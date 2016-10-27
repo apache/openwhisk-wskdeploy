@@ -1,0 +1,21 @@
+package:
+  name: helloworld
+  version: 1.0
+  license: Apache-2.0
+  actions:
+    hello:
+      version: 1.0
+      location: src/greeting.js
+      runtime: nodejs@6
+      inputs:
+        - name:
+            type: string
+            description: A person's name
+        - place:
+            type: string
+            description: Where the person is from.
+      outputs:
+        - payload:
+            type: string
+            description: a simple greeting message: Hello, name from place!
+
