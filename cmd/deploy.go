@@ -49,20 +49,21 @@ to quickly create a Cobra application.`,
 			fmt.Println("Found severless manifest")
 
 			dat, err := ioutil.ReadFile(manifestPath)
-			check(err)
+			Check(err)
 			//fmt.Println(string(dat))
 
 			var manifest Manifest
 
 			err = yaml.Unmarshal(dat, &manifest)
-			check(err)
+			Check(err)
 
 			if manifest.Provider.Name != "openwhisk" {
 				execErr := executeServerless()
-				check(execErr)
+				Check(execErr)
 			} else {
-				execErr := executeOpenWhisk(manifest, deployCmdPath)
-				check(execErr)
+				//execErr := executeOpenWhisk(manifest, deployCmdPath)
+				execErr := executeDeployer(deployCmdPath)
+				Check(execErr)
 			}
 		} else {
 			fmt.Println("No manfiest files found.")
@@ -87,10 +88,17 @@ func init() {
 	deployCmd.Flags().StringVarP(&deployCmdPath, "deployment", "d", ".", "path to deployment file")
 }
 
+func executeDeployer(manifestPath string) error {
+	deployer.ReadDirectory(manifestPath)
+	deployer.DeployActions()
+
+	return nil
+}
+
 // Process manifest using OpenWhisk Tool
 func executeOpenWhisk(manifest Manifest, manifestPath string) error {
 	err := filepath.Walk(manifestPath, processPath)
-	check(err)
+	Check(err)
 	fmt.Println("OpenWhisk processing TBD")
 	return nil
 }
@@ -102,7 +110,7 @@ func processPath(path string, f os.FileInfo, err error) error {
 
 // If "serverless" is installed, then use it to process manifest
 func executeServerless() error {
-	//check
+	//Check
 	if os.Getenv("AWS_ACCESS_KEY_ID") == "" || os.Getenv("AWS_SECRET_ACCESS_KEY") == "" {
 		return &serverlessErr{"Please set missing environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY tokens"}
 	}

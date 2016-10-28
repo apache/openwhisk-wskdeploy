@@ -16,10 +16,10 @@
 
 package cmd
 
-// constants
+// ServerlessBinaryCommand is the CLI name to run serverless
 const ServerlessBinaryCommand = "serverless"
 
-// ManifestProvder is a provider description in the manifest
+// ManifestProvider is a provider description in the manifest
 type ManifestProvider struct {
 	Name    string
 	Runtime string
@@ -40,8 +40,8 @@ func (e *serverlessErr) Error() string {
 	return e.msg
 }
 
-// util functions
-func check(e error) {
+// Check is a util function to panic when there is an error.
+func Check(e error) {
 	if e != nil {
 		panic(e)
 	}
