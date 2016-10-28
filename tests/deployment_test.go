@@ -1,21 +1,22 @@
 package tests
 
 import (
+	"github.com/openwhisk/wsktool/model"
 	"io/ioutil"
 	"testing"
-	"github.com/openwhisk/wsktool/model"
 )
 
 var deployment_yaml = "dat/deployment.yaml"
 
 func TestParseDeploymentYAML(t *testing.T) {
 	data, err := ioutil.ReadFile(deployment_yaml)
-	if err!=nil{
+	if err != nil {
 		panic(err)
 	}
 
 	var deployment model.DeploymentYAML
-	err=model.Deployer.Unmarshal(data, &deployment); if err!= nil {
+	err = model.Deployer.Unmarshal(data, &deployment)
+	if err != nil {
 		panic(err)
 	}
 	var expectedPackagename = "helloworld"
