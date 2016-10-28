@@ -37,8 +37,8 @@ type Package struct {
 	Actions     []Action `yaml:"actions"`
 }
 
-type DeploymentYAML struct{
-	Package  Package `yaml:"package"`
+type DeploymentYAML struct {
+	Package Package `yaml:"package"`
 }
 
 func (dm *DeploymentManager) Unmarshal(input []byte, deploy *DeploymentYAML) error {

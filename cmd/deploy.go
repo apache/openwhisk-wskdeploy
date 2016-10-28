@@ -18,14 +18,14 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/spf13/cobra"
+	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
 	"syscall"
-	"github.com/spf13/cobra"
-	yaml "gopkg.in/yaml.v2"
 )
 
 var deployCmdPath string
@@ -40,34 +40,34 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-Run: func(cmd *cobra.Command, args []string) {
-	// TODO: Work your own magic here
+	Run: func(cmd *cobra.Command, args []string) {
+		// TODO: Work your own magic here
 
-	var manifestPath = path.Join(deployCmdPath, "serverless.yml")
-	fmt.Println("Searching for manifest on path ", manifestPath)
-	if _, err := os.Stat(manifestPath); err == nil {
-		fmt.Println("Found severless manifest")
+		var manifestPath = path.Join(deployCmdPath, "serverless.yml")
+		fmt.Println("Searching for manifest on path ", manifestPath)
+		if _, err := os.Stat(manifestPath); err == nil {
+			fmt.Println("Found severless manifest")
 
-		dat, err := ioutil.ReadFile(manifestPath)
-		check(err)
-		//fmt.Println(string(dat))
+			dat, err := ioutil.ReadFile(manifestPath)
+			check(err)
+			//fmt.Println(string(dat))
 
-		var manifest Manifest
+			var manifest Manifest
 
-		err = yaml.Unmarshal(dat, &manifest)
-		check(err)
+			err = yaml.Unmarshal(dat, &manifest)
+			check(err)
 
-		if manifest.Provider.Name != "openwhisk" {
-			execErr := executeServerless()
-			check(execErr)
+			if manifest.Provider.Name != "openwhisk" {
+				execErr := executeServerless()
+				check(execErr)
+			} else {
+				execErr := executeOpenWhisk(manifest, deployCmdPath)
+				check(execErr)
+			}
 		} else {
-			execErr := executeOpenWhisk(manifest, deployCmdPath)
-			check(execErr)
+			fmt.Println("No manfiest files found.")
 		}
-	} else {
-		fmt.Println("No manfiest files found.")
-	}
-},
+	},
 }
 
 func init() {
@@ -86,40 +86,41 @@ func init() {
 	deployCmd.Flags().StringVarP(&deployCmdPath, "manifest", "m", ".", "path to manifest file")
 	deployCmd.Flags().StringVarP(&deployCmdPath, "deployment", "d", ".", "path to deployment file")
 }
-	// Process manifest using OpenWhisk Tool
-	func executeOpenWhisk(manifest Manifest, manifestPath string) error {
-		err := filepath.Walk(manifestPath, processPath)
-		check(err)
-		fmt.Println("OpenWhisk processing TBD")
-		return nil
+
+// Process manifest using OpenWhisk Tool
+func executeOpenWhisk(manifest Manifest, manifestPath string) error {
+	err := filepath.Walk(manifestPath, processPath)
+	check(err)
+	fmt.Println("OpenWhisk processing TBD")
+	return nil
+}
+
+func processPath(path string, f os.FileInfo, err error) error {
+	fmt.Println("Visited ", path)
+	return nil
+}
+
+// If "serverless" is installed, then use it to process manifest
+func executeServerless() error {
+	//check
+	if os.Getenv("AWS_ACCESS_KEY_ID") == "" || os.Getenv("AWS_SECRET_ACCESS_KEY") == "" {
+		return &serverlessErr{"Please set missing environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY tokens"}
+	}
+	binary, lookErr := exec.LookPath(ServerlessBinaryCommand)
+	if lookErr != nil {
+		panic(lookErr)
+	}
+	args := make([]string, 2)
+	args[0] = ServerlessBinaryCommand
+	args[1] = "deploy"
+
+	env := os.Environ()
+
+	os.Chdir(deployCmdPath)
+	execErr := syscall.Exec(binary, args, env)
+	if execErr != nil {
+		return &serverlessErr{execErr.Error()}
 	}
 
-	func processPath(path string, f os.FileInfo, err error) error {
-		fmt.Println("Visited ", path)
-		return nil
-	}
-
-	// If "serverless" is installed, then use it to process manifest
-	func executeServerless() error {
-		//check
-		if os.Getenv("AWS_ACCESS_KEY_ID") == "" || os.Getenv("AWS_SECRET_ACCESS_KEY") == "" {
-			return &serverlessErr{"Please set missing environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY tokens"}
-		}
-		binary, lookErr := exec.LookPath(ServerlessBinaryCommand)
-		if lookErr != nil {
-			panic(lookErr)
-		}
-		args := make([]string, 2)
-		args[0] = ServerlessBinaryCommand
-		args[1] = "deploy"
-
-		env := os.Environ()
-
-		os.Chdir(deployCmdPath)
-		execErr := syscall.Exec(binary, args, env)
-		if execErr != nil {
-			return &serverlessErr{execErr.Error()}
-		}
-
-		return nil
-	}
+	return nil
+}

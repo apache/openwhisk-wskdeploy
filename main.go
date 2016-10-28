@@ -18,6 +18,13 @@ package main
 
 import "github.com/openwhisk/wsktool/cmd"
 
+var (
+	//Version ...The Version of the tool
+	Version = "unset"
+	//Build ...The build tag
+	Build = "unset"
+)
+
 func main() {
 	cmd.Execute()
 }
