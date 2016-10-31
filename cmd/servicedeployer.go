@@ -22,6 +22,7 @@ import (
   "net/http"
   "net/url"
   "io/ioutil"
+  "bufio"
   "os"
   "path"
   "path/filepath"
@@ -38,11 +39,30 @@ var deployer = new(ServiceDeployer)
 //   4. Create a deployment plan to create OpenWhisk service
 type ServiceDeployer struct {
   actions []*whisk.Action
+  authtoken string
+  namespace string
+  apihost string
 }
 
 // NewServiceDeployer is a Factory to create a new ServiceDeployer
 func NewServiceDeployer() *ServiceDeployer {
   return new(ServiceDeployer)
+}
+
+// Load configuration will load properties from a file
+func (deployer *ServiceDeployer) LoadConfiguration(propPath string) error {
+  fmt.Println("Loading configuration")
+
+  props, err := readProps(propPath)
+  Check(err)
+
+  fmt.Println("Got props ", props)
+
+  deployer.namespace = props["NAMEPSACE"]
+  deployer.apihost = props["APIHOST"]
+  deployer.authtoken = props["AUTH"]
+
+  return nil
 }
 
 // ReadDirectory will collect information from the files on disk. These represent actions
@@ -66,14 +86,14 @@ func (deployer *ServiceDeployer) DeployActions() error {
 // Utility function to call go-whisk framework to make action
 func (deployer *ServiceDeployer) createAction(action *whisk.Action) {
 
-	baseURL, err := getURLBase("MyAPIHost")
+	baseURL, err := getURLBase(deployer.apihost)
 	if err != nil {
 		fmt.Println("Got error making baseUrl ", err)
 	}
 
 	clientConfig := &whisk.Config{
-		AuthToken: "MyAuthToken",
-		Namespace: "MyNameSpace",
+		AuthToken: deployer.authtoken,
+		Namespace: deployer.namespace,
 		BaseURL:   baseURL,
 		Version:   "v1",
 		Insecure:  false, // true if you want to ignore certificate signing
@@ -149,4 +169,36 @@ func processFilePath(filePath string, f os.FileInfo, err error) error {
     deployer.actions = append(deployer.actions, action)
   }
 	return nil
+}
+
+func readProps(path string) (map[string]string, error) {
+
+    props := map[string]string{}
+
+    file, err := os.Open(path)
+    if err != nil {
+        // If file does not exist, just return props
+      fmt.Printf("Unable to read whisk properties file '%s' (file open error: %s); falling back to default properties\n" ,path, err)
+        return props, nil
+    }
+    defer file.Close()
+
+    lines := []string{}
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        lines = append(lines, scanner.Text())
+    }
+
+    props = map[string]string{}
+    for _, line := range lines {
+        kv := strings.Split(line, "=")
+        if len(kv) != 2 {
+            // Invalid format; skip
+            continue
+        }
+        props[kv[0]] = kv[1]
+    }
+
+    return props, nil
+
 }

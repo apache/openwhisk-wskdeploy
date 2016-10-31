@@ -5,7 +5,7 @@ import (
 	"github.com/openwhisk/wsktool/cmd"
 )
 
-var contentReader = new(cmd.ContentReader)
+var contentReader = new(cmd.ContentReader{new(cmd.UrlContent), new(cmd.LocalContent)})
 var filepath = "../tests/dat/deployment.yaml"
 
 func TestLocalReader_ReadLocal(t *testing.T) {

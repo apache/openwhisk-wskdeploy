@@ -89,6 +89,7 @@ func init() {
 }
 
 func executeDeployer(manifestPath string) error {
+	deployer.LoadConfiguration("~/.wskprops")
 	deployer.ReadDirectory(manifestPath)
 	deployer.DeployActions()
 
