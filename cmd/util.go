@@ -16,6 +16,12 @@
 
 package cmd
 
+import (
+	"io/ioutil"
+	"net/http"
+	"net/url"
+)
+
 // ServerlessBinaryCommand is the CLI name to run serverless
 const ServerlessBinaryCommand = "serverless"
 
@@ -45,4 +51,34 @@ func Check(e error) {
 	if e != nil {
 		panic(e)
 	}
+}
+
+type URLReader interface {
+	ReadUrl(url *url.URL) (b []byte, err error)
+}
+
+func (urlReader *URLReader) ReadUrl(url *url.URL) (content []byte, err error) {
+	resp, err := http.Get(url)
+	Check(err)
+	b, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	Check(err)
+	return b, nil
+}
+
+type LocalReader interface {
+	ReadLocal(path string) (content []byte, err error)
+}
+
+func (localReader *LocalReader) ReadLocal(path string) (content []byte, err error) {
+	cont, err := ioutil.ReadFile(path)
+	Check(err)
+	content = append(content, cont)
+	return
+}
+
+// agnostic util reader to fetch content from web or local path or potentially other places.
+type ContentReader struct {
+	URLReader
+	LocalReader
 }
