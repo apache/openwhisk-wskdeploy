@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package cmd
+package utils
 
 import (
 	"io/ioutil"
 	"net/http"
-	"net/url"
 )
 
 // ServerlessBinaryCommand is the CLI name to run serverless
@@ -53,11 +52,10 @@ func Check(e error) {
 	}
 }
 
-type URLReader interface {
-	ReadUrl(url *url.URL) (b []byte, err error)
+type URLReader struct {
 }
 
-func (urlReader *URLReader) ReadUrl(url *url.URL) (content []byte, err error) {
+func (urlReader *URLReader) ReadUrl(url string) (content []byte, err error) {
 	resp, err := http.Get(url)
 	Check(err)
 	b, err := ioutil.ReadAll(resp.Body)
@@ -66,15 +64,13 @@ func (urlReader *URLReader) ReadUrl(url *url.URL) (content []byte, err error) {
 	return b, nil
 }
 
-type LocalReader interface {
-	ReadLocal(path string) (content []byte, err error)
+type LocalReader struct {
 }
 
 func (localReader *LocalReader) ReadLocal(path string) (content []byte, err error) {
 	cont, err := ioutil.ReadFile(path)
 	Check(err)
-	content = append(content, cont)
-	return
+	return cont, nil
 }
 
 // agnostic util reader to fetch content from web or local path or potentially other places.

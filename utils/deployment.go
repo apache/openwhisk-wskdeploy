@@ -1,4 +1,4 @@
-package model
+package utils
 
 import (
 	"gopkg.in/yaml.v2"
@@ -6,6 +6,8 @@ import (
 )
 
 var Deployer *DeploymentManager
+
+// structs that denotes the sample deployment.yaml, wrapped yaml.v2
 
 func init() {
 	Deployer = &DeploymentManager{}

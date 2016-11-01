@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"github.com/openwhisk/wsktool/model"
+	"../utils"
 	"io/ioutil"
 	"testing"
 )
@@ -14,8 +14,8 @@ func TestParseDeploymentYAML(t *testing.T) {
 		panic(err)
 	}
 
-	var deployment model.DeploymentYAML
-	err = model.Deployer.Unmarshal(data, &deployment)
+	var deployment utils.DeploymentYAML
+	err = utils.Deployer.Unmarshal(data, &deployment)
 	if err != nil {
 		panic(err)
 	}
