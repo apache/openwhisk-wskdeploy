@@ -17,20 +17,20 @@
 package cmd
 
 import (
-  "fmt"
-  "github.com/openwhisk/go-whisk/whisk"
-  "net/http"
-  "net/url"
-  "io/ioutil"
-  "bufio"
-  "os"
-  "path"
-  "path/filepath"
-  "strings"
+	"../utils"
+	"bufio"
+	"fmt"
+	"github.com/openwhisk/go-whisk/whisk"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"os"
+	"path"
+	"path/filepath"
+	"strings"
 )
 
 var deployer = new(ServiceDeployer)
-
 
 //ServiceDeployer defines a prototype service deployer.  It should do the following:
 //   1. Collect information from the manifest file (if any)
@@ -38,49 +38,49 @@ var deployer = new(ServiceDeployer)
 //   3. Collect information about the source code files in the working directory
 //   4. Create a deployment plan to create OpenWhisk service
 type ServiceDeployer struct {
-  actions []*whisk.Action
-  authtoken string
-  namespace string
-  apihost string
+	actions   []*whisk.Action
+	authtoken string
+	namespace string
+	apihost   string
 }
 
 // NewServiceDeployer is a Factory to create a new ServiceDeployer
 func NewServiceDeployer() *ServiceDeployer {
-  return new(ServiceDeployer)
+	return new(ServiceDeployer)
 }
 
 // Load configuration will load properties from a file
 func (deployer *ServiceDeployer) LoadConfiguration(propPath string) error {
-  fmt.Println("Loading configuration")
+	fmt.Println("Loading configuration")
 
-  props, err := readProps(propPath)
-  Check(err)
+	props, err := readProps(propPath)
+	utils.Check(err)
 
-  fmt.Println("Got props ", props)
+	fmt.Println("Got props ", props)
 
-  deployer.namespace = props["NAMEPSACE"]
-  deployer.apihost = props["APIHOST"]
-  deployer.authtoken = props["AUTH"]
+	deployer.namespace = props["NAMEPSACE"]
+	deployer.apihost = props["APIHOST"]
+	deployer.authtoken = props["AUTH"]
 
-  return nil
+	return nil
 }
 
 // ReadDirectory will collect information from the files on disk. These represent actions
 func (deployer *ServiceDeployer) ReadDirectory(directoryPath string) error {
-  err := filepath.Walk(directoryPath, processFilePath)
-  Check(err)
+	err := filepath.Walk(directoryPath, processFilePath)
+	utils.Check(err)
 
-  return nil
+	return nil
 }
 
 // DeployActions into OpenWhisk
 func (deployer *ServiceDeployer) DeployActions() error {
 
-  for _, action := range deployer.actions {
-    fmt.Println("Got action ", action.Exec.Code)
-    deployer.createAction(action)
-  }
-  return nil
+	for _, action := range deployer.actions {
+		fmt.Println("Got action ", action.Exec.Code)
+		deployer.createAction(action)
+	}
+	return nil
 }
 
 // Utility function to call go-whisk framework to make action
@@ -134,71 +134,70 @@ func getURLBase(host string) (*url.URL, error) {
 	return url, err
 }
 
-
 func processFilePath(filePath string, f os.FileInfo, err error) error {
 	fmt.Println("Visited ", filePath)
 
-  ext := path.Ext(filePath)
-  baseName:= path.Base(filePath)
-  name := strings.TrimSuffix(baseName, filepath.Ext(baseName))
+	ext := path.Ext(filePath)
+	baseName := path.Base(filePath)
+	name := strings.TrimSuffix(baseName, filepath.Ext(baseName))
 
-  // process source code files
-  if ext == ".swift"  {
+	// process source code files
+	if ext == ".swift" {
 
-    kind := "nodejs:default"
+		kind := "nodejs:default"
 
-    switch ext {
-    case ".swift":
-        kind = "swift:default"
-    case ".js":
-        kind = "nodejs:default"
-    case ".py":
-        kind = "python"
-    }
+		switch ext {
+		case ".swift":
+			kind = "swift:default"
+		case ".js":
+			kind = "nodejs:default"
+		case ".py":
+			kind = "python"
+		}
 
-    dat, err := ioutil.ReadFile(filePath)
-    Check(err)
+		dat, err := ioutil.ReadFile(filePath)
+		utils.Check(err)
 
-    action := new(whisk.Action)
-    action.Exec = new(whisk.Exec)
-    action.Exec.Code = string(dat)
-    action.Exec.Kind = kind
-    action.Name = name
-    action.Publish = false
+		action := new(whisk.Action)
+		action.Exec = new(whisk.Exec)
+		action.Exec.Code = string(dat)
+		action.Exec.Kind = kind
+		action.Name = name
+		action.Publish = false
 
-    deployer.actions = append(deployer.actions, action)
-  }
+		deployer.actions = append(deployer.actions, action)
+	}
 	return nil
 }
 
 func readProps(path string) (map[string]string, error) {
 
-    props := map[string]string{}
+	props := map[string]string{}
 
-    file, err := os.Open(path)
-    if err != nil {
-        // If file does not exist, just return props
-      fmt.Printf("Unable to read whisk properties file '%s' (file open error: %s); falling back to default properties\n" ,path, err)
-        return props, nil
-    }
-    defer file.Close()
+	file, err := os.Open(path)
+	if err != nil {
+		// If file does not exist, just return props
+		fmt.Printf("Unable to read whisk properties file '%s' (file open error: %s); falling back to default properties\n", path, err)
+		return props, nil
+	}
+	defer file.Close()
 
-    lines := []string{}
-    scanner := bufio.NewScanner(file)
-    for scanner.Scan() {
-        lines = append(lines, scanner.Text())
-    }
+	lines := []string{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
 
-    props = map[string]string{}
-    for _, line := range lines {
-        kv := strings.Split(line, "=")
-        if len(kv) != 2 {
-            // Invalid format; skip
-            continue
-        }
-        props[kv[0]] = kv[1]
-    }
+	props = map[string]string{}
+	for _, line := range lines {
+		kv := strings.Split(line, "=")
+		if len(kv) != 2 {
+			// Invalid format; skip
+			continue
+		}
+		props[kv[0]] = kv[1]
+	}
 
-    return props, nil
+	return props, nil
 
 }
