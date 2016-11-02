@@ -106,6 +106,10 @@ func GetURLBase(host string) (*url.URL, error) {
 	return url, err
 }
 
+<<<<<<< 5cea7398a55dd36f3ea9586a34c6b46e39a7b1b6
+=======
+
+>>>>>>> WIP Issue #4, more processing
 func ReadProps(path string) (map[string]string, error) {
 
 	props := map[string]string{}

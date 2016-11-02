@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/openwhisk/wsktool/utils"
 	"github.com/spf13/cobra"
+	"github.com/openwhisk/wsktool/utils"
 	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
