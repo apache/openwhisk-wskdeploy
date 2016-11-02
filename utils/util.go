@@ -17,8 +17,14 @@
 package utils
 
 import (
+	"bufio"
 	"io/ioutil"
+	"fmt"
 	"net/http"
+	"net/url"
+	"os"
+	"os/user"
+	"strings"
 )
 
 // ServerlessBinaryCommand is the CLI name to run serverless
@@ -36,13 +42,13 @@ type Manifest struct {
 	Provider ManifestProvider
 }
 
-// errors
-type serverlessErr struct {
-	msg string
+// ServerlessErr records errors from the Serverless binary
+type ServerlessErr struct {
+	Msg string
 }
 
-func (e *serverlessErr) Error() string {
-	return e.msg
+func (e *ServerlessErr) Error() string {
+	return e.Msg
 }
 
 // Check is a util function to panic when there is an error.
@@ -77,4 +83,77 @@ func (localReader *LocalReader) ReadLocal(path string) (content []byte, err erro
 type ContentReader struct {
 	URLReader
 	LocalReader
+}
+
+func GetHomeDirectory() string {
+	usr, err := user.Current()
+	Check(err)
+
+	return usr.HomeDir
+}
+
+// Utility to convert hostname to URL object
+func GetURLBase(host string) (*url.URL, error) {
+
+	urlBase := fmt.Sprintf("%s/api/", host)
+	url, err := url.Parse(urlBase)
+
+	if len(url.Scheme) == 0 || len(url.Host) == 0 {
+		urlBase = fmt.Sprintf("https://%s/api/", host)
+		url, err = url.Parse(urlBase)
+	}
+
+	return url, err
+}
+
+
+func ReadProps(path string) (map[string]string, error) {
+
+	props := map[string]string{}
+
+	file, err := os.Open(path)
+	if err != nil {
+		// If file does not exist, just return props
+		fmt.Printf("Unable to read whisk properties file '%s' (file open error: %s); falling back to default properties\n", path, err)
+		return props, nil
+	}
+	defer file.Close()
+
+	lines := []string{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	props = map[string]string{}
+	for _, line := range lines {
+		kv := strings.Split(line, "=")
+		if len(kv) != 2 {
+			// Invalid format; skip
+			continue
+		}
+		props[kv[0]] = kv[1]
+	}
+
+	return props, nil
+
+}
+
+func IsDirectory(filePath string) bool {
+	f, err := os.Open(filePath)
+	Check(err)
+
+	defer f.Close()
+
+	fi, err := f.Stat()
+	Check(err)
+
+	switch mode := fi.Mode(); {
+	case mode.IsDir():
+		return true
+	case mode.IsRegular():
+		return false
+	default:
+		return false
+	}
 }

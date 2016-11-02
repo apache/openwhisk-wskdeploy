@@ -19,6 +19,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/openwhisk/wsktool/utils"
 	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -49,21 +50,21 @@ to quickly create a Cobra application.`,
 			fmt.Println("Found severless manifest")
 
 			dat, err := ioutil.ReadFile(manifestPath)
-			Check(err)
+			utils.Check(err)
 			//fmt.Println(string(dat))
 
-			var manifest Manifest
+			var manifest utils.Manifest
 
 			err = yaml.Unmarshal(dat, &manifest)
-			Check(err)
+			utils.Check(err)
 
 			if manifest.Provider.Name != "openwhisk" {
 				execErr := executeServerless()
-				Check(execErr)
+				utils.Check(execErr)
 			} else {
 				//execErr := executeOpenWhisk(manifest, deployCmdPath)
 				execErr := executeDeployer(deployCmdPath)
-				Check(execErr)
+				utils.Check(execErr)
 			}
 		} else {
 			fmt.Println("No manfiest files found.")
@@ -89,7 +90,9 @@ func init() {
 }
 
 func executeDeployer(manifestPath string) error {
-	deployer.LoadConfiguration("~/.wskprops")
+	userHome := utils.GetHomeDirectory()
+	propPath := path.Join(userHome, ".wskprops")
+	deployer.LoadConfiguration(propPath)
 	deployer.ReadDirectory(manifestPath)
 	deployer.DeployActions()
 
@@ -97,9 +100,9 @@ func executeDeployer(manifestPath string) error {
 }
 
 // Process manifest using OpenWhisk Tool
-func executeOpenWhisk(manifest Manifest, manifestPath string) error {
+func executeOpenWhisk(manifest utils.Manifest, manifestPath string) error {
 	err := filepath.Walk(manifestPath, processPath)
-	Check(err)
+	utils.Check(err)
 	fmt.Println("OpenWhisk processing TBD")
 	return nil
 }
@@ -111,16 +114,16 @@ func processPath(path string, f os.FileInfo, err error) error {
 
 // If "serverless" is installed, then use it to process manifest
 func executeServerless() error {
-	//Check
+	//utils.Check
 	if os.Getenv("AWS_ACCESS_KEY_ID") == "" || os.Getenv("AWS_SECRET_ACCESS_KEY") == "" {
-		return &serverlessErr{"Please set missing environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY tokens"}
+		return &utils.ServerlessErr{"Please set missing environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY tokens"}
 	}
-	binary, lookErr := exec.LookPath(ServerlessBinaryCommand)
+	binary, lookErr := exec.LookPath(utils.ServerlessBinaryCommand)
 	if lookErr != nil {
 		panic(lookErr)
 	}
 	args := make([]string, 2)
-	args[0] = ServerlessBinaryCommand
+	args[0] = utils.ServerlessBinaryCommand
 	args[1] = "deploy"
 
 	env := os.Environ()
@@ -128,7 +131,7 @@ func executeServerless() error {
 	os.Chdir(deployCmdPath)
 	execErr := syscall.Exec(binary, args, env)
 	if execErr != nil {
-		return &serverlessErr{execErr.Error()}
+		return &utils.ServerlessErr{execErr.Error()}
 	}
 
 	return nil
