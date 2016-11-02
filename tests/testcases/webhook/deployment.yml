@@ -1,0 +1,12 @@
+packages:
+  git_webhook:
+    triggers:
+      webhook_trigger:
+        inputs:
+          username: daisy-ycguo 
+          repository: https://github.com/openwhisk/wsktool.git
+          accessToken:
+          events: PUSH
+          wskhost: openwhisk.ng.bluemix.net
+
+
