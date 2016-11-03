@@ -12,14 +12,14 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
+ */
 
 package cmd
 
 import (
 	"fmt"
-	"github.com/openwhisk/wsktool/utils"
 	"github.com/openwhisk/go-whisk/whisk"
+	"github.com/openwhisk/wsktool/utils"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -81,103 +81,103 @@ func (deployer *ServiceDeployer) ReadDirectory(directoryPath string) error {
 				}
 				err = deployer.CreatePackageFromDirectory(baseName)
 
-				} else {
-					err = deployer.CreateActionFromFile(filePath)
-				}
+			} else {
+				err = deployer.CreateActionFromFile(filePath)
 			}
-			return err
-		})
-
-		utils.Check(err)
-		return nil
-	}
-
-	func (deployer *ServiceDeployer) CreatePackageFromDirectory(directoryName string) error {
-		fmt.Println("Making a package ", directoryName)
-		return nil
-	}
-
-	func (deployer *ServiceDeployer) CreateActionFromFile(filePath string) error {
-		ext := path.Ext(filePath)
-		baseName := path.Base(filePath)
-		name := strings.TrimSuffix(baseName, filepath.Ext(baseName))
-
-		// process source code files
-		if ext == ".swift" || ext == ".js" || ext == ".py" {
-
-			if _, ok := deployer.actions[name]; ok {
-				return fmt.Errorf("Found a duplicate name %s when scanning file directory", name)
-
-				} else {
-
-					kind := "nodejs:default"
-
-					switch ext {
-					case ".swift":
-						kind = "swift:default"
-					case ".js":
-						kind = "nodejs:default"
-					case ".py":
-						kind = "python"
-					}
-
-					dat, err := ioutil.ReadFile(filePath)
-					utils.Check(err)
-
-					action := new(whisk.Action)
-					action.Exec = new(whisk.Exec)
-					action.Exec.Code = string(dat)
-					action.Exec.Kind = kind
-					action.Name = name
-					action.Publish = false
-
-					deployer.actions[name] = action
-				}
-			}
-			return nil
 		}
+		return err
+	})
 
-		// DeployActions into OpenWhisk
-		func (deployer *ServiceDeployer) DeployActions() error {
+	utils.Check(err)
+	return nil
+}
 
-			for _, action := range deployer.actions {
-				fmt.Println("Got action ", action.Exec.Code)
-				deployer.createAction(action)
+func (deployer *ServiceDeployer) CreatePackageFromDirectory(directoryName string) error {
+	fmt.Println("Making a package ", directoryName)
+	return nil
+}
+
+func (deployer *ServiceDeployer) CreateActionFromFile(filePath string) error {
+	ext := path.Ext(filePath)
+	baseName := path.Base(filePath)
+	name := strings.TrimSuffix(baseName, filepath.Ext(baseName))
+
+	// process source code files
+	if ext == ".swift" || ext == ".js" || ext == ".py" {
+
+		if _, ok := deployer.actions[name]; ok {
+			return fmt.Errorf("Found a duplicate name %s when scanning file directory", name)
+
+		} else {
+
+			kind := "nodejs:default"
+
+			switch ext {
+			case ".swift":
+				kind = "swift:default"
+			case ".js":
+				kind = "nodejs:default"
+			case ".py":
+				kind = "python"
 			}
-			return nil
-		}
 
-		// Utility function to call go-whisk framework to make action
-		func (deployer *ServiceDeployer) createAction(action *whisk.Action) {
+			dat, err := ioutil.ReadFile(filePath)
+			utils.Check(err)
 
-			baseURL, err := utils.GetURLBase(deployer.apihost)
-			if err != nil {
-				fmt.Println("Got error making baseUrl ", err)
-			}
-
-			clientConfig := &whisk.Config{
-				AuthToken: deployer.authtoken,
-				Namespace: deployer.namespace,
-				BaseURL:   baseURL,
-				Version:   "v1",
-				Insecure:  false, // true if you want to ignore certificate signing
-			}
-
-			// Setup network client
-			client, err := whisk.NewClient(http.DefaultClient, clientConfig)
-			if err != nil {
-				fmt.Println("Got error making whisk client ", err)
-			}
-
-			action.Namespace = deployer.namespace
+			action := new(whisk.Action)
+			action.Exec = new(whisk.Exec)
+			action.Exec.Code = string(dat)
+			action.Exec.Kind = kind
+			action.Name = name
 			action.Publish = false
-			// action.Parameters =
-			// action.Annotations =
-			// action.Limits =
 
-			// call ActionService Thru Client
-			_, _, err = client.Actions.Insert(action, false, true)
-			if err != nil {
-				fmt.Println("Got error inserting action ", err)
-			}
+			deployer.actions[name] = action
 		}
+	}
+	return nil
+}
+
+// DeployActions into OpenWhisk
+func (deployer *ServiceDeployer) DeployActions() error {
+
+	for _, action := range deployer.actions {
+		fmt.Println("Got action ", action.Exec.Code)
+		deployer.createAction(action)
+	}
+	return nil
+}
+
+// Utility function to call go-whisk framework to make action
+func (deployer *ServiceDeployer) createAction(action *whisk.Action) {
+
+	baseURL, err := utils.GetURLBase(deployer.apihost)
+	if err != nil {
+		fmt.Println("Got error making baseUrl ", err)
+	}
+
+	clientConfig := &whisk.Config{
+		AuthToken: deployer.authtoken,
+		Namespace: deployer.namespace,
+		BaseURL:   baseURL,
+		Version:   "v1",
+		Insecure:  false, // true if you want to ignore certificate signing
+	}
+
+	// Setup network client
+	client, err := whisk.NewClient(http.DefaultClient, clientConfig)
+	if err != nil {
+		fmt.Println("Got error making whisk client ", err)
+	}
+
+	action.Namespace = deployer.namespace
+	action.Publish = false
+	// action.Parameters =
+	// action.Annotations =
+	// action.Limits =
+
+	// call ActionService Thru Client
+	_, _, err = client.Actions.Insert(action, false, true)
+	if err != nil {
+		fmt.Println("Got error inserting action ", err)
+	}
+}

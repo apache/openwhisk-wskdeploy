@@ -18,8 +18,8 @@ package utils
 
 import (
 	"bufio"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -105,7 +105,6 @@ func GetURLBase(host string) (*url.URL, error) {
 
 	return url, err
 }
-
 
 func ReadProps(path string) (map[string]string, error) {
 
