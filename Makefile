@@ -33,7 +33,7 @@ format:
 	@echo "Formatting"
 	go fmt ./...
 
-lint:
+lint: format
 	@echo "Linting"
 	golint .
 

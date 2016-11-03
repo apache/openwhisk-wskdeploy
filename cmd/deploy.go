@@ -18,8 +18,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"github.com/openwhisk/wsktool/utils"
+	"github.com/spf13/cobra"
 	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"

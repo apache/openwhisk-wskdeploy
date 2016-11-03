@@ -1,0 +1,13 @@
+# A Travis CI configuration file.
+
+language: go
+
+go:
+  - 1.7
+
+install:
+  - go get -u github.com/golang/lint/golint
+
+script:
+  - make lint
+  - make build
