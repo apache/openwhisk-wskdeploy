@@ -16,4 +16,4 @@ This specification is under development and in draft status; therefore is subjec
 
 Once the draft progresses further (i.e., known outstanding "high priority" design issues have been addressed), we will make the document available in markdown.  At this time the following formats are provided for review:
 
-* PDF: <link here>
+* PDF: [openwhisk_v0.8.pdf](openwhisk_v0.8.pdf)
