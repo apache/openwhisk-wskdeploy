@@ -17,7 +17,7 @@ func TestLocalReader_ReadLocal(t *testing.T) {
 }
 
 func TestURLReader_ReadUrl(t *testing.T) {
-	var exampleUrl = "http://www.google.com"
+	var exampleUrl = "http://www.baidu.com"
 	b, err := contentReader.ReadUrl(exampleUrl)
 	utils.Check(err)
 	if b == nil {

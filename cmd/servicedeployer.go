@@ -18,7 +18,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/openwhisk/go-whisk/whisk"
+	"github.com/lzbj/go-whisk/whisk"
 	"github.com/openwhisk/wsktool/utils"
 	"io/ioutil"
 	"net/http"
