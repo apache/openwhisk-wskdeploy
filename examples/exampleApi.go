@@ -2,7 +2,7 @@ package examples
 
 import (
 	"fmt"
-	"github.com/openwhisk/go-whisk/whisk"
+	"github.com/lzbj/go-whisk/whisk"
 	"net/http"
 	"net/url"
 )
