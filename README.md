@@ -27,4 +27,6 @@ $ git checkout development   ## or skip this step and just build master
 $ go build
 ```
 
-Note: we have no releases yet so you should build the `development` branch.
+# whiskdeploy
+Utility for managing OpenWhisk Projects
+>>>>>>> Update README.md
