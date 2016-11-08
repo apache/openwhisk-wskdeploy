@@ -4,13 +4,23 @@
 
 ## Purpose
 
-This specification defines two file artifacts, along with YAML schema, that are used to describe OpenWhisk Packages for deployment to a target OpenWhisk platform; these include:
+This specification defines two file artifacts, along with YAML schema, that are used to describe OpenWhisk Packages for deployment to a target OpenWhisk platform; these are:
 
 *	**Package Manifest file**: Contains the Package definition along with any included Action, Trigger or Rule definitions that comprise the package.  This file includes the schema of input and output data to each entity for validation purposes.
 *	**Deployment file**: Contains the values and bindings used configure a Package to a target OpenWhisk platform provider’s environment and supply input parameter values for Packages, Actions and Triggers.  This can include Namespace bindings, security and policy information.
 
+### Conceptual Manifest and Deployment file usage
+
+The following images outline the basic process for creating and using both Manifest and Deployment files against a typical developer workstream:
+
+#### Conceptual Manifest file creation
+![Manifest file creation](images/OpenWhisk - Conceptual Manifest File Creation.png "image 1")
+
+#### Conceptual Manifest file deployment
+![Manifest file deployment](images/OpenWhisk - Conceptual Manifest File Deployment.png "image 1")
+
 ## Note
-This specification is under development and in draft status; therefore is subject to change during this time.  We are seeking input from the OpenWhisk community to provide us to review the contents, suggest edits, provide interesting use cases, etc.  In general, make it a top-quality means to describe a complete OpenWhisk package without having to understand and API.  
+This specification is under development and in draft status; therefore, it is subject to change during this development period.  We are posting this draft seeking review, comment, suggestions from the OpenWhisk and greater Serverless community including areas such as: model description and semantics, schema and grammar (YAML), end-user readability, concept explanations, use cases completeness, etc.  In general, mthe goal is to make the document a top-quality means to describe a complete OpenWhisk package without having to understand and API.  In addition, we welcome submission of new use cases or variant use cases that may challenge the current schema and be the subject for discussion and new features.
 
 ## Formats
 
