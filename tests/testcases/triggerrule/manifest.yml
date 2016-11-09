@@ -8,10 +8,10 @@ package:
       location: src/greeting.js
       runtime: nodejs
       inputs:
-        - name: string
-        - place: string
+        name: string
+        place: string
       outputs:
-        - payload: string
+        payload: string
   triggers:
     locationUpdate:
       inputs:
