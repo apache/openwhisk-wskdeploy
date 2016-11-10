@@ -16,7 +16,7 @@
 
 package main
 
-import "github.com/openwhisk/wsktool/cmd"
+import "github.com/openwhisk/wskdeploy/cmd"
 
 var (
 	//Version ...The Version of the tool

@@ -18,17 +18,26 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/openwhisk/wskdeploy/utils"
+	yaml "gopkg.in/yaml.v2"
+	"io/ioutil"
+	"os"
+	"os/exec"
+	"path"
+	"path/filepath"
+	"syscall"
 )
 
 var cfgFile string
+var projectPath string
+var manifestPath string
+var deploymentPath string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "wsktool",
+	Use:   "wskdeploy",
 	Short: "A brief description of your application",
 	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
@@ -38,7 +47,32 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		var manifestPath = path.Join(projectPath, "serverless.yml")
+		fmt.Println("Searching for manifest on path ", manifestPath)
+		if _, err := os.Stat(manifestPath); err == nil {
+			fmt.Println("Found severless manifest")
+
+			dat, err := ioutil.ReadFile(manifestPath)
+			utils.Check(err)
+			//fmt.Println(string(dat))
+
+			var manifest utils.Manifest
+
+			err = yaml.Unmarshal(dat, &manifest)
+			utils.Check(err)
+
+			if manifest.Provider.Name != "openwhisk" {
+				execErr := executeServerless()
+				utils.Check(execErr)
+			} else {
+				execErr := executeDeployer(projectPath)
+				utils.Check(execErr)
+			}
+		} else {
+			fmt.Println("No manfiest files found.")
+		}
+	},
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
@@ -57,10 +91,13 @@ func init() {
 	// Cobra supports Persistent Flags, which, if defined here,
 	// will be global for your application.
 
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.wsktool.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.wskdeploy.yaml)")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	RootCmd.Flags().StringVarP(&projectPath, "path", "p", ".", "path to serverless project")
+	RootCmd.Flags().StringVarP(&manifestPath, "manifest", "m", ".", "path to manifest file")
+	RootCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", ".", "path to deployment file")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -69,7 +106,7 @@ func initConfig() {
 		viper.SetConfigFile(cfgFile)
 	}
 
-	viper.SetConfigName(".wsktool") // name of config file (without extension)
+	viper.SetConfigName(".wskdeploy") // name of config file (without extension)
 	viper.AddConfigPath("$HOME")    // adding home directory as first search path
 	viper.AutomaticEnv()            // read in environment variables that match
 
@@ -77,4 +114,52 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+func executeDeployer(manifestPath string) error {
+	userHome := utils.GetHomeDirectory()
+	propPath := path.Join(userHome, ".wskprops")
+	deployer.LoadConfiguration(propPath)
+	deployer.ReadDirectory(manifestPath)
+	deployer.DeployActions()
+
+	return nil
+}
+
+// Process manifest using OpenWhisk Tool
+func executeOpenWhisk(manifest utils.Manifest, manifestPath string) error {
+	err := filepath.Walk(manifestPath, processPath)
+	utils.Check(err)
+	fmt.Println("OpenWhisk processing TBD")
+	return nil
+}
+
+func processPath(path string, f os.FileInfo, err error) error {
+	fmt.Println("Visited ", path)
+	return nil
+}
+
+// If "serverless" is installed, then use it to process manifest
+func executeServerless() error {
+	//utils.Check
+	if os.Getenv("AWS_ACCESS_KEY_ID") == "" || os.Getenv("AWS_SECRET_ACCESS_KEY") == "" {
+		return &utils.ServerlessErr{"Please set missing environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY tokens"}
+	}
+	binary, lookErr := exec.LookPath(utils.ServerlessBinaryCommand)
+	if lookErr != nil {
+		panic(lookErr)
+	}
+	args := make([]string, 2)
+	args[0] = utils.ServerlessBinaryCommand
+	args[1] = "deploy"
+
+	env := os.Environ()
+
+	os.Chdir(projectPath)
+	execErr := syscall.Exec(binary, args, env)
+	if execErr != nil {
+		return &utils.ServerlessErr{execErr.Error()}
+	}
+
+	return nil
 }
