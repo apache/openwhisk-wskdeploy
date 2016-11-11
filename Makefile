@@ -2,7 +2,7 @@ SOURCEDIR=.
 DEPS = $(go list -f '{{range .TestImports}}{{.}} {{end}}' ./...)
 
 SOURCES := $(shell find $(SOURCEDIR) -name '*.go')
-BINARY=wsktool
+BINARY=wskdeploy
 
 VERSION=1.0.0
 

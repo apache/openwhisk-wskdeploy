@@ -18,12 +18,17 @@ package utils
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
+	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"os/user"
+	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -53,9 +58,17 @@ func (e *ServerlessErr) Error() string {
 
 // Check is a util function to panic when there is an error.
 func Check(e error) {
+
+	if err := recover(); err != nil {
+		log.Printf("runtime panic : %v", e)
+	}
+
 	if e != nil {
+		erro := errors.New("Error happened during execution, please type wskdeploy -help for help messages, now exit.")
+		log.Printf("error: %v", erro)
 		panic(e)
 	}
+
 }
 
 type URLReader struct {
@@ -155,4 +168,39 @@ func IsDirectory(filePath string) bool {
 	default:
 		return false
 	}
+}
+
+func CreateActionFromFile(manipath, filePath string) (*whisk.Action, error) {
+	ext := path.Ext(filePath)
+	baseName := path.Base(filePath)
+	name := strings.TrimSuffix(baseName, filepath.Ext(baseName))
+	action := new(whisk.Action)
+	//better refactor this
+	splitmanipath := strings.Split(manipath, string(os.PathSeparator))
+	filePath = strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + filePath
+	fmt.Println(filePath)
+	// process source code files
+	if ext == ".swift" || ext == ".js" || ext == ".py" {
+
+		kind := "nodejs:default"
+
+		switch ext {
+		case ".swift":
+			kind = "swift:default"
+		case ".js":
+			kind = "nodejs:default"
+		case ".py":
+			kind = "python"
+		}
+
+		dat, err := ioutil.ReadFile(filePath)
+		Check(err)
+		action.Exec = new(whisk.Exec)
+		action.Exec.Code = string(dat)
+		action.Exec.Kind = kind
+		action.Name = name
+		action.Publish = false
+		return action, nil
+	}
+	return nil, nil
 }

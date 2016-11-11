@@ -12,23 +12,22 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
+ */
 
 package cmd
 
 import (
 	"fmt"
-	"github.com/openwhisk/wskdeploy/utils"
 	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"io/ioutil"
+	"github.com/openwhisk/wskdeploy/utils"
+	"log"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 )
-
-var deployer = NewServiceDeployer()
 
 //ServiceDeployer defines a prototype service deployer.  It should do the following:
 //   1. Collect information from the manifest file (if any)
@@ -36,34 +35,36 @@ var deployer = NewServiceDeployer()
 //   3. Collect information about the source code files in the working directory
 //   4. Create a deployment plan to create OpenWhisk service
 type ServiceDeployer struct {
-	actions   map[string]*whisk.Action
-	triggers  map[string]string
-	packages  map[string]string
-	authtoken string
-	namespace string
-	apihost   string
+	Actions   map[string]*whisk.Action
+	Triggers  map[string]*whisk.Trigger
+	Packages  map[string]*whisk.SentPackageNoPublish
+	Rules     map[string]*whisk.Rule
+	Client    *whisk.Client
+	mt        sync.RWMutex
+	Authtoken string
+	Namespace string
+	Apihost   string
 }
 
 // NewServiceDeployer is a Factory to create a new ServiceDeployer
 func NewServiceDeployer() *ServiceDeployer {
 	var dep ServiceDeployer
-	dep.actions = make(map[string]*whisk.Action)
+	dep.Actions = make(map[string]*whisk.Action)
+	dep.Packages = make(map[string]*whisk.SentPackageNoPublish)
+	dep.Triggers = make(map[string]*whisk.Trigger)
+	dep.Rules = make(map[string]*whisk.Rule)
 	return &dep
 }
 
 // Load configuration will load properties from a file
 func (deployer *ServiceDeployer) LoadConfiguration(propPath string) error {
 	fmt.Println("Loading configuration")
-
 	props, err := utils.ReadProps(propPath)
 	utils.Check(err)
-
 	fmt.Println("Got props ", props)
-
-	deployer.namespace = props["NAMEPSACE"]
-	deployer.apihost = props["APIHOST"]
-	deployer.authtoken = props["AUTH"]
-
+	deployer.Namespace = props["NAMESPACE"]
+	deployer.Apihost = props["APIHOST"]
+	deployer.Authtoken = props["AUTH"]
 	return nil
 }
 
@@ -82,7 +83,7 @@ func (deployer *ServiceDeployer) ReadDirectory(directoryPath string) error {
 				err = deployer.CreatePackageFromDirectory(baseName)
 
 			} else {
-				err = deployer.CreateActionFromFile(filePath)
+				//err = deployer.CreateActionFromFile(filePath)
 			}
 		}
 		return err
@@ -97,51 +98,28 @@ func (deployer *ServiceDeployer) CreatePackageFromDirectory(directoryName string
 	return nil
 }
 
-func (deployer *ServiceDeployer) CreateActionFromFile(filePath string) error {
-	ext := path.Ext(filePath)
-	baseName := path.Base(filePath)
-	name := strings.TrimSuffix(baseName, filepath.Ext(baseName))
-
-	// process source code files
-	if ext == ".swift" || ext == ".js" || ext == ".py" {
-
-		if _, ok := deployer.actions[name]; ok {
-			return fmt.Errorf("Found a duplicate name %s when scanning file directory", name)
-
-		} else {
-
-			kind := "nodejs:default"
-
-			switch ext {
-			case ".swift":
-				kind = "swift:default"
-			case ".js":
-				kind = "nodejs:default"
-			case ".py":
-				kind = "python"
-			}
-
-			dat, err := ioutil.ReadFile(filePath)
-			utils.Check(err)
-
-			action := new(whisk.Action)
-			action.Exec = new(whisk.Exec)
-			action.Exec.Code = string(dat)
-			action.Exec.Kind = kind
-			action.Name = name
-			action.Publish = false
-
-			deployer.actions[name] = action
-		}
+func (deployer *ServiceDeployer) CreateClient() {
+	baseURL, err := utils.GetURLBase(deployer.Apihost)
+	utils.Check(err)
+	clientConfig := &whisk.Config{
+		AuthToken: deployer.Authtoken,
+		Namespace: deployer.Namespace,
+		BaseURL:   baseURL,
+		Version:   "v1",
+		Insecure:  true, // true if you want to ignore certificate signing
 	}
-	return nil
+	// Setup network client
+	client, err := whisk.NewClient(http.DefaultClient, clientConfig)
+	utils.Check(err)
+	deployer.Client = client
+
 }
 
 // DeployActions into OpenWhisk
 func (deployer *ServiceDeployer) DeployActions() error {
 
-	for _, action := range deployer.actions {
-		fmt.Println("Got action ", action.Exec.Code)
+	for _, action := range deployer.Actions {
+		//fmt.Println("Got action ", action.Exec.Code)
 		deployer.createAction(action)
 	}
 	return nil
@@ -149,35 +127,66 @@ func (deployer *ServiceDeployer) DeployActions() error {
 
 // Utility function to call go-whisk framework to make action
 func (deployer *ServiceDeployer) createAction(action *whisk.Action) {
-
-	baseURL, err := utils.GetURLBase(deployer.apihost)
-	if err != nil {
-		fmt.Println("Got error making baseUrl ", err)
-	}
-
-	clientConfig := &whisk.Config{
-		AuthToken: deployer.authtoken,
-		Namespace: deployer.namespace,
-		BaseURL:   baseURL,
-		Version:   "v1",
-		Insecure:  false, // true if you want to ignore certificate signing
-	}
-
-	// Setup network client
-	client, err := whisk.NewClient(http.DefaultClient, clientConfig)
-	if err != nil {
-		fmt.Println("Got error making whisk client ", err)
-	}
-
-	action.Namespace = deployer.namespace
-	action.Publish = false
-	// action.Parameters =
-	// action.Annotations =
-	// action.Limits =
-
 	// call ActionService Thru Client
-	_, _, err = client.Actions.Insert(action, false, true)
+	_, _, err := deployer.Client.Actions.Insert(action, false, true)
 	if err != nil {
 		fmt.Println("Got error inserting action ", err)
 	}
+}
+
+func (deployer *ServiceDeployer) createPackage(packa *whisk.SentPackageNoPublish) {
+	_, _, err := deployer.Client.Packages.Insert(packa, true)
+	if err != nil {
+		fmt.Errorf("Got error creating package %s.", err)
+	}
+}
+
+// Wrapper parser to handle yaml dir
+func (deployer *ServiceDeployer) HandleYamlDir(manifestpath string) error {
+	mm := utils.NewManifestManager()
+	packg, err := mm.ComposePackage(manifestpath)
+	utils.Check(err)
+	actions, err := mm.ComposeActions(manifestpath)
+	utils.Check(err)
+	if !deployer.SetActions(actions) {
+		log.Panicln("duplication founded during deploy actions")
+	}
+	if !deployer.SetPackage(packg) {
+		log.Panicln("duplication founded during deploy package")
+	}
+
+	deployer.createPackage(packg)
+	deployer.DeployActions()
+	return nil
+}
+
+// Use relfect util to deploy everything in this service deployer
+// according some planning?
+func (deployer *ServiceDeployer) Deploy() {
+}
+
+func (deployer *ServiceDeployer) SetPackage(pkg *whisk.SentPackageNoPublish) bool {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
+	_, exist := deployer.Packages[pkg.Name]
+	if exist {
+		return false
+	}
+	deployer.Packages[pkg.Name] = pkg
+	return true
+}
+
+func (deployer *ServiceDeployer) SetActions(actions []*whisk.Action) bool {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
+
+	for _, action := range actions {
+		fmt.Println(action.Name)
+		_, exist := deployer.Actions[action.Name]
+		if exist {
+			return false
+		}
+		deployer.Actions[action.Name] = action
+	}
+	return true
 }
