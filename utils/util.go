@@ -32,6 +32,14 @@ import (
 	"strings"
 )
 
+// ActionRecord is a container to keep track of
+// a whisk action struct and a location filepath we use to
+// map files and manifest declared actions
+type ActionRecord struct {
+	Action *whisk.Action
+	Filepath string
+}
+
 // ServerlessBinaryCommand is the CLI name to run serverless
 const ServerlessBinaryCommand = "serverless"
 
@@ -203,4 +211,14 @@ func CreateActionFromFile(manipath, filePath string) (*whisk.Action, error) {
 		return action, nil
 	}
 	return nil, nil
+}
+
+func GetBoolFromString(value string) (bool, error) {
+	if strings.EqualFold(value, "true") || strings.EqualFold(value, "t") || strings.EqualFold(value, "yes") || strings.EqualFold(value, "y") {
+		return true, nil
+	} else if strings.EqualFold(value, "false") || strings.EqualFold(value, "f") || strings.EqualFold(value, "no") || strings.EqualFold(value, "n") {
+		return false, nil
+	}
+
+	return false, fmt.Errorf("Value %s not a valid comparison for boolean", value)
 }

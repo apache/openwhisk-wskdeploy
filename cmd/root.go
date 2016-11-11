@@ -35,6 +35,8 @@ var cfgFile string
 var projectPath string
 var manifestPath string
 var deploymentPath string
+var useInteractive string
+var useDefaults string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -49,14 +51,29 @@ to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		var projectPath = path.Join(projectPath, "serverless.yml")
-		fmt.Println("Searching for manifest on path ", projectPath)
-		if _, err := os.Stat(projectPath); err == nil {
+
+		if manifestPath == "" {
+			manifestPath = path.Join(projectPath, "manifest.yaml")
+		}
+
+		if deploymentPath == "" {
+			deploymentPath = path.Join(projectPath, "deployment.yaml")
+		}
+
+		log.Println("OpenWhisk Deploy initial configuration")
+		log.Println("Manifest paths ================================")
+		log.Println("Project path is ", projectPath)
+		log.Println("Manifest path is ", manifestPath)
+		log.Println("Deployment Descriptor path is ", deploymentPath)
+
+		var searchPath = path.Join(manifestPath, "serverless.yaml")
+		fmt.Println("Searching for manifest on path ", searchPath)
+
+		if _, err := os.Stat(searchPath); err == nil {
 			fmt.Println("Found severless manifest")
 
-			dat, err := ioutil.ReadFile(projectPath)
+			dat, err := ioutil.ReadFile(searchPath)
 			utils.Check(err)
-			//fmt.Println(string(dat))
 
 			var manifest utils.Manifest
 
@@ -64,19 +81,22 @@ to quickly create a Cobra application.`,
 			utils.Check(err)
 
 			if manifest.Provider.Name != "openwhisk" {
+				fmt.Println("Starting Serverless deployment")
 				execErr := executeServerless()
 				utils.Check(execErr)
+				fmt.Println("Deployment complete")
 			} else {
-				execErr := executeDeployer(projectPath)
+				fmt.Println("Starting OpenWhisk deployment")
+				execErr := executeDeployer(manifestPath)
 				utils.Check(execErr)
+				fmt.Println("Deployment complete")
 			}
-		} else {
-			fmt.Println("No serverless manfiest files found.")
-			log.Println("start to execute openwhisk deployment.")
 
+		} else {
+			fmt.Println("Starting OpenWhisk deployment")
 			err := executeDeployer(manifestPath)
 			utils.Check(err)
-			log.Println("Successfully deployed openwhisk manifest")
+			fmt.Println("Deployment complete")
 
 		}
 	},
@@ -103,8 +123,10 @@ func init() {
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	RootCmd.Flags().StringVarP(&projectPath, "pathpath", "p", ".", "path to serverless project")
-	RootCmd.Flags().StringVarP(&manifestPath, "manifest", "m", ".", "path to manifest file")
-	RootCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", ".", "path to deployment file")
+	RootCmd.Flags().StringVarP(&manifestPath, "manifest", "m", "", "path to manifest file")
+	RootCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", "", "path to deployment file")
+	RootCmd.Flags().StringVar(&useDefaults, "allow-defaults", "false", "allow defaults")
+	RootCmd.Flags().StringVar(&useInteractive, "allow-interactive", "true", "allow interactive prompts")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -127,10 +149,31 @@ func executeDeployer(manifestPath string) error {
 	userHome := utils.GetHomeDirectory()
 	propPath := path.Join(userHome, ".wskprops")
 	deployer := NewServiceDeployer()
+
+	isInteractive, err := utils.GetBoolFromString(useInteractive)
+	utils.Check(err)
+
+	isDefault, err := utils.GetBoolFromString(useDefaults)
+	utils.Check(err)
+
+	deployer.IsInteractive = isInteractive
+	deployer.IsDefault = isDefault
+	deployer.ManifestPath = manifestPath
+	deployer.ProjectPath = projectPath
+	deployer.DeploymentPath = deploymentPath
 	deployer.LoadConfiguration(propPath)
 	deployer.CreateClient()
-	//deployer.ReadDirectory(manifestPath)
-	deployer.HandleYamlDir(manifestPath)
+
+  err = deployer.ConstructDeploymentPlan()
+	if err != nil {
+		return err
+	}
+
+	err = deployer.Deploy()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -75,13 +75,15 @@ func readAndParse(mani string) *ManifestYAML {
 	return &maniyaml
 }
 
-func (dm *ManifestManager) ComposeActions(manipath string) ([]*whisk.Action, error) {
+func (dm *ManifestManager) ComposeActions(manipath string) ([]ActionRecord, error) {
 	mani := readAndParse(manipath)
-	var s1 []*whisk.Action = make([]*whisk.Action, 0)
+	var s1 []ActionRecord = make([]ActionRecord, 0)
 	for _, action := range mani.Package.Actions {
 		wskaction, err := CreateActionFromFile(manipath, action.Location)
 		Check(err)
-		s1 = append(s1, wskaction)
+
+		record := ActionRecord{wskaction, action.Location}
+		s1 = append(s1, record)
 	}
 	return s1, nil
 }
