@@ -26,7 +26,3 @@ $ git clone http://github.com/openwhisk/wskdeploy
 $ git checkout development   ## or skip this step and just build master
 $ go build
 ```
-
-# whiskdeploy
-Utility for managing OpenWhisk Projects
->>>>>>> Update README.md
