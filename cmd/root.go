@@ -18,11 +18,12 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/openwhisk/wskdeploy/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/openwhisk/wskdeploy/utils"
 	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"path"
@@ -38,7 +39,7 @@ var deploymentPath string
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "wskdeploy",
-	Short: "A brief description of your application",
+	Short: "A tool set to help deploy your openwhisk packages in batch.",
 	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
 
@@ -48,12 +49,12 @@ to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		var manifestPath = path.Join(projectPath, "serverless.yml")
-		fmt.Println("Searching for manifest on path ", manifestPath)
-		if _, err := os.Stat(manifestPath); err == nil {
+		var projectPath = path.Join(projectPath, "serverless.yml")
+		fmt.Println("Searching for manifest on path ", projectPath)
+		if _, err := os.Stat(projectPath); err == nil {
 			fmt.Println("Found severless manifest")
 
-			dat, err := ioutil.ReadFile(manifestPath)
+			dat, err := ioutil.ReadFile(projectPath)
 			utils.Check(err)
 			//fmt.Println(string(dat))
 
@@ -70,7 +71,13 @@ to quickly create a Cobra application.`,
 				utils.Check(execErr)
 			}
 		} else {
-			fmt.Println("No manfiest files found.")
+			fmt.Println("No serverless manfiest files found.")
+			log.Println("start to execute openwhisk deployment.")
+
+			err := executeDeployer(manifestPath)
+			utils.Check(err)
+			log.Println("Successfully deployed openwhisk manifest")
+
 		}
 	},
 }
@@ -95,7 +102,7 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	RootCmd.Flags().StringVarP(&projectPath, "path", "p", ".", "path to serverless project")
+	RootCmd.Flags().StringVarP(&projectPath, "pathpath", "p", ".", "path to serverless project")
 	RootCmd.Flags().StringVarP(&manifestPath, "manifest", "m", ".", "path to manifest file")
 	RootCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", ".", "path to deployment file")
 }
@@ -107,8 +114,8 @@ func initConfig() {
 	}
 
 	viper.SetConfigName(".wskdeploy") // name of config file (without extension)
-	viper.AddConfigPath("$HOME")    // adding home directory as first search path
-	viper.AutomaticEnv()            // read in environment variables that match
+	viper.AddConfigPath("$HOME")      // adding home directory as first search path
+	viper.AutomaticEnv()              // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
@@ -119,10 +126,11 @@ func initConfig() {
 func executeDeployer(manifestPath string) error {
 	userHome := utils.GetHomeDirectory()
 	propPath := path.Join(userHome, ".wskprops")
+	deployer := NewServiceDeployer()
 	deployer.LoadConfiguration(propPath)
-	deployer.ReadDirectory(manifestPath)
-	deployer.DeployActions()
-
+	deployer.CreateClient()
+	//deployer.ReadDirectory(manifestPath)
+	deployer.HandleYamlDir(manifestPath)
 	return nil
 }
 
