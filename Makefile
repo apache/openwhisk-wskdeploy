@@ -1,5 +1,4 @@
 SOURCEDIR=.
-DEPS = $(go list -f '{{range .TestImports}}{{.}} {{end}}' ./...)
 
 SOURCES := $(shell find $(SOURCEDIR) -name '*.go')
 BINARY=wskdeploy
@@ -10,15 +9,14 @@ BUILD=`git rev-parse HEAD`
 
 deps:
 	@echo "Installing dependencies"
-	@go get -d -v ./...
-	@echo $(DEPS) | xargs -n1 go get -d
+	@go get -d -t ./...
+
 
 LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}"
 
 updatedeps:
 	@echo "Updating all dependencies"
-	@go get -d -v -u ./...
-	@echo $(DEPS) | xargs -n1 go get -d -u
+	@go get -d -u -f -fix -t ./...
 
 
 test: deps
@@ -38,7 +36,7 @@ lint: format
 	golint .
 
 install:
-	go install ${LDFLAGS}
+	go install
 
 # Cleans our project: deletes binaries
 clean:
