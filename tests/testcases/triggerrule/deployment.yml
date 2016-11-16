@@ -1,0 +1,14 @@
+application:
+  name: wskdeploy-samples
+  namespace: /wskdeploy/samples/
+
+  packages:
+    triggerrule:
+      namespace: /wskdeploy/samples/triggerrule
+      credential: 1234-5678-90abcdef-0000   
+
+      actions:
+        hello:
+          inputs:
+            name: Bernie
+            place: Vermont
