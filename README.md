@@ -4,7 +4,7 @@
 
 `wskdeploy` is currenty under development and in its very early stages.  Check back often to see how its progressing.
 
-# How to Build
+# How to Build on local host.
 `wskdeploy` is written in Go.
 
 1. Setup your [Go development environment](https://golang.org/doc/code.html).
@@ -28,3 +28,27 @@ $ go build
 ```
 
 Note: we have no releases yet so you should build the `development` branch.
+
+#How to Build with Docker.
+If you don't want to bother with go installation, build, git clone etc, you can do it with Docker, then
+you can run wskdeploy tool in your container.
+
+1. First you need a docker daemon running locally on your machine or whatever in a VM etc.
+
+2. Get the Docker file.
+ ```
+ wget -O Dockerfile https://raw.githubusercontent.com/openwhisk/wskdeploy/master/Dockerfile
+ ```
+
+3. Build and tag a docker image.
+```
+docker build -f Dockerfile .  -t openwhisk/wskdeploy
+```
+
+4. Bring up the docker container.
+```
+docker run -ti openwhisk/wskdeploy
+```
+5. Inside the container, run `wskdeploy` and have fun.
+
+Note: Based on user role, you may need add sudo before your command to run as root.
