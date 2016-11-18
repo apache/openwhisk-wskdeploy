@@ -28,6 +28,8 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	//"runtime"
+	"runtime"
 	"syscall"
 )
 
@@ -37,6 +39,9 @@ var manifestPath string
 var deploymentPath string
 var useInteractive string
 var useDefaults string
+
+// The cached json file.
+var cacheFilePath string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -122,11 +127,13 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	RootCmd.Flags().StringVarP(&projectPath, "pathpath", "p", ".", "path to serverless project")
+	RootCmd.Flags().StringVarP(&projectPath, "projectpath", "p", ".", "path to serverless project")
 	RootCmd.Flags().StringVarP(&manifestPath, "manifest", "m", "", "path to manifest file")
 	RootCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", "", "path to deployment file")
 	RootCmd.Flags().StringVar(&useDefaults, "allow-defaults", "false", "allow defaults")
 	RootCmd.Flags().StringVar(&useInteractive, "allow-interactive", "true", "allow interactive prompts")
+	RootCmd.Flags().StringVarP(&cacheFilePath, "cache", "c", "", "path to the cache json file.")
+
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -148,7 +155,13 @@ func initConfig() {
 func executeDeployer(manifestPath string) error {
 	userHome := utils.GetHomeDirectory()
 	propPath := path.Join(userHome, ".wskprops")
+
 	deployer := NewServiceDeployer()
+	if cacheFilePath != "" {
+		deployer.CacheFilePath = cacheFilePath
+	} else {
+		deployer.CacheFilePath = path.Join(utils.GetHomeDirectory(), ".wskdeploy.json")
+	}
 
 	isInteractive, err := utils.GetBoolFromString(useInteractive)
 	utils.Check(err)
@@ -162,18 +175,28 @@ func executeDeployer(manifestPath string) error {
 	deployer.ProjectPath = projectPath
 	deployer.DeploymentPath = deploymentPath
 	deployer.LoadConfiguration(propPath)
-	deployer.CreateClient()
-
-  err = deployer.ConstructDeploymentPlan()
-	if err != nil {
-		return err
+	go deployer.LoadCache()
+	runtime.Gosched()
+	finishedLoad := false
+	select {
+	case finishedLoad = <-deployer.C:
 	}
 
-	err = deployer.Deploy()
-	if err != nil {
-		return err
-	}
+	if finishedLoad {
+		deployer.CreateClient()
 
+		err = deployer.ConstructDeploymentPlan()
+		if err != nil {
+			return err
+		}
+
+		err = deployer.Deploy()
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
 	return nil
 }
 
