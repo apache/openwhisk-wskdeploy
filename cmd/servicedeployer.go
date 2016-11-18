@@ -167,7 +167,7 @@ func (deployer *ServiceDeployer) ReadDirectory() error {
 
 	// Wrapper parser to handle yaml dir
 	func (deployer *ServiceDeployer) HandleYamlDir() error {
-		mm := utils.NewManifestManager()
+		mm := utils.NewYAMLParser()
 		packg, err := mm.ComposePackage(deployer.ManifestPath)
 		utils.Check(err)
 		actions, err := mm.ComposeActions(deployer.ManifestPath)

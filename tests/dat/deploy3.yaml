@@ -1,0 +1,12 @@
+application:
+  name: wskdeploy-samples
+  namespace: /wskdeploy/samples/
+
+  packages:
+    test_package:
+      actions:
+        hello:
+          namespace: /wskdeploy/samples/test/hello
+          credential: 12345678ABCDEF
+          inputs:
+            name: Bernie
