@@ -1,0 +1,7 @@
+package:
+  rules:
+    rule1:
+      trigger: trigger1
+      action: hellpworld
+      rule: true
+      

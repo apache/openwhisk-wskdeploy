@@ -1,0 +1,6 @@
+package:
+  triggers:
+    trigger1:
+    trigger2:
+      feed: myfeed
+      
