@@ -14,9 +14,6 @@ package:
         payload: string
   triggers:
     locationUpdate:
-      inputs:
-        name: string
-        place: string
   rules:
     myRule:
       trigger: locationUpdate

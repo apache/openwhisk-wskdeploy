@@ -12,10 +12,14 @@ $ wsktool deploy -p /tests/testcases/helloworld
 Step 2. Verify the action is installed.
 $ wsk action list
 
-Step 3. Invoke the trigger
+Step 3. Verify the action is invoked.
+$ wsk activation list --limit 1 hello
+$ wsk activation result <your action ID>
+
+Step 4. Invoke the trigger
 $ wsk trigger fire locationUpdate --param name Bernie --param place "Washington, D.C."
 
-Step 4. Verify the action is invoked
+Step 5. Verify the action is invoked
 $ wsk activation list --limit 1 hello
 $ wsk activation result <your action ID>
 
