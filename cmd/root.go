@@ -87,16 +87,20 @@ to quickly create a Cobra application.`,
 				fmt.Println("Deployment complete")
 			} else {
 				fmt.Println("Starting OpenWhisk deployment")
-				execErr := executeDeployer(manifestPath)
-				utils.Check(execErr)
-				fmt.Println("Deployment complete")
+				deployer, err := executeDeployer(manifestPath)
+				utils.Check(err)
+				if deployer.InteractiveChoice {
+					fmt.Println("Deployment complete")
+				}
 			}
 
 		} else {
 			fmt.Println("Starting OpenWhisk deployment")
-			err := executeDeployer(manifestPath)
+			deployer, err := executeDeployer(manifestPath)
 			utils.Check(err)
-			fmt.Println("Deployment complete")
+			if deployer.InteractiveChoice {
+				fmt.Println("Deployment complete")
+			}
 
 		}
 	},
@@ -145,7 +149,7 @@ func initConfig() {
 	}
 }
 
-func executeDeployer(manifestPath string) error {
+func executeDeployer(manifestPath string) (*ServiceDeployer, error) {
 	userHome := utils.GetHomeDirectory()
 	propPath := path.Join(userHome, ".wskprops")
 	deployer := NewServiceDeployer()
@@ -164,17 +168,17 @@ func executeDeployer(manifestPath string) error {
 	deployer.LoadConfiguration(propPath)
 	deployer.CreateClient()
 
-  err = deployer.ConstructDeploymentPlan()
+	err = deployer.ConstructDeploymentPlan()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = deployer.Deploy()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return deployer, nil
 }
 
 // Process manifest using OpenWhisk Tool

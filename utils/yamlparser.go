@@ -219,9 +219,17 @@ func (dm *YAMLParser) ComposeActions(manipath string) ([]ActionRecord, error) {
 	return s1, nil
 }
 
-//func (dm *YAMLParser) ComposeTriggers(mani string) ([]*whisk.Trigger, error) {
-//	return nil, nil
-//}
+func (dm *YAMLParser) ComposeTriggers(mani string) ([]*whisk.Trigger, error) {
+	mm := NewYAMLParser()
+	manifest := mm.ParseManifest(mani)
+	var t1 []*whisk.Trigger = make([]*whisk.Trigger, 0)
+	pkg := manifest.Package
+	for _, trigger := range pkg.GetTriggerList() {
+		wsktrigger := trigger.ComposeWskTrigger()
+		t1 = append(t1, wsktrigger)
+	}
+	return t1, nil
+}
 
 // Is we consider multi pacakge in one yaml?
 func (dm *YAMLParser) ComposePackage(manipath string) (*whisk.SentPackageNoPublish, error) {
