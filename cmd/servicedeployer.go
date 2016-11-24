@@ -161,10 +161,26 @@ func (deployer *ServiceDeployer) DeployTriggers() error {
 
 }
 
+// Deploy Rules into OpenWhisk
+func (deployer *ServiceDeployer) DeployRules() error {
+	for _, rule := range deployer.Rules {
+		deployer.createRule(rule)
+	}
+
+	return nil
+}
+
 func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) {
 	_, _, err := deployer.Client.Triggers.Insert(trigger, true)
 	if err != nil {
 		fmt.Errorf("Got error creating trigger %s.", err)
+	}
+}
+
+func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) {
+	_, _, err := deployer.Client.Rules.Insert(rule, true)
+	if err != nil {
+		fmt.Errorf("Got error creating rule %s.", err)
 	}
 }
 
@@ -209,6 +225,9 @@ func (deployer *ServiceDeployer) HandleYamlDir() error {
 	actions, err := mm.ComposeActions(deployer.ManifestPath)
 	utils.Check(err)
 	triggers, err := mm.ComposeTriggers(deployer.ManifestPath)
+	utils.Check(err)
+	rules, err := mm.ComposeRules(deployer.ManifestPath)
+	utils.Check(err)
 	if !deployer.SetActions(actions) {
 		log.Panicln("duplication founded during deploy actions")
 	}
@@ -217,6 +236,9 @@ func (deployer *ServiceDeployer) HandleYamlDir() error {
 	}
 	if !deployer.SetTriggers(triggers) {
 		log.Panicln("duplication founded during deploy triggers")
+	}
+	if !deployer.SetRules(rules) {
+		log.Panicln("duplication founded during deploy rules")
 	}
 
 	deployer.createPackage(packg)
@@ -286,6 +308,9 @@ func (deployer *ServiceDeployer) Deploy() error {
 				return err
 			}
 			if err := deployer.DeployTriggers(); err != nil {
+				return err
+			}
+			if err := deployer.DeployRules(); err != nil {
 				return err
 			}
 		} else {
@@ -384,6 +409,28 @@ func (deployer *ServiceDeployer) SetTriggers(triggers []*whisk.Trigger) bool {
 			existTrigger.Publish = trigger.Publish
 		} else {
 			deployer.Triggers[trigger.Name] = trigger
+		}
+
+	}
+	return true
+}
+
+func (deployer *ServiceDeployer) SetRules(rules []*whisk.Rule) bool {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
+
+	for _, rule := range rules {
+		existRule, exist := deployer.Rules[rule.Name]
+		if exist {
+			existRule.Name = rule.Name
+			existRule.Publish = rule.Publish
+			existRule.Version = rule.Version
+			existRule.Namespace = rule.Namespace
+			existRule.Action = rule.Action
+			existRule.Trigger = rule.Trigger
+			existRule.Status = rule.Status
+		} else {
+			deployer.Rules[rule.Name] = rule
 		}
 
 	}
