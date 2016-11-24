@@ -36,7 +36,7 @@ import (
 // a whisk action struct and a location filepath we use to
 // map files and manifest declared actions
 type ActionRecord struct {
-	Action *whisk.Action
+	Action   *whisk.Action
 	Filepath string
 }
 

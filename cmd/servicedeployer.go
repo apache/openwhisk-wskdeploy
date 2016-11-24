@@ -12,7 +12,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
+ */
 
 package cmd
 
@@ -37,21 +37,23 @@ import (
 //   3. Collect information about the source code files in the working directory
 //   4. Create a deployment plan to create OpenWhisk service
 type ServiceDeployer struct {
-	Actions   map[string]utils.ActionRecord
-	Triggers  map[string]*whisk.Trigger
-	Packages  map[string]*whisk.SentPackageNoPublish
-	Rules     map[string]*whisk.Rule
-	Client    *whisk.Client
-	mt        sync.RWMutex
-	Authtoken string
-	Namespace string
-	Apihost   string
-	IsInteractive bool
-	IsDefault bool
-	ManifestPath string
-	ProjectPath string
+	Actions        map[string]utils.ActionRecord
+	Triggers       map[string]*whisk.Trigger
+	Packages       map[string]*whisk.SentPackageNoPublish
+	Rules          map[string]*whisk.Rule
+	Client         *whisk.Client
+	mt             sync.RWMutex
+	Authtoken      string
+	Namespace      string
+	Apihost        string
+	IsInteractive  bool
+	IsDefault      bool
+	ManifestPath   string
+	ProjectPath    string
 	DeploymentPath string
-
+	//whether to deploy the action under the package
+	DeployActionInPackage bool
+	InteractiveChoice     bool
 }
 
 // NewServiceDeployer is a Factory to create a new ServiceDeployer
@@ -62,6 +64,7 @@ func NewServiceDeployer() *ServiceDeployer {
 	dep.Triggers = make(map[string]*whisk.Trigger)
 	dep.Rules = make(map[string]*whisk.Rule)
 	dep.IsInteractive = true
+	dep.DeployActionInPackage = true
 	return &dep
 }
 
@@ -104,223 +107,285 @@ func (deployer *ServiceDeployer) ReadDirectory() error {
 				}
 				err = deployer.CreatePackageFromDirectory(baseName)
 
-				} else {
-					action, err := utils.CreateActionFromFile(deployer.ProjectPath, filePath)
-					utils.Check(err)
-					deployer.Actions[action.Name] = utils.ActionRecord{action, filePath}
-				}
-			}
-			return err
-		})
-
-		utils.Check(err)
-		return nil
-	}
-
-	func (deployer *ServiceDeployer) CreatePackageFromDirectory(directoryName string) error {
-		fmt.Println("Making a package ", directoryName)
-		return nil
-	}
-
-	func (deployer *ServiceDeployer) CreateClient() {
-		baseURL, err := utils.GetURLBase(deployer.Apihost)
-		utils.Check(err)
-		clientConfig := &whisk.Config{
-			AuthToken: deployer.Authtoken,
-			Namespace: deployer.Namespace,
-			BaseURL:   baseURL,
-			Version:   "v1",
-			Insecure:  true, // true if you want to ignore certificate signing
-		}
-		// Setup network client
-		client, err := whisk.NewClient(http.DefaultClient, clientConfig)
-		utils.Check(err)
-		deployer.Client = client
-
-	}
-
-	// DeployActions into OpenWhisk
-	func (deployer *ServiceDeployer) DeployActions() error {
-
-		for _, action := range deployer.Actions {
-			//fmt.Println("Got action ", action.Exec.Code)
-			deployer.createAction(action.Action)
-		}
-		return nil
-	}
-
-	// Utility function to call go-whisk framework to make action
-	func (deployer *ServiceDeployer) createAction(action *whisk.Action) {
-		// call ActionService Thru Client
-		_, _, err := deployer.Client.Actions.Insert(action, false, true)
-		if err != nil {
-			fmt.Println("Got error inserting action ", err)
-		}
-	}
-
-	func (deployer *ServiceDeployer) createPackage(packa *whisk.SentPackageNoPublish) {
-		_, _, err := deployer.Client.Packages.Insert(packa, true)
-		if err != nil {
-			fmt.Errorf("Got error creating package %s.", err)
-		}
-	}
-
-	// Wrapper parser to handle yaml dir
-	func (deployer *ServiceDeployer) HandleYamlDir() error {
-		mm := utils.NewYAMLParser()
-		packg, err := mm.ComposePackage(deployer.ManifestPath)
-		utils.Check(err)
-		actions, err := mm.ComposeActions(deployer.ManifestPath)
-		utils.Check(err)
-		if !deployer.SetActions(actions) {
-			log.Panicln("duplication founded during deploy actions")
-		}
-		if !deployer.SetPackage(packg) {
-			log.Panicln("duplication founded during deploy package")
-		}
-
-		deployer.createPackage(packg)
-
-		return nil
-	}
-
-	func printDeploymentAssets(deployer *ServiceDeployer) {
-
-		fmt.Println("----==== OpenWhisk Deployment Plan ====----")
-		fmt.Println("Deploy Packages:")
-		fmt.Println("----------------")
-		for _, pkg := range deployer.Packages {
-			var buffer bytes.Buffer
-			buffer.WriteString(pkg.Namespace)
-			buffer.WriteString("/")
-			buffer.WriteString(pkg.Name)
-			fmt.Printf("    %s (version: %s)\n", buffer.String(), pkg.Version)
-		}
-
-    fmt.Println("\nDeploy Actions:")
-		fmt.Println("----------------")
-		for _, action := range deployer.Actions {
-			var buffer bytes.Buffer
-			buffer.WriteString(action.Action.Namespace)
-			buffer.WriteString("/")
-			buffer.WriteString(action.Action.Name)
-			fmt.Printf("    %s (version: %s)\n", buffer.String(), action.Action.Version)
-		}
-
-
-		fmt.Println("\nDeploy Triggers:")
-		fmt.Println("----------------")
-		for _, trigger := range deployer.Triggers {
-			var buffer bytes.Buffer
-			buffer.WriteString(trigger.Namespace)
-			buffer.WriteString("/")
-			buffer.WriteString(trigger.Name)
-			fmt.Printf("    %s (version: %s)\n", buffer.String(), trigger.Version)
-		}
-
-		fmt.Println("\nDeploy Rules:")
-		fmt.Println("----------------")
-		for _, rule := range deployer.Rules {
-			var buffer bytes.Buffer
-			buffer.WriteString(rule.Namespace)
-			buffer.WriteString("/")
-			buffer.WriteString(rule.Name)
-			fmt.Printf("    %s (version: %s)\n", buffer.String(), rule.Version)
-		}
-
-	}
-
-	// Use relfect util to deploy everything in this service deployer
-	// according some planning?
-	func (deployer *ServiceDeployer) Deploy() error {
-		if (deployer.IsInteractive == true) {
-			printDeploymentAssets(deployer)
-			reader := bufio.NewReader(os.Stdin)
-			fmt.Print("Do you really want to deploy this? (y/n): ")
-
-			text, _ := reader.ReadString('\n')
-			text = strings.TrimSpace(text)
-
-			if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
-					err := deployer.DeployActions()
-					if err != nil {
-						return err
-					}
 			} else {
-				fmt.Println("OK. Cancelling deployment")
+				action, err := utils.CreateActionFromFile(deployer.ProjectPath, filePath)
+				utils.Check(err)
+				deployer.Actions[action.Name] = utils.ActionRecord{action, filePath}
 			}
 		}
+		return err
+	})
 
-		return nil
+	utils.Check(err)
+	return nil
+}
+
+func (deployer *ServiceDeployer) CreatePackageFromDirectory(directoryName string) error {
+	fmt.Println("Making a package ", directoryName)
+	return nil
+}
+
+func (deployer *ServiceDeployer) CreateClient() {
+	baseURL, err := utils.GetURLBase(deployer.Apihost)
+	utils.Check(err)
+	clientConfig := &whisk.Config{
+		AuthToken: deployer.Authtoken,
+		Namespace: deployer.Namespace,
+		BaseURL:   baseURL,
+		Version:   "v1",
+		Insecure:  true, // true if you want to ignore certificate signing
+	}
+	// Setup network client
+	client, err := whisk.NewClient(http.DefaultClient, clientConfig)
+	utils.Check(err)
+	deployer.Client = client
+
+}
+
+// DeployActions into OpenWhisk
+func (deployer *ServiceDeployer) DeployActions() error {
+
+	for _, action := range deployer.Actions {
+		//fmt.Println("Got action ", action.Exec.Code)
+		deployer.createAction(action.Action)
+	}
+	return nil
+}
+
+// Deploy Triggers into OpenWhisk
+func (deployer *ServiceDeployer) DeployTriggers() error {
+	for _, trigger := range deployer.Triggers {
+		deployer.createTrigger(trigger)
+	}
+	return nil
+
+}
+
+func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) {
+	_, _, err := deployer.Client.Triggers.Insert(trigger, true)
+	if err != nil {
+		fmt.Errorf("Got error creating trigger %s.", err)
+	}
+}
+
+// Utility function to call go-whisk framework to make action
+func (deployer *ServiceDeployer) createAction(action *whisk.Action) {
+	// call ActionService Thru Client
+	if deployer.DeployActionInPackage {
+		pkgname := deployer.getPackageName()
+		// the action will be created under package with pattern 'packagename/actionname'
+		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
+	}
+	_, _, err := deployer.Client.Actions.Insert(action, false, true)
+	if err != nil {
+		fmt.Println("Got error inserting action ", err)
+	}
+}
+
+func (deployer *ServiceDeployer) getPackageName() string {
+	if len(deployer.Packages) > 0 {
+		//get the first available package name by default
+		for _, pkg := range deployer.Packages {
+			if pkg.Name != "" {
+				return pkg.Name
+			}
+		}
+	}
+	return ""
+}
+
+func (deployer *ServiceDeployer) createPackage(packa *whisk.SentPackageNoPublish) {
+	_, _, err := deployer.Client.Packages.Insert(packa, true)
+	if err != nil {
+		fmt.Errorf("Got error creating package %s.", err)
+	}
+}
+
+// Wrapper parser to handle yaml dir
+func (deployer *ServiceDeployer) HandleYamlDir() error {
+	mm := utils.NewYAMLParser()
+	packg, err := mm.ComposePackage(deployer.ManifestPath)
+	utils.Check(err)
+	actions, err := mm.ComposeActions(deployer.ManifestPath)
+	utils.Check(err)
+	triggers, err := mm.ComposeTriggers(deployer.ManifestPath)
+	if !deployer.SetActions(actions) {
+		log.Panicln("duplication founded during deploy actions")
+	}
+	if !deployer.SetPackage(packg) {
+		log.Panicln("duplication founded during deploy package")
+	}
+	if !deployer.SetTriggers(triggers) {
+		log.Panicln("duplication founded during deploy triggers")
 	}
 
-	func (deployer *ServiceDeployer) SetPackage(pkg *whisk.SentPackageNoPublish) bool {
-		deployer.mt.Lock()
-		defer deployer.mt.Unlock()
-		existPkg, exist := deployer.Packages[pkg.Name]
+	deployer.createPackage(packg)
+
+	return nil
+}
+
+func (deployer *ServiceDeployer) printDeploymentAssets() {
+
+	fmt.Println("----==== OpenWhisk Deployment Plan ====----")
+	fmt.Println("Deploy Packages:")
+	fmt.Println("----------------")
+	for _, pkg := range deployer.Packages {
+		var buffer bytes.Buffer
+		buffer.WriteString(pkg.Namespace)
+		buffer.WriteString("/")
+		buffer.WriteString(pkg.Name)
+		fmt.Printf("    %s (version: %s)\n", buffer.String(), pkg.Version)
+	}
+
+	fmt.Println("\nDeploy Actions:")
+	fmt.Println("----------------")
+	for _, action := range deployer.Actions {
+		var buffer bytes.Buffer
+		buffer.WriteString(action.Action.Namespace)
+		buffer.WriteString("/")
+		buffer.WriteString(action.Action.Name)
+		fmt.Printf("    %s (version: %s)\n", buffer.String(), action.Action.Version)
+	}
+
+	fmt.Println("\nDeploy Triggers:")
+	fmt.Println("----------------")
+	for _, trigger := range deployer.Triggers {
+		var buffer bytes.Buffer
+		buffer.WriteString(trigger.Namespace)
+		buffer.WriteString("/")
+		buffer.WriteString(trigger.Name)
+		fmt.Printf("    %s (version: %s)\n", buffer.String(), trigger.Version)
+	}
+
+	fmt.Println("\nDeploy Rules:")
+	fmt.Println("----------------")
+	for _, rule := range deployer.Rules {
+		var buffer bytes.Buffer
+		buffer.WriteString(rule.Namespace)
+		buffer.WriteString("/")
+		buffer.WriteString(rule.Name)
+		fmt.Printf("    %s (version: %s)\n", buffer.String(), rule.Version)
+	}
+
+}
+
+// Use relfect util to deploy everything in this service deployer
+// according some planning?
+func (deployer *ServiceDeployer) Deploy() error {
+	if deployer.IsInteractive == true {
+		deployer.printDeploymentAssets()
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Do you really want to deploy this? (y/n): ")
+
+		text, _ := reader.ReadString('\n')
+		text = strings.TrimSpace(text)
+
+		if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
+			deployer.InteractiveChoice = true
+			if err := deployer.DeployActions(); err != nil {
+				return err
+			}
+			if err := deployer.DeployTriggers(); err != nil {
+				return err
+			}
+		} else {
+			deployer.InteractiveChoice = false
+			fmt.Println("OK. Cancelling deployment")
+		}
+	}
+
+	return nil
+}
+
+func (deployer *ServiceDeployer) SetPackage(pkg *whisk.SentPackageNoPublish) bool {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
+	existPkg, exist := deployer.Packages[pkg.Name]
+	if exist {
+		if deployer.IsDefault == true {
+
+			log.Printf("Updating package %s with values from manifest file ", pkg.Name)
+
+			existPkg.Annotations = pkg.Annotations
+			existPkg.Namespace = pkg.Namespace
+			existPkg.Parameters = pkg.Parameters
+			existPkg.Publish = pkg.Publish
+			existPkg.Version = pkg.Version
+
+			deployer.Packages[pkg.Name] = existPkg
+			return true
+		} else {
+			return false
+		}
+	}
+
+	deployer.Packages[pkg.Name] = pkg
+	return true
+}
+
+func (deployer *ServiceDeployer) SetActions(actions []utils.ActionRecord) bool {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
+
+	for _, action := range actions {
+		fmt.Println(action.Action.Name)
+		existAction, exist := deployer.Actions[action.Action.Name]
+
 		if exist {
 			if deployer.IsDefault == true {
+				// look for actions declared in filesystem default as well as manifest
+				// if one exists, merge if they are the same (either same Filepath or manifest doesn't specify a Filepath)
+				// if they are not the same log error
+				if action.Filepath != "" {
+					if existAction.Filepath != action.Filepath {
+						log.Printf("Action %s has location %s in manifest but already exists at %s", action.Action.Name, action.Filepath, existAction)
+						return false
+					} else {
+						// merge the two, overwrite existing action with manifest values
+						existAction.Action.Annotations = action.Action.Annotations
+						existAction.Action.Exec.Kind = action.Action.Exec.Kind
+						existAction.Action.Limits = action.Action.Limits
+						existAction.Action.Namespace = action.Action.Namespace
+						existAction.Action.Parameters = action.Action.Parameters
+						existAction.Action.Publish = action.Action.Publish
+						existAction.Action.Version = action.Action.Version
 
-				log.Printf("Updating package %s with values from manifest file ", pkg.Name)
+						deployer.Actions[action.Action.Name] = existAction
 
-				existPkg.Annotations = pkg.Annotations
-				existPkg.Namespace = pkg.Namespace
-				existPkg.Parameters = pkg.Parameters
-				existPkg.Publish = pkg.Publish
-				existPkg.Version = pkg.Version
-
-				deployer.Packages[pkg.Name] = existPkg
-				return true
+						return true
+					}
+				}
 			} else {
+				// no defaults, so assume everything is in the incoming ActionRecord
+				// return false since it means the action is declared twice in the manifest
+				log.Printf("Action %s is declared more than once", action.Action.Name)
 				return false
 			}
 		}
-
-		deployer.Packages[pkg.Name] = pkg
-		return true
+		// doesn't exist so just add to deployer actions
+		deployer.Actions[action.Action.Name] = action
 	}
+	return true
+}
 
-	func (deployer *ServiceDeployer) SetActions(actions []utils.ActionRecord) bool {
-		deployer.mt.Lock()
-		defer deployer.mt.Unlock()
+func (deployer *ServiceDeployer) SetTriggers(triggers []*whisk.Trigger) bool {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
 
-		for _, action := range actions {
-			fmt.Println(action.Action.Name)
-			existAction, exist := deployer.Actions[action.Action.Name]
-
-			if exist {
-				if deployer.IsDefault == true {
-					// look for actions declared in filesystem default as well as manifest
-					// if one exists, merge if they are the same (either same Filepath or manifest doesn't specify a Filepath)
-					// if they are not the same log error
-					if action.Filepath != "" {
-						if existAction.Filepath != action.Filepath {
-							log.Printf("Action %s has location %s in manifest but already exists at %s", action.Action.Name, action.Filepath, existAction)
-							return false
-						} else {
-							// merge the two, overwrite existing action with manifest values
-							existAction.Action.Annotations = action.Action.Annotations
-							existAction.Action.Exec.Kind = action.Action.Exec.Kind
-							existAction.Action.Limits = action.Action.Limits
-							existAction.Action.Namespace = action.Action.Namespace
-							existAction.Action.Parameters = action.Action.Parameters
-							existAction.Action.Publish = action.Action.Publish
-							existAction.Action.Version = action.Action.Version
-
-							deployer.Actions[action.Action.Name] = existAction
-
-							return true
-						}
-					}
-				} else {
-					// no defaults, so assume everything is in the incoming ActionRecord
-					// return false since it means the action is declared twice in the manifest
-					log.Printf("Action %s is declared more than once", action.Action.Name)
-					return false
-				}
-			}
-			// doesn't exist so just add to deployer actions
-				deployer.Actions[action.Action.Name] = action
-			}
-			return true
+	for _, trigger := range triggers {
+		existTrigger, exist := deployer.Triggers[trigger.Name]
+		if exist {
+			existTrigger.Name = trigger.Name
+			existTrigger.ActivationId = trigger.ActivationId
+			existTrigger.Namespace = trigger.Namespace
+			existTrigger.Annotations = trigger.Annotations
+			existTrigger.Version = trigger.Version
+			existTrigger.Parameters = trigger.Parameters
+			existTrigger.Publish = trigger.Publish
+		} else {
+			deployer.Triggers[trigger.Name] = trigger
 		}
+
+	}
+	return true
+}
