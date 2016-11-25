@@ -70,10 +70,12 @@ func NewServiceDeployer() *ServiceDeployer {
 
 // Load configuration will load properties from a file
 func (deployer *ServiceDeployer) LoadConfiguration(propPath string) error {
-	fmt.Println("Loading configuration")
 	props, err := utils.ReadProps(propPath)
 	utils.Check(err)
-	fmt.Println("Got props ", props)
+	if Verbose {
+		log.Println("Loading configuration...")
+		log.Println("Got props:", props)
+	}
 	deployer.Namespace = props["NAMESPACE"]
 	deployer.Apihost = props["APIHOST"]
 	deployer.Authtoken = props["AUTH"]
@@ -353,7 +355,7 @@ func (deployer *ServiceDeployer) SetActions(actions []utils.ActionRecord) bool {
 	defer deployer.mt.Unlock()
 
 	for _, action := range actions {
-		fmt.Println(action.Action.Name)
+		//fmt.Println(action.Action.Name)
 		existAction, exist := deployer.Actions[action.Action.Name]
 
 		if exist {

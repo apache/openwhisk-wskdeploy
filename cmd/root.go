@@ -37,17 +37,36 @@ var manifestPath string
 var deploymentPath string
 var useInteractive string
 var useDefaults string
+var Verbose bool
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "wskdeploy",
 	Short: "A tool set to help deploy your openwhisk packages in batch.",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Long: `wskdeploy is a tool to help deploy your packages, feeds, actions, triggers,
+rules onto OpenWhisk platform in batch. The deployment is based on the manifest
+and deployment yaml file. A sample manifest yaml file is as below:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+package:
+  name: helloworld
+  version: 1.0
+  license: Apache-2.0
+  actions:
+    hello:
+      version: 1.0
+      location: src/greeting.js
+      runtime: nodejs
+      inputs:
+        name: string
+        place: string
+      outputs:
+        payload: string
+  triggers:
+    locationUpdate:
+  rules:
+    myRule:
+      trigger: locationUpdate
+      action: hello`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
@@ -67,10 +86,10 @@ to quickly create a Cobra application.`,
 		log.Println("Deployment Descriptor path is ", deploymentPath)
 
 		var searchPath = path.Join(manifestPath, "serverless.yaml")
-		fmt.Println("Searching for manifest on path ", searchPath)
+		log.Println("Searching for manifest on path ", searchPath)
 
 		if _, err := os.Stat(searchPath); err == nil {
-			fmt.Println("Found severless manifest")
+			log.Println("Found severless manifest")
 
 			dat, err := ioutil.ReadFile(searchPath)
 			utils.Check(err)
@@ -81,12 +100,12 @@ to quickly create a Cobra application.`,
 			utils.Check(err)
 
 			if manifest.Provider.Name != "openwhisk" {
-				fmt.Println("Starting Serverless deployment")
+				log.Println("Starting Serverless deployment")
 				execErr := executeServerless()
 				utils.Check(execErr)
 				fmt.Println("Deployment complete")
 			} else {
-				fmt.Println("Starting OpenWhisk deployment")
+				log.Println("Starting OpenWhisk deployment")
 				deployer, err := executeDeployer(manifestPath)
 				utils.Check(err)
 				if deployer.InteractiveChoice {
@@ -95,11 +114,11 @@ to quickly create a Cobra application.`,
 			}
 
 		} else {
-			fmt.Println("Starting OpenWhisk deployment")
+			log.Println("Starting OpenWhisk deployment")
 			deployer, err := executeDeployer(manifestPath)
 			utils.Check(err)
 			if deployer.InteractiveChoice {
-				fmt.Println("Deployment complete")
+				log.Println("Deployment complete")
 			}
 
 		}
@@ -131,6 +150,8 @@ func init() {
 	RootCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", "", "path to deployment file")
 	RootCmd.Flags().StringVar(&useDefaults, "allow-defaults", "false", "allow defaults")
 	RootCmd.Flags().StringVar(&useInteractive, "allow-interactive", "true", "allow interactive prompts")
+	RootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
+
 }
 
 // initConfig reads in config file and ENV variables if set.

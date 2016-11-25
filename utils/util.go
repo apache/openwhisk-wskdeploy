@@ -68,13 +68,14 @@ func (e *ServerlessErr) Error() string {
 func Check(e error) {
 
 	if err := recover(); err != nil {
-		log.Printf("runtime panic : %v", e)
+		log.Printf("runtime panic : %v", err)
 	}
 
 	if e != nil {
-		erro := errors.New("Error happened during execution, please type wskdeploy -help for help messages, now exit.")
-		log.Printf("error: %v", erro)
-		panic(e)
+		erro := errors.New("Error happened during execution, please type 'wskdeploy -h' for help messages.")
+		log.Printf("%v", erro)
+		os.Exit(1)
+
 	}
 
 }
@@ -186,7 +187,6 @@ func CreateActionFromFile(manipath, filePath string) (*whisk.Action, error) {
 	//better refactor this
 	splitmanipath := strings.Split(manipath, string(os.PathSeparator))
 	filePath = strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + filePath
-	fmt.Println(filePath)
 	// process source code files
 	if ext == ".swift" || ext == ".js" || ext == ".py" {
 
@@ -210,7 +210,8 @@ func CreateActionFromFile(manipath, filePath string) (*whisk.Action, error) {
 		action.Publish = false
 		return action, nil
 	}
-	return nil, nil
+	// If the action is not supported, we better to return an error.
+	return nil, errors.New("Unsupported action type.")
 }
 
 func GetBoolFromString(value string) (bool, error) {
