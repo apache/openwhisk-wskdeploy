@@ -175,14 +175,16 @@ func (deployer *ServiceDeployer) DeployRules() error {
 func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) {
 	_, _, err := deployer.Client.Triggers.Insert(trigger, true)
 	if err != nil {
-		fmt.Errorf("Got error creating trigger %s.", err)
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error creating trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 }
 
 func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) {
 	_, _, err := deployer.Client.Rules.Insert(rule, true)
 	if err != nil {
-		fmt.Errorf("Got error creating rule %s.", err)
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error creating rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 }
 
@@ -196,7 +198,8 @@ func (deployer *ServiceDeployer) createAction(action *whisk.Action) {
 	}
 	_, _, err := deployer.Client.Actions.Insert(action, false, true)
 	if err != nil {
-		fmt.Println("Got error inserting action ", err)
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error creating action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 }
 
@@ -215,7 +218,8 @@ func (deployer *ServiceDeployer) getPackageName() string {
 func (deployer *ServiceDeployer) createPackage(packa *whisk.SentPackageNoPublish) {
 	_, _, err := deployer.Client.Packages.Insert(packa, true)
 	if err != nil {
-		fmt.Errorf("Got error creating package %s.", err)
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error creating package with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 }
 
