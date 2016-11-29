@@ -70,10 +70,12 @@ func NewServiceDeployer() *ServiceDeployer {
 
 // Load configuration will load properties from a file
 func (deployer *ServiceDeployer) LoadConfiguration(propPath string) error {
-	fmt.Println("Loading configuration")
 	props, err := utils.ReadProps(propPath)
 	utils.Check(err)
-	fmt.Println("Got props ", props)
+	if Verbose {
+		log.Println("Loading configuration...")
+		log.Println("Got props:", props)
+	}
 	deployer.Namespace = props["NAMESPACE"]
 	deployer.Apihost = props["APIHOST"]
 	deployer.Authtoken = props["AUTH"]
@@ -161,10 +163,28 @@ func (deployer *ServiceDeployer) DeployTriggers() error {
 
 }
 
+// Deploy Rules into OpenWhisk
+func (deployer *ServiceDeployer) DeployRules() error {
+	for _, rule := range deployer.Rules {
+		deployer.createRule(rule)
+	}
+
+	return nil
+}
+
 func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) {
 	_, _, err := deployer.Client.Triggers.Insert(trigger, true)
 	if err != nil {
-		fmt.Errorf("Got error creating trigger %s.", err)
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error creating trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	}
+}
+
+func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) {
+	_, _, err := deployer.Client.Rules.Insert(rule, true)
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error creating rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 }
 
@@ -178,7 +198,8 @@ func (deployer *ServiceDeployer) createAction(action *whisk.Action) {
 	}
 	_, _, err := deployer.Client.Actions.Insert(action, false, true)
 	if err != nil {
-		fmt.Println("Got error inserting action ", err)
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error creating action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 }
 
@@ -197,7 +218,8 @@ func (deployer *ServiceDeployer) getPackageName() string {
 func (deployer *ServiceDeployer) createPackage(packa *whisk.SentPackageNoPublish) {
 	_, _, err := deployer.Client.Packages.Insert(packa, true)
 	if err != nil {
-		fmt.Errorf("Got error creating package %s.", err)
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error creating package with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 }
 
@@ -209,6 +231,9 @@ func (deployer *ServiceDeployer) HandleYamlDir() error {
 	actions, err := mm.ComposeActions(deployer.ManifestPath)
 	utils.Check(err)
 	triggers, err := mm.ComposeTriggers(deployer.ManifestPath)
+	utils.Check(err)
+	rules, err := mm.ComposeRules(deployer.ManifestPath)
+	utils.Check(err)
 	if !deployer.SetActions(actions) {
 		log.Panicln("duplication founded during deploy actions")
 	}
@@ -217,6 +242,9 @@ func (deployer *ServiceDeployer) HandleYamlDir() error {
 	}
 	if !deployer.SetTriggers(triggers) {
 		log.Panicln("duplication founded during deploy triggers")
+	}
+	if !deployer.SetRules(rules) {
+		log.Panicln("duplication founded during deploy rules")
 	}
 
 	deployer.createPackage(packg)
@@ -288,6 +316,9 @@ func (deployer *ServiceDeployer) Deploy() error {
 			if err := deployer.DeployTriggers(); err != nil {
 				return err
 			}
+			if err := deployer.DeployRules(); err != nil {
+				return err
+			}
 		} else {
 			deployer.InteractiveChoice = false
 			fmt.Println("OK. Cancelling deployment")
@@ -328,7 +359,7 @@ func (deployer *ServiceDeployer) SetActions(actions []utils.ActionRecord) bool {
 	defer deployer.mt.Unlock()
 
 	for _, action := range actions {
-		fmt.Println(action.Action.Name)
+		//fmt.Println(action.Action.Name)
 		existAction, exist := deployer.Actions[action.Action.Name]
 
 		if exist {
@@ -384,6 +415,28 @@ func (deployer *ServiceDeployer) SetTriggers(triggers []*whisk.Trigger) bool {
 			existTrigger.Publish = trigger.Publish
 		} else {
 			deployer.Triggers[trigger.Name] = trigger
+		}
+
+	}
+	return true
+}
+
+func (deployer *ServiceDeployer) SetRules(rules []*whisk.Rule) bool {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
+
+	for _, rule := range rules {
+		existRule, exist := deployer.Rules[rule.Name]
+		if exist {
+			existRule.Name = rule.Name
+			existRule.Publish = rule.Publish
+			existRule.Version = rule.Version
+			existRule.Namespace = rule.Namespace
+			existRule.Action = rule.Action
+			existRule.Trigger = rule.Trigger
+			existRule.Status = rule.Status
+		} else {
+			deployer.Rules[rule.Name] = rule
 		}
 
 	}
