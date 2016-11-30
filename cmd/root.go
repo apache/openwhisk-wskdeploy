@@ -186,8 +186,7 @@ func executeDeployer(manifestPath string) (*ServiceDeployer, error) {
 	deployer.ManifestPath = manifestPath
 	deployer.ProjectPath = projectPath
 	deployer.DeploymentPath = deploymentPath
-	deployer.LoadConfiguration(propPath)
-	deployer.CreateClient()
+	deployer.Client = utils.NewClient(propPath)
 
 	err = deployer.ConstructDeploymentPlan()
 	if err != nil {
