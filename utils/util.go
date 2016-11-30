@@ -40,6 +40,24 @@ type ActionRecord struct {
 	Filepath string
 }
 
+func NewClient(proppath string) *whisk.Client {
+	configs, err := LoadConfiguration(proppath)
+	Check(err)
+	baseURL, err := GetURLBase(configs[1]) //Apihost
+	Check(err)
+	clientConfig := &whisk.Config{
+		AuthToken: configs[2], //Authtoken
+		Namespace: configs[0], //Namespace
+		BaseURL:   baseURL,
+		Version:   "v1",
+		Insecure:  true, // true if you want to ignore certificate signing
+	}
+	// Setup network client
+	client, err := whisk.NewClient(http.DefaultClient, clientConfig)
+	Check(err)
+	return client
+}
+
 // ServerlessBinaryCommand is the CLI name to run serverless
 const ServerlessBinaryCommand = "serverless"
 
@@ -222,4 +240,14 @@ func GetBoolFromString(value string) (bool, error) {
 	}
 
 	return false, fmt.Errorf("Value %s not a valid comparison for boolean", value)
+}
+
+// Load configuration will load properties from a file
+func LoadConfiguration(propPath string) ([]string, error) {
+	props, err := ReadProps(propPath)
+	Check(err)
+	Namespace := props["NAMESPACE"]
+	Apihost := props["APIHOST"]
+	Authtoken := props["AUTH"]
+	return []string{Namespace, Apihost, Authtoken}, nil
 }

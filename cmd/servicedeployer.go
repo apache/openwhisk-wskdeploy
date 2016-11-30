@@ -23,7 +23,6 @@ import (
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/wskdeploy/utils"
 	"log"
-	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -43,9 +42,6 @@ type ServiceDeployer struct {
 	Rules          map[string]*whisk.Rule
 	Client         *whisk.Client
 	mt             sync.RWMutex
-	Authtoken      string
-	Namespace      string
-	Apihost        string
 	IsInteractive  bool
 	IsDefault      bool
 	ManifestPath   string
@@ -66,20 +62,6 @@ func NewServiceDeployer() *ServiceDeployer {
 	dep.IsInteractive = true
 	dep.DeployActionInPackage = true
 	return &dep
-}
-
-// Load configuration will load properties from a file
-func (deployer *ServiceDeployer) LoadConfiguration(propPath string) error {
-	props, err := utils.ReadProps(propPath)
-	utils.Check(err)
-	if Verbose {
-		log.Println("Loading configuration...")
-		log.Println("Got props:", props)
-	}
-	deployer.Namespace = props["NAMESPACE"]
-	deployer.Apihost = props["APIHOST"]
-	deployer.Authtoken = props["AUTH"]
-	return nil
 }
 
 // ConstructDeploymentPlan will collect information from the manifest, descriptors, and any
@@ -125,23 +107,6 @@ func (deployer *ServiceDeployer) ReadDirectory() error {
 func (deployer *ServiceDeployer) CreatePackageFromDirectory(directoryName string) error {
 	fmt.Println("Making a package ", directoryName)
 	return nil
-}
-
-func (deployer *ServiceDeployer) CreateClient() {
-	baseURL, err := utils.GetURLBase(deployer.Apihost)
-	utils.Check(err)
-	clientConfig := &whisk.Config{
-		AuthToken: deployer.Authtoken,
-		Namespace: deployer.Namespace,
-		BaseURL:   baseURL,
-		Version:   "v1",
-		Insecure:  true, // true if you want to ignore certificate signing
-	}
-	// Setup network client
-	client, err := whisk.NewClient(http.DefaultClient, clientConfig)
-	utils.Check(err)
-	deployer.Client = client
-
 }
 
 // DeployActions into OpenWhisk
