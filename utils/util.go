@@ -40,18 +40,38 @@ type ActionRecord struct {
 	Filepath string
 }
 
-func NewClient(proppath string) *whisk.Client {
+func NewClient(proppath string, deploymentPath string) *whisk.Client {
+	var clientConfig *whisk.Config
 	configs, err := LoadConfiguration(proppath)
 	Check(err)
-	baseURL, err := GetURLBase(configs[1]) //Apihost
+	//we need to get Apihost from property file which currently not defined in sample deployment file.
+	baseURL, err := GetURLBase(configs[1])
 	Check(err)
-	clientConfig := &whisk.Config{
-		AuthToken: configs[2], //Authtoken
-		Namespace: configs[0], //Namespace
-		BaseURL:   baseURL,
-		Version:   "v1",
-		Insecure:  true, // true if you want to ignore certificate signing
+	if deploymentPath != "" {
+		mm := NewYAMLParser()
+		deployment := mm.ParseDeployment(deploymentPath)
+		// We get the first package from the sample deployment file.
+		pkg := deployment.Application.GetPackageList()[0]
+		clientConfig = &whisk.Config{
+			AuthToken: pkg.Credential, //Authtoken
+			Namespace: pkg.Namespace,  //Namespace
+			BaseURL:   baseURL,
+			Version:   "v1",
+			Insecure:  true,
+		}
+
+	} else {
+		clientConfig = &whisk.Config{
+			AuthToken: configs[2], //Authtoken
+			Namespace: configs[0], //Namespace
+			BaseURL:   baseURL,
+			Version:   "v1",
+			Insecure:  true, // true if you want to ignore certificate signing
+
+		}
+
 	}
+
 	// Setup network client
 	client, err := whisk.NewClient(http.DefaultClient, clientConfig)
 	Check(err)
