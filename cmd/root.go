@@ -45,10 +45,12 @@ var RootCmd = &cobra.Command{
 	Short: "A tool set to help deploy your openwhisk packages in batch.",
 	Long: `wskdeploy is a tool to help deploy your packages, feeds, actions, triggers,
 rules onto OpenWhisk platform in batch. The deployment is based on the manifest
-and deployment yaml file. A sample manifest yaml file is as below:
+and deployment yaml file.
+
+A sample manifest yaml file is as below:
 
 package:
-  name: helloworld
+  name: triggerrule
   version: 1.0
   license: Apache-2.0
   actions:
@@ -66,7 +68,24 @@ package:
   rules:
     myRule:
       trigger: locationUpdate
-      action: hello`,
+      action: hello
+===========================================
+A sample deployment yaml file is as below:
+
+application:
+  name: wskdeploy-samples
+  namespace: guest
+
+  packages:
+    triggerrule:
+      credential: 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
+
+      actions:
+        hello:
+          inputs:
+            name: Bernie
+            place: Vermont
+      `,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
@@ -186,7 +205,8 @@ func executeDeployer(manifestPath string) (*ServiceDeployer, error) {
 	deployer.ManifestPath = manifestPath
 	deployer.ProjectPath = projectPath
 	deployer.DeploymentPath = deploymentPath
-	deployer.Client = utils.NewClient(propPath)
+	// from propPath and deploymentPath get all the information
+	deployer.Client = utils.NewClient(propPath, deploymentPath)
 
 	err = deployer.ConstructDeploymentPlan()
 	if err != nil {
