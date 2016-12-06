@@ -11,6 +11,7 @@ var manifest_yaml = "testcases/helloworld/manifest.yaml"
 var manifestfile1 = "dat/manifest1.yaml"
 var manifestfile3 = "dat/manifest3.yaml"
 var manifestfile4 = "dat/manifest4.yaml"
+var manifestfile5 = "dat/manifest5.yaml"
 var testfile1 = "dat/deploy1.yaml"
 var testfile2 = "dat/deploy2.yaml"
 var testfile3 = "dat/deploy3.yaml"
@@ -106,6 +107,40 @@ func TestParseManifestYAML_rule(t *testing.T) {
 	}
 }
 
+func TestParseManifestYAML_feed(t *testing.T) {
+	data, err := ioutil.ReadFile(manifestfile5)
+	if err != nil {
+		panic(err)
+	}
+
+	var manifest utils.ManifestYAML
+	err = utils.NewYAMLParser().Unmarshal(data, &manifest)
+	if err != nil {
+		panic(err)
+	}
+
+	assert.Equal(t, 1, len(manifest.Package.Feeds), "Get feed list failed.")
+	for feed_name := range manifest.Package.Feeds {
+		var feed = manifest.Package.Feeds[feed_name]
+		switch feed_name {
+		case "feed1":
+			assert.Equal(t, "https://my.company.com/services/eventHub", feed.Location, "Get feed location failed.")
+			assert.Equal(t, "my_credential", feed.Credential, "Get feed credential failed.")
+			assert.Equal(t, 2, len(feed.Operations), "Get operations number failed.")
+			for operation_name := range feed.Operations {
+				switch operation_name {
+				case "operation1":
+				case "operation2":
+				default:
+					t.Error("Get feed operation name failed")
+				}
+			}
+		default:
+			t.Error("Get feed name failed")
+		}
+	}
+}
+
 func TestParseDeploymentYAML_Application(t *testing.T) {
 	//var deployment utils.DeploymentYAML
 	mm := utils.NewYAMLParser()
@@ -164,6 +199,7 @@ func TestParseDeploymentYAML_Action(t *testing.T) {
 		}
 	}
 }
+
 
 func TestComposeWskPackage(t *testing.T) {
 	mm := utils.NewYAMLParser()

@@ -60,9 +60,12 @@ type Trigger struct {
 
 type Feed struct {
 	Namespace  string            `yaml:"namespace"`  //used in deployment.yaml
-	Credential string            `yaml:"credential"` //used in deployment.yaml
-	Inputs     map[string]string `yaml:"inputs"`     //used in both manifest.yaml and deployment.yaml
-	Outputs    map[string]string `yaml:"outputs"`    //used in manifest.yaml
+	Credential string            `yaml:"credential"` //used in both manifest.yaml and deployment.yaml
+	Inputs     map[string]string `yaml:"inputs"`     //used in deployment.yaml
+	Location string `yaml:"location"`    //used in manifest.yaml
+	Action string `yaml:"action"`    //used in manifest.yaml
+	//TODO: need to define operation structure
+	Operations map[string]interface{} `yaml:"operations"`    //used in manifest.yaml
 	Name       string
 }
 
@@ -89,6 +92,7 @@ type Package struct {
 	Credential string             `yaml:"credential"` //used in deployment.yaml
 	Actions    map[string]Action  `yaml:"actions"`    //used in both manifest.yaml and deployment.yaml
 	Triggers   map[string]Trigger `yaml:"triggers"`   //used in both manifest.yaml and deployment.yaml
+	Feeds	map[string]Feed `yaml:"feeds"`   //used in both manifest.yaml and deployment.yaml
 	Rules      map[string]Rule    `yaml:"rules"`      //used in both manifest.yaml and deployment.yaml
 	Inputs     map[string]string  `yaml:"inputs"`     //used in deployment.yaml
 }
@@ -172,6 +176,15 @@ func (pkg *Package) GetRuleList() []Rule {
 	for rule_name, rule := range pkg.Rules {
 		rule.Name = rule_name
 		s1 = append(s1, rule)
+	}
+	return s1
+}
+
+func (pkg *Package) GetFeedList() []Feed {
+	var s1 []Feed = make([]Feed, 0)
+	for feed_name, feed := range pkg.Feeds {
+		feed.Name = feed_name
+		s1 = append(s1, feed)
 	}
 	return s1
 }
