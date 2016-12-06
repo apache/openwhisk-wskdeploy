@@ -1,0 +1,10 @@
+package:
+  feeds:
+    feed1:
+      location: https://my.company.com/services/eventHub
+      credential: my_credential
+      operations:
+        operation1:
+        operation2:
+
+      
