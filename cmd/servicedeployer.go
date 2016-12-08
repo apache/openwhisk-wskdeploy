@@ -146,6 +146,12 @@ func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) {
 }
 
 func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) {
+	// The rule's trigger should include the namespace with pattern /namespace/trigger
+	rule.Trigger = deployer.getQualifiedName(rule.Trigger, clientConfig.Namespace)
+	// The rule's action should include the namespace and package with pattern /namespace/package/action
+	// please refer https://github.com/openwhisk/openwhisk/issues/1577
+	pkgName := deployer.getPackageName()
+	rule.Action = deployer.getQualifiedName(strings.Join([]string{pkgName, rule.Action}, "/"), clientConfig.Namespace)
 	_, _, err := deployer.Client.Rules.Insert(rule, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
@@ -406,4 +412,18 @@ func (deployer *ServiceDeployer) SetRules(rules []*whisk.Rule) bool {
 
 	}
 	return true
+}
+
+// from whisk go client
+func (deployer *ServiceDeployer) getQualifiedName(name string, namespace string) string {
+	if strings.HasPrefix(name, "/") {
+		return name
+	} else if strings.HasPrefix(namespace, "/") {
+		return fmt.Sprintf("%s/%s", namespace, name)
+	} else {
+		if len(namespace) == 0 {
+			namespace = clientConfig.Namespace
+		}
+		return fmt.Sprintf("/%s/%s", namespace, name)
+	}
 }

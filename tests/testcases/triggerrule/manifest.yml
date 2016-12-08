@@ -17,5 +17,7 @@ package:
   rules:
     myRule:
       trigger: locationUpdate
-      action: hello
+      #the action name and the action file greeting.js should consistent.
+      #currently the implementation deside the action name consistent with action file name?
+      action: greeting
 
