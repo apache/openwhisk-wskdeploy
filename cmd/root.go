@@ -18,6 +18,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/wskdeploy/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -38,6 +39,7 @@ var deploymentPath string
 var useInteractive string
 var useDefaults string
 var Verbose bool
+var clientConfig *whisk.Config
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -206,7 +208,8 @@ func executeDeployer(manifestPath string) (*ServiceDeployer, error) {
 	deployer.ProjectPath = projectPath
 	deployer.DeploymentPath = deploymentPath
 	// from propPath and deploymentPath get all the information
-	deployer.Client = utils.NewClient(propPath, deploymentPath)
+	// and we return the information back for later usage if necessary
+	deployer.Client, clientConfig = utils.NewClient(propPath, deploymentPath)
 
 	err = deployer.ConstructDeploymentPlan()
 	if err != nil {

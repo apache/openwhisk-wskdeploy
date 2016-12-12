@@ -40,7 +40,7 @@ type ActionRecord struct {
 	Filepath string
 }
 
-func NewClient(proppath string, deploymentPath string) *whisk.Client {
+func NewClient(proppath string, deploymentPath string) (*whisk.Client, *whisk.Config) {
 	var clientConfig *whisk.Config
 	configs, err := LoadConfiguration(proppath)
 	Check(err)
@@ -75,7 +75,7 @@ func NewClient(proppath string, deploymentPath string) *whisk.Client {
 	// Setup network client
 	client, err := whisk.NewClient(http.DefaultClient, clientConfig)
 	Check(err)
-	return client
+	return client, clientConfig
 }
 
 // ServerlessBinaryCommand is the CLI name to run serverless

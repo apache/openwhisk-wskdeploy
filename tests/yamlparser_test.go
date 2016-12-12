@@ -200,7 +200,6 @@ func TestParseDeploymentYAML_Action(t *testing.T) {
 	}
 }
 
-
 func TestComposeWskPackage(t *testing.T) {
 	mm := utils.NewYAMLParser()
 	deployment := mm.ParseDeployment(testfile2)
