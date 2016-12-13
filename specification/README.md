@@ -1,4 +1,4 @@
-# OpenWhisk Packaging Specification v0.8
+# OpenWhisk Packaging Specification v0.8.2, 2016-12-12
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
