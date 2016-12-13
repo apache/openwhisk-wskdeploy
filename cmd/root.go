@@ -30,6 +30,7 @@ import (
 	"path"
 	"path/filepath"
 	"syscall"
+	"errors"
 )
 
 var cfgFile string
@@ -91,23 +92,11 @@ application:
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-
-		if manifestPath == "" {
-			manifestPath = path.Join(projectPath, "manifest.yaml")
-		}
-
-		if deploymentPath == "" {
-			deploymentPath = path.Join(projectPath, "deployment.yaml")
-		}
-
 		log.Println("OpenWhisk Deploy initial configuration")
-		log.Println("Manifest paths ================================")
 		log.Println("Project path is ", projectPath)
-		log.Println("Manifest path is ", manifestPath)
-		log.Println("Deployment Descriptor path is ", deploymentPath)
 
-		var searchPath = path.Join(manifestPath, "serverless.yaml")
-		log.Println("Searching for manifest on path ", searchPath)
+		var searchPath = path.Join(projectPath, "serverless.yaml")
+		log.Println("Searching for serverless manifest on path ", searchPath)
 
 		if _, err := os.Stat(searchPath); err == nil {
 			log.Println("Found severless manifest")
@@ -136,6 +125,11 @@ application:
 
 		} else {
 			log.Println("Starting OpenWhisk deployment")
+			_, err := os.Stat(manifestPath)
+			if err!=nil{
+				err=errors.New("manifest file not found.")
+			}
+			utils.Check(err)
 			deployer, err := executeDeployer(manifestPath)
 			utils.Check(err)
 			if deployer.InteractiveChoice {
