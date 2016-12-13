@@ -1,11 +1,12 @@
-git_webhook:
+package:
+  name: git_webhook
   version: 1.0
   license: Apache-2.0
   actions:
     webhook:
       version: 1.0
-      function: github/webhook.js
-      runtime: nodejs@6
+      location: src/webhook.js
+      runtime: nodejs
       inputs:
         username:
           type: string
@@ -19,16 +20,13 @@ git_webhook:
         events:
           type: string
           description: the github event type
-        wskhost:
+        endpoint:
           type: string
           description: the IP address of deployed OpenWhisk server
   feeds:
     webhook-feed:
-      location:
-      credential:
       action: webhook
   triggers:
-     webhook_trigger:
-      action: webhook
-
+     webhook-trigger:
+      feed: webhook-feed
 
