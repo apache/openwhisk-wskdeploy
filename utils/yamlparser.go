@@ -4,6 +4,7 @@ import (
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"gopkg.in/yaml.v2"
 	"log"
+	"strings"
 )
 
 // structs that denotes the sample manifest.yaml, wrapped yaml.v2
@@ -21,8 +22,8 @@ type ParseDeployerYaml interface {
 	// Compose Action entities according to yaml content
 	ComposeActions(manifestpath string) ([]*whisk.Action, error)
 
-	// Compose Trigger entities according to yaml content
-	ComposeTriggers(manifestpath string) ([]*whisk.Trigger, error)
+	// Compose Trigger entities according to deployment and manifest yaml content
+	ComposeTriggers(manifestpath string, deploymentpath string) ([]*whisk.Trigger, error)
 
 	// Compose Rule entities according to yaml content
 	ComposeRule(manifestpath string) ([]*whisk.Rule, error)
@@ -124,11 +125,13 @@ func (action *Action) ComposeWskAction(manipath string) (*whisk.Action, error) {
 }
 
 //********************Trigger functions*************************//
-func (trigger *Trigger) ComposeWskTrigger() *whisk.Trigger {
+//add the key/value array as the annotations of the trigger.
+func (trigger *Trigger) ComposeWskTrigger(kvarr []whisk.KeyValue) *whisk.Trigger {
 	wsktrigger := new(whisk.Trigger)
 	wsktrigger.Name = trigger.Name
 	wsktrigger.Namespace = trigger.Namespace
 	wsktrigger.Publish = false
+	wsktrigger.Annotations = kvarr
 	return wsktrigger
 }
 
@@ -180,6 +183,7 @@ func (pkg *Package) GetRuleList() []Rule {
 	return s1
 }
 
+//This is for parse the deployment yaml file.
 func (pkg *Package) GetFeedList() []Feed {
 	var s1 []Feed = make([]Feed, 0)
 	for feed_name, feed := range pkg.Feeds {
@@ -190,6 +194,7 @@ func (pkg *Package) GetFeedList() []Feed {
 }
 
 //********************Application functions*************************//
+//This is for parse the deployment yaml file.
 func (app *Application) GetPackageList() []Package {
 	var s1 []Package = make([]Package, 0)
 	for pkg_name, pkg := range app.Packages {
@@ -232,13 +237,31 @@ func (dm *YAMLParser) ComposeActions(manipath string) ([]ActionRecord, error) {
 	return s1, nil
 }
 
-func (dm *YAMLParser) ComposeTriggers(mani string) ([]*whisk.Trigger, error) {
+func (dm *YAMLParser) ComposeTriggers(mani string, deploy string) ([]*whisk.Trigger, error) {
 	mm := NewYAMLParser()
 	manifest := mm.ParseManifest(mani)
+	//parse the deployment yaml to get feed info as annotations for triggers
+	deployment := mm.ParseDeployment(deploy)
+	//This is to get the pkgs in deployment yaml
+	var kva []whisk.KeyValue = make([]whisk.KeyValue, 0)
+	for _, dep_pkg := range deployment.Application.GetPackageList() {
+		for _, feed := range dep_pkg.GetFeedList() {
+			log.Printf("feed name is %v", feed.Name)
+			feedFullName := strings.Join([]string{dep_pkg.Packagename, feed.Name}, "/")
+			kv := whisk.KeyValue{"feed", feedFullName}
+			kva = append(kva, kv)
+			for k, v := range feed.Inputs {
+				kv := whisk.KeyValue{k, v}
+				kva = append(kva, kv)
+			}
+		}
+	}
+
+	//parse the manifest yaml
 	var t1 []*whisk.Trigger = make([]*whisk.Trigger, 0)
 	pkg := manifest.Package
 	for _, trigger := range pkg.GetTriggerList() {
-		wsktrigger := trigger.ComposeWskTrigger()
+		wsktrigger := trigger.ComposeWskTrigger(kva)
 		t1 = append(t1, wsktrigger)
 	}
 	return t1, nil

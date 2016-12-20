@@ -225,14 +225,16 @@ func TestComposeWskTrigger(t *testing.T) {
 
 	pkg := deployment.Application.GetPackageList()[0]
 	for _, trigger := range pkg.GetTriggerList() {
-		wsktrigger := trigger.ComposeWskTrigger()
+		//temporarily add the nil to make test pass, as we plan refactor the parser as well as test codes.
+		wsktrigger := trigger.ComposeWskTrigger(nil)
 		assert.Equal(t, "hello-trigger", wsktrigger.Name, "Get trigger name failed.")
 		assert.Equal(t, "/wskdeploy/samples/test/hello-trigger", wsktrigger.Namespace, "Get trigger namespace failed.")
 	}
 
 	pkg = manifest.Package
 	for _, trigger := range pkg.GetTriggerList() {
-		wsktrigger := trigger.ComposeWskTrigger()
+		//temporarily add the nil to make test pass, as we plan refactor the parser as well as test codes.
+		wsktrigger := trigger.ComposeWskTrigger(nil)
 		switch wsktrigger.Name {
 		case "trigger1":
 		case "trigger2":

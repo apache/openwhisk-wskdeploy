@@ -201,7 +201,11 @@ func (deployer *ServiceDeployer) HandleYamlDir() error {
 	utils.Check(err)
 	actions, err := mm.ComposeActions(deployer.ManifestPath)
 	utils.Check(err)
-	triggers, err := mm.ComposeTriggers(deployer.ManifestPath)
+	//for implementation of feed support(issue#47). The trigger configs are in manifest.yaml,
+	//If there is feed nodes, then parse the deployment yaml to get the feed, and create
+	//the triggers with feed configs as annonations of the trigger, so change the compose trigger
+	//interface to include both manifest and deployment path.
+	triggers, err := mm.ComposeTriggers(deployer.ManifestPath, deployer.DeploymentPath)
 	utils.Check(err)
 	rules, err := mm.ComposeRules(deployer.ManifestPath)
 	utils.Check(err)
