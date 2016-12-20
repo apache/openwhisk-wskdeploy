@@ -24,9 +24,13 @@ package:
           type: string
           description: the IP address of deployed OpenWhisk server
   feeds:
-    webhook-feed:
+    #here we don't have to add a specific feed name, just
+    #The action name is sufficent, the feed parameter must be
+    #some existing actions, so I don't think we need the action
+    #sub nodes.
+    webhook:
       action: webhook
   triggers:
      webhook-trigger:
-      feed: webhook-feed
+      feed: webhook
 
