@@ -5,7 +5,7 @@ package:
   actions:
     webhook:
       version: 1.0
-      location: src/webhook.js
+      location: https://raw.githubusercontent.com/openwhisk/openwhisk-catalog/master/packages/github/webhook.js
       runtime: nodejs
       inputs:
         username:

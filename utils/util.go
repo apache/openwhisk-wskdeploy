@@ -222,11 +222,16 @@ func IsDirectory(filePath string) bool {
 func CreateActionFromFile(manipath, filePath string) (*whisk.Action, error) {
 	ext := path.Ext(filePath)
 	baseName := path.Base(filePath)
+	//check if the file if from local or from web
+	//currently only consider http
+	islocal := !strings.HasPrefix(filePath, "http")
 	name := strings.TrimSuffix(baseName, filepath.Ext(baseName))
 	action := new(whisk.Action)
 	//better refactor this
-	splitmanipath := strings.Split(manipath, string(os.PathSeparator))
-	filePath = strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + filePath
+	if islocal {
+		splitmanipath := strings.Split(manipath, string(os.PathSeparator))
+		filePath = strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + filePath
+	}
 	// process source code files
 	if ext == ".swift" || ext == ".js" || ext == ".py" {
 
@@ -240,8 +245,13 @@ func CreateActionFromFile(manipath, filePath string) (*whisk.Action, error) {
 		case ".py":
 			kind = "python"
 		}
-
-		dat, err := ioutil.ReadFile(filePath)
+		if islocal {
+			dat, err := new(ContentReader).LocalReader.ReadLocal(filePath)
+			Check(err)
+			action.Exec = new(whisk.Exec)
+			action.Exec.Code = string(dat)
+		}
+		dat, err := new(ContentReader).URLReader.ReadUrl(filePath)
 		Check(err)
 		action.Exec = new(whisk.Exec)
 		action.Exec.Code = string(dat)
