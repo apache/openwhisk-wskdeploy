@@ -24,6 +24,7 @@ $ git clone http://github.com/openwhisk/wskdeploy
 
 ```
 $ git checkout development   ## or skip this step and just build master
+$ go get -t -d ./...
 $ go build
 ```
 
