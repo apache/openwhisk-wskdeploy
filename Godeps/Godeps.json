@@ -4,6 +4,10 @@
 	"GodepVersion": "v62",
 	"Deps": [
 		{
+			"ImportPath": "github.com/cloudfoundry/jibber_jabber",
+			"Rev": "bcc4c8345a21301bf47c032ff42dd1aae2fe3027"
+		},
+		{
 			"ImportPath": "github.com/fatih/color",
 			"Comment": "v1.1.0-4-gbf82308",
 			"Rev": "bf82308e8c8546dc2b945157173eb8a959ae9505"
@@ -78,6 +82,26 @@
 		{
 			"ImportPath": "github.com/mitchellh/mapstructure",
 			"Rev": "f3009df150dadf309fdee4a54ed65c124afad715"
+		},
+		{
+			"ImportPath": "github.com/nicksnyder/go-i18n/i18n",
+			"Comment": "v1.6.0-1-g991e81c",
+			"Rev": "991e81cc94f6c54209edb3192cb98e3995ad71c1"
+		},
+		{
+			"ImportPath": "github.com/nicksnyder/go-i18n/i18n/bundle",
+			"Comment": "v1.6.0-1-g991e81c",
+			"Rev": "991e81cc94f6c54209edb3192cb98e3995ad71c1"
+		},
+		{
+			"ImportPath": "github.com/nicksnyder/go-i18n/i18n/language",
+			"Comment": "v1.6.0-1-g991e81c",
+			"Rev": "991e81cc94f6c54209edb3192cb98e3995ad71c1"
+		},
+		{
+			"ImportPath": "github.com/nicksnyder/go-i18n/i18n/translation",
+			"Comment": "v1.6.0-1-g991e81c",
+			"Rev": "991e81cc94f6c54209edb3192cb98e3995ad71c1"
 		},
 		{
 			"ImportPath": "github.com/openwhisk/openwhisk-client-go/whisk",

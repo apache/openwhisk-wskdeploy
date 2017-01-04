@@ -28,6 +28,14 @@ $ go get -t -d ./...
 $ go build
 ```
 
+5. If you want to build with the godep tool, please execute the following commands.
+
+```
+$ go get github.com/tools/godep ## Install the godep tool.
+$ godep get                     ## Download and install packages with specified dependencies.
+$ godep go build                ## build the wskdeploy tool.
+```
+
 Note: we have no releases yet so you should build the `development` branch.
 
 #How to Build with Docker.
