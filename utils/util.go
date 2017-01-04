@@ -111,7 +111,7 @@ func Check(e error) {
 	}()
 
 	if e != nil {
-		log.Printf("%v",e)
+		log.Printf("%v", e)
 		erro := errors.New("Error happened during execution, please type 'wskdeploy -h' for help messages.")
 		log.Printf("%v", erro)
 		os.Exit(1)

@@ -17,6 +17,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/wskdeploy/utils"
@@ -30,7 +31,6 @@ import (
 	"path"
 	"path/filepath"
 	"syscall"
-	"errors"
 )
 
 var cfgFile string
@@ -126,8 +126,8 @@ application:
 		} else {
 			log.Println("Starting OpenWhisk deployment")
 			_, err := os.Stat(manifestPath)
-			if err!=nil{
-				err=errors.New("manifest file not found.")
+			if err != nil {
+				err = errors.New("manifest file not found.")
 			}
 			utils.Check(err)
 			deployer, err := executeDeployer(manifestPath)
