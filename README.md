@@ -26,7 +26,6 @@ $ git clone http://github.com/openwhisk/wskdeploy
 $ git checkout development   ## or skip this step and just build master
 $ go get -t -d ./...
 $ go build
-```
 
 5. If you want to build with the godep tool, please execute the following commands.
 
