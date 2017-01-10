@@ -41,6 +41,8 @@ var useInteractive string
 var useDefaults string
 var Verbose bool
 var clientConfig *whisk.Config
+var CliVersion string
+var CliBuild string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -92,6 +94,7 @@ application:
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
+
 		log.Println("OpenWhisk Deploy initial configuration")
 		log.Println("Project path is ", projectPath)
 
