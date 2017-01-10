@@ -16,7 +16,9 @@
 
 package main
 
-import "github.com/openwhisk/wskdeploy/cmd"
+import (
+	"github.com/openwhisk/openwhisk-wskdeploy/cmd"
+)
 
 var (
 	//Version ...The Version of the tool
@@ -24,6 +26,11 @@ var (
 	//Build ...The build tag
 	Build = "unset"
 )
+
+func init() {
+	cmd.CliVersion = Version
+	cmd.CliBuild = Build
+}
 
 func main() {
 	cmd.Execute()

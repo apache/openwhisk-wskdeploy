@@ -19,8 +19,8 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/wskdeploy/utils"
-	"github.com/openwhisk/wskdeploy/wski18n"
+	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"github.com/openwhisk/openwhisk-wskdeploy/wski18n"
 	"github.com/spf13/cobra"
 	"path"
 	"sync"
