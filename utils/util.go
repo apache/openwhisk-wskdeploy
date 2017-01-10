@@ -36,8 +36,46 @@ import (
 // a whisk action struct and a location filepath we use to
 // map files and manifest declared actions
 type ActionRecord struct {
-	Action *whisk.Action
+	Action   *whisk.Action
 	Filepath string
+}
+
+func NewClient(proppath string, deploymentPath string) (*whisk.Client, *whisk.Config) {
+	var clientConfig *whisk.Config
+	configs, err := LoadConfiguration(proppath)
+	Check(err)
+	//we need to get Apihost from property file which currently not defined in sample deployment file.
+	baseURL, err := GetURLBase(configs[1])
+	Check(err)
+	if deploymentPath != "" {
+		mm := NewYAMLParser()
+		deployment := mm.ParseDeployment(deploymentPath)
+		// We get the first package from the sample deployment file.
+		pkg := deployment.Application.GetPackageList()[0]
+		clientConfig = &whisk.Config{
+			AuthToken: pkg.Credential, //Authtoken
+			Namespace: pkg.Namespace,  //Namespace
+			BaseURL:   baseURL,
+			Version:   "v1",
+			Insecure:  true,
+		}
+
+	} else {
+		clientConfig = &whisk.Config{
+			AuthToken: configs[2], //Authtoken
+			Namespace: configs[0], //Namespace
+			BaseURL:   baseURL,
+			Version:   "v1",
+			Insecure:  true, // true if you want to ignore certificate signing
+
+		}
+
+	}
+
+	// Setup network client
+	client, err := whisk.NewClient(http.DefaultClient, clientConfig)
+	Check(err)
+	return client, clientConfig
 }
 
 // ServerlessBinaryCommand is the CLI name to run serverless
@@ -66,15 +104,18 @@ func (e *ServerlessErr) Error() string {
 
 // Check is a util function to panic when there is an error.
 func Check(e error) {
-
-	if err := recover(); err != nil {
-		log.Printf("runtime panic : %v", e)
-	}
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("runtime panic : %v", err)
+		}
+	}()
 
 	if e != nil {
-		erro := errors.New("Error happened during execution, please type wskdeploy -help for help messages, now exit.")
-		log.Printf("error: %v", erro)
-		panic(e)
+		log.Printf("%v", e)
+		erro := errors.New("Error happened during execution, please type 'wskdeploy -h' for help messages.")
+		log.Printf("%v", erro)
+		os.Exit(1)
+
 	}
 
 }
@@ -181,12 +222,16 @@ func IsDirectory(filePath string) bool {
 func CreateActionFromFile(manipath, filePath string) (*whisk.Action, error) {
 	ext := path.Ext(filePath)
 	baseName := path.Base(filePath)
+	//check if the file if from local or from web
+	//currently only consider http
+	islocal := !strings.HasPrefix(filePath, "http")
 	name := strings.TrimSuffix(baseName, filepath.Ext(baseName))
 	action := new(whisk.Action)
 	//better refactor this
-	splitmanipath := strings.Split(manipath, string(os.PathSeparator))
-	filePath = strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + filePath
-	fmt.Println(filePath)
+	if islocal {
+		splitmanipath := strings.Split(manipath, string(os.PathSeparator))
+		filePath = strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + filePath
+	}
 	// process source code files
 	if ext == ".swift" || ext == ".js" || ext == ".py" {
 
@@ -200,8 +245,13 @@ func CreateActionFromFile(manipath, filePath string) (*whisk.Action, error) {
 		case ".py":
 			kind = "python"
 		}
-
-		dat, err := ioutil.ReadFile(filePath)
+		if islocal {
+			dat, err := new(ContentReader).LocalReader.ReadLocal(filePath)
+			Check(err)
+			action.Exec = new(whisk.Exec)
+			action.Exec.Code = string(dat)
+		}
+		dat, err := new(ContentReader).URLReader.ReadUrl(filePath)
 		Check(err)
 		action.Exec = new(whisk.Exec)
 		action.Exec.Code = string(dat)
@@ -210,7 +260,8 @@ func CreateActionFromFile(manipath, filePath string) (*whisk.Action, error) {
 		action.Publish = false
 		return action, nil
 	}
-	return nil, nil
+	// If the action is not supported, we better to return an error.
+	return nil, errors.New("Unsupported action type.")
 }
 
 func GetBoolFromString(value string) (bool, error) {
@@ -221,4 +272,14 @@ func GetBoolFromString(value string) (bool, error) {
 	}
 
 	return false, fmt.Errorf("Value %s not a valid comparison for boolean", value)
+}
+
+// Load configuration will load properties from a file
+func LoadConfiguration(propPath string) ([]string, error) {
+	props, err := ReadProps(propPath)
+	Check(err)
+	Namespace := props["NAMESPACE"]
+	Apihost := props["APIHOST"]
+	Authtoken := props["AUTH"]
+	return []string{Namespace, Apihost, Authtoken}, nil
 }

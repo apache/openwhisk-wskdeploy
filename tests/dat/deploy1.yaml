@@ -1,0 +1,4 @@
+application:
+  name: wskdeploy-samples
+  namespace: /wskdeploy/samples/
+

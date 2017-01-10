@@ -1,0 +1,13 @@
+application:
+  name: wskdeploy-samples
+  namespace: /wskdeploy/samples/
+
+  packages:
+    test_package:
+      function: http://abc.com/bbb
+      package_credential: 12345678ABCDEF
+      namespace: /wskdeploy/samples/test
+      credential: 12345678ABCDEF
+      inputs:
+        param: value
+

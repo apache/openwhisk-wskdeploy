@@ -17,7 +17,9 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/wskdeploy/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -37,40 +39,67 @@ var manifestPath string
 var deploymentPath string
 var useInteractive string
 var useDefaults string
+var Verbose bool
+var clientConfig *whisk.Config
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "wskdeploy",
 	Short: "A tool set to help deploy your openwhisk packages in batch.",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Long: `wskdeploy is a tool to help deploy your packages, feeds, actions, triggers,
+rules onto OpenWhisk platform in batch. The deployment is based on the manifest
+and deployment yaml file.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+A sample manifest yaml file is as below:
+
+package:
+  name: triggerrule
+  version: 1.0
+  license: Apache-2.0
+  actions:
+    hello:
+      version: 1.0
+      location: src/greeting.js
+      runtime: nodejs
+      inputs:
+        name: string
+        place: string
+      outputs:
+        payload: string
+  triggers:
+    locationUpdate:
+  rules:
+    myRule:
+      trigger: locationUpdate
+      action: hello
+===========================================
+A sample deployment yaml file is as below:
+
+application:
+  name: wskdeploy-samples
+  namespace: guest
+
+  packages:
+    triggerrule:
+      credential: 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
+
+      actions:
+        hello:
+          inputs:
+            name: Bernie
+            place: Vermont
+      `,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-
-		if manifestPath == "" {
-			manifestPath = path.Join(projectPath, "manifest.yaml")
-		}
-
-		if deploymentPath == "" {
-			deploymentPath = path.Join(projectPath, "deployment.yaml")
-		}
-
 		log.Println("OpenWhisk Deploy initial configuration")
-		log.Println("Manifest paths ================================")
 		log.Println("Project path is ", projectPath)
-		log.Println("Manifest path is ", manifestPath)
-		log.Println("Deployment Descriptor path is ", deploymentPath)
 
-		var searchPath = path.Join(manifestPath, "serverless.yaml")
-		fmt.Println("Searching for manifest on path ", searchPath)
+		var searchPath = path.Join(projectPath, "serverless.yaml")
+		log.Println("Searching for serverless manifest on path ", searchPath)
 
 		if _, err := os.Stat(searchPath); err == nil {
-			fmt.Println("Found severless manifest")
+			log.Println("Found severless manifest")
 
 			dat, err := ioutil.ReadFile(searchPath)
 			utils.Check(err)
@@ -81,22 +110,31 @@ to quickly create a Cobra application.`,
 			utils.Check(err)
 
 			if manifest.Provider.Name != "openwhisk" {
-				fmt.Println("Starting Serverless deployment")
+				log.Println("Starting Serverless deployment")
 				execErr := executeServerless()
 				utils.Check(execErr)
 				fmt.Println("Deployment complete")
 			} else {
-				fmt.Println("Starting OpenWhisk deployment")
-				execErr := executeDeployer(manifestPath)
-				utils.Check(execErr)
-				fmt.Println("Deployment complete")
+				log.Println("Starting OpenWhisk deployment")
+				deployer, err := executeDeployer(manifestPath)
+				utils.Check(err)
+				if deployer.InteractiveChoice {
+					fmt.Println("Deployment complete")
+				}
 			}
 
 		} else {
-			fmt.Println("Starting OpenWhisk deployment")
-			err := executeDeployer(manifestPath)
+			log.Println("Starting OpenWhisk deployment")
+			_, err := os.Stat(manifestPath)
+			if err != nil {
+				err = errors.New("manifest file not found.")
+			}
 			utils.Check(err)
-			fmt.Println("Deployment complete")
+			deployer, err := executeDeployer(manifestPath)
+			utils.Check(err)
+			if deployer.InteractiveChoice {
+				log.Println("Deployment complete")
+			}
 
 		}
 	},
@@ -127,6 +165,8 @@ func init() {
 	RootCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", "", "path to deployment file")
 	RootCmd.Flags().StringVar(&useDefaults, "allow-defaults", "false", "allow defaults")
 	RootCmd.Flags().StringVar(&useInteractive, "allow-interactive", "true", "allow interactive prompts")
+	RootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
+
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -145,7 +185,7 @@ func initConfig() {
 	}
 }
 
-func executeDeployer(manifestPath string) error {
+func executeDeployer(manifestPath string) (*ServiceDeployer, error) {
 	userHome := utils.GetHomeDirectory()
 	propPath := path.Join(userHome, ".wskprops")
 	deployer := NewServiceDeployer()
@@ -161,20 +201,21 @@ func executeDeployer(manifestPath string) error {
 	deployer.ManifestPath = manifestPath
 	deployer.ProjectPath = projectPath
 	deployer.DeploymentPath = deploymentPath
-	deployer.LoadConfiguration(propPath)
-	deployer.CreateClient()
+	// from propPath and deploymentPath get all the information
+	// and we return the information back for later usage if necessary
+	deployer.Client, clientConfig = utils.NewClient(propPath, deploymentPath)
 
-  err = deployer.ConstructDeploymentPlan()
+	err = deployer.ConstructDeploymentPlan()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = deployer.Deploy()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return deployer, nil
 }
 
 // Process manifest using OpenWhisk Tool

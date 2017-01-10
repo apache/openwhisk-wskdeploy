@@ -1,11 +1,12 @@
-git_webhook:
+package:
+  name: git_webhook
   version: 1.0
   license: Apache-2.0
-  feeds:
-    webhook_feed:
+  actions:
+    webhook:
       version: 1.0
-      function: github/webhook.js
-      runtime: nodejs@6
+      location: https://raw.githubusercontent.com/openwhisk/openwhisk-catalog/master/packages/github/webhook.js
+      runtime: nodejs
       inputs:
         username:
           type: string
@@ -19,11 +20,17 @@ git_webhook:
         events:
           type: string
           description: the github event type
-        wskhost:
+        endpoint:
           type: string
           description: the IP address of deployed OpenWhisk server
+  feeds:
+    #here we don't have to add a specific feed name, just
+    #The action name is sufficent, the feed parameter must be
+    #some existing actions, so I don't think we need the action
+    #sub nodes.
+    webhook:
+      action: webhook
   triggers:
-     webhook_trigger:
-      action: webhook_feed
-
+     webhook-trigger:
+      feed: webhook
 

@@ -1,0 +1,13 @@
+application:
+  name: wskdeploy-samples
+  namespace: /wskdeploy/samples/
+
+  packages:
+    test_package:
+      triggers:
+        hello-trigger:
+          namespace: /wskdeploy/samples/test/hello-trigger
+          credential: 12345678ABCDEF
+          inputs:
+            name: Bernie
+            place: Vermont
