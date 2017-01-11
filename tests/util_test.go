@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"github.com/openwhisk/wskdeploy/utils"
+	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"testing"
 )
 

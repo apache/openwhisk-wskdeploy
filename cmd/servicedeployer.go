@@ -21,7 +21,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/wskdeploy/utils"
+	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"log"
 	"os"
 	"path"
