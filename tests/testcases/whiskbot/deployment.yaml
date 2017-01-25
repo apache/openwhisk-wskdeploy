@@ -1,0 +1,20 @@
+package:
+  name: whiskbot
+  inputs:
+    fieldToEncrypt: XXXX
+    fieldPathToEncrypt: YYYYY
+    encryptionPassword: XXXXX
+    wskauths: YYYYYYYYY
+  actions:
+    fire:
+      inputs:
+        triggername: XXXXXXX
+      annotations:
+        web-export: true
+    newbot-setup:
+      inputs:
+        configPage: YYYYYYYYY
+  sequences:
+    newbot:
+      annotaions:
+        web-export: true
