@@ -24,3 +24,9 @@ _testmain.go
 *.prof
 
 wskdeploy
+
+#OS X things
+*/.DS_Store
+
+#emacs
+*~
