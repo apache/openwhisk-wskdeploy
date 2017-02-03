@@ -1,8 +1,9 @@
 package tests
 
 import (
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"testing"
+
+	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 )
 
 var contentReader = new(utils.ContentReader)

@@ -1,8 +1,10 @@
-package utils
+package parsers
 
 import (
-	"gopkg.in/yaml.v2"
 	"log"
+
+	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"gopkg.in/yaml.v2"
 )
 
 func (dm *YAMLParser) UnmarshalDeployment(input []byte, deploy *DeploymentYAML) error {
@@ -25,8 +27,8 @@ func (dm *YAMLParser) MarshalDeployment(deployment *DeploymentYAML) (output []by
 
 func (dm *YAMLParser) ParseDeployment(dply string) *DeploymentYAML {
 	dplyyaml := DeploymentYAML{}
-	content, err := new(ContentReader).LocalReader.ReadLocal(dply)
-	Check(err)
+	content, err := new(utils.ContentReader).LocalReader.ReadLocal(dply)
+	utils.Check(err)
 	err = dm.UnmarshalDeployment(content, &dplyyaml)
 	dplyyaml.Filepath = dply
 	return &dplyyaml
@@ -36,8 +38,8 @@ func (dm *YAMLParser) ParseDeployment(dply string) *DeploymentYAML {
 //This is for parse the deployment yaml file.
 func (app *Application) GetPackageList() []Package {
 	var s1 []Package = make([]Package, 0)
-	for pkg_name, pkg := range app.Packages {
-		pkg.Packagename = pkg_name
+	for _, pkg := range app.Packages {
+		pkg.Packagename = pkg.Packagename
 		s1 = append(s1, pkg)
 	}
 	return s1

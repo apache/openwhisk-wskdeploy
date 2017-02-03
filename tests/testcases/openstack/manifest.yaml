@@ -46,14 +46,14 @@ package:
           type: string
         triggerPayload:
           type: string
-    backupTrigger_APP:
+    backupTrigger_DB:
       source: /whisk.system/alarms/alarms
       inputs:
         cron:
           type: string
         triggerPayload:
           type: string
-    backupTrigger_APP:
+    backupTrigger_WEB:
       source: /whisk.system/alarms/alarms
       inputs:
         cron:

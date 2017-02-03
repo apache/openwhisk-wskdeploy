@@ -1,4 +1,4 @@
-package utils
+package parsers
 
 import (
 	"github.com/openwhisk/openwhisk-client-go/whisk"
@@ -14,7 +14,7 @@ type ParseYaml interface {
 	Marshal(manifest *ManifestYAML) (output []byte, err error)
 
 	//Compose Package entity according to yaml content
-	ComposePackage(manifestpath string) ([]*whisk.Package, error)
+	ComposePackages(manifestpath string) ([]*whisk.Package, error)
 
 	// Compose Action entities according to yaml content
 	ComposeActions(manifestpath string) ([]*whisk.Action, error)
@@ -23,7 +23,7 @@ type ParseYaml interface {
 	ComposeTriggers(manifestpath string, deploymentpath string) ([]*whisk.Trigger, error)
 
 	// Compose Rule entities according to yaml content
-	ComposeRule(manifestpath string) ([]*whisk.Rule, error)
+	ComposeRules(manifestpath string) ([]*whisk.Rule, error)
 }
 
 type YAMLParser struct {
@@ -42,7 +42,14 @@ type Action struct {
 	Inputs     map[string]interface{} `yaml:"inputs"`     //used in both manifest.yaml and deployment.yaml
 	Outputs    map[string]interface{} `yaml:"outputs"`    //used in manifest.yaml
 	//mapping to wsk.Action.Name
-	Name string
+	Name        string
+	Annotations map[string]interface{} `yaml: annotations`
+}
+
+type Dependency struct {
+	Name    string
+	Url     string
+	Version string
 }
 
 type Trigger struct {
@@ -53,7 +60,8 @@ type Trigger struct {
 	Credential string                 `yaml:"credential"` //used in deployment.yaml
 	Inputs     map[string]interface{} `yaml:"inputs"`     //used in deployment.yaml
 	//mapping to wsk.Trigger.Name
-	Name string
+	Name        string
+	Annotations map[string]interface{} `yaml: annotations`
 }
 
 type Feed struct {
@@ -77,28 +85,39 @@ type Rule struct {
 	Name string
 }
 
+type Sequence struct {
+	Actions string
+}
+
 type Package struct {
 	//mapping to wsk.SentPackageNoPublish.Name
 	Packagename string `yaml:"name"` //used in manifest.yaml
 	//mapping to wsk.SentPackageNoPublish.Version
-	Version           string `yaml:"version"`            //used in manifest.yaml
-	License           string `yaml:"license"`            //used in manifest.yaml
-	Function          string `yaml:"function"`           //used in deployment.yaml
-	PackageCredential string `yaml:"package_credential"` //used in deployment.yaml
+	Version           string                `yaml:"version"`            //used in manifest.yaml
+	License           string                `yaml:"license"`            //used in manifest.yaml
+	Dependencies      map[string]Dependency `yaml: dependencies`        // used in manifest.yaml
+	Function          string                `yaml:"function"`           //used in deployment.yaml
+	PackageCredential string                `yaml:"package_credential"` //used in deployment.yaml
 	//mapping to wsk.SentPackageNoPublish.Namespace
-	Namespace  string             `yaml:"namespace"`  //used in deployment.yaml
-	Credential string             `yaml:"credential"` //used in deployment.yaml
-	Actions    map[string]Action  `yaml:"actions"`    //used in both manifest.yaml and deployment.yaml
-	Triggers   map[string]Trigger `yaml:"triggers"`   //used in both manifest.yaml and deployment.yaml
-	Feeds      map[string]Feed    `yaml:"feeds"`      //used in both manifest.yaml and deployment.yaml
-	Rules      map[string]Rule    `yaml:"rules"`      //used in both manifest.yaml and deployment.yaml
-	Inputs     map[string]string  `yaml:"inputs"`     //used in deployment.yaml
+	Namespace   string                 `yaml:"namespace"`  //used in deployment.yaml
+	Credential  string                 `yaml:"credential"` //used in deployment.yaml
+	Actions     map[string]Action      `yaml:"actions"`    //used in both manifest.yaml and deployment.yaml
+	Triggers    map[string]Trigger     `yaml:"triggers"`   //used in both manifest.yaml and deployment.yaml
+	Feeds       map[string]Feed        `yaml:"feeds"`      //used in both manifest.yaml and deployment.yaml
+	Rules       map[string]Rule        `yaml:"rules"`      //used in both manifest.yaml and deployment.yaml
+	Inputs      map[string]string      `yaml:"inputs"`     //used in deployment.yaml
+	Sequences   map[string]Sequence    `yaml: "sequences"`
+	Annotations map[string]interface{} `yaml: annotations`
 }
 
 type Application struct {
-	Name      string             `yaml:"name"`      //used in deployment.yaml
-	Namespace string             `yaml:"namespace"` //used in deployment.yaml
-	Packages  map[string]Package `yaml:"packages"`  //used in deployment.yaml
+	Name       string    `yaml:"name"`      //used in deployment.yaml
+	Namespace  string    `yaml:"namespace"` //used in deployment.yaml
+	Credential string    `yaml:"credential"`
+	BaseUrl    string    `yaml: baseUrl`
+	Version    string    `yaml:"version"`
+	Packages   []Package `yaml:"packages"` //used in deployment.yaml
+	Package    Package   `yaml:"package"`
 }
 
 type DeploymentYAML struct {
