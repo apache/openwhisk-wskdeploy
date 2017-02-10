@@ -1,0 +1,29 @@
+package:
+  version: 1.0
+  license: Apache-2
+  description: RSS Feed package
+  inputs:
+    provider_endpoint:
+      value: http://localhost:8080/rss
+      type: string
+      description: Feed provider endpoint
+  feeds:
+    rss_feed:
+      version: 1.0
+      function: feeds/feed.js
+      runtime: nodejs@6
+      inputs:
+        url:
+          type: string
+          description: url to RSS feed
+          value: http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml
+        pollingInterval:
+          type: string
+          description: Interval at which polling is performed
+          value: 2h
+        filter:
+          type: string
+          description: Comma separated list of keywords to filter on
+  triggers:
+    rss_trigger:
+      action: rss_feed
