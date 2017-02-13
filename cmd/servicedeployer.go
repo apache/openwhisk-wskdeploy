@@ -77,6 +77,12 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	return nil
 }
 
+// ConstructDeploymentPlan will collect information from the manifest, descriptors, and any
+// defaults to determine what assets need to be uninstalled.
+func (deployer *ServiceDeployer) ConstructUndeploymentPlan() error {
+	return nil
+}
+
 // ReadDirectory will collect information from the files on disk. These represent actions
 func (deployer *ServiceDeployer) ReadDirectory() error {
 
@@ -270,6 +276,13 @@ func (deployer *ServiceDeployer) printDeploymentAssets() {
 		fmt.Printf("    %s (version: %s)\n", buffer.String(), rule.Version)
 	}
 
+}
+
+// Use relfect util to Undeploy everything in this service deployer
+// according some planning, it should be a reverse order or the deployment
+// planning.
+func (deployer *ServiceDeployer) Undeploy() error {
+	return nil
 }
 
 // Use relfect util to deploy everything in this service deployer
