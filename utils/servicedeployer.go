@@ -14,14 +14,13 @@
 * limitations under the License.
  */
 
-package cmd
+package utils
 
 import (
 	"bufio"
 	"bytes"
 	"fmt"
 	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"log"
 	"os"
 	"path"
@@ -30,13 +29,15 @@ import (
 	"sync"
 )
 
+var ClientConfig *whisk.Config
+
 //ServiceDeployer defines a prototype service deployer.  It should do the following:
 //   1. Collect information from the manifest file (if any)
 //   2. Collect information from the deployment file (if any)
 //   3. Collect information about the source code files in the working directory
 //   4. Create a deployment plan to create OpenWhisk service
 type ServiceDeployer struct {
-	Actions        map[string]utils.ActionRecord
+	Actions        map[string]ActionRecord
 	Triggers       map[string]*whisk.Trigger
 	Packages       map[string]*whisk.SentPackageNoPublish
 	Rules          map[string]*whisk.Rule
@@ -55,7 +56,7 @@ type ServiceDeployer struct {
 // NewServiceDeployer is a Factory to create a new ServiceDeployer
 func NewServiceDeployer() *ServiceDeployer {
 	var dep ServiceDeployer
-	dep.Actions = make(map[string]utils.ActionRecord)
+	dep.Actions = make(map[string]ActionRecord)
 	dep.Packages = make(map[string]*whisk.SentPackageNoPublish)
 	dep.Triggers = make(map[string]*whisk.Trigger)
 	dep.Rules = make(map[string]*whisk.Rule)
@@ -82,7 +83,7 @@ func (deployer *ServiceDeployer) ReadDirectory() error {
 
 	err := filepath.Walk(deployer.ProjectPath, func(filePath string, f os.FileInfo, err error) error {
 		if filePath != deployer.ProjectPath {
-			isDirectory := utils.IsDirectory(filePath)
+			isDirectory := IsDirectory(filePath)
 
 			if isDirectory == true {
 				baseName := path.Base(filePath)
@@ -92,15 +93,15 @@ func (deployer *ServiceDeployer) ReadDirectory() error {
 				err = deployer.CreatePackageFromDirectory(baseName)
 
 			} else {
-				action, err := utils.CreateActionFromFile(deployer.ProjectPath, filePath)
-				utils.Check(err)
-				deployer.Actions[action.Name] = utils.ActionRecord{action, filePath}
+				action, err := CreateActionFromFile(deployer.ProjectPath, filePath)
+				Check(err)
+				deployer.Actions[action.Name] = ActionRecord{action, filePath}
 			}
 		}
 		return err
 	})
 
-	utils.Check(err)
+	Check(err)
 	return nil
 }
 
@@ -147,11 +148,11 @@ func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) {
 
 func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) {
 	// The rule's trigger should include the namespace with pattern /namespace/trigger
-	rule.Trigger = deployer.getQualifiedName(rule.Trigger, clientConfig.Namespace)
+	rule.Trigger = deployer.getQualifiedName(rule.Trigger, ClientConfig.Namespace)
 	// The rule's action should include the namespace and package with pattern /namespace/package/action
 	// please refer https://github.com/openwhisk/openwhisk/issues/1577
 	pkgName := deployer.getPackageName()
-	rule.Action = deployer.getQualifiedName(strings.Join([]string{pkgName, rule.Action}, "/"), clientConfig.Namespace)
+	rule.Action = deployer.getQualifiedName(strings.Join([]string{pkgName, rule.Action}, "/"), ClientConfig.Namespace)
 	_, _, err := deployer.Client.Rules.Insert(rule, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
@@ -196,19 +197,19 @@ func (deployer *ServiceDeployer) createPackage(packa *whisk.SentPackageNoPublish
 
 // Wrapper parser to handle yaml dir
 func (deployer *ServiceDeployer) HandleYamlDir() error {
-	mm := utils.NewYAMLParser()
+	mm := NewYAMLParser()
 	packg, err := mm.ComposePackage(deployer.ManifestPath)
-	utils.Check(err)
+	Check(err)
 	actions, err := mm.ComposeActions(deployer.ManifestPath)
-	utils.Check(err)
+	Check(err)
 	//for implementation of feed support(issue#47). The trigger configs are in manifest.yaml,
 	//If there is feed nodes, then parse the deployment yaml to get the feed, and create
 	//the triggers with feed configs as annonations of the trigger, so change the compose trigger
 	//interface to include both manifest and deployment path.
 	triggers, err := mm.ComposeTriggers(deployer.ManifestPath, deployer.DeploymentPath)
-	utils.Check(err)
+	Check(err)
 	rules, err := mm.ComposeRules(deployer.ManifestPath)
-	utils.Check(err)
+	Check(err)
 	if !deployer.SetActions(actions) {
 		log.Panicln("duplication founded during deploy actions")
 	}
@@ -329,7 +330,7 @@ func (deployer *ServiceDeployer) SetPackage(pkg *whisk.SentPackageNoPublish) boo
 	return true
 }
 
-func (deployer *ServiceDeployer) SetActions(actions []utils.ActionRecord) bool {
+func (deployer *ServiceDeployer) SetActions(actions []ActionRecord) bool {
 	deployer.mt.Lock()
 	defer deployer.mt.Unlock()
 
@@ -426,7 +427,7 @@ func (deployer *ServiceDeployer) getQualifiedName(name string, namespace string)
 		return fmt.Sprintf("%s/%s", namespace, name)
 	} else {
 		if len(namespace) == 0 {
-			namespace = clientConfig.Namespace
+			namespace = ClientConfig.Namespace
 		}
 		return fmt.Sprintf("/%s/%s", namespace, name)
 	}

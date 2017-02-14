@@ -17,9 +17,7 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
-	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -35,12 +33,8 @@ import (
 
 var cfgFile string
 var projectPath string
-var manifestPath string
-var deploymentPath string
-var useInteractive string
-var useDefaults string
 var Verbose bool
-var clientConfig *whisk.Config
+
 var CliVersion string
 var CliBuild string
 
@@ -117,26 +111,6 @@ application:
 				execErr := executeServerless()
 				utils.Check(execErr)
 				fmt.Println("Deployment complete")
-			} else {
-				log.Println("Starting OpenWhisk deployment")
-				deployer, err := executeDeployer(manifestPath)
-				utils.Check(err)
-				if deployer.InteractiveChoice {
-					fmt.Println("Deployment complete")
-				}
-			}
-
-		} else {
-			log.Println("Starting OpenWhisk deployment")
-			_, err := os.Stat(manifestPath)
-			if err != nil {
-				err = errors.New("manifest file not found.")
-			}
-			utils.Check(err)
-			deployer, err := executeDeployer(manifestPath)
-			utils.Check(err)
-			if deployer.InteractiveChoice {
-				log.Println("Deployment complete")
 			}
 
 		}
@@ -164,10 +138,6 @@ func init() {
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	RootCmd.Flags().StringVarP(&projectPath, "pathpath", "p", ".", "path to serverless project")
-	RootCmd.Flags().StringVarP(&manifestPath, "manifest", "m", "", "path to manifest file")
-	RootCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", "", "path to deployment file")
-	RootCmd.Flags().StringVar(&useDefaults, "allow-defaults", "false", "allow defaults")
-	RootCmd.Flags().StringVar(&useInteractive, "allow-interactive", "true", "allow interactive prompts")
 	RootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 
 }
@@ -186,39 +156,6 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
-}
-
-func executeDeployer(manifestPath string) (*ServiceDeployer, error) {
-	userHome := utils.GetHomeDirectory()
-	propPath := path.Join(userHome, ".wskprops")
-	deployer := NewServiceDeployer()
-
-	isInteractive, err := utils.GetBoolFromString(useInteractive)
-	utils.Check(err)
-
-	isDefault, err := utils.GetBoolFromString(useDefaults)
-	utils.Check(err)
-
-	deployer.IsInteractive = isInteractive
-	deployer.IsDefault = isDefault
-	deployer.ManifestPath = manifestPath
-	deployer.ProjectPath = projectPath
-	deployer.DeploymentPath = deploymentPath
-	// from propPath and deploymentPath get all the information
-	// and we return the information back for later usage if necessary
-	deployer.Client, clientConfig = utils.NewClient(propPath, deploymentPath)
-
-	err = deployer.ConstructDeploymentPlan()
-	if err != nil {
-		return nil, err
-	}
-
-	err = deployer.Deploy()
-	if err != nil {
-		return nil, err
-	}
-
-	return deployer, nil
 }
 
 // Process manifest using OpenWhisk Tool
