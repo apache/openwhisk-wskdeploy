@@ -1,0 +1,85 @@
+package:
+  name: whiskbot
+  version: 0.0.1
+  license: Apache-2.0
+  dependencies:
+    oauth:
+      git: https://github.com/starpit/openwhisk-oauth.git
+      version: 1.0
+  inputs:
+    fieldToEncrypt:
+      type: string
+    fieldPathToEncrypt:
+      type: string
+    encryptionPassword:
+      type: string
+    wskauths:
+      type: string
+  actions:
+      challenge:
+        location: actions/challenge/index.js
+      configure-backend:
+        location: actions/configure-backend/index.js
+      decrypt:
+        location: actions/decrypt/index.js
+      encrypt:
+        location: actions/encrypt/index.js
+      fire:
+        location: actions/fire/index.js
+        inputs:
+          triggerName:
+            type: string
+        annotations:
+          web-export:
+            type: boolean
+      getSetupURL:
+        location: actions/getSetupURL/index.js
+      getWhiskAuthAndNamspace:
+        location: actions/getWhiskAuthAndNamespace/index.js
+      newbot-setup:
+        location: actions/newbot-setup/index.js
+        inputs:
+          configPage:
+            type: string
+    seqeunces:
+      newbot: 
+        actions: oauth/login, decrypt, newbot-setup
+        annotations:
+          web-export:
+            type: string
+      getSetup:
+        actions: getWhiskAuthAndNamespace, encrypt, getSetupURL
+      setup-backend:
+        actions: provision-backend, configure-backend
+  api-experimental:
+    newbot:
+      basepath: /whiskbot
+      path: /newbot
+      verb: get
+      action: newbot
+    slack-event:
+      basepath: /whiskbot
+      path: slack-event
+      verb: post
+      action: fire
+    getSetup:
+      basepath: /whiskbot
+      path: /getSetup
+      verb: post
+      action: getSetup
+    setup-backend:
+      basepath: /whiskbot
+      path: /setup-backend
+      verb: post
+      action: setup-backend
+      
+package:
+  name: whiskbot-templates
+  version: 0.0.1
+  license: Apache-2.0
+  actions:
+    simple-echo:
+      location: bots/simple-echo/index.js
+
+
+

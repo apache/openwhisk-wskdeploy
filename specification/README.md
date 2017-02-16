@@ -1,6 +1,8 @@
-# OpenWhisk Packaging Specification v0.8.2
+# OpenWhisk Packaging Specification v0.8.3
 
-Updated: 2016-12-12
+Updated: 2017-02-02
+
+Current version (link):  [openwhisk_v0.8.3.pdf](https://github.com/openwhisk/openwhisk-wskdeploy/raw/master/specification/openwhisk_v0.8.3.pdf)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 

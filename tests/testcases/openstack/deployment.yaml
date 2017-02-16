@@ -1,0 +1,32 @@
+package:
+	name: JiraBackupSolution:
+  actions:
+    getApiToken:
+      inputs:
+        host: ibmaic-myhost.com
+        port: 5000
+        endpointName: nova
+        userId: YYYYYY
+        password: XXXXXX
+        projectId: YYYYYYY
+    callSlack:
+      inputs:
+        url: https://hooks.slack.com/services/XXXXX
+        channel: XXXXXX
+        username: YYYYYYYY
+  triggers:
+    backupTrigger_APP:
+      inputs: 
+        cron: 0 4 * * *
+        triggerPlayload: {"backupName":"AIPLTULJAPP001", "backupType":"daily backup", "rotation":7, "queryString":{"name":"AIPLTULJAPP001.aic-platform.com"}}}
+    backupTrigger_DB:
+      inputs:
+        cron: 0 5 * * *
+        triggerPlayload: {"backupName":"AIPLTULJDB001", "backupType":"daily backup", "rotation":7, "queryString":{"name":"AIPLTULDB001.aic-platform.com"}}}
+    backupTrigger_WEB:
+      inputs:
+        cron: 0 10 * * *
+        triggerPlayload: {"backupName":"AIPLTULJWEB001", "backupType":"daily backup", "rotation":7, "queryString":{"name":"AIPLTULJWEB001.aic-platform.com"}}}
+
+
+
