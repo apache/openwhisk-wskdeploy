@@ -119,7 +119,7 @@ application:
 				fmt.Println("Deployment complete")
 			} else {
 				log.Println("Starting OpenWhisk deployment")
-				deployer, err := executeDeployer(manifestPath)
+				deployer, err := executeDeployer(manifestPath, true)
 				utils.Check(err)
 				if deployer.InteractiveChoice {
 					fmt.Println("Deployment complete")
@@ -133,7 +133,7 @@ application:
 				err = errors.New("manifest file not found.")
 			}
 			utils.Check(err)
-			deployer, err := executeDeployer(manifestPath)
+			deployer, err := executeDeployer(manifestPath, true)
 			utils.Check(err)
 			if deployer.InteractiveChoice {
 				log.Println("Deployment complete")
@@ -188,7 +188,8 @@ func initConfig() {
 	}
 }
 
-func executeDeployer(manifestPath string) (*ServiceDeployer, error) {
+// with a deploymentFlag to determine deploy/undeploy
+func executeDeployer(manifestPath string, deploymentFlag bool) (*ServiceDeployer, error) {
 	userHome := utils.GetHomeDirectory()
 	propPath := path.Join(userHome, ".wskprops")
 	deployer := NewServiceDeployer()
@@ -208,17 +209,31 @@ func executeDeployer(manifestPath string) (*ServiceDeployer, error) {
 	// and we return the information back for later usage if necessary
 	deployer.Client, clientConfig = utils.NewClient(propPath, deploymentPath)
 
-	err = deployer.ConstructDeploymentPlan()
+	if deploymentFlag {
+		err = deployer.ConstructDeploymentPlan()
+		if err != nil {
+			return nil, err
+		}
+
+		err = deployer.Deploy()
+		if err != nil {
+			return nil, err
+		}
+
+		return deployer, nil
+	}
+        // if deploymentFlag is false, then undeploy.
+	err = deployer.ConstructUndeploymentPlan()
 	if err != nil {
 		return nil, err
 	}
 
-	err = deployer.Deploy()
+	err = deployer.Undeploy()
 	if err != nil {
 		return nil, err
 	}
-
 	return deployer, nil
+
 }
 
 // Process manifest using OpenWhisk Tool
