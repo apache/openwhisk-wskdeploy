@@ -4,6 +4,7 @@ application:
 
   packages:
     test_package:
+      name: test_package
       function: http://abc.com/bbb
       package_credential: 12345678ABCDEF
       namespace: /wskdeploy/samples/test

@@ -116,7 +116,7 @@ type Application struct {
 	Credential string    `yaml:"credential"`
 	BaseUrl    string    `yaml: baseUrl`
 	Version    string    `yaml:"version"`
-	Packages   []Package `yaml:"packages"` //used in deployment.yaml
+	Packages   map[string]Package `yaml:"packages"` //used in deployment.yaml
 	Package    Package   `yaml:"package"`
 }
 
