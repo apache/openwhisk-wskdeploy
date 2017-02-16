@@ -28,40 +28,47 @@ $ ./wskdeploy -m /tests/testcases/triggerrule/manifest.yml -d /tests/testcases/t
 ```
 will deploy the `triggerrule` test case.
 
-# How to Build on local host.
+# How to build on local host
 `wskdeploy` can be built with Go tool.
 
-1. Setup your [Go development environment](https://golang.org/doc/code.html).
+1. Make sure `$GOPATH` is defined. If not, setup your [Go development environment](https://golang.org/doc/code.html).
 
-2.  `wskdeploy` depends on the `github.com/openwhisk/openwhisk-client-go/whisk` . To install:
+2. then download `openwhisk-wskdeploy` and dependencies by typing:
 
-``` go get github.com/openwhisk/openwhisk-client-go/whisk ```
-
-3. Clone this repo into `$GOPATH/src/github.com/openwhisk`, which should have been created by Step #2.
-
-```
-$ cd $GOPATH/src/github.com/openwhisk
-$ git clone http://github.com/openwhisk/wskdeploy
+```sh
+$ go get github.com/openwhisk/openwhisk-wskdeploy
 ```
 
-4. Tagged releases are in master. The latest build is always in the development branch. Inside `$GOPATH/src/github.com/openwhisk/wskdeply`:
+3. and finally build `wskdeploy`
 
-```
-$ git checkout development   ## or skip this step and just build master
-$ go get -t -d ./...
+```sh
 $ go build
+```
 
-5. If you want to build with the godep tool, please execute the following commands.
+4. If you want to build with the godep tool, please execute the following commands.
 
 ```
-$ go get github.com/tools/godep ## Install the godep tool.
-$ godep get                     ## Download and install packages with specified dependencies.
-$ godep go build                ## build the wskdeploy tool.
+$ go get github.com/tools/godep # Install the godep tool.
+$ godep get                     # Download and install packages with specified dependencies.
+$ godep go build                # build the wskdeploy tool.
 ```
 
 Note: we have no releases yet so you should build the `development` branch.
 
-# How to Build with Docker.
+# Contributing
+
+Start by creating a fork of openwhisk-wskdeploy and then change the git 'origin` to point to
+your forked repository. The convention is to do this in `$GOPATH/src/github.com/openwhisk/openwhisk-wskdeploy`:
+
+```sh
+$ git remote rename origin upstream
+$ git remote add origin https://github.com/<your fork>/openwhisk-wskdeploy
+$ git branch --set-upstream-to origin/master  # track master from origin now
+```
+
+You can now use `git push` to push changes to your repository and submit pull requests.
+
+# How to Build with Docker
 If you don't want to bother with go installation, build, git clone etc, you can do it with Docker, then
 you can run wskdeploy tool in your container.
 
