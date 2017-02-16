@@ -23,12 +23,17 @@ _testmain.go
 *.test
 *.prof
 
+
+#OS X
+**/.DS_Store
+
+#binaries
+openwhisk-wskdeploy
 wskdeploy
 
-#OS X things
-*.DS_Store
+#GoGlanD IDE
+.idea
+
 
 #emacs
 *~
-
-openwhisk-wskdeploy
