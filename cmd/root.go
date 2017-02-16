@@ -31,17 +31,6 @@ import (
 const ManifestFileName = "manifest"
 const DeploymentFileName = "deployment"
 
-var cfgFile string
-var CliVersion string
-var CliBuild string
-
-var Verbose bool
-var projectPath string
-var deploymentPath string
-var manifestPath string
-var useDefaults string
-var useInteractive string
-
 var RootCmd = &cobra.Command{
 	Use:   "wskdeploy",
 	Short: "A tool set to help deploy your openwhisk packages in batch.",

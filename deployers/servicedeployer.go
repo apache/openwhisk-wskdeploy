@@ -97,9 +97,28 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	deploymentReader.BindAssets()
 
 	// print report
-	deployer.printDeploymentAssets()
+	deployer.printDeploymentAssets(deployer.Deployment.Packages)
 
 	return nil
+}
+
+func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (map[string]*DeploymentPackage, error) {
+
+	// process manifest file
+	var manifestReader = NewManfiestReader(deployer)
+	manifestReader.HandleYaml()
+
+	// process deploymet file
+	var deploymentReader = NewDeploymentReader(deployer)
+	deploymentReader.HandleYaml()
+
+	deploymentReader.BindAssets()
+
+	// do some verication here
+	// for now just assume everything
+	var verifiedPlan = deployer.Deployment.Packages
+
+	return verifiedPlan, nil
 }
 
 // Use relfect util to deploy everything in this service deployer
@@ -107,7 +126,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 func (deployer *ServiceDeployer) Deploy() error {
 
 	if deployer.IsInteractive == true {
-		deployer.printDeploymentAssets()
+		deployer.printDeploymentAssets(deployer.Deployment.Packages)
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Do you really want to deploy this? (y/n): ")
 
@@ -116,7 +135,13 @@ func (deployer *ServiceDeployer) Deploy() error {
 
 		if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
 			deployer.InteractiveChoice = true
-			return deployer.deployAssets()
+			if err := deployer.deployAssets(); err != nil {
+				fmt.Println("Deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
+				return err
+			}
+
+			fmt.Println("Deployment completed successfully.")
+			return nil
 
 		} else {
 			deployer.InteractiveChoice = false
@@ -126,7 +151,13 @@ func (deployer *ServiceDeployer) Deploy() error {
 	}
 
 	// non-interactive
-	return deployer.deployAssets()
+	if err := deployer.deployAssets(); err != nil {
+		fmt.Println("Deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
+		return err
+	}
+
+	fmt.Println("Deployment completed successfully.")
+	return nil
 
 }
 
@@ -155,7 +186,6 @@ func (deployer *ServiceDeployer) deployAssets() error {
 }
 
 func (deployer *ServiceDeployer) DeployPackages() error {
-
 	for _, pack := range deployer.Deployment.Packages {
 		deployer.createPackage(pack.Package)
 	}
@@ -233,6 +263,12 @@ func (deployer *ServiceDeployer) createRule(pkgname string, rule *whisk.Rule) {
 		wskErr := err.(*whisk.WskError)
 		fmt.Printf("Got error creating rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
+
+	_, _, err = deployer.Client.Rules.SetState(rule.Name, "active")
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error activating rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	}
 }
 
 // Utility function to call go-whisk framework to make action
@@ -244,6 +280,166 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
 	}
 	_, _, err := deployer.Client.Actions.Insert(action, false, true)
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error creating action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	}
+}
+
+func (deployer *ServiceDeployer) UnDeploy(verifiedPlan map[string]*DeploymentPackage) error {
+	if deployer.IsInteractive == true {
+		deployer.printDeploymentAssets(verifiedPlan)
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Do you really want to undeploy this? (y/n): ")
+
+		text, _ := reader.ReadString('\n')
+		text = strings.TrimSpace(text)
+
+		if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
+			deployer.InteractiveChoice = true
+
+			if err := deployer.unDeployAssets(verifiedPlan); err != nil {
+				fmt.Println("UnDeployment did not complete sucessfully.")
+				return err
+			}
+
+			fmt.Println("UnDeployment completed successfully.")
+			return nil
+
+		} else {
+			deployer.InteractiveChoice = false
+			fmt.Println("OK. Cancelling deployment")
+			return nil
+		}
+	}
+
+	// non-interactive
+	if err := deployer.unDeployAssets(verifiedPlan); err != nil {
+		fmt.Println("UnDeployment did not complete sucessfully.")
+		return err
+	}
+
+	fmt.Println("UnDeployment completed successfully.")
+	return nil
+
+}
+
+func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan map[string]*DeploymentPackage) error {
+
+	if err := deployer.UnDeployActions(verifiedPlan); err != nil {
+		return err
+	}
+
+	if err := deployer.UnDeploySequences(verifiedPlan); err != nil {
+		return err
+	}
+
+	if err := deployer.UnDeployTriggers(verifiedPlan); err != nil {
+		return err
+	}
+
+	if err := deployer.UnDeployRules(verifiedPlan); err != nil {
+		return err
+	}
+
+	if err := deployer.UnDeployPackages(verifiedPlan); err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (deployer *ServiceDeployer) UnDeployPackages(packages map[string]*DeploymentPackage) error {
+	for _, pack := range deployer.Deployment.Packages {
+		deployer.deletePackage(pack.Package)
+	}
+	return nil
+}
+
+func (deployer *ServiceDeployer) UnDeploySequences(packages map[string]*DeploymentPackage) error {
+
+	for _, pack := range packages {
+		for _, action := range pack.Sequences {
+			deployer.deleteAction(pack.Package.Name, action.Action)
+		}
+	}
+	return nil
+}
+
+// DeployActions into OpenWhisk
+func (deployer *ServiceDeployer) UnDeployActions(packages map[string]*DeploymentPackage) error {
+
+	for _, pack := range packages {
+		for _, action := range pack.Actions {
+			deployer.deleteAction(pack.Package.Name, action.Action)
+		}
+	}
+	return nil
+}
+
+// Deploy Triggers into OpenWhisk
+func (deployer *ServiceDeployer) UnDeployTriggers(packages map[string]*DeploymentPackage) error {
+	for _, pack := range packages {
+		for _, trigger := range pack.Triggers {
+			deployer.deleteTrigger(pack.Package.Name, trigger)
+		}
+	}
+	return nil
+
+}
+
+// Deploy Rules into OpenWhisk
+func (deployer *ServiceDeployer) UnDeployRules(packages map[string]*DeploymentPackage) error {
+	for _, pack := range packages {
+		for _, rule := range pack.Rules {
+			deployer.deleteRule(pack.Package.Name, rule)
+		}
+	}
+	return nil
+}
+
+func (deployer *ServiceDeployer) deletePackage(packa *whisk.SentPackageNoPublish) {
+	_, err := deployer.Client.Packages.Delete(packa.Name)
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error deleteing package with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	}
+}
+
+func (deployer *ServiceDeployer) deleteTrigger(pkgname string, trigger *whisk.Trigger) {
+	_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error creating trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	}
+}
+
+func (deployer *ServiceDeployer) deleteRule(pkgname string, rule *whisk.Rule) {
+	_, _, err := deployer.Client.Rules.SetState(rule.Name, "inactive")
+
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error deleting rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	} else {
+
+		_, err = deployer.Client.Rules.Delete(rule.Name)
+
+		if err != nil {
+			wskErr := err.(*whisk.WskError)
+			fmt.Printf("Got error deleting rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		}
+	}
+}
+
+// Utility function to call go-whisk framework to make action
+func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Action) {
+	// call ActionService Thru Client
+	if deployer.DeployActionInPackage {
+		// the action will be deleted under package with pattern 'packagename/actionname'
+		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
+	}
+	_, err := deployer.Client.Actions.Delete(action.Name)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		fmt.Printf("Got error creating action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
@@ -264,12 +460,12 @@ func (deployer *ServiceDeployer) getQualifiedName(name string, namespace string)
 	}
 }
 
-func (deployer *ServiceDeployer) printDeploymentAssets() {
+func (deployer *ServiceDeployer) printDeploymentAssets(assets map[string]*DeploymentPackage) {
 
 	fmt.Println("         ____      ___                   _    _ _     _     _\n        /\\   \\    / _ \\ _ __   ___ _ __ | |  | | |__ (_)___| | __\n   /\\  /__\\   \\  | | | | '_ \\ / _ \\ '_ \\| |  | | '_ \\| / __| |/ /\n  /  \\____ \\  /  | |_| | |_) |  __/ | | | |/\\| | | | | \\__ \\   <\n  \\   \\  /  \\/    \\___/| .__/ \\___|_| |_|__/\\__|_| |_|_|___/_|\\_\\ \n   \\___\\/              |_|\n")
 
 	fmt.Println("Packages:")
-	for _, pack := range deployer.Deployment.Packages {
+	for _, pack := range assets {
 		fmt.Println("Name: " + pack.Package.Name)
 
 		for _, action := range pack.Actions {
