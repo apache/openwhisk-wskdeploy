@@ -84,15 +84,19 @@ application:
 		whisk.SetVerbose(Verbose)
 
 		if manifestPath == "" {
-			if ok, _ := regexp.Match(ManifestFileName, []byte(manifestPath)); ok {
-				manifestPath = path.Join(projectPath, manifestPath)
+			if ok, _ := regexp.Match(ManifestFileNameYml, []byte(manifestPath)); ok {
+				manifestPath = path.Join(projectPath, ManifestFileNameYml)
+			} else {
+				manifestPath = path.Join(projectPath, ManifestFileNameYaml)
 			}
 
 		}
 
 		if deploymentPath == "" {
-			if ok, _ := regexp.Match(DeploymentFileName, []byte(manifestPath)); ok {
-				deploymentPath = path.Join(projectPath, deploymentPath)
+			if ok, _ := regexp.Match(DeploymentFileNameYml, []byte(manifestPath)); ok {
+				deploymentPath = path.Join(projectPath, DeploymentFileNameYml)
+			} else {
+				deploymentPath = path.Join(projectPath, DeploymentFileNameYaml)
 			}
 
 		}
@@ -103,6 +107,7 @@ application:
 			deployer.ProjectPath = projectPath
 			deployer.ManifestPath = manifestPath
 			deployer.DeploymentPath = deploymentPath
+			deployer.IsDefault = useDefaults
 
 			deployer.IsInteractive = useInteractive
 
@@ -149,8 +154,8 @@ func init() {
 	RootCmd.Flags().StringVarP(&projectPath, "pathpath", "p", ".", "path to serverless project")
 	RootCmd.Flags().StringVarP(&manifestPath, "manifest", "m", "", "path to manifest file")
 	RootCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", "", "path to deployment file")
-	RootCmd.Flags().StringVar(&useDefaults, "allow-defaults", "false", "allow defaults")
 	RootCmd.PersistentFlags().BoolVarP(&useInteractive, "allow-interactive", "i", true, "allow interactive prompts")
+	RootCmd.PersistentFlags().BoolVarP(&useDefaults, "allow-defaults", "a", false, "allow defaults")
 	RootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 }
 

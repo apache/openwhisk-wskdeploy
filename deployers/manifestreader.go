@@ -1,8 +1,8 @@
 package deployers
 
 import (
+	"errors"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/openwhisk/openwhisk-client-go/whisk"
@@ -22,22 +22,29 @@ func NewManfiestReader(serviceDeployer *ServiceDeployer) *ManifestReader {
 	return &dep
 }
 
-// Wrapper parser to handle yaml dir
-func (deployer *ManifestReader) HandleYaml() error {
-
+func (deployer *ManifestReader) ParseManifest() (*parsers.ManifestYAML, *parsers.YAMLParser, error) {
 	dep := deployer.serviceDeployer
-
 	manifestParser := parsers.NewYAMLParser()
 	manifest := manifestParser.ParseManifest(dep.ManifestPath)
 
+	return manifest, manifestParser, nil
+}
+
+func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
 	packg, err := manifestParser.ComposePackage(manifest)
+	utils.Check(err)
+	reader.SetPackage(packg)
 
+	return nil
+}
+
+// Wrapper parser to handle yaml dir
+func (deployer *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
+
+	actions, err := manifestParser.ComposeActions(manifest, deployer.serviceDeployer.ManifestPath)
 	utils.Check(err)
 
-	actions, err := manifestParser.ComposeActions(manifest, dep.ManifestPath)
-	utils.Check(err)
-
-	sequences, err := manifestParser.ComposeSequences(dep.ClientConfig.Namespace, packg.Name, manifest)
+	sequences, err := manifestParser.ComposeSequences(deployer.serviceDeployer.ClientConfig.Namespace, manifest)
 	utils.Check(err)
 
 	triggers, err := manifestParser.ComposeTriggers(manifest)
@@ -46,28 +53,22 @@ func (deployer *ManifestReader) HandleYaml() error {
 	rules, err := manifestParser.ComposeRules(manifest)
 	utils.Check(err)
 
-	if !deployer.SetPackage(packg) {
-		log.Panicln("Cannot assign package " + packg.Name)
-	}
-	if !deployer.SetActions(packg.Name, actions) {
-		log.Panicln("duplication founded during deploy actions")
-	}
-	if !deployer.SetSequences(packg.Name, sequences) {
-		log.Panicln("duplication founded during deploy actions")
-	}
-	if !deployer.SetTriggers(packg.Name, triggers) {
-		log.Panicln("duplication founded during deploy triggers")
-	}
-	if !deployer.SetRules(packg.Name, rules) {
-		log.Panicln("duplication founded during deploy rules")
-	}
+	err = deployer.SetActions(actions)
+	utils.Check(err)
 
-	//deployer.createPackage(packg)
+	err = deployer.SetSequences(sequences)
+	utils.Check(err)
+
+	err = deployer.SetTriggers(triggers)
+	utils.Check(err)
+
+	err = deployer.SetRules(rules)
+	utils.Check(err)
 
 	return nil
 }
 
-func (reader *ManifestReader) SetPackage(pkg *whisk.SentPackageNoPublish) bool {
+func (reader *ManifestReader) SetPackage(pkg *whisk.SentPackageNoPublish) error {
 
 	dep := reader.serviceDeployer
 
@@ -84,123 +85,88 @@ func (reader *ManifestReader) SetPackage(pkg *whisk.SentPackageNoPublish) bool {
 			existPkg.Version = pkg.Version
 
 			dep.Deployment.Packages[pkg.Name].Package = existPkg
-			return true
+			return nil
 		} else {
-			return false
+			return errors.New("Package " + pkg.Name + "exists twice")
 		}
 	}
 
 	newPack := NewDeploymentPackage()
 	newPack.Package = pkg
 	dep.Deployment.Packages[pkg.Name] = newPack
-	return true
+	return nil
 }
 
-func (reader *ManifestReader) SetActions(packageName string, actions []utils.ActionRecord) bool {
+func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 
 	dep := reader.serviceDeployer
 
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
 
-	for _, action := range actions {
-		//fmt.Println(action.Action.Name)
-		existAction, exist := dep.Deployment.Packages[packageName].Actions[action.Action.Name]
+	for _, manifestAction := range actions {
+		existAction, exists := reader.serviceDeployer.Deployment.Packages[manifestAction.Packagename].Actions[manifestAction.Action.Name]
 
-		if exist {
-			if dep.IsDefault == true {
-				// look for actions declared in filesystem default as well as manifest
-				// if one exists, merge if they are the same (either same Filepath or manifest doesn't specify a Filepath)
-				// if they are not the same log error
-				if action.Filepath != "" {
-					if existAction.Filepath != action.Filepath {
-						log.Printf("Action %s has location %s in manifest but already exists at %s", action.Action.Name, action.Filepath, existAction)
-						return false
-					} else {
-						// merge the two, overwrite existing action with manifest values
-						existAction.Action.Annotations = action.Action.Annotations
-						existAction.Action.Exec.Kind = action.Action.Exec.Kind
-						existAction.Action.Limits = action.Action.Limits
-						existAction.Action.Namespace = action.Action.Namespace
-						existAction.Action.Parameters = action.Action.Parameters
-						existAction.Action.Publish = action.Action.Publish
-						existAction.Action.Version = action.Action.Version
-
-						existAction.Packagename = packageName
-
-						dep.Deployment.Packages[packageName].Actions[action.Action.Name] = existAction
-
-						return true
-					}
+		if exists == true {
+			if existAction.Filepath == manifestAction.Filepath || manifestAction.Filepath == "" {
+				// we're adding a filesystem detected action so just updated code and filepath if needed
+				if manifestAction.Action.Exec.Kind != "" {
+					existAction.Action.Exec.Kind = manifestAction.Action.Exec.Kind
 				}
-			} else {
-				// no defaults, so assume everything is in the incoming ActionRecord
-				// return false since it means the action is declared twice in the manifest
-				log.Printf("Action %s is declared more than once", action.Action.Name)
-				return false
-			}
-		}
-		// doesn't exist so just add to deployer actions
-		action.Packagename = packageName
 
-		dep.Deployment.Packages[packageName].Actions[action.Action.Name] = action
+				if manifestAction.Action.Exec.Code != "" {
+					existAction.Action.Exec.Code = manifestAction.Action.Exec.Code
+				}
+
+				existAction.Action.Annotations = manifestAction.Action.Annotations
+				existAction.Action.Limits = manifestAction.Action.Limits
+				existAction.Action.Parameters = manifestAction.Action.Parameters
+				existAction.Action.Version = manifestAction.Action.Version
+
+				if manifestAction.Filepath != "" {
+					existAction.Filepath = manifestAction.Filepath
+				}
+
+				err := reader.checkAction(existAction)
+				utils.Check(err)
+
+			} else {
+				// Action exists, but references two different sources
+				return errors.New("manifestReader. Error: Conflict detected for action named " + existAction.Action.Name + ". Found two locations for source file: " + existAction.Filepath + " and " + manifestAction.Filepath)
+			}
+		} else {
+			// not a new action so to actions in package
+
+			err := reader.checkAction(manifestAction)
+			utils.Check(err)
+			reader.serviceDeployer.Deployment.Packages[manifestAction.Packagename].Actions[manifestAction.Action.Name] = manifestAction
+		}
 	}
-	return true
+
+	return nil
 }
 
-func (reader *ManifestReader) SetSequences(packageName string, actions []utils.ActionRecord) bool {
-
-	dep := reader.serviceDeployer
-
-	dep.mt.Lock()
-	defer dep.mt.Unlock()
-
-	for _, action := range actions {
-		//fmt.Println(action.Action.Name)
-		existAction, exist := dep.Deployment.Packages[packageName].Sequences[action.Action.Name]
-
-		if exist {
-			if dep.IsDefault == true {
-				// look for actions declared in filesystem default as well as manifest
-				// if one exists, merge if they are the same (either same Filepath or manifest doesn't specify a Filepath)
-				// if they are not the same log error
-				if action.Filepath != "" {
-					if existAction.Filepath != action.Filepath {
-						log.Printf("Action %s has location %s in manifest but already exists at %s", action.Action.Name, action.Filepath, existAction)
-						return false
-					} else {
-						// merge the two, overwrite existing action with manifest values
-						existAction.Action.Annotations = action.Action.Annotations
-						existAction.Action.Exec.Kind = action.Action.Exec.Kind
-						existAction.Action.Limits = action.Action.Limits
-						existAction.Action.Namespace = action.Action.Namespace
-						existAction.Action.Parameters = action.Action.Parameters
-						existAction.Action.Publish = action.Action.Publish
-						existAction.Action.Version = action.Action.Version
-
-						existAction.Packagename = packageName
-
-						dep.Deployment.Packages[packageName].Sequences[action.Action.Name] = existAction
-
-						return true
-					}
-				}
-			} else {
-				// no defaults, so assume everything is in the incoming ActionRecord
-				// return false since it means the action is declared twice in the manifest
-				log.Printf("Action %s is declared more than once", action.Action.Name)
-				return false
-			}
-		}
-		// doesn't exist so just add to deployer sequences
-		action.Packagename = packageName
-		dep.Deployment.Packages[packageName].Sequences[action.Action.Name] = action
-
+func (reader *ManifestReader) checkAction(action utils.ActionRecord) error {
+	if action.Filepath == "" {
+		return errors.New("Error: Action " + action.Action.Name + " has no source code location set.")
 	}
-	return true
+
+	if action.Action.Exec.Kind == "" {
+		return errors.New("Error: Action " + action.Action.Name + " has no kind set")
+	}
+
+	if action.Action.Exec.Code == "" && action.Action.Exec.Kind != "sequence" {
+		return errors.New("Error: Action " + action.Action.Name + " has no source code")
+	}
+
+	return nil
 }
 
-func (reader *ManifestReader) SetTriggers(packageName string, triggers []*whisk.Trigger) bool {
+func (reader *ManifestReader) SetSequences(actions []utils.ActionRecord) error {
+	return reader.SetActions(actions)
+}
+
+func (reader *ManifestReader) SetTriggers(triggers []*whisk.Trigger) error {
 
 	dep := reader.serviceDeployer
 
@@ -208,7 +174,7 @@ func (reader *ManifestReader) SetTriggers(packageName string, triggers []*whisk.
 	defer dep.mt.Unlock()
 
 	for _, trigger := range triggers {
-		existTrigger, exist := dep.Deployment.Packages[packageName].Triggers[trigger.Name]
+		existTrigger, exist := dep.Deployment.Triggers[trigger.Name]
 		if exist {
 			existTrigger.Name = trigger.Name
 			existTrigger.ActivationId = trigger.ActivationId
@@ -218,21 +184,21 @@ func (reader *ManifestReader) SetTriggers(packageName string, triggers []*whisk.
 			existTrigger.Parameters = trigger.Parameters
 			existTrigger.Publish = trigger.Publish
 		} else {
-			dep.Deployment.Packages[packageName].Triggers[trigger.Name] = trigger
+			dep.Deployment.Triggers[trigger.Name] = trigger
 		}
 
 	}
-	return true
+	return nil
 }
 
-func (reader *ManifestReader) SetRules(packageName string, rules []*whisk.Rule) bool {
+func (reader *ManifestReader) SetRules(rules []*whisk.Rule) error {
 	dep := reader.serviceDeployer
 
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
 
 	for _, rule := range rules {
-		existRule, exist := dep.Deployment.Packages[packageName].Rules[rule.Name]
+		existRule, exist := dep.Deployment.Rules[rule.Name]
 		if exist {
 			existRule.Name = rule.Name
 			existRule.Publish = rule.Publish
@@ -242,11 +208,11 @@ func (reader *ManifestReader) SetRules(packageName string, rules []*whisk.Rule) 
 			existRule.Trigger = rule.Trigger
 			existRule.Status = rule.Status
 		} else {
-			dep.Deployment.Packages[packageName].Rules[rule.Name] = rule
+			dep.Deployment.Rules[rule.Name] = rule
 		}
 
 	}
-	return true
+	return nil
 }
 
 // from whisk go client

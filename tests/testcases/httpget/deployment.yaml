@@ -1,0 +1,5 @@
+application:
+  name: DummyHelloApp
+  namespace: _
+  package:
+     name: DummyHello

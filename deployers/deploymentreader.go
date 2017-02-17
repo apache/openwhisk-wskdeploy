@@ -135,6 +135,7 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 }
 
 func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
+
 	packArray := make([]parsers.Package, 1)
 
 	if reader.DeploymentDescriptor.Application.Packages == nil {
@@ -147,7 +148,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 
 	for _, pack := range packArray {
 
-		serviceDeployPack := reader.serviceDeployer.Deployment.Packages[pack.Packagename]
+		serviceDeployment := reader.serviceDeployer.Deployment
 
 		for triggerName, trigger := range pack.Triggers {
 
@@ -161,7 +162,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 				keyValArr = append(keyValArr, keyVal)
 			}
 
-			if wskTrigger, exists := serviceDeployPack.Triggers[triggerName]; exists {
+			if wskTrigger, exists := serviceDeployment.Triggers[triggerName]; exists {
 				wskTrigger.Parameters = keyValArr
 			}
 
@@ -176,7 +177,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 				keyValArr = append(keyValArr, keyVal)
 			}
 
-			if wskTrigger, exists := serviceDeployPack.Triggers[triggerName]; exists {
+			if wskTrigger, exists := serviceDeployment.Triggers[triggerName]; exists {
 				wskTrigger.Annotations = keyValArr
 			}
 		}

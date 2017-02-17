@@ -18,11 +18,12 @@ import (
 	"log"
 	"path"
 
+	"regexp"
+
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
-	"regexp"
 )
 
 // undeployCmd represents the undeploy command
@@ -35,15 +36,21 @@ var undeployCmd = &cobra.Command{
 		whisk.SetVerbose(Verbose)
 
 		if manifestPath == "" {
-			if ok, _ := regexp.Match(ManifestFileName, []byte(manifestPath)); ok {
-				manifestPath = path.Join(projectPath, manifestPath)
+			if ok, _ := regexp.Match(ManifestFileNameYml, []byte(manifestPath)); ok {
+				manifestPath = path.Join(projectPath, ManifestFileNameYml)
+			} else {
+				manifestPath = path.Join(projectPath, ManifestFileNameYaml)
 			}
+
 		}
 
 		if deploymentPath == "" {
-			if ok, _ := regexp.Match(DeploymentFileName, []byte(manifestPath)); ok {
-				deploymentPath = path.Join(projectPath, deploymentPath)
+			if ok, _ := regexp.Match(DeploymentFileNameYml, []byte(manifestPath)); ok {
+				deploymentPath = path.Join(projectPath, DeploymentFileNameYml)
+			} else {
+				deploymentPath = path.Join(projectPath, DeploymentFileNameYaml)
 			}
+
 		}
 
 		if utils.FileExists(manifestPath) {
@@ -54,6 +61,7 @@ var undeployCmd = &cobra.Command{
 			deployer.DeploymentPath = deploymentPath
 
 			deployer.IsInteractive = useInteractive
+			deployer.IsDefault = useDefaults
 
 			userHome := utils.GetHomeDirectory()
 			propPath := path.Join(userHome, ".wskprops")
@@ -62,12 +70,14 @@ var undeployCmd = &cobra.Command{
 			deployer.Client = whiskClient
 			deployer.ClientConfig = clientConfig
 
-			//verifiedPlan, err := deployer.ConstructUnDeploymentPlan()
+			/* bypass for now
+			//
 			vf := deployers.Verifier{}
 			deployed, err := vf.Query(deployer)
 			utils.Check(err)
 			verifiedPlan, err := vf.Filter(deployer, deployed)
-			utils.Check(err)
+			utils.Check(err)*/
+			verifiedPlan, err := deployer.ConstructUnDeploymentPlan()
 			err = deployer.UnDeploy(verifiedPlan)
 			utils.Check(err)
 
@@ -88,13 +98,12 @@ func init() {
 	undeployCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.wskdeploy.yaml)")
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// undeployCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
+	// undeployCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")=
 	undeployCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	undeployCmd.Flags().StringVarP(&projectPath, "pathpath", "p", ".", "path to serverless project")
 	undeployCmd.Flags().StringVarP(&manifestPath, "manifest", "m", "", "path to manifest file")
 	undeployCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", "", "path to deployment file")
-	undeployCmd.Flags().StringVar(&useDefaults, "allow-defaults", "false", "allow defaults")
+	undeployCmd.PersistentFlags().BoolVarP(&useDefaults, "allow-defaults", "f", false, "allow defaults")
 	undeployCmd.PersistentFlags().BoolVarP(&useInteractive, "allow-interactive", "i", true, "allow interactive prompts")
 	undeployCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 

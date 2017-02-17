@@ -76,7 +76,7 @@ func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.SentPackageNoPu
 	return pag, nil
 }
 
-func (dm *YAMLParser) ComposeSequences(namespace string, packageName string, mani *ManifestYAML) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeSequences(namespace string, mani *ManifestYAML) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
 	for key, sequence := range mani.Package.Sequences {
 		wskaction := new(whisk.Action)
@@ -89,8 +89,8 @@ func (dm *YAMLParser) ComposeSequences(namespace string, packageName string, man
 
 			act := strings.TrimSpace(a)
 
-			if !strings.HasPrefix(act, packageName+"/") {
-				act = path.Join(packageName, act)
+			if !strings.HasPrefix(act, mani.Package.Packagename+"/") {
+				act = path.Join(mani.Package.Packagename, act)
 			}
 			components = append(components, path.Join("/"+namespace, act))
 		}
@@ -100,7 +100,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, packageName string, man
 		wskaction.Publish = false
 		wskaction.Namespace = namespace
 
-		record := utils.ActionRecord{wskaction, packageName, key}
+		record := utils.ActionRecord{wskaction, mani.Package.Packagename, key}
 		s1 = append(s1, record)
 	}
 	return s1, nil
@@ -109,21 +109,19 @@ func (dm *YAMLParser) ComposeSequences(namespace string, packageName string, man
 func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]utils.ActionRecord, error) {
 
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
+
 	for key, action := range mani.Package.Actions {
 		splitmanipath := strings.Split(manipath, string(os.PathSeparator))
-		filePath := strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + action.Location
-		dat, err := new(utils.ContentReader).LocalReader.ReadLocal(filePath)
-		utils.Check(err)
 
 		wskaction := new(whisk.Action)
 		wskaction.Exec = new(whisk.Exec)
-		wskaction.Exec.Code = string(dat)
-		wskaction.Exec = new(whisk.Exec)
-		wskaction.Exec.Code = string(dat)
 
-		if action.Runtime != "" {
-			wskaction.Exec.Kind = action.Runtime
-		} else if action.Location != "" {
+		if action.Location != "" {
+			filePath := strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + action.Location
+			action.Location = filePath
+			dat, err := new(utils.ContentReader).LocalReader.ReadLocal(filePath)
+			utils.Check(err)
+			wskaction.Exec.Code = string(dat)
 
 			ext := path.Ext(filePath)
 			kind := "nodejs:default"
@@ -140,10 +138,14 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 			wskaction.Exec.Kind = kind
 		}
 
+		if action.Runtime != "" {
+			wskaction.Exec.Kind = action.Runtime
+		}
+
 		wskaction.Name = key
 		wskaction.Publish = false
 
-		record := utils.ActionRecord{wskaction, "", action.Location}
+		record := utils.ActionRecord{wskaction, mani.Package.Packagename, action.Location}
 		s1 = append(s1, record)
 	}
 
