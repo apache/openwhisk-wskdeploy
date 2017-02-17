@@ -46,6 +46,13 @@ type Action struct {
 	Annotations map[string]interface{} `yaml: annotations`
 }
 
+
+type Sequence struct {
+	Actions string `yaml:"actions"` //used in manifest.yaml
+	Annotations map[string]interface{} `yaml: annotations`
+}
+
+
 type Dependency struct {
 	Name    string
 	Url     string
@@ -85,10 +92,6 @@ type Rule struct {
 	Name string
 }
 
-type Sequence struct {
-	Actions string
-}
-
 type Package struct {
 	//mapping to wsk.SentPackageNoPublish.Name
 	Packagename string `yaml:"name"` //used in manifest.yaml
@@ -106,7 +109,7 @@ type Package struct {
 	Feeds       map[string]Feed        `yaml:"feeds"`      //used in both manifest.yaml and deployment.yaml
 	Rules       map[string]Rule        `yaml:"rules"`      //used in both manifest.yaml and deployment.yaml
 	Inputs      map[string]string      `yaml:"inputs"`     //used in deployment.yaml
-	Sequences   map[string]Sequence    `yaml: "sequences"`
+	Sequences   map[string]Sequence    `yaml:"sequences"`
 	Annotations map[string]interface{} `yaml: annotations`
 }
 

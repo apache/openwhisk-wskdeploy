@@ -96,9 +96,6 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 	deploymentReader.BindAssets()
 
-	// print report
-	deployer.printDeploymentAssets(deployer.Deployment.Packages)
-
 	return nil
 }
 
