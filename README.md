@@ -33,17 +33,17 @@ will deploy the `triggerrule` test case.
 
 Make sure `$GOPATH` is defined. If not, setup your [Go development environment](https://golang.org/doc/code.html).
 
-then download `openwhisk-wskdeploy` and dependencies by typing:
+Then download `openwhisk-wskdeploy` and dependencies by typing:
 
 ```sh
 $ cd $GOPATH
 $ go get github.com/openwhisk/openwhisk-wskdeploy  # see known issues below if you get an error
 ```
 
-and finally build `wskdeploy`
+And finally build `wskdeploy`
 
 ```sh
-$ cd cd src/github.com/openwhisk/openwhisk-wskdeploy/
+$ cd src/github.com/openwhisk/openwhisk-wskdeploy/
 $ go build
 ```
 
@@ -60,7 +60,7 @@ Note: we have no releases yet so you should build the `development` branch.
 # Contributing
 
 Start by creating a fork of `openwhisk-wskdeploy` and then change the git `origin` to point to
-your forked repository, as follows: 
+your forked repository, as follows:
 
 ```sh
 $ cd $GOPATH/src/github.com/openwhisk/openwhisk-wskdeploy
