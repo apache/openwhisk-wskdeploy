@@ -31,21 +31,23 @@ will deploy the `triggerrule` test case.
 # How to build on local host
 `wskdeploy` can be built with Go tool.
 
-1. Make sure `$GOPATH` is defined. If not, setup your [Go development environment](https://golang.org/doc/code.html).
+Make sure `$GOPATH` is defined. If not, setup your [Go development environment](https://golang.org/doc/code.html).
 
-2. then download `openwhisk-wskdeploy` and dependencies by typing:
+Then download `openwhisk-wskdeploy` and dependencies by typing:
 
 ```sh
-$ go get github.com/openwhisk/openwhisk-wskdeploy
+$ cd $GOPATH
+$ go get github.com/openwhisk/openwhisk-wskdeploy  # see known issues below if you get an error
 ```
 
-3. and finally build `wskdeploy`
+And finally build `wskdeploy`
 
 ```sh
+$ cd src/github.com/openwhisk/openwhisk-wskdeploy/
 $ go build
 ```
 
-4. If you want to build with the godep tool, please execute the following commands.
+If you want to build with the godep tool, please execute the following commands.
 
 ```
 $ go get github.com/tools/godep # Install the godep tool.
@@ -57,10 +59,11 @@ Note: we have no releases yet so you should build the `development` branch.
 
 # Contributing
 
-Start by creating a fork of openwhisk-wskdeploy and then change the git 'origin` to point to
-your forked repository. The convention is to do this in `$GOPATH/src/github.com/openwhisk/openwhisk-wskdeploy`:
+Start by creating a fork of `openwhisk-wskdeploy` and then change the git `origin` to point to
+your forked repository, as follows:
 
 ```sh
+$ cd $GOPATH/src/github.com/openwhisk/openwhisk-wskdeploy
 $ git remote rename origin upstream
 $ git remote add origin https://github.com/<your fork>/openwhisk-wskdeploy
 $ git branch --set-upstream-to origin/master  # track master from origin now
@@ -91,3 +94,17 @@ docker run -ti openwhisk/wskdeploy
 5. Inside the container, run `wskdeploy` and have fun.
 
 Note: Based on user role, you may need add sudo before your command to run as root.
+
+# Known issues
+
+You might get this error when downloading `openwhisk-wskdeploy`
+
+     Cloning into ''$GOAPTH/src/gopkg.in/yaml.v2'...
+     error: RPC failed; HTTP 301 curl 22 The requested URL returned error: 301
+     fatal: The remote end hung up unexpectedly
+
+This is caused by newer `git` not forwarding request anymore. One solution is to allow forwarding for `gopkg.in`
+
+```sh
+$ git config --global http.https://gopkg.in.followRedirects true
+```
