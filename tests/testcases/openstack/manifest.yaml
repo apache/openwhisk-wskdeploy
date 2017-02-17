@@ -36,8 +36,11 @@ package:
         username:
           type: string
   sequences:
-    authorizedBackup: 
-      actions: getApiToken, getServers, createBackup, callSlack
+      authorizedBackup:
+        actions: getApiToken, getServers, createBackup, callSlack
+        annotations:
+          web-export:
+          type: string
   triggers:
     backupTrigger_APP:
       source: /whisk.system/alarms/alarms
