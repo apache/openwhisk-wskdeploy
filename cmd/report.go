@@ -44,12 +44,12 @@ located under current user home.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		if wskpropsPath != "" {
-			client, _ = deployers.NewWhiskClient(wskpropsPath, deploymentPath)
+			client, _ = deployers.NewWhiskClient(wskpropsPath, deploymentPath, false)
 		}
 		userHome := utils.GetHomeDirectory()
 		//default to ~/.wskprops
 		propPath := path.Join(userHome, ".wskprops")
-		client, _ = deployers.NewWhiskClient(propPath, deploymentPath)
+		client, _ = deployers.NewWhiskClient(propPath, deploymentPath, false)
 		printDeploymentInfo(client)
 	},
 }

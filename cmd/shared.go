@@ -1,6 +1,9 @@
 // shared.go
 package cmd
 
+const ManifestFileName = "manifest"
+const DeploymentFileName = "deployment"
+
 var cfgFile string
 var CliVersion string
 var CliBuild string
@@ -11,4 +14,4 @@ var projectPath string
 var deploymentPath string
 var manifestPath string
 var useDefaults string
-var useInteractive string
+var useInteractive bool

@@ -27,13 +27,8 @@ import (
 // undeployCmd represents the undeploy command
 var undeployCmd = &cobra.Command{
 	Use:   "undeploy",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Undeploy assets from OpenWhisk",
+	Long:  `Undeploy removes deployed assets from the manifest and deployment files`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		whisk.SetVerbose(Verbose)
@@ -53,10 +48,12 @@ to quickly create a Cobra application.`,
 			deployer.ManifestPath = manifestPath
 			deployer.DeploymentPath = deploymentPath
 
+			deployer.IsInteractive = useInteractive
+
 			userHome := utils.GetHomeDirectory()
 			propPath := path.Join(userHome, ".wskprops")
 
-			whiskClient, clientConfig := deployers.NewWhiskClient(propPath, deploymentPath)
+			whiskClient, clientConfig := deployers.NewWhiskClient(propPath, deploymentPath, deployer.IsInteractive)
 			deployer.Client = whiskClient
 			deployer.ClientConfig = clientConfig
 
@@ -90,7 +87,7 @@ func init() {
 	undeployCmd.Flags().StringVarP(&manifestPath, "manifest", "m", "", "path to manifest file")
 	undeployCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", "", "path to deployment file")
 	undeployCmd.Flags().StringVar(&useDefaults, "allow-defaults", "false", "allow defaults")
-	undeployCmd.Flags().StringVar(&useInteractive, "allow-interactive", "false", "allow interactive prompts")
+	undeployCmd.PersistentFlags().BoolVarP(&useInteractive, "allow-interactive", "i", true, "allow interactive prompts")
 	undeployCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 
 }
