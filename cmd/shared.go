@@ -1,8 +1,11 @@
 // shared.go
 package cmd
 
-const ManifestFileName = "manifest\\.yaml|\\.yml"
-const DeploymentFileName = "deployment\\.yaml|\\.yml"
+// name of manifest and deployment files
+const ManifestFileNameYaml = "manifest.yaml"
+const ManifestFileNameYml = "manifest.yml"
+const DeploymentFileNameYaml = "deployment.yaml"
+const DeploymentFileNameYml = "deployment.yml"
 
 var cfgFile string
 var CliVersion string
@@ -13,5 +16,5 @@ var Verbose bool
 var projectPath string
 var deploymentPath string
 var manifestPath string
-var useDefaults string
+var useDefaults bool
 var useInteractive bool

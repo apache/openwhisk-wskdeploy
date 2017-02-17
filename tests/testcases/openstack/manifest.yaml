@@ -7,8 +7,12 @@ package:
       url: https://swiftyjson.com
       version: 0.4.0
   actions:
+    greeting:
+      inputs:
+        name:
+          type: string
     getApiToken:
-      location: src/getApiToken.js
+      location: actions/getApiToken.js
       inputs:
         host:
           type: string
@@ -23,11 +27,11 @@ package:
         projectId:
           type: string
     getServers:
-      location: src/getServers.js
+      location: actions/getServers.js
     createBackup:
-      location: src/createBackup.js
+      location: actions/createBackup.js
     callSlack:
-      location: src/callSlack.js
+      location: actions/callSlack.js
       inputs:
         url:
           type: string

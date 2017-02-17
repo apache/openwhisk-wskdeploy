@@ -1,6 +1,8 @@
 package deployers
 
 import (
+	"fmt"
+
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 )
 
@@ -30,7 +32,7 @@ func (vf *Verifier) Query(deployer *ServiceDeployer) (da *DeploymentApplication,
 	return da, nil
 }
 
-func (vf *Verifier) Filter(deployer *ServiceDeployer, target *DeploymentApplication) (rs map[string]*DeploymentPackage, err error) {
+func (vf *Verifier) Filter(deployer *ServiceDeployer, target *DeploymentApplication) (rs *DeploymentApplication, err error) {
 	//substract
 	for _, pa := range target.Packages {
 		for _, dpa := range deployer.Deployment.Packages {
@@ -39,7 +41,11 @@ func (vf *Verifier) Filter(deployer *ServiceDeployer, target *DeploymentApplicat
 			}
 		}
 	}
-	return target.Packages, nil
+
+	depApp := NewDeploymentApplication()
+	fmt.Printf("Target Packages are %#v\n", target.Packages)
+	depApp.Packages = target.Packages
+	return depApp, nil
 }
 
 // Convert whisk.package to whisk.SentPackageNoPublish
