@@ -111,9 +111,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (map[string]*Deploy
 
 	deploymentReader.BindAssets()
 
-	// do some verication here
-	// for now just assume everything
-	var verifiedPlan = deployer.Deployment.Packages
+	verifiedPlan := deployer.Deployment.Packages
 
 	return verifiedPlan, nil
 }
@@ -125,10 +123,14 @@ func (deployer *ServiceDeployer) Deploy() error {
 	if deployer.IsInteractive == true {
 		deployer.printDeploymentAssets(deployer.Deployment.Packages)
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Do you really want to deploy this? (y/n): ")
+		fmt.Print("Do you really want to deploy this? (y/N): ")
 
 		text, _ := reader.ReadString('\n')
 		text = strings.TrimSpace(text)
+
+		if text == "" {
+			text = "n"
+		}
 
 		if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
 			deployer.InteractiveChoice = true
@@ -287,10 +289,15 @@ func (deployer *ServiceDeployer) UnDeploy(verifiedPlan map[string]*DeploymentPac
 	if deployer.IsInteractive == true {
 		deployer.printDeploymentAssets(verifiedPlan)
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Do you really want to undeploy this? (y/n): ")
+
+		fmt.Print("Do you really want to undeploy this? (y/N): ")
 
 		text, _ := reader.ReadString('\n')
 		text = strings.TrimSpace(text)
+
+		if text == "" {
+			text = "n"
+		}
 
 		if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
 			deployer.InteractiveChoice = true
@@ -459,6 +466,7 @@ func (deployer *ServiceDeployer) getQualifiedName(name string, namespace string)
 
 func (deployer *ServiceDeployer) printDeploymentAssets(assets map[string]*DeploymentPackage) {
 
+	// pretty ASCII OpenWhisk graphic
 	fmt.Println("         ____      ___                   _    _ _     _     _\n        /\\   \\    / _ \\ _ __   ___ _ __ | |  | | |__ (_)___| | __\n   /\\  /__\\   \\  | | | | '_ \\ / _ \\ '_ \\| |  | | '_ \\| / __| |/ /\n  /  \\____ \\  /  | |_| | |_) |  __/ | | | |/\\| | | | | \\__ \\   <\n  \\   \\  /  \\/    \\___/| .__/ \\___|_| |_|__/\\__|_| |_|_|___/_|\\_\\ \n   \\___\\/              |_|\n")
 
 	fmt.Println("Packages:")

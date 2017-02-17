@@ -28,9 +28,6 @@ import (
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 )
 
-const ManifestFileName = "manifest"
-const DeploymentFileName = "deployment"
-
 var RootCmd = &cobra.Command{
 	Use:   "wskdeploy",
 	Short: "A tool set to help deploy your openwhisk packages in batch.",
@@ -98,10 +95,12 @@ application:
 			deployer.ManifestPath = manifestPath
 			deployer.DeploymentPath = deploymentPath
 
+			deployer.IsInteractive = useInteractive
+
 			userHome := utils.GetHomeDirectory()
 			propPath := path.Join(userHome, ".wskprops")
 
-			whiskClient, clientConfig := deployers.NewWhiskClient(propPath, deploymentPath)
+			whiskClient, clientConfig := deployers.NewWhiskClient(propPath, deploymentPath, deployer.IsInteractive)
 			deployer.Client = whiskClient
 			deployer.ClientConfig = clientConfig
 
@@ -142,7 +141,7 @@ func init() {
 	RootCmd.Flags().StringVarP(&manifestPath, "manifest", "m", "", "path to manifest file")
 	RootCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", "", "path to deployment file")
 	RootCmd.Flags().StringVar(&useDefaults, "allow-defaults", "false", "allow defaults")
-	RootCmd.Flags().StringVar(&useInteractive, "allow-interactive", "false", "allow interactive prompts")
+	RootCmd.PersistentFlags().BoolVarP(&useInteractive, "allow-interactive", "i", true, "allow interactive prompts")
 	RootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 }
 

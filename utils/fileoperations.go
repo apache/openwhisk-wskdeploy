@@ -3,7 +3,7 @@ package utils
 import (
 	"bufio"
 	"errors"
-	"log"
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -101,7 +101,7 @@ func ReadProps(path string) (map[string]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		// If file does not exist, just return props
-		log.Printf("Unable to read whisk properties file '%s' (file open error: %s); falling back to default properties\n", path, err)
+		fmt.Printf("Warning: Unable to read whisk properties file '%s' (file open error: %s)\n", path, err)
 		return props, nil
 	}
 	defer file.Close()
