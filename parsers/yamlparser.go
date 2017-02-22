@@ -46,12 +46,10 @@ type Action struct {
 	Annotations map[string]interface{} `yaml: annotations`
 }
 
-
 type Sequence struct {
-	Actions string `yaml:"actions"` //used in manifest.yaml
+	Actions     string                 `yaml:"actions"` //used in manifest.yaml
 	Annotations map[string]interface{} `yaml: annotations`
 }
-
 
 type Dependency struct {
 	Name    string
@@ -114,13 +112,13 @@ type Package struct {
 }
 
 type Application struct {
-	Name       string    `yaml:"name"`      //used in deployment.yaml
-	Namespace  string    `yaml:"namespace"` //used in deployment.yaml
-	Credential string    `yaml:"credential"`
-	BaseUrl    string    `yaml: baseUrl`
-	Version    string    `yaml:"version"`
+	Name       string             `yaml:"name"`      //used in deployment.yaml
+	Namespace  string             `yaml:"namespace"` //used in deployment.yaml
+	Credential string             `yaml:"credential"`
+	BaseUrl    string             `yaml: baseUrl`
+	Version    string             `yaml:"version"`
 	Packages   map[string]Package `yaml:"packages"` //used in deployment.yaml
-	Package    Package   `yaml:"package"`
+	Package    Package            `yaml:"package"`
 }
 
 type DeploymentYAML struct {

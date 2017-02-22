@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"regexp"
 )
 
 var RootCmd = &cobra.Command{
@@ -81,11 +82,17 @@ application:
 		whisk.SetVerbose(Verbose)
 
 		if manifestPath == "" {
-			manifestPath = path.Join(projectPath, ManifestFileName+".yaml")
+			if ok, _ := regexp.Match(ManifestFileName, []byte(manifestPath)); ok {
+				manifestPath = path.Join(projectPath, manifestPath)
+			}
+
 		}
 
 		if deploymentPath == "" {
-			deploymentPath = path.Join(projectPath, DeploymentFileName+".yaml")
+			if ok, _ := regexp.Match(DeploymentFileName, []byte(manifestPath)); ok {
+				deploymentPath = path.Join(projectPath, deploymentPath)
+			}
+
 		}
 
 		if utils.FileExists(manifestPath) {

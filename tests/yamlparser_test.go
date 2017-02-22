@@ -1,10 +1,10 @@
 package tests
 
 import (
+	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
-	"github.com/stretchr/testify/assert"
-	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
 )
 
 var manifest_yaml = "testcases/helloworld/manifest.yaml"
