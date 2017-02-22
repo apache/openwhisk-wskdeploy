@@ -15,8 +15,6 @@ package cmd
 
 import (
 	"bufio"
-	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -29,7 +27,7 @@ var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Init helps you create a manifest file on OpenWhisk",
 	Run: func(cmd *cobra.Command, args []string) {
-		maniyaml := readOrCreateManifest()
+		maniyaml := parsers.ReadOrCreateManifest()
 
 		reader := bufio.NewReader(os.Stdin)
 
@@ -37,42 +35,11 @@ var initCmd = &cobra.Command{
 		maniyaml.Package.Version = askVersion(reader, maniyaml.Package.Version)
 		maniyaml.Package.License = askLicense(reader, maniyaml.Package.License)
 
-		yamlparser := parsers.NewYAMLParser()
-		output, err := yamlparser.Marshal(maniyaml)
-		utils.Check(err)
-
-		f, err := os.Create("manifest.yaml")
-		utils.Check(err)
-		defer f.Close()
-
-		f.Write(output)
+		parsers.Write(maniyaml, "manifest.yaml")
 
 		// Create directory structure
 		os.Mkdir("actions", 0777)
-		os.Mkdir("feeds", 0777)
 	},
-}
-
-// Read existing manifest file or create new if none exists
-func readOrCreateManifest() *parsers.ManifestYAML {
-	maniyaml := parsers.ManifestYAML{}
-
-	if _, err := os.Stat("manifest.yaml"); err == nil {
-		dat, _ := ioutil.ReadFile("manifest.yaml")
-		err := parsers.NewYAMLParser().Unmarshal(dat, &maniyaml)
-		utils.Check(err)
-	}
-	return &maniyaml
-}
-
-func ask(reader *bufio.Reader, question string, def string) string {
-	fmt.Print(question + " (" + def + "): ")
-	answer, _ := reader.ReadString('\n')
-	len := len(answer)
-	if len == 1 {
-		return def
-	}
-	return answer[:len-1]
 }
 
 func askName(reader *bufio.Reader, def string) string {

@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -25,8 +26,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"regexp"
+
+	"github.com/openwhisk/openwhisk-client-go/whisk"
 )
 
 var RootCmd = &cobra.Command{
@@ -166,4 +168,17 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+// Common utilities
+
+// Prompt for user input
+func ask(reader *bufio.Reader, question string, def string) string {
+	fmt.Print(question + " (" + def + "): ")
+	answer, _ := reader.ReadString('\n')
+	len := len(answer)
+	if len == 1 {
+		return def
+	}
+	return answer[:len-1]
 }

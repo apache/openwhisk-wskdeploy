@@ -1,6 +1,7 @@
 package parsers
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -10,6 +11,30 @@ import (
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"gopkg.in/yaml.v2"
 )
+
+// Read existing manifest file or create new if none exists
+func ReadOrCreateManifest() *ManifestYAML {
+	maniyaml := ManifestYAML{}
+
+	if _, err := os.Stat("manifest.yaml"); err == nil {
+		dat, _ := ioutil.ReadFile("manifest.yaml")
+		err := NewYAMLParser().Unmarshal(dat, &maniyaml)
+		utils.Check(err)
+	}
+	return &maniyaml
+}
+
+// Serialize manifest to local file
+func Write(manifest *ManifestYAML, filename string) {
+	output, err := NewYAMLParser().Marshal(manifest)
+	utils.Check(err)
+
+	f, err := os.Create(filename)
+	utils.Check(err)
+	defer f.Close()
+
+	f.Write(output)
+}
 
 func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
 	err := yaml.Unmarshal(input, manifest)
