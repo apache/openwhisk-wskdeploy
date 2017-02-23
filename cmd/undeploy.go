@@ -62,9 +62,12 @@ var undeployCmd = &cobra.Command{
 			deployer.Client = whiskClient
 			deployer.ClientConfig = clientConfig
 
-			verifiedPlan, err := deployer.ConstructUnDeploymentPlan()
+			//verifiedPlan, err := deployer.ConstructUnDeploymentPlan()
+			vf := deployers.Verifier{}
+			deployed, err := vf.Query(deployer)
 			utils.Check(err)
-
+			verifiedPlan, err := vf.Filter(deployer, deployed)
+			utils.Check(err)
 			err = deployer.UnDeploy(verifiedPlan)
 			utils.Check(err)
 
