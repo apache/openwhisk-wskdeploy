@@ -20,11 +20,11 @@ $ ./wskdeploy --help
 
 For example,
 ```
-$ go run main.go -m /tests/testcases/triggerrule/manifest.yml -d /tests/testcases/triggerrule/deployment.yml
+$ go run main.go -m tests/testcases/triggerrule/manifest.yml -d tests/testcases/triggerrule/deployment.yml
 ```
 or
 ```
-$ ./wskdeploy -m /tests/testcases/triggerrule/manifest.yml -d /tests/testcases/triggerrule/deployment.yml
+$ ./wskdeploy -m tests/testcases/triggerrule/manifest.yml -d tests/testcases/triggerrule/deployment.yml
 ```
 will deploy the `triggerrule` test case.
 
