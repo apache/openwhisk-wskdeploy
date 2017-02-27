@@ -57,7 +57,7 @@ If you want to build with the godep tool, please execute the following commands.
 ```sh
 $ go get github.com/tools/godep # Install the godep tool.
 $ godep get                     # Download and install packages with specified dependencies.
-$ godep go build                # build the wskdeploy tool.
+$ godep go build -o wskdeploy   # build the wskdeploy tool.
 ```
 
 You can verify your build by running:
