@@ -5,27 +5,32 @@
 `wskdeploy` is currenty under development and in its very early stages.  Check back often to see how its progressing.
 
 # How to use
-`wskdeploy` is written in Go. You can invoke it as a Go program, or run its binary file `wskdeploy` directly after building.
+`openwhisk-wskdeploy` is written in Go. You can invoke it as a Go program, or run its binary file `openwhisk-wskdeploy` directly after building.
 
-Using command
+You can get the detail usage of this tool by using following commands:
+
 ```
 $ go run main.go --help
 ```
-or
-```
-$ ./wskdeploy --help
-```
-, you can get the detail usage of this tool.
 
+or
+
+```
+$ ./openwhisk-wskdeploy --help
+```
 
 For example,
+
 ```
 $ go run main.go -m tests/testcases/triggerrule/manifest.yml -d tests/testcases/triggerrule/deployment.yml
 ```
+
 or
+
 ```
-$ ./wskdeploy -m tests/testcases/triggerrule/manifest.yml -d tests/testcases/triggerrule/deployment.yml
+$ ./openwhisk-wskdeploy -m tests/testcases/triggerrule/manifest.yml -d tests/testcases/triggerrule/deployment.yml
 ```
+
 will deploy the `triggerrule` test case.
 
 # How to build on local host
