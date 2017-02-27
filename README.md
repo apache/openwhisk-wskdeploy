@@ -29,7 +29,7 @@ $ ./wskdeploy -m tests/testcases/triggerrule/manifest.yml -d tests/testcases/tri
 will deploy the `triggerrule` test case.
 
 # How to build on local host
-`wskdeploy` can be built with Go tool.
+`openwhisk-wskdeploy` can be built with Go tool.
 
 Make sure `$GOPATH` is defined. If not, setup your [Go development environment](https://golang.org/doc/code.html).
 
@@ -40,7 +40,7 @@ $ cd $GOPATH
 $ go get github.com/openwhisk/openwhisk-wskdeploy  # see known issues below if you get an error
 ```
 
-And finally build `wskdeploy`
+And finally build `openwhisk-wskdeploy`
 
 ```sh
 $ cd src/github.com/openwhisk/openwhisk-wskdeploy/
@@ -49,10 +49,16 @@ $ go build
 
 If you want to build with the godep tool, please execute the following commands.
 
-```
+```sh
 $ go get github.com/tools/godep # Install the godep tool.
 $ godep get                     # Download and install packages with specified dependencies.
 $ godep go build                # build the wskdeploy tool.
+```
+
+You can verify your build by running:
+
+```sh
+./openwhisk-wskdeploy --help
 ```
 
 Note: we have no releases yet so you should build the `development` branch.
