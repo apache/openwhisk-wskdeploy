@@ -7,25 +7,30 @@
 # How to use
 `wskdeploy` is written in Go. You can invoke it as a Go program, or run its binary file `wskdeploy` directly after building.
 
-Using command
+You can get the detail usage of this tool by using following commands:
+
 ```
 $ go run main.go --help
 ```
+
 or
+
 ```
 $ ./wskdeploy --help
 ```
-, you can get the detail usage of this tool.
-
 
 For example,
+
 ```
-$ go run main.go -m tests/testcases/triggerrule/manifest.yml -d tests/testcases/triggerrule/deployment.yml
+$ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
+
 or
+
 ```
-$ ./wskdeploy -m tests/testcases/triggerrule/manifest.yml -d tests/testcases/triggerrule/deployment.yml
+$ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
+
 will deploy the `triggerrule` test case.
 
 # How to build on local host
@@ -33,7 +38,7 @@ will deploy the `triggerrule` test case.
 
 Make sure `$GOPATH` is defined. If not, setup your [Go development environment](https://golang.org/doc/code.html).
 
-Then download `openwhisk-wskdeploy` and dependencies by typing:
+Then download `wskdeploy` and dependencies by typing:
 
 ```sh
 $ cd $GOPATH
@@ -44,15 +49,21 @@ And finally build `wskdeploy`
 
 ```sh
 $ cd src/github.com/openwhisk/openwhisk-wskdeploy/
-$ go build
+$ go build -o wskdeploy
 ```
 
 If you want to build with the godep tool, please execute the following commands.
 
-```
+```sh
 $ go get github.com/tools/godep # Install the godep tool.
 $ godep get                     # Download and install packages with specified dependencies.
-$ godep go build                # build the wskdeploy tool.
+$ godep go build -o wskdeploy   # build the wskdeploy tool.
+```
+
+You can verify your build by running:
+
+```sh
+./wskdeploy --help
 ```
 
 Note: we have no releases yet so you should build the `development` branch.
