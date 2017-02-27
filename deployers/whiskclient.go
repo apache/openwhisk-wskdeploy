@@ -45,7 +45,7 @@ func NewWhiskClient(proppath string, deploymentPath string, isInteractive bool) 
 		utils.Check(err)
 	}
 
-	if deploymentPath != "" {
+	if utils.FileExists(deploymentPath) {
 		mm := parsers.NewYAMLParser()
 		deployment := mm.ParseDeployment(deploymentPath)
 		// We get the first package from the sample deployment file.

@@ -1,0 +1,10 @@
+application:
+  name: myHello
+  namespace: _
+  version: 0.0.1
+  package:
+    name: defaulttest
+    actions:
+      greeting:
+        inputs:
+          name: Paul
