@@ -5,7 +5,7 @@
 `wskdeploy` is currenty under development and in its very early stages.  Check back often to see how its progressing.
 
 # How to use
-`openwhisk-wskdeploy` is written in Go. You can invoke it as a Go program, or run its binary file `openwhisk-wskdeploy` directly after building.
+`wskdeploy` is written in Go. You can invoke it as a Go program, or run its binary file `wskdeploy` directly after building.
 
 You can get the detail usage of this tool by using following commands:
 
@@ -16,7 +16,7 @@ $ go run main.go --help
 or
 
 ```
-$ ./openwhisk-wskdeploy --help
+$ ./wskdeploy --help
 ```
 
 For example,
@@ -28,28 +28,28 @@ $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/tr
 or
 
 ```
-$ ./openwhisk-wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
+$ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
 
 will deploy the `triggerrule` test case.
 
 # How to build on local host
-`openwhisk-wskdeploy` can be built with Go tool.
+`wskdeploy` can be built with Go tool.
 
 Make sure `$GOPATH` is defined. If not, setup your [Go development environment](https://golang.org/doc/code.html).
 
-Then download `openwhisk-wskdeploy` and dependencies by typing:
+Then download `wskdeploy` and dependencies by typing:
 
 ```sh
 $ cd $GOPATH
 $ go get github.com/openwhisk/openwhisk-wskdeploy  # see known issues below if you get an error
 ```
 
-And finally build `openwhisk-wskdeploy`
+And finally build `wskdeploy`
 
 ```sh
 $ cd src/github.com/openwhisk/openwhisk-wskdeploy/
-$ go build
+$ go build -o wskdeploy
 ```
 
 If you want to build with the godep tool, please execute the following commands.
@@ -63,7 +63,7 @@ $ godep go build                # build the wskdeploy tool.
 You can verify your build by running:
 
 ```sh
-./openwhisk-wskdeploy --help
+./wskdeploy --help
 ```
 
 Note: we have no releases yet so you should build the `development` branch.
