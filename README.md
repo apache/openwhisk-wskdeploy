@@ -22,13 +22,13 @@ $ ./openwhisk-wskdeploy --help
 For example,
 
 ```
-$ go run main.go -m tests/testcases/triggerrule/manifest.yml -d tests/testcases/triggerrule/deployment.yml
+$ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
 
 or
 
 ```
-$ ./openwhisk-wskdeploy -m tests/testcases/triggerrule/manifest.yml -d tests/testcases/triggerrule/deployment.yml
+$ ./openwhisk-wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
 
 will deploy the `triggerrule` test case.
