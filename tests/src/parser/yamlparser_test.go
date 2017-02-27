@@ -7,15 +7,15 @@ import (
 	"testing"
 )
 
-var manifest_yaml = "testcases/helloworld/manifest.yaml"
-var manifestfile1 = "dat/manifest1.yaml"
-var manifestfile3 = "dat/manifest3.yaml"
-var manifestfile4 = "dat/manifest4.yaml"
-var manifestfile5 = "dat/manifest5.yaml"
-var testfile1 = "dat/deploy1.yaml"
-var testfile2 = "dat/deploy2.yaml"
-var testfile3 = "dat/deploy3.yaml"
-var testfile4 = "dat/deploy4.yaml"
+var manifest_yaml = "../../usecases/helloworld/manifest.yaml"
+var manifestfile1 = "../../dat/manifest1.yaml"
+var manifestfile3 = "../../dat/manifest3.yaml"
+var manifestfile4 = "../../dat/manifest4.yaml"
+var manifestfile5 = "../../dat/manifest5.yaml"
+var testfile1 = "../../dat/deploy1.yaml"
+var testfile2 = "../../dat/deploy2.yaml"
+var testfile3 = "../../dat/deploy3.yaml"
+var testfile4 = "../../dat/deploy4.yaml"
 
 func TestParseManifestYAML(t *testing.T) {
 	data, err := ioutil.ReadFile(manifest_yaml)

@@ -7,7 +7,7 @@ import (
 )
 
 var contentReader = new(utils.ContentReader)
-var filepath = "../tests/dat/deployment.yaml"
+var filepath = "../../../tests/dat/deployment.yaml"
 
 func TestLocalReader_ReadLocal(t *testing.T) {
 	b, err := contentReader.ReadLocal(filepath)
