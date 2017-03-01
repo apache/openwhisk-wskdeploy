@@ -1,6 +1,8 @@
 package deployers
 
 import (
+	"fmt"
+
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
 )
@@ -54,31 +56,35 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 	}
 
 	for _, pack := range packArray {
-		serviceDeployPack := reader.serviceDeployer.Deployment.Packages[pack.Packagename]
+		serviceDeployPack, exist := reader.serviceDeployer.Deployment.Packages[pack.Packagename]
 
-		var keyValArr whisk.KeyValueArr
-		for name, input := range pack.Inputs {
-			var keyVal whisk.KeyValue
+		if exist {
+			var keyValArr whisk.KeyValueArr
+			for name, input := range pack.Inputs {
+				var keyVal whisk.KeyValue
 
-			keyVal.Key = name
-			keyVal.Value = input
+				keyVal.Key = name
+				keyVal.Value = input
 
-			keyValArr = append(keyValArr, keyVal)
+				keyValArr = append(keyValArr, keyVal)
+			}
+
+			serviceDeployPack.Package.Parameters = keyValArr
+
+			keyValArr = keyValArr[:0]
+			for name, input := range pack.Annotations {
+				var keyVal whisk.KeyValue
+
+				keyVal.Key = name
+				keyVal.Value = input
+
+				keyValArr = append(keyValArr, keyVal)
+			}
+
+			serviceDeployPack.Package.Annotations = keyValArr
+		} else {
+			fmt.Println("Warning: deployment file attempts to bind parameters to undeclared package: " + pack.Packagename)
 		}
-
-		serviceDeployPack.Package.Parameters = keyValArr
-
-		keyValArr = keyValArr[:0]
-		for name, input := range pack.Annotations {
-			var keyVal whisk.KeyValue
-
-			keyVal.Key = name
-			keyVal.Value = input
-
-			keyValArr = append(keyValArr, keyVal)
-		}
-
-		serviceDeployPack.Package.Annotations = keyValArr
 
 	}
 }
@@ -99,35 +105,39 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 
 		for actionName, action := range pack.Actions {
 
-			serviceDeployPack := reader.serviceDeployer.Deployment.Packages[pack.Packagename]
+			serviceDeployPack, exists := reader.serviceDeployer.Deployment.Packages[pack.Packagename]
 
-			var keyValArr whisk.KeyValueArr
-			for name, input := range action.Inputs {
-				var keyVal whisk.KeyValue
+			if exists {
+				var keyValArr whisk.KeyValueArr
+				for name, input := range action.Inputs {
+					var keyVal whisk.KeyValue
 
-				keyVal.Key = name
-				keyVal.Value = input
+					keyVal.Key = name
+					keyVal.Value = input
 
-				keyValArr = append(keyValArr, keyVal)
-			}
+					keyValArr = append(keyValArr, keyVal)
+				}
 
-			if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
-				wskAction.Action.Parameters = keyValArr
-			}
+				if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
+					wskAction.Action.Parameters = keyValArr
+				}
 
-			keyValArr = keyValArr[:0]
+				keyValArr = keyValArr[:0]
 
-			for name, input := range action.Annotations {
-				var keyVal whisk.KeyValue
+				for name, input := range action.Annotations {
+					var keyVal whisk.KeyValue
 
-				keyVal.Key = name
-				keyVal.Value = input
+					keyVal.Key = name
+					keyVal.Value = input
 
-				keyValArr = append(keyValArr, keyVal)
-			}
+					keyValArr = append(keyValArr, keyVal)
+				}
 
-			if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
-				wskAction.Action.Annotations = keyValArr
+				if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
+					wskAction.Action.Annotations = keyValArr
+				}
+			} else {
+				fmt.Println("Warning: deployment file sets action bindings undeclared package: " + pack.Packagename)
 			}
 		}
 
