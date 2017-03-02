@@ -21,6 +21,10 @@ func NewWhiskClient(proppath string, deploymentPath string, isInteractive bool) 
 
 	credential := configs[2]
 	namespace := configs[0]
+
+	if namespace == "" {
+		namespace = "_"
+	}
 	//we need to get Apihost from property file which currently not defined in sample deployment file.
 
 	u := configs[1]

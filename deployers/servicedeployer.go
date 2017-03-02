@@ -254,7 +254,13 @@ func (deployer *ServiceDeployer) DeployActions() error {
 // Deploy Triggers into OpenWhisk
 func (deployer *ServiceDeployer) DeployTriggers() error {
 	for _, trigger := range deployer.Deployment.Triggers {
-		deployer.createTrigger(trigger)
+
+		if feedname, isFeed := utils.IsFeedAction(trigger); isFeed {
+			deployer.createFeedAction(trigger, feedname)
+		} else {
+			deployer.createTrigger(trigger)
+		}
+
 	}
 	return nil
 
@@ -279,11 +285,58 @@ func (deployer *ServiceDeployer) createPackage(packa *whisk.SentPackageNoPublish
 }
 
 func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) {
-	fmt.Print("Deploying trigger " + trigger.Name + " ... ")
 	_, _, err := deployer.Client.Triggers.Insert(trigger, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		fmt.Printf("Got error creating trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	}
+	fmt.Println("Done!")
+}
+
+func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedName string) {
+	// to hold and modify trigger parameters, not passed by ref?
+	params := make(map[string]interface{})
+
+	// check for strings that are JSON
+	for _, keyVal := range trigger.Parameters {
+		fmt.Println("Checking trigger param " + keyVal.Key + " with value " + keyVal.Value.(string))
+		if b, isJson := utils.IsJSON(keyVal.Value.(string)); isJson {
+			fmt.Println("Setting JSON for trigger param " + keyVal.Key)
+			params[keyVal.Key] = b
+		} else {
+			params[keyVal.Key] = keyVal.Value
+		}
+	}
+
+	params["authKey"] = deployer.ClientConfig.AuthToken
+	params["lifecycleEvent"] = "CREATE"
+	params["triggerName"] = "/" + deployer.Client.Namespace + "/" + trigger.Name
+
+	t := &whisk.Trigger{
+		Name:        trigger.Name,
+		Annotations: trigger.Annotations,
+		Publish:     true,
+	}
+
+	_, _, err := deployer.Client.Triggers.Insert(t, false)
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error creating trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	} else {
+
+		qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
+
+		utils.Check(err)
+
+		namespace := deployer.Client.Namespace
+		deployer.Client.Namespace = qName.Namespace
+		_, _, err = deployer.Client.Actions.Invoke(qName.EntityName, params, true)
+		deployer.Client.Namespace = namespace
+
+		if err != nil {
+			wskErr := err.(*whisk.WskError)
+			fmt.Printf("Got error creating trigger feed with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		}
 	}
 	fmt.Println("Done!")
 }
@@ -433,7 +486,11 @@ func (deployer *ServiceDeployer) UnDeployActions(deployment *DeploymentApplicati
 func (deployer *ServiceDeployer) UnDeployTriggers(deployment *DeploymentApplication) error {
 
 	for _, trigger := range deployment.Triggers {
-		deployer.deleteTrigger(trigger)
+		if feedname, isFeed := utils.IsFeedAction(trigger); isFeed {
+			deployer.deleteFeedAction(trigger, feedname)
+		} else {
+			deployer.deleteTrigger(trigger)
+		}
 	}
 
 	return nil
@@ -466,6 +523,42 @@ func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) {
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		fmt.Printf("Got error deleting trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	}
+	fmt.Println("Done!")
+}
+
+func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedName string) {
+
+	params := make(whisk.KeyValueArr, 0)
+	params = append(params, whisk.KeyValue{Key: "authKey", Value: deployer.ClientConfig.AuthToken})
+	params = append(params, whisk.KeyValue{Key: "lifecycleEvent", Value: "DELETE"})
+	params = append(params, whisk.KeyValue{Key: "triggerName", Value: "/" + deployer.Client.Namespace + "/" + trigger.Name})
+
+	trigger.Parameters = nil
+
+	_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error deleting trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	} else {
+		parameters := make(map[string]interface{})
+		for _, keyVal := range params {
+			parameters[keyVal.Key] = keyVal.Value
+		}
+
+		qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
+
+		utils.Check(err)
+
+		namespace := deployer.Client.Namespace
+		deployer.Client.Namespace = qName.Namespace
+		_, _, err = deployer.Client.Actions.Invoke(qName.EntityName, parameters, true)
+		deployer.Client.Namespace = namespace
+
+		if err != nil {
+			wskErr := err.(*whisk.WskError)
+			fmt.Printf("Got error deleting trigger feed with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		}
 	}
 	fmt.Println("Done!")
 }
@@ -557,6 +650,16 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 		fmt.Println("    bindings: ")
 
 		for _, p := range trigger.Parameters {
+
+			value := "?"
+			if str, ok := p.Value.(string); ok {
+				value = str
+			}
+			fmt.Println("        - name: " + p.Key + " value: " + value)
+		}
+
+		fmt.Println("    annotations: ")
+		for _, p := range trigger.Annotations {
 
 			value := "?"
 			if str, ok := p.Value.(string); ok {

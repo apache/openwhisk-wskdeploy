@@ -162,7 +162,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 
 		for triggerName, trigger := range pack.Triggers {
 
-			var keyValArr whisk.KeyValueArr
+			keyValArr := make(whisk.KeyValueArr, 0)
 			for name, input := range trigger.Inputs {
 				var keyVal whisk.KeyValue
 
@@ -188,7 +188,21 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 			}
 
 			if wskTrigger, exists := serviceDeployment.Triggers[triggerName]; exists {
-				wskTrigger.Annotations = keyValArr
+				existAnnotations := make(map[string]whisk.KeyValue, 0)
+
+				for _, keyVal := range wskTrigger.Annotations {
+					key := keyVal.Key
+					existAnnotations[key] = keyVal
+				}
+
+				for _, keyVal := range keyValArr {
+					if annotation, exists := existAnnotations[keyVal.Key]; exists {
+						annotation.Value = keyVal.Value
+					} else {
+						wskTrigger.Annotations = append(wskTrigger.Annotations, keyVal)
+					}
+				}
+
 			}
 		}
 

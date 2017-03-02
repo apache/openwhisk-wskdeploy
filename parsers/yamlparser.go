@@ -67,6 +67,7 @@ type Trigger struct {
 	//mapping to wsk.Trigger.Name
 	Name        string
 	Annotations map[string]interface{} `yaml: annotations`
+	Source      string                 `yaml:source` // used in manifest.yaml
 }
 
 type Feed struct {

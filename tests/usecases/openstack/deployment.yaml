@@ -5,9 +5,6 @@ application:
   package:
       name: JiraBackupSolution
       actions:
-        greeting:
-          inputs:
-            name: Paul
         getApiToken:
           inputs:
             host: ibmaic-myhost.com

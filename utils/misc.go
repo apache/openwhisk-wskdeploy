@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"os/user"
@@ -54,4 +55,23 @@ func GetHomeDirectory() string {
 type Comparable interface {
 	HashCode() uint32
 	Equals() bool
+}
+
+func IsFeedAction(trigger *whisk.Trigger) (string, bool) {
+	for _, annotation := range trigger.Annotations {
+		if annotation.Key == "feed" {
+			return annotation.Value.(string), true
+		}
+	}
+
+	return "", false
+}
+
+func IsJSON(s string) (interface{}, bool) {
+	var js interface{}
+	if json.Unmarshal([]byte(s), &js) == nil {
+		return js, true
+	}
+	return nil, false
+
 }

@@ -162,6 +162,18 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 		wsktrigger.Name = trigger.Name
 		wsktrigger.Namespace = trigger.Namespace
 		wsktrigger.Publish = false
+
+		keyValArr := make(whisk.KeyValueArr, 0)
+		if trigger.Source != "" {
+			var keyVal whisk.KeyValue
+
+			keyVal.Key = "feed"
+			keyVal.Value = trigger.Source
+
+			keyValArr = append(keyValArr, keyVal)
+
+			wsktrigger.Annotations = keyValArr
+		}
 		t1 = append(t1, wsktrigger)
 	}
 	return t1, nil

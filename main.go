@@ -23,7 +23,7 @@ func main() {
 var (
 	//Version ...The Version of the tool
 	Version = "unset"
-	//Build ...The build tagyy
+	//Build ...The build tag
 	Build = "unset"
 )
 
