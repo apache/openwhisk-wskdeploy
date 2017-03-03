@@ -622,6 +622,14 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 	fmt.Println("Packages:")
 	for _, pack := range assets.Packages {
 		fmt.Println("Name: " + pack.Package.Name)
+		fmt.Println("    bindings: ")
+		for _, p := range pack.Package.Parameters {
+			value := "?"
+			if str, ok := p.Value.(string); ok {
+				value = str
+			}
+			fmt.Println("        - name: " + p.Key + " value: " + value)
+		}
 
 		for _, action := range pack.Actions {
 			fmt.Println("  * action: " + action.Action.Name)

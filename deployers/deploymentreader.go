@@ -56,10 +56,11 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 	}
 
 	for _, pack := range packArray {
-		serviceDeployPack, exist := reader.serviceDeployer.Deployment.Packages[pack.Packagename]
+		serviceDeployPack := reader.serviceDeployer.Deployment.Packages[pack.Packagename]
 
-		if exist {
-			var keyValArr whisk.KeyValueArr
+		keyValArr := make(whisk.KeyValueArr, 0)
+
+		if len(pack.Inputs) > 0 {
 			for name, input := range pack.Inputs {
 				var keyVal whisk.KeyValue
 
@@ -69,9 +70,23 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 				keyValArr = append(keyValArr, keyVal)
 			}
 
-			serviceDeployPack.Package.Parameters = keyValArr
+			depParams := make(map[string]whisk.KeyValue)
+			for _, kv := range keyValArr {
+				depParams[kv.Key] = kv
+			}
 
-			keyValArr = keyValArr[:0]
+			for _, keyVal := range serviceDeployPack.Package.Parameters {
+				if _, exists := depParams[keyVal.Key]; !exists {
+					keyValArr = append(keyValArr, keyVal)
+				}
+			}
+
+			serviceDeployPack.Package.Parameters = keyValArr
+		}
+
+		keyValArr = keyValArr[:0]
+
+		if len(pack.Annotations) > 0 {
 			for name, input := range pack.Annotations {
 				var keyVal whisk.KeyValue
 
@@ -82,8 +97,6 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 			}
 
 			serviceDeployPack.Package.Annotations = keyValArr
-		} else {
-			fmt.Println("Warning: deployment file attempts to bind parameters to undeclared package: " + pack.Packagename)
 		}
 
 	}
@@ -105,10 +118,11 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 
 		for actionName, action := range pack.Actions {
 
-			serviceDeployPack, exists := reader.serviceDeployer.Deployment.Packages[pack.Packagename]
+			serviceDeployPack := reader.serviceDeployer.Deployment.Packages[pack.Packagename]
 
-			if exists {
-				var keyValArr whisk.KeyValueArr
+			keyValArr := make(whisk.KeyValueArr, 0)
+
+			if len(action.Inputs) > 0 {
 				for name, input := range action.Inputs {
 					var keyVal whisk.KeyValue
 
@@ -119,11 +133,23 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 				}
 
 				if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
+					depParams := make(map[string]whisk.KeyValue)
+					for _, kv := range keyValArr {
+						depParams[kv.Key] = kv
+					}
+
+					for _, keyVal := range wskAction.Action.Parameters {
+						if _, exists := depParams[keyVal.Key]; !exists {
+							keyValArr = append(keyValArr, keyVal)
+						}
+					}
 					wskAction.Action.Parameters = keyValArr
 				}
+			}
 
-				keyValArr = keyValArr[:0]
+			keyValArr = keyValArr[:0]
 
+			if len(action.Annotations) > 0 {
 				for name, input := range action.Annotations {
 					var keyVal whisk.KeyValue
 
@@ -136,8 +162,6 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 				if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
 					wskAction.Action.Annotations = keyValArr
 				}
-			} else {
-				fmt.Println("Warning: deployment file sets action bindings undeclared package: " + pack.Packagename)
 			}
 		}
 
@@ -163,46 +187,49 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 		for triggerName, trigger := range pack.Triggers {
 
 			keyValArr := make(whisk.KeyValueArr, 0)
-			for name, input := range trigger.Inputs {
-				var keyVal whisk.KeyValue
 
-				keyVal.Key = name
-				keyVal.Value = input
+			if len(trigger.Inputs) > 0 {
+				for name, input := range trigger.Inputs {
+					var keyVal whisk.KeyValue
 
-				keyValArr = append(keyValArr, keyVal)
-			}
+					keyVal.Key = name
+					keyVal.Value = input
 
-			if wskTrigger, exists := serviceDeployment.Triggers[triggerName]; exists {
-				wskTrigger.Parameters = keyValArr
+					keyValArr = append(keyValArr, keyVal)
+				}
+
+				if wskTrigger, exists := serviceDeployment.Triggers[triggerName]; exists {
+
+					depParams := make(map[string]whisk.KeyValue)
+					for _, kv := range keyValArr {
+						depParams[kv.Key] = kv
+					}
+
+					for _, keyVal := range wskTrigger.Parameters {
+						fmt.Println("Checking key " + keyVal.Key)
+						if _, exists := depParams[keyVal.Key]; !exists {
+							keyValArr = append(keyValArr, keyVal)
+						}
+					}
+					wskTrigger.Parameters = keyValArr
+				}
 			}
 
 			keyValArr = keyValArr[:0]
 
-			for name, input := range trigger.Annotations {
-				var keyVal whisk.KeyValue
+			if len(trigger.Annotations) > 0 {
+				for name, input := range trigger.Annotations {
+					var keyVal whisk.KeyValue
 
-				keyVal.Key = name
-				keyVal.Value = input
+					keyVal.Key = name
+					keyVal.Value = input
 
-				keyValArr = append(keyValArr, keyVal)
-			}
-
-			if wskTrigger, exists := serviceDeployment.Triggers[triggerName]; exists {
-				existAnnotations := make(map[string]whisk.KeyValue, 0)
-
-				for _, keyVal := range wskTrigger.Annotations {
-					key := keyVal.Key
-					existAnnotations[key] = keyVal
+					keyValArr = append(keyValArr, keyVal)
 				}
 
-				for _, keyVal := range keyValArr {
-					if annotation, exists := existAnnotations[keyVal.Key]; exists {
-						annotation.Value = keyVal.Value
-					} else {
-						wskTrigger.Annotations = append(wskTrigger.Annotations, keyVal)
-					}
+				if wskTrigger, exists := serviceDeployment.Triggers[triggerName]; exists {
+					wskTrigger.Annotations = keyValArr
 				}
-
 			}
 		}
 
