@@ -24,6 +24,7 @@ import (
 	"sync"
 
 	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 )
 
@@ -83,6 +84,16 @@ func NewServiceDeployer() *ServiceDeployer {
 	dep.DeployActionInPackage = true
 
 	return &dep
+}
+
+// Check if the manifest yaml could be parsed by Manifest Parser.
+// Check if the deployment yaml could be parsed by Manifest Parser.
+func (deployer *ServiceDeployer) Check() {
+	ps := parsers.NewYAMLParser()
+	ps.ParseDeployment(deployer.DeploymentPath)
+	ps.ParseManifest(deployer.ManifestPath)
+	// add more schema check or manifest/deployment consistency checks here if
+	// necessary
 }
 
 func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {

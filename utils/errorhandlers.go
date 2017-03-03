@@ -19,7 +19,7 @@ func (e *ServerlessErr) Error() string {
 func Check(e error) {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Printf("runtime panic : %v", err)
+			log.Printf("Runtime panic : %v", err)
 		}
 	}()
 

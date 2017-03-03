@@ -15,7 +15,6 @@
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -107,6 +106,10 @@ application:
 			deployer.ProjectPath = projectPath
 			deployer.ManifestPath = manifestPath
 			deployer.DeploymentPath = deploymentPath
+			// perform some quick check here.
+			go func() {
+				deployer.Check()
+			}()
 			deployer.IsDefault = useDefaults
 
 			deployer.IsInteractive = useInteractive
@@ -161,7 +164,8 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" { // enable ability to specify config file via flag
+	if cfgFile != "" {
+		// enable ability to specify config file via flag
 		viper.SetConfigFile(cfgFile)
 	}
 
@@ -173,17 +177,4 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
-}
-
-// Common utilities
-
-// Prompt for user input
-func ask(reader *bufio.Reader, question string, def string) string {
-	fmt.Print(question + " (" + def + "): ")
-	answer, _ := reader.ReadString('\n')
-	len := len(answer)
-	if len == 1 {
-		return def
-	}
-	return answer[:len-1]
 }

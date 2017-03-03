@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os/user"
 
+	"bufio"
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 )
 
@@ -74,4 +75,17 @@ func IsJSON(s string) (interface{}, bool) {
 	}
 	return nil, false
 
+}
+
+// Common utilities
+
+// Prompt for user input
+func Ask(reader *bufio.Reader, question string, def string) string {
+	fmt.Print(question + " (" + def + "): ")
+	answer, _ := reader.ReadString('\n')
+	len := len(answer)
+	if len == 1 {
+		return def
+	}
+	return answer[:len-1]
 }

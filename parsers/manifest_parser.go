@@ -39,7 +39,7 @@ func Write(manifest *ManifestYAML, filename string) {
 func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
 	err := yaml.Unmarshal(input, manifest)
 	if err != nil {
-		log.Fatalf("error happened during unmarshal :%v", err)
+		log.Printf("error happened during unmarshal :%v", err)
 		return err
 	}
 	return nil
@@ -48,7 +48,7 @@ func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
 func (dm *YAMLParser) Marshal(manifest *ManifestYAML) (output []byte, err error) {
 	data, err := yaml.Marshal(manifest)
 	if err != nil {
-		log.Fatalf("err happened during marshal :%v", err)
+		log.Printf("err happened during marshal :%v", err)
 		return nil, err
 	}
 	return data, nil
