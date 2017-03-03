@@ -41,7 +41,7 @@ var actionCmd = &cobra.Command{
 		action := parsers.Action{}
 
 		for {
-			action.Name = ask(reader, "Name", "")
+			action.Name = utils.Ask(reader, "Name", "")
 
 			// Check action name is unique
 			if _, ok := maniyaml.Package.Actions[action.Name]; !ok {
@@ -50,7 +50,7 @@ var actionCmd = &cobra.Command{
 			fmt.Print(action.Name + " is already used. Pick another action name\n")
 		}
 
-		action.Runtime = ask(reader, "Runtime", "nodejs:6")
+		action.Runtime = utils.Ask(reader, "Runtime", "nodejs:6")
 		maniyaml.Package.Actions[action.Name] = action
 
 		// Create directory structure before update manifest, as a way
@@ -73,7 +73,7 @@ var triggerCmd = &cobra.Command{
 		trigger := parsers.Trigger{}
 
 		for {
-			trigger.Name = ask(reader, "Name", "")
+			trigger.Name = utils.Ask(reader, "Name", "")
 
 			// Check trigger name is unique
 			if _, ok := maniyaml.Package.Triggers[trigger.Name]; !ok {
@@ -82,7 +82,7 @@ var triggerCmd = &cobra.Command{
 			fmt.Print(trigger.Name + " is already used. Pick another trigger name\n")
 		}
 
-		trigger.Feed = ask(reader, "Feed", "")
+		trigger.Feed = utils.Ask(reader, "Feed", "")
 		maniyaml.Package.Triggers[trigger.Name] = trigger
 
 		parsers.Write(maniyaml, "manifest.yaml")
@@ -100,7 +100,7 @@ var ruleCmd = &cobra.Command{
 		rule := parsers.Rule{}
 
 		for {
-			rule.Rule = ask(reader, "Rule Name", "")
+			rule.Rule = utils.Ask(reader, "Rule Name", "")
 
 			// Check rule name is unique
 			if _, ok := maniyaml.Package.Triggers[rule.Rule]; !ok {
@@ -109,8 +109,8 @@ var ruleCmd = &cobra.Command{
 			fmt.Print(rule.Rule + " is already used. Pick another rule name\n")
 		}
 
-		rule.Action = ask(reader, "Action", "")
-		rule.Trigger = ask(reader, "Trigger", "")
+		rule.Action = utils.Ask(reader, "Action", "")
+		rule.Trigger = utils.Ask(reader, "Trigger", "")
 		maniyaml.Package.Rules[rule.Rule] = rule
 
 		parsers.Write(maniyaml, "manifest.yaml")

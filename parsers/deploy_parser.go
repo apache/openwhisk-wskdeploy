@@ -10,7 +10,7 @@ import (
 func (dm *YAMLParser) UnmarshalDeployment(input []byte, deploy *DeploymentYAML) error {
 	err := yaml.Unmarshal(input, deploy)
 	if err != nil {
-		log.Fatalf("error happened during unmarshal :%v", err)
+		log.Printf("error happened during unmarshal :%v", err)
 		return err
 	}
 	return nil
@@ -19,7 +19,7 @@ func (dm *YAMLParser) UnmarshalDeployment(input []byte, deploy *DeploymentYAML) 
 func (dm *YAMLParser) MarshalDeployment(deployment *DeploymentYAML) (output []byte, err error) {
 	data, err := yaml.Marshal(deployment)
 	if err != nil {
-		log.Fatalf("err happened during marshal :%v", err)
+		log.Printf("err happened during marshal :%v", err)
 		return nil, err
 	}
 	return data, nil
@@ -30,6 +30,7 @@ func (dm *YAMLParser) ParseDeployment(dply string) *DeploymentYAML {
 	content, err := new(utils.ContentReader).LocalReader.ReadLocal(dply)
 	utils.Check(err)
 	err = dm.UnmarshalDeployment(content, &dplyyaml)
+	utils.Check(err)
 	dplyyaml.Filepath = dply
 	return &dplyyaml
 }
