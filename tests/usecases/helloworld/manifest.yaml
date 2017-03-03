@@ -6,7 +6,7 @@ package:
     hello:
       version: 2.0
       location: src/greeting.js
-      runtime: nodejs@6
+      runtime: nodejs:6
       inputs:
         name:
           type: string
@@ -21,7 +21,7 @@ package:
     helloworld:
       version: 1.0
       location: src/greeting2.js
-      runtime: nodejs@6
+      runtime: nodejs:6
       inputs:
         name: string
         place: string
