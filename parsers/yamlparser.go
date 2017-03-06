@@ -141,7 +141,8 @@ func (trigger *Trigger) ComposeWskTrigger(kvarr []whisk.KeyValue) *whisk.Trigger
 	wsktrigger := new(whisk.Trigger)
 	wsktrigger.Name = trigger.Name
 	wsktrigger.Namespace = trigger.Namespace
-	wsktrigger.Publish = false
+	pub := false
+	wsktrigger.Publish = &pub
 	wsktrigger.Annotations = kvarr
 	return wsktrigger
 }
@@ -151,18 +152,20 @@ func (rule *Rule) ComposeWskRule() *whisk.Rule {
 	wskrule := new(whisk.Rule)
 	wskrule.Name = rule.Name
 	//wskrule.Namespace = rule.Namespace
-	wskrule.Publish = false
+	pub := false
+	wskrule.Publish = &pub
 	wskrule.Trigger = rule.Trigger
 	wskrule.Action = rule.Action
 	return wskrule
 }
 
 //********************Package functions*************************//
-func (pkg *Package) ComposeWskPackage() *whisk.SentPackageNoPublish {
-	wskpag := new(whisk.SentPackageNoPublish)
+func (pkg *Package) ComposeWskPackage() *whisk.Package {
+	wskpag := new(whisk.Package)
 	wskpag.Name = pkg.Packagename
 	wskpag.Namespace = pkg.Namespace
-	wskpag.Publish = false
+	pub := false
+	wskpag.Publish = &pub
 	wskpag.Version = pkg.Version
 	return wskpag
 }

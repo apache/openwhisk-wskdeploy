@@ -6,6 +6,9 @@ package:
     oauth:
       git: https://github.com/starpit/openwhisk-oauth.git
       version: 1.0
+    whiskbot-templates:
+      version: 0.0.1
+      git: https://github.com/starpit/whiskbot-templates.git
   inputs:
     fieldToEncrypt:
       type: string
@@ -72,14 +75,6 @@ package:
       path: /setup-backend
       verb: post
       action: setup-backend
-      
-package:
-  name: whiskbot-templates
-  version: 0.0.1
-  license: Apache-2.0
-  actions:
-    simple-echo:
-      location: bots/simple-echo/index.js
 
 
 
