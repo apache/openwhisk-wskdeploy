@@ -19,6 +19,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 
 	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
@@ -81,6 +82,9 @@ application:
 	Run: func(cmd *cobra.Command, args []string) {
 
 		whisk.SetVerbose(Verbose)
+
+		projectPath, err := filepath.Abs(projectPath)
+		utils.Check(err)
 
 		if manifestPath == "" {
 			if ok, _ := regexp.Match(ManifestFileNameYml, []byte(manifestPath)); ok {
