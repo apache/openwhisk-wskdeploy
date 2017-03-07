@@ -99,6 +99,7 @@ type Package struct {
 	//mapping to wsk.SentPackageNoPublish.Version
 	Version           string                `yaml:"version"`            //used in manifest.yaml
 	License           string                `yaml:"license"`            //used in manifest.yaml
+	BindingPackage    string                `yaml:"binding-package"`    //used in manifest.yaml
 	Dependencies      map[string]Dependency `yaml: dependencies`        // used in manifest.yaml
 	Function          string                `yaml:"function"`           //used in deployment.yaml
 	PackageCredential string                `yaml:"package_credential"` //used in deployment.yaml
@@ -110,7 +111,7 @@ type Package struct {
 	Feeds       map[string]Feed        `yaml:"feeds"`      //used in both manifest.yaml and deployment.yaml
 	Rules       map[string]Rule        `yaml:"rules"`      //used in both manifest.yaml and deployment.yaml
 	Inputs      map[string]interface{} `yaml:"inputs"`     //used in deployment.yaml
-	Sequences   map[string]Sequence    `yaml:"sequences"`
+	Sequences   map[string]Sequence    `yaml:"sequences"`  //used in manifest.yaml
 	Annotations map[string]interface{} `yaml: annotations`
 	//Parameters  map[string]interface{} `yaml: parameters` // used in manifest.yaml
 }

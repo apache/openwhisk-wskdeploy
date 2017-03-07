@@ -29,9 +29,10 @@ import (
 )
 
 type DeploymentApplication struct {
-	Packages map[string]*DeploymentPackage
-	Triggers map[string]*whisk.Trigger
-	Rules    map[string]*whisk.Rule
+	Packages        map[string]*DeploymentPackage
+	Triggers        map[string]*whisk.Trigger
+	Rules           map[string]*whisk.Rule
+	BindingPackages map[string]*DeploymentBindingPackage
 }
 
 func NewDeploymentApplication() *DeploymentApplication {
@@ -39,6 +40,7 @@ func NewDeploymentApplication() *DeploymentApplication {
 	dep.Packages = make(map[string]*DeploymentPackage)
 	dep.Triggers = make(map[string]*whisk.Trigger)
 	dep.Rules = make(map[string]*whisk.Rule)
+	dep.BindingPackages = make(map[string]*DeploymentBindingPackage)
 	return &dep
 }
 
@@ -48,11 +50,20 @@ type DeploymentPackage struct {
 	Sequences map[string]utils.ActionRecord
 }
 
+type DeploymentBindingPackage struct {
+	BindingPackage *whisk.BindingPackage
+}
+
 func NewDeploymentPackage() *DeploymentPackage {
 	var dep DeploymentPackage
 	dep.Actions = make(map[string]utils.ActionRecord)
 	dep.Sequences = make(map[string]utils.ActionRecord)
 	return &dep
+}
+
+func NewDeploymentBindingPackage() *DeploymentBindingPackage {
+	var bdep DeploymentBindingPackage
+	return &bdep
 }
 
 //ServiceDeployer defines a prototype service deployer.  It should do the following:
@@ -105,6 +116,15 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	deployer.RootPackageName = manifest.Package.Packagename
 
 	utils.Check(err)
+
+	if manifest.Package.BindingPackage != "" {
+		manifestReader.InitRootBindingPackage(manifestParser, manifest)
+		// If need to create the binding package, then the actions
+		// are not allowed to be deployed under the binding package
+		// according to openwhisk platform rule, so set DeployActionInPackage
+		// to false
+		deployer.DeployActionInPackage = false
+	}
 
 	manifestReader.InitRootPackage(manifestParser, manifest)
 
@@ -213,8 +233,16 @@ func (deployer *ServiceDeployer) Deploy() error {
 
 func (deployer *ServiceDeployer) deployAssets() error {
 
-	if err := deployer.DeployPackages(); err != nil {
-		return err
+	if !deployer.DeployActionInPackage {
+		if err := deployer.DeployBindingPackages(); err != nil {
+			return err
+		}
+	}
+
+	if deployer.DeployActionInPackage {
+		if err := deployer.DeployPackages(); err != nil {
+			return err
+		}
 	}
 
 	if err := deployer.DeployActions(); err != nil {
@@ -238,6 +266,13 @@ func (deployer *ServiceDeployer) deployAssets() error {
 func (deployer *ServiceDeployer) DeployPackages() error {
 	for _, pack := range deployer.Deployment.Packages {
 		deployer.createPackage(pack.Package)
+	}
+	return nil
+}
+
+func (deployer *ServiceDeployer) DeployBindingPackages() error {
+	for _, pack := range deployer.Deployment.BindingPackages {
+		deployer.createBindingPackage(pack.BindingPackage)
 	}
 	return nil
 }
@@ -293,6 +328,16 @@ func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) {
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		fmt.Printf("Got error creating package with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	}
+	fmt.Println("Done!")
+}
+
+func (deployer *ServiceDeployer) createBindingPackage(packa *whisk.BindingPackage) {
+	fmt.Print("Deploying binding package " + packa.Name + " ... ")
+	_, _, err := deployer.Client.Packages.Insert(packa, true)
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		fmt.Printf("Got error creating binding package with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 	fmt.Println("Done!")
 }
