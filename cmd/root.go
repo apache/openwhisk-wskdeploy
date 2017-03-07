@@ -34,48 +34,10 @@ import (
 var RootCmd = &cobra.Command{
 	Use:   "wskdeploy",
 	Short: "A tool set to help deploy your openwhisk packages in batch.",
-	Long: `wskdeploy is a tool to help deploy your packages, feeds, actions, triggers,
-rules onto OpenWhisk platform in batch. The deployment is based on the manifest
-and deployment yaml file.
+	Long: `A tool to deploy openwhisk packages with a manifest and/or deployment yaml file.
 
-A sample manifest yaml file is as below:
+wskdeploy without any commands or flags deploys openwhisk package in the current directory if manifest.yaml exists.
 
-package:
-  name: triggerrule
-  version: 1.0
-  license: Apache-2.0
-  actions:
-    hello:
-      version: 1.0
-      location: src/greeting.js
-      runtime: nodejs
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-  triggers:
-    locationUpdate:
-  rules:
-    myRule:
-      trigger: locationUpdate
-      action: hello
-===========================================
-A sample deployment yaml file is as below:
-
-application:
-  name: wskdeploy-samples
-  namespace: guest
-
-  packages:
-    triggerrule:
-      credential: 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
-
-      actions:
-        hello:
-          inputs:
-            name: Bernie
-            place: Vermont
       `,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
