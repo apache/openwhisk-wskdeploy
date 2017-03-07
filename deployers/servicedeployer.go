@@ -90,7 +90,9 @@ func NewServiceDeployer() *ServiceDeployer {
 // Check if the deployment yaml could be parsed by Manifest Parser.
 func (deployer *ServiceDeployer) Check() {
 	ps := parsers.NewYAMLParser()
-	ps.ParseDeployment(deployer.DeploymentPath)
+	if utils.FileExists(deployer.DeploymentPath) {
+		ps.ParseDeployment(deployer.DeploymentPath)
+	}
 	ps.ParseManifest(deployer.ManifestPath)
 	// add more schema check or manifest/deployment consistency checks here if
 	// necessary
