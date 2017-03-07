@@ -39,7 +39,7 @@ func Write(manifest *ManifestYAML, filename string) {
 func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
 	err := yaml.Unmarshal(input, manifest)
 	if err != nil {
-		log.Fatalf("error happened during unmarshal :%v", err)
+		log.Printf("error happened during unmarshal :%v", err)
 		return err
 	}
 	return nil
@@ -48,7 +48,7 @@ func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
 func (dm *YAMLParser) Marshal(manifest *ManifestYAML) (output []byte, err error) {
 	data, err := yaml.Marshal(manifest)
 	if err != nil {
-		log.Fatalf("err happened during marshal :%v", err)
+		log.Printf("err happened during marshal :%v", err)
 		return nil, err
 	}
 	return data, nil
@@ -73,6 +73,19 @@ func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.SentPackageNoPu
 	//The namespace for this package is absent, so we use default guest here.
 	pag.Namespace = mani.Package.Namespace
 	pag.Publish = false
+
+	keyValArr := make(whisk.KeyValueArr, 0)
+	for name, value := range mani.Package.Inputs {
+		var keyVal whisk.KeyValue
+		keyVal.Key = name
+		keyVal.Value = value
+
+		keyValArr = append(keyValArr, keyVal)
+	}
+
+	if len(keyValArr) > 0 {
+		pag.Parameters = keyValArr
+	}
 	return pag, nil
 }
 
@@ -142,6 +155,19 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 			wskaction.Exec.Kind = action.Runtime
 		}
 
+		keyValArr := make(whisk.KeyValueArr, 0)
+		for name, value := range action.Inputs {
+			var keyVal whisk.KeyValue
+			keyVal.Key = name
+			keyVal.Value = value
+
+			keyValArr = append(keyValArr, keyVal)
+		}
+
+		if len(keyValArr) > 0 {
+			wskaction.Parameters = keyValArr
+		}
+
 		wskaction.Name = key
 		wskaction.Publish = false
 
@@ -162,6 +188,32 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 		wsktrigger.Name = trigger.Name
 		wsktrigger.Namespace = trigger.Namespace
 		wsktrigger.Publish = false
+
+		keyValArr := make(whisk.KeyValueArr, 0)
+		if trigger.Source != "" {
+			var keyVal whisk.KeyValue
+
+			keyVal.Key = "feed"
+			keyVal.Value = trigger.Source
+
+			keyValArr = append(keyValArr, keyVal)
+
+			wsktrigger.Annotations = keyValArr
+		}
+
+		keyValArr = make(whisk.KeyValueArr, 0)
+		for name, value := range trigger.Inputs {
+			var keyVal whisk.KeyValue
+			keyVal.Key = name
+			keyVal.Value = value
+
+			keyValArr = append(keyValArr, keyVal)
+		}
+
+		if len(keyValArr) > 0 {
+			wsktrigger.Parameters = keyValArr
+		}
+
 		t1 = append(t1, wsktrigger)
 	}
 	return t1, nil

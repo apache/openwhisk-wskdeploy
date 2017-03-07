@@ -1,10 +1,12 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"os/user"
 
+	"bufio"
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 )
 
@@ -54,4 +56,36 @@ func GetHomeDirectory() string {
 type Comparable interface {
 	HashCode() uint32
 	Equals() bool
+}
+
+func IsFeedAction(trigger *whisk.Trigger) (string, bool) {
+	for _, annotation := range trigger.Annotations {
+		if annotation.Key == "feed" {
+			return annotation.Value.(string), true
+		}
+	}
+
+	return "", false
+}
+
+func IsJSON(s string) (interface{}, bool) {
+	var js interface{}
+	if json.Unmarshal([]byte(s), &js) == nil {
+		return js, true
+	}
+	return nil, false
+
+}
+
+// Common utilities
+
+// Prompt for user input
+func Ask(reader *bufio.Reader, question string, def string) string {
+	fmt.Print(question + " (" + def + "): ")
+	answer, _ := reader.ReadString('\n')
+	len := len(answer)
+	if len == 1 {
+		return def
+	}
+	return answer[:len-1]
 }

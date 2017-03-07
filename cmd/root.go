@@ -15,11 +15,11 @@
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 
 	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
@@ -34,54 +34,19 @@ import (
 var RootCmd = &cobra.Command{
 	Use:   "wskdeploy",
 	Short: "A tool set to help deploy your openwhisk packages in batch.",
-	Long: `wskdeploy is a tool to help deploy your packages, feeds, actions, triggers,
-rules onto OpenWhisk platform in batch. The deployment is based on the manifest
-and deployment yaml file.
+	Long: `A tool to deploy openwhisk packages with a manifest and/or deployment yaml file.
 
-A sample manifest yaml file is as below:
+wskdeploy without any commands or flags deploys openwhisk package in the current directory if manifest.yaml exists.
 
-package:
-  name: triggerrule
-  version: 1.0
-  license: Apache-2.0
-  actions:
-    hello:
-      version: 1.0
-      location: src/greeting.js
-      runtime: nodejs
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-  triggers:
-    locationUpdate:
-  rules:
-    myRule:
-      trigger: locationUpdate
-      action: hello
-===========================================
-A sample deployment yaml file is as below:
-
-application:
-  name: wskdeploy-samples
-  namespace: guest
-
-  packages:
-    triggerrule:
-      credential: 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
-
-      actions:
-        hello:
-          inputs:
-            name: Bernie
-            place: Vermont
       `,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
 
 		whisk.SetVerbose(Verbose)
+
+		projectPath, err := filepath.Abs(projectPath)
+		utils.Check(err)
 
 		if manifestPath == "" {
 			if ok, _ := regexp.Match(ManifestFileNameYml, []byte(manifestPath)); ok {
@@ -107,6 +72,10 @@ application:
 			deployer.ProjectPath = projectPath
 			deployer.ManifestPath = manifestPath
 			deployer.DeploymentPath = deploymentPath
+			// perform some quick check here.
+			go func() {
+				deployer.Check()
+			}()
 			deployer.IsDefault = useDefaults
 
 			deployer.IsInteractive = useInteractive
@@ -161,7 +130,8 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" { // enable ability to specify config file via flag
+	if cfgFile != "" {
+		// enable ability to specify config file via flag
 		viper.SetConfigFile(cfgFile)
 	}
 
@@ -173,17 +143,4 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
-}
-
-// Common utilities
-
-// Prompt for user input
-func ask(reader *bufio.Reader, question string, def string) string {
-	fmt.Print(question + " (" + def + "): ")
-	answer, _ := reader.ReadString('\n')
-	len := len(answer)
-	if len == 1 {
-		return def
-	}
-	return answer[:len-1]
 }

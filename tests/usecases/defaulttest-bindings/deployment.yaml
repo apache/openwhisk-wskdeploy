@@ -1,10 +1,10 @@
 application:
-  name: helloworld
+  name: myHello
   namespace: _
   version: 0.0.1
   package:
-    name: helloworld
+    name: defaulttest
     actions:
-      hello:
+      greeting:
         inputs:
           name: Paul

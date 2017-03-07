@@ -48,21 +48,21 @@ func askName(reader *bufio.Reader, def string) string {
 		utils.Check(err)
 		def = filepath.Base(abspath)
 	}
-	return ask(reader, "Name", def)
+	return utils.Ask(reader, "Name", def)
 }
 
 func askVersion(reader *bufio.Reader, def string) string {
 	if len(def) == 0 {
 		def = "0.0.1"
 	}
-	return ask(reader, "Version", def)
+	return utils.Ask(reader, "Version", def)
 }
 
 func askLicense(reader *bufio.Reader, def string) string {
 	if len(def) == 0 {
 		def = "Apache-2.0"
 	}
-	return ask(reader, "License", def)
+	return utils.Ask(reader, "License", def)
 }
 
 // init initializes this package

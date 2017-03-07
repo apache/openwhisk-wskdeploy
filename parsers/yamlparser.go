@@ -44,6 +44,7 @@ type Action struct {
 	//mapping to wsk.Action.Name
 	Name        string
 	Annotations map[string]interface{} `yaml: annotations`
+	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
 }
 
 type Sequence struct {
@@ -67,6 +68,8 @@ type Trigger struct {
 	//mapping to wsk.Trigger.Name
 	Name        string
 	Annotations map[string]interface{} `yaml: annotations`
+	Source      string                 `yaml:source` // used in manifest.yaml
+	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
 }
 
 type Feed struct {
@@ -106,9 +109,10 @@ type Package struct {
 	Triggers    map[string]Trigger     `yaml:"triggers"`   //used in both manifest.yaml and deployment.yaml
 	Feeds       map[string]Feed        `yaml:"feeds"`      //used in both manifest.yaml and deployment.yaml
 	Rules       map[string]Rule        `yaml:"rules"`      //used in both manifest.yaml and deployment.yaml
-	Inputs      map[string]string      `yaml:"inputs"`     //used in deployment.yaml
+	Inputs      map[string]interface{} `yaml:"inputs"`     //used in deployment.yaml
 	Sequences   map[string]Sequence    `yaml:"sequences"`
 	Annotations map[string]interface{} `yaml: annotations`
+	//Parameters  map[string]interface{} `yaml: parameters` // used in manifest.yaml
 }
 
 type Application struct {

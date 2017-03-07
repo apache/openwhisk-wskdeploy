@@ -9,7 +9,6 @@ import (
 
 var mr *deployers.ManifestReader
 var ps *parsers.YAMLParser
-var manifest_file = "../../../tests/usecases/openstack/manifest.yaml"
 var ms *parsers.ManifestYAML
 
 func init() {

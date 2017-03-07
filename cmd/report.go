@@ -36,8 +36,7 @@ var wg sync.WaitGroup
 // reportCmd represents the report command
 var reportCmd = &cobra.Command{
 	Use: "report",
-	Short: "Command helps user get an overall report about what's been deployed " +
-		"on OpenWhisk with specific OpenWhisk namespace.",
+	Short: "Returns summary of what's been deployed on OpenWhisk in specific namespace",
 	Long: `Command helps user get an overall report about what's been deployed
 on OpenWhisk with specific OpenWhisk namespace. By default it will read the wsk property file
 located under current user home.`,
