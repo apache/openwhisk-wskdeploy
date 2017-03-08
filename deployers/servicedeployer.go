@@ -43,7 +43,7 @@ func NewDeploymentApplication() *DeploymentApplication {
 }
 
 type DeploymentPackage struct {
-	Package   *whisk.SentPackageNoPublish
+	Package   *whisk.Package
 	Actions   map[string]utils.ActionRecord
 	Sequences map[string]utils.ActionRecord
 }
@@ -287,8 +287,8 @@ func (deployer *ServiceDeployer) DeployRules() error {
 	return nil
 }
 
-func (deployer *ServiceDeployer) createPackage(packa *whisk.SentPackageNoPublish) {
-	fmt.Print("Deploying pacakge " + packa.Name + " ... ")
+func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) {
+	fmt.Print("Deploying package " + packa.Name + " ... ")
 	_, _, err := deployer.Client.Packages.Insert(packa, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
@@ -307,14 +307,14 @@ func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) {
 }
 
 func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedName string) {
+	fmt.Println("Deploying trigger feed " + trigger.Name + " ... ")
 	// to hold and modify trigger parameters, not passed by ref?
 	params := make(map[string]interface{})
 
 	// check for strings that are JSON
 	for _, keyVal := range trigger.Parameters {
-		fmt.Println("Checking trigger param " + keyVal.Key + " with value " + keyVal.Value.(string))
 		if b, isJson := utils.IsJSON(keyVal.Value.(string)); isJson {
-			fmt.Println("Setting JSON for trigger param " + keyVal.Key)
+			fmt.Println(keyVal.Key + " is JSON " + keyVal.Value.(string))
 			params[keyVal.Key] = b
 		} else {
 			params[keyVal.Key] = keyVal.Value
@@ -325,10 +325,11 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 	params["lifecycleEvent"] = "CREATE"
 	params["triggerName"] = "/" + deployer.Client.Namespace + "/" + trigger.Name
 
+	pub := true
 	t := &whisk.Trigger{
 		Name:        trigger.Name,
 		Annotations: trigger.Annotations,
-		Publish:     true,
+		Publish:     &pub,
 	}
 
 	_, _, err := deployer.Client.Triggers.Insert(t, false)
@@ -343,7 +344,7 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 
 		namespace := deployer.Client.Namespace
 		deployer.Client.Namespace = qName.Namespace
-		_, _, err = deployer.Client.Actions.Invoke(qName.EntityName, params, true)
+		_, _, err = deployer.Client.Actions.Invoke(qName.EntityName, params, true, false)
 		deployer.Client.Namespace = namespace
 
 		if err != nil {
@@ -356,16 +357,16 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 
 func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) {
 	// The rule's trigger should include the namespace with pattern /namespace/trigger
-	rule.Trigger = deployer.getQualifiedName(rule.Trigger, deployer.ClientConfig.Namespace)
+	rule.Trigger = deployer.getQualifiedName(rule.Trigger.(string), deployer.ClientConfig.Namespace)
 	// The rule's action should include the namespace and package with pattern /namespace/package/action
 	// please refer https://github.com/openwhisk/openwhisk/issues/1577
 
 	// if it contains a slash, then the action is qualified by a package name
-	if strings.Contains(rule.Action, "/") {
-		rule.Action = deployer.getQualifiedName(rule.Action, deployer.ClientConfig.Namespace)
+	if strings.Contains(rule.Action.(string), "/") {
+		rule.Action = deployer.getQualifiedName(rule.Action.(string), deployer.ClientConfig.Namespace)
 	} else {
 		// if not, we assume the action is inside the root package
-		rule.Action = deployer.getQualifiedName(strings.Join([]string{deployer.RootPackageName, rule.Action}, "/"), deployer.ClientConfig.Namespace)
+		rule.Action = deployer.getQualifiedName(strings.Join([]string{deployer.RootPackageName, rule.Action.(string)}, "/"), deployer.ClientConfig.Namespace)
 	}
 	fmt.Print("Deploying rule " + rule.Name + " ... ")
 	_, _, err := deployer.Client.Rules.Insert(rule, true)
@@ -390,7 +391,7 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
 	}
 	fmt.Print("Deploying action " + action.Name + " ... ")
-	_, _, err := deployer.Client.Actions.Insert(action, false, true)
+	_, _, err := deployer.Client.Actions.Insert(action, false)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		fmt.Printf("Got error creating action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
@@ -520,7 +521,7 @@ func (deployer *ServiceDeployer) UnDeployRules(deployment *DeploymentApplication
 	return nil
 }
 
-func (deployer *ServiceDeployer) deletePackage(packa *whisk.SentPackageNoPublish) {
+func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) {
 	fmt.Print("Removing package " + packa.Name + " ... ")
 	_, err := deployer.Client.Packages.Delete(packa.Name)
 	if err != nil {
@@ -565,7 +566,7 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 
 		namespace := deployer.Client.Namespace
 		deployer.Client.Namespace = qName.Namespace
-		_, _, err = deployer.Client.Actions.Invoke(qName.EntityName, parameters, true)
+		_, _, err = deployer.Client.Actions.Invoke(qName.EntityName, parameters, true, true)
 		deployer.Client.Namespace = namespace
 
 		if err != nil {
@@ -693,7 +694,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 	fmt.Println("\n Rules")
 	for _, rule := range assets.Rules {
 		fmt.Println("* rule: " + rule.Name)
-		fmt.Println("    - trigger: " + rule.Trigger + "\n    - action: " + rule.Action)
+		fmt.Println("    - trigger: " + rule.Trigger.(string) + "\n    - action: " + rule.Action.(string))
 	}
 
 	fmt.Println("")

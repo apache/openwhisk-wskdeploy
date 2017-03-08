@@ -68,7 +68,7 @@ func (deployer *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, m
 	return nil
 }
 
-func (reader *ManifestReader) SetPackage(pkg *whisk.SentPackageNoPublish) error {
+func (reader *ManifestReader) SetPackage(pkg *whisk.Package) error {
 
 	dep := reader.serviceDeployer
 
@@ -114,8 +114,11 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 					existAction.Action.Exec.Kind = manifestAction.Action.Exec.Kind
 				}
 
-				if manifestAction.Action.Exec.Code != "" {
-					existAction.Action.Exec.Code = manifestAction.Action.Exec.Code
+				if manifestAction.Action.Exec.Code != nil {
+					code := *manifestAction.Action.Exec.Code
+					if code != "" {
+						existAction.Action.Exec.Code = manifestAction.Action.Exec.Code
+					}
 				}
 
 				existAction.Action.Annotations = manifestAction.Action.Annotations
@@ -155,8 +158,11 @@ func (reader *ManifestReader) checkAction(action utils.ActionRecord) error {
 		return errors.New("Error: Action " + action.Action.Name + " has no kind set")
 	}
 
-	if action.Action.Exec.Code == "" && action.Action.Exec.Kind != "sequence" {
-		return errors.New("Error: Action " + action.Action.Name + " has no source code")
+	if action.Action.Exec.Code != nil {
+		code := *action.Action.Exec.Code
+		if code == "" && action.Action.Exec.Kind != "sequence" {
+			return errors.New("Error: Action " + action.Action.Name + " has no source code")
+		}
 	}
 
 	return nil

@@ -7,6 +7,7 @@ import (
 	"os/user"
 
 	"bufio"
+
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 )
 
@@ -32,11 +33,11 @@ type RuleRecord struct {
 // Utility to convert hostname to URL object
 func GetURLBase(host string) (*url.URL, error) {
 
-	urlBase := fmt.Sprintf("%s/api/", host)
+	urlBase := fmt.Sprintf("%s/api", host)
 	url, err := url.Parse(urlBase)
 
 	if len(url.Scheme) == 0 || len(url.Host) == 0 {
-		urlBase = fmt.Sprintf("https://%s/api/", host)
+		urlBase = fmt.Sprintf("https://%s/api", host)
 		url, err = url.Parse(urlBase)
 	}
 

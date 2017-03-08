@@ -2,7 +2,7 @@ application:
   name: wskdeploy-samples
   namespace: _
 
-  packages:
+  package:
     triggerrule:
       name: helloworld
       namespace: _

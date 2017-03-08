@@ -77,14 +77,14 @@ func CreateActionFromFile(manipath, filePath string) (*whisk.Action, error) {
 			dat, err = new(ContentReader).URLReader.ReadUrl(filePath)
 		}
 
+		code := string(dat)
+		pub := false
 		Check(err)
 		action.Exec = new(whisk.Exec)
-		action.Exec.Code = string(dat)
-		action.Exec = new(whisk.Exec)
-		action.Exec.Code = string(dat)
+		action.Exec.Code = &code
 		action.Exec.Kind = kind
 		action.Name = name
-		action.Publish = false
+		action.Publish = &pub
 		return action, nil
 		//dat, err := new(ContentReader).URLReader.ReadUrl(filePath)
 		//Check(err)

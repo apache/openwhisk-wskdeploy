@@ -22,15 +22,15 @@ application:
         backupTrigger_APP:
           inputs: 
             cron: 0 4 * * * 
-            triggerPlayload: '{"backupName":"AIPLTULJAPP001", "backupType":"daily backup", "rotation":7, "queryString":{"name":"AIPLTULJAPP001.aic-platform.com"}}}'
+            trigger_payload: '{"context":{"backupName":"AIPLTULJAPP001", "backupType":"daily backup", "rotation":7, "queryString":{"name":"AIPLTULJAPP001.aic-platform.com"}}}'
         backupTrigger_DB:
           inputs:
             cron: 0 5 * * *
-            triggerPlayload: '{"backupName":"AIPLTULJDB001", "backupType":"daily backup", "rotation":7, "queryString":{"name":"AIPLTULDB001.aic-platform.com"}}}'
+            trigger_payload: '{"context":{"backupName":"AIPLTULJDB001", "backupType":"daily backup", "rotation":7, "queryString":{"name":"AIPLTULDB001.aic-platform.com"}}}'
         backupTrigger_WEB:
           inputs:
             cron: 0 10 * * *
-            triggerPlayload: '{"backupName":"AIPLTULJWEB001", "backupType":"daily backup", "rotation":7, "queryString":{"name":"AIPLTULJWEB001.aic-platform.com"}}}'
+            trigger_payload: '{"context":{"backupName":"AIPLTULJWEB001", "backupType":"daily backup", "rotation":7, "queryString":{"name":"AIPLTULJWEB001.aic-platform.com"}}}'
 
 
 

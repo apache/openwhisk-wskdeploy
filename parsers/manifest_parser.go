@@ -66,13 +66,14 @@ func (dm *YAMLParser) ParseManifest(mani string) *ManifestYAML {
 }
 
 // Is we consider multi pacakge in one yaml?
-func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.SentPackageNoPublish, error) {
+func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error) {
 	//mani := dm.ParseManifest(manipath)
-	pag := &whisk.SentPackageNoPublish{}
+	pag := &whisk.Package{}
 	pag.Name = mani.Package.Packagename
 	//The namespace for this package is absent, so we use default guest here.
 	pag.Namespace = mani.Package.Namespace
-	pag.Publish = false
+	pub := false
+	pag.Publish = &pub
 
 	keyValArr := make(whisk.KeyValueArr, 0)
 	for name, value := range mani.Package.Inputs {
@@ -110,7 +111,8 @@ func (dm *YAMLParser) ComposeSequences(namespace string, mani *ManifestYAML) ([]
 
 		wskaction.Exec.Components = components
 		wskaction.Name = key
-		wskaction.Publish = false
+		pub := false
+		wskaction.Publish = &pub
 		wskaction.Namespace = namespace
 
 		record := utils.ActionRecord{wskaction, mani.Package.Packagename, key}
@@ -134,7 +136,8 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 			action.Location = filePath
 			dat, err := new(utils.ContentReader).LocalReader.ReadLocal(filePath)
 			utils.Check(err)
-			wskaction.Exec.Code = string(dat)
+			code := string(dat)
+			wskaction.Exec.Code = &code
 
 			ext := path.Ext(filePath)
 			kind := "nodejs:default"
@@ -169,7 +172,8 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 		}
 
 		wskaction.Name = key
-		wskaction.Publish = false
+		pub := false
+		wskaction.Publish = &pub
 
 		record := utils.ActionRecord{wskaction, mani.Package.Packagename, action.Location}
 		s1 = append(s1, record)
@@ -187,7 +191,8 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 		wsktrigger := new(whisk.Trigger)
 		wsktrigger.Name = trigger.Name
 		wsktrigger.Namespace = trigger.Namespace
-		wsktrigger.Publish = false
+		pub := false
+		wsktrigger.Publish = &pub
 
 		keyValArr := make(whisk.KeyValueArr, 0)
 		if trigger.Source != "" {
