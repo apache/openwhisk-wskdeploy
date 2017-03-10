@@ -126,6 +126,30 @@ func ReadProps(path string) (map[string]string, error) {
 
 }
 
+func WriteProps(path string, props map[string]string) error {
+	file, err := os.Create(path)
+	if err != nil {
+		fmt.Printf("Warning: Unable to create whisk properties file '%s' (file create error: %s)\n", path, err)
+		return err
+	}
+	defer file.Close()
+
+	for k, v := range props {
+		_, err := file.WriteString(k)
+		Check(err)
+
+		_, err = file.WriteString("=")
+		Check(err)
+
+		_, err = file.WriteString(v)
+		Check(err)
+
+		_, err = file.WriteString("\n")
+		Check(err)
+	}
+	return nil
+}
+
 // Load configuration will load properties from a file
 func LoadConfiguration(propPath string) ([]string, error) {
 	props, err := ReadProps(propPath)
