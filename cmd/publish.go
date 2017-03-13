@@ -79,8 +79,12 @@ var publishCmd = &cobra.Command{
 			owner := paths[l-2]
 
 			// Send HTTP request
-			_, err := http.Get(registry + "?owner=" + owner + "&repo=" + repo)
+			client := &http.Client{}
+			request, err := http.NewRequest("PUT", registry+"?owner="+owner+"&repo="+repo, nil)
 			utils.Check(err)
+			_, err = client.Do(request)
+			utils.Check(err)
+
 		} else {
 			log.Print("Fatal error: missing repository URL in manifest file.")
 		}
