@@ -32,9 +32,17 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.ManifestYAML, *parsers
 
 func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
 	packg, err := manifestParser.ComposePackage(manifest)
+
 	utils.Check(err)
 	reader.SetPackage(packg)
 
+	return nil
+}
+
+func (read *ManifestReader) InitRootBindingPackage(manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
+	binpackg, err := manifestParser.ComposeBindingPackage(manifest)
+	utils.Check(err)
+	read.SetBindingPackage(binpackg)
 	return nil
 }
 
@@ -94,6 +102,34 @@ func (reader *ManifestReader) SetPackage(pkg *whisk.Package) error {
 	newPack := NewDeploymentPackage()
 	newPack.Package = pkg
 	dep.Deployment.Packages[pkg.Name] = newPack
+	return nil
+}
+
+func (reader *ManifestReader) SetBindingPackage(bpkg *whisk.BindingPackage) error {
+	dep := reader.serviceDeployer
+
+	dep.mt.Lock()
+	defer dep.mt.Unlock()
+	depbPkg, exist := dep.Deployment.BindingPackages[bpkg.Name]
+	if exist {
+		if dep.IsDefault == true {
+			existPkg := depbPkg.BindingPackage
+			existPkg.Annotations = bpkg.Annotations
+			existPkg.Namespace = bpkg.Namespace
+			existPkg.Parameters = bpkg.Parameters
+			existPkg.Publish = bpkg.Publish
+			existPkg.Version = bpkg.Version
+
+			dep.Deployment.BindingPackages[bpkg.Name].BindingPackage = existPkg
+			return nil
+		} else {
+			return errors.New("BindingPackage " + bpkg.Name + "exists twice")
+		}
+	}
+
+	newPack := NewDeploymentBindingPackage()
+	newPack.BindingPackage = bpkg
+	dep.Deployment.BindingPackages[bpkg.Name] = newPack
 	return nil
 }
 

@@ -10,6 +10,7 @@ application:
       topic: out-topic
     triggers:
       kafka-trigger:
+        feed: Bluemix_kafka-broker_Credentials-1/messageHubFeed
         inputs:
           isJSONData: true
           topic: in-topic

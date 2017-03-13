@@ -1,0 +1,11 @@
+application:
+  name: data-processing-cloudant application
+  namespace: _
+  version: 1.0
+  package:
+    name: data-processing-cloudant
+    #inputs: to eliminate confusing, we comments all those parameters
+    #  CLOUDANT_USERNAME: cloudant_user # Corresponding to the CLOUDANT_USERNAME variable in local.env
+    #  CLOUDANT_PASSWORD: cloudant_password # Corresponding to the CLOUDANT_PASSWORD variable in local.env
+    #  CLOUDANT_DATABASE: cloudant_database # Corresponding to the CLOUDANT_DATABASE variable in local.env
+    #  CLOUDANT_INSTANCE: cloudant_instance # Corresponding to the CLOUDANT_INSTANCE variable in local.env

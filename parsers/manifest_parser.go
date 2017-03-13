@@ -68,6 +68,7 @@ func (dm *YAMLParser) ParseManifest(mani string) *ManifestYAML {
 // Is we consider multi pacakge in one yaml?
 func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error) {
 	//mani := dm.ParseManifest(manipath)
+
 	pag := &whisk.Package{}
 	pag.Name = mani.Package.Packagename
 	//The namespace for this package is absent, so we use default guest here.
@@ -87,6 +88,36 @@ func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error)
 	if len(keyValArr) > 0 {
 		pag.Parameters = keyValArr
 	}
+	return pag, nil
+
+}
+
+// Compose binding package
+func (dm *YAMLParser) ComposeBindingPackage(mani *ManifestYAML) (*whisk.BindingPackage, error) {
+	pag := &whisk.BindingPackage{}
+	qName, err := utils.ParseQualifiedName(mani.Package.BindingPackage, "_")
+	utils.Check(err)
+	binding := whisk.Binding{
+		Name:      qName.EntityName,
+		Namespace: qName.Namespace,
+	}
+
+	pag.Name = mani.Package.Packagename
+
+	keyValArr := make(whisk.KeyValueArr, 0)
+	for name, value := range mani.Package.Inputs {
+		var keyVal whisk.KeyValue
+		keyVal.Key = name
+		keyVal.Value = value
+
+		keyValArr = append(keyValArr, keyVal)
+	}
+
+	if len(keyValArr) > 0 {
+		pag.Parameters = keyValArr
+	}
+	pag.Binding = binding
+
 	return pag, nil
 }
 

@@ -1,0 +1,34 @@
+package:
+  name: data-processing-cloudant
+  version: 1.0
+  license: Apache-2.0
+  binding-package: /whisk.system/cloudant
+  inputs:
+    username: cloudant_user
+    password: cloudant_password
+    host: cloudant_user.cloudant.com
+  actions:
+    write-to-action:
+      version: 1.0
+      location: actions/write-to-cloudant.js
+      runtime: nodejs
+      inputs:
+        CLOUDANT_USERNAME: cloudant_user # The same as above one
+        CLOUDANT_PASSWORD: cloudant_password # The same as above one
+        CLOUDANT_DATABASE: cloudant_database
+    write-from-action:
+      version: 1.0
+      location: actions/write-from-cloudant.js
+      runtime: nodejs
+  sequences:
+      write-from-cloudant-sequence:
+        actions: /whisk.system/cloudant/read,write-from-cloudant  # cloudant_instance is the same as the package binding name
+  triggers:
+    image-uploaded:
+      feed: /whisk.system/cloudant/changes # cloudant_instance is the same as the package binding name
+      inputs:
+        dbname: cloudant_database # The same as above one
+  rules:
+    echo-images:
+      trigger: image-uploaded
+      action: write-from-cloudant-sequence
