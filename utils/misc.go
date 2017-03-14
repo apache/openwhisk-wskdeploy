@@ -9,6 +9,9 @@ import (
 	"bufio"
 
 	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"os"
+	"reflect"
+	"strings"
 )
 
 // ActionRecord is a container to keep track of
@@ -89,4 +92,21 @@ func Ask(reader *bufio.Reader, question string, def string) string {
 		return def
 	}
 	return answer[:len-1]
+}
+
+// Get the env variable value by key.
+// Get the env variable if the key is start by $
+func GetEnvVar(key interface{}) interface{} {
+	if reflect.TypeOf(key).String() == "string" {
+		if strings.HasPrefix(key.(string), "$") {
+			envkey := strings.Split(key.(string), "$")[1]
+			value := os.Getenv(envkey)
+			if value != "" {
+				return value
+			}
+			return envkey
+		}
+		return key.(string)
+	}
+	return key
 }

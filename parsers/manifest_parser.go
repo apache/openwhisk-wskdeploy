@@ -79,7 +79,7 @@ func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error)
 	for name, value := range mani.Package.Inputs {
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
-		keyVal.Value = value
+		keyVal.Value = utils.GetEnvVar(value)
 
 		keyValArr = append(keyValArr, keyVal)
 	}
@@ -162,7 +162,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 		for name, value := range action.Inputs {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = value
+			keyVal.Value = utils.GetEnvVar(value)
 
 			keyValArr = append(keyValArr, keyVal)
 		}
@@ -210,7 +210,7 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 		for name, value := range trigger.Inputs {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = value
+			keyVal.Value = utils.GetEnvVar(value)
 
 			keyValArr = append(keyValArr, keyVal)
 		}
