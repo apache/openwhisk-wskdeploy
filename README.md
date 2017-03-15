@@ -1,5 +1,10 @@
 # Whisk Deploy `wskdeploy`
 
+
+DISCLAIMER - wskdeploy is an experimental tool.
+-----------------------------------------------
+
+
 `wskdeploy` is a utility to help you create and deploy OpenWhisk projects. Deploy all your actions, triggers, and rules using a single command! You can use this in addition to the OpenWhisk CLI.
 
 `wskdeploy` is currenty under development and in its very early stages.  Check back often to see how its progressing.
@@ -119,3 +124,6 @@ This is caused by newer `git` not forwarding request anymore. One solution is to
 ```sh
 $ git config --global http.https://gopkg.in.followRedirects true
 ```
+
+DISCLAIMER - wskdeploy is an experimental tool.
+-----------------------------------------------

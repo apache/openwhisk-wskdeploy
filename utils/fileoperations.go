@@ -77,14 +77,14 @@ func CreateActionFromFile(manipath, filePath string) (*whisk.Action, error) {
 			dat, err = new(ContentReader).URLReader.ReadUrl(filePath)
 		}
 
+		code := string(dat)
+		pub := false
 		Check(err)
 		action.Exec = new(whisk.Exec)
-		action.Exec.Code = string(dat)
-		action.Exec = new(whisk.Exec)
-		action.Exec.Code = string(dat)
+		action.Exec.Code = &code
 		action.Exec.Kind = kind
 		action.Name = name
-		action.Publish = false
+		action.Publish = &pub
 		return action, nil
 		//dat, err := new(ContentReader).URLReader.ReadUrl(filePath)
 		//Check(err)
@@ -124,6 +124,30 @@ func ReadProps(path string) (map[string]string, error) {
 
 	return props, nil
 
+}
+
+func WriteProps(path string, props map[string]string) error {
+	file, err := os.Create(path)
+	if err != nil {
+		fmt.Printf("Warning: Unable to create whisk properties file '%s' (file create error: %s)\n", path, err)
+		return err
+	}
+	defer file.Close()
+
+	for k, v := range props {
+		_, err := file.WriteString(k)
+		Check(err)
+
+		_, err = file.WriteString("=")
+		Check(err)
+
+		_, err = file.WriteString(v)
+		Check(err)
+
+		_, err = file.WriteString("\n")
+		Check(err)
+	}
+	return nil
 }
 
 // Load configuration will load properties from a file

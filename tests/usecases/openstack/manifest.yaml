@@ -9,32 +9,12 @@ package:
   actions:
     getApiToken:
       location: actions/getApiToken.js
-      inputs:
-        host:
-          type: string
-        port:
-          type: int
-        endpointName:
-          type: string
-        userId:
-          type: string
-        password:
-          type: string
-        projectId:
-          type: string
     getServers:
       location: actions/getServers.js
     createBackup:
       location: actions/createBackup.js
     callSlack:
       location: actions/callSlack.js
-      inputs:
-        url:
-          type: string
-        channel:
-          type: string
-        username:
-          type: string
   sequences:
       authorizedBackup:
         actions: getApiToken, getServers, createBackup, callSlack
@@ -43,26 +23,11 @@ package:
           type: string
   triggers:
     backupTrigger_APP:
-      source: /whisk.system/alarms/alarms
-      inputs:
-        cron:
-          type: string
-        triggerPayload:
-          type: string
+      source: /whisk.system/alarms/alarm
     backupTrigger_DB:
-      source: /whisk.system/alarms/alarms
-      inputs:
-        cron:
-          type: string
-        triggerPayload:
-          type: string
+      source: /whisk.system/alarms/alarm
     backupTrigger_WEB:
-      source: /whisk.system/alarms/alarms
-      inputs:
-        cron:
-          type: string
-        triggerPayload:
-          type: string
+      source: /whisk.system/alarms/alarm
   rules:
     backupRule_APP:
       trigger: backupTrigger_APP

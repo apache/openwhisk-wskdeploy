@@ -93,12 +93,19 @@ type Rule struct {
 	Name string
 }
 
+type Repository struct {
+	Url         string `yaml:"url"`
+	Description string `yaml:"description,omitempty"`
+	Credential  string `yaml:"credential,omitempty"`
+}
+
 type Package struct {
 	//mapping to wsk.SentPackageNoPublish.Name
 	Packagename string `yaml:"name"` //used in manifest.yaml
 	//mapping to wsk.SentPackageNoPublish.Version
-	Version           string                `yaml:"version"`            //used in manifest.yaml
-	License           string                `yaml:"license"`            //used in manifest.yaml
+	Version           string                `yaml:"version"` //used in manifest.yaml
+	License           string                `yaml:"license"` //used in manifest.yaml
+	Repositories      []Repository          `yaml:"repositories,omitempty"`
 	Dependencies      map[string]Dependency `yaml: dependencies`        // used in manifest.yaml
 	Function          string                `yaml:"function"`           //used in deployment.yaml
 	PackageCredential string                `yaml:"package_credential"` //used in deployment.yaml
@@ -141,7 +148,8 @@ func (trigger *Trigger) ComposeWskTrigger(kvarr []whisk.KeyValue) *whisk.Trigger
 	wsktrigger := new(whisk.Trigger)
 	wsktrigger.Name = trigger.Name
 	wsktrigger.Namespace = trigger.Namespace
-	wsktrigger.Publish = false
+	pub := false
+	wsktrigger.Publish = &pub
 	wsktrigger.Annotations = kvarr
 	return wsktrigger
 }
@@ -151,18 +159,20 @@ func (rule *Rule) ComposeWskRule() *whisk.Rule {
 	wskrule := new(whisk.Rule)
 	wskrule.Name = rule.Name
 	//wskrule.Namespace = rule.Namespace
-	wskrule.Publish = false
+	pub := false
+	wskrule.Publish = &pub
 	wskrule.Trigger = rule.Trigger
 	wskrule.Action = rule.Action
 	return wskrule
 }
 
 //********************Package functions*************************//
-func (pkg *Package) ComposeWskPackage() *whisk.SentPackageNoPublish {
-	wskpag := new(whisk.SentPackageNoPublish)
+func (pkg *Package) ComposeWskPackage() *whisk.Package {
+	wskpag := new(whisk.Package)
 	wskpag.Name = pkg.Packagename
 	wskpag.Namespace = pkg.Namespace
-	wskpag.Publish = false
+	pub := false
+	wskpag.Publish = &pub
 	wskpag.Version = pkg.Version
 	return wskpag
 }

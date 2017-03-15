@@ -2,10 +2,6 @@ package:
   name: kafka
   version: 1.0
   license: Apache-2.0
-  inputs:
-    api_key: string
-    kafka_rest_url: string
-    topic: string
   actions:
     mhpost-action:
       version: 1.0
@@ -18,9 +14,6 @@ package:
   triggers:
     kafka-trigger:
       feed: Bluemix_kafka-broker_Credentials-1/messageHubFeed
-      inputs:
-          isJSONData: string
-          topic: string
   seqeunces:
     kafka-sequence: mhget-action, kafka/mhpost-action
   rules:

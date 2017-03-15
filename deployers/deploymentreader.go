@@ -5,6 +5,7 @@ import (
 
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
+	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 )
 
 type DeploymentReader struct {
@@ -65,7 +66,8 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 				var keyVal whisk.KeyValue
 
 				keyVal.Key = name
-				keyVal.Value = input
+
+				keyVal.Value = utils.GetEnvVar(input)
 
 				keyValArr = append(keyValArr, keyVal)
 			}
@@ -91,7 +93,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 				var keyVal whisk.KeyValue
 
 				keyVal.Key = name
-				keyVal.Value = input
+				keyVal.Value = utils.GetEnvVar(input)
 
 				keyValArr = append(keyValArr, keyVal)
 			}
@@ -127,7 +129,8 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 					var keyVal whisk.KeyValue
 
 					keyVal.Key = name
-					keyVal.Value = input
+
+					keyVal.Value = utils.GetEnvVar(input)
 
 					keyValArr = append(keyValArr, keyVal)
 				}
@@ -193,7 +196,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 					var keyVal whisk.KeyValue
 
 					keyVal.Key = name
-					keyVal.Value = input
+					keyVal.Value = utils.GetEnvVar(input)
 
 					keyValArr = append(keyValArr, keyVal)
 				}

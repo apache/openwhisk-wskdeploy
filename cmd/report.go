@@ -35,7 +35,7 @@ var wg sync.WaitGroup
 
 // reportCmd represents the report command
 var reportCmd = &cobra.Command{
-	Use: "report",
+	Use:   "report",
 	Short: "Returns summary of what's been deployed on OpenWhisk in specific namespace",
 	Long: `Command helps user get an overall report about what's been deployed
 on OpenWhisk with specific OpenWhisk namespace. By default it will read the wsk property file
@@ -102,9 +102,9 @@ func printDeploymentInfo(*whisk.Client) error {
 	go func() {
 		defer wg.Done()
 		troptions := &whisk.TriggerListOptions{0, 0, false}
-		triggers, _, err := client.Triggers.List(troptions)
+		_, _, err := client.Triggers.List(troptions)
 		utils.Check(err)
-		printTriggerList(triggers)
+		//printTriggerList(triggers)
 
 	}()
 
@@ -128,8 +128,8 @@ func printList(collection interface{}) {
 	switch collection := collection.(type) {
 	case []whisk.Action:
 		printActionList(collection)
-	case []whisk.TriggerFromServer:
-		printTriggerList(collection)
+	//case []whisk.Trigger
+	//	printTriggerList(collection)
 	case []whisk.Package:
 		printPackageList(collection)
 	case []whisk.Rule:
@@ -145,7 +145,7 @@ func printRuleList(rules []whisk.Rule) {
 	fmt.Fprintf(color.Output, "%s\n", boldString("rules"))
 	for _, rule := range rules {
 		publishState := wski18n.T("private")
-		if rule.Publish {
+		if *rule.Publish {
 			publishState = wski18n.T("shared")
 		}
 		fmt.Printf("%-70s %s\n", fmt.Sprintf("/%s/%s", rule.Namespace, rule.Name), publishState)
@@ -156,7 +156,7 @@ func printPackageList(packages []whisk.Package) {
 	fmt.Fprintf(color.Output, "%s\n", boldString("packages"))
 	for _, xPackage := range packages {
 		publishState := wski18n.T("private")
-		if xPackage.Publish {
+		if *xPackage.Publish {
 			publishState = wski18n.T("shared")
 		}
 		fmt.Printf("%-70s %s\n", fmt.Sprintf("/%s/%s", xPackage.Namespace, xPackage.Name), publishState)
@@ -167,7 +167,7 @@ func printActionList(actions []whisk.Action) {
 	fmt.Fprintf(color.Output, "%s\n", boldString("actions"))
 	for _, action := range actions {
 		publishState := wski18n.T("private")
-		if action.Publish {
+		if *action.Publish {
 			publishState = wski18n.T("shared")
 		}
 		kind := getValueString(action.Annotations, "exec")
@@ -175,7 +175,8 @@ func printActionList(actions []whisk.Action) {
 	}
 }
 
-func printTriggerList(triggers []whisk.TriggerFromServer) {
+/*
+func printTriggerList(triggers whisk.Trigger) {
 	fmt.Fprintf(color.Output, "%s\n", boldString("triggers"))
 	for _, trigger := range triggers {
 		publishState := wski18n.T("private")
@@ -184,7 +185,7 @@ func printTriggerList(triggers []whisk.TriggerFromServer) {
 		}
 		fmt.Printf("%-70s %s\n", fmt.Sprintf("/%s/%s", trigger.Namespace, trigger.Name), publishState)
 	}
-}
+}*/
 
 func getValueString(keyValueArr whisk.KeyValueArr, key string) string {
 	var value interface{}

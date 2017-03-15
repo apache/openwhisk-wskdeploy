@@ -7,7 +7,11 @@ import (
 	"os/user"
 
 	"bufio"
+
 	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"os"
+	"reflect"
+	"strings"
 )
 
 // ActionRecord is a container to keep track of
@@ -32,11 +36,11 @@ type RuleRecord struct {
 // Utility to convert hostname to URL object
 func GetURLBase(host string) (*url.URL, error) {
 
-	urlBase := fmt.Sprintf("%s/api/", host)
+	urlBase := fmt.Sprintf("%s/api", host)
 	url, err := url.Parse(urlBase)
 
 	if len(url.Scheme) == 0 || len(url.Host) == 0 {
-		urlBase = fmt.Sprintf("https://%s/api/", host)
+		urlBase = fmt.Sprintf("https://%s/api", host)
 		url, err = url.Parse(urlBase)
 	}
 
@@ -88,4 +92,21 @@ func Ask(reader *bufio.Reader, question string, def string) string {
 		return def
 	}
 	return answer[:len-1]
+}
+
+// Get the env variable value by key.
+// Get the env variable if the key is start by $
+func GetEnvVar(key interface{}) interface{} {
+	if reflect.TypeOf(key).String() == "string" {
+		if strings.HasPrefix(key.(string), "$") {
+			envkey := strings.Split(key.(string), "$")[1]
+			value := os.Getenv(envkey)
+			if value != "" {
+				return value
+			}
+			return envkey
+		}
+		return key.(string)
+	}
+	return key
 }

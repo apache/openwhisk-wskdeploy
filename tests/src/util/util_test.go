@@ -3,7 +3,10 @@ package tests
 import (
 	"testing"
 
+	"fmt"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"github.com/stretchr/testify/assert"
+	"os"
 )
 
 var contentReader = new(utils.ContentReader)
@@ -24,4 +27,18 @@ func TestURLReader_ReadUrl(t *testing.T) {
 	if b == nil {
 		t.Error("get web content failed")
 	}
+}
+
+// The dollar sign test cases.
+func TestGetEnvVar(t *testing.T) {
+	os.Setenv("NoDollar", "NO dollar")
+	os.Setenv("WithDollar", "oh, dollars!")
+	os.Setenv("5000", "5000")
+	fmt.Println(utils.GetEnvVar("NoDollar"))
+	fmt.Println(utils.GetEnvVar("$WithDollar"))
+	fmt.Println(utils.GetEnvVar("$5000"))
+	assert.Equal(t, "NoDollar", utils.GetEnvVar("NoDollar"), "NoDollar should be no change.")
+	assert.Equal(t, "oh, dollars!", utils.GetEnvVar("$WithDollar"), "dollar sign should be handled")
+	assert.Equal(t, "5000", utils.GetEnvVar("5000"), "Should be no difference between integer and string")
+	assert.Equal(t, "WithDollarAgain", utils.GetEnvVar("$WithDollarAgain"), "if not found, just return the env")
 }

@@ -49,8 +49,8 @@ func (vf *Verifier) Filter(deployer *ServiceDeployer, target *DeploymentApplicat
 }
 
 // Convert whisk.package to whisk.SentPackageNoPublish
-func convert(pa *whisk.Package) (sentpackage *whisk.SentPackageNoPublish, err error) {
-	sp := &whisk.SentPackageNoPublish{}
+func convert(pa *whisk.Package) (sentpackage *whisk.Package, err error) {
+	sp := &whisk.Package{}
 	sp.Name = pa.Name
 	sp.Annotations = pa.Annotations
 	sp.Parameters = pa.Parameters

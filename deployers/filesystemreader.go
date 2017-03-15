@@ -108,10 +108,12 @@ func (reader *FileSystemReader) CreateActionFromFile(manipath, filePath string) 
 		utils.Check(err)
 
 		action.Exec = new(whisk.Exec)
-		action.Exec.Code = string(dat)
+		code := string(dat)
+		action.Exec.Code = &code
 		action.Exec.Kind = kind
 		action.Name = name
-		action.Publish = false
+		pub := false
+		action.Publish = &pub
 		return name, action, nil
 	}
 	// If the action is not supported, we better to return an error.

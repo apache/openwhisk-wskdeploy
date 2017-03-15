@@ -1,10 +1,11 @@
 package tests
 
 import (
-	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
+
+	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
+	"github.com/stretchr/testify/assert"
 )
 
 var manifest_yaml = "../../usecases/helloworld/manifest.yaml"
@@ -38,17 +39,6 @@ func TestParseManifestYAML(t *testing.T) {
 		//assert.Equal(t, "src/greeting.js", action.Location, "Get action location failed.")
 		//get and verify total param number
 		assert.Equal(t, 2, len(action.Inputs), "Get input param number failed.")
-		//get and verify param type
-		for param_name := range action.Inputs {
-			var param = action.Inputs[param_name]
-			switch param.(type) {
-			case string:
-				assert.Equal(t, "string", param, "Get input param type failed.")
-			case map[string]string:
-				var param_map = param.(map[string]string)
-				assert.Equal(t, "string", param_map["type"], "Get input param type failed.")
-			}
-		}
 		count++
 	}
 	//get and verify action count
