@@ -1,17 +1,24 @@
+# A Travis CI configuration file.
+
 language: go
+
 go:
-- 1.7
+  - 1.7
+
 install:
-- go get -u github.com/golang/lint/golint
+  - go get -u github.com/golang/lint/golint
+
 script:
-- make lint
-- make build
+  - make lint
+  - make build
+
 before_deploy:
   - export build_file_name=wskdeploy
   - go get github.com/inconshreveable/mousetrap
   - ./tools/travis/build_tag_releases.sh $build_file_name
   - export RELEASE_PKG_FILE=$(ls $build_file_name-*.zip)
   - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."
+
 deploy:
   provider: releases
   api_key:
