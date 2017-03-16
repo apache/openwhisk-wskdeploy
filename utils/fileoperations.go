@@ -27,7 +27,16 @@ import (
 	"strings"
 
 	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"log"
 )
+
+func MayExists(file string) bool {
+	if strings.HasPrefix(file, "http") {
+		return true // to avoid multiple fetches
+	} else {
+		return FileExists(file)
+	}
+}
 
 func FileExists(file string) bool {
 	_, err := os.Stat(file)
@@ -118,7 +127,7 @@ func ReadProps(path string) (map[string]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		// If file does not exist, just return props
-		fmt.Printf("Warning: Unable to read whisk properties file '%s' (file open error: %s)\n", path, err)
+		log.Printf("Warning: Unable to read whisk properties file '%s' (file open error: %s)\n", path, err)
 		return props, nil
 	}
 	defer file.Close()
