@@ -38,8 +38,13 @@ $ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/trigg
 
 will deploy the `triggerrule` test case.
 
+# Where to download the binary wskdeploy
+`wskdeploy` is available on the release page of openwhisk-wskdeploy project: [click here to download](https://github.com/openwhisk/openwhisk-wskdeploy/releases).
+We currently have binaries available for Linux, Mac OS and windows under amd64 architecture. You can find the binary, which fits your local environment.
+
+
 # How to build on local host
-`wskdeploy` can be built with Go tool.
+There is another approach to get the binary `wskdeploy`, which is to build it from the source code with Go tool.
 
 Make sure `$GOPATH` is defined. If not, setup your [Go development environment](https://golang.org/doc/code.html).
 
