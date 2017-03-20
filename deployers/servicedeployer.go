@@ -34,6 +34,7 @@ type DeploymentApplication struct {
 	Packages map[string]*DeploymentPackage
 	Triggers map[string]*whisk.Trigger
 	Rules    map[string]*whisk.Rule
+	Apis     map[string]*whisk.SendApi
 }
 
 func NewDeploymentApplication() *DeploymentApplication {
@@ -41,6 +42,7 @@ func NewDeploymentApplication() *DeploymentApplication {
 	dep.Packages = make(map[string]*DeploymentPackage)
 	dep.Triggers = make(map[string]*whisk.Trigger)
 	dep.Rules = make(map[string]*whisk.Rule)
+	dep.Apis = make(map[string]*whisk.SendApi)
 	return &dep
 }
 
@@ -119,7 +121,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	}
 
 	// process manifest file
-	err = manifestReader.HandleYaml(manifestParser, manifest)
+	err = manifestReader.HandleYaml(deployer, manifestParser, manifest)
 	utils.Check(err)
 
 	// process deploymet file
@@ -153,7 +155,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
 	}
 
 	// process manifest file
-	err = manifestReader.HandleYaml(manifestParser, manifest)
+	err = manifestReader.HandleYaml(deployer, manifestParser, manifest)
 	utils.Check(err)
 
 	// process deploymet file
@@ -234,6 +236,13 @@ func (deployer *ServiceDeployer) deployAssets() error {
 	if err := deployer.DeployRules(); err != nil {
 		return err
 	}
+
+	if len(deployer.Deployment.Apis) != 0 {
+		if err := deployer.DeployApis(); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -288,6 +297,14 @@ func (deployer *ServiceDeployer) DeployTriggers() error {
 func (deployer *ServiceDeployer) DeployRules() error {
 	for _, rule := range deployer.Deployment.Rules {
 		deployer.createRule(rule)
+	}
+	return nil
+}
+
+// Deploy Apis into OpenWhisk
+func (deployer *ServiceDeployer) DeployApis() error {
+	for _, api := range deployer.Deployment.Apis {
+		deployer.createApi(api)
 	}
 	return nil
 }
@@ -404,6 +421,16 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 	}
 	log.Println("Done!")
 	return nil
+}
+
+// create api gateway
+func (deployer *ServiceDeployer) createApi(api *whisk.SendApi) {
+	_, _, err := deployer.Client.Apis.Insert(api, true)
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		log.Printf("Got error creating api with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	}
+	log.Println("Done!")
 }
 
 func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentApplication) error {

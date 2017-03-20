@@ -145,16 +145,21 @@ func (dm *YAMLParser) ComposeSequences(namespace string, mani *ManifestYAML) ([]
 	return s1, nil
 }
 
-func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []utils.ActionRecord, aub []*utils.ActionExposedURLBinding, err error) {
 
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
+	var au []*utils.ActionExposedURLBinding = make([]*utils.ActionExposedURLBinding, 0)
 
 	for key, action := range mani.Package.Actions {
 		splitmanipath := strings.Split(manipath, string(os.PathSeparator))
 
 		wskaction := new(whisk.Action)
-		wskaction.Exec = new(whisk.Exec)
+		//bind action, and exposed URL
+		aubinding := new(utils.ActionExposedURLBinding)
+		aubinding.ActionName = key
+		aubinding.ExposedUrl = action.ExposedUrl
 
+		wskaction.Exec = new(whisk.Exec)
 		if action.Location != "" {
 			filePath := strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + action.Location
 
@@ -235,9 +240,15 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 
 		record := utils.ActionRecord{wskaction, mani.Package.Packagename, action.Location}
 		s1 = append(s1, record)
+
+		//only append when the fields are exists
+		if aubinding.ActionName != "" && aubinding.ExposedUrl != "" {
+			au = append(au, aubinding)
+		}
+
 	}
 
-	return s1, nil
+	return s1, au, nil
 
 }
 

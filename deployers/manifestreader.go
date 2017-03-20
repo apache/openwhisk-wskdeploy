@@ -56,9 +56,9 @@ func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser
 }
 
 // Wrapper parser to handle yaml dir
-func (deployer *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
+func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
 
-	actions, err := manifestParser.ComposeActions(manifest, deployer.serviceDeployer.ManifestPath)
+	actions, aubindings, err := manifestParser.ComposeActions(manifest, deployer.serviceDeployer.ManifestPath)
 	utils.Check(err)
 
 	sequences, err := manifestParser.ComposeSequences(deployer.serviceDeployer.ClientConfig.Namespace, manifest)
@@ -81,6 +81,11 @@ func (deployer *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, m
 
 	err = deployer.SetRules(rules)
 	utils.Check(err)
+
+	//only set api if aubindings
+	if len(aubindings) != 0 {
+		err = deployer.SetApis(sdeployer, aubindings)
+	}
 
 	return nil
 }
@@ -236,6 +241,55 @@ func (reader *ManifestReader) SetRules(rules []*whisk.Rule) error {
 
 	}
 	return nil
+}
+
+func (reader *ManifestReader) SetApis(deployer *ServiceDeployer, aubs []*utils.ActionExposedURLBinding) error {
+	dep := reader.serviceDeployer
+	var apis []*whisk.SendApi = make([]*whisk.SendApi, 0)
+
+	dep.mt.Lock()
+	defer dep.mt.Unlock()
+
+	for _, aub := range aubs {
+		api := createApiEntity(deployer, aub)
+		apis = append(apis, api)
+	}
+
+	for _, api := range apis {
+		existApi, exist := dep.Deployment.Apis[api.ApiDoc.ApiName]
+		if exist {
+			existApi.ApiDoc.ApiName = api.ApiDoc.ApiName
+		} else {
+			dep.Deployment.Apis[api.ApiDoc.ApiName] = api
+		}
+
+	}
+	return nil
+}
+
+// create the api entity according to the action definition and deployer.
+func createApiEntity(dp *ServiceDeployer, au *utils.ActionExposedURLBinding) *whisk.SendApi {
+	sendapi := new(whisk.SendApi)
+	api := new(whisk.Api)
+	//Compose the api
+	bindingInfo := strings.Split(au.ExposedUrl, "/")
+	api.Namespace = dp.Client.Namespace
+	//api.ApiName = ""
+	api.GatewayBasePath = bindingInfo[1]
+	api.GatewayRelPath = bindingInfo[2]
+	api.GatewayMethod = strings.ToUpper(bindingInfo[0])
+	api.Id = "API" + ":" + dp.ClientConfig.Namespace + ":" + "/" + api.GatewayBasePath
+	//api.GatewayFullPath = ""
+	//api.Swagger = ""
+	//compose the api action
+	api.Action = new(whisk.ApiAction)
+	api.Action.Name = au.ActionName
+	api.Action.Namespace = dp.ClientConfig.Namespace
+	api.Action.BackendMethod = "POST"
+	api.Action.BackendUrl = "https://" + dp.ClientConfig.Host + "/api/v1/namespaces/" + dp.ClientConfig.Namespace + "/actions/" + au.ActionName
+	api.Action.Auth = dp.Client.Config.AuthToken
+	sendapi.ApiDoc = api
+	return sendapi
 }
 
 // from whisk go client

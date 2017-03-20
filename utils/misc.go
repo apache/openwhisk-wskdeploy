@@ -55,6 +55,12 @@ type RuleRecord struct {
 	Packagename string
 }
 
+// Bind the action name and the ExposedUrl
+type ActionExposedURLBinding struct {
+	ActionName string //action name
+	ExposedUrl string //exposedUrl in format method/baseurl/relativeurl
+}
+
 // Utility to convert hostname to URL object
 func GetURLBase(host string) (*url.URL, error) {
 
