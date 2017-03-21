@@ -37,6 +37,9 @@ func NewWhiskClient(proppath string, deploymentPath string, isInteractive bool) 
 	utils.Check(err)
 
 	credential := configs[2]
+	if len(utils.Flags.Auth) > 0 {
+		credential = utils.Flags.Auth
+	}
 	namespace := configs[0]
 
 	if namespace == "" {
@@ -45,6 +48,10 @@ func NewWhiskClient(proppath string, deploymentPath string, isInteractive bool) 
 	//we need to get Apihost from property file which currently not defined in sample deployment file.
 
 	u := configs[1]
+	if len(utils.Flags.ApiHost) > 0 {
+		u = utils.Flags.ApiHost
+	}
+
 	var baseURL *url.URL
 
 	if u == "" && isInteractive == true {
@@ -62,7 +69,7 @@ func NewWhiskClient(proppath string, deploymentPath string, isInteractive bool) 
 	} else if u == "" {
 		// handle some error
 	} else {
-		baseURL, err = utils.GetURLBase(configs[1])
+		baseURL, err = utils.GetURLBase(u)
 		utils.Check(err)
 	}
 

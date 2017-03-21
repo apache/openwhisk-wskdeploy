@@ -20,6 +20,7 @@ package utils
 import (
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 // agnostic util reader to fetch content from web or local path or potentially other places.
@@ -47,4 +48,12 @@ func (localReader *LocalReader) ReadLocal(path string) (content []byte, err erro
 	cont, err := ioutil.ReadFile(path)
 	Check(err)
 	return cont, nil
+}
+
+func Read(url string) (content []byte, err error) {
+	if strings.HasPrefix(url, "http") {
+		return new(ContentReader).URLReader.ReadUrl(url)
+	} else {
+		return new(ContentReader).LocalReader.ReadLocal(url)
+	}
 }

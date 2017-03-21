@@ -106,8 +106,4 @@ func init() {
 	undeployCmd.Flags().StringVarP(&projectPath, "pathpath", "p", ".", "path to serverless project")
 	undeployCmd.Flags().StringVarP(&manifestPath, "manifest", "m", "", "path to manifest file")
 	undeployCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", "", "path to deployment file")
-	undeployCmd.PersistentFlags().BoolVarP(&useDefaults, "allow-defaults", "f", false, "allow defaults")
-	undeployCmd.PersistentFlags().BoolVarP(&useInteractive, "allow-interactive", "i", true, "allow interactive prompts")
-	undeployCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
-
 }

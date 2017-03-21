@@ -2,5 +2,26 @@
   {
     "id": "Hello",
     "translation": "An API host must be provided."
+  },
+  {
+    "id": "Missing cmd key",
+    "translation": "Missing 'cmd' input key"
+  },
+  {
+    "id": "missing manifest.yaml file",
+    "translation": "Missing manifest.yaml file"
+  },
+  {
+  "id": "authorization `KEY`",
+  "translation": "authorization `KEY`"
+  },
+  {
+    "id": "whisk API `HOST`",
+    "translation": "whisk API `HOST`"
+  },
+  {
+    "id": "whisk API `VERSION`",
+    "translation": "whisk API `VERSION`"
   }
+
 ]

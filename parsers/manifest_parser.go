@@ -74,8 +74,10 @@ func (dm *YAMLParser) Marshal(manifest *ManifestYAML) (output []byte, err error)
 func (dm *YAMLParser) ParseManifest(mani string) *ManifestYAML {
 	mm := NewYAMLParser()
 	maniyaml := ManifestYAML{}
-	content, err := new(utils.ContentReader).LocalReader.ReadLocal(mani)
+
+	content, err := utils.Read(mani)
 	utils.Check(err)
+
 	err = mm.Unmarshal(content, &maniyaml)
 	utils.Check(err)
 	maniyaml.Filepath = mani
@@ -151,7 +153,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 		if action.Location != "" {
 			filePath := strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + action.Location
 			action.Location = filePath
-			dat, err := new(utils.ContentReader).LocalReader.ReadLocal(filePath)
+			dat, err := utils.Read(filePath)
 			utils.Check(err)
 			code := string(dat)
 			wskaction.Exec.Code = &code

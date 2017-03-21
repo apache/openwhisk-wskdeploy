@@ -29,6 +29,7 @@ var CliVersion string
 var CliBuild string
 
 // used to configure service deployer for various commands
+// TODO: should move this into utils.Flags
 var Verbose bool
 var projectPath string
 var deploymentPath string
