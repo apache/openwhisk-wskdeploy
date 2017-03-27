@@ -60,13 +60,13 @@ type Action struct {
 	Outputs    map[string]interface{} `yaml:"outputs"`    //used in manifest.yaml
 	//mapping to wsk.Action.Name
 	Name        string
-	Annotations map[string]interface{} `yaml: annotations`
+	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
 }
 
 type Sequence struct {
 	Actions     string                 `yaml:"actions"` //used in manifest.yaml
-	Annotations map[string]interface{} `yaml: annotations`
+	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 }
 
 type Dependency struct {
@@ -84,7 +84,7 @@ type Trigger struct {
 	Inputs     map[string]interface{} `yaml:"inputs"`     //used in deployment.yaml
 	//mapping to wsk.Trigger.Name
 	Name        string
-	Annotations map[string]interface{} `yaml: annotations`
+	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	Source      string                 `yaml:source` // used in manifest.yaml
 	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
 }
@@ -135,7 +135,7 @@ type Package struct {
 	Rules       map[string]Rule        `yaml:"rules"`      //used in both manifest.yaml and deployment.yaml
 	Inputs      map[string]interface{} `yaml:"inputs"`     //used in deployment.yaml
 	Sequences   map[string]Sequence    `yaml:"sequences"`
-	Annotations map[string]interface{} `yaml: annotations`
+	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml: parameters` // used in manifest.yaml
 }
 
