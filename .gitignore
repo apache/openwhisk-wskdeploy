@@ -34,6 +34,9 @@ wskdeploy
 #GoGlanD IDE
 .idea
 
+# Gradle
+.gradle
+build/
 
 #emacs
 *~

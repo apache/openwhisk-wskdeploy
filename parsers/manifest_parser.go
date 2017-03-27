@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package parsers
 
 import (
@@ -57,8 +74,10 @@ func (dm *YAMLParser) Marshal(manifest *ManifestYAML) (output []byte, err error)
 func (dm *YAMLParser) ParseManifest(mani string) *ManifestYAML {
 	mm := NewYAMLParser()
 	maniyaml := ManifestYAML{}
-	content, err := new(utils.ContentReader).LocalReader.ReadLocal(mani)
+
+	content, err := utils.Read(mani)
 	utils.Check(err)
+
 	err = mm.Unmarshal(content, &maniyaml)
 	utils.Check(err)
 	maniyaml.Filepath = mani
@@ -134,7 +153,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 		if action.Location != "" {
 			filePath := strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + action.Location
 			action.Location = filePath
-			dat, err := new(utils.ContentReader).LocalReader.ReadLocal(filePath)
+			dat, err := utils.Read(filePath)
 			utils.Check(err)
 			code := string(dat)
 			wskaction.Exec.Code = &code
@@ -169,6 +188,19 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 
 		if len(keyValArr) > 0 {
 			wskaction.Parameters = keyValArr
+		}
+
+		keyValArr = make(whisk.KeyValueArr, 0)
+		for name, value := range action.Annotations {
+			var keyVal whisk.KeyValue
+			keyVal.Key = name
+			keyVal.Value = utils.GetEnvVar(value)
+
+			keyValArr = append(keyValArr, keyVal)
+		}
+
+		if len(keyValArr) > 0 {
+			wskaction.Annotations = keyValArr
 		}
 
 		wskaction.Name = key

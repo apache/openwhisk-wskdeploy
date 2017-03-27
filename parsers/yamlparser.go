@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package parsers
 
 import (
@@ -43,13 +60,13 @@ type Action struct {
 	Outputs    map[string]interface{} `yaml:"outputs"`    //used in manifest.yaml
 	//mapping to wsk.Action.Name
 	Name        string
-	Annotations map[string]interface{} `yaml: annotations`
+	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
 }
 
 type Sequence struct {
 	Actions     string                 `yaml:"actions"` //used in manifest.yaml
-	Annotations map[string]interface{} `yaml: annotations`
+	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 }
 
 type Dependency struct {
@@ -67,7 +84,7 @@ type Trigger struct {
 	Inputs     map[string]interface{} `yaml:"inputs"`     //used in deployment.yaml
 	//mapping to wsk.Trigger.Name
 	Name        string
-	Annotations map[string]interface{} `yaml: annotations`
+	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	Source      string                 `yaml:source` // used in manifest.yaml
 	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
 }
@@ -118,7 +135,7 @@ type Package struct {
 	Rules       map[string]Rule        `yaml:"rules"`      //used in both manifest.yaml and deployment.yaml
 	Inputs      map[string]interface{} `yaml:"inputs"`     //used in deployment.yaml
 	Sequences   map[string]Sequence    `yaml:"sequences"`
-	Annotations map[string]interface{} `yaml: annotations`
+	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml: parameters` // used in manifest.yaml
 }
 
@@ -126,7 +143,7 @@ type Application struct {
 	Name       string             `yaml:"name"`      //used in deployment.yaml
 	Namespace  string             `yaml:"namespace"` //used in deployment.yaml
 	Credential string             `yaml:"credential"`
-	BaseUrl    string             `yaml: baseUrl`
+	BaseUrl    string             `yaml:"baseUrl"`
 	Version    string             `yaml:"version"`
 	Packages   map[string]Package `yaml:"packages"` //used in deployment.yaml
 	Package    Package            `yaml:"package"`

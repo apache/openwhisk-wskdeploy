@@ -1,4 +1,6 @@
 application:
   name: wskdeploy-samples
   namespace: /wskdeploy/samples/
+  credential: user-credential
+  baseUrl: https://172.17.0.1/api
 
