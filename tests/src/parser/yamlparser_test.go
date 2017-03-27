@@ -139,6 +139,8 @@ func TestParseDeploymentYAML_Application(t *testing.T) {
 	//get and verify application name
 	assert.Equal(t, "wskdeploy-samples", deployment.Application.Name, "Get application name failed.")
 	assert.Equal(t, "/wskdeploy/samples/", deployment.Application.Namespace, "Get application namespace failed.")
+	assert.Equal(t, "user-credential", deployment.Application.Credential, "Get application credential failed.")
+	assert.Equal(t, "https://172.17.0.1/api", deployment.Application.BaseUrl, "Get application base url failed.")
 }
 
 func TestParseDeploymentYAML_Package(t *testing.T) {
