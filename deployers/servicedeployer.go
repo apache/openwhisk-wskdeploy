@@ -658,6 +658,11 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 				}
 				fmt.Println("        - name: " + p.Key + " value: " + value)
 			}
+			fmt.Println("    annotations: ")
+			for _, p := range action.Action.Annotations {
+				fmt.Printf("        - %s : %v\n", p.Key, p.Value)
+
+			}
 		}
 
 		fmt.Println("")
