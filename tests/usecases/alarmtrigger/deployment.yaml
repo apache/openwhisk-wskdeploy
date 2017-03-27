@@ -1,0 +1,14 @@
+application:
+    name: HelloWorldEvery12Hours
+    namespace: _
+    package:
+        name: helloworld
+        actions:
+            helloworld:
+                inputs:
+                    name: Amy
+                    place: Paris
+        triggers:
+            Every12Hours:
+                inputs:
+                    cron: "0 */12 * * *"
