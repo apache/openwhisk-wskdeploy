@@ -50,7 +50,7 @@ Once the draft progresses further (i.e., known outstanding "high priority" desig
 The following images outline the basic process for creating and using both Manifest and Deployment files against a typical developer workstream:
 
 #### Conceptual Manifest file creation
-![Manifest file creation](images/OpenWhisk - Conceptual Manifest File Creation.png "image 1")
+![Manifest file creation](images/OpenWhisk%20-%20Conceptual%20Manifest%20File%20Creation.png "image 1")
 
 #### Conceptual Manifest file deployment
-![Manifest file deployment](images/OpenWhisk - Conceptual Manifest File Deployment.png "image 1")
+![Manifest file deployment](images/OpenWhisk%20-%20Conceptual%20Manifest%20File%20Deployment.png "image 1")
