@@ -190,6 +190,19 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 			wskaction.Parameters = keyValArr
 		}
 
+		keyValArr = make(whisk.KeyValueArr, 0)
+		for name, value := range action.Annotations {
+			var keyVal whisk.KeyValue
+			keyVal.Key = name
+			keyVal.Value = utils.GetEnvVar(value)
+
+			keyValArr = append(keyValArr, keyVal)
+		}
+
+		if len(keyValArr) > 0 {
+			wskaction.Annotations = keyValArr
+		}
+
 		wskaction.Name = key
 		pub := false
 		wskaction.Publish = &pub
