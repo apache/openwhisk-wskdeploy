@@ -393,7 +393,7 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
 	}
 	log.Print("Deploying action " + action.Name + " ... ")
-	_, _, err := deployer.Client.Actions.Insert(action, false)
+	_, _, err := deployer.Client.Actions.Insert(action, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		log.Printf("Got error creating action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
