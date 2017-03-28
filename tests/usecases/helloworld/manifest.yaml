@@ -9,7 +9,7 @@ package:
       runtime: nodejs:6
       inputs:
         name: Paul
-        place: Boston
+        place: string
     helloworld:
       version: 1.0
       location: actions/greeting2.js
