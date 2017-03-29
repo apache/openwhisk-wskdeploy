@@ -22,6 +22,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
 	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
@@ -48,7 +49,7 @@ var initCmd = &cobra.Command{
 
 func askName(reader *bufio.Reader, def string) string {
 	if len(def) == 0 {
-		abspath, err := filepath.Abs(projectPath)
+		abspath, err := filepath.Abs(cmdImp.ProjectPath)
 		utils.Check(err)
 		def = filepath.Base(abspath)
 	}
