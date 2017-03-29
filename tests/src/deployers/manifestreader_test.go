@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"encoding/json"
 	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
 	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
 	"github.com/stretchr/testify/assert"
