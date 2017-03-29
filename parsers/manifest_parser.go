@@ -149,7 +149,6 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 
 		wskaction := new(whisk.Action)
 		wskaction.Exec = new(whisk.Exec)
-
 		if action.Location != "" {
 			filePath := strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + action.Location
 			action.Location = filePath

@@ -238,6 +238,24 @@ func (reader *ManifestReader) SetRules(rules []*whisk.Rule) error {
 	return nil
 }
 
+func (reader *ManifestReader) SetApis(apis []*whisk.SendApi) error {
+	dep := reader.serviceDeployer
+
+	dep.mt.Lock()
+	defer dep.mt.Unlock()
+
+	for _, api := range apis {
+		existApi, exist := dep.Deployment.Apis[api.ApiDoc.ApiName]
+		if exist {
+			existApi.ApiDoc.ApiName = api.ApiDoc.ApiName
+		} else {
+			dep.Deployment.Apis[api.ApiDoc.ApiName] = api
+		}
+
+	}
+	return nil
+}
+
 // from whisk go client
 func (deployer *ManifestReader) getQualifiedName(name string, namespace string) string {
 	if strings.HasPrefix(name, "/") {

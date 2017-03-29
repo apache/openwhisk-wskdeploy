@@ -34,6 +34,7 @@ type DeploymentApplication struct {
 	Packages map[string]*DeploymentPackage
 	Triggers map[string]*whisk.Trigger
 	Rules    map[string]*whisk.Rule
+	Apis     map[string]*whisk.SendApi
 }
 
 func NewDeploymentApplication() *DeploymentApplication {
@@ -41,6 +42,7 @@ func NewDeploymentApplication() *DeploymentApplication {
 	dep.Packages = make(map[string]*DeploymentPackage)
 	dep.Triggers = make(map[string]*whisk.Trigger)
 	dep.Rules = make(map[string]*whisk.Rule)
+	dep.Apis = make(map[string]*whisk.SendApi)
 	return &dep
 }
 
@@ -289,6 +291,14 @@ func (deployer *ServiceDeployer) DeployRules() error {
 	return nil
 }
 
+// Deploy Apis into OpenWhisk
+func (deployer *ServiceDeployer) DeployApis() error {
+	for _, api := range deployer.Deployment.Apis {
+		deployer.createApi(api)
+	}
+	return nil
+}
+
 func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) {
 	log.Print("Deploying package " + packa.Name + " ... ")
 	_, _, err := deployer.Client.Packages.Insert(packa, true)
@@ -397,8 +407,55 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		log.Printf("Got error creating action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	} else {
+		// create the API gateway according to the action definition in the manifest.yaml
+		// if no errors happened during the action creation.
+		// since the spec for this is not publish, so comment below lines.
+
+		//_, _, err := deployer.Client.Apis.Insert(createApiEntity(deployer, action), true)
+		//if err != nil {
+		//	wskErr := err.(*whisk.WskError)
+		//	fmt.Printf("Got error creating API with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		//}
+
 	}
-	log.Println("Done!")
+
+	// create the API gateway create if the
+	fmt.Println("Done!")
+}
+
+// create api gateway
+func (deployer *ServiceDeployer) createApi(api *whisk.SendApi) {
+	_, _, err := deployer.Client.Apis.Insert(api, true)
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		log.Printf("Got error creating api with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	}
+	fmt.Println("Done!")
+}
+
+// create the api entity according to the action definition and deployer.
+func createApiEntity(dp *ServiceDeployer, action *whisk.Action) *whisk.SendApi {
+	sendapi := new(whisk.SendApi)
+	api := new(whisk.Api)
+	//Compose the api
+	api.Namespace = dp.Client.Namespace
+	//api.ApiName = ""
+	api.GatewayBasePath = "/base"
+	api.GatewayRelPath = "/fire"
+	api.GatewayMethod = "GET" //
+	api.Id = "API:david.liu@cn.ibm.com_dliu:/base"
+	//api.GatewayFullPath = ""
+	//api.Swagger = ""
+	//compose the api action
+	api.Action = new(whisk.ApiAction)
+	api.Action.Name = action.Name
+	api.Action.Namespace = dp.ClientConfig.Namespace
+	api.Action.BackendMethod = "POST"
+	api.Action.BackendUrl = "https://" + "openwhisk.ng.bluemix.net" + "/api/v1/namespaces/" + dp.ClientConfig.Namespace + "/actions/" + action.Name
+	api.Action.Auth = dp.Client.Config.AuthToken
+	sendapi.ApiDoc = api
+	return sendapi
 }
 
 func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentApplication) error {
