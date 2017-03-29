@@ -56,7 +56,7 @@ type Action struct {
 	//mapping to wsk.Action.Namespace
 	Namespace  string                 `yaml:"namespace"`  //used in deployment.yaml
 	Credential string                 `yaml:"credential"` //used in deployment.yaml
-	Inputs     map[string]interface{} `yaml:"inputs"`     //used in both manifest.yaml and deployment.yaml
+	Inputs     map[string]Parameter   `yaml:"inputs"`     //used in both manifest.yaml and deployment.yaml
 	Outputs    map[string]interface{} `yaml:"outputs"`    //used in manifest.yaml
 	//mapping to wsk.Action.Name
 	Name        string
@@ -75,13 +75,23 @@ type Dependency struct {
 	Version string
 }
 
+type Parameter struct {
+	Type        string      `yaml:"type,omitempty"`
+	Description string      `yaml:"description,omitempty"`
+	Value       interface{} `yaml:"value,omitempty"` // JSON Value
+	Required    bool        `yaml:"required,omitempty"`
+	Default     interface{} `yaml:"default,omitempty"`
+	Status      string      `yaml:"status,omitempty"`
+	Schema      interface{} `yaml:"schema,omitempty"`
+}
+
 type Trigger struct {
 	//mapping to ????
 	Feed string `yaml:"feed"` //used in manifest.yaml
 	//mapping to wsk.Trigger.Namespace
-	Namespace  string                 `yaml:"namespace"`  //used in deployment.yaml
-	Credential string                 `yaml:"credential"` //used in deployment.yaml
-	Inputs     map[string]interface{} `yaml:"inputs"`     //used in deployment.yaml
+	Namespace  string               `yaml:"namespace"`  //used in deployment.yaml
+	Credential string               `yaml:"credential"` //used in deployment.yaml
+	Inputs     map[string]Parameter `yaml:"inputs"`     //used in deployment.yaml
 	//mapping to wsk.Trigger.Name
 	Name        string
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
@@ -133,7 +143,7 @@ type Package struct {
 	Triggers    map[string]Trigger     `yaml:"triggers"`   //used in both manifest.yaml and deployment.yaml
 	Feeds       map[string]Feed        `yaml:"feeds"`      //used in both manifest.yaml and deployment.yaml
 	Rules       map[string]Rule        `yaml:"rules"`      //used in both manifest.yaml and deployment.yaml
-	Inputs      map[string]interface{} `yaml:"inputs"`     //used in deployment.yaml
+	Inputs      map[string]Parameter   `yaml:"inputs"`     //used in deployment.yaml
 	Sequences   map[string]Sequence    `yaml:"sequences"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml: parameters` // used in manifest.yaml

@@ -13,6 +13,7 @@ var manifestfile1 = "../../dat/manifest1.yaml"
 var manifestfile3 = "../../dat/manifest3.yaml"
 var manifestfile4 = "../../dat/manifest4.yaml"
 var manifestfile5 = "../../dat/manifest5.yaml"
+var manifestfile6 = "../../dat/manifest6.yaml"
 var testfile1 = "../../dat/deploy1.yaml"
 var testfile2 = "../../dat/deploy2.yaml"
 var testfile3 = "../../dat/deploy3.yaml"
@@ -131,6 +132,74 @@ func TestParseManifestYAML_feed(t *testing.T) {
 	}
 }
 
+func TestParseManifestYAML_param(t *testing.T) {
+	data, err := ioutil.ReadFile(manifestfile6)
+	if err != nil {
+		panic(err)
+	}
+
+	var manifest parsers.ManifestYAML
+	err = parsers.NewYAMLParser().Unmarshal(data, &manifest)
+	if err != nil {
+		panic(err)
+	}
+
+	assert.Equal(t, 1, len(manifest.Package.Actions), "Get action list failed.")
+	for action_name := range manifest.Package.Actions {
+		var action = manifest.Package.Actions[action_name]
+		switch action_name {
+		case "action1":
+			for param_name := range action.Inputs {
+				var param = action.Inputs[param_name]
+				switch param_name {
+				case "inline1":
+					assert.Equal(t, "{ \"key\": true }", param.Value, "Get param value failed.")
+				case "inline2":
+					assert.Equal(t, "Just a string", param.Value, "Get param value failed.")
+				case "inline3":
+					assert.Equal(t, nil, param.Value, "Get param value failed.")
+				case "inline4":
+					assert.Equal(t, true, param.Value, "Get param value failed.")
+				case "inline5":
+					assert.Equal(t, 42, param.Value, "Get param value failed.")
+				case "inline6":
+					assert.Equal(t, -531, param.Value, "Get param value failed.")
+				case "inline7":
+					assert.Equal(t, 432.432E-43, param.Value, "Get param value failed.")
+				case "inline8":
+					assert.Equal(t, "[ true, null, \"boo\", { \"key\": 0 }]", param.Value, "Get param value failed.")
+				case "inline9":
+					assert.Equal(t, false, param.Value, "Get param value failed.")
+				case "inline0":
+					assert.Equal(t, 456.423, param.Value, "Get param value failed.")
+				case "inlin10":
+					assert.Equal(t, nil, param.Value, "Get param value failed.")
+				case "inlin11":
+					assert.Equal(t, true, param.Value, "Get param value failed.")
+				case "expand1":
+					assert.Equal(t, nil, param.Value, "Get param value failed.")
+				case "expand2":
+					assert.Equal(t, true, param.Value, "Get param value failed.")
+				case "expand3":
+					assert.Equal(t, false, param.Value, "Get param value failed.")
+				case "expand4":
+					assert.Equal(t, 15646, param.Value, "Get param value failed.")
+				case "expand5":
+					assert.Equal(t, "{ \"key\": true }", param.Value, "Get param value failed.")
+				case "expand6":
+					assert.Equal(t, "[ true, null, \"boo\", { \"key\": 0 }]", param.Value, "Get param value failed.")
+				case "expand7":
+					assert.Equal(t, nil, param.Value, "Get param value failed.")
+				default:
+					t.Error("Get param name failed")
+				}
+			}
+		default:
+			t.Error("Get action name failed")
+		}
+	}
+}
+
 func TestParseDeploymentYAML_Application(t *testing.T) {
 	//var deployment utils.DeploymentYAML
 	mm := parsers.NewYAMLParser()
@@ -158,8 +227,8 @@ func TestParseDeploymentYAML_Package(t *testing.T) {
 		assert.Equal(t, "12345678ABCDEF", pkg.Credential, "Get package credential failed.")
 		assert.Equal(t, 1, len(pkg.Inputs), "Get package input list failed.")
 		//get and verify inputs
-		for param_name, value := range pkg.Inputs {
-			assert.Equal(t, "value", value, "Get input value failed.")
+		for param_name, param := range pkg.Inputs {
+			assert.Equal(t, "value", param.Value, "Get input value failed.")
 			assert.Equal(t, "param", param_name, "Get input param name failed.")
 		}
 	}
@@ -179,11 +248,11 @@ func TestParseDeploymentYAML_Action(t *testing.T) {
 			assert.Equal(t, "12345678ABCDEF", action.Credential, "Get action credential failed.")
 			assert.Equal(t, 1, len(action.Inputs), "Get package input list failed.")
 			//get and verify inputs
-			for param_name, value := range action.Inputs {
-				switch value.(type) {
+			for param_name, param := range action.Inputs {
+				switch param.Value.(type) {
 				case string:
 					assert.Equal(t, "name", param_name, "Get input param name failed.")
-					assert.Equal(t, "Bernie", value, "Get input value failed.")
+					assert.Equal(t, "Bernie", param.Value, "Get input value failed.")
 				default:
 					t.Error("Get input value type failed.")
 				}

@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"encoding/json"
 	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
 	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
 	"github.com/stretchr/testify/assert"
@@ -12,6 +13,7 @@ var ps *parsers.YAMLParser
 var ms *parsers.ManifestYAML
 
 func init() {
+
 	sd = deployers.NewServiceDeployer()
 	sd.ManifestPath = manifest_file
 	mr = deployers.NewManfiestReader(sd)
@@ -29,4 +31,13 @@ func TestManifestReader_ParseManifest(t *testing.T) {
 func TestManifestReader_InitRootPackage(t *testing.T) {
 	err := mr.InitRootPackage(ps, ms)
 	assert.Equal(t, err, nil, "Init Root Package failed")
+}
+
+// Test Parameters
+func TestManifestReader_param(t *testing.T) {
+	ms := ps.ParseManifest("../../dat/manifest6.yaml")
+	err := mr.InitRootPackage(ps, ms)
+	assert.Equal(t, err, nil, "Init Root Package failed")
+
+	// TODO.
 }

@@ -1,0 +1,45 @@
+package:
+  name: manifest6
+  actions:
+    action1:
+      inputs:
+        inline1: '{ "key": true }'
+        inline2: Just a string
+        inline3: null
+        inline4: true
+        inline5: 42
+        inline6: -531
+        inline7: 432.432E-43
+        inline8: '[ true, null, "boo", { "key": 0 }]'
+        inline9: !!bool false
+        inline0: !!float 456.423
+        inlin10:  # JSON null
+        inlin11: True # JSON true
+
+        expand1:
+          value: null
+          type: string
+
+        expand2:
+          value: true
+          type: string
+
+        expand3:
+          value: false
+          type: string
+
+        expand4:
+          value: 15646
+          type: string
+
+        expand5:
+          value: '{ "key": true }'
+          type: string
+
+        expand6:
+          value:  '[ true, null, "boo", { "key": 0 }]'
+          type: string
+
+        expand7:
+          value: !!null null
+          type: string

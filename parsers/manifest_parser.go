@@ -24,6 +24,7 @@ import (
 	"path"
 	"strings"
 
+	"encoding/json"
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"gopkg.in/yaml.v2"
@@ -95,12 +96,15 @@ func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error)
 	pag.Publish = &pub
 
 	keyValArr := make(whisk.KeyValueArr, 0)
-	for name, value := range mani.Package.Inputs {
+	for name, param := range mani.Package.Inputs {
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
-		keyVal.Value = utils.GetEnvVar(value)
 
-		keyValArr = append(keyValArr, keyVal)
+		keyVal.Value = ResolveParameter(&param)
+
+		if keyVal.Value != nil {
+			keyValArr = append(keyValArr, keyVal)
+		}
 	}
 
 	if len(keyValArr) > 0 {
@@ -181,9 +185,12 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 		for name, value := range action.Inputs {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
+
 			keyVal.Value = utils.GetEnvVar(value)
 
-			keyValArr = append(keyValArr, keyVal)
+			if keyVal.Value != nil {
+				keyValArr = append(keyValArr, keyVal)
+			}
 		}
 
 		if len(keyValArr) > 0 {
@@ -242,9 +249,12 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 		for name, value := range trigger.Inputs {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
+
 			keyVal.Value = utils.GetEnvVar(value)
 
-			keyValArr = append(keyValArr, keyVal)
+			if keyVal.Value != nil {
+				keyValArr = append(keyValArr, keyVal)
+			}
 		}
 
 		if len(keyValArr) > 0 {
@@ -275,4 +285,55 @@ func (action *Action) ComposeWskAction(manipath string) (*whisk.Action, error) {
 	wskaction.Version = action.Version
 	wskaction.Namespace = action.Namespace
 	return wskaction, err
+}
+
+// Resolve parameter input
+func ResolveParameter(param *Parameter) interface{} {
+	value := utils.GetEnvVar(param.Value)
+
+	typ := param.Type
+	if str, ok := value.(string); ok && (len(typ) == 0 || typ != "string") {
+		var parsed interface{}
+		err := json.Unmarshal([]byte(str), &parsed)
+		if err == nil {
+			return parsed
+		}
+	}
+	return value
+}
+
+// Provide custom Parameter marshalling and unmarshalling
+
+type ParsedParameter Parameter
+
+func (n *Parameter) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var aux ParsedParameter
+	if err := unmarshal(&aux); err == nil {
+		n.Type = aux.Type
+		n.Description = aux.Description
+		n.Value = aux.Value
+		n.Required = aux.Required
+		n.Default = aux.Default
+		n.Status = aux.Status
+		n.Schema = aux.Schema
+		return nil
+	}
+
+	var inline interface{}
+	if err := unmarshal(&inline); err != nil {
+		return err
+	}
+
+	n.Value = inline
+	return nil
+}
+
+func (n *Parameter) MarshalYAML() (interface{}, error) {
+	if _, ok := n.Value.(string); len(n.Type) == 0 && len(n.Description) == 0 && ok {
+		if !n.Required && len(n.Status) == 0 && n.Schema == nil {
+			return n.Value.(string), nil
+		}
+	}
+
+	return n, nil
 }
