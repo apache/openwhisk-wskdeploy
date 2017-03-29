@@ -260,7 +260,10 @@ func (deployer *ServiceDeployer) DeployActions() error {
 
 	for _, pack := range deployer.Deployment.Packages {
 		for _, action := range pack.Actions {
-			deployer.createAction(pack.Package.Name, action.Action)
+			err := deployer.createAction(pack.Package.Name, action.Action)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -386,7 +389,7 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) {
 }
 
 // Utility function to call go-whisk framework to make action
-func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Action) {
+func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Action) error {
 	// call ActionService Thru Client
 	if deployer.DeployActionInPackage {
 		// the action will be created under package with pattern 'packagename/actionname'
@@ -397,8 +400,10 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		log.Printf("Got error creating action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		return err
 	}
 	log.Println("Done!")
+	return nil
 }
 
 func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentApplication) error {
@@ -492,7 +497,10 @@ func (deployer *ServiceDeployer) UnDeployActions(deployment *DeploymentApplicati
 
 	for _, pack := range deployment.Packages {
 		for _, action := range pack.Actions {
-			deployer.deleteAction(pack.Package.Name, action.Action)
+			err := deployer.deleteAction(pack.Package.Name, action.Action)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -600,7 +608,7 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) {
 }
 
 // Utility function to call go-whisk framework to make action
-func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Action) {
+func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Action) error {
 	// call ActionService Thru Client
 	if deployer.DeployActionInPackage {
 		// the action will be deleted under package with pattern 'packagename/actionname'
@@ -612,8 +620,10 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		log.Printf("Got error deleting action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		return err
 	}
 	fmt.Println("Done!")
+	return nil
 }
 
 // from whisk go client

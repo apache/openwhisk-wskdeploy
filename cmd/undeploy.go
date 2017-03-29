@@ -18,15 +18,8 @@
 package cmd
 
 import (
-	"log"
-	"path"
-
-	"regexp"
-
-	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
+	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
 )
 
 // undeployCmd represents the undeploy command
@@ -34,60 +27,15 @@ var undeployCmd = &cobra.Command{
 	Use:   "undeploy",
 	Short: "Undeploy assets from OpenWhisk",
 	Long:  `Undeploy removes deployed assets from the manifest and deployment files`,
-	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		whisk.SetVerbose(Verbose)
+	Run: UndeployCmdImp,
+}
 
-		if manifestPath == "" {
-			if ok, _ := regexp.Match(ManifestFileNameYml, []byte(manifestPath)); ok {
-				manifestPath = path.Join(projectPath, ManifestFileNameYml)
-			} else {
-				manifestPath = path.Join(projectPath, ManifestFileNameYaml)
-			}
-
-		}
-
-		if deploymentPath == "" {
-			if ok, _ := regexp.Match(DeploymentFileNameYml, []byte(manifestPath)); ok {
-				deploymentPath = path.Join(projectPath, DeploymentFileNameYml)
-			} else {
-				deploymentPath = path.Join(projectPath, DeploymentFileNameYaml)
-			}
-
-		}
-
-		if utils.FileExists(manifestPath) {
-
-			var deployer = deployers.NewServiceDeployer()
-			deployer.ProjectPath = projectPath
-			deployer.ManifestPath = manifestPath
-			deployer.DeploymentPath = deploymentPath
-
-			deployer.IsInteractive = useInteractive
-			deployer.IsDefault = useDefaults
-
-			userHome := utils.GetHomeDirectory()
-			propPath := path.Join(userHome, ".wskprops")
-
-			whiskClient, clientConfig := deployers.NewWhiskClient(propPath, deploymentPath, deployer.IsInteractive)
-			deployer.Client = whiskClient
-			deployer.ClientConfig = clientConfig
-
-			/* bypass for now
-			//
-			vf := deployers.Verifier{}
-			deployed, err := vf.Query(deployer)
-			utils.Check(err)
-			verifiedPlan, err := vf.Filter(deployer, deployed)
-			utils.Check(err)*/
-			verifiedPlan, err := deployer.ConstructUnDeploymentPlan()
-			err = deployer.UnDeploy(verifiedPlan)
-			utils.Check(err)
-
-		} else {
-			log.Println("missing manifest.yaml file")
-		}
-	},
+func UndeployCmdImp(cmd *cobra.Command, args []string) {
+	// Set all the parameters passed via the command to the struct of undeploy command.
+	undeployParams := cmdImp.DeployParams{cmdImp.Verbose, cmdImp.ProjectPath, cmdImp.ManifestPath,
+		cmdImp.DeploymentPath, cmdImp.UseDefaults, cmdImp.UseInteractive}
+	// Call the implementation of wskdeploy command.
+	cmdImp.Undeploy(undeployParams)
 }
 
 func init() {
@@ -98,12 +46,12 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// undeployCmd.PersistentFlags().String("foo", "", "A help for foo")
-	undeployCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.wskdeploy.yaml)")
+	undeployCmd.PersistentFlags().StringVar(&cmdImp.CfgFile, "config", "", "config file (default is $HOME/.wskdeploy.yaml)")
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// undeployCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")=
 	undeployCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	undeployCmd.Flags().StringVarP(&projectPath, "pathpath", "p", ".", "path to serverless project")
-	undeployCmd.Flags().StringVarP(&manifestPath, "manifest", "m", "", "path to manifest file")
-	undeployCmd.Flags().StringVarP(&deploymentPath, "deployment", "d", "", "path to deployment file")
+	undeployCmd.Flags().StringVarP(&cmdImp.ProjectPath, "pathpath", "p", ".", "path to serverless project")
+	undeployCmd.Flags().StringVarP(&cmdImp.ManifestPath, "manifest", "m", "", "path to manifest file")
+	undeployCmd.Flags().StringVarP(&cmdImp.DeploymentPath, "deployment", "d", "", "path to deployment file")
 }
