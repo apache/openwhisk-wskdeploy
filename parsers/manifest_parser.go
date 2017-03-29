@@ -182,11 +182,11 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 		}
 
 		keyValArr := make(whisk.KeyValueArr, 0)
-		for name, value := range action.Inputs {
+		for name, param := range action.Inputs {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value = utils.GetEnvVar(value)
+			keyVal.Value = ResolveParameter(&param)
 
 			if keyVal.Value != nil {
 				keyValArr = append(keyValArr, keyVal)
@@ -246,11 +246,11 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 		}
 
 		keyValArr = make(whisk.KeyValueArr, 0)
-		for name, value := range trigger.Inputs {
+		for name, param := range trigger.Inputs {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value = utils.GetEnvVar(value)
+			keyVal.Value = ResolveParameter(&param)
 
 			if keyVal.Value != nil {
 				keyValArr = append(keyValArr, keyVal)
