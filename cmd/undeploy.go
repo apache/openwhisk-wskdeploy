@@ -18,8 +18,8 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
 	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
+	"github.com/spf13/cobra"
 )
 
 // undeployCmd represents the undeploy command
@@ -27,7 +27,7 @@ var undeployCmd = &cobra.Command{
 	Use:   "undeploy",
 	Short: "Undeploy assets from OpenWhisk",
 	Long:  `Undeploy removes deployed assets from the manifest and deployment files`,
-	Run: UndeployCmdImp,
+	Run:   UndeployCmdImp,
 }
 
 func UndeployCmdImp(cmd *cobra.Command, args []string) {

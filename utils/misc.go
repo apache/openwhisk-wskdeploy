@@ -18,16 +18,20 @@
 package utils
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/url"
-	"os/user"
-
+	"archive/zip"
 	"bufio"
-
+	"encoding/base64"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/hokaccha/go-prettyjson"
 	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"github.com/openwhisk/openwhisk-wskdeploy/wski18n"
+	"io"
+	"net/url"
 	"os"
+	"os/user"
+	"path/filepath"
 	"reflect"
 	"strings"
 )
@@ -143,4 +147,133 @@ var kindToJSON []string = []string{"", "boolean", "integer", "integer", "integer
 func GetJSONType(j interface{}) string {
 	fmt.Print(reflect.TypeOf(j).Kind())
 	return kindToJSON[reflect.TypeOf(j).Kind()]
+}
+
+func CreateZip(filename string, files []string) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	zipwriter := zip.NewWriter(file)
+	defer zipwriter.Close()
+	for _, name := range files {
+		if err := writeFileToZip(zipwriter, name); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func writeFileToZip(zipwriter *zip.Writer, filename string) error {
+	file, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	finfo, err := file.Stat()
+	if err != nil {
+		return err
+	}
+	header, err := zip.FileInfoHeader(finfo)
+	if err != nil {
+		return err
+	}
+	//add some filter logic if necessary
+	//filter(file)
+	writer, err := zipwriter.CreateHeader(header)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(writer, file)
+	return err
+}
+
+func filter(filename string) interface{} {
+	//To do
+	return nil
+}
+
+// below codes is from wsk cli with tiny adjusts.
+func GetExec(artifact string, kind string, isDocker bool, mainEntry string) (*whisk.Exec, error) {
+	var err error
+	var code string
+	var content []byte
+	var exec *whisk.Exec
+
+	ext := filepath.Ext(artifact)
+	exec = new(whisk.Exec)
+
+	if !isDocker || ext == ".zip" {
+		content, err = new(ContentReader).ReadLocal(artifact)
+		Check(err)
+		code = string(content)
+		exec.Code = &code
+	}
+
+	if len(kind) > 0 {
+		exec.Kind = kind
+	} else if isDocker {
+		exec.Kind = "blackbox"
+		if ext != ".zip" {
+			exec.Image = artifact
+		} else {
+			exec.Image = "openwhisk/dockerskeleton"
+		}
+	} else if ext == ".swift" {
+		exec.Kind = "swift:default"
+	} else if ext == ".js" {
+		exec.Kind = "nodejs:default"
+	} else if ext == ".py" {
+		exec.Kind = "python:default"
+	} else if ext == ".jar" {
+		exec.Kind = "java:default"
+		exec.Jar = base64.StdEncoding.EncodeToString([]byte(code))
+		exec.Code = nil
+	} else {
+		if ext == ".zip" {
+			return nil, zipKindError()
+		} else {
+			return nil, extensionError(ext)
+		}
+	}
+
+	// Error if entry point is not specified for Java
+	if len(mainEntry) != 0 {
+		exec.Main = mainEntry
+	} else {
+		if exec.Kind == "java" {
+			return nil, javaEntryError()
+		}
+	}
+
+	// Base64 encode the zip file content
+	if ext == ".zip" {
+		code = base64.StdEncoding.EncodeToString([]byte(code))
+		exec.Code = &code
+	}
+
+	return exec, nil
+}
+
+func zipKindError() error {
+	errMsg := wski18n.T("creating an action from a .zip artifact requires specifying the action kind explicitly")
+
+	return errors.New(errMsg)
+}
+
+func extensionError(extension string) error {
+	errMsg := wski18n.T(
+		"'{{.name}}' is not a supported action runtime",
+		map[string]interface{}{
+			"name": extension,
+		})
+
+	return errors.New(errMsg)
+}
+
+func javaEntryError() error {
+	errMsg := wski18n.T("Java actions require --main to specify the fully-qualified name of the main class")
+
+	return errors.New(errMsg)
 }

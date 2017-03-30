@@ -25,11 +25,11 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
 	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"github.com/openwhisk/openwhisk-wskdeploy/wski18n"
 	"github.com/spf13/cobra"
-	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
 )
 
 var wskpropsPath string

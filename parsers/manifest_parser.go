@@ -28,6 +28,7 @@ import (
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"gopkg.in/yaml.v2"
+	"path/filepath"
 )
 
 // Read existing manifest file or create new if none exists
@@ -156,25 +157,43 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) ([]uti
 
 		if action.Location != "" {
 			filePath := strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + action.Location
-			action.Location = filePath
-			dat, err := utils.Read(filePath)
-			utils.Check(err)
-			code := string(dat)
-			wskaction.Exec.Code = &code
 
-			ext := path.Ext(filePath)
-			kind := "nodejs:default"
+			if utils.IsDirectory(filePath) {
+				files := []string{}
+				filepath.Walk(filePath, func(path string, info os.FileInfo, err error) error {
+					if !info.IsDir() {
+						files = append(files, path)
+					}
+					return nil
+				})
+				zipName := filePath + ".zip"
+				err := utils.CreateZip(zipName, files)
+				defer os.Remove(zipName)
+				utils.Check(err)
+				// To do: support docker and main entry as did by go cli?
+				wskaction.Exec, err = utils.GetExec(zipName, action.Runtime, false, "")
+			} else {
+				action.Location = filePath
+				dat, err := utils.Read(filePath)
+				utils.Check(err)
+				code := string(dat)
+				wskaction.Exec.Code = &code
 
-			switch ext {
-			case ".swift":
-				kind = "swift:default"
-			case ".js":
-				kind = "nodejs:default"
-			case ".py":
-				kind = "python"
+				ext := path.Ext(filePath)
+				kind := "nodejs:default"
+
+				switch ext {
+				case ".swift":
+					kind = "swift:default"
+				case ".js":
+					kind = "nodejs:default"
+				case ".py":
+					kind = "python"
+				}
+
+				wskaction.Exec.Kind = kind
 			}
 
-			wskaction.Exec.Kind = kind
 		}
 
 		if action.Runtime != "" {

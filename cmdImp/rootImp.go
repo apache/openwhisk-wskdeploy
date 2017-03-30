@@ -1,23 +1,23 @@
 package cmdImp
 
 import (
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
-	"path"
-	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
-	"log"
+	"errors"
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/openwhisk-client-go/wski18n"
+	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
+	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"log"
+	"path"
 	"path/filepath"
 	"regexp"
-	"errors"
 )
 
 type DeployParams struct {
-	Verbose bool
-	ProjectPath string
-	ManifestPath string
+	Verbose        bool
+	ProjectPath    string
+	ManifestPath   string
 	DeploymentPath string
-	UseDefaults bool
+	UseDefaults    bool
 	UseInteractive bool
 }
 

@@ -1,13 +1,13 @@
 package cmdImp
 
 import (
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
-	"path"
-	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
-	"log"
-	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"regexp"
 	"errors"
+	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
+	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"log"
+	"path"
+	"regexp"
 )
 
 func Undeploy(params DeployParams) error {

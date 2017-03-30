@@ -19,8 +19,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
+	"github.com/spf13/cobra"
 )
 
 func init() {

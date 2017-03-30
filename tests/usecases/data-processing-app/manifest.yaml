@@ -5,12 +5,12 @@ package:
   actions:
     mhpost-action:
       version: 1.0
-      location: actions/mhpost/mhpost.js
-      runtime: nodejs
+      location: actions/mhpost
+      runtime: nodejs:6
     mhget-action:
       version: 1.0
       location: actions/mhget/mhget.js
-      runtime: nodejs
+      runtime: nodejs:6
   triggers:
     kafka-trigger:
       feed: Bluemix_kafka-broker_Credentials-1/messageHubFeed
