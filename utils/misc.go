@@ -25,6 +25,7 @@ import (
 
 	"bufio"
 
+	"github.com/hokaccha/go-prettyjson"
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"os"
 	"reflect"
@@ -98,6 +99,13 @@ func IsJSON(s string) (interface{}, bool) {
 
 }
 
+func PrettyJSON(j interface{}) string {
+	formatter := prettyjson.NewFormatter()
+	bytes, err := formatter.Marshal(j)
+	Check(err)
+	return string(bytes)
+}
+
 // Common utilities
 
 // Prompt for user input
@@ -126,4 +134,13 @@ func GetEnvVar(key interface{}) interface{} {
 		return key.(string)
 	}
 	return key
+}
+
+var kindToJSON []string = []string{"", "boolean", "integer", "integer", "integer", "integer", "integer", "integer", "integer", "integer",
+	"integer", "integer", "integer", "number", "number", "number", "number", "array", "", "", "", "object", "", "", "string", "", ""}
+
+// Gets JSON type name
+func GetJSONType(j interface{}) string {
+	fmt.Print(reflect.TypeOf(j).Kind())
+	return kindToJSON[reflect.TypeOf(j).Kind()]
 }

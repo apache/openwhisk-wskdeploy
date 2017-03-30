@@ -650,23 +650,14 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 		fmt.Println("Name: " + pack.Package.Name)
 		fmt.Println("    bindings: ")
 		for _, p := range pack.Package.Parameters {
-			value := "?"
-			if str, ok := p.Value.(string); ok {
-				value = str
-			}
-			fmt.Println("        - name: " + p.Key + " value: " + value)
+			fmt.Printf("        - %s : %v\n", p.Key, utils.PrettyJSON(p.Value))
 		}
 
 		for _, action := range pack.Actions {
 			fmt.Println("  * action: " + action.Action.Name)
 			fmt.Println("    bindings: ")
 			for _, p := range action.Action.Parameters {
-
-				value := "?"
-				if str, ok := p.Value.(string); ok {
-					value = str
-				}
-				fmt.Println("        - name: " + p.Key + " value: " + value)
+				fmt.Printf("        - %s : %v\n", p.Key, utils.PrettyJSON(p.Value))
 			}
 			fmt.Println("    annotations: ")
 			for _, p := range action.Action.Annotations {
@@ -689,12 +680,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 		fmt.Println("    bindings: ")
 
 		for _, p := range trigger.Parameters {
-
-			value := "?"
-			if str, ok := p.Value.(string); ok {
-				value = str
-			}
-			fmt.Println("        - name: " + p.Key + " value: " + value)
+			fmt.Printf("        - %s : %v\n", p.Key, utils.PrettyJSON(p.Value))
 		}
 
 		fmt.Println("    annotations: ")
