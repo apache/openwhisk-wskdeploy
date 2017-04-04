@@ -71,9 +71,11 @@ type Sequence struct {
 }
 
 type Dependency struct {
-	Name    string
-	Url     string
-	Version string
+	Url         string                 `yaml: "url"`
+	Source      string                 `yaml: "source"`
+	Version     string                 `yaml: "version, omitempty"`
+	Inputs      map[string]Parameter   `yaml:"inputs"`
+	Annotations map[string]interface{} `yaml:"annotations"`
 }
 
 type Parameter struct {
@@ -190,6 +192,7 @@ func (rule *Rule) ComposeWskRule() *whisk.Rule {
 	pub := false
 	wskrule.Publish = &pub
 	wskrule.Trigger = rule.Trigger
+
 	wskrule.Action = rule.Action
 	return wskrule
 }
