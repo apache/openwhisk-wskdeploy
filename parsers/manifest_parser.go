@@ -18,6 +18,7 @@
 package parsers
 
 import (
+	"errors"
 	"io/ioutil"
 	"log"
 	"os"
@@ -25,6 +26,7 @@ import (
 	"strings"
 
 	"encoding/json"
+
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"gopkg.in/yaml.v2"
@@ -85,6 +87,64 @@ func (dm *YAMLParser) ParseManifest(mani string) *ManifestYAML {
 	return &maniyaml
 }
 
+func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string) (map[string]utils.DependencyRecord, error) {
+
+	depMap := make(map[string]utils.DependencyRecord)
+	for key, dependency := range mani.Package.Dependencies {
+		version := dependency.Version
+		if version == "" {
+			version = "master"
+		}
+
+		location := dependency.Location
+
+		isBinding := false
+		if utils.LocationIsBinding(location) {
+
+			if !strings.HasPrefix(location, "/") {
+				location = "/" + dependency.Location
+			}
+
+			isBinding = true
+		} else if utils.LocationIsGithub(location) {
+
+			if !strings.HasPrefix(location, "https://") && !strings.HasPrefix(location, "http://") {
+				location = "https://" + dependency.Location
+			}
+
+			isBinding = false
+		} else {
+			return nil, errors.New("Dependency type is unknown.  wskdeploy only supports /whisk.system bindings or github.com packages.")
+		}
+
+		keyValArrParams := make(whisk.KeyValueArr, 0)
+		for name, param := range dependency.Inputs {
+			var keyVal whisk.KeyValue
+			keyVal.Key = name
+
+			keyVal.Value = ResolveParameter(&param)
+
+			if keyVal.Value != nil {
+				keyValArrParams = append(keyValArrParams, keyVal)
+			}
+		}
+
+		keyValArrAnot := make(whisk.KeyValueArr, 0)
+		for name, value := range dependency.Annotations {
+			var keyVal whisk.KeyValue
+			keyVal.Key = name
+			keyVal.Value = utils.GetEnvVar(value)
+
+			keyValArrAnot = append(keyValArrAnot, keyVal)
+		}
+
+		packDir := path.Join(projectPath, "Packages")
+		depMap[key] = utils.DependencyRecord{packDir, mani.Package.Packagename, location, version, keyValArrParams, keyValArrAnot, isBinding}
+	}
+
+	return depMap, nil
+}
+
 // Is we consider multi pacakge in one yaml?
 func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error) {
 	//mani := dm.ParseManifest(manipath)
@@ -126,8 +186,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, mani *ManifestYAML) ([]
 
 			act := strings.TrimSpace(a)
 
-			// Add manifest package name to unqualified action.
-			if !strings.Contains(act, "/") {
+			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, mani.Package.Packagename+"/") {
 				act = path.Join(mani.Package.Packagename, act)
 			}
 			components = append(components, path.Join("/"+namespace, act))
@@ -311,6 +370,15 @@ func (dm *YAMLParser) ComposeRules(manifest *ManifestYAML) ([]*whisk.Rule, error
 	pkg := manifest.Package
 	for _, rule := range pkg.GetRuleList() {
 		wskrule := rule.ComposeWskRule()
+
+		act := strings.TrimSpace(wskrule.Action.(string))
+
+		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, pkg.Packagename+"/") {
+			act = path.Join(pkg.Packagename, act)
+		}
+
+		wskrule.Action = act
+
 		r1 = append(r1, wskrule)
 	}
 

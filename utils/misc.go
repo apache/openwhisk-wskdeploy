@@ -24,9 +24,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/hokaccha/go-prettyjson"
-	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/openwhisk-wskdeploy/wski18n"
 	"io"
 	"net/url"
 	"os"
@@ -34,6 +31,10 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
+
+	"github.com/hokaccha/go-prettyjson"
+	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"github.com/openwhisk/openwhisk-wskdeploy/wski18n"
 )
 
 // ActionRecord is a container to keep track of

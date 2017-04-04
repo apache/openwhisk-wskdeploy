@@ -30,6 +30,7 @@ import (
 
 type ManifestReader struct {
 	serviceDeployer *ServiceDeployer
+	IsUndeploy      bool
 }
 
 func NewManfiestReader(serviceDeployer *ServiceDeployer) *ManifestReader {
@@ -58,6 +59,8 @@ func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser
 // Wrapper parser to handle yaml dir
 func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
 
+	deps, err := manifestParser.ComposeDependencies(manifest, deployer.serviceDeployer.ProjectPath)
+
 	actions, aubindings, err := manifestParser.ComposeActions(manifest, deployer.serviceDeployer.ManifestPath)
 	utils.Check(err)
 
@@ -68,6 +71,9 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 	utils.Check(err)
 
 	rules, err := manifestParser.ComposeRules(manifest)
+	utils.Check(err)
+
+	err = deployer.SetDependencies(deps)
 	utils.Check(err)
 
 	err = deployer.SetActions(actions)
@@ -85,6 +91,29 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 	//only set api if aubindings
 	if len(aubindings) != 0 {
 		err = deployer.SetApis(sdeployer, aubindings)
+	}
+
+	return nil
+}
+
+func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRecord) error {
+	for depName, dep := range deps {
+		if !dep.IsBinding && !reader.IsUndeploy {
+			if _, exists := reader.serviceDeployer.DependencyMaster[depName]; !exists {
+				// dependency
+				gitReader := utils.NewGitReader(depName, dep)
+				err := gitReader.CloneDependency()
+				utils.Check(err)
+			} else {
+				// TODO: we should do a check to make sure this dependency is compatible with an already installed one.
+				// If not, we should throw dependency mismatch error.
+			}
+		}
+
+		// store in two places (one local to package to preserve relationship, one in master record to check for conflics
+		reader.serviceDeployer.Deployment.Packages[dep.Packagename].Dependencies[depName] = dep
+		reader.serviceDeployer.DependencyMaster[depName] = dep
+
 	}
 
 	return nil
