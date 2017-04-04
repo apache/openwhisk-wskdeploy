@@ -25,7 +25,6 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
 	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"github.com/openwhisk/openwhisk-wskdeploy/wski18n"
@@ -47,12 +46,12 @@ located under current user home.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		if wskpropsPath != "" {
-			client, _ = deployers.NewWhiskClient(wskpropsPath, cmdImp.DeploymentPath, false)
+			client, _ = deployers.NewWhiskClient(wskpropsPath, deployers.DeploymentPath, false)
 		}
 		userHome := utils.GetHomeDirectory()
 		//default to ~/.wskprops
 		propPath := path.Join(userHome, ".wskprops")
-		client, _ = deployers.NewWhiskClient(propPath, cmdImp.DeploymentPath, false)
+		client, _ = deployers.NewWhiskClient(propPath, deployers.DeploymentPath, false)
 		printDeploymentInfo(client)
 	},
 }

@@ -2,34 +2,51 @@ package cmdImp
 
 import (
 	"errors"
+	"log"
+	"os"
+	"path"
+	"path/filepath"
+	"regexp"
+
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
-	"log"
-	"path"
-	"regexp"
 )
 
 func Undeploy(params DeployParams) error {
 	// TODO: Work your own magic here
 	whisk.SetVerbose(params.Verbose)
 
-	if params.ManifestPath == "" {
-		if ok, _ := regexp.Match(ManifestFileNameYml, []byte(params.ManifestPath)); ok {
-			params.ManifestPath = path.Join(params.ProjectPath, ManifestFileNameYml)
-		} else {
-			params.ManifestPath = path.Join(params.ProjectPath, ManifestFileNameYaml)
-		}
+	projectPath, err := filepath.Abs(params.ProjectPath)
+	utils.Check(err)
 
+	if params.ManifestPath != "" {
+		if ok, _ := regexp.Match(deployers.ManifestFileNameYml, []byte(params.ManifestPath)); ok {
+			params.ManifestPath = path.Join(params.ProjectPath, deployers.ManifestFileNameYml)
+		} else {
+			params.ManifestPath = path.Join(params.ProjectPath, deployers.ManifestFileNameYaml)
+		}
+	} else {
+		if utils.FileExists(path.Join(projectPath, "manifest.yaml")) {
+			params.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYaml)
+		} else {
+			params.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYml)
+		}
 	}
 
 	if params.DeploymentPath == "" {
-		if ok, _ := regexp.Match(DeploymentFileNameYml, []byte(params.ManifestPath)); ok {
-			params.DeploymentPath = path.Join(params.ProjectPath, DeploymentFileNameYml)
+		if ok, _ := regexp.Match(deployers.DeploymentFileNameYml, []byte(params.ManifestPath)); ok {
+			params.DeploymentPath = path.Join(params.ProjectPath, deployers.DeploymentFileNameYml)
 		} else {
-			params.DeploymentPath = path.Join(params.ProjectPath, DeploymentFileNameYaml)
+			params.DeploymentPath = path.Join(params.ProjectPath, deployers.DeploymentFileNameYaml)
 		}
 
+	} else {
+		if _, err := os.Stat(path.Join(projectPath, "deployment.yaml")); err == nil {
+			params.DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYaml)
+		} else if _, err := os.Stat(path.Join(projectPath, "deployment.yml")); err == nil {
+			params.DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYml)
+		}
 	}
 
 	if utils.FileExists(params.ManifestPath) {
@@ -59,7 +76,7 @@ func Undeploy(params DeployParams) error {
 		}
 
 	} else {
-		log.Println("missing manifest.yaml file")
-		return errors.New("missing manifest.yaml file")
+		log.Println("missing manifest file")
+		return errors.New("missing manifest file")
 	}
 }

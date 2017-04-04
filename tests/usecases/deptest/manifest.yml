@@ -1,0 +1,23 @@
+package:
+  name: opentest
+  dependencies:
+    hellowhisk:
+      url: https://github.com/paulcastro/hellowhisk
+    myCloudant:
+      source: /whisk.system/cloudant
+      inputs:
+        dbname: myGreatDB
+      annotations:
+        myAnnotation: Here it is
+  sequences:
+    mySequence:
+      actions: hellowhisk/greeting, hellowhisk/httpGet
+  triggers:
+    myTrigger:
+  rules:
+    myRule:
+      trigger: myTrigger
+      action: hellowhisk/httpGet
+    myCloudantRule:
+      trigger: myTrigger
+      action: myCloudant/create-database
