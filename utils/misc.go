@@ -228,7 +228,6 @@ func GetExec(artifact string, kind string, isDocker bool, mainEntry string) (*wh
 		exec.Kind = "python:default"
 	} else if ext == ".jar" {
 		exec.Kind = "java:default"
-		exec.Jar = base64.StdEncoding.EncodeToString([]byte(code))
 		exec.Code = nil
 	} else {
 		if ext == ".zip" {

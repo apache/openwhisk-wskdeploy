@@ -21,11 +21,16 @@ updatedeps:
 
 test: deps
 	@echo "Testing"
-	go test ./...
+	go test ./... -tags=unit
 
 # Build the project
 build: test
 	go build ${LDFLAGS} -o ${BINARY}
+
+# Run the integration test against OpenWhisk
+integration_test:
+	@echo "Launch the integration tests."
+	go test -v ./... -tags=integration
 
 format:
 	@echo "Formatting"
