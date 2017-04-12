@@ -155,7 +155,55 @@ func GetJSONType(j interface{}) string {
 	return kindToJSON[reflect.TypeOf(j).Kind()]
 }
 
-func CreateZip(filename string, files []string) error {
+// zip whole folder to a zip file
+func CreateFolderZip(src, des string) error {
+	zippedFile, err := os.Create(des)
+	Check(err)
+	defer zippedFile.Close()
+
+	zipWritter := zip.NewWriter(zippedFile)
+	defer zipWritter.Close()
+
+	sinfo, err := os.Stat(src)
+	Check(err)
+
+	var basedir string
+	if sinfo.IsDir() {
+		basedir = filepath.Base(src)
+	}
+
+	filepath.Walk(src, func(path string, finfo os.FileInfo, err error) error {
+		Check(err)
+
+		header, err := zip.FileInfoHeader(finfo)
+		Check(err)
+
+		if basedir != "" {
+			header.Name = filepath.Join(basedir, strings.TrimPrefix(path, src))
+		}
+
+		if finfo.IsDir() {
+			header.Name += "/"
+		} else {
+			header.Method = zip.Deflate
+		}
+
+		writer, err := zipWritter.CreateHeader(header)
+		Check(err)
+
+		file, err := os.Open(path)
+		Check(err)
+		defer file.Close()
+		_, err = io.Copy(writer, file)
+		Check(err)
+		return err
+	})
+
+	return err
+}
+
+// zip given files to a zip file.
+func CreateFilesZip(filename string, files []string) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		return err

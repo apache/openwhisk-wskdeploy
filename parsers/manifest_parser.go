@@ -28,7 +28,6 @@ import (
 	"github.com/openwhisk/openwhisk-client-go/whisk"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"gopkg.in/yaml.v2"
-	"path/filepath"
 )
 
 // Read existing manifest file or create new if none exists
@@ -164,15 +163,8 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			filePath := strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + action.Location
 
 			if utils.IsDirectory(filePath) {
-				files := []string{}
-				filepath.Walk(filePath, func(path string, info os.FileInfo, err error) error {
-					if !info.IsDir() {
-						files = append(files, path)
-					}
-					return nil
-				})
 				zipName := filePath + ".zip"
-				err := utils.CreateZip(zipName, files)
+				err := utils.CreateFolderZip(filePath, zipName)
 				defer os.Remove(zipName)
 				utils.Check(err)
 				// To do: support docker and main entry as did by go cli?
