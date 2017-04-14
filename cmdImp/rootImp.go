@@ -10,6 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"os"
 )
 
 type DeployParams struct {
@@ -29,21 +30,31 @@ func Deploy(params DeployParams) error {
 	utils.Check(err)
 
 	if params.ManifestPath == "" {
-		if ok, _ := regexp.Match(ManifestFileNameYml, []byte(params.ManifestPath)); ok {
-			params.ManifestPath = path.Join(projectPath, ManifestFileNameYml)
+		if ok, _ := regexp.Match(deployers.ManifestFileNameYml, []byte(params.ManifestPath)); ok {
+			params.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYml)
 		} else {
-			params.ManifestPath = path.Join(projectPath, ManifestFileNameYaml)
+			params.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYaml)
 		}
-
+	} else {
+		if _, err := os.Stat(path.Join(projectPath, "manifest.yaml")); err == nil {
+			params.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYaml)
+		} else if _, err := os.Stat(path.Join(projectPath, "manifest.yml")); err == nil {
+			params.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYml)
+		}
 	}
 
 	if params.DeploymentPath == "" {
-		if ok, _ := regexp.Match(DeploymentFileNameYml, []byte(params.ManifestPath)); ok {
-			params.DeploymentPath = path.Join(projectPath, DeploymentFileNameYml)
+		if ok, _ := regexp.Match(deployers.DeploymentFileNameYml, []byte(params.ManifestPath)); ok {
+			params.DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYml)
 		} else {
-			params.DeploymentPath = path.Join(projectPath, DeploymentFileNameYaml)
+			params.DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYaml)
 		}
-
+	} else {
+		if _, err := os.Stat(path.Join(projectPath, "deployment.yaml")); err == nil {
+			params.DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYaml)
+		} else if _, err := os.Stat(path.Join(projectPath, "deployment.yml")); err == nil {
+			params.DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYml)
+		}
 	}
 
 	if utils.MayExists(params.ManifestPath) {
@@ -59,6 +70,9 @@ func Deploy(params DeployParams) error {
 		deployer.IsDefault = params.UseDefaults
 
 		deployer.IsInteractive = params.UseInteractive
+
+		// master record of any dependency that has been downloaded
+		deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
 
 		propPath := ""
 		if !utils.Flags.WithinOpenWhisk {
