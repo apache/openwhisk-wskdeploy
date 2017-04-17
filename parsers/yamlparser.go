@@ -63,6 +63,7 @@ type Action struct {
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
 	ExposedUrl string `yaml:"exposedUrl"` // used in manifest.yaml
+	Webexport  string `yaml:"web-export"` // used in manifest.yaml
 }
 
 type Sequence struct {

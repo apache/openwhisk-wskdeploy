@@ -330,3 +330,94 @@ func javaEntryError() error {
 
 	return errors.New(errMsg)
 }
+
+//for web action support, code from wsk cli with tiny adjustments
+const WEB_EXPORT_ANNOT = "web-export"
+const RAW_HTTP_ANNOT = "raw-http"
+const FINAL_ANNOT = "final"
+
+func WebAction(webMode string, annotations whisk.KeyValueArr, entityName string, fetch bool) (whisk.KeyValueArr, error) {
+	switch strings.ToLower(webMode) {
+	case "yes":
+		fallthrough
+	case "true":
+		return webActionAnnotations(fetch, annotations, entityName, addWebAnnotations)
+	case "no":
+		fallthrough
+	case "false":
+		return webActionAnnotations(fetch, annotations, entityName, deleteWebAnnotations)
+	case "raw":
+		return webActionAnnotations(fetch, annotations, entityName, addRawAnnotations)
+	default:
+		return nil, errors.New(webMode)
+	}
+}
+
+type WebActionAnnotationMethod func(annotations whisk.KeyValueArr) whisk.KeyValueArr
+
+func webActionAnnotations(
+	fetchAnnotations bool,
+	annotations whisk.KeyValueArr,
+	entityName string,
+	webActionAnnotationMethod WebActionAnnotationMethod) (whisk.KeyValueArr, error) {
+	if annotations != nil || !fetchAnnotations {
+		annotations = webActionAnnotationMethod(annotations)
+	}
+
+	return annotations, nil
+}
+
+func addWebAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
+	annotations = deleteWebAnnotationKeys(annotations)
+	annotations = addKeyValue(WEB_EXPORT_ANNOT, true, annotations)
+	annotations = addKeyValue(RAW_HTTP_ANNOT, false, annotations)
+	annotations = addKeyValue(FINAL_ANNOT, true, annotations)
+
+	return annotations
+}
+
+func deleteWebAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
+	annotations = deleteWebAnnotationKeys(annotations)
+	annotations = addKeyValue(WEB_EXPORT_ANNOT, false, annotations)
+	annotations = addKeyValue(RAW_HTTP_ANNOT, false, annotations)
+	annotations = addKeyValue(FINAL_ANNOT, false, annotations)
+
+	return annotations
+}
+
+func addRawAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
+	annotations = deleteWebAnnotationKeys(annotations)
+	annotations = addKeyValue(WEB_EXPORT_ANNOT, true, annotations)
+	annotations = addKeyValue(RAW_HTTP_ANNOT, true, annotations)
+	annotations = addKeyValue(FINAL_ANNOT, true, annotations)
+
+	return annotations
+}
+
+func deleteWebAnnotationKeys(annotations whisk.KeyValueArr) whisk.KeyValueArr {
+	annotations = deleteKey(WEB_EXPORT_ANNOT, annotations)
+	annotations = deleteKey(RAW_HTTP_ANNOT, annotations)
+	annotations = deleteKey(FINAL_ANNOT, annotations)
+
+	return annotations
+}
+
+func deleteKey(key string, keyValueArr whisk.KeyValueArr) whisk.KeyValueArr {
+	for i := 0; i < len(keyValueArr); i++ {
+		if keyValueArr[i].Key == key {
+			keyValueArr = append(keyValueArr[:i], keyValueArr[i+1:]...)
+			break
+		}
+	}
+
+	return keyValueArr
+}
+
+func addKeyValue(key string, value interface{}, keyValueArr whisk.KeyValueArr) whisk.KeyValueArr {
+	keyValue := whisk.KeyValue{
+		Key:   key,
+		Value: value,
+	}
+
+	return append(keyValueArr, keyValue)
+}

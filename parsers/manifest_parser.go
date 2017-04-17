@@ -236,8 +236,11 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			keyValArr = append(keyValArr, keyVal)
 		}
 
-		if len(keyValArr) > 0 {
-			wskaction.Annotations = keyValArr
+		// only set the webaction when the annotations are not empty.
+		if len(keyValArr) > 0 && action.Webexport == "true" {
+			//wskaction.Annotations = keyValArr
+			wskaction.Annotations, err = utils.WebAction("yes", keyValArr, action.Name, false)
+			utils.Check(err)
 		}
 
 		wskaction.Name = key
