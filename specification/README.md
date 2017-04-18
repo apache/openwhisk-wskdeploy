@@ -2,7 +2,7 @@
 
 Updated: 2017-02-02
 
-Current version (link):  [openwhisk_v0.8.3.pdf](https://github.com/openwhisk/openwhisk-wskdeploy/raw/master/specification/openwhisk_v0.8.3.pdf)
+Current version (link):  [openwhisk_v0.8.4.pdf](https://github.com/openwhisk/openwhisk-wskdeploy/raw/master/specification/openwhisk_v0.8.4.pdf)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
@@ -39,10 +39,7 @@ The specification includes the following general sections:
   
 ## Formats
 
-Once the draft progresses further (i.e., known outstanding "high priority" design issues have been addressed), we will make the document available in markdown.  At this time the following formats are provided for review:
-
-* PDF: [openwhisk_v0.8.pdf](openwhisk_v0.8.pdf)
-
+Once the draft progresses further (i.e., known outstanding "high priority" design issues have been addressed), we will make the document available in markdown. 
 ---
 
 ### Conceptual Manifest and Deployment file usage
