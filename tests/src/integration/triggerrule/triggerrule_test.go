@@ -4,25 +4,20 @@ package tests
 
 import (
 	"testing"
-	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
+	"github.com/openwhisk/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
 )
 
+var wskprops = common.GetWskprops()
+
 // TODO: write the integration against openwhisk
 func TestTriggerRule(t *testing.T) {
-	// Load configuration file
-
-	//Assign the parameters to deploy and undeploy the action
-	deployParams := cmdImp.DeployParams{false, ".", manifestPath, deploymentPath, false, false}
-	undeployParams := cmdImp.DeployParams{false, ".", manifestPath, deploymentPath, false, false}
-
-	// Deploy the action
-	err := cmdImp.Deploy(deployParams)
+	os.Setenv("__OW_API_HOST", wskprops.APIHost)
+	wskdeploy := common.NewWskdeploy()
+	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
-
-	// Undeploy the action
-	err = cmdImp.Undeploy(undeployParams)
+	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files.")
 }
 

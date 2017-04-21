@@ -21,6 +21,7 @@ install:
 script:
   - make lint
   - make build
+  - export PATH=$PATH:$TRAVIS_BUILD_DIR;
   - export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/openwhisk"
   - ./tools/travis/install_openwhisk.sh
   - make integration_test
