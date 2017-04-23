@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package cmd
+// shared.go
+package deployers
 
-import (
-	"fmt"
+// name of manifest and deployment files
+const ManifestFileNameYaml = "manifest.yaml"
+const ManifestFileNameYml = "manifest.yml"
+const DeploymentFileNameYaml = "deployment.yaml"
+const DeploymentFileNameYml = "deployment.yml"
 
-	"github.com/spf13/cobra"
-	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
-)
+var CfgFile string
+var CliVersion string
+var CliBuild string
 
-func init() {
-	RootCmd.AddCommand(versionCmd)
-}
-
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Print the version number of openwhisk-wskdeploy",
-	Long:  `Print the version number of openwhisk-wskdeploy`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("openwhisk-wskdeploy version is %s--%s\n", cmdImp.CliBuild, cmdImp.CliVersion)
-	},
-}
+// used to configure service deployer for various commands
+// TODO: should move this into utils.Flags
+var Verbose bool
+var ProjectPath string
+var DeploymentPath string
+var ManifestPath string
+var UseDefaults bool
+var UseInteractive bool

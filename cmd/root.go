@@ -31,8 +31,9 @@ import (
 
 	"encoding/json"
 	"errors"
-	"github.com/openwhisk/openwhisk-client-go/wski18n"
 	"strings"
+
+	"github.com/openwhisk/openwhisk-client-go/wski18n"
 )
 
 var RootCmd = &cobra.Command{
