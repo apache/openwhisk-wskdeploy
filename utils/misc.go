@@ -24,9 +24,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/hokaccha/go-prettyjson"
-	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/openwhisk-wskdeploy/wski18n"
 	"io"
 	"net/url"
 	"os"
@@ -34,6 +31,10 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
+
+	"github.com/hokaccha/go-prettyjson"
+	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"github.com/openwhisk/openwhisk-wskdeploy/wski18n"
 )
 
 // ActionRecord is a container to keep track of
@@ -43,6 +44,17 @@ type ActionRecord struct {
 	Action      *whisk.Action
 	Packagename string
 	Filepath    string
+}
+
+type DependencyRecord struct {
+	ProjectPath string
+	Packagename string
+	Url         string
+	Source      string
+	Version     string
+	Parameters  whisk.KeyValueArr
+	Annotations whisk.KeyValueArr
+	IsBinding   bool
 }
 
 type TriggerRecord struct {

@@ -23,6 +23,7 @@ import (
 	"os"
 
 	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
+	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
 	"github.com/openwhisk/openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -31,8 +32,9 @@ import (
 
 	"encoding/json"
 	"errors"
-	"github.com/openwhisk/openwhisk-client-go/wski18n"
 	"strings"
+
+	"github.com/openwhisk/openwhisk-client-go/wski18n"
 )
 
 var RootCmd = &cobra.Command{
@@ -52,8 +54,8 @@ var Deploy = cmdImp.Deploy
 
 func RootCmdImp(cmd *cobra.Command, args []string) {
 	// Set all the parameters passed via the command to the struct of wskdeploy command.
-	deployParams := cmdImp.DeployParams{cmdImp.Verbose, cmdImp.ProjectPath, cmdImp.ManifestPath,
-		cmdImp.DeploymentPath, cmdImp.UseDefaults, cmdImp.UseInteractive}
+	deployParams := cmdImp.DeployParams{deployers.Verbose, deployers.ProjectPath, deployers.ManifestPath,
+		deployers.DeploymentPath, deployers.UseDefaults, deployers.UseInteractive}
 	// Call the implementation of wskdeploy command.
 	Deploy(deployParams)
 
@@ -113,16 +115,16 @@ func init() {
 	// Cobra supports Persistent Flags, which, if defined here,
 	// will be global for your application.
 
-	RootCmd.PersistentFlags().StringVar(&cmdImp.CfgFile, "config", "", "config file (default is $HOME/.wskdeploy.yaml)")
+	RootCmd.PersistentFlags().StringVar(&deployers.CfgFile, "config", "", "config file (default is $HOME/.wskdeploy.yaml)")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	RootCmd.Flags().StringVarP(&cmdImp.ProjectPath, "pathpath", "p", ".", "path to serverless project")
-	RootCmd.Flags().StringVarP(&cmdImp.ManifestPath, "manifest", "m", "", "path to manifest file")
-	RootCmd.Flags().StringVarP(&cmdImp.DeploymentPath, "deployment", "d", "", "path to deployment file")
-	RootCmd.PersistentFlags().BoolVarP(&cmdImp.UseInteractive, "allow-interactive", "i", !utils.Flags.WithinOpenWhisk, "allow interactive prompts")
-	RootCmd.PersistentFlags().BoolVarP(&cmdImp.UseDefaults, "allow-defaults", "a", false, "allow defaults")
-	RootCmd.PersistentFlags().BoolVarP(&cmdImp.Verbose, "verbose", "v", false, "verbose output")
+	RootCmd.Flags().StringVarP(&deployers.ProjectPath, "pathpath", "p", ".", "path to serverless project")
+	RootCmd.Flags().StringVarP(&deployers.ManifestPath, "manifest", "m", "", "path to manifest file")
+	RootCmd.Flags().StringVarP(&deployers.DeploymentPath, "deployment", "d", "", "path to deployment file")
+	RootCmd.PersistentFlags().BoolVarP(&deployers.UseInteractive, "allow-interactive", "i", !utils.Flags.WithinOpenWhisk, "allow interactive prompts")
+	RootCmd.PersistentFlags().BoolVarP(&deployers.UseDefaults, "allow-defaults", "a", false, "allow defaults")
+	RootCmd.PersistentFlags().BoolVarP(&deployers.Verbose, "verbose", "v", false, "verbose output")
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ApiHost, "apihost", "", "", wski18n.T("whisk API HOST"))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Auth, "auth", "u", "", wski18n.T("authorization `KEY`"))
 	RootCmd.PersistentFlags().StringVar(&utils.Flags.ApiVersion, "apiversion", "", wski18n.T("whisk API `VERSION`"))
@@ -130,9 +132,9 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cmdImp.CfgFile != "" {
+	if deployers.CfgFile != "" {
 		// enable ability to specify config file via flag
-		viper.SetConfigFile(cmdImp.CfgFile)
+		viper.SetConfigFile(deployers.CfgFile)
 	}
 
 	viper.SetConfigName(".wskdeploy") // name of config file (without extension)

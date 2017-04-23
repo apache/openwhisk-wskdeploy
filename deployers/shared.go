@@ -16,7 +16,7 @@
  */
 
 // shared.go
-package cmdImp
+package deployers
 
 // name of manifest and deployment files
 const ManifestFileNameYaml = "manifest.yaml"
