@@ -15,19 +15,19 @@ func Undeploy(params DeployParams) error {
 	whisk.SetVerbose(params.Verbose)
 
 	if params.ManifestPath == "" {
-		if ok, _ := regexp.Match(ManifestFileNameYml, []byte(params.ManifestPath)); ok {
-			params.ManifestPath = path.Join(params.ProjectPath, ManifestFileNameYml)
+		if ok, _ := regexp.Match(deployers.ManifestFileNameYml, []byte(params.ManifestPath)); ok {
+			params.ManifestPath = path.Join(params.ProjectPath, deployers.ManifestFileNameYml)
 		} else {
-			params.ManifestPath = path.Join(params.ProjectPath, ManifestFileNameYaml)
+			params.ManifestPath = path.Join(params.ProjectPath, deployers.ManifestFileNameYaml)
 		}
 
 	}
 
 	if params.DeploymentPath == "" {
-		if ok, _ := regexp.Match(DeploymentFileNameYml, []byte(params.ManifestPath)); ok {
-			params.DeploymentPath = path.Join(params.ProjectPath, DeploymentFileNameYml)
+		if ok, _ := regexp.Match(deployers.DeploymentFileNameYml, []byte(params.ManifestPath)); ok {
+			params.DeploymentPath = path.Join(params.ProjectPath, deployers.DeploymentFileNameYml)
 		} else {
-			params.DeploymentPath = path.Join(params.ProjectPath, DeploymentFileNameYaml)
+			params.DeploymentPath = path.Join(params.ProjectPath, deployers.DeploymentFileNameYaml)
 		}
 
 	}
