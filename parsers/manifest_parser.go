@@ -126,7 +126,8 @@ func (dm *YAMLParser) ComposeSequences(namespace string, mani *ManifestYAML) ([]
 
 			act := strings.TrimSpace(a)
 
-			if !strings.HasPrefix(act, mani.Package.Packagename+"/") {
+			// Add manifest package name to unqualified action.
+			if !strings.Contains(act, "/") {
 				act = path.Join(mani.Package.Packagename, act)
 			}
 			components = append(components, path.Join("/"+namespace, act))
@@ -137,6 +138,19 @@ func (dm *YAMLParser) ComposeSequences(namespace string, mani *ManifestYAML) ([]
 		pub := false
 		wskaction.Publish = &pub
 		wskaction.Namespace = namespace
+
+		keyValArr := make(whisk.KeyValueArr, 0)
+		for name, value := range sequence.Annotations {
+			var keyVal whisk.KeyValue
+			keyVal.Key = name
+			keyVal.Value = utils.GetEnvVar(value)
+
+			keyValArr = append(keyValArr, keyVal)
+		}
+
+		if len(keyValArr) > 0 {
+			wskaction.Annotations = keyValArr
+		}
 
 		record := utils.ActionRecord{wskaction, mani.Package.Packagename, key}
 		s1 = append(s1, record)

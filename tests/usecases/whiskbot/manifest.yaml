@@ -44,7 +44,7 @@ package:
         inputs:
           configPage:
             type: string
-    seqeunces:
+    sequences:
       newbot: 
         actions: oauth/login, decrypt, newbot-setup
         annotations:
