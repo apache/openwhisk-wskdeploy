@@ -245,7 +245,7 @@ func (reader *ManifestReader) SetRules(rules []*whisk.Rule) error {
 
 func (reader *ManifestReader) SetApis(deployer *ServiceDeployer, aubs []*utils.ActionExposedURLBinding) error {
 	dep := reader.serviceDeployer
-	var apis []*whisk.SendApi = make([]*whisk.SendApi, 0)
+	var apis []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
@@ -268,8 +268,8 @@ func (reader *ManifestReader) SetApis(deployer *ServiceDeployer, aubs []*utils.A
 }
 
 // create the api entity according to the action definition and deployer.
-func createApiEntity(dp *ServiceDeployer, au *utils.ActionExposedURLBinding) *whisk.SendApi {
-	sendapi := new(whisk.SendApi)
+func createApiEntity(dp *ServiceDeployer, au *utils.ActionExposedURLBinding) *whisk.ApiCreateRequest {
+	sendapi := new(whisk.ApiCreateRequest)
 	api := new(whisk.Api)
 	//Compose the api
 	bindingInfo := strings.Split(au.ExposedUrl, "/")

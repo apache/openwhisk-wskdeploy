@@ -9,7 +9,7 @@ BUILD=`git rev-parse HEAD`
 
 deps:
 	@echo "Installing dependencies"
-	@go get -d -t ./...
+	go get -d -t ./...
 
 
 LDFLAGS=-ldflags "-X main.Version=`date -u '+%Y-%m-%dT%H:%M:%S'` -X main.Build=`git rev-parse HEAD` "
