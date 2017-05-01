@@ -34,7 +34,7 @@ type DeploymentApplication struct {
 	Packages map[string]*DeploymentPackage
 	Triggers map[string]*whisk.Trigger
 	Rules    map[string]*whisk.Rule
-	Apis     map[string]*whisk.SendApi
+	Apis     map[string]*whisk.ApiCreateRequest
 }
 
 func NewDeploymentApplication() *DeploymentApplication {
@@ -42,7 +42,7 @@ func NewDeploymentApplication() *DeploymentApplication {
 	dep.Packages = make(map[string]*DeploymentPackage)
 	dep.Triggers = make(map[string]*whisk.Trigger)
 	dep.Rules = make(map[string]*whisk.Rule)
-	dep.Apis = make(map[string]*whisk.SendApi)
+	dep.Apis = make(map[string]*whisk.ApiCreateRequest)
 	return &dep
 }
 
@@ -424,8 +424,8 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 }
 
 // create api gateway
-func (deployer *ServiceDeployer) createApi(api *whisk.SendApi) {
-	_, _, err := deployer.Client.Apis.Insert(api, true)
+func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) {
+	_, _, err := deployer.Client.Apis.Insert(api, nil, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		log.Printf("Got error creating api with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
