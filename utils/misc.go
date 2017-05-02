@@ -140,6 +140,9 @@ func GetEnvVar(key interface{}) interface{} {
 				return value
 			}
 			return envkey
+			// for issue #172.
+		} else if key.(string) == "string" {
+			return ""
 		}
 		return key.(string)
 	}

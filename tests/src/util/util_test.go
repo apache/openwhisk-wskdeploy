@@ -43,4 +43,5 @@ func TestGetEnvVar(t *testing.T) {
 	assert.Equal(t, "oh, dollars!", utils.GetEnvVar("$WithDollar"), "dollar sign should be handled")
 	assert.Equal(t, "5000", utils.GetEnvVar("5000"), "Should be no difference between integer and string")
 	assert.Equal(t, "WithDollarAgain", utils.GetEnvVar("$WithDollarAgain"), "if not found, just return the env")
+	assert.Equal(t, "", utils.GetEnvVar("string"), "string should be empty")
 }
