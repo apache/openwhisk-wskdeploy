@@ -1,25 +1,23 @@
 // +build unit
 
-package tests
+package parsers
 
 import (
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
-
-	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
-	"github.com/stretchr/testify/assert"
 )
 
-var manifest_yaml = "../../usecases/helloworld/manifest.yaml"
-var manifestfile1 = "../../dat/manifest1.yaml"
-var manifestfile3 = "../../dat/manifest3.yaml"
-var manifestfile4 = "../../dat/manifest4.yaml"
-var manifestfile5 = "../../dat/manifest5.yaml"
-var manifestfile6 = "../../dat/manifest6.yaml"
-var testfile1 = "../../dat/deploy1.yaml"
-var testfile2 = "../../dat/deploy2.yaml"
-var testfile3 = "../../dat/deploy3.yaml"
-var testfile4 = "../../dat/deploy4.yaml"
+var manifest_yaml = "../tests/usecases/helloworld/manifest.yaml"
+var manifestfile1 = "../tests/dat/manifest1.yaml"
+var manifestfile3 = "../tests/dat/manifest3.yaml"
+var manifestfile4 = "../tests/dat/manifest4.yaml"
+var manifestfile5 = "../tests/dat/manifest5.yaml"
+var manifestfile6 = "../tests/dat/manifest6.yaml"
+var testfile1 = "../tests/dat/deploy1.yaml"
+var testfile2 = "../tests/dat/deploy2.yaml"
+var testfile3 = "../tests/dat/deploy3.yaml"
+var testfile4 = "../tests/dat/deploy4.yaml"
 
 func TestParseManifestYAML(t *testing.T) {
 	data, err := ioutil.ReadFile(manifest_yaml)
@@ -27,8 +25,8 @@ func TestParseManifestYAML(t *testing.T) {
 		panic(err)
 	}
 
-	var manifest parsers.ManifestYAML
-	err = parsers.NewYAMLParser().Unmarshal(data, &manifest)
+	var manifest ManifestYAML
+	err = NewYAMLParser().Unmarshal(data, &manifest)
 	if err != nil {
 		panic(err)
 	}
@@ -55,8 +53,8 @@ func TestParseManifestYAML_trigger(t *testing.T) {
 		panic(err)
 	}
 
-	var manifest parsers.ManifestYAML
-	err = parsers.NewYAMLParser().Unmarshal(data, &manifest)
+	var manifest ManifestYAML
+	err = NewYAMLParser().Unmarshal(data, &manifest)
 	if err != nil {
 		panic(err)
 	}
@@ -80,8 +78,8 @@ func TestParseManifestYAML_rule(t *testing.T) {
 		panic(err)
 	}
 
-	var manifest parsers.ManifestYAML
-	err = parsers.NewYAMLParser().Unmarshal(data, &manifest)
+	var manifest ManifestYAML
+	err = NewYAMLParser().Unmarshal(data, &manifest)
 	if err != nil {
 		panic(err)
 	}
@@ -106,8 +104,8 @@ func TestParseManifestYAML_feed(t *testing.T) {
 		panic(err)
 	}
 
-	var manifest parsers.ManifestYAML
-	err = parsers.NewYAMLParser().Unmarshal(data, &manifest)
+	var manifest ManifestYAML
+	err = NewYAMLParser().Unmarshal(data, &manifest)
 	if err != nil {
 		panic(err)
 	}
@@ -140,8 +138,8 @@ func TestParseManifestYAML_param(t *testing.T) {
 		panic(err)
 	}
 
-	var manifest parsers.ManifestYAML
-	err = parsers.NewYAMLParser().Unmarshal(data, &manifest)
+	var manifest ManifestYAML
+	err = NewYAMLParser().Unmarshal(data, &manifest)
 	if err != nil {
 		panic(err)
 	}
@@ -204,7 +202,7 @@ func TestParseManifestYAML_param(t *testing.T) {
 
 func TestParseDeploymentYAML_Application(t *testing.T) {
 	//var deployment utils.DeploymentYAML
-	mm := parsers.NewYAMLParser()
+	mm := NewYAMLParser()
 	deployment := mm.ParseDeployment(testfile1)
 
 	//get and verify application name
@@ -216,7 +214,7 @@ func TestParseDeploymentYAML_Application(t *testing.T) {
 
 func TestParseDeploymentYAML_Package(t *testing.T) {
 	//var deployment utils.DeploymentYAML
-	mm := parsers.NewYAMLParser()
+	mm := NewYAMLParser()
 	deployment := mm.ParseDeployment(testfile2)
 
 	assert.Equal(t, 1, len(deployment.Application.Packages), "Get package list failed.")
@@ -237,7 +235,7 @@ func TestParseDeploymentYAML_Package(t *testing.T) {
 }
 
 func TestParseDeploymentYAML_Action(t *testing.T) {
-	mm := parsers.NewYAMLParser()
+	mm := NewYAMLParser()
 	deployment := mm.ParseDeployment(testfile2)
 
 	for pkg_name := range deployment.Application.Packages {
@@ -264,7 +262,7 @@ func TestParseDeploymentYAML_Action(t *testing.T) {
 }
 
 func TestComposeWskPackage(t *testing.T) {
-	mm := parsers.NewYAMLParser()
+	mm := NewYAMLParser()
 	deployment := mm.ParseDeployment(testfile2)
 	manifest := mm.ParseManifest(manifestfile1)
 
@@ -282,7 +280,7 @@ func TestComposeWskPackage(t *testing.T) {
 }
 
 func TestComposeWskTrigger(t *testing.T) {
-	mm := parsers.NewYAMLParser()
+	mm := NewYAMLParser()
 	deployment := mm.ParseDeployment(testfile4)
 	manifest := mm.ParseManifest(manifestfile3)
 
@@ -308,7 +306,7 @@ func TestComposeWskTrigger(t *testing.T) {
 }
 
 func TestComposeWskRule(t *testing.T) {
-	mm := parsers.NewYAMLParser()
+	mm := NewYAMLParser()
 	manifest := mm.ParseManifest(manifestfile4)
 
 	pkg := manifest.Package

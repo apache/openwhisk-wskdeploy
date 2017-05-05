@@ -1,16 +1,15 @@
 // +build unit
 
-package tests
+package cmd
 
 import (
 	"bytes"
-	"strings"
-	"testing"
-	"github.com/spf13/cobra"
-	"github.com/apache/incubator-openwhisk-wskdeploy/cmd"
 	"github.com/apache/incubator-openwhisk-wskdeploy/cmdImp"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
+	"strings"
+	"testing"
 )
 
 var rootcalled bool
@@ -18,14 +17,14 @@ var rootcalled bool
 type RootCommand struct {
 }
 
-func (rootCommand *RootCommand) Deploy (params cmdImp.DeployParams) error {
+func (rootCommand *RootCommand) Deploy(params cmdImp.DeployParams) error {
 	rootcalled = true
 	return nil
 }
 
 func functionMock() {
 	rootCommand := &RootCommand{}
-	cmd.Deploy = rootCommand.Deploy
+	Deploy = rootCommand.Deploy
 }
 
 type resulter struct {
@@ -37,7 +36,7 @@ type resulter struct {
 func initializeWithRootCmd() *cobra.Command {
 	rootcalled = false
 	functionMock()
-	return cmd.RootCmd
+	return RootCmd
 }
 
 func fullSetupTest(input string) resulter {
@@ -54,20 +53,20 @@ func fullTester(c *cobra.Command, input string) resulter {
 }
 
 type Auth_flags struct {
-	ApiHost         string
-	Auth            string
-	ApiVersion      string
+	ApiHost    string
+	Auth       string
+	ApiVersion string
 }
 
 var expected_auth_flags Auth_flags
 
 type Input struct {
-	CfgFile string
-	Verbose bool
-	ProjectPath string
+	CfgFile        string
+	Verbose        bool
+	ProjectPath    string
 	DeploymentPath string
-	ManifestPath string
-	UseDefaults bool
+	ManifestPath   string
+	UseDefaults    bool
 	UseInteractive bool
 }
 

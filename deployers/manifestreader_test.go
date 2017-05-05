@@ -1,23 +1,22 @@
 // +build unit
 
-package tests
+package deployers
 
 import (
-	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-var mr *deployers.ManifestReader
+var mr *ManifestReader
 var ps *parsers.YAMLParser
 var ms *parsers.ManifestYAML
 
 func init() {
 
-	sd = deployers.NewServiceDeployer()
+	sd = NewServiceDeployer()
 	sd.ManifestPath = manifest_file
-	mr = deployers.NewManfiestReader(sd)
+	mr = NewManfiestReader(sd)
 	ps = parsers.NewYAMLParser()
 	ms = ps.ParseManifest(manifest_file)
 }
@@ -36,7 +35,7 @@ func TestManifestReader_InitRootPackage(t *testing.T) {
 
 // Test Parameters
 func TestManifestReader_param(t *testing.T) {
-	ms := ps.ParseManifest("../../dat/manifest6.yaml")
+	ms := ps.ParseManifest("../tests/dat/manifest6.yaml")
 	err := mr.InitRootPackage(ps, ms)
 	assert.Equal(t, err, nil, "Init Root Package failed")
 

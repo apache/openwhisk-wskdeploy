@@ -32,9 +32,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/hokaccha/go-prettyjson"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/hokaccha/go-prettyjson"
 )
 
 // ActionRecord is a container to keep track of

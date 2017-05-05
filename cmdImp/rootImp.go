@@ -7,10 +7,10 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"log"
+	"os"
 	"path"
 	"path/filepath"
 	"regexp"
-	"os"
 )
 
 type DeployParams struct {
