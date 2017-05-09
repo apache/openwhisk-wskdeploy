@@ -2,10 +2,10 @@ package cmdImp
 
 import (
 	"errors"
-	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/openwhisk-client-go/wski18n"
-	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-client-go/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"log"
 	"path"
 	"path/filepath"

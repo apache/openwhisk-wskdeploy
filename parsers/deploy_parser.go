@@ -20,7 +20,7 @@ package parsers
 import (
 	"log"
 
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"gopkg.in/yaml.v2"
 )
 

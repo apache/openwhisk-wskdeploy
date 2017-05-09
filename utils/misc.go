@@ -33,8 +33,8 @@ import (
 	"strings"
 
 	"github.com/hokaccha/go-prettyjson"
-	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 // ActionRecord is a container to keep track of

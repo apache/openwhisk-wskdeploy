@@ -20,7 +20,7 @@ package deployers
 import (
 	"fmt"
 
-	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
 // The verifier will filter the deployer against the target DeploymentApplication

@@ -25,9 +25,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 )
 
 func NewWhiskClient(proppath string, deploymentPath string, isInteractive bool) (*whisk.Client, *whisk.Config) {

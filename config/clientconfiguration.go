@@ -23,8 +23,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 )
 
 var ClientConfig *whisk.Config

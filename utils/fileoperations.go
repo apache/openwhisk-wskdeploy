@@ -26,7 +26,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"log"
 )
 

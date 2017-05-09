@@ -18,8 +18,8 @@
 package main
 
 import (
-	"github.com/openwhisk/openwhisk-wskdeploy/cmd"
-	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
+	"github.com/apache/incubator-openwhisk-wskdeploy/cmd"
+	"github.com/apache/incubator-openwhisk-wskdeploy/cmdImp"
 )
 
 func main() {

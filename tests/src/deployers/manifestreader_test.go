@@ -3,8 +3,8 @@
 package tests
 
 import (
-	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
-	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
