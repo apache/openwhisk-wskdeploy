@@ -22,8 +22,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/cmdImp"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -31,7 +31,7 @@ import (
 
 	"encoding/json"
 	"errors"
-	"github.com/openwhisk/openwhisk-client-go/wski18n"
+	"github.com/apache/incubator-openwhisk-client-go/wski18n"
 	"strings"
 )
 

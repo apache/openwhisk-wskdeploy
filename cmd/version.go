@@ -19,7 +19,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
+	"github.com/apache/incubator-openwhisk-wskdeploy/cmdImp"
 	"github.com/spf13/cobra"
 )
 

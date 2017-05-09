@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"fmt"
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/stretchr/testify/assert"
 	"os"
 )

@@ -13,7 +13,7 @@ type Wskdeploy struct {
 }
 
 func NewWskdeploy() *Wskdeploy {
-	return NewWskWithPath(os.Getenv("GOPATH") + "/src/github.com/openwhisk/openwhisk-wskdeploy/")
+	return NewWskWithPath(os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/")
 }
 
 func NewWskWithPath(path string) *Wskdeploy {

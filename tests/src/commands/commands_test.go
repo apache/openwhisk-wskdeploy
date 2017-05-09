@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 	"github.com/spf13/cobra"
-	"github.com/openwhisk/openwhisk-wskdeploy/cmd"
-	"github.com/openwhisk/openwhisk-wskdeploy/cmdImp"
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/cmd"
+	"github.com/apache/incubator-openwhisk-wskdeploy/cmdImp"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/stretchr/testify/assert"
 )
 

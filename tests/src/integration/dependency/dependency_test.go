@@ -3,7 +3,7 @@
 package tests
 
 import (
-	"github.com/openwhisk/openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -23,6 +23,6 @@ func TestDependency(t *testing.T) {
 }
 
 var (
-	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/openwhisk/openwhisk-wskdeploy/tests/src/integration/dependency/manifest.yaml"
+	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/dependency/manifest.yaml"
 	deploymentPath = ""
 )

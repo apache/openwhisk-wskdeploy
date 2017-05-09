@@ -27,8 +27,8 @@ import (
 
 	"encoding/json"
 
-	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"gopkg.in/yaml.v2"
 )
 

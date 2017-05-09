@@ -4,7 +4,7 @@ package tests
 
 import (
 	"testing"
-	"github.com/openwhisk/openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
 )
@@ -22,7 +22,7 @@ func TestTriggerRule(t *testing.T) {
 }
 
 var (
-	manifestPath = os.Getenv("GOPATH") + "/src/github.com/openwhisk/openwhisk-wskdeploy/tests/src/integration/triggerrule/manifest.yml"
-	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/openwhisk/openwhisk-wskdeploy/tests/src/integration/triggerrule/deployment.yml"
+	manifestPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/triggerrule/manifest.yml"
+	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/triggerrule/deployment.yml"
 )
 

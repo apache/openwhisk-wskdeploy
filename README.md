@@ -39,7 +39,7 @@ $ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/trigg
 will deploy the `triggerrule` test case.
 
 # Where to download the binary wskdeploy
-`wskdeploy` is available on the release page of openwhisk-wskdeploy project: [click here to download](https://github.com/openwhisk/openwhisk-wskdeploy/releases).
+`wskdeploy` is available on the release page of openwhisk-wskdeploy project: [click here to download](https://github.com/apache/incubator-openwhisk-wskdeploy/releases).
 We currently have binaries available for Linux, Mac OS and windows under amd64 architecture. You can find the binary, which fits your local environment.
 
 
@@ -52,13 +52,13 @@ Then download `wskdeploy` and dependencies by typing:
 
 ```sh
 $ cd $GOPATH
-$ go get github.com/openwhisk/openwhisk-wskdeploy  # see known issues below if you get an error
+$ go get github.com/apache/incubator-openwhisk-wskdeploy  # see known issues below if you get an error
 ```
 
 And finally build `wskdeploy`
 
 ```sh
-$ cd src/github.com/openwhisk/openwhisk-wskdeploy/
+$ cd src/github.com/apache/incubator-openwhisk-wskdeploy/
 $ go build -o wskdeploy
 ```
 
@@ -84,9 +84,9 @@ Start by creating a fork of `openwhisk-wskdeploy` and then change the git `origi
 your forked repository, as follows:
 
 ```sh
-$ cd $GOPATH/src/github.com/openwhisk/openwhisk-wskdeploy
+$ cd $GOPATH/src/github.com/apache/incubator-openwhisk-wskdeploy
 $ git remote rename origin upstream
-$ git remote add origin https://github.com/<your fork>/openwhisk-wskdeploy
+$ git remote add origin https://github.com/<your fork>/incubator-openwhisk-wskdeploy
 $ git branch --set-upstream-to origin/master  # track master from origin now
 ```
 
@@ -100,7 +100,7 @@ After compiling, a suitable wskdeploy binary that works for your OS platform wil
 
 2. Make sure you have Java 1.7 or above installed.
 
-3. Clone the wskdeploy repo with command ```git clone https://github.com/openwhisk/openwhisk-wskdeploy.git```
+3. Clone the wskdeploy repo with command ```git clone https://github.com/apache/incubator-openwhisk-wskdeploy.git```
 
 4. If you use Windows OS, type ```gradlew.bat -version ```. For Unix/Linux/Mac, please type ```./gradlew -version```.
 

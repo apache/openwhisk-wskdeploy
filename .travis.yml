@@ -47,6 +47,6 @@ deploy:
   file: ${build_file_name}-*.zip
   skip_cleanup: true
   on:
-    repo: openwhisk/openwhisk-wskdeploy
+    repo: apache/incubator-openwhisk-wskdeploy
     tags: true
     condition: "$DEPLOY_BUILD_READY = true"

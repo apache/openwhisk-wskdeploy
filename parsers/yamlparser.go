@@ -18,7 +18,7 @@
 package parsers
 
 import (
-	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
 // structs that denotes the sample manifest.yaml, wrapped yaml.v2
