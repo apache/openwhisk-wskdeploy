@@ -14,7 +14,7 @@ ADD . /src/github.com/apache/incubator-openwhisk-wskdeploy
 
 # Load all of the dependencies from the previously generated/saved godep generated godeps.json file
 RUN echo "Restoring Go dependencies"
-RUN cd /src/github.com/apache/incubator-wskdeploy && /bin/godep restore -v
+RUN cd /src/github.com/apache/incubator-openwhisk-wskdeploy && /bin/godep restore -v
 
 # All of the Go CLI binaries will be placed under a build folder
 RUN mkdir /src/github.com/apache/incubator-openwhisk-wskdeploy/build
