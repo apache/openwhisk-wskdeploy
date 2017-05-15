@@ -12,6 +12,7 @@ import (
 
 var wskprops = common.GetWskprops()
 
+
 func TestZipAction(t *testing.T) {
 	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
@@ -22,6 +23,6 @@ func TestZipAction(t *testing.T) {
 }
 
 var (
-	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/zipaction/manifest.yaml"
-	deploymentPath = "" 
+	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/zipaction/manifest.yml"
+	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/zipaction/deployment.yml"
 )

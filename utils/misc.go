@@ -156,96 +156,59 @@ func GetJSONType(j interface{}) string {
 	return kindToJSON[reflect.TypeOf(j).Kind()]
 }
 
-// zip whole folder to a zip file
-func CreateFolderZip(src, des string) error {
-	zippedFile, err := os.Create(des)
-	Check(err)
-	defer zippedFile.Close()
-
-	zipWritter := zip.NewWriter(zippedFile)
-	defer zipWritter.Close()
-
-	sinfo, err := os.Stat(src)
-	Check(err)
-
-	var basedir string
-	if sinfo.IsDir() {
-		basedir = filepath.Base(src)
-	}
-
-	filepath.Walk(src, func(path string, finfo os.FileInfo, err error) error {
-		Check(err)
-
-		header, err := zip.FileInfoHeader(finfo)
-		Check(err)
-
-		if basedir != "" {
-			header.Name = filepath.Join(basedir, strings.TrimPrefix(path, src))
-		}
-
-		if finfo.IsDir() {
-			header.Name += "/"
-		} else {
-			header.Method = zip.Deflate
-		}
-
-		writer, err := zipWritter.CreateHeader(header)
-		Check(err)
-
-		file, err := os.Open(path)
-		Check(err)
-		defer file.Close()
-		_, err = io.Copy(writer, file)
-		Check(err)
-		return err
-	})
-
-	return err
+func NewZipWritter(src, des string) *ZipWritter {
+	zw := &ZipWritter{src: src, des: des}
+	return zw
 }
 
-// zip given files to a zip file.
-func CreateFilesZip(filename string, files []string) error {
-	file, err := os.Create(filename)
+type ZipWritter struct {
+	src        string
+	des        string
+	zipWritter *zip.Writer
+}
+
+func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
+	if err != nil {
+		return err
+	}
+	if !f.Mode().IsRegular() || f.Size() == 0 {
+		return nil
+	}
+	file, err := os.Open(path)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
-	zipwriter := zip.NewWriter(file)
-	defer zipwriter.Close()
-	for _, name := range files {
-		if err := writeFileToZip(zipwriter, name); err != nil {
-			return err
-		}
+
+	fileName := strings.TrimPrefix(path, zw.src+"/")
+	wr, err := zw.zipWritter.Create(fileName)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(wr, file)
+	if err != nil {
+		return err
 	}
 	return nil
 }
 
-func writeFileToZip(zipwriter *zip.Writer, filename string) error {
-	file, err := os.Open(filename)
+func (zw *ZipWritter) Zip() error {
+	// create zip file
+	zipFile, err := os.Create(zw.des)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
-	finfo, err := file.Stat()
+	defer zipFile.Close()
+	zw.zipWritter = zip.NewWriter(zipFile)
+	err = filepath.Walk(zw.src, zw.zipFile)
+	if err != nil {
+		return nil
+	}
+	err = zw.zipWritter.Close()
 	if err != nil {
 		return err
 	}
-	header, err := zip.FileInfoHeader(finfo)
-	if err != nil {
-		return err
-	}
-	//add some filter logic if necessary
-	//filter(file)
-	writer, err := zipwriter.CreateHeader(header)
-	if err != nil {
-		return err
-	}
-	_, err = io.Copy(writer, file)
-	return err
-}
-
-func filter(filename string) interface{} {
-	//To do
 	return nil
 }
 

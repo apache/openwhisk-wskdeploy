@@ -25,7 +25,7 @@ import (
 	"path"
 	"strings"
 
-    	"encoding/base64"
+	"encoding/base64"
 	"encoding/json"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
@@ -238,7 +238,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 
 			if utils.IsDirectory(filePath) {
 				zipName := filePath + ".zip"
-				err := utils.CreateFolderZip(filePath, zipName)
+				err := utils.NewZipWritter(filePath, zipName).Zip()
 				defer os.Remove(zipName)
 				utils.Check(err)
 				// To do: support docker and main entry as did by go cli?
@@ -262,9 +262,9 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 				dat, err := utils.Read(filePath)
 				utils.Check(err)
 				code := string(dat)
-                		if ext == ".zip" || ext == ".jar" {
-                    			code = base64.StdEncoding.EncodeToString([]byte(dat))
-                		}
+				if ext == ".zip" || ext == ".jar" {
+					code = base64.StdEncoding.EncodeToString([]byte(dat))
+				}
 				wskaction.Exec.Code = &code
 			}
 
