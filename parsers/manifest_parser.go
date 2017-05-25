@@ -262,9 +262,9 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 				dat, err := utils.Read(filePath)
 				utils.Check(err)
 				code := string(dat)
-                if ext == ".zip" || ext == ".jar" {
-                    code = base64.StdEncoding.EncodeToString([]byte(dat))
-                }
+                		if ext == ".zip" || ext == ".jar" {
+                    			code = base64.StdEncoding.EncodeToString([]byte(dat))
+                		}
 				wskaction.Exec.Code = &code
 			}
 
