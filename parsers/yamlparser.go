@@ -18,7 +18,7 @@
 package parsers
 
 import (
-	"github.com/openwhisk/openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
 // structs that denotes the sample manifest.yaml, wrapped yaml.v2
@@ -56,12 +56,14 @@ type Action struct {
 	//mapping to wsk.Action.Namespace
 	Namespace  string                 `yaml:"namespace"`  //used in deployment.yaml
 	Credential string                 `yaml:"credential"` //used in deployment.yaml
-	Inputs     map[string]interface{} `yaml:"inputs"`     //used in both manifest.yaml and deployment.yaml
+	Inputs     map[string]Parameter   `yaml:"inputs"`     //used in both manifest.yaml and deployment.yaml
 	Outputs    map[string]interface{} `yaml:"outputs"`    //used in manifest.yaml
 	//mapping to wsk.Action.Name
 	Name        string
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
+	ExposedUrl string `yaml:"exposedUrl"` // used in manifest.yaml
+	Webexport  string `yaml:"web-export"` // used in manifest.yaml
 }
 
 type Sequence struct {
@@ -70,18 +72,29 @@ type Sequence struct {
 }
 
 type Dependency struct {
-	Name    string
-	Url     string
-	Version string
+	Version     string                 `yaml: "version, omitempty"`
+	Location    string                 `yaml: "location, omitempty"`
+	Inputs      map[string]Parameter   `yaml:"inputs"`
+	Annotations map[string]interface{} `yaml:"annotations"`
+}
+
+type Parameter struct {
+	Type        string      `yaml:"type,omitempty"`
+	Description string      `yaml:"description,omitempty"`
+	Value       interface{} `yaml:"value,omitempty"` // JSON Value
+	Required    bool        `yaml:"required,omitempty"`
+	Default     interface{} `yaml:"default,omitempty"`
+	Status      string      `yaml:"status,omitempty"`
+	Schema      interface{} `yaml:"schema,omitempty"`
 }
 
 type Trigger struct {
 	//mapping to ????
 	Feed string `yaml:"feed"` //used in manifest.yaml
 	//mapping to wsk.Trigger.Namespace
-	Namespace  string                 `yaml:"namespace"`  //used in deployment.yaml
-	Credential string                 `yaml:"credential"` //used in deployment.yaml
-	Inputs     map[string]interface{} `yaml:"inputs"`     //used in deployment.yaml
+	Namespace  string               `yaml:"namespace"`  //used in deployment.yaml
+	Credential string               `yaml:"credential"` //used in deployment.yaml
+	Inputs     map[string]Parameter `yaml:"inputs"`     //used in deployment.yaml
 	//mapping to wsk.Trigger.Name
 	Name        string
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
@@ -133,7 +146,7 @@ type Package struct {
 	Triggers    map[string]Trigger     `yaml:"triggers"`   //used in both manifest.yaml and deployment.yaml
 	Feeds       map[string]Feed        `yaml:"feeds"`      //used in both manifest.yaml and deployment.yaml
 	Rules       map[string]Rule        `yaml:"rules"`      //used in both manifest.yaml and deployment.yaml
-	Inputs      map[string]interface{} `yaml:"inputs"`     //used in deployment.yaml
+	Inputs      map[string]Parameter   `yaml:"inputs"`     //used in deployment.yaml
 	Sequences   map[string]Sequence    `yaml:"sequences"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml: parameters` // used in manifest.yaml
@@ -179,6 +192,7 @@ func (rule *Rule) ComposeWskRule() *whisk.Rule {
 	pub := false
 	wskrule.Publish = &pub
 	wskrule.Trigger = rule.Trigger
+
 	wskrule.Action = rule.Action
 	return wskrule
 }

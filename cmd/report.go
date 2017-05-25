@@ -23,11 +23,12 @@ import (
 	"path"
 	"sync"
 
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/cmdImp"
+	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/fatih/color"
-	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/openwhisk-wskdeploy/deployers"
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
-	"github.com/openwhisk/openwhisk-wskdeploy/wski18n"
 	"github.com/spf13/cobra"
 )
 
@@ -46,12 +47,12 @@ located under current user home.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		if wskpropsPath != "" {
-			client, _ = deployers.NewWhiskClient(wskpropsPath, deploymentPath, false)
+			client, _ = deployers.NewWhiskClient(wskpropsPath, cmdImp.DeploymentPath, false)
 		}
 		userHome := utils.GetHomeDirectory()
 		//default to ~/.wskprops
 		propPath := path.Join(userHome, ".wskprops")
-		client, _ = deployers.NewWhiskClient(propPath, deploymentPath, false)
+		client, _ = deployers.NewWhiskClient(propPath, cmdImp.DeploymentPath, false)
 		printDeploymentInfo(client)
 	},
 }

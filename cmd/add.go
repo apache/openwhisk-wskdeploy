@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
 )
 

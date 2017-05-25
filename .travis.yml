@@ -1,16 +1,36 @@
 # A Travis CI configuration file.
 
+sudo: required
+
 language: go
 
 go:
   - 1.7
 
+services:
+  - docker
+
+git:
+  depth: 3
+
 install:
+  - export DEPLOY_BUILD_READY=false
   - go get -u github.com/golang/lint/golint
+  - go get -u github.com/stretchr/testify
 
 script:
   - make lint
   - make build
+  - export PATH=$PATH:$TRAVIS_BUILD_DIR;
+  - export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/openwhisk"
+  - ./tools/travis/install_openwhisk.sh
+  - make integration_test
+
+after_success:
+  - DEPLOY_BUILD_READY=true
+
+after_script:
+  - make clean
 
 before_deploy:
   - export build_file_name=wskdeploy
@@ -27,5 +47,6 @@ deploy:
   file: ${build_file_name}-*.zip
   skip_cleanup: true
   on:
-    repo: openwhisk/openwhisk-wskdeploy
+    repo: apache/incubator-openwhisk-wskdeploy
     tags: true
+    condition: "$DEPLOY_BUILD_READY = true"

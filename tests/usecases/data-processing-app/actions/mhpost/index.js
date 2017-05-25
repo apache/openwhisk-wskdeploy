@@ -27,7 +27,7 @@ function transform(events) {
     "agent": "OpenWhisk action",
     "events_count": events.length,
     "avg_velocity": average
-  }
+  };
   return result;
 }
 
@@ -35,7 +35,7 @@ function transform(events) {
  * Process incoming message and publish it to Message Hub or Kafka.
  * This code is used as the OpenWhisk Action implementation and linked to a trigger via a rule.
  */
-function main(args) {
+function mhpost(args) {
   console.log("DEBUG: Received message as input: " + JSON.stringify(args));
 
   return new Promise(function(resolve, reject) {
@@ -54,7 +54,7 @@ function main(args) {
 
     var MessageHub = require('message-hub-rest');
     var kafka = new MessageHub(vcap_services);
-    var transformedMessage = transform(args.events)
+    var transformedMessage = transform(args.events);
     console.log("DEBUG: Message to be published: " + JSON.stringify(transformedMessage));
 
     kafka.produce(args.topic, transformedMessage)
@@ -68,3 +68,5 @@ function main(args) {
       });
   });
 }
+
+exports.main = mhpost;

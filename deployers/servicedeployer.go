@@ -20,20 +20,22 @@ package deployers
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
+	"path"
 	"strings"
 	"sync"
 
-	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
-	"log"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 )
 
 type DeploymentApplication struct {
 	Packages map[string]*DeploymentPackage
 	Triggers map[string]*whisk.Trigger
 	Rules    map[string]*whisk.Rule
+	Apis     map[string]*whisk.ApiCreateRequest
 }
 
 func NewDeploymentApplication() *DeploymentApplication {
@@ -41,17 +43,20 @@ func NewDeploymentApplication() *DeploymentApplication {
 	dep.Packages = make(map[string]*DeploymentPackage)
 	dep.Triggers = make(map[string]*whisk.Trigger)
 	dep.Rules = make(map[string]*whisk.Rule)
+	dep.Apis = make(map[string]*whisk.ApiCreateRequest)
 	return &dep
 }
 
 type DeploymentPackage struct {
-	Package   *whisk.Package
-	Actions   map[string]utils.ActionRecord
-	Sequences map[string]utils.ActionRecord
+	Package      *whisk.Package
+	Dependencies map[string]utils.DependencyRecord
+	Actions      map[string]utils.ActionRecord
+	Sequences    map[string]utils.ActionRecord
 }
 
 func NewDeploymentPackage() *DeploymentPackage {
 	var dep DeploymentPackage
+	dep.Dependencies = make(map[string]utils.DependencyRecord)
 	dep.Actions = make(map[string]utils.ActionRecord)
 	dep.Sequences = make(map[string]utils.ActionRecord)
 	return &dep
@@ -76,6 +81,7 @@ type ServiceDeployer struct {
 	DeployActionInPackage bool
 	InteractiveChoice     bool
 	ClientConfig          *whisk.Config
+	DependencyMaster      map[string]utils.DependencyRecord
 }
 
 // NewServiceDeployer is a Factory to create a new ServiceDeployer
@@ -84,6 +90,7 @@ func NewServiceDeployer() *ServiceDeployer {
 	dep.Deployment = NewDeploymentApplication()
 	dep.IsInteractive = true
 	dep.DeployActionInPackage = true
+	dep.DependencyMaster = make(map[string]utils.DependencyRecord)
 
 	return &dep
 }
@@ -103,6 +110,7 @@ func (deployer *ServiceDeployer) Check() {
 func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 	var manifestReader = NewManfiestReader(deployer)
+	manifestReader.IsUndeploy = false
 	manifest, manifestParser, err := manifestReader.ParseManifest()
 	utils.Check(err)
 
@@ -119,7 +127,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	}
 
 	// process manifest file
-	err = manifestReader.HandleYaml(manifestParser, manifest)
+	err = manifestReader.HandleYaml(deployer, manifestParser, manifest)
 	utils.Check(err)
 
 	// process deploymet file
@@ -136,6 +144,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplication, error) {
 
 	var manifestReader = NewManfiestReader(deployer)
+	manifestReader.IsUndeploy = true
 	manifest, manifestParser, err := manifestReader.ParseManifest()
 	utils.Check(err)
 
@@ -153,7 +162,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
 	}
 
 	// process manifest file
-	err = manifestReader.HandleYaml(manifestParser, manifest)
+	err = manifestReader.HandleYaml(deployer, manifestParser, manifest)
 	utils.Check(err)
 
 	// process deploymet file
@@ -219,6 +228,10 @@ func (deployer *ServiceDeployer) deployAssets() error {
 		return err
 	}
 
+	if err := deployer.DeployDependencies(); err != nil {
+		return err
+	}
+
 	if err := deployer.DeployActions(); err != nil {
 		return err
 	}
@@ -234,6 +247,54 @@ func (deployer *ServiceDeployer) deployAssets() error {
 	if err := deployer.DeployRules(); err != nil {
 		return err
 	}
+
+	if len(deployer.Deployment.Apis) != 0 {
+		if err := deployer.DeployApis(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (deployer *ServiceDeployer) DeployDependencies() error {
+	for _, pack := range deployer.Deployment.Packages {
+		for depName, depRecord := range pack.Dependencies {
+			fmt.Println("Deploying dependency " + depName + " ... ")
+
+			if depRecord.IsBinding {
+				bindingPackage := new(whisk.BindingPackage)
+				bindingPackage.Namespace = pack.Package.Namespace
+				bindingPackage.Name = depName
+				pub := false
+				bindingPackage.Publish = &pub
+
+				qName, err := utils.ParseQualifiedName(depRecord.Location, pack.Package.Namespace)
+				utils.Check(err)
+				bindingPackage.Binding = whisk.Binding{qName.Namespace, qName.EntityName}
+
+				bindingPackage.Parameters = depRecord.Parameters
+				bindingPackage.Annotations = depRecord.Annotations
+
+				deployer.createBinding(bindingPackage)
+
+			} else {
+				depServiceDeployer, err := deployer.getDependentDeployer(depName, depRecord)
+				utils.Check(err)
+
+				err = depServiceDeployer.ConstructDeploymentPlan()
+				utils.Check(err)
+
+				if err := depServiceDeployer.deployAssets(); err != nil {
+					log.Println("\nDeployment of dependency " + depName + " did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
+					return err
+				} else {
+					fmt.Println("Done!")
+				}
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -260,7 +321,10 @@ func (deployer *ServiceDeployer) DeployActions() error {
 
 	for _, pack := range deployer.Deployment.Packages {
 		for _, action := range pack.Actions {
-			deployer.createAction(pack.Package.Name, action.Action)
+			err := deployer.createAction(pack.Package.Name, action.Action)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -289,6 +353,24 @@ func (deployer *ServiceDeployer) DeployRules() error {
 	return nil
 }
 
+// Deploy Apis into OpenWhisk
+func (deployer *ServiceDeployer) DeployApis() error {
+	for _, api := range deployer.Deployment.Apis {
+		deployer.createApi(api)
+	}
+	return nil
+}
+
+func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) {
+	log.Print("Deploying package binding" + packa.Name + " ... ")
+	_, _, err := deployer.Client.Packages.Insert(packa, true)
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		log.Printf("Got error creating package binding with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+	}
+	log.Println("Done!")
+}
+
 func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) {
 	log.Print("Deploying package " + packa.Name + " ... ")
 	_, _, err := deployer.Client.Packages.Insert(packa, true)
@@ -315,12 +397,7 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 
 	// check for strings that are JSON
 	for _, keyVal := range trigger.Parameters {
-		if b, isJson := utils.IsJSON(keyVal.Value.(string)); isJson {
-			fmt.Println(keyVal.Key + " is JSON " + keyVal.Value.(string))
-			params[keyVal.Key] = b
-		} else {
-			params[keyVal.Key] = keyVal.Value
-		}
+		params[keyVal.Key] = keyVal.Value
 	}
 
 	params["authKey"] = deployer.ClientConfig.AuthToken
@@ -386,7 +463,7 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) {
 }
 
 // Utility function to call go-whisk framework to make action
-func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Action) {
+func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Action) error {
 	// call ActionService Thru Client
 	if deployer.DeployActionInPackage {
 		// the action will be created under package with pattern 'packagename/actionname'
@@ -397,6 +474,18 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		log.Printf("Got error creating action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		return err
+	}
+	log.Println("Done!")
+	return nil
+}
+
+// create api gateway
+func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) {
+	_, _, err := deployer.Client.Apis.Insert(api, nil, true)
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		log.Printf("Got error creating api with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 	log.Println("Done!")
 }
@@ -466,8 +555,41 @@ func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan *DeploymentApplicat
 		return err
 	}
 
+	if err := deployer.UnDeployDependencies(); err != nil {
+		return err
+	}
+
 	return nil
 
+}
+
+func (deployer *ServiceDeployer) UnDeployDependencies() error {
+	for _, pack := range deployer.Deployment.Packages {
+		for depName, depRecord := range pack.Dependencies {
+			fmt.Println("Undeploying dependency " + depName + " ... ")
+
+			if depRecord.IsBinding {
+				_, err := deployer.Client.Packages.Delete(depName)
+				utils.Check(err)
+			} else {
+
+				depServiceDeployer, err := deployer.getDependentDeployer(depName, depRecord)
+				utils.Check(err)
+
+				plan, err := depServiceDeployer.ConstructUnDeploymentPlan()
+				utils.Check(err)
+
+				if err := depServiceDeployer.unDeployAssets(plan); err != nil {
+					log.Println("\nUndeployment of dependency " + depName + " did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
+					return err
+				} else {
+					fmt.Println("Done!")
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 func (deployer *ServiceDeployer) UnDeployPackages(deployment *DeploymentApplication) error {
@@ -492,7 +614,10 @@ func (deployer *ServiceDeployer) UnDeployActions(deployment *DeploymentApplicati
 
 	for _, pack := range deployment.Packages {
 		for _, action := range pack.Actions {
-			deployer.deleteAction(pack.Package.Name, action.Action)
+			err := deployer.deleteAction(pack.Package.Name, action.Action)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -600,7 +725,7 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) {
 }
 
 // Utility function to call go-whisk framework to make action
-func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Action) {
+func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Action) error {
 	// call ActionService Thru Client
 	if deployer.DeployActionInPackage {
 		// the action will be deleted under package with pattern 'packagename/actionname'
@@ -612,8 +737,10 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		log.Printf("Got error deleting action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		return err
 	}
 	fmt.Println("Done!")
+	return nil
 }
 
 // from whisk go client
@@ -640,23 +767,24 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 		fmt.Println("Name: " + pack.Package.Name)
 		fmt.Println("    bindings: ")
 		for _, p := range pack.Package.Parameters {
-			value := "?"
-			if str, ok := p.Value.(string); ok {
-				value = str
-			}
-			fmt.Println("        - name: " + p.Key + " value: " + value)
+			fmt.Printf("        - %s : %v\n", p.Key, utils.PrettyJSON(p.Value))
 		}
+
+		for key, dep := range pack.Dependencies {
+			fmt.Println("  * dependency: " + key)
+			fmt.Println("    location: " + dep.Location)
+			if !dep.IsBinding {
+				fmt.Println("    local path: " + dep.ProjectPath)
+			}
+		}
+
+		fmt.Println("")
 
 		for _, action := range pack.Actions {
 			fmt.Println("  * action: " + action.Action.Name)
 			fmt.Println("    bindings: ")
 			for _, p := range action.Action.Parameters {
-
-				value := "?"
-				if str, ok := p.Value.(string); ok {
-					value = str
-				}
-				fmt.Println("        - name: " + p.Key + " value: " + value)
+				fmt.Printf("        - %s : %v\n", p.Key, utils.PrettyJSON(p.Value))
 			}
 			fmt.Println("    annotations: ")
 			for _, p := range action.Action.Annotations {
@@ -679,12 +807,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 		fmt.Println("    bindings: ")
 
 		for _, p := range trigger.Parameters {
-
-			value := "?"
-			if str, ok := p.Value.(string); ok {
-				value = str
-			}
-			fmt.Println("        - name: " + p.Key + " value: " + value)
+			fmt.Printf("        - %s : %v\n", p.Key, utils.PrettyJSON(p.Value))
 		}
 
 		fmt.Println("    annotations: ")
@@ -706,4 +829,25 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 
 	fmt.Println("")
 
+}
+
+func (deployer *ServiceDeployer) getDependentDeployer(depName string, depRecord utils.DependencyRecord) (*ServiceDeployer, error) {
+	depServiceDeployer := NewServiceDeployer()
+	projectPath := path.Join(depRecord.ProjectPath, depName+"-"+depRecord.Version)
+	manifestPath := path.Join(projectPath, ManifestFileNameYml)
+	deploymentPath := path.Join(projectPath, DeploymentFileNameYaml)
+	depServiceDeployer.ProjectPath = projectPath
+	depServiceDeployer.ManifestPath = manifestPath
+	depServiceDeployer.DeploymentPath = deploymentPath
+	depServiceDeployer.IsInteractive = true
+
+	depServiceDeployer.Client = deployer.Client
+	depServiceDeployer.ClientConfig = deployer.ClientConfig
+
+	depServiceDeployer.DependencyMaster = deployer.DependencyMaster
+
+	// share the master dependency list
+	depServiceDeployer.DependencyMaster = deployer.DependencyMaster
+
+	return depServiceDeployer, nil
 }

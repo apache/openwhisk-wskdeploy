@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/openwhisk/openwhisk-wskdeploy",
+	"ImportPath": "github.com/apache/incubator-openwhisk-wskdeploy",
 	"GoVersion": "go1.7",
 	"GodepVersion": "v62",
 	"Deps": [
@@ -104,12 +104,12 @@
 			"Rev": "991e81cc94f6c54209edb3192cb98e3995ad71c1"
 		},
 		{
-			"ImportPath": "github.com/openwhisk/openwhisk-client-go/whisk",
-			"Rev": "277d1e8fb63dc8f6cf25a47346f363d5ff7a359d"
+			"ImportPath": "github.com/apache/incubator-openwhisk-client-go/whisk",
+			"Rev": "62ddca28397566aaa46ac06484d79bd6da74011f"
 		},
 		{
-			"ImportPath": "github.com/openwhisk/openwhisk-client-go/wski18n",
-			"Rev": "277d1e8fb63dc8f6cf25a47346f363d5ff7a359d"
+			"ImportPath": "github.com/apache/incubator-openwhisk-client-go/wski18n",
+			"Rev": "62ddca28397566aaa46ac06484d79bd6da74011f"
 		},
 		{
 			"ImportPath": "github.com/pelletier/go-buffruneio",

@@ -16,23 +16,17 @@
  */
 
 // shared.go
-package cmd
+package cmdImp
 
-// name of manifest and deployment files
-const ManifestFileNameYaml = "manifest.yaml"
-const ManifestFileNameYml = "manifest.yml"
-const DeploymentFileNameYaml = "deployment.yaml"
-const DeploymentFileNameYml = "deployment.yml"
-
-var cfgFile string
+var CfgFile string
 var CliVersion string
 var CliBuild string
 
 // used to configure service deployer for various commands
 // TODO: should move this into utils.Flags
 var Verbose bool
-var projectPath string
-var deploymentPath string
-var manifestPath string
-var useDefaults bool
-var useInteractive bool
+var ProjectPath string
+var DeploymentPath string
+var ManifestPath string
+var UseDefaults bool
+var UseInteractive bool

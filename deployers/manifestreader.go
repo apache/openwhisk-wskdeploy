@@ -22,14 +22,15 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/openwhisk/openwhisk-client-go/whisk"
-	"github.com/openwhisk/openwhisk-wskdeploy/config"
-	"github.com/openwhisk/openwhisk-wskdeploy/parsers"
-	"github.com/openwhisk/openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/config"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 )
 
 type ManifestReader struct {
 	serviceDeployer *ServiceDeployer
+	IsUndeploy      bool
 }
 
 func NewManfiestReader(serviceDeployer *ServiceDeployer) *ManifestReader {
@@ -56,9 +57,11 @@ func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser
 }
 
 // Wrapper parser to handle yaml dir
-func (deployer *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
+func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
 
-	actions, err := manifestParser.ComposeActions(manifest, deployer.serviceDeployer.ManifestPath)
+	deps, err := manifestParser.ComposeDependencies(manifest, deployer.serviceDeployer.ProjectPath)
+
+	actions, aubindings, err := manifestParser.ComposeActions(manifest, deployer.serviceDeployer.ManifestPath)
 	utils.Check(err)
 
 	sequences, err := manifestParser.ComposeSequences(deployer.serviceDeployer.ClientConfig.Namespace, manifest)
@@ -68,6 +71,9 @@ func (deployer *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, m
 	utils.Check(err)
 
 	rules, err := manifestParser.ComposeRules(manifest)
+	utils.Check(err)
+
+	err = deployer.SetDependencies(deps)
 	utils.Check(err)
 
 	err = deployer.SetActions(actions)
@@ -81,6 +87,34 @@ func (deployer *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, m
 
 	err = deployer.SetRules(rules)
 	utils.Check(err)
+
+	//only set api if aubindings
+	if len(aubindings) != 0 {
+		err = deployer.SetApis(sdeployer, aubindings)
+	}
+
+	return nil
+}
+
+func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRecord) error {
+	for depName, dep := range deps {
+		if !dep.IsBinding && !reader.IsUndeploy {
+			if _, exists := reader.serviceDeployer.DependencyMaster[depName]; !exists {
+				// dependency
+				gitReader := utils.NewGitReader(depName, dep)
+				err := gitReader.CloneDependency()
+				utils.Check(err)
+			} else {
+				// TODO: we should do a check to make sure this dependency is compatible with an already installed one.
+				// If not, we should throw dependency mismatch error.
+			}
+		}
+
+		// store in two places (one local to package to preserve relationship, one in master record to check for conflics
+		reader.serviceDeployer.Deployment.Packages[dep.Packagename].Dependencies[depName] = dep
+		reader.serviceDeployer.DependencyMaster[depName] = dep
+
+	}
 
 	return nil
 }
@@ -236,6 +270,55 @@ func (reader *ManifestReader) SetRules(rules []*whisk.Rule) error {
 
 	}
 	return nil
+}
+
+func (reader *ManifestReader) SetApis(deployer *ServiceDeployer, aubs []*utils.ActionExposedURLBinding) error {
+	dep := reader.serviceDeployer
+	var apis []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
+
+	dep.mt.Lock()
+	defer dep.mt.Unlock()
+
+	for _, aub := range aubs {
+		api := createApiEntity(deployer, aub)
+		apis = append(apis, api)
+	}
+
+	for _, api := range apis {
+		existApi, exist := dep.Deployment.Apis[api.ApiDoc.ApiName]
+		if exist {
+			existApi.ApiDoc.ApiName = api.ApiDoc.ApiName
+		} else {
+			dep.Deployment.Apis[api.ApiDoc.ApiName] = api
+		}
+
+	}
+	return nil
+}
+
+// create the api entity according to the action definition and deployer.
+func createApiEntity(dp *ServiceDeployer, au *utils.ActionExposedURLBinding) *whisk.ApiCreateRequest {
+	sendapi := new(whisk.ApiCreateRequest)
+	api := new(whisk.Api)
+	//Compose the api
+	bindingInfo := strings.Split(au.ExposedUrl, "/")
+	api.Namespace = dp.Client.Namespace
+	//api.ApiName = ""
+	api.GatewayBasePath = bindingInfo[1]
+	api.GatewayRelPath = bindingInfo[2]
+	api.GatewayMethod = strings.ToUpper(bindingInfo[0])
+	api.Id = "API" + ":" + dp.ClientConfig.Namespace + ":" + "/" + api.GatewayBasePath
+	//api.GatewayFullPath = ""
+	//api.Swagger = ""
+	//compose the api action
+	api.Action = new(whisk.ApiAction)
+	api.Action.Name = au.ActionName
+	api.Action.Namespace = dp.ClientConfig.Namespace
+	api.Action.BackendMethod = "POST"
+	api.Action.BackendUrl = "https://" + dp.ClientConfig.Host + "/api/v1/namespaces/" + dp.ClientConfig.Namespace + "/actions/" + au.ActionName
+	api.Action.Auth = dp.Client.Config.AuthToken
+	sendapi.ApiDoc = api
+	return sendapi
 }
 
 // from whisk go client

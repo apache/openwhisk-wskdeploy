@@ -1,5 +1,7 @@
 # Whisk Deploy `wskdeploy`
 
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Build Status](https://travis-ci.org/apache/incubator-openwhisk-wskdeploy.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-wskdeploy)
 
 DISCLAIMER - wskdeploy is an experimental tool.
 -----------------------------------------------
@@ -39,7 +41,7 @@ $ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/trigg
 will deploy the `triggerrule` test case.
 
 # Where to download the binary wskdeploy
-`wskdeploy` is available on the release page of openwhisk-wskdeploy project: [click here to download](https://github.com/openwhisk/openwhisk-wskdeploy/releases).
+`wskdeploy` is available on the release page of openwhisk-wskdeploy project: [click here to download](https://github.com/apache/incubator-openwhisk-wskdeploy/releases).
 We currently have binaries available for Linux, Mac OS and windows under amd64 architecture. You can find the binary, which fits your local environment.
 
 
@@ -52,13 +54,13 @@ Then download `wskdeploy` and dependencies by typing:
 
 ```sh
 $ cd $GOPATH
-$ go get github.com/openwhisk/openwhisk-wskdeploy  # see known issues below if you get an error
+$ go get github.com/apache/incubator-openwhisk-wskdeploy  # see known issues below if you get an error
 ```
 
 And finally build `wskdeploy`
 
 ```sh
-$ cd src/github.com/openwhisk/openwhisk-wskdeploy/
+$ cd src/github.com/apache/incubator-openwhisk-wskdeploy/
 $ go build -o wskdeploy
 ```
 
@@ -84,37 +86,34 @@ Start by creating a fork of `openwhisk-wskdeploy` and then change the git `origi
 your forked repository, as follows:
 
 ```sh
-$ cd $GOPATH/src/github.com/openwhisk/openwhisk-wskdeploy
+$ cd $GOPATH/src/github.com/apache/incubator-openwhisk-wskdeploy
 $ git remote rename origin upstream
-$ git remote add origin https://github.com/<your fork>/openwhisk-wskdeploy
+$ git remote add origin https://github.com/<your fork>/incubator-openwhisk-wskdeploy
 $ git branch --set-upstream-to origin/master  # track master from origin now
 ```
 
 You can now use `git push` to push changes to your repository and submit pull requests.
 
-# How to Build with Docker
-If you don't want to bother with go installation, build, git clone etc, you can do it with Docker, then
-you can run wskdeploy tool in your container.
+# How to Cross Compile Binary with Gradle/Docker
+If you don't want to bother with go installation, build, git clone etc, and you can do it with Gradle/Docker.
+After compiling, a suitable wskdeploy binary that works for your OS platform will be available under /bin directory.
 
-1. First you need a docker daemon running locally on your machine or whatever in a VM etc.
+1. First you need a docker daemon running locally on your machine.
 
-2. Get the Docker file.
- ```
- wget -O Dockerfile https://raw.githubusercontent.com/openwhisk/wskdeploy/master/Dockerfile
- ```
+2. Make sure you have Java 1.7 or above installed.
 
-3. Build and tag a docker image.
-```
-docker build -f Dockerfile .  -t openwhisk/wskdeploy
-```
+3. Clone the wskdeploy repo with command ```git clone https://github.com/apache/incubator-openwhisk-wskdeploy.git```
 
-4. Bring up the docker container.
-```
-docker run -ti openwhisk/wskdeploy
-```
-5. Inside the container, run `wskdeploy` and have fun.
+4. If you use Windows OS, type ```gradlew.bat -version ```. For Unix/Linux/Mac, please type ```./gradlew -version```.
 
-Note: Based on user role, you may need add sudo before your command to run as root.
+5. Make sure you can see the correct Gradle version info on your console. Currently the expected Gradle
+version is 3.3.
+
+6. For Windows type ```gradlew.bat distDocker```. For Linux/Unix/Mac, please type ```./gradlew distDocker```. These
+commands will start the wskdeploy cross compile for your specific OS platform inside a Docker container.
+
+7. After build success, you should find a correct binary under current /bin dir of you openwhisk-deploy clone dir.
+
 
 # Known issues
 
