@@ -25,7 +25,7 @@ import (
 	"path"
 	"strings"
 
-    "encoding/base64"
+    	"encoding/base64"
 	"encoding/json"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
