@@ -12,7 +12,6 @@ import (
 
 var wskprops = common.GetWskprops()
 
-// TODO: write the integration against openwhisk
 func TestZipAction(t *testing.T) {
 	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
