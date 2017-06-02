@@ -274,6 +274,9 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			wskaction.Exec.Kind = action.Runtime
 		}
 
+        // we can specify the name of the action entry point using main
+        wskaction.Exec.Main = action.Main
+
 		keyValArr := make(whisk.KeyValueArr, 0)
 		for name, param := range action.Inputs {
 			var keyVal whisk.KeyValue

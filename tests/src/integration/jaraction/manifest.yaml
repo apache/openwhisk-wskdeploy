@@ -1,0 +1,7 @@
+package:
+    name: helloworldjar
+    actions:
+        helloworld:
+            location: src/hello.jar
+            runtime: java
+            main: Hello

@@ -64,6 +64,7 @@ type Action struct {
 	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
 	ExposedUrl string `yaml:"exposedUrl"` // used in manifest.yaml
 	Webexport  string `yaml:"web-export"` // used in manifest.yaml
+    Main       string `yaml:"main"`       // used in manifest.yaml
 }
 
 type Sequence struct {
