@@ -1,0 +1,6 @@
+package:
+    name: helloworld
+    actions:
+        helloworld:
+            location: src/helloworld.zip
+            kind: nodejs:6
