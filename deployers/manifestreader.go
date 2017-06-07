@@ -23,10 +23,11 @@ import (
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/config"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 )
+
+var clientConfig *whisk.Config
 
 type ManifestReader struct {
 	serviceDeployer *ServiceDeployer
@@ -329,7 +330,7 @@ func (deployer *ManifestReader) getQualifiedName(name string, namespace string) 
 		return fmt.Sprintf("%s/%s", namespace, name)
 	} else {
 		if len(namespace) == 0 {
-			namespace = config.ClientConfig.Namespace
+			namespace = clientConfig.Namespace
 		}
 		return fmt.Sprintf("/%s/%s", namespace, name)
 	}
