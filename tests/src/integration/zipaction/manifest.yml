@@ -1,0 +1,15 @@
+package:
+  name: zipaction
+  version: 1.0
+  license: Apache-2.0
+  actions:
+    cat:
+      version: 1.0
+      location: actions/cat
+      runtime: nodejs:6
+      inputs:
+        name: string
+        place: string
+      outputs:
+        payload: string
+
