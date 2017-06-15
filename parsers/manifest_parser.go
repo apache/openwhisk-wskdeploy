@@ -230,11 +230,10 @@ func (dm *YAMLParser) ComposeSequences(namespace string, mani *ManifestYAML) ([]
 	return s1, nil
 }
 
-func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []utils.ActionRecord, aub []*utils.ActionExposedURLBinding, err error) {
+func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []utils.ActionRecord, err error) {
 
 	var errorParser error
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
-	var au []*utils.ActionExposedURLBinding = make([]*utils.ActionExposedURLBinding, 0)
 
 	for key, action := range mani.Package.Actions {
 		splitmanipath := strings.Split(manipath, string(os.PathSeparator))
@@ -246,9 +245,6 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 
 		wskaction := new(whisk.Action)
 		//bind action, and exposed URL
-		aubinding := new(utils.ActionExposedURLBinding)
-		aubinding.ActionName = key
-		aubinding.ExposedUrl = action.ExposedUrl
 
 		wskaction.Exec = new(whisk.Exec)
 		if action.Function != "" {
@@ -322,7 +318,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			keyVal.Value, errorParser = ResolveParameter(name, &param)
 
 			if errorParser != nil {
-				return nil, nil, errorParser
+				return nil, errorParser
 			}
 
 			if keyVal.Value != nil {
@@ -357,14 +353,9 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 		record := utils.ActionRecord{wskaction, mani.Package.Packagename, action.Function}
 		s1 = append(s1, record)
 
-		//only append when the fields are exists
-		if aubinding.ActionName != "" && aubinding.ExposedUrl != "" {
-			au = append(au, aubinding)
-		}
-
 	}
 
-	return s1, au, nil
+	return s1, nil
 
 }
 

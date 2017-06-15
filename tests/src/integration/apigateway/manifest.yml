@@ -1,0 +1,18 @@
+package:
+  name: book club
+  version: 1.0
+  license: Apache-2.0
+  apis: # new top-level key for defining groups of named APIs
+    book-club:
+      description: Book Club # optional
+      basepath: /club
+      path: /books
+      actions:
+        getBooks:
+           verb: get
+        postBooks:
+           verb: post
+        putBooks:
+           verb: put
+        deleteBooks:
+           verb: delete

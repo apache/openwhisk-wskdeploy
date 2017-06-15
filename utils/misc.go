@@ -59,10 +59,9 @@ type RuleRecord struct {
 	Packagename string
 }
 
-// Bind the action name and the ExposedUrl
-type ActionExposedURLBinding struct {
-	ActionName string //action name
-	ExposedUrl string //exposedUrl in format method/baseurl/relativeurl
+// The whisk.Api struct wrapper
+type ApiRecord struct {
+	Api *whisk.Api
 }
 
 // Utility to convert hostname to URL object
