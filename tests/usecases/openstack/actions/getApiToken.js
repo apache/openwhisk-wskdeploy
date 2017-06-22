@@ -1,3 +1,6 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more contributor
+// license agreements; and to You under the Apache License, Version 2.0.
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -6,7 +9,7 @@
 //  Will retrieve the auth token and storage URL for the object store service.  Uses V3 of the auth calls
 //
 //  The params object should look like:
-// 
+//
 //  "userId":"f45adsa0d0478c", "password":"sd2rsS^kdfsd", "projectId":"11fdseerff"}
 //
 //  @param userId: user id (not user name)
@@ -15,7 +18,7 @@
 //  @param host: hostname of keystone endpoint (don't include 'https://')
 //  @param port: port of keystone endpoint
 //  @param endpointName: the name of the public endpoint service you want (nova, swift, etc)
-//  
+//
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +55,7 @@ function main(params) {
         context = params.context
     }
 
-   
+
     var body = {
     "auth": {
         "identity": {
@@ -96,7 +99,7 @@ function main(params) {
 
                 var j = body
                 var entries = j.token.catalog
-            
+
                 for (var i = 0; i < entries.length; i++) {
                     var entry = entries[i]
                     console.log('Comparing '+ entry.name + " with "+endpointName)
@@ -112,11 +115,11 @@ function main(params) {
 
                                 var urlParts = url.parse(endpoint.url,true)
 
-                                var jsonResponse = {apiToken: authToken, 
-                                    endpointUrl: endpoint.url, 
-                                    host: urlParts.hostname, 
-                                    port: urlParts.port, 
-                                    path: urlParts.path, 
+                                var jsonResponse = {apiToken: authToken,
+                                    endpointUrl: endpoint.url,
+                                    host: urlParts.hostname,
+                                    port: urlParts.port,
+                                    path: urlParts.path,
                                     protocol: urlParts.protocol}
 
                                 if (context) {
@@ -127,8 +130,8 @@ function main(params) {
                             }
                         }
                     }
-            } 
-            
+            }
+
             reject({'msg': 'Cannot find public endpoint in response from keystone'})
 
             } else {
@@ -136,5 +139,5 @@ function main(params) {
             }
         });
 
-    });    
+    });
 }

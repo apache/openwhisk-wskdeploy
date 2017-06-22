@@ -1,9 +1,13 @@
+
+// Licensed to the Apache Software Foundation (ASF) under one or more contributor
+// license agreements; and to You under the Apache License, Version 2.0.
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //  Get Servers from Nova
 //
-//  Will retrieve a list of filtered servers from Nova.  
+//  Will retrieve a list of filtered servers from Nova.
 //
 //  @param apiToken apiToken retrieved from Keystone
 //
@@ -32,13 +36,13 @@ function main(params) {
     if (params.context) {
         context = params.context
     }
-   
+
     var headers = {
         'X-Auth-Token':apiToken
     };
- 
+
     var apiEndpoint = protocol+'//'+host+':'+port+path
-   
+
    var url = apiEndpoint+'/servers'
 
     // hardcode for now
@@ -47,7 +51,7 @@ function main(params) {
         headers: headers
     };
 
-    
+
     if (context && context.queryString) {
         options.qs = context.queryString
     }
@@ -56,7 +60,7 @@ function main(params) {
 
     return new Promise(function(resolve, reject) {
         request(url, options, function(error, res, body) {
-            
+
             if (error) {
                 reject(error)
             }
@@ -73,11 +77,11 @@ function main(params) {
 
             if (j.servers.length > 0) {
                 j.serverId = j.servers[0].id
-            } 
+            }
 
             console.log(j)
             resolve(j)
         });
     });
-    
+
 }

@@ -1,3 +1,6 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more contributor
+// license agreements; and to You under the Apache License, Version 2.0.
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -80,7 +83,7 @@ function main(params) {
             backup_type: backupType,
             rotation: rotation
         }
-    };  
+    };
 
     var url = apiEndpoint+'/servers/'+serverId+'/action'
 
@@ -91,7 +94,7 @@ function main(params) {
         headers: headers
     };
 
-   
+
     var headers = {
         'X-Auth-Token':apiToken
     };
@@ -126,5 +129,5 @@ function main(params) {
         });
 
     });
-    
+
 }
