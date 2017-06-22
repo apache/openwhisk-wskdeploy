@@ -22,7 +22,7 @@ install:
   - go get -u github.com/stretchr/testify
 
 script:
-  - ./tools/travis/codescan.sh
+  - ./tools/travis/scancode.sh
   - make lint
   - make build
   - export PATH=$PATH:$TRAVIS_BUILD_DIR;
