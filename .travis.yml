@@ -13,12 +13,16 @@ services:
 git:
   depth: 3
 
+before_install:
+  - ./tools/travis/cloneutils.sh
+
 install:
   - export DEPLOY_BUILD_READY=false
   - go get -u github.com/golang/lint/golint
   - go get -u github.com/stretchr/testify
 
 script:
+  - ./tools/travis/scancode.sh
   - make lint
   - make build
   - export PATH=$PATH:$TRAVIS_BUILD_DIR;
