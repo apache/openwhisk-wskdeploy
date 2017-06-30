@@ -4,7 +4,7 @@ HOMEDIR="$(dirname "$TRAVIS_BUILD_DIR")"
 cd $HOMEDIR
 
 # OpenWhisk stuff
-git clone --depth 3 https://github.com/openwhisk/openwhisk.git
+git clone --depth 3 https://github.com/apache/incubator-openwhisk.git
 
 # Build script for Travis-CI.
 WHISKDIR="$HOMEDIR/openwhisk"
