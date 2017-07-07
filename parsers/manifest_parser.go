@@ -275,7 +275,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 		}
 
                 // we can specify the name of the action entry point using main
-		if (action.Main) {
+		if (action.Main != "") {
                         wskaction.Exec.Main = action.Main
 		}
 
