@@ -118,6 +118,16 @@ commands will start the wskdeploy cross compile for your specific OS platform in
 
 # Known issues
 
+## Git commands using HTTPS, not SSH
+
+The "go get" command uses HTTPS with GitHub and when you attempt to "commit" code you might be prompted with your GitHub credentials.  If you wish to use your SSH credentials, you may need to issue the following command to set the appropriate URL for your "origin" fork:
+
+```
+git remote set-url origin git@github.com:<username>/incubator-openwhisk-wskdeploy.git
+'''
+
+## RPC failed: HTTP 301
+
 You might get this error when downloading `openwhisk-wskdeploy`
 
      Cloning into ''$GOAPTH/src/gopkg.in/yaml.v2'...
