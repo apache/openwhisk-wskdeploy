@@ -85,10 +85,11 @@ Note: we have no releases yet so you should build the `development` branch.
 Start by creating a fork of `openwhisk-wskdeploy` and then change the git `origin` to point to
 your forked repository, as follows:
 
-```sh
+```
 $ cd $GOPATH/src/github.com/apache/incubator-openwhisk-wskdeploy
 $ git remote rename origin upstream
 $ git remote add origin https://github.com/<your fork>/incubator-openwhisk-wskdeploy
+$ git fetch --all
 $ git branch --set-upstream-to origin/master  # track master from origin now
 ```
 

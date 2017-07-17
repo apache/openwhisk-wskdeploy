@@ -62,7 +62,8 @@ func NewDeploymentPackage() *DeploymentPackage {
 	return &dep
 }
 
-//ServiceDeployer defines a prototype service deployer.  It should do the following:
+// ServiceDeployer defines a prototype service deployer.
+// It should do the following:
 //   1. Collect information from the manifest file (if any)
 //   2. Collect information from the deployment file (if any)
 //   3. Collect information about the source code files in the working directory
@@ -77,7 +78,7 @@ type ServiceDeployer struct {
 	ManifestPath    string
 	ProjectPath     string
 	DeploymentPath  string
-	//whether to deploy the action under the package
+	// whether to deploy the action under the package
 	DeployActionInPackage bool
 	InteractiveChoice     bool
 	ClientConfig          *whisk.Config
@@ -165,7 +166,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
 	err = manifestReader.HandleYaml(deployer, manifestParser, manifest)
 	utils.Check(err)
 
-	// process deploymet file
+	// process deployment file
 	if utils.FileExists(deployer.DeploymentPath) {
 		var deploymentReader = NewDeploymentReader(deployer)
 		deploymentReader.HandleYaml()
@@ -178,8 +179,8 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
 	return verifiedPlan, nil
 }
 
-// Use relfect util to deploy everything in this service deployer
-// according some planning?
+// Use reflect util to deploy everything in this service deployer
+// TODO(TBD): according some planning?
 func (deployer *ServiceDeployer) Deploy() error {
 
 	if deployer.IsInteractive == true && !utils.Flags.WithinOpenWhisk {
@@ -305,7 +306,7 @@ func (deployer *ServiceDeployer) DeployPackages() error {
 	return nil
 }
 
-// DeployActions into OpenWhisk
+// Deploy Sequences into OpenWhisk
 func (deployer *ServiceDeployer) DeploySequences() error {
 
 	for _, pack := range deployer.Deployment.Packages {
@@ -316,7 +317,7 @@ func (deployer *ServiceDeployer) DeploySequences() error {
 	return nil
 }
 
-// DeployActions into OpenWhisk
+// Deploy Actions into OpenWhisk
 func (deployer *ServiceDeployer) DeployActions() error {
 
 	for _, pack := range deployer.Deployment.Packages {
@@ -437,8 +438,9 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) {
 	// The rule's trigger should include the namespace with pattern /namespace/trigger
 	rule.Trigger = deployer.getQualifiedName(rule.Trigger.(string), deployer.ClientConfig.Namespace)
-	// The rule's action should include the namespace and package with pattern /namespace/package/action
-	// please refer https://github.com/openwhisk/openwhisk/issues/1577
+	// The rule's action should include the namespace and package
+	// with pattern /namespace/package/action
+	// TODO(TBD): please refer https://github.com/openwhisk/openwhisk/issues/1577
 
 	// if it contains a slash, then the action is qualified by a package name
 	if strings.Contains(rule.Action.(string), "/") {
@@ -464,7 +466,7 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) {
 
 // Utility function to call go-whisk framework to make action
 func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Action) error {
-	// call ActionService Thru Client
+	// call ActionService through the Client
 	if deployer.DeployActionInPackage {
 		// the action will be created under package with pattern 'packagename/actionname'
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
@@ -480,7 +482,7 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 	return nil
 }
 
-// create api gateway
+// create api (API Gateway functionality)
 func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) {
 	_, _, err := deployer.Client.Apis.Insert(api, nil, true)
 	if err != nil {
@@ -517,7 +519,7 @@ func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentApplication) e
 
 		} else {
 			deployer.InteractiveChoice = false
-			fmt.Println("OK. Cancelling undeployment")
+			fmt.Println("OK. Canceling undeployment")
 			return nil
 		}
 	}
