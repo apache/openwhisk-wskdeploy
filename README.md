@@ -6,24 +6,17 @@
 DISCLAIMER - wskdeploy is an experimental tool.
 -----------------------------------------------
 
+`wskdeploy` is a utility to help you create and deploy OpenWhisk packages and their entities  using a Manifest file wrttien in YAML. Deploy all your Actions, Triggers, Rules and rules using a single command! You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses the OpenWhisk "Go" CLI to create its HTTP REST calls for deploying and undeploying your packages.
 
-`wskdeploy` is a utility to help you create and deploy OpenWhisk projects. Deploy all your actions, triggers, and rules using a single command! You can use this in addition to the OpenWhisk CLI.
-
-`wskdeploy` is currenty under development and in its very early stages.  Check back often to see how its progressing.
-
-# How to use
+# How to run
 `wskdeploy` is written in Go. You can invoke it as a Go program, or run its binary file `wskdeploy` directly after building.
 
 You can get the detail usage of this tool by using following commands:
 
+## Go program
+
 ```
 $ go run main.go --help
-```
-
-or
-
-```
-$ ./wskdeploy --help
 ```
 
 For example,
@@ -32,7 +25,11 @@ For example,
 $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
 
-or
+# Binary file
+
+```
+$ ./wskdeploy --help
+```
 
 ```
 $ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
@@ -41,11 +38,12 @@ $ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/trigg
 will deploy the `triggerrule` test case.
 
 # Where to download the binary wskdeploy
+
 `wskdeploy` is available on the release page of openwhisk-wskdeploy project: [click here to download](https://github.com/apache/incubator-openwhisk-wskdeploy/releases).
 We currently have binaries available for Linux, Mac OS and windows under amd64 architecture. You can find the binary, which fits your local environment.
 
-
 # How to build on local host
+
 There is another approach to get the binary `wskdeploy`, which is to build it from the source code with Go tool.
 
 Make sure `$GOPATH` is defined. If not, setup your [Go development environment](https://golang.org/doc/code.html).
