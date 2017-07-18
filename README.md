@@ -20,7 +20,7 @@ invoking command line help:
 $ go run main.go --help
 ```
 
-deploying the ```triggerrule''' test case:
+deploying the ```triggerrule``` test case:
 ```
 $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
@@ -32,7 +32,7 @@ invoking command line help:
 $ ./wskdeploy --help
 ```
 
-deploying the ```triggerrule''' test case:
+deploying the ```triggerrule``` test case:
 ```
 $ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
