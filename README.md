@@ -11,7 +11,7 @@ DISCLAIMER - wskdeploy is an experimental tool.
 # How to run
 `wskdeploy` is written in Go. You can invoke it as a Go program, or run its binary file `wskdeploy` directly after building.
 
-The following examples show you how to deploy the `triggerrule` test case using both methods:
+The following examples show you how to invoke wskdeploy's command line help using both methods, as well as deploy the `triggerrule` test case:
 
 ### Go program
 
@@ -19,8 +19,7 @@ The following examples show you how to deploy the `triggerrule` test case using 
 $ go run main.go --help
 ```
 
-For example,
-
+for example,
 ```
 $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
@@ -32,7 +31,6 @@ $ ./wskdeploy --help
 ```
 
 for example:
-
 ```
 $ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
