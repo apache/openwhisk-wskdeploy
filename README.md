@@ -124,7 +124,7 @@ The "go get" command uses HTTPS with GitHub and when you attempt to "commit" cod
 
 ```
 git remote set-url origin git@github.com:<username>/incubator-openwhisk-wskdeploy.git
-'''
+```
 
 ## RPC failed: HTTP 301
 
@@ -136,7 +136,7 @@ You might get this error when downloading `openwhisk-wskdeploy`
 
 This is caused by newer `git` not forwarding request anymore. One solution is to allow forwarding for `gopkg.in`
 
-```sh
+```
 $ git config --global http.https://gopkg.in.followRedirects true
 ```
 
