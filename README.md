@@ -78,8 +78,7 @@ You can verify your build by running:
 
 # Contributing
 
-Start by creating a fork of `openwhisk-wskdeploy` and then change the git `origin` to point to
-your forked repository, as follows:
+Start by creating a fork of `incubator-openwhisk-wskdeploy` and then change the git `origin` to point to your forked repository, as follows:
 
 ```
 $ cd $GOPATH/src/github.com/apache/incubator-openwhisk-wskdeploy
@@ -122,9 +121,9 @@ The "go get" command uses HTTPS with GitHub and when you attempt to "commit" cod
 git remote set-url origin git@github.com:<username>/incubator-openwhisk-wskdeploy.git
 ```
 
-### RPC failed: HTTP 301
+### Git clone RPC failed: HTTP 301
 
-You might get this error when downloading `openwhisk-wskdeploy`
+This sometimes occurs using "go get" the wskdeploy code (which indirectly invokes "git clone"). You might get this error when downloading `incubator-openwhisk-wskdeploy`:
 
      Cloning into ''$GOAPTH/src/gopkg.in/yaml.v2'...
      error: RPC failed; HTTP 301 curl 22 The requested URL returned error: 301
