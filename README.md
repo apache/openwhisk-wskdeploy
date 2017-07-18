@@ -76,8 +76,6 @@ You can verify your build by running:
 ./wskdeploy --help
 ```
 
-Note: we have no releases yet so you should build the `development` branch.
-
 # Contributing
 
 Start by creating a fork of `openwhisk-wskdeploy` and then change the git `origin` to point to
