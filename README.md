@@ -15,22 +15,24 @@ The following examples show you how to invoke wskdeploy's command line help usin
 
 ### Go program
 
+invoking command line help:
 ```
 $ go run main.go --help
 ```
 
-for example,
+deploying the ```triggerrule''' test case:
 ```
 $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
 
 ### Binary file
 
+invoking command line help:
 ```
 $ ./wskdeploy --help
 ```
 
-for example:
+deploying the ```triggerrule''' test case:
 ```
 $ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
