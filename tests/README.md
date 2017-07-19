@@ -66,4 +66,4 @@ Different integration tests can be grouped into different packages as well, and 
 | [utils / utils_test.go](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/utils/util_test.go) | N/A | dat/deployment.yaml| Tests ContentReader, ReadUrl |
 | [cmd / root_test.go](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/cmd/root_test.go) | N/A | N/A | Tests Cobra frameworks "Root" command (i.e., "wskdeploy") andits child commands|
 | [parsers / yamlparser_test.go](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/parsers/yamlparser_test.go) | usecases/helloworld/manifest.yaml, dat/manifest1.yaml, dat/manifest2.yaml, dat/manifest3.yaml, dat/manifest4.yaml, dat/manifest5.yaml, dat/manifest6.yaml | dat/deploy1.yaml, dat/deploy2.yaml, dat/deploy3.yaml, dat/deploy4.yaml | Tests YAML parser against various Manifest and Deployment files. |
-#| []() | <manifest> | <depl> | <desc> |
+<!-- | []() | <manifest> | <depl> | <desc> | -->
