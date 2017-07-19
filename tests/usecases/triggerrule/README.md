@@ -11,7 +11,7 @@ The package includes:
 
 Step 1. Deploy the package.
 ```
-$ wsktool deploy -p /tests/usecases/helloworld
+$ wskdeploy -p /tests/usecases/helloworld
 ```
 Step 2. Verify the action is installed.
 ```

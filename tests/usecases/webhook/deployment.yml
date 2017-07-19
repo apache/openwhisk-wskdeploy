@@ -10,10 +10,10 @@ application:
         webhook:
           #we treat the inputs as parameters besides --feed.
           inputs:
-            username: daisy-ycguo 
+            # TODO(dliu): Please fix "repsotiory value" and see if we can change/remove username
+            # as actual developer names should not be in these files when possible.
+            username: daisy-ycguo
             repository: https://github.com/openwhisk/wsktool.git
             accessToken:
             events: PUSH
             endpoint: openwhisk.ng.bluemix.net
-
-
