@@ -110,6 +110,17 @@ commands will start the wskdeploy cross compile for your specific OS platform in
 
 7. After build success, you should find a correct binary under current /bin dir of you openwhisk-deploy clone dir.
 
+# Debugging
+
+### Enable additional trace in Go client
+
+Wskdeploy uses the OpenWhisk Go Client to format and invoke OpenWhisk's APIs which has additional debug tracing available.
+
+To enable this trace, set the following environemt variable in Bash:
+```
+# set to any value > 0
+WSK_CLI_DEBUG=1
+```
 
 # Known issues
 
