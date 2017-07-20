@@ -6,46 +6,44 @@
 DISCLAIMER - wskdeploy is an experimental tool.
 -----------------------------------------------
 
+`wskdeploy` is a utility to help you create and deploy OpenWhisk packages and their entities  using a Manifest file wrttien in YAML. Deploy all your Actions, Triggers, Rules and rules using a single command! You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses the OpenWhisk "Go" CLI to create its HTTP REST calls for deploying and undeploying your packages.
 
-`wskdeploy` is a utility to help you create and deploy OpenWhisk projects. Deploy all your actions, triggers, and rules using a single command! You can use this in addition to the OpenWhisk CLI.
-
-`wskdeploy` is currenty under development and in its very early stages.  Check back often to see how its progressing.
-
-# How to use
+# How to run
 `wskdeploy` is written in Go. You can invoke it as a Go program, or run its binary file `wskdeploy` directly after building.
 
-You can get the detail usage of this tool by using following commands:
+The following examples show you how to invoke wskdeploy's command line help using both methods, as well as deploy the `triggerrule` test case:
 
+### Go program
+
+invoking command line help:
 ```
 $ go run main.go --help
 ```
 
-or
-
-```
-$ ./wskdeploy --help
-```
-
-For example,
-
+deploying the ```triggerrule``` test case:
 ```
 $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
 
-or
+### Binary file
 
+invoking command line help:
+```
+$ ./wskdeploy --help
+```
+
+deploying the ```triggerrule``` test case:
 ```
 $ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
 
-will deploy the `triggerrule` test case.
-
 # Where to download the binary wskdeploy
+
 `wskdeploy` is available on the release page of openwhisk-wskdeploy project: [click here to download](https://github.com/apache/incubator-openwhisk-wskdeploy/releases).
 We currently have binaries available for Linux, Mac OS and windows under amd64 architecture. You can find the binary, which fits your local environment.
 
-
 # How to build on local host
+
 There is another approach to get the binary `wskdeploy`, which is to build it from the source code with Go tool.
 
 Make sure `$GOPATH` is defined. If not, setup your [Go development environment](https://golang.org/doc/code.html).
@@ -78,17 +76,15 @@ You can verify your build by running:
 ./wskdeploy --help
 ```
 
-Note: we have no releases yet so you should build the `development` branch.
-
 # Contributing
 
-Start by creating a fork of `openwhisk-wskdeploy` and then change the git `origin` to point to
-your forked repository, as follows:
+Start by creating a fork of `incubator-openwhisk-wskdeploy` and then change the git `origin` to point to your forked repository, as follows:
 
-```sh
+```
 $ cd $GOPATH/src/github.com/apache/incubator-openwhisk-wskdeploy
 $ git remote rename origin upstream
 $ git remote add origin https://github.com/<your fork>/incubator-openwhisk-wskdeploy
+$ git fetch --all
 $ git branch --set-upstream-to origin/master  # track master from origin now
 ```
 
@@ -114,10 +110,31 @@ commands will start the wskdeploy cross compile for your specific OS platform in
 
 7. After build success, you should find a correct binary under current /bin dir of you openwhisk-deploy clone dir.
 
+# Debugging
+
+### Enable additional trace in Go client
+
+Wskdeploy uses the OpenWhisk Go Client to format and invoke OpenWhisk's APIs which has additional debug tracing available.
+
+To enable this trace, set the following environemt variable in Bash:
+```
+# set to any value > 0
+WSK_CLI_DEBUG=1
+```
 
 # Known issues
 
-You might get this error when downloading `openwhisk-wskdeploy`
+### Git commands using HTTPS, not SSH
+
+The "go get" command uses HTTPS with GitHub and when you attempt to "commit" code you might be prompted with your GitHub credentials.  If you wish to use your SSH credentials, you may need to issue the following command to set the appropriate URL for your "origin" fork:
+
+```
+git remote set-url origin git@github.com:<username>/incubator-openwhisk-wskdeploy.git
+```
+
+### Git clone RPC failed: HTTP 301
+
+This sometimes occurs using "go get" the wskdeploy code (which indirectly invokes "git clone"). You might get this error when downloading `incubator-openwhisk-wskdeploy`:
 
      Cloning into ''$GOAPTH/src/gopkg.in/yaml.v2'...
      error: RPC failed; HTTP 301 curl 22 The requested URL returned error: 301
@@ -125,7 +142,7 @@ You might get this error when downloading `openwhisk-wskdeploy`
 
 This is caused by newer `git` not forwarding request anymore. One solution is to allow forwarding for `gopkg.in`
 
-```sh
+```
 $ git config --global http.https://gopkg.in.followRedirects true
 ```
 
