@@ -116,7 +116,7 @@ commands will start the wskdeploy cross compile for your specific OS platform in
 
 Wskdeploy uses the OpenWhisk Go Client to format and invoke OpenWhisk's APIs which has additional debug tracing available.
 
-To enable this trace, set the following environemt variable in Bash:
+To enable this trace, set the following environment variable in Bash:
 ```
 # set to any value > 0
 WSK_CLI_DEBUG=1
