@@ -1,0 +1,23 @@
+package:
+    name: validate
+    actions:
+        validate_params:
+            location: actions/dump_params.js
+            runtime: nodejs:6
+            inputs:
+                param_simple_string: foo
+                param_string_type_only:
+                    type: string
+                param_integer_type_only:
+                    type: integer
+                param_string_with_default:
+                    type: string
+                    default: bar
+                param_integer_with_default:
+                    type: integer
+                    default: -1
+                param_from_environment: $PATH
+            outputs:
+                payload:
+                    type: string
+                    description: parameter dump

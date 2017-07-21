@@ -126,11 +126,7 @@ func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value, errorParser = ResolveParameter(name, &param)
-
-			if errorParser != nil {
-				return nil, errorParser
-			}
+			keyVal.Value = ResolveParameter(keyVal.Value, &param)
 
 			if keyVal.Value != nil {
 				keyValArrParams = append(keyValArrParams, keyVal)
@@ -170,11 +166,7 @@ func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error)
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
 
-		keyVal.Value, errorParser = ResolveParameter(name, &param)
-
-		if errorParser != nil {
-			return nil, errorParser
-		}
+		keyVal.Value = ResolveParameter(keyVal.Value, &param)
 
 		if keyVal.Value != nil {
 			keyValArr = append(keyValArr, keyVal)
@@ -298,11 +290,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value, errorParser = ResolveParameter(name, &param)
-
-			if errorParser != nil {
-				return nil, nil, errorParser
-			}
+			keyVal.Value = ResolveParameter(keyVal.Value, &param)
 
 			if keyVal.Value != nil {
 				keyValArr = append(keyValArr, keyVal)
@@ -375,11 +363,7 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value, errorParser = ResolveParameter(name, &param)
-
-			if errorParser != nil {
-				return nil, errorParser
-			}
+			keyVal.Value = ResolveParameter(keyVal.Value, &param)
 
 			if keyVal.Value != nil {
 				keyValArr = append(keyValArr, keyVal)
@@ -426,131 +410,60 @@ func (action *Action) ComposeWskAction(manipath string) (*whisk.Action, error) {
 }
 
 
-// TODO(): Support other valid Package Manifest types
-// TODO(): i.e., json (valid), timestamp, version, string256, string64, string16
-// TODO(): Support JSON schema validation for type: json
+// TODO() Support other valid Package Manifest types
+// TODO() i.e., json (valid), timestamp, version, string256, string64, string16
+// TODO() Support JSON schema validation for type: json
 // TODO(): Support OpenAPI schema validation
 
-var validParameterNameMap = map[string]string{
-	"string": "string",
-	"int": "integer",
-	"float": "float",
-	"bool": "boolean",
-	"int8": "integer",
-	"int16": "integer",
-	"int32": "integer",
-	"int64": "integer",
-	"float32": "float",
-	"float64": "float",
-}
-
-
-var typeDefaultValueMap = map[string]interface{} {
+var validParameterTypeDefaultMap = map[string]string{
 	"string": "",
-	"integer": 0,
-	"float": 0.0,
-	"boolean": false,
-	// TODO() Support these types + their validation
-	// timestamp
-	// null
-	// version
-	// string256
-	// string64
-	// string16
-	// json
-	// scalar-unit
-	// schema
-	// object
+	"integer" : "0",
+	"float" : "0.0",
+	"boolean" : "false",
 }
 
-func isValidParameterType(typeName string) bool {
-	_, isValid := typeDefaultValueMap[typeName]
-	return isValid
-}
+func ResolveParamType(param *Parameter) (string, string) {
 
-// TODO(): throw errors
-func getTypeDefaultValue(typeName string) interface{} {
-
-	if val, ok := typeDefaultValueMap[typeName]; ok {
-		return val
-	} else {
-		// TODO() throw an error "type not found"
-	}
-        return nil
-}
-
-func ResolveParamTypeFromValue(value interface{}) (string, error) {
-        // Note: string is the default type if not specified.
 	var paramType string = "string"
-	var err error = nil
+	var defaultValue string = ""
 
-	if value != nil {
-		actualType := reflect.TypeOf(value).Kind().String()
+	// TODO() raise an error if param is nil
+	if param.Type != "" {
 
-		// See if the actual type of the value is valid
-		if normalizedTypeName, found := validParameterNameMap[actualType]; found {
-			// use the full spec. name
-			paramType = normalizedTypeName
-
-		} else {
-			// raise an error if param is not a known type
-			err = utils.NewParserErr("",-1, "Parameter value is not a known type. [" + actualType + "]")
+		paramType = param.Type
+		if defaultValue, ok := validParameterTypeDefaultMap[paramType]; !ok {
+			// TODO() emit an error, cease processing, inform user where error occurred in YAML
+			println(ok, defaultValue)
 		}
-	} else {
-
-		// TODO: The value may be supplied later, we need to support non-fatal warnings
-		// raise an error if param is nil
-		//err = utils.NewParserErr("",-1,"Paramter value is nil.")
 	}
-	return paramType, err
+	return paramType, defaultValue
 }
 
 // Resolve input parameter (i.e., type, value, default)
-// Note: parameter values may set later (overriddNen) by an (optional) Deployment file
-func ResolveParameter(paramName string, param *Parameter) (interface{}, error) {
-
-	var errorParser error
-	var tempType string
+// Note: parameter values may set later (overridden) by an (optional) Deployment file
+func ResolveParameter(simpleValue interface{}, param *Parameter) interface{} {
 	// default parameter value to empty string
-	var value interface{} = ""
+        var value interface{} = ""
 
-	// Trace Parameter struct before any resolution
-	//dumpParameter(paramName, param, "BEFORE")
-
-	// Parameters can be single OR multi-line declarations which must be processed/validated differently
-	if !param.multiline {
-		// we have a single-line parameter declaration
-		// We need to identify parameter Type here for later validation
-		param.Type, errorParser = ResolveParamTypeFromValue(param.Value)
-
-	} else {
-		// we have a multi-line parameter declaration
-
-		// if we do not have a value, but have a default, use it for the value
-                if param.Value == nil && param.Default !=nil {
-			param.Value = param.Default
-		}
-
-		// if we also have a type at this point, verify value (and/or default) matches type, if not error
-		// Note: if either the value or default is in conflict with the type then this is an error
-		tempType, errorParser = ResolveParamTypeFromValue(param.Value)
-
-		// if we do not have a value or default, but have a type, find its default and use it for the value
-		if param.Type!="" && !isValidParameterType(param.Type) {
-		    return value, utils.NewParserErr("",-1, "Invalid Type for parameter. [" + param.Type + "]")
-		} else if param.Type == "" {
-			param.Type = tempType
-		}
-	}
+	//// Resolve type of parameter's value
+	//paramType, typeDefault := ResolveParamType(param)
+	//println("type=["+paramType+"] defaultvalue=["+typeDefault+"]")
+	//
+	//// If param.Value is nil, that implies a "multi-line" (complex) parameter schema
+	//if param.Value == nil {
+	//
+	//	// TODO()
+	//	return value
+	//}
 
 	// Make sure the parameter's value is a valid, non-empty string and startsWith '$" (dollar) sign
-	value = utils.GetEnvVar(param.Value)
+	if strValue, ok := value.(string); ok && strValue != "" && len(strValue) > 0 {
+		value = utils.GetEnvVar(param.Value)
+	}
 
 	typ := param.Type
-
-	// TODO(Priti): need to validate type is one of the supported primitive types with unit testing
-	// TODO(): with the new logic, when would the fpllowing Unmarhsall() call be used?
 	// if value is of type 'string' and its not empty <OR> if type is not 'string'
+	// TODO(): need to validate type is one of the supported primitive types with unit testing
 	if str, ok := value.(string); ok && (len(typ) == 0 || typ != "string") {
 		var parsed interface{}
 		err := json.Unmarshal([]byte(str), &parsed)

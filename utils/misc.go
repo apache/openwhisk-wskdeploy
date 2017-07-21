@@ -151,7 +151,8 @@ func GetEnvVar(key interface{}) interface{} {
 	}
 
 	if reflect.TypeOf(key).String() == "string" {
-		if isValidEnvironmentVar(key.(string)) {
+		if isValidEnvironmentVar( key.(string)) {
+//		if strings.HasPrefix(key.(string), "$") {
 			// retrieve the value of the env. var. from the host system.
 			envkey := strings.Split(key.(string), "$")[1]
 			value := os.Getenv(envkey)
@@ -159,10 +160,11 @@ func GetEnvVar(key interface{}) interface{} {
 				// TODO() We should issue a warning to the user (verbose) that env. var. was not found
 				// (i.e., and empty string was returned).
 			}
-			return value
+			// TODO() We should issue a warning to the user (verbose) that env. var. was not found
+			// or had no value
+			return key.(string)
 		}
-
-		// The key was not a valid env. variable, simply return it as the value itself (of type string)
+		// TODO() We should issue a warning to the user (verbose) that env. var. was not found
 		return key.(string)
 	}
 	return key
