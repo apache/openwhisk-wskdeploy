@@ -123,7 +123,7 @@ func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value = ResolveParameter(&param)
+			keyVal.Value = ResolveParameter(keyVal.Value, &param)
 
 			if keyVal.Value != nil {
 				keyValArrParams = append(keyValArrParams, keyVal)
@@ -161,7 +161,7 @@ func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error)
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
 
-		keyVal.Value = ResolveParameter(&param)
+		keyVal.Value = ResolveParameter(keyVal.Value, &param)
 
 		if keyVal.Value != nil {
 			keyValArr = append(keyValArr, keyVal)
@@ -284,7 +284,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value = ResolveParameter(&param)
+			keyVal.Value = ResolveParameter(keyVal.Value, &param)
 
 			if keyVal.Value != nil {
 				keyValArr = append(keyValArr, keyVal)
@@ -357,7 +357,7 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value = ResolveParameter(&param)
+			keyVal.Value = ResolveParameter(keyVal.Value, &param)
 
 			if keyVal.Value != nil {
 				keyValArr = append(keyValArr, keyVal)
@@ -403,11 +403,61 @@ func (action *Action) ComposeWskAction(manipath string) (*whisk.Action, error) {
 	return wskaction, err
 }
 
-// Resolve parameter input
-func ResolveParameter(param *Parameter) interface{} {
-	value := utils.GetEnvVar(param.Value)
+
+// TODO() Support other valid Package Manifest types
+// TODO() i.e., json (valid), timestamp, version, string256, string64, string16
+// TODO() Support JSON schema validation for type: json
+// TODO(): Support OpenAPI schema validation
+
+var validParameterTypeDefaultMap = map[string]string{
+	"string": "",
+	"integer" : "0",
+	"float" : "0.0",
+	"boolean" : "false",
+}
+
+func ResolveParamType(param *Parameter) (string, string) {
+
+	var paramType string = "string"
+	var defaultValue string = ""
+
+	// TODO() raise an error if param is nil
+	if param.Type != "" {
+
+		paramType = param.Type
+		if defaultValue, ok := validParameterTypeDefaultMap[paramType]; !ok {
+			// TODO() emit an error, cease processing, inform user where error occurred in YAML
+			println(ok, defaultValue)
+		}
+	}
+	return paramType, defaultValue
+}
+
+// Resolve input parameter (i.e., type, value, default)
+// Note: parameter values may set later (overridden) by an (optional) Deployment file
+func ResolveParameter(simpleValue interface{}, param *Parameter) interface{} {
+	// default parameter value to empty string
+        var value interface{} = ""
+
+	//// Resolve type of parameter's value
+	//paramType, typeDefault := ResolveParamType(param)
+	//println("type=["+paramType+"] defaultvalue=["+typeDefault+"]")
+	//
+	//// If param.Value is nil, that implies a "multi-line" (complex) parameter schema
+	//if param.Value == nil {
+	//
+	//	// TODO()
+	//	return value
+	//}
+
+	// Make sure the parameter's value is a valid, non-empty string and startsWith '$" (dollar) sign
+	if strValue, ok := value.(string); ok && strValue != "" && len(strValue) > 0 {
+		value = utils.GetEnvVar(param.Value)
+	}
 
 	typ := param.Type
+	// if value is of type 'string' and its not empty <OR> if type is not 'string'
+	// TODO(): need to validate type is one of the supported primitive types with unit testing
 	if str, ok := value.(string); ok && (len(typ) == 0 || typ != "string") {
 		var parsed interface{}
 		err := json.Unmarshal([]byte(str), &parsed)

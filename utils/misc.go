@@ -130,18 +130,40 @@ func Ask(reader *bufio.Reader, question string, def string) string {
 	return answer[:len-1]
 }
 
+
+// Test if a string
+func isValidEnvironmentVar( value string ) bool {
+
+	// A valid Env. variable should start with '$' (dollar) char.
+	// AND have at least 1 additional character after it.
+	if value != "" && len(value) > 1 && strings.HasPrefix(value, "$") {
+		return true
+	}
+	return false
+}
+
 // Get the env variable value by key.
 // Get the env variable if the key is start by $
 func GetEnvVar(key interface{}) interface{} {
+	// Assure the key itself is not nil
+	if (key == nil ) {
+		return nil
+	}
+
 	if reflect.TypeOf(key).String() == "string" {
-		if strings.HasPrefix(key.(string), "$") {
+		if isValidEnvironmentVar( key.(string)) {
+//		if strings.HasPrefix(key.(string), "$") {
+			// retrieve the value of the env. var. from the host system.
 			envkey := strings.Split(key.(string), "$")[1]
 			value := os.Getenv(envkey)
 			if value != "" {
 				return value
 			}
-			return envkey
+			// TODO() We should issue a warning to the user (verbose) that env. var. was not found
+			// or had no value
+			return key.(string)
 		}
+		// TODO() We should issue a warning to the user (verbose) that env. var. was not found
 		return key.(string)
 	}
 	return key
