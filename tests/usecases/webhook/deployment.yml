@@ -1,6 +1,6 @@
 application:
   name: wskdeploy-samples
-  namespace: guest
+  namespace: _
 
   packages:
     git_webhook:
@@ -10,10 +10,10 @@ application:
         webhook:
           #we treat the inputs as parameters besides --feed.
           inputs:
-            # TODO(dliu): Please fix "repsotiory value" and see if we can change/remove username
-            # as actual developer names should not be in these files when possible.
-            username: daisy-ycguo
-            repository: https://github.com/openwhisk/wsktool.git
-            accessToken:
-            events: PUSH
-            endpoint: openwhisk.ng.bluemix.net
+            # Below values are fake values of username, repository, accessToken, events and endpoint.
+	    # You need to replace them with the real data.
+            username: github_id		# user name in github.com
+            repository: https://github.com/XXX/XXX.git		# the url of git repository 
+            accessToken: 8854acesdf	# the access token of github
+            events: PUSH		# the event of github, e.g. PUSH
+            endpoint: myopenwhisk.net	#the name or IP of the OpenWhisk server
