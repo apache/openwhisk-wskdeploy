@@ -152,7 +152,6 @@ func GetEnvVar(key interface{}) interface{} {
 
 	if reflect.TypeOf(key).String() == "string" {
 		if isValidEnvironmentVar( key.(string)) {
-//		if strings.HasPrefix(key.(string), "$") {
 			// retrieve the value of the env. var. from the host system.
 			envkey := strings.Split(key.(string), "$")[1]
 			value := os.Getenv(envkey)
