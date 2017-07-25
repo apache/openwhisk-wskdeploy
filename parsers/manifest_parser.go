@@ -126,7 +126,11 @@ func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value = ResolveParameter(keyVal.Value, &param)
+			keyVal.Value, errorParser = ResolveParameter(keyVal.Value, &param)
+
+			if errorParser != nil {
+				return nil, errorParser
+			}
 
 			if keyVal.Value != nil {
 				keyValArrParams = append(keyValArrParams, keyVal)
@@ -166,7 +170,11 @@ func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error)
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
 
-		keyVal.Value = ResolveParameter(keyVal.Value, &param)
+		keyVal.Value, errorParser = ResolveParameter(keyVal.Value, &param)
+
+		if errorParser != nil {
+			return nil, errorParser
+		}
 
 		if keyVal.Value != nil {
 			keyValArr = append(keyValArr, keyVal)
@@ -290,7 +298,11 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value = ResolveParameter(keyVal.Value, &param)
+			keyVal.Value, errorParser = ResolveParameter(keyVal.Value, &param)
+
+			if errorParser != nil {
+				return nil, nil, errorParser
+			}
 
 			if keyVal.Value != nil {
 				keyValArr = append(keyValArr, keyVal)
@@ -363,7 +375,11 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value = ResolveParameter(keyVal.Value, &param)
+			keyVal.Value, errorParser = ResolveParameter(keyVal.Value, &param)
+
+			if errorParser != nil {
+				return nil, errorParser
+			}
 
 			if keyVal.Value != nil {
 				keyValArr = append(keyValArr, keyVal)
@@ -415,46 +431,65 @@ func (action *Action) ComposeWskAction(manipath string) (*whisk.Action, error) {
 // TODO() Support JSON schema validation for type: json
 // TODO(): Support OpenAPI schema validation
 
-var validParameterTypeDefaultMap = map[string]string{
-	"string": "",
-	"integer" : "0",
-	"float" : "0.0",
-	"boolean" : "false",
+
+var validParameterTypes = []string {
+	"string",
+	"integer",
+	"float",
+	"boolean",
 }
 
-func ResolveParamType(param *Parameter) (string, string) {
-
-	var paramType string = "string"
-	var defaultValue string = ""
-
-	// TODO() raise an error if param is nil
-	if param.Type != "" {
-
-		paramType = param.Type
-		if defaultValue, ok := validParameterTypeDefaultMap[paramType]; !ok {
-			// TODO() emit an error, cease processing, inform user where error occurred in YAML
-			println(ok, defaultValue)
+func knownParameterType(test string) bool {
+	for _, current := range validParameterTypes {
+		if current == test {
+			return true
 		}
 	}
-	return paramType, defaultValue
+	return false
+}
+
+var validParameterNameMap = map[string]string{
+	"string": "string",
+	"int": "integer",
+	"float": "float",
+	"bool": "boolean",
+}
+
+func ResolveParamType(value interface{}) (string) {
+
+	var paramType string = "string"
+
+	// TODO() raise an error if param is nil
+	if value != nil {
+
+		actualType := reflect.TypeOf(value).Kind().String()
+
+		if fname, found := validParameterNameMap[actualType]; found {
+			println("found ["+actualType + "] fullname=["+fname+"]")
+		} else {
+			println("NOT FOUND! ["+actualType + "]")
+		}
+	}
+	return paramType
 }
 
 // Resolve input parameter (i.e., type, value, default)
-// Note: parameter values may set later (overridden) by an (optional) Deployment file
-func ResolveParameter(simpleValue interface{}, param *Parameter) interface{} {
+// Note: parameter values may set later (overriddNen) by an (optional) Deployment file
+func ResolveParameter(simpleValue interface{}, param *Parameter) (interface{}, error) {
+
+	var errorParser error
 	// default parameter value to empty string
         var value interface{} = ""
 
-	//// Resolve type of parameter's value
-	//paramType, typeDefault := ResolveParamType(param)
-	//println("type=["+paramType+"] defaultvalue=["+typeDefault+"]")
-	//
-	//// If param.Value is nil, that implies a "multi-line" (complex) parameter schema
-	//if param.Value == nil {
-	//
-	//	// TODO()
-	//	return value
-	//}
+	// Parameters can be single OR multi-line declarations which must be processed/validated differently
+	if !param.multiline {
+		// we have a single-line parameter declaration
+		if (param.Type == "") {
+			param.Type = ResolveParamType(param.Value)
+		}
+	} else {  // we have a multi-line parameter declaration
+
+	}
 
 	// Make sure the parameter's value is a valid, non-empty string and startsWith '$" (dollar) sign
 	if strValue, ok := value.(string); ok && strValue != "" && len(strValue) > 0 {
@@ -471,17 +506,6 @@ func ResolveParameter(simpleValue interface{}, param *Parameter) interface{} {
 			return parsed, err
 		}
 	}
-
-	// Default to an empty string, do NOT error/terminate as Value may be provided later bu a Deployment file.
-	if (value == nil) {
-		value = getTypeDefaultValue(param.Type)
-		// @TODO(): Need warning message here to warn of default usage, support for warnings (non-fatal)
-	}
-
-	// Trace Parameter struct after resolution
-	//dumpParameter(paramName, param, "AFTER")
-	//fmt.Printf("EXIT: value=[%v]\n", value)
-
 	return value, errorParser
 }
 
@@ -503,6 +527,8 @@ func (n *Parameter) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		n.Status = aux.Status
 		n.Schema = aux.Schema
 		return nil
+	} else {
+
 	}
 
 	// If we did not find the multi-line schema, assume in-line (or single-line) schema
