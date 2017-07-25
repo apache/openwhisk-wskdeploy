@@ -152,7 +152,6 @@ func GetEnvVar(key interface{}) interface{} {
 
 	if reflect.TypeOf(key).String() == "string" {
 		if isValidEnvironmentVar( key.(string)) {
-//		if strings.HasPrefix(key.(string), "$") {
 			// retrieve the value of the env. var. from the host system.
 			envkey := strings.Split(key.(string), "$")[1]
 			value := os.Getenv(envkey)
@@ -315,6 +314,23 @@ func javaEntryError() error {
 	errMsg := wski18n.T("Java actions require --main to specify the fully-qualified name of the main class")
 
 	return errors.New(errMsg)
+}
+
+// ParserErr records errors from parsing YAML against the wskdeploy spec.
+type ParserErr struct {
+	filneame string
+        lineNum int
+	message string
+}
+
+// Implement the error interface.
+func (e ParserErr) Error() string {
+	return fmt.Sprintf("%s [%d]: %s", e.filneame, e.lineNum, e.message)
+}
+
+func NewParserErr(fname string, line int, msg string) error {
+	var err = &ParserErr{"", -1, msg}
+	return err
 }
 
 //for web action support, code from wsk cli with tiny adjustments

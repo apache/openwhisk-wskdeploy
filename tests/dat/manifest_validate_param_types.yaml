@@ -9,9 +9,11 @@ package:
                 param_simple_integer_1: 1
                 param_simple_integer_2: 0
                 param_simple_integer_3: -1
-                param_simple_integer_4: 99
-                param_simple_integer_5: 99999
-                param_simple_integer_6: -99999
+#                param_simple_integer_4: 99999
+#                param_simple_integer_5: -99999
+                param_simple_float_1: 1.0
+                param_simple_float_2: 0.0
+                param_simple_float_4: -1.0
 #                param_string_type_only:
 #                    type: string
 #                param_integer_type_only:

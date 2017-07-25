@@ -190,8 +190,7 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 				return errors.New("manifestReader. Error: Conflict detected for action named " + existAction.Action.Name + ". Found two locations for source file: " + existAction.Filepath + " and " + manifestAction.Filepath)
 			}
 		} else {
-			// not a new action so to actions in package
-
+			// not a new action so update the action in the package
 			err := reader.checkAction(manifestAction)
 			utils.Check(err)
 			reader.serviceDeployer.Deployment.Packages[manifestAction.Packagename].Actions[manifestAction.Action.Name] = manifestAction

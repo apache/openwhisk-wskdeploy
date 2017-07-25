@@ -24,15 +24,6 @@ import (
 	"os"
 )
 
-// ParserErr records errors from parsing YAML against the wskdeploy spec.
-type ParserErr struct {
-	Msg string
-}
-
-func (e *ParserErr) Error() string {
-	return e.Msg
-}
-
 // Check is a util function to panic when there is an error.
 func Check(e error) {
 	defer func() {

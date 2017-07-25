@@ -32,6 +32,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"gopkg.in/yaml.v2"
+	"fmt"
 )
 
 // Read existing manifest file or create new if none exists
@@ -125,7 +126,7 @@ func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value, errorParser = ResolveParameter(keyVal.Value, &param)
+			keyVal.Value, errorParser = ResolveParameter(&param)
 
 			if errorParser != nil {
 				return nil, errorParser
@@ -169,7 +170,7 @@ func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error)
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
 
-		keyVal.Value, errorParser = ResolveParameter(keyVal.Value, &param)
+		keyVal.Value, errorParser = ResolveParameter(&param)
 
 		if errorParser != nil {
 			return nil, errorParser
@@ -297,7 +298,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value, errorParser = ResolveParameter(keyVal.Value, &param)
+			keyVal.Value, errorParser = ResolveParameter(&param)
 
 			if errorParser != nil {
 				return nil, nil, errorParser
@@ -374,7 +375,7 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value, errorParser = ResolveParameter(keyVal.Value, &param)
+			keyVal.Value, errorParser = ResolveParameter(&param)
 
 			if errorParser != nil {
 				return nil, errorParser
@@ -430,70 +431,102 @@ func (action *Action) ComposeWskAction(manipath string) (*whisk.Action, error) {
 // TODO() Support JSON schema validation for type: json
 // TODO(): Support OpenAPI schema validation
 
-
-var validParameterTypes = []string {
-	"string",
-	"integer",
-	"float",
-	"boolean",
-}
-
-func knownParameterType(test string) bool {
-	for _, current := range validParameterTypes {
-		if current == test {
-			return true
-		}
-	}
-	return false
-}
-
 var validParameterNameMap = map[string]string{
 	"string": "string",
 	"int": "integer",
 	"float": "float",
 	"bool": "boolean",
+	"int8": "integer",
+	"int16": "integer",
+	"int32": "integer",
+	"int64": "integer",
+	"float32": "float",
+	"float64": "float",
 }
 
-func ResolveParamType(value interface{}) (string) {
+
+var typeDefaultValueMap = map[string]interface{} {
+	"string": "",
+	"integer": 0,
+	"float": 0.0,
+	"boolean": false,
+	// @TODO() Support these types + their validation
+	// timestamp
+	// null
+	// version
+	// string256
+	// string64
+	// string16
+	// json
+	// scalar-unit
+	// schema
+	// object
+}
+
+func isValidParameterType(typeName string) bool {
+	_, isValid := typeDefaultValueMap[typeName]
+	return isValid
+}
+
+// TODO() throw errors
+func getTypeDefaultValue(typeName string) interface{} {
+
+	if val, ok := typeDefaultValueMap[typeName]; ok {
+		return val
+	} else {
+		// TODO() throw an error "type not found"
+	}
+        return nil
+}
+
+// TODO() return errors
+func ResolveParamTypeFromValue(value interface{}) (string, error) {
 
 	var paramType string = "string"
+	var err error = nil
 
-	// TODO() raise an error if param is nil
 	if value != nil {
-
 		actualType := reflect.TypeOf(value).Kind().String()
 
-		if fname, found := validParameterNameMap[actualType]; found {
-			println("found ["+actualType + "] fullname=["+fname+"]")
+		// See if the actual type of the value is valid
+		if normalizedTypeName, found := validParameterNameMap[actualType]; found {
+			// use the full spec. name
+			paramType = normalizedTypeName
+
 		} else {
-			println("NOT FOUND! ["+actualType + "]")
+			// raise an error if param is not a known type
+			err = utils.NewParserErr("",-1, "Parameter value is not a known type. [" + actualType + "]")
 		}
+	} else {
+		// raise an error if param is nil
+		err = utils.NewParserErr("",-1,"Paramter value is nil.")
 	}
-	return paramType
+	return paramType, err
 }
 
 // Resolve input parameter (i.e., type, value, default)
 // Note: parameter values may set later (overriddNen) by an (optional) Deployment file
-func ResolveParameter(simpleValue interface{}, param *Parameter) (interface{}, error) {
+func ResolveParameter(param *Parameter) (interface{}, error) {
 
 	var errorParser error
 	// default parameter value to empty string
         var value interface{} = ""
 
+	dumpParameter("BEFORE", param)
+
 	// Parameters can be single OR multi-line declarations which must be processed/validated differently
 	if !param.multiline {
 		// we have a single-line parameter declaration
-		if (param.Type == "") {
-			param.Type = ResolveParamType(param.Value)
-		}
+		// We need to identify parameter Type here for later validation
+		param.Type, errorParser = ResolveParamTypeFromValue(param.Value)
+
 	} else {  // we have a multi-line parameter declaration
+
 
 	}
 
 	// Make sure the parameter's value is a valid, non-empty string and startsWith '$" (dollar) sign
-	if strValue, ok := value.(string); ok && strValue != "" && len(strValue) > 0 {
-		value = utils.GetEnvVar(param.Value)
-	}
+	value = utils.GetEnvVar(param.Value)
 
 	typ := param.Type
 	// if value is of type 'string' and its not empty <OR> if type is not 'string'
@@ -505,6 +538,8 @@ func ResolveParameter(simpleValue interface{}, param *Parameter) (interface{}, e
 			return parsed, err
 		}
 	}
+
+	dumpParameter("AFTER", param)
 	return value, errorParser
 }
 
@@ -546,4 +581,16 @@ func (n *Parameter) MarshalYAML() (interface{}, error) {
 	}
 
 	return n, nil
+}
+
+func dumpParameter(sep string, param *Parameter) {
+
+	fmt.Printf("%s: %T\n", sep, param)
+	if(param!= nil) {
+		fmt.Printf("\tParameter.Type: [%s]\n", param.Type)
+
+		//var str string = param.Value.(string)
+		fmt.Printf("\tParameter.Value: [%v]\n", param.Value)
+		fmt.Printf("\tParameter.DEfault: [%v]\n", param.Default)
+	}
 }
