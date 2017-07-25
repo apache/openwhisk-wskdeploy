@@ -24,12 +24,12 @@ import (
 	"os"
 )
 
-// ServerlessErr records errors from the Serverless binary
-type ServerlessErr struct {
+// ParserErr records errors from parsing YAML against the wskdeploy spec.
+type ParserErr struct {
 	Msg string
 }
 
-func (e *ServerlessErr) Error() string {
+func (e *ParserErr) Error() string {
 	return e.Msg
 }
 

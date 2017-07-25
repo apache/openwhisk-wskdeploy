@@ -23,6 +23,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"reflect"
 	"strings"
 
 	"encoding/base64"
@@ -90,6 +91,7 @@ func (dm *YAMLParser) ParseManifest(mani string) *ManifestYAML {
 
 func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string) (map[string]utils.DependencyRecord, error) {
 
+	var errorParser error
 	depMap := make(map[string]utils.DependencyRecord)
 	for key, dependency := range mani.Package.Dependencies {
 		version := dependency.Version
@@ -123,7 +125,11 @@ func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value = ResolveParameter(keyVal.Value, &param)
+			keyVal.Value, errorParser = ResolveParameter(keyVal.Value, &param)
+
+			if errorParser != nil {
+				return nil, errorParser
+			}
 
 			if keyVal.Value != nil {
 				keyValArrParams = append(keyValArrParams, keyVal)
@@ -148,6 +154,8 @@ func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string
 
 // Is we consider multi pacakge in one yaml?
 func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error) {
+	var errorParser error
+
 	//mani := dm.ParseManifest(manipath)
 	pag := &whisk.Package{}
 	pag.Name = mani.Package.Packagename
@@ -161,7 +169,11 @@ func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error)
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
 
-		keyVal.Value = ResolveParameter(keyVal.Value, &param)
+		keyVal.Value, errorParser = ResolveParameter(keyVal.Value, &param)
+
+		if errorParser != nil {
+			return nil, errorParser
+		}
 
 		if keyVal.Value != nil {
 			keyValArr = append(keyValArr, keyVal)
@@ -220,6 +232,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, mani *ManifestYAML) ([]
 
 func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []utils.ActionRecord, aub []*utils.ActionExposedURLBinding, err error) {
 
+	var errorParser error
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
 	var au []*utils.ActionExposedURLBinding = make([]*utils.ActionExposedURLBinding, 0)
 
@@ -238,7 +251,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 
 			if utils.IsDirectory(filePath) {
 				zipName := filePath + ".zip"
-				err := utils.NewZipWritter(filePath, zipName).Zip()
+				err = utils.NewZipWritter(filePath, zipName).Zip()
 				defer os.Remove(zipName)
 				utils.Check(err)
 				// To do: support docker and main entry as did by go cli?
@@ -284,7 +297,11 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value = ResolveParameter(keyVal.Value, &param)
+			keyVal.Value, errorParser = ResolveParameter(keyVal.Value, &param)
+
+			if errorParser != nil {
+				return nil, nil, errorParser
+			}
 
 			if keyVal.Value != nil {
 				keyValArr = append(keyValArr, keyVal)
@@ -330,7 +347,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 }
 
 func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger, error) {
-
+	var errorParser error
 	var t1 []*whisk.Trigger = make([]*whisk.Trigger, 0)
 	pkg := manifest.Package
 	for _, trigger := range pkg.GetTriggerList() {
@@ -357,7 +374,11 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value = ResolveParameter(keyVal.Value, &param)
+			keyVal.Value, errorParser = ResolveParameter(keyVal.Value, &param)
+
+			if errorParser != nil {
+				return nil, errorParser
+			}
 
 			if keyVal.Value != nil {
 				keyValArr = append(keyValArr, keyVal)
@@ -409,46 +430,65 @@ func (action *Action) ComposeWskAction(manipath string) (*whisk.Action, error) {
 // TODO() Support JSON schema validation for type: json
 // TODO(): Support OpenAPI schema validation
 
-var validParameterTypeDefaultMap = map[string]string{
-	"string": "",
-	"integer" : "0",
-	"float" : "0.0",
-	"boolean" : "false",
+
+var validParameterTypes = []string {
+	"string",
+	"integer",
+	"float",
+	"boolean",
 }
 
-func ResolveParamType(param *Parameter) (string, string) {
-
-	var paramType string = "string"
-	var defaultValue string = ""
-
-	// TODO() raise an error if param is nil
-	if param.Type != "" {
-
-		paramType = param.Type
-		if defaultValue, ok := validParameterTypeDefaultMap[paramType]; !ok {
-			// TODO() emit an error, cease processing, inform user where error occurred in YAML
-			println(ok, defaultValue)
+func knownParameterType(test string) bool {
+	for _, current := range validParameterTypes {
+		if current == test {
+			return true
 		}
 	}
-	return paramType, defaultValue
+	return false
+}
+
+var validParameterNameMap = map[string]string{
+	"string": "string",
+	"int": "integer",
+	"float": "float",
+	"bool": "boolean",
+}
+
+func ResolveParamType(value interface{}) (string) {
+
+	var paramType string = "string"
+
+	// TODO() raise an error if param is nil
+	if value != nil {
+
+		actualType := reflect.TypeOf(value).Kind().String()
+
+		if fname, found := validParameterNameMap[actualType]; found {
+			println("found ["+actualType + "] fullname=["+fname+"]")
+		} else {
+			println("NOT FOUND! ["+actualType + "]")
+		}
+	}
+	return paramType
 }
 
 // Resolve input parameter (i.e., type, value, default)
-// Note: parameter values may set later (overridden) by an (optional) Deployment file
-func ResolveParameter(simpleValue interface{}, param *Parameter) interface{} {
+// Note: parameter values may set later (overriddNen) by an (optional) Deployment file
+func ResolveParameter(simpleValue interface{}, param *Parameter) (interface{}, error) {
+
+	var errorParser error
 	// default parameter value to empty string
         var value interface{} = ""
 
-	//// Resolve type of parameter's value
-	//paramType, typeDefault := ResolveParamType(param)
-	//println("type=["+paramType+"] defaultvalue=["+typeDefault+"]")
-	//
-	//// If param.Value is nil, that implies a "multi-line" (complex) parameter schema
-	//if param.Value == nil {
-	//
-	//	// TODO()
-	//	return value
-	//}
+	// Parameters can be single OR multi-line declarations which must be processed/validated differently
+	if !param.multiline {
+		// we have a single-line parameter declaration
+		if (param.Type == "") {
+			param.Type = ResolveParamType(param.Value)
+		}
+	} else {  // we have a multi-line parameter declaration
+
+	}
 
 	// Make sure the parameter's value is a valid, non-empty string and startsWith '$" (dollar) sign
 	if strValue, ok := value.(string); ok && strValue != "" && len(strValue) > 0 {
@@ -462,10 +502,10 @@ func ResolveParameter(simpleValue interface{}, param *Parameter) interface{} {
 		var parsed interface{}
 		err := json.Unmarshal([]byte(str), &parsed)
 		if err == nil {
-			return parsed
+			return parsed, err
 		}
 	}
-	return value
+	return value, errorParser
 }
 
 // Provide custom Parameter marshalling and unmarshalling
@@ -475,6 +515,7 @@ type ParsedParameter Parameter
 func (n *Parameter) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var aux ParsedParameter
 	if err := unmarshal(&aux); err == nil {
+		n.multiline = true
 		n.Type = aux.Type
 		n.Description = aux.Description
 		n.Value = aux.Value
@@ -483,6 +524,8 @@ func (n *Parameter) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		n.Status = aux.Status
 		n.Schema = aux.Schema
 		return nil
+	} else {
+
 	}
 
 	var inline interface{}
@@ -491,6 +534,7 @@ func (n *Parameter) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	n.Value = inline
+	n.multiline = false
 	return nil
 }
 

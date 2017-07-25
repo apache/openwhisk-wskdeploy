@@ -87,6 +87,7 @@ type Parameter struct {
 	Default     interface{} `yaml:"default,omitempty"`
 	Status      string      `yaml:"status,omitempty"`
 	Schema      interface{} `yaml:"schema,omitempty"`
+	multiline   bool
 }
 
 type Trigger struct {
