@@ -1,0 +1,26 @@
+package:
+    name: validate
+    actions:
+        validate_multiline_params:
+            location: actions/dump_params.js
+            runtime: nodejs:6
+            inputs:
+                param_string_value_only:
+                    value: foo
+                param_string_type_and_value_only:
+                    type: string
+                    value: foo
+#                param_string_type_only:
+#                    type: string
+#                param_integer_type_only:
+#                    type: integer
+#                param_string_with_default:
+#                    type: string
+#                    default: bar
+#                param_integer_with_default:
+#                    type: integer
+#                    default: -1
+            outputs:
+                payload:
+                    type: string
+                    description: parameter dump
