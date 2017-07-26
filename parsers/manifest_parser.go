@@ -525,6 +525,12 @@ func ResolveParameter(param *Parameter) (interface{}, error) {
 	} else {
 		// we have a multi-line parameter declaration
 
+		// if we do not have a value, but have a default, use it for the value
+
+		// if we also have a type at this point, verify value (and/or default) matches type, if not error
+		// Note: if either the value or default is in conflict with the type then this is an error
+
+		// if we do not have a value or default, but have a type, find its default and use it for the value
 
 	}
 

@@ -56,7 +56,7 @@ func TestGetEnvVar(t *testing.T) {
 	fmt.Println(GetEnvVar("$WithDollar"))
 	fmt.Println(GetEnvVar("$5000"))
 	assert.Equal(t, "NoDollar", GetEnvVar("NoDollar"), "NoDollar should be no change.")
-	assert.Equal(t, "oh, dollars!", GetEnvVar("$WithDollar"), "dollar sign should be handled")
-	assert.Equal(t, "5000", GetEnvVar("5000"), "Should be no difference between integer and string")
-	assert.Equal(t, "WithDollarAgain", GetEnvVar("$WithDollarAgain"), "if not found, just return the env")
+	assert.Equal(t, "oh, dollars!", GetEnvVar("$WithDollar"), "dollar sign should be handled.")
+	assert.Equal(t, "5000", GetEnvVar("5000"), "Should be no difference between integer and string.")
+	assert.Equal(t, "", GetEnvVar("$WithDollarAgain"), "if not found in environemnt, return empty string.")
 }
