@@ -5,34 +5,21 @@ package:
             location: actions/dump_params.js
             runtime: nodejs:6
             inputs:
-                # value only
                 param_string_value_only:
                     value: foo
-                param_int_value_only:
-                    value: 123
-                param_float_value_only:
-                    value: 3.14
-                # type and value only
                 param_string_type_and_value_only:
                     type: string
                     value: foo
-                # type only
-                param_string_type_only:
-                    type: string
-                param_integer_type_only:
-                    type: integer
-                param_float_type_only:
-                    type: float
-                # No value, but with default value
-                param_string_with_default:
-                    type: string
-                    default: bar
-                param_integer_with_default:
-                    type: integer
-                    default: -1
-                param_float_with_default:
-                    type: float
-                    default: 2.9
+#                param_string_type_only:
+#                    type: string
+#                param_integer_type_only:
+#                    type: integer
+#                param_string_with_default:
+#                    type: string
+#                    default: bar
+#                param_integer_with_default:
+#                    type: integer
+#                    default: -1
             outputs:
                 payload:
                     type: string
