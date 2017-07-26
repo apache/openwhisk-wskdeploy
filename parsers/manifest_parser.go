@@ -297,6 +297,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 		for name, param := range action.Inputs {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
+			println("NAME: " + name)
 
 			keyVal.Value, errorParser = ResolveParameter(&param)
 
@@ -479,9 +480,8 @@ func getTypeDefaultValue(typeName string) interface{} {
         return nil
 }
 
-// TODO() return errors
 func ResolveParamTypeFromValue(value interface{}) (string, error) {
-
+        // Note: string is the default type if not specified.
 	var paramType string = "string"
 	var err error = nil
 
@@ -498,8 +498,10 @@ func ResolveParamTypeFromValue(value interface{}) (string, error) {
 			err = utils.NewParserErr("",-1, "Parameter value is not a known type. [" + actualType + "]")
 		}
 	} else {
+
+		// TODO: The value may be supplied later, we need to support non-fatal warnings
 		// raise an error if param is nil
-		err = utils.NewParserErr("",-1,"Paramter value is nil.")
+		//err = utils.NewParserErr("",-1,"Paramter value is nil.")
 	}
 	return paramType, err
 }
@@ -510,7 +512,7 @@ func ResolveParameter(param *Parameter) (interface{}, error) {
 
 	var errorParser error
 	// default parameter value to empty string
-        var value interface{} = ""
+	var value interface{} = ""
 
 	dumpParameter("BEFORE", param)
 
@@ -520,7 +522,8 @@ func ResolveParameter(param *Parameter) (interface{}, error) {
 		// We need to identify parameter Type here for later validation
 		param.Type, errorParser = ResolveParamTypeFromValue(param.Value)
 
-	} else {  // we have a multi-line parameter declaration
+	} else {
+		// we have a multi-line parameter declaration
 
 
 	}
@@ -540,6 +543,14 @@ func ResolveParameter(param *Parameter) (interface{}, error) {
 	}
 
 	dumpParameter("AFTER", param)
+	fmt.Printf("EXIT: value=[%v]\n", value)
+
+	// @TODO() Need warning message here, support for warnings (non-fatal)
+	// Default to an empty string, do NOT error/terminate as Value may be provided later bu a Deployment file.
+	if (value == nil) {
+		value = ""
+		param.Type = "string"
+	}
 	return value, errorParser
 }
 
@@ -591,6 +602,6 @@ func dumpParameter(sep string, param *Parameter) {
 
 		//var str string = param.Value.(string)
 		fmt.Printf("\tParameter.Value: [%v]\n", param.Value)
-		fmt.Printf("\tParameter.DEfault: [%v]\n", param.Default)
+		fmt.Printf("\tParameter.Default: [%v]\n", param.Default)
 	}
 }

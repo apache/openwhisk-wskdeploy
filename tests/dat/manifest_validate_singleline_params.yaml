@@ -5,26 +5,24 @@ package:
             location: actions/dump_params.js
             runtime: nodejs:6
             inputs:
+                # simple string
                 param_simple_string: foo
+                # simple integers
                 param_simple_integer_1: 1
                 param_simple_integer_2: 0
                 param_simple_integer_3: -1
-#                param_simple_integer_4: 99999
-#                param_simple_integer_5: -99999
+                param_simple_integer_4: 99999
+                param_simple_integer_5: -99999
+                # simple floats
                 param_simple_float_1: 1.0
                 param_simple_float_2: 0.0
                 param_simple_float_4: -1.0
-#                param_string_type_only:
-#                    type: string
-#                param_integer_type_only:
-#                    type: integer
-#                param_string_with_default:
-#                    type: string
-#                    default: bar
-#                param_integer_with_default:
-#                    type: integer
-#                    default: -1
-#                param_from_environment: $PATH
+                # simple Environment variables
+                param_simple_env_var_1: $GOPATH
+                # Empty (string)
+                param_simple_implied_empty:
+                param_simple_explicit_empty_1: ''
+                param_simple_explicit_empty_2: ""
             outputs:
                 payload:
                     type: string
