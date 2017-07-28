@@ -511,10 +511,11 @@ func ResolveParamTypeFromValue(value interface{}) (string, error) {
 func ResolveParameter(param *Parameter) (interface{}, error) {
 
 	var errorParser error
+	var tempType string
 	// default parameter value to empty string
 	var value interface{} = ""
 
-	dumpParameter("BEFORE", param)
+	// dumpParameter("BEFORE", param)
 
 	// Parameters can be single OR multi-line declarations which must be processed/validated differently
 	if !param.multiline {
@@ -526,12 +527,20 @@ func ResolveParameter(param *Parameter) (interface{}, error) {
 		// we have a multi-line parameter declaration
 
 		// if we do not have a value, but have a default, use it for the value
+                if param.Value == nil && param.Default !=nil {
+			param.Value = param.Default
+		}
 
 		// if we also have a type at this point, verify value (and/or default) matches type, if not error
 		// Note: if either the value or default is in conflict with the type then this is an error
+		tempType, errorParser = ResolveParamTypeFromValue(param.Value)
 
 		// if we do not have a value or default, but have a type, find its default and use it for the value
-
+		if param.Type!="" && !isValidParameterType(param.Type) {
+		    return value, utils.NewParserErr("",-1, "Invalid Type for parameter. [" + param.Type + "]")
+		} else if param.Type == "" {
+			param.Type = tempType
+		}
 	}
 
 	// Make sure the parameter's value is a valid, non-empty string and startsWith '$" (dollar) sign
@@ -548,15 +557,15 @@ func ResolveParameter(param *Parameter) (interface{}, error) {
 		}
 	}
 
-	dumpParameter("AFTER", param)
-	fmt.Printf("EXIT: value=[%v]\n", value)
-
 	// @TODO() Need warning message here, support for warnings (non-fatal)
 	// Default to an empty string, do NOT error/terminate as Value may be provided later bu a Deployment file.
 	if (value == nil) {
-		value = ""
-		param.Type = "string"
+		value = getTypeDefaultValue(param.Type)
 	}
+
+	// dumpParameter("AFTER", param)
+	//fmt.Printf("EXIT: value=[%v]\n", value)
+
 	return value, errorParser
 }
 
