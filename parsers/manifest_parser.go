@@ -126,7 +126,7 @@ func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value, errorParser = ResolveParameter(&param)
+			keyVal.Value, errorParser = ResolveParameter(name, &param)
 
 			if errorParser != nil {
 				return nil, errorParser
@@ -170,7 +170,7 @@ func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error)
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
 
-		keyVal.Value, errorParser = ResolveParameter(&param)
+		keyVal.Value, errorParser = ResolveParameter(name, &param)
 
 		if errorParser != nil {
 			return nil, errorParser
@@ -297,9 +297,8 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 		for name, param := range action.Inputs {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			println("NAME: " + name)
 
-			keyVal.Value, errorParser = ResolveParameter(&param)
+			keyVal.Value, errorParser = ResolveParameter(name, &param)
 
 			if errorParser != nil {
 				return nil, nil, errorParser
@@ -376,7 +375,7 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value, errorParser = ResolveParameter(&param)
+			keyVal.Value, errorParser = ResolveParameter(name, &param)
 
 			if errorParser != nil {
 				return nil, errorParser
@@ -508,14 +507,15 @@ func ResolveParamTypeFromValue(value interface{}) (string, error) {
 
 // Resolve input parameter (i.e., type, value, default)
 // Note: parameter values may set later (overriddNen) by an (optional) Deployment file
-func ResolveParameter(param *Parameter) (interface{}, error) {
+func ResolveParameter(paramName string, param *Parameter) (interface{}, error) {
 
 	var errorParser error
 	var tempType string
 	// default parameter value to empty string
 	var value interface{} = ""
 
-	dumpParameter("BEFORE", param)
+	// Trace Parameter struct before any resolution
+	//dumpParameter(paramName, param, "BEFORE")
 
 	// Parameters can be single OR multi-line declarations which must be processed/validated differently
 	if !param.multiline {
@@ -547,8 +547,10 @@ func ResolveParameter(param *Parameter) (interface{}, error) {
 	value = utils.GetEnvVar(param.Value)
 
 	typ := param.Type
+
+	// TODO(Priti): need to validate type is one of the supported primitive types with unit testing
+	// TODO(): with the new logic, when would the fpllowing Unmarhsall() call be used?
 	// if value is of type 'string' and its not empty <OR> if type is not 'string'
-	// TODO(): need to validate type is one of the supported primitive types with unit testing
 	if str, ok := value.(string); ok && (len(typ) == 0 || typ != "string") {
 		var parsed interface{}
 		err := json.Unmarshal([]byte(str), &parsed)
@@ -557,13 +559,14 @@ func ResolveParameter(param *Parameter) (interface{}, error) {
 		}
 	}
 
-	// @TODO(): Need warning message here, support for warnings (non-fatal)
 	// Default to an empty string, do NOT error/terminate as Value may be provided later bu a Deployment file.
 	if (value == nil) {
 		value = getTypeDefaultValue(param.Type)
+		// @TODO(): Need warning message here to warn of default usage, support for warnings (non-fatal)
 	}
 
-	//dumpParameter("AFTER", param)
+	// Trace Parameter struct after resolution
+	//dumpParameter(paramName, param, "AFTER")
 	//fmt.Printf("EXIT: value=[%v]\n", value)
 
 	return value, errorParser
@@ -575,6 +578,8 @@ type ParsedParameter Parameter
 
 func (n *Parameter) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var aux ParsedParameter
+
+	// Attempt to unmarshall the multi-line schema
 	if err := unmarshal(&aux); err == nil {
 		n.multiline = true
 		n.Type = aux.Type
@@ -585,10 +590,9 @@ func (n *Parameter) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		n.Status = aux.Status
 		n.Schema = aux.Schema
 		return nil
-	} else {
-
 	}
 
+	// If we did not find the multi-line schema, assume in-line (or single-line) schema
 	var inline interface{}
 	if err := unmarshal(&inline); err != nil {
 		return err
@@ -610,13 +614,14 @@ func (n *Parameter) MarshalYAML() (interface{}, error) {
 }
 
 // Provides debug/trace support for Parameter type
-func dumpParameter(sep string, param *Parameter) {
+func dumpParameter(paramName string, param *Parameter, separator string) {
 
-	fmt.Printf("%s: %T\n", sep, param)
+	fmt.Printf("%s:\n", separator)
+	fmt.Printf("\t%s: (%T)\n", paramName, param)
 	if(param!= nil) {
-		fmt.Printf("\tParameter.Descrption: [%s]\n", param.Description)
-		fmt.Printf("\tParameter.Type: [%s]\n", param.Type)
-		fmt.Printf("\tParameter.Value: [%v]\n", param.Value)
-		fmt.Printf("\tParameter.Default: [%v]\n", param.Default)
+		fmt.Printf("\t\tParameter.Descrption: [%s]\n", param.Description)
+		fmt.Printf("\t\tParameter.Type: [%s]\n", param.Type)
+		fmt.Printf("\t\tParameter.Value: [%v]\n", param.Value)
+		fmt.Printf("\t\tParameter.Default: [%v]\n", param.Default)
 	}
 }
