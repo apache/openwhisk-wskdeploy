@@ -30,7 +30,7 @@ package:
                 param_integer_with_default:
                     type: integer
                     default: -1
-                param_integer_with_default:
+                param_float_with_default:
                     type: float
                     default: 2.9
             outputs:
