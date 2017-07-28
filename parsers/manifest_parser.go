@@ -427,9 +427,9 @@ func (action *Action) ComposeWskAction(manipath string) (*whisk.Action, error) {
 }
 
 
-// TODO() Support other valid Package Manifest types
-// TODO() i.e., json (valid), timestamp, version, string256, string64, string16
-// TODO() Support JSON schema validation for type: json
+// TODO(): Support other valid Package Manifest types
+// TODO(): i.e., json (valid), timestamp, version, string256, string64, string16
+// TODO(): Support JSON schema validation for type: json
 // TODO(): Support OpenAPI schema validation
 
 var validParameterNameMap = map[string]string{
@@ -451,7 +451,7 @@ var typeDefaultValueMap = map[string]interface{} {
 	"integer": 0,
 	"float": 0.0,
 	"boolean": false,
-	// @TODO() Support these types + their validation
+	// TODO() Support these types + their validation
 	// timestamp
 	// null
 	// version
@@ -469,7 +469,7 @@ func isValidParameterType(typeName string) bool {
 	return isValid
 }
 
-// TODO() throw errors
+// TODO(): throw errors
 func getTypeDefaultValue(typeName string) interface{} {
 
 	if val, ok := typeDefaultValueMap[typeName]; ok {
@@ -515,7 +515,7 @@ func ResolveParameter(param *Parameter) (interface{}, error) {
 	// default parameter value to empty string
 	var value interface{} = ""
 
-	// dumpParameter("BEFORE", param)
+	dumpParameter("BEFORE", param)
 
 	// Parameters can be single OR multi-line declarations which must be processed/validated differently
 	if !param.multiline {
@@ -557,13 +557,13 @@ func ResolveParameter(param *Parameter) (interface{}, error) {
 		}
 	}
 
-	// @TODO() Need warning message here, support for warnings (non-fatal)
+	// @TODO(): Need warning message here, support for warnings (non-fatal)
 	// Default to an empty string, do NOT error/terminate as Value may be provided later bu a Deployment file.
 	if (value == nil) {
 		value = getTypeDefaultValue(param.Type)
 	}
 
-	// dumpParameter("AFTER", param)
+	//dumpParameter("AFTER", param)
 	//fmt.Printf("EXIT: value=[%v]\n", value)
 
 	return value, errorParser
@@ -609,13 +609,13 @@ func (n *Parameter) MarshalYAML() (interface{}, error) {
 	return n, nil
 }
 
+// Provides debug/trace support for Parameter type
 func dumpParameter(sep string, param *Parameter) {
 
 	fmt.Printf("%s: %T\n", sep, param)
 	if(param!= nil) {
+		fmt.Printf("\tParameter.Descrption: [%s]\n", param.Description)
 		fmt.Printf("\tParameter.Type: [%s]\n", param.Type)
-
-		//var str string = param.Value.(string)
 		fmt.Printf("\tParameter.Value: [%v]\n", param.Value)
 		fmt.Printf("\tParameter.Default: [%v]\n", param.Default)
 	}
