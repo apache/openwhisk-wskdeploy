@@ -25,131 +25,40 @@ import (
 	"strconv"
 	"fmt"
 	"os"
+	"io/ioutil"
 )
 
-var manifest_for_action_helloNodejs string
-var manifest_for_action_helloJava string
-
-
-
-var manifestForHelloJava = `
-package:
-  name: helloworld
-  actions:
-    helloJava:
-      location: actions/hello.jar
-      runtime: java
-      main: Hello
-`
-
-var manifestForHelloPython = `
-package:
-  name: helloworld
-  actions:
-    helloPython:
-      location: actions/hello.py
-      runtime: python
-`
-
-var manifestForHelloSwift = `
-package:
-  name: helloworld
-  actions:
-    helloSwift:
-      location: actions/hello.swift
-      runtime: swift
-`
-
-var manifestForHelloWithParams = `
-package:
-   name: helloworld
-   actions:
-     helloWithParams:
-       location: actions/hello-with-params.js
-       runtime: nodejs:6
-       inputs:
-         name: Amy
-         place: Paris
-`
-
-var manifestForHelloNodeJS = `
-package:
-  name: helloworld
-  actions:
-    helloNodejs:
-      location: actions/hello.js
-`
-
-var manifestHelloDefaultJava = `
-package:
-  name: helloworld
-  actions:
-    helloJava:
-      location: actions/hello.jar
-      main: Hello
-`
-
-var manifestHelloDefaultPython = `
-package:
-  name: helloworld
-  actions:
-    helloPython:
-      location: actions/hello.py
-`
-
-var manifestHelloDefaultSwift = `
-package:
-  name: helloworld
-  actions:
-    helloSwift:
-      location: actions/hello.swift
-`
-
-var manifestMissingPackage = `
-  actions:
-    helloNodejs:
-      location: actions/hello.js
-      runtime: nodejs:6
-`
-
-var manifestHelloInvalidRuntime = `
-package:
-  name: helloworld
-  actions:
-    helloInvalidRuntime:
-      location: actions/hello.js
-      runtime: invalid
-`
-
+// Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
+// validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloNodeJS(t *testing.T) {
 	data := `
-		package:
-	  		name: helloworld
-	  		actions:
-	    			helloNodejs:
-	      				location: actions/hello.js
-	      				runtime: nodejs:6
-	`
+package:
+  name: helloworld
+  actions:
+    helloNodejs:
+      location: actions/hello.js
+      runtime: nodejs:6`
+	// set the zero value of struct ManifestYAML
 	m := ManifestYAML{}
-	// unmarshal returns an error if parsing a manifest data fails
-	// else, it sets the values of struct ManifestYAML
+	// Unmarshal reads/parses manifest data and sets the values of ManifestYAML
+	// And returns an error if parsing a manifest data fails
 	err := NewYAMLParser().Unmarshal([]byte(data), &m)
 	if err == nil {
 		// ManifestYAML.Filepath does not get set by Parsers.Unmarshal
 		// as it takes manifest YAML data as a function parameter
 		// instead of file name of a manifest file, therefore there is
 		// no way for Unmarshal function to set ManifestYAML.Filepath field
-		// (TODO)ideally we should change this functionality so that
-		// (TODO)filepath is set to the actual path of manifest file
+		// (TODO) Ideally we should change this functionality so that
+		// (TODO) filepath is set to the actual path of the manifest file
 		expectedResult := ""
 		actualResult := m.Filepath
 		assert.Equal(t, expectedResult, actualResult, "Expected filepath to be an empty"+
 			" string instead its set to "+actualResult+" which is invalid value")
-		// validate package name to be "helloworld"
+		// package name should be "helloworld"
 		expectedResult = "helloworld"
 		actualResult = m.Package.Packagename
 		assert.Equal(t, expectedResult, actualResult, "Expected package name "+expectedResult+" but got "+actualResult)
-		// validate that this manifest contains only one action
+		// manifest should contain only one action
 		expectedResult = string(1)
 		actualResult = string(len(m.Package.Actions))
 		assert.Equal(t, expectedResult, actualResult, "Expected 1 but got "+actualResult)
@@ -157,11 +66,11 @@ func TestUnmarshalForHelloNodeJS(t *testing.T) {
 		// ManifestYAML.Package.Actions with the type of map[string]Action
 		actionName := "helloNodejs"
 		if action, ok := m.Package.Actions[actionName]; ok {
-			// validate location/function of an action to be "actions/hello.js"
+			// location/function of an action should be "actions/hello.js"
 			expectedResult = "actions/hello.js"
 			actualResult = action.Location
 			assert.Equal(t, expectedResult, actualResult, "Expected action location " + expectedResult + " but got " + actualResult)
-			// validate runtime of an action to be "nodejs:6"
+			// runtime of an action should be "nodejs:6"
 			expectedResult = "nodejs:6"
 			actualResult = action.Runtime
 			assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
@@ -171,31 +80,109 @@ func TestUnmarshalForHelloNodeJS(t *testing.T) {
 	}
 }
 
-func TestUnmarshalForHelloJava (t *testing.T) {
+// Test 2: validate manifest_parser:Unmarshal() method with a sample manifest in Java
+// validate that manifest_parser is able to read and parse the manifest data
+func TestUnmarshalForHelloJava (t *testing.T){
+	data := `
+package:
+  name: helloworld
+  actions:
+    helloJava:
+      location: actions/hello.jar
+      runtime: java
+      main: Hello`
 	m := ManifestYAML{}
-	err := NewYAMLParser().Unmarshal([]byte(manifestHelloJava), &m)
+	err := NewYAMLParser().Unmarshal([]byte(data), &m)
+	// nothing to test if Unmarshal returns an err
 	if err == nil {
 		// get an action from map of actions where key is action name and
 		// value is Action struct
 		actionName := "helloJava"
 		if action, ok := m.Package.Actions[actionName]; ok {
-			// validate the runtime of an action is java
+			// runtime of an action should be java
 			expectedResult := "java"
 			actualResult := action.Runtime
 			assert.Equal(t, expectedResult, actualResult, "Expected action runtime "+expectedResult+" but got "+actualResult)
-			// validate Main field is set to "Hello"
+			// Main field should be set to "Hello"
 			expectedResult = action.Main
 			actualResult = "Hello"
 			assert.Equal(t, expectedResult, actualResult, "Expected action main function "+expectedResult+" but got "+actualResult)
 		} else {
-			t.Error("Action named "+actionName+" does not exist.")
+			t.Error("Expected action named "+actionName+" but does not exist.")
 		}
 	}
 }
 
-func TestUnmarshalForHelloWithParams(t *testing.T) {
+// Test 3: validate manifest_parser:Unmarshal() method with a sample manifest in Python
+// validate that manifest_parser is able to read and parse the manifest data
+func TestUnmarshalForHelloPython (t *testing.T){
+	data := `
+package:
+  name: helloworld
+  actions:
+    helloPython:
+      location: actions/hello.py
+      runtime: python`
 	m := ManifestYAML{}
-	err := NewYAMLParser().Unmarshal([]byte(manifestHelloWithParams), &m)
+	err := NewYAMLParser().Unmarshal([]byte(data), &m)
+	// nothing to test if Unmarshal returns an err
+	if err == nil {
+		// get an action from map of actions which is defined as map[string]Action{}
+		actionName := "helloPython"
+		if action, ok := m.Package.Actions[actionName]; ok {
+			// runtime of an action should be python
+			expectedResult := "python"
+			actualResult := action.Runtime
+			assert.Equal(t, expectedResult, actualResult, "Expected action runtime "+expectedResult+" but got "+actualResult)
+		} else {
+			t.Error("Expected action named "+actionName+" but does not exist.")
+		}
+	}
+}
+
+// Test 4: validate manifest_parser:Unmarshal() method with a sample manifest in Swift
+// validate that manifest_parser is able to read and parse the manifest data
+func TestUnmarshalForHelloSwift (t *testing.T){
+	data := `
+package:
+  name: helloworld
+  actions:
+    helloSwift:
+      location: actions/hello.swift
+      runtime: swift`
+	m := ManifestYAML{}
+	err := NewYAMLParser().Unmarshal([]byte(data), &m)
+	// nothing to test if Unmarshal returns an err
+	if err == nil {
+		// get an action from map of actions which is defined as map[string]Action{}
+		actionName := "helloSwift"
+		if action, ok := m.Package.Actions[actionName]; ok {
+			// runtime of an action should be swift
+			expectedResult := "swift"
+			actualResult := action.Runtime
+			assert.Equal(t, expectedResult, actualResult, "Expected action runtime "+expectedResult+" but got "+actualResult)
+		} else {
+			t.Error("Expected action named "+actionName+" but does not exist.")
+		}
+	}
+}
+
+// Test 5: validate manifest_parser:Unmarshal() method for an action with parameters
+// validate that manifest_parser is able to read and parse the manifest data, specially
+// validate two input parameters and their values
+func TestUnmarshalForHelloWithParams(t *testing.T) {
+	var data = `
+package:
+   name: helloworld
+   actions:
+     helloWithParams:
+       location: actions/hello-with-params.js
+       runtime: nodejs:6
+       inputs:
+         name: Amy
+         place: Paris`
+	m := ManifestYAML{}
+	err := NewYAMLParser().Unmarshal([]byte(data), &m)
 	if err == nil {
 		actionName := "helloWithParams"
 		if action, ok := m.Package.Actions[actionName]; ok {
@@ -211,6 +198,53 @@ func TestUnmarshalForHelloWithParams(t *testing.T) {
 	}
 }
 
+// Test 6: validate manifest_parser:Unmarshal() method for an invalid manifest
+// manifest_parser should report an error when a package section is missing
+func TestUnmarshalForMissingPackage(t *testing.T) {
+	data := `
+  actions:
+    helloNodejs:
+      location: actions/hello.js
+      runtime: nodejs:6
+    helloJava:
+      location: actions/hello.java`
+	// set the zero value of struct ManifestYAML
+	m := ManifestYAML{}
+	// Unmarshal reads/parses manifest data and sets the values of ManifestYAML
+	// And returns an error if parsing a manifest data fails
+	err := NewYAMLParser().Unmarshal([]byte(data), &m)
+	fmt.Println("Error: ", err)
+	fmt.Println("Filepath: \"",m.Filepath,"\"")
+	fmt.Println("Package: ", m.Package)
+	fmt.Println("PackageName: \"", m.Package.Packagename, "\"")
+	fmt.Println("Number of Actions: ", len(m.Package.Actions))
+	fmt.Println("Actions: ", m.Package.Actions)
+	// (TODO) Unmarshal does not report any error even if manifest file is missing required section.
+	// (TODO) In this test case, "Package" section is missing which is not reported,
+	// (TODO) instead ManifestYAML is set to its zero values
+	// assert.NotNil(t, err, "Expected some error from Unmarshal but got no error")
+}
+
+/*
+ Test 7: validate manifest_parser:ParseManifest() method for multiline parameters
+ manifest_parser should be able to parse all different mutliline combinations of
+ inputs section including:
+
+ case 1: value only
+ param:
+	value: <value>
+ case 2: type only
+ param:
+ 	type: <type>
+ case 3: type and value only
+ param:
+	type: <type>
+ 	value: <value>
+ case 4: default value
+ param:
+ 	type: <type>
+	default: <default value>
+*/
 func TestParseManifestForMultiLineParams(t *testing.T) {
 	// manifest file is located under ../tests folder
 	manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
@@ -322,6 +356,8 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
 	}
 }
 
+// Test 8: validate manifest_parser:ParseManifest() method for single line parameters
+// manifest_parser should be able to parse input section with different types of values
 func TestParseManifestForSingleLineParams(t *testing.T) {
 	// manifest file is located under ../tests folder
 	manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
@@ -433,7 +469,89 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
 	}
 }
 
-func TestComposeActions (t *testing.T) {
+// Test 9: validate manifest_parser.ComposeActions() method for implicit runtimes
+// when a runtime of an action is not provided, manifest_parser determines the runtime
+// based on the file extension of an action file
+func TestComposeActionsForImplicitRuntimes (t *testing.T) {
+	data :=
+`package:
+  name: helloworld
+  actions:
+    helloNodejs:
+      location: ../tests/usecases/helloworld/actions/hello.js
+    helloJava:
+      location: ../tests/usecases/helloworld/actions/hello.jar
+      main: Hello
+    helloPython:
+      location: ../tests/usecases/helloworld/actions/hello.py
+    helloSwift:
+      location: ../tests/usecases/helloworld/actions/hello.swift`
+
+	dir, _ := os.Getwd()
+	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtimes_")
+	if err == nil {
+		defer os.Remove(tmpfile.Name()) // clean up
+		if _, err := tmpfile.Write([]byte(data)); err == nil {
+			// read and parse manifest.yaml file
+			p := NewYAMLParser()
+			m := p.ParseManifest(tmpfile.Name())
+			actions, _, err := p.ComposeActions(m, tmpfile.Name())
+			var expectedResult string
+			if err == nil {
+				for i:=0; i<len(actions); i++ {
+					if actions[i].Action.Name == "helloNodejs" {
+						expectedResult = "nodejs:default"
+					//(TODO) uncomment following condition once issue #306 is fixed
+					//} else if actions[i].Action.Name == "helloJava" {
+					//	expectedResult = "java"
+					} else if actions[i].Action.Name == "helloPython" {
+						expectedResult = "python"
+					} else if actions[i].Action.Name == "helloSwift" {
+						expectedResult = "swift:default"
+					}
+					actualResult := actions[i].Action.Exec.Kind
+					assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+				}
+			}
+
+		}
+		tmpfile.Close()
+	}
+}
+
+// Test 10: validate manifest_parser.ComposeActions() method for invalid runtimes
+// when a runtime of an action is set to some garbage, manifest_parser should
+// report an error for that action
+func TestComposeActionsForInvalidRuntime (t *testing.T) {
+	data :=
+`package:
+   name: helloworld
+   actions:
+     helloInvalidRuntime:
+       location: ../tests/usecases/helloworld/actions/hello.js
+       runtime: invalid`
+	dir, _ := os.Getwd()
+	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtime_")
+	if err == nil {
+		defer os.Remove(tmpfile.Name()) // clean up
+		if _, err := tmpfile.Write([]byte(data)); err == nil {
+			// read and parse manifest.yaml file
+			p := NewYAMLParser()
+			m := p.ParseManifest(tmpfile.Name())
+			_, _, err := p.ComposeActions(m, tmpfile.Name())
+			// (TODO) uncomment the following test case after issue #307 is fixed
+			// (TODO) its failing right now as we are lacking check on invalid runtime
+			// assert.NotNil(t, err, "Invalid runtime, ComposeActions should report an error")
+			// (TODO) remove this print statement after uncommenting above test case
+			fmt.Println(err)
+		}
+		tmpfile.Close()
+	}
+}
+
+// Test 11: validate manfiest_parser.ComposeActions() method for single line parameters
+// manifest_parser should be able to parse input section with different types of values
+func TestComposeActionsForSingleLineParams (t *testing.T) {
 	// manifest file is located under ../tests folder
 	manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
 	// read and parse manifest.yaml file
