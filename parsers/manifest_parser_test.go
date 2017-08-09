@@ -633,3 +633,73 @@ func TestComposeActionsForSingleLineParams (t *testing.T) {
 		assert.Empty(t, actualResult, "Expected empty string but got " + actualResult)
 	}
 }
+
+
+// Test 12: validate manfiest_parser.ComposeActions() method for multi line parameters
+// manifest_parser should be able to parse input section with different types of values
+func TestComposeActionsForMultiLineParams (t *testing.T) {
+	// manifest file is located under ../tests folder
+	manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
+	// read and parse manifest.yaml file
+	p := NewYAMLParser()
+	m := p.ParseManifest(manifestFile)
+	actions, _, err := p.ComposeActions(m, manifestFile)
+
+	if err == nil {
+		// assert that the actions variable has only one action
+		assert.Equal(t, 1, len(actions), "We have defined only one action but we got " + string(len(actions)))
+
+		action := actions[0]
+
+		fmt.Println(action.Action.Parameters)
+
+		// param_string_value_only should be "foo"
+		expectedResult := "foo"
+		actualResult := action.Action.Parameters.GetValue("param_string_value_only").(string)
+		assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+		// param_int_value_only should be 123
+		expectedResult = strconv.FormatInt(123, 10)
+		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_int_value_only").(int)), 10)
+		assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+		// param_float_value_only should be 3.14
+		expectedResult = strconv.FormatFloat(3.14, 'f', -1, 64)
+		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_float_value_only").(float64), 'f', -1, 64)
+		assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+		// param_string_type_and_value_only should be foo
+		expectedResult = "foo"
+		actualResult = action.Action.Parameters.GetValue("param_string_type_and_value_only").(string)
+		assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+		// param_string_type_only should be ""
+		actualResult = action.Action.Parameters.GetValue("param_string_type_only").(string)
+		assert.Empty(t, actualResult, "Expected empty string but got " + actualResult)
+
+		// param_integer_type_only should be 0
+		expectedResult = strconv.FormatInt(0, 10)
+		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_integer_type_only").(int)), 10)
+		assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+		// param_float_type_only should be 0
+		expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
+		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_float_type_only").(float64), 'f', -1, 64)
+		assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+		// param_string_with_default should be "bar"
+		expectedResult = "bar"
+		actualResult = action.Action.Parameters.GetValue("param_string_with_default").(string)
+		assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+		// param_integer_with_default should be -1
+		expectedResult = strconv.FormatInt(-1, 10)
+		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_integer_with_default").(int)), 10)
+		assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+		// param_float_with_default should be 2.9
+		expectedResult = strconv.FormatFloat(2.9, 'f', -1, 64)
+		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_float_with_default").(float64), 'f', -1, 64)
+		assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+	}
+}
