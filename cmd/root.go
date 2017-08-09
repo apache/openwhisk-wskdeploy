@@ -48,14 +48,9 @@ wskdeploy without any commands or flags deploys openwhisk package in the current
 	Run: RootCmdImp,
 }
 
-var Deploy = cmdImp.Deploy
 
 func RootCmdImp(cmd *cobra.Command, args []string) {
-	// Set all the parameters passed via the command to the struct of wskdeploy command.
-	deployParams := cmdImp.DeployParams{cmdImp.Verbose, cmdImp.ProjectPath, cmdImp.ManifestPath,
-		cmdImp.DeploymentPath, cmdImp.UseDefaults, cmdImp.UseInteractive}
-	// Call the implementation of wskdeploy command.
-	Deploy(deployParams)
+	cmdImp.Deploy()
 
 }
 

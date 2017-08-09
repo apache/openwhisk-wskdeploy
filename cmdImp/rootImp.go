@@ -30,63 +30,54 @@ import (
 	"regexp"
 )
 
-type DeployParams struct {
-	Verbose        bool
-	ProjectPath    string
-	ManifestPath   string
-	DeploymentPath string
-	UseDefaults    bool
-	UseInteractive bool
-}
+func Deploy() error {
 
-func Deploy(params DeployParams) error {
+	whisk.SetVerbose(Verbose)
 
-	whisk.SetVerbose(params.Verbose)
-
-	projectPath, err := filepath.Abs(params.ProjectPath)
+	projectPath, err := filepath.Abs(ProjectPath)
 	utils.Check(err)
 
-	if params.ManifestPath == "" {
-		if ok, _ := regexp.Match(deployers.ManifestFileNameYml, []byte(params.ManifestPath)); ok {
-			params.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYml)
+	if ManifestPath == "" {
+		if ok, _ := regexp.Match(deployers.ManifestFileNameYml, []byte(ManifestPath)); ok {
+			ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYml)
 		} else {
-			params.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYaml)
+			ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYaml)
 		}
 	} else {
 		if _, err := os.Stat(path.Join(projectPath, "manifest.yaml")); err == nil {
-			params.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYaml)
+			ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYaml)
 		} else if _, err := os.Stat(path.Join(projectPath, "manifest.yml")); err == nil {
-			params.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYml)
+			ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYml)
 		}
 	}
 
-	if params.DeploymentPath == "" {
-		if ok, _ := regexp.Match(deployers.DeploymentFileNameYml, []byte(params.ManifestPath)); ok {
-			params.DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYml)
+	if DeploymentPath == "" {
+		if ok, _ := regexp.Match(deployers.DeploymentFileNameYml, []byte(ManifestPath)); ok {
+			DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYml)
 		} else {
-			params.DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYaml)
+			DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYaml)
 		}
 	} else {
 		if _, err := os.Stat(path.Join(projectPath, "deployment.yaml")); err == nil {
-			params.DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYaml)
+			DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYaml)
 		} else if _, err := os.Stat(path.Join(projectPath, "deployment.yml")); err == nil {
-			params.DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYml)
+			DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYml)
 		}
 	}
 
-	if utils.MayExists(params.ManifestPath) {
+	if utils.MayExists(ManifestPath) {
 
 		var deployer = deployers.NewServiceDeployer()
 		deployer.ProjectPath = projectPath
-		deployer.ManifestPath = params.ManifestPath
-		deployer.DeploymentPath = params.DeploymentPath
+		deployer.ManifestPath = ManifestPath
+		deployer.DeploymentPath = DeploymentPath
 		// perform some quick check here.
 		go func() {
 			deployer.Check()
 		}()
-		deployer.IsDefault = params.UseDefaults
+		deployer.IsDefault = UseDefaults
 
-		deployer.IsInteractive = params.UseInteractive
+		deployer.IsInteractive = UseInteractive
 
 		// master record of any dependency that has been downloaded
 		deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
@@ -96,7 +87,7 @@ func Deploy(params DeployParams) error {
 			userHome := utils.GetHomeDirectory()
 			propPath = path.Join(userHome, ".wskprops")
 		}
-		whiskClient, clientConfig := deployers.NewWhiskClient(propPath, params.DeploymentPath, deployer.IsInteractive)
+		whiskClient, clientConfig := deployers.NewWhiskClient(propPath, DeploymentPath, deployer.IsInteractive)
 		deployer.Client = whiskClient
 		deployer.ClientConfig = clientConfig
 
@@ -125,4 +116,58 @@ func Deploy(params DeployParams) error {
 		}
 	}
 
+}
+
+func Undeploy() error {
+	// TODO: Work your own magic here
+	whisk.SetVerbose(Verbose)
+
+	if ManifestPath == "" {
+		if ok, _ := regexp.Match(deployers.ManifestFileNameYml, []byte(ManifestPath)); ok {
+			ManifestPath = path.Join(ProjectPath, deployers.ManifestFileNameYml)
+		} else {
+			ManifestPath = path.Join(ProjectPath, deployers.ManifestFileNameYaml)
+		}
+
+	}
+
+	if DeploymentPath == "" {
+		if ok, _ := regexp.Match(deployers.DeploymentFileNameYml, []byte(ManifestPath)); ok {
+			DeploymentPath = path.Join(ProjectPath, deployers.DeploymentFileNameYml)
+		} else {
+			DeploymentPath = path.Join(ProjectPath, deployers.DeploymentFileNameYaml)
+		}
+
+	}
+
+	if utils.FileExists(ManifestPath) {
+
+		var deployer = deployers.NewServiceDeployer()
+		deployer.ProjectPath = ProjectPath
+		deployer.ManifestPath = ManifestPath
+		deployer.DeploymentPath = DeploymentPath
+
+		deployer.IsInteractive = UseInteractive
+		deployer.IsDefault = UseDefaults
+
+		userHome := utils.GetHomeDirectory()
+		propPath := path.Join(userHome, ".wskprops")
+
+		whiskClient, clientConfig := deployers.NewWhiskClient(propPath, DeploymentPath, deployer.IsInteractive)
+		deployer.Client = whiskClient
+		deployer.ClientConfig = clientConfig
+
+		verifiedPlan, err := deployer.ConstructUnDeploymentPlan()
+		err = deployer.UnDeploy(verifiedPlan)
+		if err != nil {
+			utils.Check(err)
+			return err
+		} else {
+			return nil
+		}
+
+	} else {
+		log.Println("missing manifest.yaml file")
+		return errors.New("missing manifest.yaml file")
+	}
 }

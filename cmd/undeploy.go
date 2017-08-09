@@ -31,11 +31,7 @@ var undeployCmd = &cobra.Command{
 }
 
 func UndeployCmdImp(cmd *cobra.Command, args []string) {
-	// Set all the parameters passed via the command to the struct of undeploy command.
-	undeployParams := cmdImp.DeployParams{cmdImp.Verbose, cmdImp.ProjectPath, cmdImp.ManifestPath,
-		cmdImp.DeploymentPath, cmdImp.UseDefaults, cmdImp.UseInteractive}
-	// Call the implementation of wskdeploy command.
-	cmdImp.Undeploy(undeployParams)
+	cmdImp.Undeploy()
 }
 
 func init() {

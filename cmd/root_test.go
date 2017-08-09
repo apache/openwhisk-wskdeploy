@@ -31,17 +31,8 @@ import (
 
 var rootcalled bool
 
-type RootCommand struct {
-}
-
-func (rootCommand *RootCommand) Deploy(params cmdImp.DeployParams) error {
-	rootcalled = true
-	return nil
-}
-
 func functionMock() {
-	rootCommand := &RootCommand{}
-	Deploy = rootCommand.Deploy
+	rootcalled = true
 }
 
 type resulter struct {
