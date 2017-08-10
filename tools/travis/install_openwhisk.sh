@@ -12,7 +12,7 @@ WHISKDIR="$HOMEDIR/openwhisk"
 cd $WHISKDIR
 ./tools/travis/setup.sh
 
-ANSIBLE_CMD="ansible-playbook -i environments/local"
+ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=openwhisk"
 
 cd $WHISKDIR/ansible
 $ANSIBLE_CMD setup.yml
@@ -21,7 +21,9 @@ $ANSIBLE_CMD couchdb.yml
 $ANSIBLE_CMD initdb.yml
 
 cd $WHISKDIR
-./gradlew distDocker
+# The CLI build is only used to facilitate the openwhisk deployment. When CLI is separate from openwhisk, this line
+# should be removed.
+./gradlew :tools:cli:distDocker -PdockerImagePrefix=openwhisk
 
 cd $WHISKDIR/ansible
 $ANSIBLE_CMD wipe.yml
