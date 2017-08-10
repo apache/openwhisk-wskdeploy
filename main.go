@@ -19,7 +19,7 @@ package main
 
 import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/cmd"
-	"github.com/apache/incubator-openwhisk-wskdeploy/cmdImp"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 )
 
 func main() {
@@ -34,6 +34,6 @@ var (
 )
 
 func init() {
-	cmdImp.CliVersion = Version
-	cmdImp.CliBuild = Build
+	utils.Flags.CliVersion = Version
+	utils.Flags.CliBuild = Build
 }

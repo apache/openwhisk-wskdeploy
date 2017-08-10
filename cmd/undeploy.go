@@ -18,7 +18,7 @@
 package cmd
 
 import (
-	"github.com/apache/incubator-openwhisk-wskdeploy/cmdImp"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +31,7 @@ var undeployCmd = &cobra.Command{
 }
 
 func UndeployCmdImp(cmd *cobra.Command, args []string) {
-	cmdImp.Undeploy()
+	Undeploy()
 }
 
 func init() {
@@ -42,12 +42,12 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// undeployCmd.PersistentFlags().String("foo", "", "A help for foo")
-	undeployCmd.PersistentFlags().StringVar(&cmdImp.CfgFile, "config", "", "config file (default is $HOME/.wskdeploy.yaml)")
+	undeployCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", "config file (default is $HOME/.wskdeploy.yaml)")
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// undeployCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")=
 	undeployCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	undeployCmd.Flags().StringVarP(&cmdImp.ProjectPath, "pathpath", "p", ".", "path to serverless project")
-	undeployCmd.Flags().StringVarP(&cmdImp.ManifestPath, "manifest", "m", "", "path to manifest file")
-	undeployCmd.Flags().StringVarP(&cmdImp.DeploymentPath, "deployment", "d", "", "path to deployment file")
+	undeployCmd.Flags().StringVarP(&utils.Flags.ProjectPath, "pathpath", "p", ".", "path to serverless project")
+	undeployCmd.Flags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", "path to manifest file")
+	undeployCmd.Flags().StringVarP(&utils.Flags.DeploymentPath, "deployment", "d", "", "path to deployment file")
 }

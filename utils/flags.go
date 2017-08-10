@@ -22,6 +22,15 @@ var Flags struct {
 	ApiHost         string // OpenWhisk API host
 	Auth            string // OpenWhisk API key
 	ApiVersion      string // OpenWhisk version
+	CfgFile         string
+	CliVersion      string
+	CliBuild        string
+	Verbose         bool
+	ProjectPath     string
+	DeploymentPath  string
+	ManifestPath    string
+	UseDefaults     bool
+	UseInteractive  bool
 
 	//action flag definition
 	//from go cli

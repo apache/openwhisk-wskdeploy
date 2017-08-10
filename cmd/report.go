@@ -19,17 +19,14 @@ package cmd
 
 import (
 	"fmt"
-
-	"path"
-	"sync"
-
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/cmdImp"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
+	"path"
+	"sync"
 )
 
 var wskpropsPath string
@@ -47,12 +44,12 @@ located under current user home.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		if wskpropsPath != "" {
-			client, _ = deployers.NewWhiskClient(wskpropsPath, cmdImp.DeploymentPath, false)
+			client, _ = deployers.NewWhiskClient(wskpropsPath, utils.Flags.DeploymentPath, false)
 		}
 		userHome := utils.GetHomeDirectory()
 		//default to ~/.wskprops
 		propPath := path.Join(userHome, ".wskprops")
-		client, _ = deployers.NewWhiskClient(propPath, cmdImp.DeploymentPath, false)
+		client, _ = deployers.NewWhiskClient(propPath, utils.Flags.DeploymentPath, false)
 		printDeploymentInfo(client)
 	},
 }
