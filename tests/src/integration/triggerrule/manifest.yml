@@ -18,6 +18,6 @@ package:
     myRule:
       trigger: locationUpdate
       #the action name and the action file greeting.js should consistent.
-      #currently the implementation deside the action name consistent with action file name?
+      #currently the implementation decide the action name consistent with action file name?
       action: greeting
 

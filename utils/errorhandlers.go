@@ -24,15 +24,6 @@ import (
 	"os"
 )
 
-// ServerlessErr records errors from the Serverless binary
-type ServerlessErr struct {
-	Msg string
-}
-
-func (e *ServerlessErr) Error() string {
-	return e.Msg
-}
-
 // Check is a util function to panic when there is an error.
 func Check(e error) {
 	defer func() {

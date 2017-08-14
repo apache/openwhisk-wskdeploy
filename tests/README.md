@@ -46,7 +46,7 @@ $ go test -v ./... -tags integration
 
 All integration test cases are put under the folder 'tests/src/integration'.
 
-Unit tests are co-located in the same directory as the package they are testing (by Go convention). The test files would use the same basename as the file that containst the package they are providing tests for but with and add '_test' postfix.
+Unit tests are co-located in the same directory as the package they are testing (by Go convention). The test files would use the same basename as the file that contains the package they are providing tests for, but with the added '_test' postfix to the base file name.
 
 For example, the package 'deployers', which defines a 'DeploymentReader' service, is declared in the file 'deploymentreader.go'; its corresponding unit test is in the file named 'deploymentreader_test.go' in the same directory.
 
