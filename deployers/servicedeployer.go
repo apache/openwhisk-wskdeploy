@@ -180,7 +180,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
 }
 
 // Use reflect util to deploy everything in this service deployer
-// TODO(TBD): according some planning?
+// TODO(TBD): according to some planning?
 func (deployer *ServiceDeployer) Deploy() error {
 
 	if deployer.IsInteractive == true && !utils.Flags.WithinOpenWhisk {

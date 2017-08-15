@@ -7,9 +7,9 @@ application:
   package:
     triggerrule:
       name: helloworld
-      namespace: guest
+     namespace: guest
       actions:
         greeting:
           inputs:
             name: Bernie
-            place: Vermont
+            place: DC

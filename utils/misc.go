@@ -130,18 +130,39 @@ func Ask(reader *bufio.Reader, question string, def string) string {
 	return answer[:len-1]
 }
 
+
+// Test if a string
+func isValidEnvironmentVar( value string ) bool {
+
+	// A valid Env. variable should start with '$' (dollar) char.
+	// AND have at least 1 additional character after it.
+	if value != "" && len(value) > 1 && strings.HasPrefix(value, "$") {
+		return true
+	}
+	return false
+}
+
 // Get the env variable value by key.
 // Get the env variable if the key is start by $
 func GetEnvVar(key interface{}) interface{} {
+	// Assure the key itself is not nil
+	if (key == nil ) {
+		return nil
+	}
+
 	if reflect.TypeOf(key).String() == "string" {
-		if strings.HasPrefix(key.(string), "$") {
+		if isValidEnvironmentVar(key.(string)) {
+			// retrieve the value of the env. var. from the host system.
 			envkey := strings.Split(key.(string), "$")[1]
 			value := os.Getenv(envkey)
-			if value != "" {
-				return value
+			if value == "" {
+				// TODO() We should issue a warning to the user (verbose) that env. var. was not found
+				// (i.e., and empty string was returned).
 			}
-			return envkey
+			return value
 		}
+
+		// The key was not a valid env. variable, simply return it as the value itself (of type string)
 		return key.(string)
 	}
 	return key
@@ -293,6 +314,23 @@ func javaEntryError() error {
 	errMsg := wski18n.T("Java actions require --main to specify the fully-qualified name of the main class")
 
 	return errors.New(errMsg)
+}
+
+// ParserErr records errors from parsing YAML against the wskdeploy spec.
+type ParserErr struct {
+	filneame string
+        lineNum int
+	message string
+}
+
+// Implement the error interface.
+func (e ParserErr) Error() string {
+	return fmt.Sprintf("%s [%d]: %s", e.filneame, e.lineNum, e.message)
+}
+
+func NewParserErr(fname string, line int, msg string) error {
+	var err = &ParserErr{"", -1, msg}
+	return err
 }
 
 //for web action support, code from wsk cli with tiny adjustments
