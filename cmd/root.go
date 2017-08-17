@@ -50,7 +50,6 @@ wskdeploy without any commands or flags deploys openwhisk package in the current
 
 func RootCmdImp(cmd *cobra.Command, args []string) {
 	Deploy()
-
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
@@ -150,8 +149,13 @@ func Deploy() error {
 	if utils.Flags.ManifestPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, "manifest.yaml")); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYaml)
+			log.Printf("Using %s for deployment \n", utils.Flags.ManifestPath)
 		} else if _, err := os.Stat(path.Join(projectPath, "manifest.yml")); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYml)
+			log.Printf("Using %s for deployment", utils.Flags.ManifestPath)
+		} else {
+			log.Printf("Manifest file not found at path %s", projectPath)
+			return errors.New("missing manifest.yaml file")
 		}
 	}
 
