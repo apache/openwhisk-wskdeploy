@@ -21,7 +21,6 @@ package cmd
 
 import (
 	"bytes"
-	"github.com/apache/incubator-openwhisk-wskdeploy/cmdImp"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
@@ -31,17 +30,8 @@ import (
 
 var rootcalled bool
 
-type RootCommand struct {
-}
-
-func (rootCommand *RootCommand) Deploy(params cmdImp.DeployParams) error {
-	rootcalled = true
-	return nil
-}
-
 func functionMock() {
-	rootCommand := &RootCommand{}
-	Deploy = rootCommand.Deploy
+	rootcalled = true
 }
 
 type resulter struct {
@@ -112,13 +102,13 @@ func checkValidAuthInfo(t *testing.T, expected_auth_flags Auth_flags) {
 }
 
 func checkValidInputInfo(t *testing.T, expected_input Input) {
-	assert.Equal(t, expected_input.CfgFile, cmdImp.CfgFile, "CfgFile does not match.")
-	assert.Equal(t, expected_input.Verbose, cmdImp.Verbose, "Verbose does not match.")
-	assert.Equal(t, expected_input.UseDefaults, cmdImp.UseDefaults, "UseDefaults does not match.")
-	assert.Equal(t, expected_input.UseInteractive, cmdImp.UseInteractive, "ApiHoUseInteractivest does not match.")
-	assert.Equal(t, expected_input.ProjectPath, cmdImp.ProjectPath, "ProjectPath does not match.")
-	assert.Equal(t, expected_input.DeploymentPath, cmdImp.DeploymentPath, "DeploymentPath does not match.")
-	assert.Equal(t, expected_input.ManifestPath, cmdImp.ManifestPath, "ManifestPath does not match.")
+	assert.Equal(t, expected_input.CfgFile, utils.Flags.CfgFile, "CfgFile does not match.")
+	assert.Equal(t, expected_input.Verbose, utils.Flags.Verbose, "Verbose does not match.")
+	assert.Equal(t, expected_input.UseDefaults, utils.Flags.UseDefaults, "UseDefaults does not match.")
+	assert.Equal(t, expected_input.UseInteractive, utils.Flags.UseInteractive, "ApiHoUseInteractivest does not match.")
+	assert.Equal(t, expected_input.ProjectPath, utils.Flags.ProjectPath, "ProjectPath does not match.")
+	assert.Equal(t, expected_input.DeploymentPath, utils.Flags.DeploymentPath, "DeploymentPath does not match.")
+	assert.Equal(t, expected_input.ManifestPath, utils.Flags.ManifestPath, "ManifestPath does not match.")
 }
 
 func composeCommand(auth Auth_flags, input Input) string {

@@ -19,13 +19,11 @@ package cmd
 
 import (
 	"bufio"
-	"os"
-	"path/filepath"
-
-	"github.com/apache/incubator-openwhisk-wskdeploy/cmdImp"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
+	"os"
+	"path/filepath"
 )
 
 var initCmd = &cobra.Command{
@@ -49,7 +47,7 @@ var initCmd = &cobra.Command{
 
 func askName(reader *bufio.Reader, def string) string {
 	if len(def) == 0 {
-		abspath, err := filepath.Abs(cmdImp.ProjectPath)
+		abspath, err := filepath.Abs(utils.Flags.ProjectPath)
 		utils.Check(err)
 		def = filepath.Base(abspath)
 	}
