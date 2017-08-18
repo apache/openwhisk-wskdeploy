@@ -5,8 +5,8 @@ package:
   actions:
     webhook:
       version: 1.0
-      location: https://raw.githubusercontent.com/apache/incubator-openwhisk-catalog/master/packages/github/webhook.js
-      runtime: nodejs
+      location: src/webhook.js
+      runtime: nodejs:6
       inputs:
         username:
           type: string
