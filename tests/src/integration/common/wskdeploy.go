@@ -45,7 +45,9 @@ func (wskdeploy *Wskdeploy) RunCommand(s ...string) ([]byte, error) {
 	command := exec.Command(wskdeploy.Path, s...)
 	command.Dir = wskdeploy.Dir
 	output, err := command.CombinedOutput()
-	fmt.Println(err.Error())
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 	return output, err
 }
 
