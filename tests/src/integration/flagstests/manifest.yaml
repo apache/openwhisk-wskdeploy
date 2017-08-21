@@ -6,7 +6,7 @@ package:
     greeting:
       web-export: true
       version: 1.0
-      location: src/greeting.js
+      function: src/greeting.js
       runtime: nodejs:6
       inputs:
         name: string

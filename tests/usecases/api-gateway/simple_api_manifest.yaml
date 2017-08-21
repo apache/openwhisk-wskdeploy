@@ -4,7 +4,7 @@ package:
   license: Apache-2.0
   actions:
       fire:
-        location: actions/fire/index.js
+        function: actions/fire/index.js
         inputs:
           triggerName: trgger1
           type: string

@@ -51,7 +51,8 @@ type YAMLParser struct {
 type Action struct {
 	//mapping to wsk.Action.Version
 	Version  string `yaml:"version"`  //used in manifest.yaml
-	Location string `yaml:"location"` //used in manifest.yaml
+	Location string `yaml:"location"` //deprecated, used in manifest.yaml
+	Function string `yaml:"function"` //used in manifest.yaml
 	Runtime  string `yaml:"runtime"`  //used in manifest.yaml
 	//mapping to wsk.Action.Namespace
 	Namespace  string                 `yaml:"namespace"`  //used in deployment.yaml

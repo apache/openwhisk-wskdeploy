@@ -5,7 +5,7 @@ package:
   actions:
     webhook:
       version: 1.0
-      location: src/webhook.js
+      function: src/webhook.js
       runtime: nodejs:6
       inputs:
         username:

@@ -2,7 +2,7 @@ package:
     name: validate
     actions:
         validate_multiline_params:
-            location: actions/dump_params.js
+            function: actions/dump_params.js
             runtime: nodejs:6
             inputs:
                 # value only

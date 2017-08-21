@@ -20,15 +20,15 @@ package:
       type: string
   actions:
       challenge:
-        location: actions/challenge/index.js
+        function: actions/challenge/index.js
       configure-backend:
-        location: actions/configure-backend/index.js
+        function: actions/configure-backend/index.js
       decrypt:
-        location: actions/decrypt/index.js
+        function: actions/decrypt/index.js
       encrypt:
-        location: actions/encrypt/index.js
+        function: actions/encrypt/index.js
       fire:
-        location: actions/fire/index.js
+        function: actions/fire/index.js
         inputs:
           triggerName:
             type: string
@@ -36,11 +36,11 @@ package:
           web-export:
             type: boolean
       getSetupURL:
-        location: actions/getSetupURL/index.js
+        function: actions/getSetupURL/index.js
       getWhiskAuthAndNamspace:
-        location: actions/getWhiskAuthAndNamespace/index.js
+        function: actions/getWhiskAuthAndNamespace/index.js
       newbot-setup:
-        location: actions/newbot-setup/index.js
+        function: actions/newbot-setup/index.js
         inputs:
           configPage:
             type: string
