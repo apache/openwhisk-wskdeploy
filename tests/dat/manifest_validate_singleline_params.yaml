@@ -24,10 +24,6 @@ package:
                 param_simple_implied_empty:
                 param_simple_explicit_empty_1: ''
                 param_simple_explicit_empty_2: ""
-                # Type names (should default to a value for that type)
-                param_simple_type_string: string
-                param_simple_type_integer: integer
-                param_simple_type_float: float
             outputs:
                 payload:
                     type: string
