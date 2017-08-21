@@ -45,6 +45,7 @@ func TestSupportProjectPathTrailingSlash(t *testing.T) {
 	_, err := wskdeploy.DeployProjectPathOnly(projectPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the projectpath")
 }
+
 // only a yaml manifest
 func TestSupportManifestYamlPath(t *testing.T) {
 	os.Setenv("__OW_API_HOST", wskprops.APIHost)

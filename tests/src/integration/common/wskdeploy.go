@@ -20,6 +20,7 @@ package common
 import (
 	"os"
 	"os/exec"
+	"fmt"
 )
 
 const cmd = "wskdeploy"
@@ -43,7 +44,11 @@ func NewWskWithPath(path string) *Wskdeploy {
 func (wskdeploy *Wskdeploy) RunCommand(s ...string) ([]byte, error) {
 	command := exec.Command(wskdeploy.Path, s...)
 	command.Dir = wskdeploy.Dir
-	return command.CombinedOutput()
+	output, err := command.CombinedOutput()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	return output, err
 }
 
 func (wskdeploy *Wskdeploy) Deploy(manifestPath string, deploymentPath string) ([]byte, error) {
