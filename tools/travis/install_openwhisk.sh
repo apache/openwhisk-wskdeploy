@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+Exit Bash on error
+set -e
+
+export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/incubator-openwhisk";
 HOMEDIR="$(dirname "$TRAVIS_BUILD_DIR")"
 cd $HOMEDIR
 
