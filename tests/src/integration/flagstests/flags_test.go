@@ -30,7 +30,6 @@ var wskprops = common.GetWskprops()
 
 // support only projectpath flag
 func TestSupportProjectPath(t *testing.T) {
-	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
 	projectPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests"
 	deployed := wskdeploy.DeployProjectPathOnly(projectPath)
@@ -39,7 +38,6 @@ func TestSupportProjectPath(t *testing.T) {
 
 // support only projectpath with trailing slash
 func TestSupportProjectPathTrailingSlash(t *testing.T) {
-	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
 	projectPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests" + "/"
 	deployed := wskdeploy.DeployProjectPathOnly(projectPath)
@@ -47,7 +45,6 @@ func TestSupportProjectPathTrailingSlash(t *testing.T) {
 }
 // only a yaml manifest
 func TestSupportManifestYamlPath(t *testing.T) {
-	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/manifest.yaml"
 	deployed := wskdeploy.DeployManifestPathOnly(manifestPath)
@@ -56,7 +53,6 @@ func TestSupportManifestYamlPath(t *testing.T) {
 
 // only a yml manifest
 func TestSupportManifestYmlPath(t *testing.T) {
-	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/manifest.yml"
 	deployed := wskdeploy.DeployManifestPathOnly(manifestPath)
@@ -65,7 +61,6 @@ func TestSupportManifestYmlPath(t *testing.T) {
 
 // manifest yaml and deployment yaml
 func TestSupportManifestYamlDeployment(t *testing.T) {
-	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/manifest.yaml"
 	deploymentPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/deployment.yml"
@@ -75,7 +70,6 @@ func TestSupportManifestYamlDeployment(t *testing.T) {
 
 // manifest yml and deployment yaml
 func TestSupportManifestYmlDeployment(t *testing.T) {
-	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/manifest.yml"
 	deploymentPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/deployment.yml"
