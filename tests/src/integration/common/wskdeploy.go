@@ -63,6 +63,8 @@ func printOutput(outs []byte) {
 }
 
 func (wskdeploy *Wskdeploy) RunCommand(args ...string) (bool) {
+	// (TODO) hardcoding 30 secounds timeout here, make this configurable
+	// (TODO) so that timeout can be also be read from env. variable
 	timeout := 30*time.Second
 	// create a new context and add a timeout to it
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -90,6 +92,9 @@ func (wskdeploy *Wskdeploy) RunCommand(args ...string) (bool) {
 	}
 
 	// send "y" in response to wskdeploy interacting mode to continue with deployment
+	// (TODO) this has to be revised as right now, we are just sending "y" in stdin
+	// (TODO) without any check on stdout, check whether wskdeploy is waiting for an
+	// (TODO) yes from user or not.
 	go func() {
 		stdin.Write([]byte("y"))
 		defer stdin.Close()
