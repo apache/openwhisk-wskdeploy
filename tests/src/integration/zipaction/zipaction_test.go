@@ -31,7 +31,6 @@ var wskprops = common.GetWskprops()
 
 
 func TestZipAction(t *testing.T) {
-    os.Setenv("__OW_API_HOST", wskprops.APIHost)
     wskdeploy := common.NewWskdeploy()
     deployed := wskdeploy.Deploy(manifestPath, deploymentPath)
     assert.True(t, deployed, "Failed to deploy zip action based on the manifest and deployment files")
