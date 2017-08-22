@@ -4,13 +4,13 @@ package:
   license: Apache-2.0
   actions:
     getApiToken:
-      location: actions/getApiToken.js
+      function: actions/getApiToken.js
     getServers:
-      location: actions/getServers.js
+      function: actions/getServers.js
     createBackup:
-      location: actions/createBackup.js
+      function: actions/createBackup.js
     callSlack:
-      location: actions/callSlack.js
+      function: actions/callSlack.js
   sequences:
       authorizedBackup:
         actions: getApiToken, getServers, createBackup, callSlack

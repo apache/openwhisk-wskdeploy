@@ -2,7 +2,7 @@ package:
     name: helloworld
     actions:
         helloworld:
-            location: actions/hello.js
+            function: actions/hello.js
             runtime: nodejs:6
             inputs:
                 name:

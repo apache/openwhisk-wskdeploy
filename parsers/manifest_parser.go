@@ -239,6 +239,11 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 
 	for key, action := range mani.Package.Actions {
 		splitmanipath := strings.Split(manipath, string(os.PathSeparator))
+		//set action.Function to action.Location
+		//because Location is deprecated in Action entity
+		if action.Function == "" && action.Location != "" {
+			action.Function = action.Location
+		}
 
 		wskaction := new(whisk.Action)
 		//bind action, and exposed URL
@@ -247,8 +252,8 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 		aubinding.ExposedUrl = action.ExposedUrl
 
 		wskaction.Exec = new(whisk.Exec)
-		if action.Location != "" {
-			filePath := strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + action.Location
+		if action.Function != "" {
+			filePath := strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + action.Function
 
 			if utils.IsDirectory(filePath) {
 				zipName := filePath + ".zip"
@@ -272,7 +277,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 
 				wskaction.Exec.Kind = kind
 
-				action.Location = filePath
+				action.Function = filePath
 				dat, err := utils.Read(filePath)
 				utils.Check(err)
 				code := string(dat)
@@ -333,7 +338,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 		pub := false
 		wskaction.Publish = &pub
 
-		record := utils.ActionRecord{wskaction, mani.Package.Packagename, action.Location}
+		record := utils.ActionRecord{wskaction, mani.Package.Packagename, action.Function}
 		s1 = append(s1, record)
 
 		//only append when the fields are exists
@@ -415,16 +420,6 @@ func (dm *YAMLParser) ComposeRules(manifest *ManifestYAML) ([]*whisk.Rule, error
 
 	return r1, nil
 }
-
-func (action *Action) ComposeWskAction(manipath string) (*whisk.Action, error) {
-	wskaction, err := utils.CreateActionFromFile(manipath, action.Location)
-	utils.Check(err)
-	wskaction.Name = action.Name
-	wskaction.Version = action.Version
-	wskaction.Namespace = action.Namespace
-	return wskaction, err
-}
-
 
 // TODO(): Support other valid Package Manifest types
 // TODO(): i.e., json (valid), timestamp, version, string256, string64, string16

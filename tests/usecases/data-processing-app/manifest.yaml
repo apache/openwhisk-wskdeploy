@@ -5,11 +5,11 @@ package:
   actions:
     mhpost-action:
       version: 1.0
-      location: actions/mhpost
+      function: actions/mhpost
       runtime: nodejs:6
     mhget-action:
       version: 1.0
-      location: actions/mhget/mhget.js
+      function: actions/mhget/mhget.js
       runtime: nodejs:6
   triggers:
     kafka-trigger:
