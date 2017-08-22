@@ -119,7 +119,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 	manifestReader.InitRootPackage(manifestParser, manifest)
 
-	if deployer.IsDefault == true && !utils.Flags.WithinOpenWhisk {
+	if deployer.IsDefault == true {
 		fileReader := NewFileSystemReader(deployer)
 		fileActions, err := fileReader.ReadProjectDirectory(manifest)
 		utils.Check(err)
@@ -183,7 +183,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
 // TODO(TBD): according to some planning?
 func (deployer *ServiceDeployer) Deploy() error {
 
-	if deployer.IsInteractive == true && !utils.Flags.WithinOpenWhisk {
+	if deployer.IsInteractive == true {
 		deployer.printDeploymentAssets(deployer.Deployment)
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Do you really want to deploy this? (y/N): ")
