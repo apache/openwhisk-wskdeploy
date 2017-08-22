@@ -39,7 +39,7 @@ package:
   name: helloworld
   actions:
     helloNodejs:
-      location: actions/hello.js
+      function: actions/hello.js
       runtime: nodejs:6`
     // set the zero value of struct ManifestYAML
     m := ManifestYAML{}
@@ -71,8 +71,8 @@ package:
         if action, ok := m.Package.Actions[actionName]; ok {
             // location/function of an action should be "actions/hello.js"
             expectedResult = "actions/hello.js"
-            actualResult = action.Location
-            assert.Equal(t, expectedResult, actualResult, "Expected action location " + expectedResult + " but got " + actualResult)
+            actualResult = action.Function
+            assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
             // runtime of an action should be "nodejs:6"
             expectedResult = "nodejs:6"
             actualResult = action.Runtime
@@ -91,7 +91,7 @@ package:
   name: helloworld
   actions:
     helloJava:
-      location: actions/hello.jar
+      function: actions/hello.jar
       runtime: java
       main: Hello`
     m := ManifestYAML{}
@@ -124,7 +124,7 @@ package:
   name: helloworld
   actions:
     helloPython:
-      location: actions/hello.py
+      function: actions/hello.py
       runtime: python`
     m := ManifestYAML{}
     err := NewYAMLParser().Unmarshal([]byte(data), &m)
@@ -151,7 +151,7 @@ package:
   name: helloworld
   actions:
     helloSwift:
-      location: actions/hello.swift
+      function: actions/hello.swift
       runtime: swift`
     m := ManifestYAML{}
     err := NewYAMLParser().Unmarshal([]byte(data), &m)
@@ -179,7 +179,7 @@ package:
    name: helloworld
    actions:
      helloWithParams:
-       location: actions/hello-with-params.js
+       function: actions/hello-with-params.js
        runtime: nodejs:6
        inputs:
          name: Amy
@@ -207,10 +207,10 @@ func TestUnmarshalForMissingPackage(t *testing.T) {
     data := `
   actions:
     helloNodejs:
-      location: actions/hello.js
+      function: actions/hello.js
       runtime: nodejs:6
     helloJava:
-      location: actions/hello.java`
+      function: actions/hello.java`
     // set the zero value of struct ManifestYAML
     m := ManifestYAML{}
     // Unmarshal reads/parses manifest data and sets the values of ManifestYAML
@@ -274,8 +274,8 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
     if action, ok := m.Package.Actions[actionName]; ok {
         // validate location/function of an action to be "actions/dump_params.js"
         expectedResult := "actions/dump_params.js"
-        actualResult := action.Location
-        assert.Equal(t, expectedResult, actualResult, "Expected action location " + expectedResult + " but got " + actualResult)
+        actualResult := action.Function
+        assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
 
         // validate runtime of an action to be "nodejs:6"
         expectedResult = "nodejs:6"
@@ -383,8 +383,8 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
     if action, ok := m.Package.Actions[actionName]; ok {
         // validate location/function of an action to be "actions/dump_params.js"
         expectedResult := "actions/dump_params.js"
-        actualResult := action.Location
-        assert.Equal(t, expectedResult, actualResult, "Expected action location " + expectedResult + " but got " + actualResult)
+        actualResult := action.Function
+        assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
 
         // validate runtime of an action to be "nodejs:6"
         expectedResult = "nodejs:6"
@@ -477,14 +477,14 @@ func TestComposeActionsForImplicitRuntimes (t *testing.T) {
   name: helloworld
   actions:
     helloNodejs:
-      location: ../tests/usecases/helloworld/actions/hello.js
+      function: ../tests/usecases/helloworld/actions/hello.js
     helloJava:
-      location: ../tests/usecases/helloworld/actions/hello.jar
+      function: ../tests/usecases/helloworld/actions/hello.jar
       main: Hello
     helloPython:
-      location: ../tests/usecases/helloworld/actions/hello.py
+      function: ../tests/usecases/helloworld/actions/hello.py
     helloSwift:
-      location: ../tests/usecases/helloworld/actions/hello.swift`
+      function: ../tests/usecases/helloworld/actions/hello.swift`
 
     dir, _ := os.Getwd()
     tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtimes_")
@@ -530,7 +530,7 @@ func TestComposeActionsForInvalidRuntime (t *testing.T) {
    name: helloworld
    actions:
      helloInvalidRuntime:
-       location: ../tests/usecases/helloworld/actions/hello.js
+       function: ../tests/usecases/helloworld/actions/hello.js
        runtime: invalid`
     dir, _ := os.Getwd()
     tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtime_")
@@ -708,16 +708,14 @@ func TestComposeActionsForMultiLineParams (t *testing.T) {
 
 
 // Test 13: validate manfiest_parser.ComposeActions() method
-func TestComposeActionsForLocation (t *testing.T) {
+func TestComposeActionsForFunction (t *testing.T) {
     data :=
 `package:
   name: helloworld
   actions:
     hello1:
-      location: ../tests/usecases/helloworld/actions/hello.js
-    hello2:
       function: ../tests/usecases/helloworld/actions/hello.js
-    hello3:
+    hello2:
       function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/usecases/helloworld/manifest.yaml`
     dir, _ := os.Getwd()
     tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_locations_")
@@ -735,11 +733,9 @@ func TestComposeActionsForLocation (t *testing.T) {
                         expectedResult, _ = filepath.Abs("../tests/usecases/helloworld/actions/hello.js")
                         actualResult, _ = filepath.Abs(actions[i].Filepath)
                         assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
-                    // (TODO) Uncomment the following two conditions, hello2 and hello3
+                    // (TODO) Uncomment the following condition, hello2
                     // (TODO) after issue # 311 is fixed
                     //} else if actions[i].Action.Name == "hello2" {
-                    //  assert.NotNil(t, actions[i].Action.Exec.Code, "Expected source code from an action file but found it empty")
-                    //} else if actions[i].Action.Name == "hello3" {
                     //  assert.NotNil(t, actions[i].Action.Exec.Code, "Expected source code from an action file but found it empty")
                     }
                 }
@@ -759,9 +755,9 @@ func TestComposeActionsForLocation (t *testing.T) {
 //  name: helloworld
 //  actions:
 //    hello1:
-//      location: ../tests/usecases/helloworld/actions/hello.js
+//      function: ../tests/usecases/helloworld/actions/hello.js
 //    hello2:
-//      location: ../tests/usecases/helloworld/actions/hello.js
+//      function: ../tests/usecases/helloworld/actions/hello.js
 //      limits:
 //        timeout: 60
 //        memorySize: 128
@@ -804,7 +800,7 @@ func TestComposeActionsForWebActions (t *testing.T) {
   name: helloworld
   actions:
     hello:
-      location: ../tests/usecases/helloworld/actions/hello.js
+      function: ../tests/usecases/helloworld/actions/hello.js
       annotations:
         foo: bar
       web-export: true`
