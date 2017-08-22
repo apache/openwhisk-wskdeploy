@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 HOMEDIR="$(dirname "$TRAVIS_BUILD_DIR")"
 cd $HOMEDIR
 
