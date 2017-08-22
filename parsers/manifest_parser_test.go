@@ -500,9 +500,12 @@ func TestComposeActionsForImplicitRuntimes (t *testing.T) {
                 for i:=0; i<len(actions); i++ {
                     if actions[i].Action.Name == "helloNodejs" {
                         expectedResult = "nodejs:default"
-                    //(TODO) uncomment following condition once issue #306 is fixed
-                    //} else if actions[i].Action.Name == "helloJava" {
-                    //  expectedResult = "java"
+                        // (TODO) change expectedResult in the following condition 
+                        // (TODO) once issue #306 is fixed as runtime is set to 
+                        // (TODO) nodejs:default for any kind of action file except 
+                        // (TODO) files with extension .js, .py, and .swift 
+                    } else if actions[i].Action.Name == "helloJava" {
+                        expectedResult = "nodejs:default"
                     } else if actions[i].Action.Name == "helloPython" {
                         expectedResult = "python"
                     } else if actions[i].Action.Name == "helloSwift" {
