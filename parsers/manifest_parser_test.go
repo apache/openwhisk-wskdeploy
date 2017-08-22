@@ -715,7 +715,7 @@ func TestComposeActionsForFunction (t *testing.T) {
   actions:
     hello1:
       function: ../tests/usecases/helloworld/actions/hello.js`
-    // (TODO) uncomment this after we add support for action file content from URL 
+    // (TODO) uncomment this after we add support for action file content from URL
     // hello2:
     //  function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/usecases/helloworld/manifest.yaml`
     dir, _ := os.Getwd()
