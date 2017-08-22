@@ -33,8 +33,8 @@ func TestSupportProjectPath(t *testing.T) {
 	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
 	projectPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests"
-	_, err := wskdeploy.DeployProjectPathOnly(projectPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the projectpath")
+	deployed := wskdeploy.DeployProjectPathOnly(projectPath)
+	assert.True(t, deployed, "Failed to deploy based on the projectpath")
 }
 
 // support only projectpath with trailing slash
@@ -42,17 +42,16 @@ func TestSupportProjectPathTrailingSlash(t *testing.T) {
 	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
 	projectPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests" + "/"
-	_, err := wskdeploy.DeployProjectPathOnly(projectPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the projectpath")
+	deployed := wskdeploy.DeployProjectPathOnly(projectPath)
+	assert.True(t, deployed, "Failed to deploy based on the projectpath")
 }
-
 // only a yaml manifest
 func TestSupportManifestYamlPath(t *testing.T) {
 	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/manifest.yaml"
-	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifestpath")
+	deployed := wskdeploy.DeployManifestPathOnly(manifestPath)
+	assert.True(t, deployed, "Failed to deploy based on the manifestpath")
 }
 
 // only a yml manifest
@@ -60,8 +59,8 @@ func TestSupportManifestYmlPath(t *testing.T) {
 	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/manifest.yml"
-	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifestpath")
+	deployed := wskdeploy.DeployManifestPathOnly(manifestPath)
+	assert.True(t, deployed, "Failed to deploy based on the manifestpath")
 }
 
 // manifest yaml and deployment yaml
@@ -70,8 +69,8 @@ func TestSupportManifestYamlDeployment(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/manifest.yaml"
 	deploymentPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/deployment.yml"
-	_, err := wskdeploy.Deploy(manifestPath,deploymentPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifestpath and deploymentpath.")
+	deployed := wskdeploy.Deploy(manifestPath,deploymentPath)
+	assert.True(t, deployed, "Failed to deploy based on the manifestpath and deploymentpath.")
 }
 
 // manifest yml and deployment yaml
@@ -80,6 +79,6 @@ func TestSupportManifestYmlDeployment(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/manifest.yml"
 	deploymentPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/deployment.yml"
-	_, err := wskdeploy.Deploy(manifestPath,deploymentPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifestpath and deploymentpath.")
+	deployed := wskdeploy.Deploy(manifestPath,deploymentPath)
+	assert.True(t, deployed, "Failed to deploy based on the manifestpath and deploymentpath.")
 }
