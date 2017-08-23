@@ -412,7 +412,7 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 		Publish:     &pub,
 	}
 
-	_, _, err := deployer.Client.Triggers.Insert(t, false)
+	_, _, err := deployer.Client.Triggers.Insert(t, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		log.Printf("Got error creating trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
