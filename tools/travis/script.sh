@@ -2,6 +2,12 @@
 
 set -e
 
+cd $TRAVIS_BUILD_DIR
+./tools/travis/scancode.sh
+make lint
+make build
+export PATH=$PATH:$TRAVIS_BUILD_DIR
+
 HOMEDIR="$(dirname "$TRAVIS_BUILD_DIR")"
 cd $HOMEDIR
 
@@ -30,3 +36,8 @@ cd $WHISKDIR
 cd $WHISKDIR/ansible
 $ANSIBLE_CMD wipe.yml
 $ANSIBLE_CMD openwhisk.yml
+
+export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/openwhisk"
+
+cd $TRAVIS_BUILD_DIR
+make integration_test
