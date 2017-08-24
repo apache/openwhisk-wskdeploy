@@ -30,12 +30,11 @@ var wskprops = common.GetWskprops()
 
 // TODO: write the integration against openwhisk
 func TestTriggerRule(t *testing.T) {
-	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
-	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
-	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
-	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files.")
+	deployed := wskdeploy.Deploy(manifestPath, deploymentPath)
+	assert.True(t, deployed, "Failed to deploy based on the manifest and deployment files.")
+	undeployed := wskdeploy.Undeploy(manifestPath, deploymentPath)
+	assert.True(t, undeployed, "Failed to undeploy based on the manifest and deployment files.")
 }
 
 var (
