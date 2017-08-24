@@ -21,6 +21,7 @@ import (
 	"os"
 	"os/exec"
 	"fmt"
+	"strings"
 )
 
 const cmd = "wskdeploy"
@@ -41,13 +42,33 @@ func NewWskWithPath(path string) *Wskdeploy {
 	return &dep
 }
 
+func printCommand(cmd *exec.Cmd) {
+	fmt.Printf("==> Executing: %s\n", strings.Join(cmd.Args, " "))
+}
+
+func printError(err error) {
+	if err != nil {
+		os.Stderr.WriteString(fmt.Sprintf("==> Error: %s\n", err.Error()))
+	}
+}
+
+func printOutput(outs []byte) {
+	if len(outs) > 0 {
+		fmt.Printf("==> Output: %s\n", string(outs))
+	}
+}
+
 func (wskdeploy *Wskdeploy) RunCommand(s ...string) ([]byte, error) {
 	command := exec.Command(wskdeploy.Path, s...)
 	command.Dir = wskdeploy.Dir
+
+	printCommand(command)
+
 	output, err := command.CombinedOutput()
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+
+	printOutput(output)
+	printError(err)
+
 	return output, err
 }
 
