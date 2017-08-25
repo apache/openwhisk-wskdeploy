@@ -141,7 +141,6 @@ type Package struct {
 	Repositories      []Repository          `yaml:"repositories,omitempty"`
 	Dependencies      map[string]Dependency `yaml: dependencies`        // used in manifest.yaml
 	Function          string                `yaml:"function"`           //used in deployment.yaml
-	PackageCredential string                `yaml:"package_credential"` //used in deployment.yaml
 	//mapping to wsk.SentPackageNoPublish.Namespace
 	Namespace   string                 `yaml:"namespace"`  //used in deployment.yaml
 	Credential  string                 `yaml:"credential"` //used in deployment.yaml
