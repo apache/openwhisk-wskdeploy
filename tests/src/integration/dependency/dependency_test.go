@@ -40,5 +40,5 @@ func TestDependency(t *testing.T) {
 
 var (
     manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/dependency/manifest.yaml"
-    deploymentPath = ""
+    deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/dependency/deployment.yaml"
 )
