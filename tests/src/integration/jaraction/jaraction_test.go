@@ -29,7 +29,7 @@ import (
 
 var wskprops = common.GetWskprops()
 
-func TestZipAction(t *testing.T) {
+func TestJarAction(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
