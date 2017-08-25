@@ -600,5 +600,13 @@ var Default_Rts = map[string][]string{
 }
 
 func CheckExistRuntime(rtname string, rts map[string][]string) bool {
+	for _, v :=range rts{
+		for i := range v{
+			if rtname == v[i]{
+				return true
+			}
+		}
+	}
 	return false
 }
+

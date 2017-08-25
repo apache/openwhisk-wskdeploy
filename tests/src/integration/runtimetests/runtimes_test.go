@@ -26,18 +26,13 @@ import (
 	"testing"
 )
 
-
 var wskprops = common.GetWskprops()
 
-func TestJarAction(t *testing.T) {
+func TestSupportProjectPath(t *testing.T) {
+	os.Setenv("__OW_API_HOST", wskprops.APIHost)
 	wskdeploy := common.NewWskdeploy()
-	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
-	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
-	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files.")
+	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/runtimetests"
+	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest path")
 }
 
-var (
-	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/jaraction/manifest.yaml"
-	deploymentPath = ""
-)
