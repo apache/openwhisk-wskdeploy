@@ -39,5 +39,5 @@ func TestZipAction(t *testing.T) {
 
 var (
 	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/jaraction/manifest.yaml"
-	deploymentPath = ""
+	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/jaraction/deployment.yaml"
 )
