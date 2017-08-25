@@ -20,6 +20,10 @@
     "translation": "whisk API `HOST`"
   },
   {
+    "id": "namespace",
+    "translation": "namespace"
+  },
+  {
     "id": "whisk API `VERSION`",
     "translation": "whisk API `VERSION`"
   }

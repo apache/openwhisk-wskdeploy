@@ -28,113 +28,169 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+    "errors"
 )
 
-func NewWhiskClient(proppath string, deploymentPath string, isInteractive bool) (*whisk.Client, *whisk.Config) {
-	var clientConfig *whisk.Config
+const (
+    DEPLOYMENTFILE = "deployment.yml"
+    MANIDESTFILE = "manifest.yml"
+    COMMANDLINE = "wskdeploy command line"
+    DEFAULTVALUE = "default value"
+    WSKPROPS = ".wskprops"
+    WHISKPROPERTY = "whisk.properties"
+    INTERINPUT = "interactve input"
+)
 
-	configs, err := utils.LoadConfiguration(proppath)
-	utils.Check(err)
+type PropertyValue struct {
+    Value string
+    Source string
+}
 
-	credential := configs[2]
-	if len(utils.Flags.Auth) > 0 {
-		credential = utils.Flags.Auth
-	}
-	namespace := configs[0]
+var GetPropertyValue = func (prop PropertyValue, newValue string, source string) PropertyValue {
+    if len(prop.Value) == 0 && len(newValue) > 0 {
+        prop.Value = newValue
+        prop.Source = source
+    }
+    return prop
+}
 
-	if namespace == "" {
-		namespace = "_"
-	}
-	//we need to get Apihost from property file which currently not defined in sample deployment file.
+var GetWskPropFromWskprops = func (pi whisk.Properties, proppath string) (*whisk.Wskprops, error) {
+    return whisk.GetWskPropFromWskprops(pi, proppath)
+}
 
-	u := configs[1]
-	if len(utils.Flags.ApiHost) > 0 {
-		u = utils.Flags.ApiHost
-	}
+var GetWskPropFromWhiskProperty = func (pi whisk.Properties) (*whisk.Wskprops, error) {
+    return whisk.GetWskPropFromWhiskProperty(pi)
+}
 
-	var baseURL *url.URL
+var GetCommandLineFlags = func () (string, string, string) {
+    return utils.Flags.ApiHost, utils.Flags.Auth, utils.Flags.Namespace
+}
 
-	if u == "" && isInteractive == true {
-		host, err := promptForValue("\nPlease provide the hostname for OpenWhisk [openwhisk.ng.bluemix.net]: ")
-		utils.Check(err)
-		if host == "" {
-			host = "openwhisk.ng.bluemix.net"
-		}
+var CreateNewClient = func (httpClient *http.Client, config_input *whisk.Config) (*whisk.Client, error) {
+    return whisk.NewClient(http.DefaultClient, clientConfig)
+}
 
-		fmt.Println("Host set to " + host)
+func NewWhiskClient(proppath string, deploymentPath string, manifestPath string, isInteractive bool) (*whisk.Client, *whisk.Config) {
+    credential := PropertyValue {}
+    namespace := PropertyValue {}
+    apiHost := PropertyValue {}
 
-		baseURL, err = utils.GetURLBase(host)
-		utils.Check(err)
+    // First, we look up the above variables in the deployment file.
+    if utils.FileExists(deploymentPath) {
+        mm := parsers.NewYAMLParser()
+        deployment := mm.ParseDeployment(deploymentPath)
+        credential.Value = deployment.Application.Credential
+        credential.Source = DEPLOYMENTFILE
+        namespace.Value = deployment.Application.Namespace
+        namespace.Source = DEPLOYMENTFILE
+        apiHost.Value = deployment.Application.ApiHost
+        apiHost.Source = DEPLOYMENTFILE
+    }
 
-	} else if u == "" {
-		// handle some error
-	} else {
-		baseURL, err = utils.GetURLBase(u)
-		utils.Check(err)
-	}
+    if len(credential.Value) == 0 || len(namespace.Value) == 0 || len(apiHost.Value) == 0 {
+        if utils.FileExists(manifestPath) {
+            mm := parsers.NewYAMLParser()
+            manifest := mm.ParseManifest(manifestPath)
+            credential = GetPropertyValue(credential, manifest.Package.Credential, MANIDESTFILE)
+            namespace = GetPropertyValue(namespace, manifest.Package.Namespace, MANIDESTFILE)
+            apiHost = GetPropertyValue(apiHost, manifest.Package.ApiHost, MANIDESTFILE)
+        }
+    }
 
-	if utils.FileExists(deploymentPath) {
-		mm := parsers.NewYAMLParser()
-		deployment := mm.ParseDeployment(deploymentPath)
-		// We get the first package from the sample deployment file.
-		credentialDep := deployment.Application.Credential
-		namespaceDep := deployment.Application.Namespace
-		baseUrlDep := deployment.Application.BaseUrl
+    // If the variables are not correctly assigned, we look up auth key and api host in the command line. The namespace
+    // is currently not available in command line, which can be added later.
+    apihost, auth, ns := GetCommandLineFlags()
+    credential = GetPropertyValue(credential, auth, COMMANDLINE)
+    namespace = GetPropertyValue(namespace, ns, COMMANDLINE)
+    apiHost = GetPropertyValue(apiHost, apihost, COMMANDLINE)
 
-		if credentialDep != "" {
-			credential = credentialDep
-		}
+    // Third, we need to look up the variables in .wskprops file.
+    pi := whisk.PropertiesImp {
+        OsPackage: whisk.OSPackageImp{},
+    }
+    wskprops, _ := GetWskPropFromWskprops(pi, proppath)
+    credential = GetPropertyValue(credential, wskprops.AuthKey, WSKPROPS)
+    namespace = GetPropertyValue(namespace, wskprops.Namespace, WSKPROPS)
+    apiHost = GetPropertyValue(apiHost, wskprops.APIHost, WSKPROPS)
 
-		if namespaceDep != "" {
-			namespace = namespaceDep
-		}
+    // Fourth, we look up the variables in whisk.properties on a local openwhisk deployment.
+    if len(credential.Value) == 0 || len(apiHost.Value) == 0 {
+        // No need to keep the default value for namespace, since both of auth and apihost are not set after .wskprops.
+        // whisk.property will set the default value as well.
+        apiHost.Value = ""
+    }
+    whiskproperty, _ := GetWskPropFromWhiskProperty(pi)
+    credential = GetPropertyValue(credential, whiskproperty.AuthKey, WHISKPROPERTY)
+    namespace = GetPropertyValue(namespace, whiskproperty.Namespace, WHISKPROPERTY)
+    apiHost = GetPropertyValue(apiHost, whiskproperty.APIHost, WHISKPROPERTY)
 
-		if baseUrlDep != "" {
-			u, err := url.Parse(baseUrlDep)
-			utils.Check(err)
+    // If we still can not find the variables we need, check if it is interactive mode. If so, we accept the input
+    // from the user. The namespace will be set to a default value, when the code reaches this line, because WSKPROPS
+    // has a default value for namespace.
+    if len(apiHost.Value) == 0 && isInteractive == true {
+        host, err := promptForValue("\nPlease provide the hostname for OpenWhisk [default value is openwhisk.ng.bluemix.net]: ")
+        utils.Check(err)
+        if host == "" {
+            host = "openwhisk.ng.bluemix.net"
+        }
+        apiHost.Value = host
+        apiHost.Source = INTERINPUT
+    }
 
-			baseURL = u
-		}
+    if len(credential.Value) == 0 && isInteractive == true {
+        cred, err := promptForValue("\nPlease provide an authentication token: ")
+        utils.Check(err)
+        credential.Value = cred
+        credential.Source = INTERINPUT
 
-	}
+        // The namespace is always associated with the credential. Both of them should be picked up from the same source.
+        if len(namespace.Value) == 0 || namespace.Value == whisk.DEFAULT_NAMESPACE {
+            ns, err := promptForValue("\nPlease provide a namespace [default value is guest]: ")
+            utils.Check(err)
 
-	if credential == "" && isInteractive == true {
-		cred, err := promptForValue("\nPlease provide an authentication token: ")
-		utils.Check(err)
-		credential = cred
+            source := INTERINPUT
+            if ns == "" {
+                ns = whisk.DEFAULT_NAMESPACE
+                source = DEFAULTVALUE
+            }
 
-		fmt.Println("Authentication token set.")
-	}
+            namespace.Value = ns
+            namespace.Source = source
+        }
+    }
 
-	if namespace == "" && isInteractive == true {
-		ns, err := promptForValue("\nPlease provide a namespace [default]: ")
-		utils.Check(err)
+    var baseURL *url.URL
+    baseURL, err := utils.GetURLBase(apiHost.Value)
+    if err != nil {
+        utils.Check(err)
+    }
 
-		if ns == "" {
-			ns = "_"
-		}
+    if len(credential.Value) == 0 {
+        errStr := "Missing authentication key"
+        err = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+        utils.Check(err)
+    }
 
-		namespace = ns
-		fmt.Println("Namespace set to '" + namespace + "'")
-	}
+    fmt.Println("The URL is " + baseURL.String() + ", selected from " + apiHost.Source)
+    fmt.Println("The auth key is set, selected from " + credential.Source)
+    fmt.Println("The namespace is " + namespace.Value + ", selected from " + namespace.Source)
+    clientConfig = &whisk.Config{
+        AuthToken: credential.Value, //Authtoken
+        Namespace: namespace.Value,  //Namespace
+        BaseURL:   baseURL,
+        Version:   "v1",
+        Insecure:  true, // true if you want to ignore certificate signing
 
-	clientConfig = &whisk.Config{
-		AuthToken: credential, //Authtoken
-		Namespace: namespace,  //Namespace
-		BaseURL:   baseURL,
-		Version:   "v1",
-		Insecure:  true, // true if you want to ignore certificate signing
+    }
 
-	}
-
-	// Setup network client
-	client, err := whisk.NewClient(http.DefaultClient, clientConfig)
-	utils.Check(err)
-	return client, clientConfig
+    // Setup network client
+    client, err := CreateNewClient(http.DefaultClient, clientConfig)
+    utils.Check(err)
+    return client, clientConfig
 
 }
 
-func promptForValue(msg string) (string, error) {
+var promptForValue = func (msg string) (string, error) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(msg)
 
