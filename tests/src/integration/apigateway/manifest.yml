@@ -3,16 +3,14 @@ package:
   version: 1.0
   license: Apache-2.0
   apis: # new top-level key for defining groups of named APIs
-    book-club:
-      description: Book Club # optional
-      basepath: /club
-      path: /books
-      actions:
-        getBooks:
-           verb: get
-        postBooks:
-           verb: post
-        putBooks:
-           verb: put
-        deleteBooks:
-           verb: delete
+    book-club: #api name
+      description: some text the describe the api purpose and defitions.
+      club: # shared base path
+        books:   #path
+           getBooks: get  #action name:verb
+           postBooks: post
+           putBooks: put
+           deleteBooks: delete
+        members: #path
+           listMembers: get #action name:verb
+
