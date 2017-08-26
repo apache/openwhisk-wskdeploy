@@ -1,24 +1,16 @@
 package:
-  name: opentest
+  name: TestGitHubDependency
   namespace: guest
   dependencies:
-    hellowhisk:
-      location: github.com/paulcastro/hellowhisk
-    myCloudant:
-      location: /whisk.system/cloudant
-      inputs:
-        dbname: myGreatDB
-      annotations:
-        myAnnotation: Here it is
-  sequences:
-    mySequence:
-      actions: hellowhisk/greeting, hellowhisk/httpGet
+    openwhisk-app:
+      location: github.com/pritidesai/openwhisk-app
   triggers:
-    myTrigger:
+    trigger1:
+    trigger2:
   rules:
-    myRule:
-      trigger: myTrigger
-      action: hellowhisk/httpGet
-    myCloudantRule:
-      trigger: myTrigger
-      action: myCloudant/create-database
+    rule1:
+      trigger: trigger1
+      action: openwhisk-app/hello
+    rule2:
+      trigger: trigger2
+      action: openwhisk-app/helloworld
