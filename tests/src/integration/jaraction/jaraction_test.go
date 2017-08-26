@@ -29,8 +29,7 @@ import (
 
 var wskprops = common.GetWskprops()
 
-func TestZipAction(t *testing.T) {
-	os.Setenv("__OW_API_HOST", wskprops.APIHost)
+func TestJarAction(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
@@ -40,5 +39,5 @@ func TestZipAction(t *testing.T) {
 
 var (
 	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/jaraction/manifest.yaml"
-	deploymentPath = ""
+	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/jaraction/deployment.yaml"
 )
