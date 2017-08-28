@@ -1,5 +1,3 @@
-// +build not_integration
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -17,20 +15,16 @@
  * limitations under the License.
  */
 
-package tests
+package triggerrule
 
 import (
+	"testing"
 	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
-	"testing"
 )
 
-
-var wskprops = common.GetWskprops()
-
-// TODO: write the integration against openwhisk
-func TestWebAction(t *testing.T) {
+func RunTestTriggerRule(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
@@ -39,6 +33,7 @@ func TestWebAction(t *testing.T) {
 }
 
 var (
-	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/webaction/manifest.yml"
-	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/webaction/deployment.yml"
+	manifestPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/triggerrule/manifest.yml"
+	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/triggerrule/deployment.yml"
 )
+

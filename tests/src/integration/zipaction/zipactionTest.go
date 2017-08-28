@@ -1,5 +1,3 @@
-// +build not_integration
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -17,7 +15,7 @@
  * limitations under the License.
  */
 
-package tests
+package zipaction
 
 import (
     "github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
@@ -29,8 +27,8 @@ import (
 
 var wskprops = common.GetWskprops()
 
-// TODO: write the integration against openwhisk
-func TestDependency(t *testing.T) {
+
+func RunTestZipAction(t *testing.T) {
     wskdeploy := common.NewWskdeploy()
     _, err := wskdeploy.Deploy(manifestPath, deploymentPath)
     assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
@@ -39,6 +37,6 @@ func TestDependency(t *testing.T) {
 }
 
 var (
-    manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/dependency/manifest.yaml"
-    deploymentPath = ""
+    manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/zipaction/manifest.yml"
+    deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/zipaction/deployment.yml"
 )

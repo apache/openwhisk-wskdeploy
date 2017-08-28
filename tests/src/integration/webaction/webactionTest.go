@@ -1,5 +1,3 @@
-// +build not_integration
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -29,7 +27,8 @@ import (
 
 var wskprops = common.GetWskprops()
 
-func TestJarAction(t *testing.T) {
+// TODO: write the integration against openwhisk
+func RunTestWebAction(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
@@ -38,6 +37,6 @@ func TestJarAction(t *testing.T) {
 }
 
 var (
-	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/jaraction/manifest.yaml"
-	deploymentPath = ""
+	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/webaction/manifest.yml"
+	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/webaction/deployment.yml"
 )

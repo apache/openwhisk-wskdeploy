@@ -537,19 +537,19 @@ func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentApplication) e
 
 func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan *DeploymentApplication) error {
 
+    if err := deployer.UnDeployRules(verifiedPlan); err != nil {
+        return err
+    }
+
+    if err := deployer.UnDeploySequences(verifiedPlan); err != nil {
+        return err
+    }
+
 	if err := deployer.UnDeployActions(verifiedPlan); err != nil {
 		return err
 	}
 
-	if err := deployer.UnDeploySequences(verifiedPlan); err != nil {
-		return err
-	}
-
 	if err := deployer.UnDeployTriggers(verifiedPlan); err != nil {
-		return err
-	}
-
-	if err := deployer.UnDeployRules(verifiedPlan); err != nil {
 		return err
 	}
 
