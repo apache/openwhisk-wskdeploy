@@ -471,10 +471,11 @@ func ParseOpenWhisk() (op OpenWhiskInfo, err error) {
 		TLSClientConfig: tlsConfig,
 	}
 	res, err := http.DefaultClient.Do(req)
+	defer res.Body.Close()
 	if err != nil || res.Header.Get("Content-Type") != ct {
 		log.Println("failed get openwhisk info from internet")
 		log.Println("Start unmarshal Openwhisk info from local values")
-		err = json.Unmarshal(runtime_info, &op)
+		err = json.Unmarshal(runtimeInfo, &op)
 	} else {
 		b, _ := ioutil.ReadAll(res.Body)
 		if b != nil && len(b) > 0 {
@@ -497,7 +498,7 @@ func ConvertToMap(op OpenWhiskInfo) (rt map[string][]string) {
 	return
 }
 
-var runtime_info = []byte(`{
+var runtimeInfo = []byte(`{
   "support": {
     "github": "https://github.com/apache/incubator-openwhisk/issues",
     "slack": "http://slack.openwhisk.org"
@@ -591,7 +592,7 @@ var runtime_info = []byte(`{
 
 var Rts map[string][]string
 
-var Default_Rts = map[string][]string{
+var DefaultRts = map[string][]string{
 	"nodejs": {"nodejs", "nodejs:6"},
 	"java":   {"java"},
 	"php":    {"php:7.1"},

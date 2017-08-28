@@ -270,7 +270,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 				case ".swift":
 					kind = "swift"
 				case ".js":
-					kind = "nodejs"
+					kind = "nodejs:6"
 				case ".py":
 					kind = "python"
 				case ".java":
@@ -280,7 +280,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 				case ".jar":
 					kind = "java"
 				default:
-					kind = "nodejs"
+					kind = "nodejs:6"
 					log.Println("Unsupported runtime type, set to nodejs")
 					//add the user input kind here
 				}

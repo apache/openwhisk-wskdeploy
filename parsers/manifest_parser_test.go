@@ -499,7 +499,7 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
 			if err == nil {
 				for i := 0; i < len(actions); i++ {
 					if actions[i].Action.Name == "helloNodejs" {
-						expectedResult = "nodejs"
+						expectedResult = "nodejs:6"
 						// (TODO) change expectedResult in the following condition
 						// (TODO) once issue #306 is fixed as runtime is set to
 						// (TODO) nodejs:default for any kind of action file except
