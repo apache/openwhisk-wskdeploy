@@ -1,4 +1,4 @@
-// +build integration
+// +build not_integration
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -31,7 +31,6 @@ var wskprops = common.GetWskprops()
 
 
 func TestZipAction(t *testing.T) {
-    os.Setenv("__OW_API_HOST", wskprops.APIHost)
     wskdeploy := common.NewWskdeploy()
     _, err := wskdeploy.Deploy(manifestPath, deploymentPath)
     assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")

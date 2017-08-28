@@ -84,6 +84,7 @@ func substCmdArgs() error {
 
 	arg := os.Args[1]
 
+    fmt.Println("arg is " + arg)
 	// unmarshal the string to a JSON object
 	var obj map[string]interface{}
 	json.Unmarshal([]byte(arg), &obj)
@@ -117,6 +118,7 @@ func init() {
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseDefaults, "allow-defaults", "a", false, "allow defaults")
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Verbose, "verbose", "v", false, "verbose output")
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ApiHost, "apihost", "", "", wski18n.T("whisk API HOST"))
+    RootCmd.PersistentFlags().StringVarP(&utils.Flags.Namespace, "namespace", "n", "", wski18n.T("namespace"))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Auth, "auth", "u", "", wski18n.T("authorization `KEY`"))
 	RootCmd.PersistentFlags().StringVar(&utils.Flags.ApiVersion, "apiversion", "", wski18n.T("whisk API `VERSION`"))
 }
@@ -189,7 +191,7 @@ func Deploy() error {
 			userHome := utils.GetHomeDirectory()
 			propPath = path.Join(userHome, ".wskprops")
 		}
-		whiskClient, clientConfig := deployers.NewWhiskClient(propPath, utils.Flags.DeploymentPath, deployer.IsInteractive)
+		whiskClient, clientConfig := deployers.NewWhiskClient(propPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
 		deployer.Client = whiskClient
 		deployer.ClientConfig = clientConfig
 
@@ -255,7 +257,7 @@ func Undeploy() error {
 		userHome := utils.GetHomeDirectory()
 		propPath := path.Join(userHome, ".wskprops")
 
-		whiskClient, clientConfig := deployers.NewWhiskClient(propPath, utils.Flags.DeploymentPath, deployer.IsInteractive)
+		whiskClient, clientConfig := deployers.NewWhiskClient(propPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
 		deployer.Client = whiskClient
 		deployer.ClientConfig = clientConfig
 

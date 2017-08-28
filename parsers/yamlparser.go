@@ -142,8 +142,9 @@ type Package struct {
 	Dependencies      map[string]Dependency `yaml: dependencies`        // used in manifest.yaml
 	Function          string                `yaml:"function"`           //used in deployment.yaml
 	//mapping to wsk.SentPackageNoPublish.Namespace
-	Namespace   string                 `yaml:"namespace"`  //used in deployment.yaml
-	Credential  string                 `yaml:"credential"` //used in deployment.yaml
+	Namespace   string                 `yaml:"namespace"`  //used in both manifest.yaml and deployment.yaml
+	Credential  string                 `yaml:"credential"` //used in both manifest.yaml and deployment.yaml
+    ApiHost    string                  `yaml:"apiHost"`    //used in both manifest.yaml and deployment.yaml
 	Actions     map[string]Action      `yaml:"actions"`    //used in both manifest.yaml and deployment.yaml
 	Triggers    map[string]Trigger     `yaml:"triggers"`   //used in both manifest.yaml and deployment.yaml
 	Feeds       map[string]Feed        `yaml:"feeds"`      //used in both manifest.yaml and deployment.yaml
@@ -158,7 +159,7 @@ type Application struct {
 	Name       string             `yaml:"name"`      //used in deployment.yaml
 	Namespace  string             `yaml:"namespace"` //used in deployment.yaml
 	Credential string             `yaml:"credential"`
-	BaseUrl    string             `yaml:"baseUrl"`
+	ApiHost    string             `yaml:"apiHost"`
 	Version    string             `yaml:"version"`
 	Packages   map[string]Package `yaml:"packages"` //used in deployment.yaml
 	Package    Package            `yaml:"package"`

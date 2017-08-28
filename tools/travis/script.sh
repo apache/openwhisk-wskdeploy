@@ -28,14 +28,9 @@ $ANSIBLE_CMD prereq.yml
 $ANSIBLE_CMD couchdb.yml
 $ANSIBLE_CMD initdb.yml
 
-cd $WHISKDIR
-# The CLI build is only used to facilitate the openwhisk deployment. When CLI is separate from openwhisk, this line
-# should be removed.
-./gradlew :tools:cli:distDocker -PdockerImagePrefix=openwhisk
-
-cd $WHISKDIR/ansible
 $ANSIBLE_CMD wipe.yml
-$ANSIBLE_CMD openwhisk.yml
+$ANSIBLE_CMD openwhisk.yml -e '{"openwhisk_cli":{"installation_mode":"remote","remote":{"name":"OpenWhisk_CLI","dest_name":"OpenWhisk_CLI","location":"https://github.com/apache/incubator-openwhisk-cli/releases/download/latest"}}}'
+
 
 export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/openwhisk"
 
