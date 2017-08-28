@@ -177,6 +177,7 @@ func NewWhiskClient(proppath string, deploymentPath string, manifestPath string,
     clientConfig = &whisk.Config{
         AuthToken: credential.Value, //Authtoken
         Namespace: namespace.Value,  //Namespace
+        Host: apiHost.Value,
         BaseURL:   baseURL,
         Version:   "v1",
         Insecure:  true, // true if you want to ignore certificate signing
