@@ -7,10 +7,10 @@ package:
       description: some text the describe the api purpose and defitions.
       club: # shared base path
         books:   #path
-           getBooks: get  #action name:verb
-           postBooks: post
-           putBooks: put
-           deleteBooks: delete
+           getBooks: get | post  #action name:verb
+           postBooks: post | put
+           putBooks: put | post | get | delete
+           deleteBooks: delete | post
         members: #path
            listMembers: get #action name:verb
 
