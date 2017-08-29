@@ -28,11 +28,10 @@ import (
 
 var wskprops = common.GetWskprops()
 
-func TestSupportProjectPath(t *testing.T) {
-	os.Setenv("__OW_API_HOST", wskprops.APIHost)
+func TestExplicitRunTimes(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/runtimetests"
-	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
+	_, err := wskdeploy.DeployProjectPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest path")
 }
 
