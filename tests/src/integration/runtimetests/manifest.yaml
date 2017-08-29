@@ -1,5 +1,5 @@
 package:
-  name: helloworld
+  name: TestExplicitRuntimes
   version: 1.0
   license: Apache-2.0
   actions:
@@ -86,10 +86,6 @@ package:
     helloworldjava:
       function: src/hello.jar
       runtime: java
-      main: Hello
-    helloworldinvalid:
-      function: src/hello.jar
-      runtime: invalid
       main: Hello
   triggers:
     locationUpdate:
