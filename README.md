@@ -62,6 +62,15 @@ $ cd src/github.com/apache/incubator-openwhisk-wskdeploy/
 $ go build -o wskdeploy
 ```
 
+If you would like to build the binary for a specific operating system, you may add the arguments GOOS and GOARCH into the
+Go build command. You have to set GOARCH to amd64 or 386. GOOS can be set to "linux" "darwin" or "windows".
+
+For example, run the following command to build the binary for 64-bit Linux:
+
+```sh
+$ GOOS=linux GOARCH=amd64 go build -o wskdeploy
+```
+
 If you want to build with the godep tool, please execute the following commands.
 
 ```sh
@@ -109,6 +118,15 @@ version is 3.3.
 commands will start the wskdeploy cross compile for your specific OS platform inside a Docker container.
 
 7. After build success, you should find a correct binary under current /bin dir of you openwhisk-deploy clone dir.
+
+If you would like to build the binaries available for all the operating systems and architectures, run the following command:
+
+```sh
+$ ./gradlew distDocker -PcrossCompileCLI=true
+```
+
+Then, you will find the binaries and their compressed packages generated under the folder bin/<os>/<cpu arc>/ for each
+operating system and CPU architecture pair. We supports both amd64 and 386 for Linux, Mac and Windows operating systems.
 
 # Debugging
 
