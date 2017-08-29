@@ -26,13 +26,12 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"log"
 	"os"
-	"path"
-	"path/filepath"
 	"regexp"
 	"strings"
+	"path"
+	"path/filepath"
 )
 
 var RootCmd = &cobra.Command{
@@ -114,7 +113,7 @@ func init() {
 	// Cobra supports Persistent Flags, which, if defined here,
 	// will be global for your application.
 
-	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", "config file (default is $HOME/.wskdeploy.yaml)")
+	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", "config file (default is $HOME/.wskprops)")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
@@ -132,19 +131,18 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+    userHome := utils.GetHomeDirectory()
+    defaultPath := path.Join(userHome, whisk.DEFAULT_LOCAL_CONFIG)
 	if utils.Flags.CfgFile != "" {
-		// enable ability to specify config file via flag
-		viper.SetConfigFile(utils.Flags.CfgFile)
-	}
-
-	viper.SetConfigName(".wskdeploy") // name of config file (without extension)
-	viper.AddConfigPath("$HOME")      // adding home directory as first search path
-	viper.AutomaticEnv()              // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
+        // Read the file as a wskprops file, to check if it is valid.
+        _, err := whisk.ReadProps(utils.Flags.CfgFile)
+        if err != nil {
+            utils.Flags.CfgFile = defaultPath
+            log.Println("Invalid config file detected, so by bdefault it is set to " + utils.Flags.CfgFile)
+        }
+	} else {
+        utils.Flags.CfgFile = defaultPath
+    }
 }
 
 func Deploy() error {
@@ -192,12 +190,7 @@ func Deploy() error {
 		// master record of any dependency that has been downloaded
 		deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
 
-		propPath := ""
-		if !utils.Flags.WithinOpenWhisk {
-			userHome := utils.GetHomeDirectory()
-			propPath = path.Join(userHome, ".wskprops")
-		}
-		whiskClient, clientConfig := deployers.NewWhiskClient(propPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
+		whiskClient, clientConfig := deployers.NewWhiskClient(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
 		deployer.Client = whiskClient
 		deployer.ClientConfig = clientConfig
 
@@ -260,10 +253,7 @@ func Undeploy() error {
 		deployer.IsInteractive = utils.Flags.UseInteractive
 		deployer.IsDefault = utils.Flags.UseDefaults
 
-		userHome := utils.GetHomeDirectory()
-		propPath := path.Join(userHome, ".wskprops")
-
-		whiskClient, clientConfig := deployers.NewWhiskClient(propPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
+		whiskClient, clientConfig := deployers.NewWhiskClient(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
 		deployer.Client = whiskClient
 		deployer.ClientConfig = clientConfig
 

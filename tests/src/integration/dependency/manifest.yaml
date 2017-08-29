@@ -1,6 +1,5 @@
 package:
   name: TestGitHubDependency
-  namespace: guest
   dependencies:
     openwhisk-app:
       location: github.com/pritidesai/openwhisk-app

@@ -29,6 +29,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
     "errors"
+    "log"
 )
 
 const (
@@ -108,6 +109,7 @@ func NewWhiskClient(proppath string, deploymentPath string, manifestPath string,
     pi := whisk.PropertiesImp {
         OsPackage: whisk.OSPackageImp{},
     }
+
     wskprops, _ := GetWskPropFromWskprops(pi, proppath)
     credential = GetPropertyValue(credential, wskprops.AuthKey, WSKPROPS)
     namespace = GetPropertyValue(namespace, wskprops.Namespace, WSKPROPS)
@@ -171,13 +173,14 @@ func NewWhiskClient(proppath string, deploymentPath string, manifestPath string,
         utils.Check(err)
     }
 
-    fmt.Println("The URL is " + baseURL.String() + ", selected from " + apiHost.Source)
-    fmt.Println("The auth key is set, selected from " + credential.Source)
-    fmt.Println("The namespace is " + namespace.Value + ", selected from " + namespace.Source)
+    log.Println("The URL is " + baseURL.String() + ", selected from " + apiHost.Source)
+    log.Println("The auth key is set, selected from " + credential.Source)
+    log.Println("The namespace is " + namespace.Value + ", selected from " + namespace.Source)
     clientConfig = &whisk.Config{
         AuthToken: credential.Value, //Authtoken
         Namespace: namespace.Value,  //Namespace
         BaseURL:   baseURL,
+        Host: apiHost.Value,
         Version:   "v1",
         Insecure:  true, // true if you want to ignore certificate signing
 

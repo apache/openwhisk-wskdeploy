@@ -26,6 +26,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
+    "os"
 )
 
 var rootcalled bool
@@ -86,7 +87,7 @@ func initializeParameters() {
 	expected_auth_flags.Auth = "fake_auth"
 	expected_auth_flags.ApiVersion = "fake_api_version"
 
-	expected_input.CfgFile = "fake_config_file"
+	expected_input.CfgFile = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/dat/wskprops"
 	expected_input.Verbose = true
 	expected_input.UseDefaults = true
 	expected_input.UseInteractive = true
