@@ -17,6 +17,7 @@ RUN echo "Restoring Go dependencies"
 RUN cd /src/github.com/apache/incubator-openwhisk-wskdeploy && /bin/godep restore -v
 
 # All of the Go CLI binaries will be placed under a build folder
+RUN rm -rf /src/github.com/apache/incubator-openwhisk-wskdeploy/build
 RUN mkdir /src/github.com/apache/incubator-openwhisk-wskdeploy/build
 
 ARG WSKDEPLOY_OS
