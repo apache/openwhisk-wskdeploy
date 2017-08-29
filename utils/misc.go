@@ -32,9 +32,13 @@ import (
 	"reflect"
 	"strings"
 
+	"crypto/tls"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/hokaccha/go-prettyjson"
+	"io/ioutil"
+	"log"
+	"net/http"
 )
 
 // ActionRecord is a container to keep track of
@@ -130,9 +134,8 @@ func Ask(reader *bufio.Reader, question string, def string) string {
 	return answer[:len-1]
 }
 
-
 // Test if a string
-func isValidEnvironmentVar( value string ) bool {
+func isValidEnvironmentVar(value string) bool {
 
 	// A valid Env. variable should start with '$' (dollar) char.
 	// AND have at least 1 additional character after it.
@@ -146,7 +149,7 @@ func isValidEnvironmentVar( value string ) bool {
 // Get the env variable if the key is start by $
 func GetEnvVar(key interface{}) interface{} {
 	// Assure the key itself is not nil
-	if (key == nil ) {
+	if key == nil {
 		return nil
 	}
 
@@ -319,8 +322,8 @@ func javaEntryError() error {
 // ParserErr records errors from parsing YAML against the wskdeploy spec.
 type ParserErr struct {
 	filneame string
-        lineNum int
-	message string
+	lineNum  int
+	message  string
 }
 
 // Implement the error interface.
@@ -422,4 +425,180 @@ func addKeyValue(key string, value interface{}, keyValueArr whisk.KeyValueArr) w
 	}
 
 	return append(keyValueArr, keyValue)
+}
+
+// Structs used to denote the OpenWhisk Runtime information
+type Limit struct {
+	Apm       uint16 `json:"actions_per_minute"`
+	Tpm       uint16 `json:"triggers_per_minute"`
+	ConAction uint16 `json:"concurrent_actions"`
+}
+
+type Runtime struct {
+	Image      string `json:"image"`
+	Deprecated bool   `json:"deprecated"`
+	ReMain     bool   `json:"requireMain"`
+	Default    bool   `json:"default"`
+	Attach     bool   `json:"attached"`
+	Kind       string `json:"kind"`
+}
+
+type SupportInfo struct {
+	Github string `json:"github"`
+	Slack  string `json:"slack"`
+}
+
+type OpenWhiskInfo struct {
+	Support  SupportInfo          `json:"support"`
+	Desc     string               `json:"description"`
+	ApiPath  []string             `json:"api_paths"`
+	Runtimes map[string][]Runtime `json:"runtimes"`
+	Limits   Limit                `json:"limits"`
+}
+
+// We could get the openwhisk info from bluemix through running the command
+// `curl -k https://openwhisk.ng.bluemix.net`
+// hard coding it here in case of network unavailable or failure.
+func ParseOpenWhisk() (op OpenWhiskInfo, err error) {
+	ct := "application/json; charset=UTF-8"
+	req, _ := http.NewRequest("GET", "https://openwhisk.ng.bluemix.net", nil)
+	req.Header.Set("Content-Type", ct)
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: true,
+	}
+
+	http.DefaultClient.Transport = &http.Transport{
+		TLSClientConfig: tlsConfig,
+	}
+	res, err := http.DefaultClient.Do(req)
+	if err != nil || res.Header.Get("Content-Type") != ct {
+		log.Println("failed get openwhisk info from internet")
+		log.Println("Start unmarshal Openwhisk info from local values")
+		err = json.Unmarshal(runtime_info, &op)
+	} else {
+		b, _ := ioutil.ReadAll(res.Body)
+		if b != nil && len(b) > 0 {
+			log.Println("Unmarshal Openwhisk info from internet")
+			err = json.Unmarshal(b, &op)
+		}
+	}
+	return
+}
+
+func ConvertToMap(op OpenWhiskInfo) (rt map[string][]string) {
+	rt = make(map[string][]string)
+	for k, _ := range op.Runtimes {
+		v := op.Runtimes[k]
+		rt[k] = make([]string, 0, len(v))
+		for i := range op.Runtimes[k] {
+			rt[k] = append(rt[k], op.Runtimes[k][i].Kind)
+		}
+	}
+	return
+}
+
+var runtime_info = []byte(`{
+  "support": {
+    "github": "https://github.com/apache/incubator-openwhisk/issues",
+    "slack": "http://slack.openwhisk.org"
+  },
+  "description": "OpenWhisk",
+  "api_paths": ["/api/v1"],
+  "runtimes": {
+    "nodejs": [{
+      "image": "openwhisk/nodejsaction:latest",
+      "deprecated": true,
+      "requireMain": false,
+      "default": false,
+      "attached": false,
+      "kind": "nodejs"
+    }, {
+      "image": "openwhisk/nodejs6action:latest",
+      "deprecated": false,
+      "requireMain": false,
+      "default": true,
+      "attached": false,
+      "kind": "nodejs:6"
+    }],
+    "java": [{
+      "image": "openwhisk/java8action:latest",
+      "deprecated": false,
+      "requireMain": true,
+      "default": true,
+      "attached": true,
+      "kind": "java"
+    }],
+    "php": [{
+      "image": "openwhisk/action-php-v7.1:latest",
+      "deprecated": false,
+      "requireMain": false,
+      "default": true,
+      "attached": false,
+      "kind": "php:7.1"
+    }],
+    "python": [{
+      "image": "openwhisk/python2action:latest",
+      "deprecated": false,
+      "requireMain": false,
+      "default": false,
+      "attached": false,
+      "kind": "python"
+    }, {
+      "image": "openwhisk/python2action:latest",
+      "deprecated": false,
+      "requireMain": false,
+      "default": true,
+      "attached": false,
+      "kind": "python:2"
+    }, {
+      "image": "openwhisk/python3action:latest",
+      "deprecated": false,
+      "requireMain": false,
+      "default": false,
+      "attached": false,
+      "kind": "python:3"
+    }],
+    "swift": [{
+      "image": "openwhisk/swiftaction:latest",
+      "deprecated": true,
+      "requireMain": false,
+      "default": false,
+      "attached": false,
+      "kind": "swift"
+    }, {
+      "image": "openwhisk/swift3action:latest",
+      "deprecated": false,
+      "requireMain": false,
+      "default": true,
+      "attached": false,
+      "kind": "swift:3"
+    }, {
+      "image": "openwhisk/action-swift-v3.1.1:latest",
+      "deprecated": false,
+      "requireMain": false,
+      "default": false,
+      "attached": false,
+      "kind": "swift:3.1.1"
+    }]
+  },
+  "limits": {
+    "actions_per_minute": 5000,
+    "triggers_per_minute": 5000,
+    "concurrent_actions": 1000
+  }
+  }
+`)
+
+var Rts map[string][]string
+
+var Default_Rts = map[string][]string{
+	"nodejs": {"nodejs", "nodejs:6"},
+	"java":   {"java"},
+	"php":    {"php:7.1"},
+	"python": {"python", "python:2", "python:3"},
+	"swift":  {"swift", "swift:3", "swift:3.1.1"},
+}
+
+func CheckExistRuntime(rtname string, rts map[string][]string) bool {
+	return false
 }
