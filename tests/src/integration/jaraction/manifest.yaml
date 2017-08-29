@@ -1,0 +1,7 @@
+package:
+    name: IntegrationTestHelloworldJar
+    actions:
+        hellojaraction:
+            function: src/hello.jar
+            runtime: java
+            main: Hello
