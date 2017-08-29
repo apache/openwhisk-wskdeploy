@@ -30,8 +30,10 @@ var wskprops = common.GetWskprops()
 
 func TestExplicitRunTimes(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
-	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/runtimetests"
-	_, err := wskdeploy.DeployProjectPathOnly(manifestPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifest path")
+	projectPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/runtimetests"
+	_, err := wskdeploy.DeployProjectPathOnly(projectPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the project path")
+	_, err := wskdeploy.UnDeployProjectPathOnly(projectPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the project path")
 }
 
