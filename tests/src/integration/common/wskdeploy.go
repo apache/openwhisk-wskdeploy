@@ -86,6 +86,14 @@ func (wskdeploy *Wskdeploy) DeployProjectPathOnly(projectPath string) ([]byte, e
         return wskdeploy.RunCommand("-p", projectPath)
 }
 
+func (wskdeploy *Wskdeploy) UndeployProjectPathOnly(projectPath string) ([]byte, error) {
+    return wskdeploy.RunCommand("undeploy", "-p", projectPath)
+}
+
 func (wskdeploy *Wskdeploy) DeployManifestPathOnly(manifestpath string) ([]byte, error) {
-	return wskdeploy.RunCommand("-p", manifestpath)
+	return wskdeploy.RunCommand("-m", manifestpath)
+}
+
+func (wskdeploy *Wskdeploy) UndeployManifestPathOnly(manifestpath string) ([]byte, error) {
+    return wskdeploy.RunCommand("undeploy", "-m", manifestpath)
 }
