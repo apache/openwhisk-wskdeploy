@@ -1,7 +1,5 @@
 package:
-  name: helloworld
-  version: 1.0
-  license: Apache-2.0
+  name: IntegrationTestWebAction
   actions:
     greeting:
       web-export: true
@@ -14,11 +12,9 @@ package:
       outputs:
         payload: string
   triggers:
-    locationUpdate:
+    webActionTrigger:
   rules:
-    myRule:
-      trigger: locationUpdate
-      #the action name and the action file greeting.js should consistent.
-      #currently the implementation deside the action name consistent with action file name?
+    webActionRule:
+      trigger: webActionTrigger
       action: greeting
 

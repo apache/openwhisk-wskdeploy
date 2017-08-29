@@ -1,4 +1,4 @@
-// +build not_integration
+// +build integration
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -33,12 +33,12 @@ var wskprops = common.GetWskprops()
 func TestWebAction(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
-	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files.")
+	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest file.")
 }
 
 var (
 	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/webaction/manifest.yml"
-	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/webaction/deployment.yml"
+	deploymentPath = ""
 )
