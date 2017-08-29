@@ -3,7 +3,7 @@ application:
 
   package:
     triggerrule:
-      name: helloworld
+      name: helloWorldFlags
       namespace: guest
       actions:
         greeting:

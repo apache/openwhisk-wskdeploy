@@ -3,7 +3,7 @@ application:
 
   package:
     triggerrule:
-      name: helloworld
+      name: helloWorldTriggerRule
       namespace: guest
       actions:
         greeting:

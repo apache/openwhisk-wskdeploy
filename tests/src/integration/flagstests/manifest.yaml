@@ -1,5 +1,5 @@
 package:
-  name: helloworld
+  name: helloWorldFlags
   version: 1.0
   license: Apache-2.0
   actions:
@@ -14,10 +14,10 @@ package:
       outputs:
         payload: string
   triggers:
-    locationUpdate:
+    locationUpdateFlags:
   rules:
     myRule:
-      trigger: locationUpdate
+      trigger: locationUpdateFlags
       #the action name and the action file greeting.js should consistent.
       #currently the implementation deside the action name consistent with action file name?
       action: greeting
