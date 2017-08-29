@@ -11,6 +11,8 @@ package:
     rule1:
       trigger: trigger1
       action: openwhisk-app/hello
+      runtime: nodejs:6
     rule2:
       trigger: trigger2
       action: openwhisk-app/helloworld
+      runtime: nodejs:6

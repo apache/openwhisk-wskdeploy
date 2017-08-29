@@ -18,21 +18,21 @@
 package cmd
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
-	"log"
-	"os"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-client-go/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"regexp"
-	"encoding/json"
-	"errors"
-	"github.com/apache/incubator-openwhisk-client-go/wski18n"
-	"strings"
+	"log"
+	"os"
 	"path"
-	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"path/filepath"
+	"regexp"
+	"strings"
 )
 
 var RootCmd = &cobra.Command{
@@ -103,6 +103,13 @@ func init() {
 
 	cobra.OnInitialize(initConfig)
 
+	//Initialize the supported runtime infos.
+	op, err := utils.ParseOpenWhisk()
+	if err == nil {
+		utils.Rts = utils.ConvertToMap(op)
+	} else {
+		utils.Rts = utils.DefaultRts
+	}
 	// Here you will define your flags and configuration settings.
 	// Cobra supports Persistent Flags, which, if defined here,
 	// will be global for your application.
@@ -139,7 +146,6 @@ func initConfig() {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
 }
-
 
 func Deploy() error {
 

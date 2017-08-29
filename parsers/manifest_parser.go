@@ -29,10 +29,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
+	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"gopkg.in/yaml.v2"
-	"fmt"
 )
 
 // Read existing manifest file or create new if none exists
@@ -264,15 +264,25 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 				wskaction.Exec, err = utils.GetExec(zipName, action.Runtime, false, "")
 			} else {
 				ext := path.Ext(filePath)
-				kind := "nodejs:default"
+				var kind string
 
 				switch ext {
 				case ".swift":
-					kind = "swift:default"
+					kind = "swift"
 				case ".js":
-					kind = "nodejs:default"
+					kind = "nodejs:6"
 				case ".py":
 					kind = "python"
+				case ".java":
+					kind = "java"
+				case ".php":
+					kind = "php"
+				case ".jar":
+					kind = "java"
+				default:
+					kind = "nodejs:6"
+					log.Println("Unsupported runtime type, set to nodejs")
+					//add the user input kind here
 				}
 
 				wskaction.Exec.Kind = kind
@@ -284,13 +294,20 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 				if ext == ".zip" || ext == ".jar" {
 					code = base64.StdEncoding.EncodeToString([]byte(dat))
 				}
+				if ext == ".zip" && action.Runtime == "" {
+					log.Println("need explicit action Runtime value")
+				}
 				wskaction.Exec.Code = &code
 			}
 
 		}
 
 		if action.Runtime != "" {
-			wskaction.Exec.Kind = action.Runtime
+			if utils.CheckExistRuntime(action.Runtime, utils.Rts) {
+				wskaction.Exec.Kind = action.Runtime
+			} else {
+				log.Println("the runtime it not supported by Openwhisk platform.")
+			}
 		}
 
 		// we can specify the name of the action entry point using main
@@ -421,29 +438,37 @@ func (dm *YAMLParser) ComposeRules(manifest *ManifestYAML) ([]*whisk.Rule, error
 	return r1, nil
 }
 
+func (action *Action) ComposeWskAction(manipath string) (*whisk.Action, error) {
+	wskaction, err := utils.CreateActionFromFile(manipath, action.Location)
+	utils.Check(err)
+	wskaction.Name = action.Name
+	wskaction.Version = action.Version
+	wskaction.Namespace = action.Namespace
+	return wskaction, err
+}
+
 // TODO(): Support other valid Package Manifest types
 // TODO(): i.e., json (valid), timestamp, version, string256, string64, string16
 // TODO(): Support JSON schema validation for type: json
 // TODO(): Support OpenAPI schema validation
 
 var validParameterNameMap = map[string]string{
-	"string": "string",
-	"int": "integer",
-	"float": "float",
-	"bool": "boolean",
-	"int8": "integer",
-	"int16": "integer",
-	"int32": "integer",
-	"int64": "integer",
+	"string":  "string",
+	"int":     "integer",
+	"float":   "float",
+	"bool":    "boolean",
+	"int8":    "integer",
+	"int16":   "integer",
+	"int32":   "integer",
+	"int64":   "integer",
 	"float32": "float",
 	"float64": "float",
 }
 
-
-var typeDefaultValueMap = map[string]interface{} {
-	"string": "",
+var typeDefaultValueMap = map[string]interface{}{
+	"string":  "",
 	"integer": 0,
-	"float": 0.0,
+	"float":   0.0,
 	"boolean": false,
 	// TODO() Support these types + their validation
 	// timestamp
@@ -471,11 +496,11 @@ func getTypeDefaultValue(typeName string) interface{} {
 	} else {
 		// TODO() throw an error "type not found"
 	}
-        return nil
+	return nil
 }
 
 func ResolveParamTypeFromValue(value interface{}) (string, error) {
-        // Note: string is the default type if not specified.
+	// Note: string is the default type if not specified.
 	var paramType string = "string"
 	var err error = nil
 
@@ -489,7 +514,7 @@ func ResolveParamTypeFromValue(value interface{}) (string, error) {
 
 		} else {
 			// raise an error if param is not a known type
-			err = utils.NewParserErr("",-1, "Parameter value is not a known type. [" + actualType + "]")
+			err = utils.NewParserErr("", -1, "Parameter value is not a known type. ["+actualType+"]")
 		}
 	} else {
 
@@ -522,7 +547,7 @@ func ResolveParameter(paramName string, param *Parameter) (interface{}, error) {
 		// we have a multi-line parameter declaration
 
 		// if we do not have a value, but have a default, use it for the value
-                if param.Value == nil && param.Default !=nil {
+		if param.Value == nil && param.Default != nil {
 			param.Value = param.Default
 		}
 
@@ -531,8 +556,8 @@ func ResolveParameter(paramName string, param *Parameter) (interface{}, error) {
 		tempType, errorParser = ResolveParamTypeFromValue(param.Value)
 
 		// if we do not have a value or default, but have a type, find its default and use it for the value
-		if param.Type!="" && !isValidParameterType(param.Type) {
-		    return value, utils.NewParserErr("",-1, "Invalid Type for parameter. [" + param.Type + "]")
+		if param.Type != "" && !isValidParameterType(param.Type) {
+			return value, utils.NewParserErr("", -1, "Invalid Type for parameter. ["+param.Type+"]")
 		} else if param.Type == "" {
 			param.Type = tempType
 		}
@@ -555,7 +580,7 @@ func ResolveParameter(paramName string, param *Parameter) (interface{}, error) {
 	}
 
 	// Default to an empty string, do NOT error/terminate as Value may be provided later bu a Deployment file.
-	if (value == nil) {
+	if value == nil {
 		value = getTypeDefaultValue(param.Type)
 		// @TODO(): Need warning message here to warn of default usage, support for warnings (non-fatal)
 	}
@@ -613,7 +638,7 @@ func dumpParameter(paramName string, param *Parameter, separator string) {
 
 	fmt.Printf("%s:\n", separator)
 	fmt.Printf("\t%s: (%T)\n", paramName, param)
-	if(param!= nil) {
+	if param != nil {
 		fmt.Printf("\t\tParameter.Descrption: [%s]\n", param.Description)
 		fmt.Printf("\t\tParameter.Type: [%s]\n", param.Type)
 		fmt.Printf("\t\tParameter.Value: [%v]\n", param.Value)

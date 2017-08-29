@@ -18,9 +18,9 @@
 package common
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
-	"fmt"
 	"strings"
 )
 
@@ -83,7 +83,7 @@ func (wskdeploy *Wskdeploy) Undeploy(manifestPath string, deploymentPath string)
 }
 
 func (wskdeploy *Wskdeploy) DeployProjectPathOnly(projectPath string) ([]byte, error) {
-        return wskdeploy.RunCommand("-p", projectPath)
+	return wskdeploy.RunCommand( "-p", projectPath)
 }
 
 func (wskdeploy *Wskdeploy) UndeployProjectPathOnly(projectPath string) ([]byte, error) {
