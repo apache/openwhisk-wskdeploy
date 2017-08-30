@@ -26,6 +26,21 @@
   {
     "id": "whisk API `VERSION`",
     "translation": "whisk API `VERSION`"
+  },
+  {
+    "id": "Manifest file not found at path {{.projectPath}}.\n",
+    "translation": "Manifest file not found at path {{.projectPath}}.\n"
+  },
+  {
+    "id": "Missing {{.yaml}}/{{.yml}} file.\n",
+    "translation": "Missing {{.yaml}}/{{.yml}} file.\n"
+  },
+  {
+    "id": "Using {{.manifestPath}} for deployment.\n",
+    "translation": "Using {{.manifestPath}} for deployment.\n"
+  },
+  {
+    "id": "Using {{.manifestPath}} for undeployment.\n",
+    "translation": "Using {{.manifestPath}} for undeployment.\n"
   }
-
 ]

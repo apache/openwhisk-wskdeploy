@@ -28,9 +28,8 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-        "errors"
-        "log"
     "path"
+    "errors"
 )
 
 const (
@@ -172,9 +171,9 @@ func NewWhiskClient(proppath string, deploymentPath string, manifestPath string,
         utils.Check(err)
     }
 
-    log.Println("The URL is " + baseURL.String() + ", selected from " + apiHost.Source)
-    log.Println("The auth key is set, selected from " + credential.Source)
-    log.Println("The namespace is " + namespace.Value + ", selected from " + namespace.Source)
+    fmt.Println("The URL is " + baseURL.String() + ", selected from " + apiHost.Source)
+    fmt.Println("The auth key is set, selected from " + credential.Source)
+    fmt.Println("The namespace is " + namespace.Value + ", selected from " + namespace.Source)
     clientConfig = &whisk.Config{
         AuthToken: credential.Value, //Authtoken
         Namespace: namespace.Value,  //Namespace

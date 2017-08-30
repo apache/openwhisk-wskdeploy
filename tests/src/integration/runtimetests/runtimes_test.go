@@ -26,8 +26,6 @@ import (
 	"testing"
 )
 
-var wskprops = common.GetWskprops()
-
 func TestExplicitRuntimes(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
     projectPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/runtimetests"

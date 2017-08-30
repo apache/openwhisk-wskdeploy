@@ -20,7 +20,6 @@ package deployers
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"path"
 	"strings"
@@ -198,7 +197,7 @@ func (deployer *ServiceDeployer) Deploy() error {
 		if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
 			deployer.InteractiveChoice = true
 			if err := deployer.deployAssets(); err != nil {
-				log.Println("\nDeployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
+				fmt.Println("\nDeployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
 				return err
 			}
 
@@ -214,11 +213,11 @@ func (deployer *ServiceDeployer) Deploy() error {
 
 	// non-interactive
 	if err := deployer.deployAssets(); err != nil {
-		log.Println("\nDeployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
+		fmt.Println("\nDeployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
 		return err
 	}
 
-	log.Println("\nDeployment completed successfully.")
+	fmt.Println("\nDeployment completed successfully.")
 	return nil
 
 }
@@ -287,7 +286,7 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 				utils.Check(err)
 
 				if err := depServiceDeployer.deployAssets(); err != nil {
-					log.Println("\nDeployment of dependency " + depName + " did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
+					fmt.Println("\nDeployment of dependency " + depName + " did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
 					return err
 				} else {
 					fmt.Println("Done!")
@@ -363,36 +362,36 @@ func (deployer *ServiceDeployer) DeployApis() error {
 }
 
 func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) {
-	log.Print("Deploying package binding " + packa.Name + " ... ")
+	fmt.Print("Deploying package binding " + packa.Name + " ... ")
 	_, _, err := deployer.Client.Packages.Insert(packa, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		log.Printf("Got error creating package binding with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		fmt.Printf("Got error creating package binding with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
-	log.Println("Done!")
+	fmt.Println("Done!")
 }
 
 func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) {
-	log.Print("Deploying package " + packa.Name + " ... ")
+	fmt.Print("Deploying package " + packa.Name + " ... ")
 	_, _, err := deployer.Client.Packages.Insert(packa, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		log.Printf("Got error creating package with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		fmt.Printf("Got error creating package with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
-	log.Println("Done!")
+	fmt.Println("Done!")
 }
 
 func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) {
 	_, _, err := deployer.Client.Triggers.Insert(trigger, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		log.Printf("Got error creating trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		fmt.Printf("Got error creating trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 	fmt.Println("Done!")
 }
 
 func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedName string) {
-	log.Println("Deploying trigger feed " + trigger.Name + " ... ")
+	fmt.Println("Deploying trigger feed " + trigger.Name + " ... ")
 	// to hold and modify trigger parameters, not passed by ref?
 	params := make(map[string]interface{})
 
@@ -415,7 +414,7 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 	_, _, err := deployer.Client.Triggers.Insert(t, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		log.Printf("Got error creating trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		fmt.Printf("Got error creating trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	} else {
 
 		qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
@@ -429,7 +428,7 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 
 		if err != nil {
 			wskErr := err.(*whisk.WskError)
-			log.Printf("Got error creating trigger feed with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+			fmt.Printf("Got error creating trigger feed with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 		}
 	}
 	fmt.Println("Done!")
@@ -453,13 +452,13 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) {
 	_, _, err := deployer.Client.Rules.Insert(rule, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		log.Printf("Got error creating rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		fmt.Printf("Got error creating rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 
 	_, _, err = deployer.Client.Rules.SetState(rule.Name, "active")
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		log.Printf("Got error activating rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		fmt.Printf("Got error activating rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 	fmt.Println("Done!")
 }
@@ -471,14 +470,14 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 		// the action will be created under package with pattern 'packagename/actionname'
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
 	}
-	log.Print("Deploying action " + action.Name + " ... ")
+	fmt.Print("Deploying action " + action.Name + " ... ")
 	_, _, err := deployer.Client.Actions.Insert(action, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		log.Printf("Got error creating action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		fmt.Printf("Got error creating action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 		return err
 	}
-	log.Println("Done!")
+	fmt.Println("Done!")
 	return nil
 }
 
@@ -487,9 +486,9 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) {
 	_, _, err := deployer.Client.Apis.Insert(api, nil, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		log.Printf("Got error creating api with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		fmt.Printf("Got error creating api with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
-	log.Println("Done!")
+	fmt.Println("Done!")
 }
 
 func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentApplication) error {
@@ -582,7 +581,7 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
 				utils.Check(err)
 
 				if err := depServiceDeployer.unDeployAssets(plan); err != nil {
-					log.Println("\nUndeployment of dependency " + depName + " did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
+					fmt.Println("\nUndeployment of dependency " + depName + " did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
 					return err
 				} else {
 					fmt.Println("Done!")
@@ -655,7 +654,7 @@ func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) {
 	_, err := deployer.Client.Packages.Delete(packa.Name)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		log.Printf("Got error deleteing package with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		fmt.Printf("Got error deleteing package with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 	fmt.Println("Done!")
 }
@@ -665,7 +664,7 @@ func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) {
 	_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		log.Printf("Got error deleting trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		fmt.Printf("Got error deleting trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	}
 	fmt.Println("Done!")
 }
@@ -682,7 +681,7 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 	_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		log.Printf("Got error deleting trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		fmt.Printf("Got error deleting trigger with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	} else {
 		parameters := make(map[string]interface{})
 		for _, keyVal := range params {
@@ -700,7 +699,7 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 
 		if err != nil {
 			wskErr := err.(*whisk.WskError)
-			log.Printf("Got error deleting trigger feed with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+			fmt.Printf("Got error deleting trigger feed with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 		}
 	}
 	fmt.Println("Done!")
@@ -712,14 +711,14 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) {
 
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		log.Printf("Got error deleting rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		fmt.Printf("Got error deleting rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 	} else {
 
 		_, err = deployer.Client.Rules.Delete(rule.Name)
 
 		if err != nil {
 			wskErr := err.(*whisk.WskError)
-			log.Printf("Got error deleting rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+			fmt.Printf("Got error deleting rule with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 		}
 
 		fmt.Println("Done!")
@@ -738,7 +737,7 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
 	_, err := deployer.Client.Actions.Delete(action.Name)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		log.Printf("Got error deleting action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+		fmt.Printf("Got error deleting action with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
 		return err
 	}
 	fmt.Println("Done!")

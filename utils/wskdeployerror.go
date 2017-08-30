@@ -18,42 +18,40 @@
 package utils
 
 import (
-	"errors"
-	"fmt"
-	"os"
-    "github.com/mattn/go-colorable"
-    "github.com/fatih/color"
+    "fmt"
     "github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
-// Check is a util function to panic when there is an error.
-func Check(e error) {
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Printf("Runtime panic : %v", err)
-		}
-	}()
+const (
+    INVALID_YAML_INPUT = "Invalid input of Yaml file"
+)
 
-	if e != nil {
-		fmt.Printf("%v", e)
-		erro := errors.New("Error happened during execution, please type 'wskdeploy -h' for help messages.")
-		fmt.Printf("%v", erro)
-		if Flags.WithinOpenWhisk {
-			PrintOpenWhiskError(e)
-		} else {
-			os.Exit(1)
-		}
-
-	}
+type TestCaseError struct {
+    errorMessage string
 }
 
-func PrintOpenWhiskError(err error) {
-    outputStream := colorable.NewColorableStderr()
-    fmt.Fprintf(outputStream, "%s%s\n", color.RedString(wski18n.T("Error: ")), err.Error())
+func NewTestCaseError(errorMessage string) *TestCaseError {
+    return &TestCaseError{
+        errorMessage: errorMessage,
+    }
 }
 
-func PrintOpenWhiskOutput(err error) {
-    outputStream := colorable.NewColorableStderr()
-    fmt.Fprintf(outputStream, "%s%s\n", color.RedString(wski18n.T("Error: ")), err.Error())
+func (e *TestCaseError) Error() string {
+    return e.errorMessage
 }
 
+type InputYamlFileError struct {
+    errorMessage string
+    errorType string
+}
+
+func NewInputYamlFileError(errorMessage string) *InputYamlFileError {
+    return &InputYamlFileError{
+        errorMessage: errorMessage,
+        errorType: wski18n.T(INVALID_YAML_INPUT),
+    }
+}
+
+func (e *InputYamlFileError) Error() string {
+    return fmt.Sprintf("%s =====> %s", e.errorType, e.errorMessage)
+}
