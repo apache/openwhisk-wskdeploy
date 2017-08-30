@@ -40,7 +40,6 @@ func init() {
 // Check DeploymentReader could handle deployment yaml successfully.
 func TestDeploymentReader_HandleYaml(t *testing.T) {
 	dr.HandleYaml()
-	packageName := ""
 	assert.NotNil(t, dr.DeploymentDescriptor.Application.Packages["JiraBackupSolution"], "DeploymentReader handle deployment yaml failed.")
 }
 

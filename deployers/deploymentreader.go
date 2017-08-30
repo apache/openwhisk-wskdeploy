@@ -82,7 +82,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 		serviceDeployPack := reader.serviceDeployer.Deployment.Packages[packName]
 
 		if serviceDeployPack == nil {
-			log.Println("Package name in deployment file " + packName + " does not match with manifest file.")
+			log.Println("WARNING: Package name in deployment file " + packName + " does not match with manifest file.")
 			break
 		}
 
@@ -133,7 +133,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 
 func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 
-	packMap := make(map[string]parsers.Package, 1)
+	packMap := make(map[string]parsers.Package)
 
 	if reader.DeploymentDescriptor.Application.Packages == nil {
 		// a single package is specified in deployment YAML file with "package" key
