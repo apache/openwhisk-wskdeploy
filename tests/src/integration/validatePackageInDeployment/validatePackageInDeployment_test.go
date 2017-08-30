@@ -20,15 +20,13 @@
 package tests
 
 import (
-"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
-"github.com/stretchr/testify/assert"
-"os"
-"testing"
+	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/stretchr/testify/assert"
+	"os"
+	"testing"
 )
 
-
 var wskprops = common.GetWskprops()
-
 
 func TestPackageInDeploymentFile(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
@@ -39,8 +37,6 @@ func TestPackageInDeploymentFile(t *testing.T) {
 }
 
 var (
-	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/packageInDeployment/manifest.yaml"
-	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/packageInDeployment/deployment.yaml"
+	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validatePackageInDeployment/manifest.yaml"
+	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validatePackageInDeployment/deployment.yaml"
 )
-
-
