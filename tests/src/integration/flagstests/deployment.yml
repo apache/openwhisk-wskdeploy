@@ -2,9 +2,7 @@ application:
   name: wskdeploy-samples
 
   packages:
-    triggerrule:
-      name: helloWorldFlags
-      namespace: guest
+    helloWorldFlags:
       actions:
         greeting:
           inputs:

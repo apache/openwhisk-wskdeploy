@@ -3,7 +3,7 @@ application:
   version: 0.0.1
   namespace: _
   packages:
-      name: JiraBackupSolution
+    JiraBackupSolution:
       actions:
         getApiToken:
           inputs:

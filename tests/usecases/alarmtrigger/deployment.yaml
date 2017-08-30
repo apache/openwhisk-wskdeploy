@@ -2,7 +2,7 @@ application:
     name: HelloWorldEvery12Hours
     namespace: _
     packages:
-        name: helloworld
+      helloworld:
         actions:
             helloworld:
                 inputs:
