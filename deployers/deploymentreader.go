@@ -94,7 +94,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 
 				keyVal.Key = name
 
-				keyVal.Value = utils.GetEnvVar(input)
+				keyVal.Value = utils.GetEnvVar(input.Value)
 
 				keyValArr = append(keyValArr, keyVal)
 			}
@@ -163,7 +163,7 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 
 					keyVal.Key = name
 
-					keyVal.Value = utils.GetEnvVar(input)
+					keyVal.Value = utils.GetEnvVar(input.Value)
 
 					keyValArr = append(keyValArr, keyVal)
 				}
@@ -230,7 +230,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 					var keyVal whisk.KeyValue
 
 					keyVal.Key = name
-					keyVal.Value = utils.GetEnvVar(input)
+					keyVal.Value = utils.GetEnvVar(input.Value)
 
 					keyValArr = append(keyValArr, keyVal)
 				}
