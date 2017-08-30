@@ -363,7 +363,7 @@ func (deployer *ServiceDeployer) DeployApis() error {
 }
 
 func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) {
-	log.Print("Deploying package binding" + packa.Name + " ... ")
+	log.Print("Deploying package binding " + packa.Name + " ... ")
 	_, _, err := deployer.Client.Packages.Insert(packa, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)

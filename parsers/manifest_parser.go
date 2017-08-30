@@ -306,7 +306,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			if utils.CheckExistRuntime(action.Runtime, utils.Rts) {
 				wskaction.Exec.Kind = action.Runtime
 			} else {
-				log.Println("the runtime it not supported by Openwhisk platform.")
+				log.Println("the runtime is not supported by Openwhisk platform.")
 			}
 		}
 
