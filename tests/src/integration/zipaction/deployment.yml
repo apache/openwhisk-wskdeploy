@@ -1,6 +1,6 @@
 application:
   name: wskdeploy-samples
-  package:
+  packages:
     triggerrule:
       name: cat
       namespace: guest

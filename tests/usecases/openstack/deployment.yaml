@@ -2,7 +2,7 @@ application:
   name: GBSBackups
   version: 0.0.1
   namespace: _
-  package:
+  packages:
       name: JiraBackupSolution
       actions:
         getApiToken:

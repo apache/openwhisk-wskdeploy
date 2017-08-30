@@ -23,6 +23,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"log"
 )
 
 type DeploymentReader struct {
@@ -67,6 +68,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 
 	if reader.DeploymentDescriptor.Application.Packages == nil {
 		packArray = append(packArray, reader.DeploymentDescriptor.Application.Package)
+		log.Println("WARNING: The package YAML key in deployment file will soon be deprecated. Please use packages instead as described in specifications.")
 	} else {
 		for _, depPacks := range reader.DeploymentDescriptor.Application.Packages {
 			packArray = append(packArray, depPacks)

@@ -2,7 +2,7 @@ application:
   name: testapp
   namespace: _
   version: 1.0
-  package:
+  packages:
     name: kafka
     inputs:
       kafka_rest_url: https://kafka-rest-prod01.messagehub.services.us-south.bluemix.net:443
