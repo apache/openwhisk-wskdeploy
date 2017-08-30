@@ -220,7 +220,41 @@ func (reader *ManifestReader) checkAction(action utils.ActionRecord) error {
 }
 
 func (reader *ManifestReader) SetSequences(actions []utils.ActionRecord) error {
-	return reader.SetActions(actions)
+	dep := reader.serviceDeployer
+
+	dep.mt.Lock()
+	defer dep.mt.Unlock()
+
+	for _, seqAction := range actions {
+		// check if the sequence action is exist in actions
+		// If the sequence action exists in actions, return error
+		_, exists := reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Actions[seqAction.Action.Name]
+		if exists == true {
+			return errors.New("manifestReader. Error: Conflict sequence action with an action. "+
+					"Found a sequence action with the same name of an action:"+
+					seqAction.Action.Name)
+		}
+		existAction, exists := reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Sequences[seqAction.Action.Name]
+
+		if exists == true {
+			existAction.Action.Annotations = seqAction.Action.Annotations
+			existAction.Action.Exec.Kind = "sequence"
+			existAction.Action.Exec.Components = seqAction.Action.Exec.Components
+			existAction.Action.Publish = seqAction.Action.Publish
+			existAction.Action.Namespace = seqAction.Action.Namespace
+			existAction.Action.Limits = seqAction.Action.Limits
+			existAction.Action.Parameters = seqAction.Action.Parameters
+			existAction.Action.Version = seqAction.Action.Version
+		} else {
+			// not a new action so update the action in the package
+			err := reader.checkAction(seqAction)
+			utils.Check(err)
+			reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Sequences[seqAction.Action.Name] = seqAction
+		}
+	}
+
+	return nil
+
 }
 
 func (reader *ManifestReader) SetTriggers(triggers []*whisk.Trigger) error {
