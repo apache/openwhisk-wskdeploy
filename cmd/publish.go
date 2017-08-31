@@ -24,7 +24,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -58,7 +57,7 @@ var publishCmd = &cobra.Command{
 					// TODO: send request to registry to check it exists.
 					break
 				}
-				log.Print("Malformed repository URL. Try again")
+				fmt.Print("Malformed repository URL. Try again")
 
 			}
 			configs["REGISTRY"] = registry
@@ -74,7 +73,7 @@ var publishCmd = &cobra.Command{
 			paths := strings.Split(repoURL, "/")
 			l := len(paths)
 			if l < 2 {
-				log.Print("Fatal error: malformed repository URL in manifest file :" + repoURL)
+				fmt.Print("Fatal error: malformed repository URL in manifest file :" + repoURL)
 				return
 			}
 
@@ -89,7 +88,7 @@ var publishCmd = &cobra.Command{
 			utils.Check(err)
 
 		} else {
-			log.Print("Fatal error: missing repository URL in manifest file.")
+			fmt.Print("Fatal error: missing repository URL in manifest file.")
 		}
 
 	},

@@ -22,6 +22,10 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+    "bytes"
+    "github.com/apache/incubator-openwhisk-wskdeploy/utils"
+    "github.com/mattn/go-colorable"
+    "github.com/fatih/color"
 )
 
 const cmd = "wskdeploy"
@@ -46,54 +50,66 @@ func printCommand(cmd *exec.Cmd) {
 	fmt.Printf("==> Executing: %s\n", strings.Join(cmd.Args, " "))
 }
 
-func printError(err error) {
-	if err != nil {
-		os.Stderr.WriteString(fmt.Sprintf("==> Error: %s\n", err.Error()))
-	}
+func printError(err string) {
+    outputStream := colorable.NewColorableStderr()
+	if len(err) > 0 {
+        fmt.Fprintf(outputStream, "==> Error: %s.\n", color.RedString(err))
+	} else {
+        fmt.Fprintf(outputStream, "==> Error: %s.\n", color.RedString("No error message"))
+    }
 }
 
-func printOutput(outs []byte) {
+func printOutput(outs string) {
 	if len(outs) > 0 {
-		fmt.Printf("==> Output: %s\n", string(outs))
+		fmt.Printf("==> Output: %s.\n", outs)
 	}
 }
 
-func (wskdeploy *Wskdeploy) RunCommand(s ...string) ([]byte, error) {
+func (wskdeploy *Wskdeploy) RunCommand(s ...string) (string, error) {
 	command := exec.Command(wskdeploy.Path, s...)
 	command.Dir = wskdeploy.Dir
-
-    fmt.Println("wskdeploy.Path is " + wskdeploy.Path)
-    //fmt.Println("s is " + string(s))
 	printCommand(command)
 
-	output, err := command.CombinedOutput()
+    var outb, errb bytes.Buffer
+    command.Stdout = &outb
+    command.Stderr = &errb
+	err := command.Run()
 
-	printOutput(output)
-	printError(err)
-
-	return output, err
+    var returnError error = nil
+    if err != nil {
+        returnError = err
+    } else {
+        if (len(errb.String()) > 0) {
+            returnError = utils.NewTestCaseError(errb.String())
+        }
+    }
+    printOutput(outb.String())
+    if returnError != nil {
+        printError(returnError.Error())
+    }
+    return outb.String(), returnError
 }
 
-func (wskdeploy *Wskdeploy) Deploy(manifestPath string, deploymentPath string) ([]byte, error) {
+func (wskdeploy *Wskdeploy) Deploy(manifestPath string, deploymentPath string) (string, error) {
 	return wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath)
 }
 
-func (wskdeploy *Wskdeploy) Undeploy(manifestPath string, deploymentPath string) ([]byte, error) {
+func (wskdeploy *Wskdeploy) Undeploy(manifestPath string, deploymentPath string) (string, error) {
 	return wskdeploy.RunCommand("undeploy", "-m", manifestPath, "-d", deploymentPath)
 }
 
-func (wskdeploy *Wskdeploy) DeployProjectPathOnly(projectPath string) ([]byte, error) {
+func (wskdeploy *Wskdeploy) DeployProjectPathOnly(projectPath string) (string, error) {
 	return wskdeploy.RunCommand( "-p", projectPath)
 }
 
-func (wskdeploy *Wskdeploy) UndeployProjectPathOnly(projectPath string) ([]byte, error) {
+func (wskdeploy *Wskdeploy) UndeployProjectPathOnly(projectPath string) (string, error) {
     return wskdeploy.RunCommand("undeploy", "-p", projectPath)
 }
 
-func (wskdeploy *Wskdeploy) DeployManifestPathOnly(manifestpath string) ([]byte, error) {
+func (wskdeploy *Wskdeploy) DeployManifestPathOnly(manifestpath string) (string, error) {
 	return wskdeploy.RunCommand("-m", manifestpath)
 }
 
-func (wskdeploy *Wskdeploy) UndeployManifestPathOnly(manifestpath string) ([]byte, error) {
+func (wskdeploy *Wskdeploy) UndeployManifestPathOnly(manifestpath string) (string, error) {
     return wskdeploy.RunCommand("undeploy", "-m", manifestpath)
 }

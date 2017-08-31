@@ -23,7 +23,6 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"log"
 )
 
 type DeploymentReader struct {
@@ -69,7 +68,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 	if reader.DeploymentDescriptor.Application.Packages == nil {
 		// a single package is specified in deployment YAML file with "package" key
 		packMap[reader.DeploymentDescriptor.Application.Package.Packagename] = reader.DeploymentDescriptor.Application.Package
-		log.Println("WARNING: The package YAML key in deployment file will soon be deprecated. Please use packages instead as described in specifications.")
+		fmt.Println("WARNING: The package YAML key in deployment file will soon be deprecated. Please use packages instead as described in specifications.")
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.Application.Packages {
 			depPacks.Packagename = packName
@@ -82,7 +81,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 		serviceDeployPack := reader.serviceDeployer.Deployment.Packages[packName]
 
 		if serviceDeployPack == nil {
-			log.Println("WARNING: Package name in deployment file " + packName + " does not match with manifest file.")
+			fmt.Println("WARNING: Package name in deployment file " + packName + " does not match with manifest file.")
 			break
 		}
 

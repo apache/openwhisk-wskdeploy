@@ -18,16 +18,15 @@
 package parsers
 
 import (
-	"log"
-
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"gopkg.in/yaml.v2"
+    "fmt"
 )
 
 func (dm *YAMLParser) UnmarshalDeployment(input []byte, deploy *DeploymentYAML) error {
 	err := yaml.Unmarshal(input, deploy)
 	if err != nil {
-		log.Printf("error happened during unmarshal :%v", err)
+		fmt.Printf("error happened during unmarshal :%v", err)
 		return err
 	}
 	return nil
@@ -36,7 +35,7 @@ func (dm *YAMLParser) UnmarshalDeployment(input []byte, deploy *DeploymentYAML) 
 func (dm *YAMLParser) MarshalDeployment(deployment *DeploymentYAML) (output []byte, err error) {
 	data, err := yaml.Marshal(deployment)
 	if err != nil {
-		log.Printf("err happened during marshal :%v", err)
+		fmt.Printf("err happened during marshal :%v", err)
 		return nil, err
 	}
 	return data, nil

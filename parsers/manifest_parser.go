@@ -20,7 +20,6 @@ package parsers
 import (
 	"errors"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"reflect"
@@ -62,7 +61,7 @@ func Write(manifest *ManifestYAML, filename string) {
 func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
 	err := yaml.Unmarshal(input, manifest)
 	if err != nil {
-		log.Printf("error happened during unmarshal :%v", err)
+		fmt.Printf("error happened during unmarshal :%v", err)
 		return err
 	}
 	return nil
@@ -71,7 +70,7 @@ func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
 func (dm *YAMLParser) Marshal(manifest *ManifestYAML) (output []byte, err error) {
 	data, err := yaml.Marshal(manifest)
 	if err != nil {
-		log.Printf("err happened during marshal :%v", err)
+		fmt.Printf("err happened during marshal :%v", err)
 		return nil, err
 	}
 	return data, nil
@@ -281,7 +280,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 					kind = "java"
 				default:
 					kind = "nodejs:6"
-					log.Println("Unsupported runtime type, set to nodejs")
+					fmt.Println("Unsupported runtime type, set to nodejs")
 					//add the user input kind here
 				}
 
@@ -295,7 +294,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 					code = base64.StdEncoding.EncodeToString([]byte(dat))
 				}
 				if ext == ".zip" && action.Runtime == "" {
-					log.Println("need explicit action Runtime value")
+					fmt.Println("need explicit action Runtime value")
 				}
 				wskaction.Exec.Code = &code
 			}
@@ -306,7 +305,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			if utils.CheckExistRuntime(action.Runtime, utils.Rts) {
 				wskaction.Exec.Kind = action.Runtime
 			} else {
-				log.Println("the runtime is not supported by Openwhisk platform.")
+				fmt.Println("the runtime is not supported by Openwhisk platform.")
 			}
 		}
 

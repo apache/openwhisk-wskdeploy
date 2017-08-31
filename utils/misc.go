@@ -37,7 +37,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/hokaccha/go-prettyjson"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -460,9 +459,9 @@ type OpenWhiskInfo struct {
 // We could get the openwhisk info from bluemix through running the command
 // `curl -k https://openwhisk.ng.bluemix.net`
 // hard coding it here in case of network unavailable or failure.
-func ParseOpenWhisk() (op OpenWhiskInfo, err error) {
+func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	ct := "application/json; charset=UTF-8"
-	req, _ := http.NewRequest("GET", "https://openwhisk.ng.bluemix.net", nil)
+	req, _ := http.NewRequest("GET", "https://" + apiHost, nil)
 	req.Header.Set("Content-Type", ct)
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: true,
@@ -473,14 +472,16 @@ func ParseOpenWhisk() (op OpenWhiskInfo, err error) {
 	}
 	res, err := http.DefaultClient.Do(req)
 	defer res.Body.Close()
-	if err != nil || res.Header.Get("Content-Type") != ct {
-		log.Println("failed get openwhisk info from internet")
-		log.Println("Start unmarshal Openwhisk info from local values")
+
+    // Local openwhisk deployment sometimes only returns "application/json" as the content type
+	if err != nil || !strings.Contains(ct, res.Header.Get("Content-Type")) {
+        fmt.Println("failed get openwhisk info from internet")
+		fmt.Println("Start unmarshal Openwhisk info from local values")
 		err = json.Unmarshal(runtimeInfo, &op)
 	} else {
 		b, _ := ioutil.ReadAll(res.Body)
 		if b != nil && len(b) > 0 {
-			log.Println("Unmarshal Openwhisk info from internet")
+			fmt.Println("Unmarshal Openwhisk info from internet")
 			err = json.Unmarshal(b, &op)
 		}
 	}

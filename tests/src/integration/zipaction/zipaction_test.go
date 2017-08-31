@@ -26,10 +26,6 @@ import (
     "testing"
 )
 
-
-var wskprops = common.GetWskprops()
-
-
 func TestZipAction(t *testing.T) {
     wskdeploy := common.NewWskdeploy()
     _, err := wskdeploy.Deploy(manifestPath, deploymentPath)
