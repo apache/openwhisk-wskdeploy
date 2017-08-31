@@ -156,19 +156,19 @@ func Deploy() error {
 		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
 			log.Printf("Using %s for deployment \n", utils.Flags.ManifestPath)
-		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
+		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
 			log.Printf("Using %s for deployment", utils.Flags.ManifestPath)
 		} else {
 			log.Printf("Manifest file not found at path %s", projectPath)
-			return errors.New("missing manifest.yaml file")
+			return errors.New("missing "+utils.ManifestFileNameYaml+"/" +utils.ManifestFileNameYml+" file")
 		}
 	}
 
 	if utils.Flags.DeploymentPath == "" {
-		if _, err := os.Stat(path.Join(projectPath, "deployment.yaml")); err == nil {
+		if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYaml)); err == nil {
 			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYaml)
-		} else if _, err := os.Stat(path.Join(projectPath, "deployment.yml")); err == nil {
+		} else if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYml)); err == nil {
 			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYml)
 		}
 	}
@@ -211,12 +211,11 @@ func Deploy() error {
 
 	} else {
 		if utils.Flags.WithinOpenWhisk {
-			utils.PrintOpenWhiskError(wski18n.T("missing manifest.yaml file"))
-			return errors.New("missing manifest.yaml file")
+			utils.PrintOpenWhiskError(wski18n.T("missing "+utils.ManifestFileNameYaml+"/" +utils.ManifestFileNameYml+" file"))
 		} else {
-			log.Println("missing manifest.yaml file")
-			return errors.New("missing manifest.yaml file")
+			log.Println("missing "+utils.ManifestFileNameYaml+"/" +utils.ManifestFileNameYml+" file")
 		}
+		return errors.New("missing "+utils.ManifestFileNameYaml+"/" +utils.ManifestFileNameYml+" file")
 	}
 
 }
@@ -225,22 +224,30 @@ func Undeploy() error {
 	// TODO: Work your own magic here
 	whisk.SetVerbose(utils.Flags.Verbose)
 
-	if utils.Flags.ManifestPath == "" {
-		if ok, _ := regexp.Match(utils.ManifestFileNameYml, []byte(utils.Flags.ManifestPath)); ok {
-			utils.Flags.ManifestPath = path.Join(utils.Flags.ProjectPath, utils.ManifestFileNameYml)
-		} else {
-			utils.Flags.ManifestPath = path.Join(utils.Flags.ProjectPath, utils.ManifestFileNameYaml)
-		}
+	projectPath, err := filepath.Abs(utils.Flags.ProjectPath)
+	utils.Check(err)
 
+	if utils.Flags.ManifestPath == "" {
+		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
+			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
+			log.Printf("Using %s for undeployment \n", utils.Flags.ManifestPath)
+		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
+			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
+			log.Printf("Using %s for undeployment", utils.Flags.ManifestPath)
+		} else {
+			log.Printf("Manifest file not found at path %s", projectPath)
+			return errors.New("missing "+utils.ManifestFileNameYaml+"/" +utils.ManifestFileNameYml+" file")
+		}
 	}
 
 	if utils.Flags.DeploymentPath == "" {
-		if ok, _ := regexp.Match(utils.DeploymentFileNameYml, []byte(utils.Flags.ManifestPath)); ok {
-			utils.Flags.DeploymentPath = path.Join(utils.Flags.ProjectPath, utils.DeploymentFileNameYml)
-		} else {
-			utils.Flags.DeploymentPath = path.Join(utils.Flags.ProjectPath, utils.DeploymentFileNameYaml)
+		if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYaml)); err == nil {
+			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYaml)
+			log.Printf("Using %s for undeployment \n", utils.Flags.DeploymentPath)
+		} else if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYml)); err == nil {
+			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYml)
+			log.Printf("Using %s for undeployment \n", utils.Flags.DeploymentPath)
 		}
-
 	}
 
 	if utils.FileExists(utils.Flags.ManifestPath) {
@@ -267,7 +274,7 @@ func Undeploy() error {
 		}
 
 	} else {
-		log.Println("missing manifest.yaml file")
-		return errors.New("missing manifest.yaml file")
+		log.Println("missing "+utils.ManifestFileNameYaml+"/" +utils.ManifestFileNameYml+" file")
+		return errors.New("missing "+utils.ManifestFileNameYaml+"/" +utils.ManifestFileNameYml+" file")
 	}
 }
