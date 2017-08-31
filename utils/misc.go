@@ -159,8 +159,9 @@ func GetEnvVar(key interface{}) interface{} {
 			envkey := strings.Split(key.(string), "$")[1]
 			value := os.Getenv(envkey)
 			if value == "" {
-				// TODO() We should issue a warning to the user (verbose) that env. var. was not found
+				// Issue a warning to the user (verbose) that env. var. was not found
 				// (i.e., and empty string was returned).
+				fmt.Println("WARNING: Missing Environment Variable "+envkey+".")
 			}
 			return value
 		}
