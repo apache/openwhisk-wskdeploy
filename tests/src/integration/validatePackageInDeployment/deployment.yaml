@@ -1,0 +1,9 @@
+application:
+  name: IntegrationTestPackageInDeployment
+  package:
+    name: TestPackageInDeploymentFile
+    actions:
+      helloworld:
+        inputs:
+          name: Amy Validating Package
+          place: California

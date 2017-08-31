@@ -23,6 +23,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"log"
 )
 
 type DeploymentReader struct {
@@ -63,18 +64,27 @@ func (reader *DeploymentReader) BindAssets() error {
 
 func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 
-	packArray := make([]parsers.Package, 0)
+	packMap := make(map[string]parsers.Package)
 
 	if reader.DeploymentDescriptor.Application.Packages == nil {
-		packArray = append(packArray, reader.DeploymentDescriptor.Application.Package)
+		// a single package is specified in deployment YAML file with "package" key
+		packMap[reader.DeploymentDescriptor.Application.Package.Packagename] = reader.DeploymentDescriptor.Application.Package
+		log.Println("WARNING: The package YAML key in deployment file will soon be deprecated. Please use packages instead as described in specifications.")
 	} else {
-		for _, depPacks := range reader.DeploymentDescriptor.Application.Packages {
-			packArray = append(packArray, depPacks)
+		for packName, depPacks := range reader.DeploymentDescriptor.Application.Packages {
+			depPacks.Packagename = packName
+			packMap[packName] = depPacks
 		}
 	}
 
-	for _, pack := range packArray {
-		serviceDeployPack := reader.serviceDeployer.Deployment.Packages[pack.Packagename]
+	for packName, pack := range packMap {
+
+		serviceDeployPack := reader.serviceDeployer.Deployment.Packages[packName]
+
+		if serviceDeployPack == nil {
+			log.Println("WARNING: Package name in deployment file " + packName + " does not match with manifest file.")
+			break
+		}
 
 		keyValArr := make(whisk.KeyValueArr, 0)
 
@@ -84,7 +94,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 
 				keyVal.Key = name
 
-				keyVal.Value = utils.GetEnvVar(input)
+				keyVal.Value = utils.GetEnvVar(input.Value)
 
 				keyValArr = append(keyValArr, keyVal)
 			}
@@ -123,21 +133,27 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 
 func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 
-	packArray := make([]parsers.Package, 1)
+	packMap := make(map[string]parsers.Package)
 
 	if reader.DeploymentDescriptor.Application.Packages == nil {
-		packArray = append(packArray, reader.DeploymentDescriptor.Application.Package)
+		// a single package is specified in deployment YAML file with "package" key
+		packMap[reader.DeploymentDescriptor.Application.Package.Packagename] = reader.DeploymentDescriptor.Application.Package
 	} else {
-		for _, depPacks := range reader.DeploymentDescriptor.Application.Packages {
-			packArray = append(packArray, depPacks)
+		for packName, depPacks := range reader.DeploymentDescriptor.Application.Packages {
+			depPacks.Packagename = packName
+			packMap[packName] = depPacks
 		}
 	}
 
-	for _, pack := range packArray {
+	for packName, pack := range packMap {
+
+		serviceDeployPack := reader.serviceDeployer.Deployment.Packages[packName]
+
+		if serviceDeployPack == nil {
+			break
+		}
 
 		for actionName, action := range pack.Actions {
-
-			serviceDeployPack := reader.serviceDeployer.Deployment.Packages[pack.Packagename]
 
 			keyValArr := make(whisk.KeyValueArr, 0)
 
@@ -147,7 +163,7 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 
 					keyVal.Key = name
 
-					keyVal.Value = utils.GetEnvVar(input)
+					keyVal.Value = utils.GetEnvVar(input.Value)
 
 					keyValArr = append(keyValArr, keyVal)
 				}
@@ -190,17 +206,18 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 
 func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 
-	packArray := make([]parsers.Package, 1)
+	packMap := make(map[string]parsers.Package)
 
 	if reader.DeploymentDescriptor.Application.Packages == nil {
-		packArray = append(packArray, reader.DeploymentDescriptor.Application.Package)
+		packMap[reader.DeploymentDescriptor.Application.Package.Packagename] = reader.DeploymentDescriptor.Application.Package
 	} else {
-		for _, depPacks := range reader.DeploymentDescriptor.Application.Packages {
-			packArray = append(packArray, depPacks)
+		for packName, depPacks := range reader.DeploymentDescriptor.Application.Packages {
+			depPacks.Packagename = packName
+			packMap[packName] = depPacks
 		}
 	}
 
-	for _, pack := range packArray {
+	for _, pack := range packMap {
 
 		serviceDeployment := reader.serviceDeployer.Deployment
 
@@ -213,7 +230,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 					var keyVal whisk.KeyValue
 
 					keyVal.Key = name
-					keyVal.Value = utils.GetEnvVar(input)
+					keyVal.Value = utils.GetEnvVar(input.Value)
 
 					keyValArr = append(keyValArr, keyVal)
 				}

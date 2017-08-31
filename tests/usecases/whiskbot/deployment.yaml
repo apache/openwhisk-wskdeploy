@@ -2,7 +2,7 @@ Application:
   name: whiskbot
   namespace: mynamespace
   version: 1.0
-  package:
+  packages:
     name: whiskbot
     inputs:
       fieldToEncrypt: XXXX

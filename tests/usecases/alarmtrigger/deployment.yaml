@@ -1,8 +1,8 @@
 application:
     name: HelloWorldEvery12Hours
     namespace: _
-    package:
-        name: helloworld
+    packages:
+      helloworld:
         actions:
             helloworld:
                 inputs:

@@ -40,7 +40,7 @@ func init() {
 // Check DeploymentReader could handle deployment yaml successfully.
 func TestDeploymentReader_HandleYaml(t *testing.T) {
 	dr.HandleYaml()
-	assert.Equal(t, "JiraBackupSolution", dr.DeploymentDescriptor.Application.Package.Packagename, "DeploymentReader handle deployment yaml failed.")
+	assert.NotNil(t, dr.DeploymentDescriptor.Application.Packages["JiraBackupSolution"], "DeploymentReader handle deployment yaml failed.")
 }
 
 func TestDeployerCheck(t *testing.T) {

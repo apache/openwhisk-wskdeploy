@@ -1,10 +1,8 @@
 application:
   name: wskdeploy-samples
 
-  package:
-    triggerrule:
-      name: helloWorldTriggerRule
-      namespace: guest
+  packages:
+    helloWorldTriggerRule:
       actions:
         greeting:
           inputs:

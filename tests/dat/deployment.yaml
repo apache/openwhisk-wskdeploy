@@ -1,5 +1,5 @@
 ---
-package:
+packages:
   actions:
     -
       function: src/hello/hello.js

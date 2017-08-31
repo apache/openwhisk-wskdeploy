@@ -1,7 +1,7 @@
 application:
   name: wskdeploy-samples
-  package:
-    triggerrule:
+  packages:
+    zipaction:
       name: cat
       namespace: guest
       actions:

@@ -162,7 +162,7 @@ type Application struct {
 	ApiHost    string             `yaml:"apiHost"`
 	Version    string             `yaml:"version"`
 	Packages   map[string]Package `yaml:"packages"` //used in deployment.yaml
-	Package    Package            `yaml:"package"`
+	Package    Package            `yaml:"package"`	// being deprecated, used in deployment.yaml
 }
 
 type DeploymentYAML struct {

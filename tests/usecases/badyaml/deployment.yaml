@@ -2,9 +2,9 @@ Application:
   name: testapp
   namespace: _
   version: 1.0
-  package:
-    name: kafka
-  iputs:
+  packages:
+    kafka:
+    iputs:
       kafka_rest_url: https://kafka-rest-prod01.messagehub.services.us-south.bluemix.net:443
       topic: out-topic
     triggers:
