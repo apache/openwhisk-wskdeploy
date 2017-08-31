@@ -494,7 +494,7 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
 			// read and parse manifest.yaml file
 			p := NewYAMLParser()
 			m := p.ParseManifest(tmpfile.Name())
-			actions, _, err := p.ComposeActions(m, tmpfile.Name())
+			actions, err := p.ComposeActions(m, tmpfile.Name())
 			var expectedResult string
 			if err == nil {
 				for i := 0; i < len(actions); i++ {
@@ -536,7 +536,7 @@ func TestComposeActionsForInvalidRuntime(t *testing.T) {
 			// read and parse manifest.yaml file
 			p := NewYAMLParser()
 			m := p.ParseManifest(tmpfile.Name())
-			_, _, err := p.ComposeActions(m, tmpfile.Name())
+			_, err := p.ComposeActions(m, tmpfile.Name())
 			// (TODO) uncomment the following test case after issue #307 is fixed
 			// (TODO) its failing right now as we are lacking check on invalid runtime
 			// assert.NotNil(t, err, "Invalid runtime, ComposeActions should report an error")
@@ -555,7 +555,7 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
 	m := p.ParseManifest(manifestFile)
-	actions, _, err := p.ComposeActions(m, manifestFile)
+	actions, err := p.ComposeActions(m, manifestFile)
 
 	if err == nil {
 		// assert that the actions variable has only one action
@@ -640,7 +640,7 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
 	m := p.ParseManifest(manifestFile)
-	actions, _, err := p.ComposeActions(m, manifestFile)
+	actions, err := p.ComposeActions(m, manifestFile)
 
 	if err == nil {
 		// assert that the actions variable has only one action
@@ -720,7 +720,7 @@ func TestComposeActionsForFunction(t *testing.T) {
 			// read and parse manifest.yaml file
 			p := NewYAMLParser()
 			m := p.ParseManifest(tmpfile.Name())
-			actions, _, err := p.ComposeActions(m, tmpfile.Name())
+			actions, err := p.ComposeActions(m, tmpfile.Name())
 			var expectedResult, actualResult string
 			if err == nil {
 				for i := 0; i < len(actions); i++ {
@@ -808,7 +808,7 @@ func TestComposeActionsForWebActions(t *testing.T) {
 			// read and parse manifest.yaml file
 			p := NewYAMLParser()
 			m := p.ParseManifest(tmpfile.Name())
-			actions, _, err := p.ComposeActions(m, tmpfile.Name())
+			actions, err := p.ComposeActions(m, tmpfile.Name())
 			if err == nil {
 				for i := 0; i < len(actions); i++ {
 					if actions[i].Action.Name == "hello" {

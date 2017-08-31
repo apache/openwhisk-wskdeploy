@@ -20,10 +20,10 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/fatih/color"
+	"github.com/mattn/go-colorable"
 	"os"
-    "github.com/mattn/go-colorable"
-    "github.com/fatih/color"
-    "github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 // Check is a util function to panic when there is an error.
@@ -48,11 +48,11 @@ func Check(e error) {
 }
 
 func PrintOpenWhiskError(err error) {
-    outputStream := colorable.NewColorableStderr()
-    fmt.Fprintf(outputStream, "%s%s\n", color.RedString(wski18n.T("Error: ")), err.Error())
+	outputStream := colorable.NewColorableStderr()
+	fmt.Fprintf(outputStream, "%s%s\n", color.RedString(wski18n.T("Error: ")), err.Error())
 }
 
-func PrintOpenWhiskOutput(output string) {
-    fmt.Fprintf(os.Stdout, "%s\n", output)
+func PrintOpenWhiskOutput(err error) {
+	outputStream := colorable.NewColorableStderr()
+	fmt.Fprintf(outputStream, "%s%s\n", color.RedString(wski18n.T("Error: ")), err.Error())
 }
-

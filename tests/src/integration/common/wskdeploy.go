@@ -18,14 +18,14 @@
 package common
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/fatih/color"
+	"github.com/mattn/go-colorable"
 	"os"
 	"os/exec"
 	"strings"
-    "bytes"
-    "github.com/apache/incubator-openwhisk-wskdeploy/utils"
-    "github.com/mattn/go-colorable"
-    "github.com/fatih/color"
 )
 
 const cmd = "wskdeploy"
@@ -51,12 +51,12 @@ func printCommand(cmd *exec.Cmd) {
 }
 
 func printError(err string) {
-    outputStream := colorable.NewColorableStderr()
+	outputStream := colorable.NewColorableStderr()
 	if len(err) > 0 {
-        fmt.Fprintf(outputStream, "==> Error: %s.\n", color.RedString(err))
+		fmt.Fprintf(outputStream, "==> Error: %s.\n", color.RedString(err))
 	} else {
-        fmt.Fprintf(outputStream, "==> Error: %s.\n", color.RedString("No error message"))
-    }
+		fmt.Fprintf(outputStream, "==> Error: %s.\n", color.RedString("No error message"))
+	}
 }
 
 func printOutput(outs string) {
@@ -68,26 +68,29 @@ func printOutput(outs string) {
 func (wskdeploy *Wskdeploy) RunCommand(s ...string) (string, error) {
 	command := exec.Command(wskdeploy.Path, s...)
 	command.Dir = wskdeploy.Dir
+
+	fmt.Println("wskdeploy.Path is " + wskdeploy.Path)
+	//fmt.Println("s is " + string(s))
 	printCommand(command)
 
-    var outb, errb bytes.Buffer
-    command.Stdout = &outb
-    command.Stderr = &errb
+	var outb, errb bytes.Buffer
+	command.Stdout = &outb
+	command.Stderr = &errb
 	err := command.Run()
 
-    var returnError error = nil
-    if err != nil {
-        returnError = err
-    } else {
-        if (len(errb.String()) > 0) {
-            returnError = utils.NewTestCaseError(errb.String())
-        }
-    }
-    printOutput(outb.String())
-    if returnError != nil {
-        printError(returnError.Error())
-    }
-    return outb.String(), returnError
+	var returnError error = nil
+	if err != nil {
+		returnError = err
+	} else {
+		if len(errb.String()) > 0 {
+			returnError = utils.NewTestCaseError(errb.String())
+		}
+	}
+	printOutput(outb.String())
+	if returnError != nil {
+		printError(returnError.Error())
+	}
+	return outb.String(), returnError
 }
 
 func (wskdeploy *Wskdeploy) Deploy(manifestPath string, deploymentPath string) (string, error) {
@@ -99,11 +102,12 @@ func (wskdeploy *Wskdeploy) Undeploy(manifestPath string, deploymentPath string)
 }
 
 func (wskdeploy *Wskdeploy) DeployProjectPathOnly(projectPath string) (string, error) {
-	return wskdeploy.RunCommand( "-p", projectPath)
+	return wskdeploy.RunCommand("-p", projectPath)
 }
 
 func (wskdeploy *Wskdeploy) UndeployProjectPathOnly(projectPath string) (string, error) {
-    return wskdeploy.RunCommand("undeploy", "-p", projectPath)
+	return wskdeploy.RunCommand("undeploy", "-p", projectPath)
+
 }
 
 func (wskdeploy *Wskdeploy) DeployManifestPathOnly(manifestpath string) (string, error) {
@@ -111,5 +115,6 @@ func (wskdeploy *Wskdeploy) DeployManifestPathOnly(manifestpath string) (string,
 }
 
 func (wskdeploy *Wskdeploy) UndeployManifestPathOnly(manifestpath string) (string, error) {
-    return wskdeploy.RunCommand("undeploy", "-m", manifestpath)
+	return wskdeploy.RunCommand("undeploy", "-m", manifestpath)
+
 }

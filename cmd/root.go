@@ -22,16 +22,16 @@ import (
 	"errors"
 	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/spf13/cobra"
 	"os"
-	"regexp"
-	"strings"
 	"path"
 	"path/filepath"
     "net/http"
+	"regexp"
+	"strings"
 )
 
 var stderr = ""
@@ -49,7 +49,7 @@ wskdeploy without any commands or flags deploys openwhisk package in the current
 	RunE: RootCmdImp,
 }
 
-func RootCmdImp(cmd *cobra.Command, args []string) error{
+func RootCmdImp(cmd *cobra.Command, args []string) error {
 	return Deploy()
 }
 
@@ -65,7 +65,7 @@ func Execute() {
 	}
 
 	if err := RootCmd.Execute(); err != nil {
-        utils.PrintOpenWhiskError(err)
+		utils.PrintOpenWhiskError(err)
 		os.Exit(-1)
 	} else {
 		if utils.Flags.WithinOpenWhisk {
@@ -81,7 +81,7 @@ func substCmdArgs() error {
 
 	arg := os.Args[1]
 
-    fmt.Println("arg is " + arg)
+	fmt.Println("arg is " + arg)
 	// unmarshal the string to a JSON object
 	var obj map[string]interface{}
 	json.Unmarshal([]byte(arg), &obj)
@@ -114,42 +114,44 @@ func init() {
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseDefaults, "allow-defaults", "a", false, "allow defaults")
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Verbose, "verbose", "v", false, "verbose output")
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ApiHost, "apihost", "", "", wski18n.T("whisk API HOST"))
-    RootCmd.PersistentFlags().StringVarP(&utils.Flags.Namespace, "namespace", "n", "", wski18n.T("namespace"))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Namespace, "namespace", "n", "", wski18n.T("namespace"))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Auth, "auth", "u", "", wski18n.T("authorization `KEY`"))
 	RootCmd.PersistentFlags().StringVar(&utils.Flags.ApiVersion, "apiversion", "", wski18n.T("whisk API `VERSION`"))
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-    userHome := utils.GetHomeDirectory()
-    defaultPath := path.Join(userHome, whisk.DEFAULT_LOCAL_CONFIG)
+	userHome := utils.GetHomeDirectory()
+	defaultPath := path.Join(userHome, whisk.DEFAULT_LOCAL_CONFIG)
 	if utils.Flags.CfgFile != "" {
-        // Read the file as a wskprops file, to check if it is valid.
-        _, err := whisk.ReadProps(utils.Flags.CfgFile)
-        if err != nil {
-            utils.Flags.CfgFile = defaultPath
-            fmt.Println("Invalid config file detected, so by bdefault it is set to " + utils.Flags.CfgFile)
-        }
+
+		// Read the file as a wskprops file, to check if it is valid.
+		_, err := whisk.ReadProps(utils.Flags.CfgFile)
+		if err != nil {
+			utils.Flags.CfgFile = defaultPath
+			fmt.Println("Invalid config file detected, so by bdefault it is set to " + utils.Flags.CfgFile)
+		}
+
 	} else {
-        utils.Flags.CfgFile = defaultPath
-    }
+		utils.Flags.CfgFile = defaultPath
+	}
 }
 
 func setSupportedRuntimes(apiHost string) {
-    op, error := utils.ParseOpenWhisk(apiHost)
-    if error == nil {
-        utils.Rts = utils.ConvertToMap(op)
-    } else {
-        utils.Rts = utils.DefaultRts
-    }
+	op, error := utils.ParseOpenWhisk(apiHost)
+	if error == nil {
+		utils.Rts = utils.ConvertToMap(op)
+	} else {
+		utils.Rts = utils.DefaultRts
+	}
 }
 
 func Deploy() error {
 
 	whisk.SetVerbose(utils.Flags.Verbose)
-    // Verbose mode is the only mode for wskdeploy to turn on all the debug messages, so the currenty Verbose mode
-    // also set debug mode to true.
-    whisk.SetDebug(utils.Flags.Verbose)
+	// Verbose mode is the only mode for wskdeploy to turn on all the debug messages, so the currenty Verbose mode
+	// also set debug mode to true.
+	whisk.SetDebug(utils.Flags.Verbose)
 
 	projectPath, err := filepath.Abs(utils.Flags.ProjectPath)
 	utils.Check(err)
@@ -157,21 +159,21 @@ func Deploy() error {
 	if utils.Flags.ManifestPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
-            stdout = wski18n.T("Using {{.manifestPath}} for deployment.\n",
-                map[string]interface{}{"manifestPath": utils.Flags.ManifestPath})
+			stdout = wski18n.T("Using {{.manifestPath}} for deployment.\n",
+				map[string]interface{}{"manifestPath": utils.Flags.ManifestPath})
 		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
-            stdout = wski18n.T("Using {{.manifestPath}} for deployment.\n",
-                map[string]interface{}{"manifestPath": utils.Flags.ManifestPath})
+			stdout = wski18n.T("Using {{.manifestPath}} for deployment.\n",
+				map[string]interface{}{"manifestPath": utils.Flags.ManifestPath})
 		} else {
-            stderr = wski18n.T("Manifest file not found at path {{.projectPath}}.\n",
-                map[string]interface{}{"projectPath": projectPath})
-            whisk.Debug(whisk.DbgError, stderr)
-            errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file.\n",
-                map[string]interface{}{"yaml": utils.ManifestFileNameYaml , "yml":utils.ManifestFileNameYml})
+			stderr = wski18n.T("Manifest file not found at path {{.projectPath}}.\n",
+				map[string]interface{}{"projectPath": projectPath})
+			whisk.Debug(whisk.DbgError, stderr)
+			errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file.\n",
+				map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml})
 			return utils.NewInputYamlFileError(errString)
 		}
-        whisk.Debug(whisk.DbgInfo, stdout)
+		whisk.Debug(whisk.DbgInfo, stdout)
 	}
 
 	if utils.Flags.DeploymentPath == "" {
@@ -212,8 +214,8 @@ func Deploy() error {
         deployer.Client = whiskClient
 		deployer.ClientConfig = clientConfig
 
-        // The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
-        setSupportedRuntimes(clientConfig.Host)
+		// The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
+		setSupportedRuntimes(clientConfig.Host)
 
 		err := deployer.ConstructDeploymentPlan()
 
@@ -231,10 +233,10 @@ func Deploy() error {
 		}
 
 	} else {
-        errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file.\n",
-            map[string]interface{}{"yaml": utils.ManifestFileNameYaml , "yml":utils.ManifestFileNameYml})
-        whisk.Debug(whisk.DbgError, errString)
-        return utils.NewInputYamlFileError(errString)
+		errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file.\n",
+			map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml})
+		whisk.Debug(whisk.DbgError, errString)
+		return utils.NewInputYamlFileError(errString)
 	}
 
 }
@@ -242,9 +244,9 @@ func Deploy() error {
 func Undeploy() error {
 
 	whisk.SetVerbose(utils.Flags.Verbose)
-    // Verbose mode is the only mode for wskdeploy to turn on all the debug messages, so the currenty Verbose mode
-    // also set debug mode to true.
-    whisk.SetDebug(utils.Flags.Verbose)
+	// Verbose mode is the only mode for wskdeploy to turn on all the debug messages, so the currenty Verbose mode
+	// also set debug mode to true.
+	whisk.SetDebug(utils.Flags.Verbose)
 
 	projectPath, err := filepath.Abs(utils.Flags.ProjectPath)
 	utils.Check(err)
@@ -252,21 +254,21 @@ func Undeploy() error {
 	if utils.Flags.ManifestPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
-            stdout = wski18n.T("Using {{.manifestPath}} for undeployment.\n",
-                map[string]interface{}{"manifestPath": utils.Flags.ManifestPath})
+			stdout = wski18n.T("Using {{.manifestPath}} for undeployment.\n",
+				map[string]interface{}{"manifestPath": utils.Flags.ManifestPath})
 		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
-            stdout = wski18n.T("Using {{.manifestPath}} for undeployment.\n",
-                map[string]interface{}{"manifestPath": utils.Flags.ManifestPath})
+			stdout = wski18n.T("Using {{.manifestPath}} for undeployment.\n",
+				map[string]interface{}{"manifestPath": utils.Flags.ManifestPath})
 		} else {
-            stderr = wski18n.T("Manifest file not found at path {{.projectPath}}.\n",
-                map[string]interface{}{"projectPath": projectPath})
-            whisk.Debug(whisk.DbgError, stderr)
-            errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file.\n",
-                map[string]interface{}{"yaml": utils.ManifestFileNameYaml , "yml":utils.ManifestFileNameYml})
-            return utils.NewInputYamlFileError(errString)
+			stderr = wski18n.T("Manifest file not found at path {{.projectPath}}.\n",
+				map[string]interface{}{"projectPath": projectPath})
+			whisk.Debug(whisk.DbgError, stderr)
+			errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file.\n",
+				map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml})
+			return utils.NewInputYamlFileError(errString)
 		}
-        whisk.Debug(whisk.DbgInfo, stdout)
+		whisk.Debug(whisk.DbgInfo, stdout)
 	}
 
 	if utils.Flags.DeploymentPath == "" {
@@ -302,8 +304,8 @@ func Undeploy() error {
         deployer.Client = whiskClient
 		deployer.ClientConfig = clientConfig
 
-        // The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
-        setSupportedRuntimes(clientConfig.Host)
+		// The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
+		setSupportedRuntimes(clientConfig.Host)
 
 		verifiedPlan, err := deployer.ConstructUnDeploymentPlan()
 		err = deployer.UnDeploy(verifiedPlan)
@@ -315,9 +317,9 @@ func Undeploy() error {
 		}
 
 	} else {
-        errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file.\n",
-            map[string]interface{}{"yaml": utils.ManifestFileNameYaml , "yml":utils.ManifestFileNameYml})
-        whisk.Debug(whisk.DbgError, errString)
-        return utils.NewInputYamlFileError(errString)
+		errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file.\n",
+			map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml})
+		whisk.Debug(whisk.DbgError, errString)
+		return utils.NewInputYamlFileError(errString)
 	}
 }

@@ -24,21 +24,21 @@ import (
 )
 
 const (
-    INVALID_YAML_INPUT = "Invalid input of Yaml file"
+	INVALID_YAML_INPUT = "Invalid input of Yaml file"
 )
 
 type TestCaseError struct {
-    errorMessage string
+	errorMessage string
 }
 
 func NewTestCaseError(errorMessage string) *TestCaseError {
-    return &TestCaseError{
-        errorMessage: errorMessage,
-    }
+	return &TestCaseError{
+		errorMessage: errorMessage,
+	}
 }
 
 func (e *TestCaseError) Error() string {
-    return e.errorMessage
+	return e.errorMessage
 }
 
 type BaseErr struct {

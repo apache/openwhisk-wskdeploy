@@ -24,9 +24,9 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"strings"
 	"testing"
-    "os"
 )
 
 var rootcalled bool

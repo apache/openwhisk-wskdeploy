@@ -18,9 +18,9 @@
 package parsers
 
 import (
+	"fmt"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"gopkg.in/yaml.v2"
-    "fmt"
 )
 
 func (dm *YAMLParser) UnmarshalDeployment(input []byte, deploy *DeploymentYAML) error {

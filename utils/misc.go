@@ -59,11 +59,6 @@ type RuleRecord struct {
 	Packagename string
 }
 
-// The whisk.Api struct wrapper
-type ApiRecord struct {
-	Api *whisk.Api
-}
-
 // Utility to convert hostname to URL object
 func GetURLBase(host string) (*url.URL, error) {
 
@@ -159,7 +154,7 @@ func GetEnvVar(key interface{}) interface{} {
 			if value == "" {
 				// Issue a warning to the user (verbose) that env. var. was not found
 				// (i.e., and empty string was returned).
-				fmt.Println("WARNING: Missing Environment Variable "+envkey+".")
+				fmt.Println("WARNING: Missing Environment Variable " + envkey + ".")
 			}
 			return value
 		}
@@ -443,7 +438,7 @@ type OpenWhiskInfo struct {
 // hard coding it here in case of network unavailable or failure.
 func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	ct := "application/json; charset=UTF-8"
-	req, _ := http.NewRequest("GET", "https://" + apiHost, nil)
+	req, _ := http.NewRequest("GET", "https://"+apiHost, nil)
 	req.Header.Set("Content-Type", ct)
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: true,
@@ -455,9 +450,9 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	res, err := http.DefaultClient.Do(req)
 	defer res.Body.Close()
 
-    // Local openwhisk deployment sometimes only returns "application/json" as the content type
+	// Local openwhisk deployment sometimes only returns "application/json" as the content type
 	if err != nil || !strings.Contains(ct, res.Header.Get("Content-Type")) {
-        fmt.Println("failed get openwhisk info from internet")
+		fmt.Println("failed get openwhisk info from internet")
 		fmt.Println("Start unmarshal Openwhisk info from local values")
 		err = json.Unmarshal(runtimeInfo, &op)
 	} else {
@@ -586,9 +581,9 @@ var DefaultRts = map[string][]string{
 }
 
 func CheckExistRuntime(rtname string, rts map[string][]string) bool {
-	for _, v :=range rts{
-		for i := range v{
-			if rtname == v[i]{
+	for _, v := range rts {
+		for i := range v {
+			if rtname == v[i] {
 				return true
 			}
 		}

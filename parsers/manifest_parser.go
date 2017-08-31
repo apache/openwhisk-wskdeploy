@@ -428,13 +428,16 @@ func (dm *YAMLParser) ComposeRules(manifest *ManifestYAML) ([]*whisk.Rule, error
 	return r1, nil
 }
 
-func (action *Action) ComposeWskAction(manipath string) (*whisk.Action, error) {
-	wskaction, err := utils.CreateActionFromFile(manipath, action.Location)
-	utils.Check(err)
-	wskaction.Name = action.Name
-	wskaction.Version = action.Version
-	wskaction.Namespace = action.Namespace
-	return wskaction, err
+func (dm *YAMLParser) ComposeApiRecords(manifest *ManifestYAML) ([]*whisk.ApiCreateRequest, error) {
+	pkg := manifest.Package
+	var acq []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
+	apis := pkg.GetApis()
+	for _, api := range apis {
+		acr := new(whisk.ApiCreateRequest)
+		acr.ApiDoc = api
+		acq = append(acq, acr)
+	}
+	return acq, nil
 }
 
 // TODO(): Support other valid Package Manifest types

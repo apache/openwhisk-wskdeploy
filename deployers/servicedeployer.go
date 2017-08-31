@@ -253,11 +253,10 @@ func (deployer *ServiceDeployer) deployAssets() error {
 		return err
 	}
 
-	if len(deployer.Deployment.Apis) != 0 {
-		if err := deployer.DeployApis(); err != nil {
-			return err
-		}
+	if err := deployer.DeployApis(); err != nil {
+		return err
 	}
+
 
 	return nil
 }

@@ -75,6 +75,8 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 	rules, err := manifestParser.ComposeRules(manifest)
 	utils.Check(err)
 
+	apis, err := manifestParser.ComposeApiRecords(manifest)
+
 	err = deployer.SetDependencies(deps)
 	utils.Check(err)
 
@@ -90,6 +92,7 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 	err = deployer.SetRules(rules)
 	utils.Check(err)
 
+	err = deployer.SetApis(apis)
 
 	return nil
 
@@ -228,9 +231,9 @@ func (reader *ManifestReader) SetSequences(actions []utils.ActionRecord) error {
 		// If the sequence action exists in actions, return error
 		_, exists := reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Actions[seqAction.Action.Name]
 		if exists == true {
-			return errors.New("manifestReader. Error: Conflict sequence action with an action. "+
-					"Found a sequence action with the same name of an action:"+
-					seqAction.Action.Name)
+			return errors.New("manifestReader. Error: Conflict sequence action with an action. " +
+				"Found a sequence action with the same name of an action:" +
+				seqAction.Action.Name)
 		}
 		existAction, exists := reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Sequences[seqAction.Action.Name]
 
@@ -304,17 +307,12 @@ func (reader *ManifestReader) SetRules(rules []*whisk.Rule) error {
 	return nil
 }
 
-func (reader *ManifestReader) SetApis(deployer *ServiceDeployer, aubs []*utils.ApiRecord) error {
+func (reader *ManifestReader) SetApis(ar []*whisk.ApiCreateRequest) error {
 	dep := reader.serviceDeployer
 	var apis []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
-
-	for _, aub := range aubs {
-		api := createApiEntity(deployer, aub)
-		apis = append(apis, api)
-	}
 
 	for _, api := range apis {
 		existApi, exist := dep.Deployment.Apis[api.ApiDoc.ApiName]
@@ -326,33 +324,6 @@ func (reader *ManifestReader) SetApis(deployer *ServiceDeployer, aubs []*utils.A
 
 	}
 	return nil
-}
-
-// create the api entity according to the action definition and deployer.
-func createApiEntity(dp *ServiceDeployer, au *utils.ApiRecord) *whisk.ApiCreateRequest {
-	sendapi := new(whisk.ApiCreateRequest)
-	api := new(whisk.Api)
-	//Compose the api
-	bindingInfo := strings.Split(au.Api.GatewayBasePath, "/")
-	api.Namespace = dp.Client.Namespace
-	//api.ApiName = ""
-	api.GatewayBasePath = "/" + bindingInfo[1]
-	api.GatewayRelPath = bindingInfo[2]
-	api.GatewayMethod = strings.ToUpper(bindingInfo[0])
-	api.Id = "API:" + dp.ClientConfig.Namespace + ":" + api.GatewayBasePath
-	//api.GatewayFullPath = ""
-	//api.Swagger = ""
-	//compose the api action
-	api.Action = new(whisk.ApiAction)
-
-	api.Action.Namespace = dp.ClientConfig.Namespace
-	api.Action.BackendMethod = api.GatewayMethod
-	api.Action.BackendUrl = "https://" + dp.ClientConfig.Host + "/api/v1/web/" + dp.ClientConfig.Namespace + "/" + au.Api.ApiName + "/" + ".http"
-	fmt.Println("backend url is " + api.Action.BackendUrl)
-	api.Action.Auth = dp.Client.Config.AuthToken
-	api.ApiName = ""
-	sendapi.ApiDoc = api
-	return sendapi
 }
 
 // from whisk go client

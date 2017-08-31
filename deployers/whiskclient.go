@@ -31,8 +31,6 @@ import (
 )
 
 const (
-	DEPLOYMENTFILE = "deployment.yml"
-	MANIDESTFILE = "manifest.yml"
 	COMMANDLINE = "wskdeploy command line"
 	DEFAULTVALUE = "default value"
 	WSKPROPS = ".wskprops"
