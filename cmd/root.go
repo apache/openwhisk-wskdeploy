@@ -153,11 +153,11 @@ func Deploy() error {
 	utils.Check(err)
 
 	if utils.Flags.ManifestPath == "" {
-		if _, err := os.Stat(path.Join(projectPath, "manifest.yaml")); err == nil {
-			utils.Flags.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYaml)
+		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
+			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
 			log.Printf("Using %s for deployment \n", utils.Flags.ManifestPath)
-		} else if _, err := os.Stat(path.Join(projectPath, "manifest.yml")); err == nil {
-			utils.Flags.ManifestPath = path.Join(projectPath, deployers.ManifestFileNameYml)
+		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
+			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
 			log.Printf("Using %s for deployment", utils.Flags.ManifestPath)
 		} else {
 			log.Printf("Manifest file not found at path %s", projectPath)
@@ -167,9 +167,9 @@ func Deploy() error {
 
 	if utils.Flags.DeploymentPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, "deployment.yaml")); err == nil {
-			utils.Flags.DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYaml)
+			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYaml)
 		} else if _, err := os.Stat(path.Join(projectPath, "deployment.yml")); err == nil {
-			utils.Flags.DeploymentPath = path.Join(projectPath, deployers.DeploymentFileNameYml)
+			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYml)
 		}
 	}
 
@@ -226,19 +226,19 @@ func Undeploy() error {
 	whisk.SetVerbose(utils.Flags.Verbose)
 
 	if utils.Flags.ManifestPath == "" {
-		if ok, _ := regexp.Match(deployers.ManifestFileNameYml, []byte(utils.Flags.ManifestPath)); ok {
-			utils.Flags.ManifestPath = path.Join(utils.Flags.ProjectPath, deployers.ManifestFileNameYml)
+		if ok, _ := regexp.Match(utils.ManifestFileNameYml, []byte(utils.Flags.ManifestPath)); ok {
+			utils.Flags.ManifestPath = path.Join(utils.Flags.ProjectPath, utils.ManifestFileNameYml)
 		} else {
-			utils.Flags.ManifestPath = path.Join(utils.Flags.ProjectPath, deployers.ManifestFileNameYaml)
+			utils.Flags.ManifestPath = path.Join(utils.Flags.ProjectPath, utils.ManifestFileNameYaml)
 		}
 
 	}
 
 	if utils.Flags.DeploymentPath == "" {
-		if ok, _ := regexp.Match(deployers.DeploymentFileNameYml, []byte(utils.Flags.ManifestPath)); ok {
-			utils.Flags.DeploymentPath = path.Join(utils.Flags.ProjectPath, deployers.DeploymentFileNameYml)
+		if ok, _ := regexp.Match(utils.DeploymentFileNameYml, []byte(utils.Flags.ManifestPath)); ok {
+			utils.Flags.DeploymentPath = path.Join(utils.Flags.ProjectPath, utils.DeploymentFileNameYml)
 		} else {
-			utils.Flags.DeploymentPath = path.Join(utils.Flags.ProjectPath, deployers.DeploymentFileNameYaml)
+			utils.Flags.DeploymentPath = path.Join(utils.Flags.ProjectPath, utils.DeploymentFileNameYaml)
 		}
 
 	}

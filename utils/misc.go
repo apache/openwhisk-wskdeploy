@@ -611,3 +611,8 @@ func CheckExistRuntime(rtname string, rts map[string][]string) bool {
 	return false
 }
 
+// name of manifest and deployment files
+const ManifestFileNameYaml = "manifest.yaml"
+const ManifestFileNameYml = "manifest.yml"
+const DeploymentFileNameYaml = "deployment.yaml"
+const DeploymentFileNameYml = "deployment.yml"

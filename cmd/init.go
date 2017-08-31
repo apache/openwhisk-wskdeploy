@@ -38,7 +38,7 @@ var initCmd = &cobra.Command{
 		maniyaml.Package.Version = askVersion(reader, maniyaml.Package.Version)
 		maniyaml.Package.License = askLicense(reader, maniyaml.Package.License)
 
-		parsers.Write(maniyaml, "manifest.yaml")
+		parsers.Write(maniyaml, utils.ManifestFileNameYaml)
 
 		// Create directory structure
 		os.Mkdir("actions", 0777)
