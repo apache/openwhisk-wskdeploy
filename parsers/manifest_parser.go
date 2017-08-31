@@ -39,8 +39,8 @@ import (
 func ReadOrCreateManifest() *ManifestYAML {
 	maniyaml := ManifestYAML{}
 
-	if _, err := os.Stat("manifest.yaml"); err == nil {
-		dat, _ := ioutil.ReadFile("manifest.yaml")
+	if _, err := os.Stat(utils.ManifestFileNameYaml); err == nil {
+		dat, _ := ioutil.ReadFile(utils.ManifestFileNameYaml)
 		err := NewYAMLParser().Unmarshal(dat, &maniyaml)
 		utils.Check(err)
 	}

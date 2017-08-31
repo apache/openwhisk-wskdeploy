@@ -61,7 +61,7 @@ var actionCmd = &cobra.Command{
 		err := os.MkdirAll("actions/"+action.Name, 0777)
 		utils.Check(err)
 
-		parsers.Write(maniyaml, "manifest.yaml")
+		parsers.Write(maniyaml, utils.ManifestFileNameYaml)
 	},
 }
 
@@ -88,7 +88,7 @@ var triggerCmd = &cobra.Command{
 		trigger.Feed = utils.Ask(reader, "Feed", "")
 		maniyaml.Package.Triggers[trigger.Name] = trigger
 
-		parsers.Write(maniyaml, "manifest.yaml")
+		parsers.Write(maniyaml, utils.ManifestFileNameYaml)
 	},
 }
 
@@ -116,7 +116,7 @@ var ruleCmd = &cobra.Command{
 		rule.Trigger = utils.Ask(reader, "Trigger", "")
 		maniyaml.Package.Rules[rule.Rule] = rule
 
-		parsers.Write(maniyaml, "manifest.yaml")
+		parsers.Write(maniyaml, utils.ManifestFileNameYaml)
 	},
 }
 
