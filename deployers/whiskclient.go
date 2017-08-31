@@ -28,13 +28,12 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-    "errors"
-    "log"
+        "errors"
+        "log"
+    "path"
 )
 
 const (
-    DEPLOYMENTFILE = "deployment.yml"
-    MANIDESTFILE = "manifest.yml"
     COMMANDLINE = "wskdeploy command line"
     DEFAULTVALUE = "default value"
     WSKPROPS = ".wskprops"
@@ -81,20 +80,20 @@ func NewWhiskClient(proppath string, deploymentPath string, manifestPath string,
         mm := parsers.NewYAMLParser()
         deployment := mm.ParseDeployment(deploymentPath)
         credential.Value = deployment.Application.Credential
-        credential.Source = DEPLOYMENTFILE
+        credential.Source = path.Base(deploymentPath)
         namespace.Value = deployment.Application.Namespace
-        namespace.Source = DEPLOYMENTFILE
+        namespace.Source = path.Base(deploymentPath)
         apiHost.Value = deployment.Application.ApiHost
-        apiHost.Source = DEPLOYMENTFILE
+        apiHost.Source = path.Base(deploymentPath)
     }
 
     if len(credential.Value) == 0 || len(namespace.Value) == 0 || len(apiHost.Value) == 0 {
         if utils.FileExists(manifestPath) {
             mm := parsers.NewYAMLParser()
             manifest := mm.ParseManifest(manifestPath)
-            credential = GetPropertyValue(credential, manifest.Package.Credential, MANIDESTFILE)
-            namespace = GetPropertyValue(namespace, manifest.Package.Namespace, MANIDESTFILE)
-            apiHost = GetPropertyValue(apiHost, manifest.Package.ApiHost, MANIDESTFILE)
+            credential = GetPropertyValue(credential, manifest.Package.Credential, path.Base(manifestPath))
+            namespace = GetPropertyValue(namespace, manifest.Package.Namespace, path.Base(manifestPath))
+            apiHost = GetPropertyValue(apiHost, manifest.Package.ApiHost, path.Base(manifestPath))
         }
     }
 
