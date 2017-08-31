@@ -513,7 +513,7 @@ func ResolveParamTypeFromValue(value interface{}) (string, error) {
 
 		} else {
 			// raise an error if param is not a known type
-			err = utils.NewParserErr("", -1, "Parameter value is not a known type. ["+actualType+"]")
+			err = utils.NewParserErr("Parameter value is not a known type. ["+actualType+"]")
 		}
 	} else {
 
@@ -556,7 +556,7 @@ func ResolveParameter(paramName string, param *Parameter) (interface{}, error) {
 
 		// if we do not have a value or default, but have a type, find its default and use it for the value
 		if param.Type != "" && !isValidParameterType(param.Type) {
-			return value, utils.NewParserErr("", -1, "Invalid Type for parameter. ["+param.Type+"]")
+			return value, utils.NewParserErr("Invalid Type for parameter. ["+param.Type+"]")
 		} else if param.Type == "" {
 			param.Type = tempType
 		}

@@ -28,6 +28,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+    "github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 type DeploymentApplication struct {
@@ -111,6 +112,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 	var manifestReader = NewManfiestReader(deployer)
 	manifestReader.IsUndeploy = false
+    var err error
 	manifest, manifestParser, err := manifestReader.ParseManifest()
 	utils.Check(err)
 
@@ -138,13 +140,14 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		deploymentReader.BindAssets()
 	}
 
-	return nil
+	return err
 }
 
 func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplication, error) {
 
 	var manifestReader = NewManfiestReader(deployer)
 	manifestReader.IsUndeploy = true
+    var err error
 	manifest, manifestParser, err := manifestReader.ParseManifest()
 	utils.Check(err)
 
@@ -175,7 +178,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
 
 	verifiedPlan := deployer.Deployment
 
-	return verifiedPlan, nil
+	return verifiedPlan, err
 }
 
 // Use reflect util to deploy everything in this service deployer
@@ -197,7 +200,8 @@ func (deployer *ServiceDeployer) Deploy() error {
 		if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
 			deployer.InteractiveChoice = true
 			if err := deployer.deployAssets(); err != nil {
-				fmt.Println("\nDeployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
+                errString := wski18n.T("Deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n")
+                whisk.Debug(whisk.DbgError, errString)
 				return err
 			}
 
@@ -213,7 +217,8 @@ func (deployer *ServiceDeployer) Deploy() error {
 
 	// non-interactive
 	if err := deployer.deployAssets(); err != nil {
-		fmt.Println("\nDeployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets")
+        errString := wski18n.T("Deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n")
+        whisk.Debug(whisk.DbgError, errString)
 		return err
 	}
 

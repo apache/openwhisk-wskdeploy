@@ -1,4 +1,4 @@
-// +build unit
+//// +build unit
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -876,8 +876,14 @@ func TestResolveParameterForMultiLineParams(t *testing.T) {
 	param5 := Parameter{Type: "invalid", multiline: true}
 	_, err := ResolveParameter(p, &param5)
 	assert.NotNil(t, err, "Expected error saying Invalid type for parameter")
-	expectedErr := utils.NewParserErr("", -1, "Invalid Type for parameter. [invalid]")
-	assert.Equal(t, err, expectedErr, "Expected error "+expectedErr.Error()+" but found "+err.Error())
+	expectedErr := utils.NewParserErr("Invalid Type for parameter. [invalid]")
+    switch errorType := err.(type) {
+        default:
+            assert.Fail(t, "Wrong error type received: We are expecting ParserErr.")
+        case *utils.ParserErr:
+            assert.Equal(t, expectedErr.Message, errorType.Message,
+                "Expected error " + expectedErr.Message + " but found " + errorType.Message)
+    }
 
 	// type none - param without type, without value, and without default value
 	param6 := Parameter{multiline: true}
