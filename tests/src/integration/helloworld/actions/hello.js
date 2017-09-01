@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-func main(args: [String:Any]) -> [String:Any] {
-    if let name = args["name"] as? String {
-        return [ "greeting" : "Hello \(name)!" ]
-    } else {
-        return [ "greeting" : "Hello stranger!" ]
-    }
+/*
+ * Return a simple greeting message for the whole world.
+ */
+function main(params) {
+    msg = "Hello, " + params.name + " from " + params.place;
+    console.log(msg)
+    return { payload:  msg };
 }
-

@@ -25,7 +25,6 @@ import (
 	"testing"
 )
 
-var manifest_yaml = "../tests/usecases/helloworld/manifest.yaml"
 var manifestfile1 = "../tests/dat/manifest1.yaml"
 var manifestfile3 = "../tests/dat/manifest3.yaml"
 var manifestfile4 = "../tests/dat/manifest4.yaml"
@@ -35,34 +34,6 @@ var testfile1 = "../tests/dat/deploy1.yaml"
 var testfile2 = "../tests/dat/deploy2.yaml"
 var testfile3 = "../tests/dat/deploy3.yaml"
 var testfile4 = "../tests/dat/deploy4.yaml"
-
-func TestParseManifestYAML(t *testing.T) {
-	data, err := ioutil.ReadFile(manifest_yaml)
-	if err != nil {
-		panic(err)
-	}
-
-	var manifest ManifestYAML
-	err = NewYAMLParser().Unmarshal(data, &manifest)
-	if err != nil {
-		panic(err)
-	}
-	//get and verify package name
-	assert.Equal(t, "helloworld", manifest.Package.Packagename, "Get package name failed.")
-
-	count := 0
-	for action_name := range manifest.Package.Actions {
-		var action = manifest.Package.Actions[action_name]
-		//get and verify action location
-		//assert.Equal(t, "src/greeting.js", action.Location, "Get action location failed.")
-		//get and verify total param number
-		assert.Equal(t, 2, len(action.Inputs), "Get input param number failed.")
-		count++
-	}
-	//get and verify action count
-	assert.Equal(t, 2, count, "Get action number failed.")
-
-}
 
 func TestParseManifestYAML_trigger(t *testing.T) {
 	data, err := ioutil.ReadFile(manifestfile3)

@@ -15,9 +15,18 @@
  * limitations under the License.
  */
 
-/*
- * Return a simple greeting message for the whole world.
- */
-function main(params) {
-    return {payload:  'Hello, world!'};
+import com.google.gson.JsonObject;
+public class Hello {
+    private JsonObject response;
+
+    public static JsonObject main(JsonObject args) {
+        String name = "stranger";
+        if (args.has("name"))
+            name = args.getAsJsonPrimitive("name").getAsString();
+        JsonObject response = new JsonObject();
+        response.addProperty("greeting", "Hello " + name + "!");
+        System.out.println(response);
+        return response;
+    }
 }
+
