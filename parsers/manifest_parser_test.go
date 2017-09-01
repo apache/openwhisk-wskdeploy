@@ -500,16 +500,12 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
 				for i := 0; i < len(actions); i++ {
 					if actions[i].Action.Name == "helloNodejs" {
 						expectedResult = "nodejs:6"
-						// (TODO) change expectedResult in the following condition
-						// (TODO) once issue #306 is fixed as runtime is set to
-						// (TODO) nodejs:default for any kind of action file except
-						// (TODO) files with extension .js, .py, and .swift
 					} else if actions[i].Action.Name == "helloJava" {
 						expectedResult = "java"
 					} else if actions[i].Action.Name == "helloPython" {
 						expectedResult = "python"
 					} else if actions[i].Action.Name == "helloSwift" {
-						expectedResult = "swift"
+						expectedResult = "swift:3"
 					}
 					actualResult := actions[i].Action.Exec.Kind
 					assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
