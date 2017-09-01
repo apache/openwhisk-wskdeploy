@@ -1,0 +1,16 @@
+application:
+  name: IntegrationTest
+  packages:
+    IntegrationTestHelloWorld:
+      actions:
+        helloNodejs:
+          inputs:
+            name: Amy
+            place: Paris
+        helloJava:
+          inputs:
+            name: Bob
+        helloPython:
+          inputs:
+            name: Henry
+        helloSwift:

@@ -15,9 +15,15 @@
  * limitations under the License.
  */
 
-/*
- * Return a simple greeting message for the whole world.
- */
-function main(params) {
-    return {payload:  'Hello, world!'};
+func main(args: [String:Any]) -> [String:Any] {
+    var msg = ["greeting": "Hello stranger!"]
+    if let name = args["name"] as? String {
+        if !name.isEmpty {
+            msg["greeting"] = "Hello \(name)!"
+        }
+    }
+    print (msg)
+    return msg
 }
+
+
