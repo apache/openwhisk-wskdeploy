@@ -1,0 +1,13 @@
+package:
+    name: GitHubCommits
+    actions:
+        print-github-commits:
+            location: src/print-github-commits.js
+            runtime: nodejs:6
+    triggers:
+        GitHubWebhookTrigger:
+            source: /whisk.system/github/webhook
+    rules:
+        rule-for-github-commits:
+            action: print-github-commits
+            trigger: GitHubWebhookTrigger
