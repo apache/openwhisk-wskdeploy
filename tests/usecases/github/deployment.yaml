@@ -1,0 +1,13 @@
+application:
+    name: AppToPrintGitHubCommits
+    packages:
+        GitHubCommits:
+            actions:
+                print-github-commits:
+            triggers:
+                GitHubWebhookTrigger:
+                    inputs:
+                        username: <username>  # replace it with your GitHub username
+                        repository: <repo>    # replace it with your repo eg. apache/incubator-openwhisk-wskdeploy
+                        accessToken: <token>  # replace it with token which has access to the specified repo
+                        events: push          # push for commits
