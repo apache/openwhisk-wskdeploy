@@ -25,7 +25,7 @@ import (
 	"testing"
 )
 
-var manifest_yaml = "../tests/usecases/helloworld/manifest.yaml"
+var manifest_yaml = "../tests/src/integration/helloworld/manifest.yaml"
 var manifestfile1 = "../tests/dat/manifest1.yaml"
 var manifestfile3 = "../tests/dat/manifest3.yaml"
 var manifestfile4 = "../tests/dat/manifest4.yaml"

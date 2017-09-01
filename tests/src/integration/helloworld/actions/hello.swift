@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-import com.google.gson.JsonObject;
-public class Hello {
-    public static JsonObject main(JsonObject args) {
-        String name = "stranger";
-        if (args.has("name"))
-            name = args.getAsJsonPrimitive("name").getAsString();
-        JsonObject response = new JsonObject();
-        response.addProperty("greeting", "Hello " + name + "!");
-        return response;
+func main(args: [String:Any]) -> [String:Any] {
+    var msg = ["greeting": "Hello stranger!"]
+    if let name = args["name"] as? String {
+        if !name.isEmpty {
+            msg["greeting"] = "Hello \(name)!"
+        }
     }
+    print (msg)
+    return msg
 }
 

@@ -477,14 +477,14 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
   name: helloworld
   actions:
     helloNodejs:
-      function: ../tests/usecases/helloworld/actions/hello.js
+      function: ../tests/src/integration/helloworld/actions/hello.js
     helloJava:
-      function: ../tests/usecases/helloworld/actions/hello.jar
+      function: ../tests/src/integration/helloworld/actions/hello.jar
       main: Hello
     helloPython:
-      function: ../tests/usecases/helloworld/actions/hello.py
+      function: ../tests/src/integration/helloworld/actions/hello.py
     helloSwift:
-      function: ../tests/usecases/helloworld/actions/hello.swift`
+      function: ../tests/src/integration/helloworld/actions/hello.swift`
 
 	dir, _ := os.Getwd()
 	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtimes_")
@@ -530,7 +530,7 @@ func TestComposeActionsForInvalidRuntime(t *testing.T) {
    name: helloworld
    actions:
      helloInvalidRuntime:
-       function: ../tests/usecases/helloworld/actions/hello.js
+       function: ../tests/src/integration/helloworld/actions/hello.js
        runtime: invalid`
 	dir, _ := os.Getwd()
 	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtime_")
@@ -712,10 +712,10 @@ func TestComposeActionsForFunction(t *testing.T) {
   name: helloworld
   actions:
     hello1:
-      function: ../tests/usecases/helloworld/actions/hello.js`
+      function: ../tests/src/integration/helloworld/actions/hello.js`
 	// (TODO) uncomment this after we add support for action file content from URL
 	// hello2:
-	//  function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/usecases/helloworld/manifest.yaml`
+	//  function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/isrc/integration/helloworld/manifest.yaml`
 	dir, _ := os.Getwd()
 	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_locations_")
 	if err == nil {
@@ -729,7 +729,7 @@ func TestComposeActionsForFunction(t *testing.T) {
 			if err == nil {
 				for i := 0; i < len(actions); i++ {
 					if actions[i].Action.Name == "hello1" {
-						expectedResult, _ = filepath.Abs("../tests/usecases/helloworld/actions/hello.js")
+						expectedResult, _ = filepath.Abs("../tests/src/integration/helloworld/actions/hello.js")
 						actualResult, _ = filepath.Abs(actions[i].Filepath)
 						assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
 						// (TODO) Uncomment the following condition, hello2
@@ -754,9 +754,9 @@ func TestComposeActionsForFunction(t *testing.T) {
 //  name: helloworld
 //  actions:
 //    hello1:
-//      function: ../tests/usecases/helloworld/actions/hello.js
+//      function: ../tests/src/integration/helloworld/actions/hello.js
 //    hello2:
-//      function: ../tests/usecases/helloworld/actions/hello.js
+//      function: ../tests/src/integration/helloworld/actions/hello.js
 //      limits:
 //        timeout: 60
 //        memorySize: 128
@@ -799,7 +799,7 @@ func TestComposeActionsForWebActions(t *testing.T) {
   name: helloworld
   actions:
     hello:
-      function: ../tests/usecases/helloworld/actions/hello.js
+      function: ../tests/src/integration/helloworld/actions/hello.js
       annotations:
         foo: bar
       web-export: true`
