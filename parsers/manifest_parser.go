@@ -267,7 +267,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 
 				switch ext {
 				case ".swift":
-					kind = "swift"
+					kind = "swift:3"
 				case ".js":
 					kind = "nodejs:6"
 				case ".py":
@@ -275,7 +275,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 				case ".java":
 					kind = "java"
 				case ".php":
-					kind = "php"
+					kind = "php:7.1"
 				case ".jar":
 					kind = "java"
 				default:
