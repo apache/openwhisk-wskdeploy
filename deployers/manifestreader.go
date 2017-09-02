@@ -60,6 +60,7 @@ func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser
 // Wrapper parser to handle yaml dir
 func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
 
+    var err error
 	deps, err := manifestParser.ComposeDependencies(manifest, deployer.serviceDeployer.ProjectPath)
 
 	actions, aubindings, err := manifestParser.ComposeActions(manifest, deployer.serviceDeployer.ManifestPath)
@@ -94,7 +95,7 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 		err = deployer.SetApis(sdeployer, aubindings)
 	}
 
-	return nil
+	return err
 }
 
 func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRecord) error {

@@ -319,23 +319,6 @@ func javaEntryError() error {
 	return errors.New(errMsg)
 }
 
-// ParserErr records errors from parsing YAML against the wskdeploy spec.
-type ParserErr struct {
-	filneame string
-	lineNum  int
-	message  string
-}
-
-// Implement the error interface.
-func (e ParserErr) Error() string {
-	return fmt.Sprintf("%s [%d]: %s", e.filneame, e.lineNum, e.message)
-}
-
-func NewParserErr(fname string, line int, msg string) error {
-	var err = &ParserErr{"", -1, msg}
-	return err
-}
-
 //for web action support, code from wsk cli with tiny adjustments
 const WEB_EXPORT_ANNOT = "web-export"
 const RAW_HTTP_ANNOT = "raw-http"

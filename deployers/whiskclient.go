@@ -21,15 +21,14 @@ import (
 	"bufio"
 	"fmt"
 	"net/http"
-	"net/url"
 	"os"
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+    "github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
     "path"
-    "errors"
 )
 
 const (
@@ -69,7 +68,7 @@ var CreateNewClient = func (httpClient *http.Client, config_input *whisk.Config)
     return whisk.NewClient(http.DefaultClient, clientConfig)
 }
 
-func NewWhiskClient(proppath string, deploymentPath string, manifestPath string, isInteractive bool) (*whisk.Client, *whisk.Config) {
+func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string, isInteractive bool) (*whisk.Config, error) {
     credential := PropertyValue {}
     namespace := PropertyValue {}
     apiHost := PropertyValue {}
@@ -108,6 +107,7 @@ func NewWhiskClient(proppath string, deploymentPath string, manifestPath string,
         OsPackage: whisk.OSPackageImp{},
     }
 
+    // The error raised here can be neglected, because we will handle it in the end of this function.
     wskprops, _ := GetWskPropFromWskprops(pi, proppath)
     credential = GetPropertyValue(credential, wskprops.AuthKey, WSKPROPS)
     namespace = GetPropertyValue(namespace, wskprops.Namespace, WSKPROPS)
@@ -118,7 +118,10 @@ func NewWhiskClient(proppath string, deploymentPath string, manifestPath string,
         // No need to keep the default value for namespace, since both of auth and apihost are not set after .wskprops.
         // whisk.property will set the default value as well.
         apiHost.Value = ""
+        apiHost.Source = DEFAULTVALUE
     }
+
+    // The error raised here can be neglected, because we will handle it in the end of this function.
     whiskproperty, _ := GetWskPropFromWhiskProperty(pi)
     credential = GetPropertyValue(credential, whiskproperty.AuthKey, WHISKPROPERTY)
     namespace = GetPropertyValue(namespace, whiskproperty.Namespace, WHISKPROPERTY)
@@ -153,42 +156,50 @@ func NewWhiskClient(proppath string, deploymentPath string, manifestPath string,
                 ns = whisk.DEFAULT_NAMESPACE
                 source = DEFAULTVALUE
             }
-
             namespace.Value = ns
             namespace.Source = source
         }
     }
 
-    var baseURL *url.URL
-    baseURL, err := utils.GetURLBase(apiHost.Value)
-    if err != nil {
-        utils.Check(err)
-    }
-
-    if len(credential.Value) == 0 {
-        errStr := "Missing authentication key"
-        err = whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
-        utils.Check(err)
-    }
-
-    fmt.Println("The URL is " + baseURL.String() + ", selected from " + apiHost.Source)
-    fmt.Println("The auth key is set, selected from " + credential.Source)
-    fmt.Println("The namespace is " + namespace.Value + ", selected from " + namespace.Source)
     clientConfig = &whisk.Config{
         AuthToken: credential.Value, //Authtoken
         Namespace: namespace.Value,  //Namespace
-        BaseURL:   baseURL,
         Host: apiHost.Value,
         Version:   "v1",
         Insecure:  true, // true if you want to ignore certificate signing
-
     }
 
-    // Setup network client
-    client, err := CreateNewClient(http.DefaultClient, clientConfig)
-    utils.Check(err)
-    return client, clientConfig
+    if len(credential.Value) == 0 {
+        errStr := wski18n.T("The authentication key is not configured.\n")
+        whisk.Debug(whisk.DbgError, errStr)
+        return clientConfig, utils.NewInvalidWskpropsError(errStr)
+    }
 
+    if len(apiHost.Value) == 0 {
+        errStr := wski18n.T("The API host is not configured.\n")
+        whisk.Debug(whisk.DbgError, errStr)
+        return clientConfig, utils.NewInvalidWskpropsError(errStr)
+    }
+
+    if len(namespace.Value) == 0 {
+        errStr := wski18n.T("The namespace is not configured.\n")
+        whisk.Debug(whisk.DbgError, errStr)
+        return clientConfig, utils.NewInvalidWskpropsError(errStr)
+    }
+
+    stdout := wski18n.T("The API host is {{.apihost}}, from {{.apisource}}.\n",
+        map[string]interface{}{"apihost": apiHost.Value, "apisource": apiHost.Source})
+    whisk.Debug(whisk.DbgInfo, stdout)
+
+    stdout = wski18n.T("The auth key is set, from {{.authsource}}.\n",
+        map[string]interface{}{"authsource": credential.Source})
+    whisk.Debug(whisk.DbgInfo, stdout)
+
+    stdout = wski18n.T("The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
+        map[string]interface{}{"namespace": namespace.Value, "namespacesource": namespace.Source})
+    whisk.Debug(whisk.DbgInfo, stdout)
+
+    return clientConfig, nil
 }
 
 var promptForValue = func (msg string) (string, error) {

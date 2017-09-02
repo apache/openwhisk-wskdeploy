@@ -31,6 +31,7 @@ import (
 	"strings"
 	"path"
 	"path/filepath"
+    "net/http"
 )
 
 var stderr = ""
@@ -198,8 +199,17 @@ func Deploy() error {
 		// master record of any dependency that has been downloaded
 		deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
 
-		whiskClient, clientConfig := deployers.NewWhiskClient(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
-		deployer.Client = whiskClient
+        clientConfig, error := deployers.NewWhiskConfig(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
+        if error != nil {
+            return error
+        }
+
+        whiskClient, error := deployers.CreateNewClient(http.DefaultClient, clientConfig)
+        if error != nil {
+            return error
+        }
+
+        deployer.Client = whiskClient
 		deployer.ClientConfig = clientConfig
 
         // The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
@@ -279,8 +289,17 @@ func Undeploy() error {
 		deployer.IsInteractive = utils.Flags.UseInteractive
 		deployer.IsDefault = utils.Flags.UseDefaults
 
-		whiskClient, clientConfig := deployers.NewWhiskClient(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
-		deployer.Client = whiskClient
+        clientConfig, error := deployers.NewWhiskConfig(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
+        if error != nil {
+            return error
+        }
+
+        whiskClient, error := deployers.CreateNewClient(http.DefaultClient, clientConfig)
+        if error != nil {
+            return error
+        }
+
+        deployer.Client = whiskClient
 		deployer.ClientConfig = clientConfig
 
         // The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.

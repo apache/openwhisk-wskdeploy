@@ -27,6 +27,7 @@ import (
 	"github.com/spf13/cobra"
 	"path"
 	"sync"
+    "net/http"
 )
 
 var wskpropsPath string
@@ -42,15 +43,18 @@ var reportCmd = &cobra.Command{
 on OpenWhisk with specific OpenWhisk namespace. By default it will read the wsk property file
 located under current user home.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
 		if wskpropsPath != "" {
-			client, _ = deployers.NewWhiskClient(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
-		}
-		userHome := utils.GetHomeDirectory()
-		//default to ~/.wskprops
-		propPath := path.Join(userHome, ".wskprops")
-		client, _ = deployers.NewWhiskClient(propPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
-		printDeploymentInfo(client)
+			config, _ := deployers.NewWhiskConfig(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
+            client, _ := deployers.CreateNewClient(http.DefaultClient, config)
+            printDeploymentInfo(client)
+		} else {
+            //default to ~/.wskprops
+            userHome := utils.GetHomeDirectory()
+            propPath := path.Join(userHome, ".wskprops")
+            config, _ := deployers.NewWhiskConfig(propPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
+            client, _ := deployers.CreateNewClient(http.DefaultClient, config)
+            printDeploymentInfo(client)
+        }
 	},
 }
 
