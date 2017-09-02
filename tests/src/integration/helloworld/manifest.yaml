@@ -1,0 +1,70 @@
+package:
+  name: IntegrationTestHelloWorld
+  actions:
+    # helloworld action in NodeJS
+    helloNodejs:
+      function: actions/hello.js
+      runtime: nodejs:6
+      inputs:
+        name:
+          type: string
+          description: name of a person
+        place:
+          type: string
+          description: location of a person
+      outputs:
+        payload:
+          type: string
+          description: a simple greeting message, Hello World!
+    # helloworld action in Java
+    helloJava:
+      function: actions/hello.jar
+      main: Hello
+      runtime: java
+      inputs:
+        name:
+          type: string
+          description: name of a person
+      outputs:
+        payload:
+          type: string
+          description: a simple greeting message, Hello Bob!
+    # helloworld action in python
+    helloPython:
+      function: actions/hello.py
+      runtime: python
+      inputs:
+        name:
+          type: string
+          description: name of a person
+      outputs:
+        payload:
+          type: string
+          description: a simple greeting message, Hello Henry!
+    # helloworld action in swift
+    helloSwift:
+      function: actions/hello.swift
+      runtime: swift:3.1.1
+      inputs:
+        name:
+          type: string
+          description: name of a person
+      outputs:
+        payload:
+          type: string
+          description: a simple greeting message, Hello stranger!
+  sequences:
+    # sequence of helloworld in all four runtimes
+    hello-world-series:
+      actions: helloNodejs, helloJava, helloPython, helloSwift
+  triggers:
+    # trigger to activate helloworld sequence
+    triggerHelloworld:
+  rules:
+    # rule associating trigger with sequence of helloworld actions
+    ruleMappingHelloworld:
+      trigger: triggerHelloworld
+      action: hello-world-series
+
+
+

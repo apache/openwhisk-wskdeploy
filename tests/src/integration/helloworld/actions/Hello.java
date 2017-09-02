@@ -15,11 +15,18 @@
  * limitations under the License.
  */
 
-func main(args: [String:Any]) -> [String:Any] {
-    if let name = args["name"] as? String {
-        return [ "greeting" : "Hello \(name)!" ]
-    } else {
-        return [ "greeting" : "Hello stranger!" ]
+import com.google.gson.JsonObject;
+public class Hello {
+    private JsonObject response;
+
+    public static JsonObject main(JsonObject args) {
+        String name = "stranger";
+        if (args.has("name"))
+            name = args.getAsJsonPrimitive("name").getAsString();
+        JsonObject response = new JsonObject();
+        response.addProperty("greeting", "Hello " + name + "!");
+        System.out.println(response);
+        return response;
     }
 }
 
