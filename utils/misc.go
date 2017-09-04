@@ -473,11 +473,12 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 
 func ConvertToMap(op OpenWhiskInfo) (rt map[string][]string) {
 	rt = make(map[string][]string)
-	for k, _ := range op.Runtimes {
-		v := op.Runtimes[k]
+	for k, v := range op.Runtimes {
 		rt[k] = make([]string, 0, len(v))
-		for i := range op.Runtimes[k] {
-			rt[k] = append(rt[k], op.Runtimes[k][i].Kind)
+		for i := range v {
+			if (!v[i].Deprecated) {
+				rt[k] = append(rt[k], v[i].Kind)
+			}
 		}
 	}
 	return

@@ -3,7 +3,7 @@ package:
   version: 1.0
   license: Apache-2.0
   actions:
-    greeting:
+    greetingnodejs-with-explicit-runtime:
       web-export: true
       version: 1.0
       function: src/greeting.js
@@ -13,7 +13,16 @@ package:
         place: string
       outputs:
         payload: string
-    greetingphp:
+    greetingnodejs-without-explicit-runtime:
+      web-export: true
+      version: 1.0
+      function: src/greeting.js
+      inputs:
+        name: string
+        place: string
+      outputs:
+        payload: string
+    greetingphp-with-explicit-runtime:
       web-export: true
       version: 1.0
       function: src/hello.php
@@ -23,7 +32,16 @@ package:
         place: string
       outputs:
         payload: string
-    greetingpython:
+    greetingphp-without-explicit-runtime:
+      web-export: true
+      version: 1.0
+      function: src/hello.php
+      inputs:
+        name: string
+        place: string
+      outputs:
+        payload: string
+    greetingpython-with-explicit-runtime:
       web-export: true
       version: 1.0
       function: src/hello.py
@@ -33,7 +51,16 @@ package:
         place: string
       outputs:
         payload: string
-    greetingpython:
+    greetingpython-without-explicit-runtime:
+      web-export: true
+      version: 1.0
+      function: src/hello.py
+      inputs:
+        name: string
+        place: string
+      outputs:
+        payload: string
+    greetingpython2-with-explicit-runtime:
       web-export: true
       version: 1.0
       function: src/hello.py
@@ -43,7 +70,7 @@ package:
         place: string
       outputs:
         payload: string
-    greetingpython:
+    greetingpython3-with-explicit-runtime:
       web-export: true
       version: 1.0
       function: src/hello.py
@@ -53,7 +80,7 @@ package:
         place: string
       outputs:
         payload: string
-    greetingswift:
+    greetingswift311-with-explicit-runtime:
       web-export: true
       version: 1.0
       function: src/hello.swift
@@ -63,17 +90,7 @@ package:
         place: string
       outputs:
         payload: string
-    greetingswift:
-      web-export: true
-      version: 1.0
-      function: src/hello.swift
-      runtime: swift
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-    greetingswift:
+    greetingswift3-with-explicit-runtime:
       web-export: true
       version: 1.0
       function: src/hello.swift
@@ -83,15 +100,25 @@ package:
         place: string
       outputs:
         payload: string
-    helloworldjava:
+    greetingswift-without-explicit-runtime:
+      web-export: true
+      version: 1.0
+      function: src/hello.swift
+      inputs:
+        name: string
+        place: string
+      outputs:
+        payload: string
+    helloworldjava-with-explicit-runtime:
       function: src/hello.jar
       runtime: java
+      main: Hello
+    helloworldjava-without-explicit-runtime:
+      function: src/hello.jar
       main: Hello
   triggers:
     locationUpdateRuntime:
   rules:
     myRuleRuntime:
       trigger: locationUpdateRuntime
-      #the action name and the action file greeting.js should consistent.
-      #currently the implementation deside the action name consistent with action file name?
       action: greeting
