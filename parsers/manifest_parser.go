@@ -146,7 +146,7 @@ func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string
 		}
 
 		packDir := path.Join(projectPath, "Packages")
-		depMap[key] = utils.DependencyRecord{packDir, mani.Package.Packagename, location, version, keyValArrParams, keyValArrAnot, isBinding}
+		depMap[key] = utils.NewDependencyRecord(packDir, mani.Package.Packagename, location, version, keyValArrParams, keyValArrAnot, isBinding)
 	}
 
 	return depMap, nil

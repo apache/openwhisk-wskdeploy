@@ -60,3 +60,17 @@ func TestGetEnvVar(t *testing.T) {
 	assert.Equal(t, "5000", GetEnvVar("5000"), "Should be no difference between integer and string.")
 	assert.Equal(t, "", GetEnvVar("$WithDollarAgain"), "if not found in environemnt, return empty string.")
 }
+
+func TestDependencies(t *testing.T) {
+	var record = NewDependencyRecord("projectPath","packageName","http://github.com/user/repo","master",nil,nil,false)
+	assert.Equal(t, "projectPath", record.ProjectPath,"ProjectPath is wrong")
+	assert.Equal(t, "http://github.com/user/repo", record.Location, "URL is wrong")
+	assert.Equal(t, "http://github.com/user/repo", record.BaseRepo, "BaseRepo is wrong")
+	assert.Equal(t, "", record.SubFolder, "SubFolder is wrong")
+
+	record = NewDependencyRecord("projectPath","packageName","http://github.com/user/repo/subfolder1/subfolder2","master",nil,nil,false)
+	assert.Equal(t, "projectPath", record.ProjectPath,"ProjectPath is wrong")
+	assert.Equal(t, "http://github.com/user/repo/subfolder1/subfolder2", record.Location, "URL is wrong")
+	assert.Equal(t, "http://github.com/user/repo", record.BaseRepo, "BaseRepo is wrong")
+	assert.Equal(t, "/subfolder1/subfolder2", record.SubFolder, "SubFolder is wrong")
+}

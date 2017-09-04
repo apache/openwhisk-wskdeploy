@@ -29,19 +29,20 @@ import (
 )
 
 type GitReader struct {
-	Name        string
-	Url         string
+	Name        string	// the name of the dependency
+	Url         string	// pkg repo location, e.g. github.com/user/repo
+	//BaseRepo    string	// base url of the git repo, e.g. github.com/user/repo
+	//SubFolder   string	// subfolder of the package under BaseUrl
 	Version     string
-	ProjectPath string
+	ProjectPath string	// The root folder of all dependency packages, e.g. src_project_path/Packages
 }
 
 func NewGitReader(projectName string, record DependencyRecord) *GitReader {
 	var gitReader GitReader
 
 	gitReader.Name = projectName
-	gitReader.Url = record.Location
+	gitReader.Url = record.BaseRepo
 	gitReader.Version = record.Version
-
 	gitReader.ProjectPath = record.ProjectPath
 
 	return &gitReader
@@ -68,7 +69,7 @@ func (reader *GitReader) CloneDependency() error {
 	Check(err)
 
 	u, err := url.Parse(reader.Url)
-	team, project := path.Split(u.Path)
+	team, _ := path.Split(u.Path)
 
 	team = strings.TrimPrefix(team, "/")
 	team = strings.TrimSuffix(team, "/")
@@ -95,7 +96,11 @@ func (reader *GitReader) CloneDependency() error {
 	}
 
 	rootDir := filepath.Join(reader.ProjectPath, zipReader.File[0].Name)
-	depPath := filepath.Join(reader.ProjectPath, project+"-"+reader.Version)
+	depPath := filepath.Join(reader.ProjectPath, reader.Name+"-"+reader.Version)
+	//if the folder exists, remove it at first
+	if _, err := os.Stat(depPath); err == nil {
+		os.Remove(depPath)
+	}
 	os.Rename(rootDir, depPath)
 	os.Remove(filepath.Join(reader.ProjectPath, zipFileName))
 
