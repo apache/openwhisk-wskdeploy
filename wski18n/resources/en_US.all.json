@@ -81,6 +81,13 @@
   {
     "id": "Unmarshal Openwhisk info from internet.\n",
     "translation": "Unmarshal Openwhisk info from internet.\n"
+  },
+  {
+    "id": "Deployment completed successfully.\n",
+    "translation": "Deployment completed successfully.\n"
+  },
+  {
+    "id": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n"
   }
-
 ]

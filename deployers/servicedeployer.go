@@ -24,6 +24,7 @@ import (
 	"path"
 	"strings"
 	"sync"
+    "strconv"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
@@ -205,8 +206,8 @@ func (deployer *ServiceDeployer) Deploy() error {
 				return err
 			}
 
-			fmt.Println("\nDeployment completed successfully.")
-			return nil
+            utils.PrintOpenWhiskOutput(wski18n.T("Deployment completed successfully.\n"))
+            return nil
 
 		} else {
 			deployer.InteractiveChoice = false
@@ -222,7 +223,7 @@ func (deployer *ServiceDeployer) Deploy() error {
 		return err
 	}
 
-	fmt.Println("\nDeployment completed successfully.")
+    utils.PrintOpenWhiskOutput(wski18n.T("Deployment completed successfully.\n"))
 	return nil
 
 }
@@ -303,8 +304,12 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 }
 
 func (deployer *ServiceDeployer) DeployPackages() error {
+    var err error
 	for _, pack := range deployer.Deployment.Packages {
-		deployer.createPackage(pack.Package)
+        err = deployer.createPackage(pack.Package)
+        if err != nil {
+            return err
+        }
 	}
 	return nil
 }
@@ -375,14 +380,18 @@ func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) {
 	fmt.Println("Done!")
 }
 
-func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) {
+func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) error {
 	fmt.Print("Deploying package " + packa.Name + " ... ")
 	_, _, err := deployer.Client.Packages.Insert(packa, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		fmt.Printf("Got error creating package with error message: %v and error code: %v.\n", wskErr.Error(), wskErr.ExitCode)
+        errString := wski18n.T("Got error creating package with error message: {{.err}} and error code: {{.code}}.\n",
+            map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
+        whisk.Debug(whisk.DbgError, errString)
+        return wskErr
 	}
 	fmt.Println("Done!")
+    return nil
 }
 
 func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) {
