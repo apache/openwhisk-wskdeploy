@@ -121,4 +121,5 @@ package:
   rules:
     myRuleRuntime:
       trigger: locationUpdateRuntime
-      action: greeting
+      action:  greetingnodejs-with-explicit-runtime
+

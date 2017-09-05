@@ -32,104 +32,104 @@
 package wski18n
 
 import (
-	"bytes"
-	"compress/gzip"
-	"fmt"
-	"io"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"strings"
-	"time"
+    "bytes"
+    "compress/gzip"
+    "fmt"
+    "io"
+    "io/ioutil"
+    "os"
+    "path/filepath"
+    "strings"
+    "time"
 )
 
 func bindataRead(data []byte, name string) ([]byte, error) {
-	gz, err := gzip.NewReader(bytes.NewBuffer(data))
-	if err != nil {
-		return nil, fmt.Errorf("Read %q: %v", name, err)
-	}
+    gz, err := gzip.NewReader(bytes.NewBuffer(data))
+    if err != nil {
+        return nil, fmt.Errorf("Read %q: %v", name, err)
+    }
 
-	var buf bytes.Buffer
-	_, err = io.Copy(&buf, gz)
-	clErr := gz.Close()
+    var buf bytes.Buffer
+    _, err = io.Copy(&buf, gz)
+    clErr := gz.Close()
 
-	if err != nil {
-		return nil, fmt.Errorf("Read %q: %v", name, err)
-	}
-	if clErr != nil {
-		return nil, err
-	}
+    if err != nil {
+        return nil, fmt.Errorf("Read %q: %v", name, err)
+    }
+    if clErr != nil {
+        return nil, err
+    }
 
-	return buf.Bytes(), nil
+    return buf.Bytes(), nil
 }
 
 type asset struct {
-	bytes []byte
-	info  os.FileInfo
+    bytes []byte
+    info  os.FileInfo
 }
 
 type bindataFileInfo struct {
-	name    string
-	size    int64
-	mode    os.FileMode
-	modTime time.Time
+    name    string
+    size    int64
+    mode    os.FileMode
+    modTime time.Time
 }
 
 func (fi bindataFileInfo) Name() string {
-	return fi.name
+    return fi.name
 }
 func (fi bindataFileInfo) Size() int64 {
-	return fi.size
+    return fi.size
 }
 func (fi bindataFileInfo) Mode() os.FileMode {
-	return fi.mode
+    return fi.mode
 }
 func (fi bindataFileInfo) ModTime() time.Time {
-	return fi.modTime
+    return fi.modTime
 }
 func (fi bindataFileInfo) IsDir() bool {
-	return false
+    return false
 }
 func (fi bindataFileInfo) Sys() interface{} {
-	return nil
+    return nil
 }
 
 var _wski18nResourcesDe_deAllJson = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
 
 func wski18nResourcesDe_deAllJsonBytes() ([]byte, error) {
-	return bindataRead(
-		_wski18nResourcesDe_deAllJson,
-		"wski18n/resources/de_DE.all.json",
-	)
+    return bindataRead(
+        _wski18nResourcesDe_deAllJson,
+        "wski18n/resources/de_DE.all.json",
+    )
 }
 
 func wski18nResourcesDe_deAllJson() (*asset, error) {
-	bytes, err := wski18nResourcesDe_deAllJsonBytes()
-	if err != nil {
-		return nil, err
-	}
+    bytes, err := wski18nResourcesDe_deAllJsonBytes()
+    if err != nil {
+        return nil, err
+    }
 
-	info := bindataFileInfo{name: "wski18n/resources/de_DE.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
+    info := bindataFileInfo{name: "wski18n/resources/de_DE.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
+    a := &asset{bytes: bytes, info: info}
+    return a, nil
 }
 
-var _wski18nResourcesEn_usAllJson = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xa4\x94\xc1\x8e\xd3\x30\x10\x86\xef\x7e\x8a\x51\x2e\x7b\xa9\xc2\x9d\xdb\x1e\x56\xda\x15\x82\x5d\xb1\x0b\x12\x02\xa4\x9a\x78\xd2\x98\xc6\x76\x64\x8f\x41\xc5\xca\xbb\x23\xbb\x6d\xa8\x8a\xdd\xa6\xdd\x5b\x6c\xcf\x7c\xf3\x7b\x7e\x4f\xbe\x32\x80\xc0\x00\x00\x2a\x29\xaa\xb7\x50\xdd\x63\xdf\x9b\x6a\xb1\xdd\x22\xcb\xb5\xeb\x39\x49\xa3\xe3\xd9\xad\x86\xdb\xa7\x07\xe8\x8c\x23\x50\xde\x11\xfc\x40\x18\xac\xf9\x25\x05\x8a\xba\x62\x00\xe3\xe2\x18\xf7\x5e\x3a\x27\xf5\x0a\x1a\x25\x60\x8d\x9b\x02\x78\x1f\x75\xd3\x28\x71\x03\x52\x0f\x9e\x52\x74\x16\xa9\x76\xc1\x8a\x6b\xd9\xa2\xa3\x7a\xc3\x55\x0f\xad\xec\xf1\x0c\x3d\x93\x70\x58\x60\x87\xe7\x9e\x3a\x63\xe5\x9f\x94\x0e\xcb\x77\x77\x5f\x96\x89\x7b\x4c\xcd\xc5\x65\xf5\xfe\xee\xa4\x5b\xa7\xc6\x2d\xef\x1f\x9f\x5f\x96\x05\x95\xff\x85\x65\x61\x9a\x2b\x74\x03\x6f\x4a\x77\xfd\x77\x7e\x4e\xcb\xe7\xbb\x8f\xcf\x0f\x8f\x1f\x66\xc8\x99\x22\xf3\x0e\xef\xba\x9a\x1a\x0a\xda\x10\xb4\xc6\x6b\x01\x9c\x60\xe0\xd4\x41\x08\xf5\x60\xcd\x4f\x6c\xe8\x89\x53\x37\x8e\xf5\x37\x5d\xf2\xe9\x0a\xd2\xc9\x47\x17\x42\xb2\x7a\x1c\xdf\xc4\xaf\xf8\x91\xd0\x27\x14\x9c\x4f\xcc\x16\xfc\xb4\xcf\xda\x3f\xb1\xad\x40\x68\x8d\x05\x81\x43\x6f\x36\x0a\x35\x95\xeb\xce\xcf\xbf\xb8\xbc\xd7\xaf\x15\x70\x4c\xd8\x4a\x60\xec\x58\xc5\x4b\x87\x10\x87\x02\x35\xc9\x66\x3b\x15\x6b\xdc\x80\x74\xc9\xca\xc6\xe8\x56\xae\xbc\x45\x51\x56\x71\x09\x21\xdb\x88\x08\x98\xfe\x50\x17\x16\x3e\x9d\x57\x2c\x37\x0d\xdc\xa5\xf5\xce\x24\xce\xba\x5f\x08\x35\x1f\x64\x5c\x8d\xe3\x02\x5a\x6b\xd4\x6e\xcb\x19\x6f\x1b\x3c\x35\x6c\x57\xa1\x8a\xa2\xa2\x6b\x7b\xaf\x1c\xd2\x01\xc0\x53\x37\x4f\xcc\x6c\xc4\x3c\x2b\x42\xa8\xa7\xf5\xe1\x8d\xa6\xcd\x79\xaa\xae\x67\x46\x99\x8c\x7d\x67\x7f\x03\x00\x00\xff\xff\x63\x1a\x1d\xb4\x62\x07\x00\x00")
+var _wski18nResourcesEn_usAllJson = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xac\x95\xc1\x8e\xd3\x30\x10\x40\xef\xf9\x8a\x51\x2f\x7b\x59\x85\xfb\xde\xf6\xb0\x68\x57\x08\xba\xa2\x0b\x08\x01\x52\x4d\x32\x69\x4c\xed\x71\x64\x8f\x8b\x4a\x94\x7f\x47\x76\xda\x52\x15\x27\x4d\x0b\xb7\xc4\x99\x79\xf3\xec\xb1\x9d\x2f\x19\x40\x9b\x01\x00\xcc\x64\x39\xbb\x83\xd9\x23\x2a\x65\x66\xb7\xfd\x10\x5b\x41\x4e\x09\x96\x86\xc2\xb7\x7b\x82\xfb\xe7\x27\xa8\x8d\x63\xd0\xde\x31\x7c\x47\x68\xac\xd9\xc8\x12\xcb\x7c\x96\x01\x74\xb7\xa7\xb8\xb7\xd2\x39\x49\x2b\x28\x74\x09\x6b\xdc\x0e\x80\xf7\x51\x37\x85\x2e\x6f\x40\x52\xe3\x39\x46\x27\x91\x7a\x17\xac\x05\xc9\x0a\x1d\xe7\x5b\xa1\x15\x54\x52\xe1\x19\x7a\x22\xe1\xb8\xc0\x0e\x2f\x3c\xd7\xc6\xca\x5f\x31\x1d\x96\x6f\x1e\x3e\x2f\x23\xf7\x94\x9a\x8a\x4b\xfa\xfe\xac\xa5\x5b\xc7\x85\x5b\x3e\xce\x17\x2f\xcb\x01\xcb\xbf\xc2\x92\x30\x12\x1a\x5d\x23\x8a\xa1\xb9\xfe\xf9\x7e\xce\xe5\xe3\xc3\xfb\xc5\xd3\xfc\xdd\x04\x9d\x43\x64\xba\xc3\xbb\x55\x8d\x0b\x0a\x64\x18\x2a\xe3\xa9\x04\xc1\xd0\x08\xae\xa1\x6d\xf3\xc6\x9a\x1f\x58\xf0\xb3\xe0\xba\xeb\xf2\xaf\x34\xd4\xa7\x2b\x48\xa3\x9b\xae\x6d\x63\xab\xbb\xee\x55\x78\x0a\x0f\x11\x3d\x62\x70\x3e\x31\x59\xf0\xc3\x3e\x6b\xbf\xc5\x7a\x41\xa8\x8c\x85\x12\x1b\x65\xb6\x1a\x89\x87\xeb\x4e\xcf\xbf\xb8\xbc\xa7\x7f\x15\x38\x25\xf4\x0a\x59\x76\x6a\xf1\x52\x23\x84\x43\x81\xc4\xb2\xe8\x4f\xc5\x1a\xb7\x20\x5d\x6c\x65\x61\xa8\x92\x2b\x6f\xb1\x1c\xb6\xb8\x84\x90\x5c\x88\x00\x38\xdc\x50\x17\x16\x1e\xcf\x1b\x2c\x77\x38\x70\x97\xd6\x3b\x93\x38\x69\x7e\x6d\x9b\x8b\x46\x86\xb7\xae\xbb\x85\xca\x1a\xbd\x1b\x72\xc6\xdb\x02\xc7\x0e\xdb\x55\xa8\x41\xa9\xd0\xb5\x7d\xaf\x1c\xf2\x11\xc0\x73\x3d\x4d\x66\x32\x62\x5a\x2b\xda\x36\x3f\xbc\x1f\xcf\xe8\x30\x38\xcd\xea\x7a\x66\x52\xf3\xb5\x90\x0a\x4b\x60\x03\x2b\x64\xe0\x1a\xc1\xf9\xa6\x31\x96\xb1\x04\xeb\x89\xa5\x46\xd7\x63\xe7\x0d\xd2\xa7\x78\x07\x3b\xb4\x1b\x59\xe0\x5d\xa8\x84\xd6\x8e\x19\xff\x37\x7c\x52\x7e\xc1\xc2\x72\x80\x7b\xd2\xc2\xba\x5a\xa8\x88\xe9\xff\x14\x92\x2a\xd3\xa3\x95\x29\x84\x82\x8d\x50\x1e\xdd\xb0\xea\x95\xb0\xf4\xfd\x37\x8a\x90\xc4\x68\x09\xc7\x6e\xbf\xc9\xf9\xa1\x7c\x96\x7d\xcb\x7e\x07\x00\x00\xff\xff\xe7\x1a\x91\x03\x37\x09\x00\x00")
 
 func wski18nResourcesEn_usAllJsonBytes() ([]byte, error) {
-	return bindataRead(
-		_wski18nResourcesEn_usAllJson,
-		"wski18n/resources/en_US.all.json",
-	)
+    return bindataRead(
+        _wski18nResourcesEn_usAllJson,
+        "wski18n/resources/en_US.all.json",
+    )
 }
 
 func wski18nResourcesEn_usAllJson() (*asset, error) {
-	bytes, err := wski18nResourcesEn_usAllJsonBytes()
-	if err != nil {
-		return nil, err
-	}
+    bytes, err := wski18nResourcesEn_usAllJsonBytes()
+    if err != nil {
+        return nil, err
+    }
 
-    info := bindataFileInfo{name: "wski18n/resources/en_US.all.json", size: 1890, mode: os.FileMode(420), modTime: time.Unix(1504289235, 0)}
+    info := bindataFileInfo{name: "wski18n/resources/en_US.all.json", size: 2359, mode: os.FileMode(420), modTime: time.Unix(1504640900, 0)}
     a := &asset{bytes: bytes, info: info}
     return a, nil
 }
@@ -137,225 +137,225 @@ func wski18nResourcesEn_usAllJson() (*asset, error) {
 var _wski18nResourcesEs_esAllJson = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
 
 func wski18nResourcesEs_esAllJsonBytes() ([]byte, error) {
-	return bindataRead(
-		_wski18nResourcesEs_esAllJson,
-		"wski18n/resources/es_ES.all.json",
-	)
+    return bindataRead(
+        _wski18nResourcesEs_esAllJson,
+        "wski18n/resources/es_ES.all.json",
+    )
 }
 
 func wski18nResourcesEs_esAllJson() (*asset, error) {
-	bytes, err := wski18nResourcesEs_esAllJsonBytes()
-	if err != nil {
-		return nil, err
-	}
+    bytes, err := wski18nResourcesEs_esAllJsonBytes()
+    if err != nil {
+        return nil, err
+    }
 
-	info := bindataFileInfo{name: "wski18n/resources/es_ES.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
+    info := bindataFileInfo{name: "wski18n/resources/es_ES.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
+    a := &asset{bytes: bytes, info: info}
+    return a, nil
 }
 
 var _wski18nResourcesFr_frAllJson = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8a\xe6\x52\x50\xa8\xe6\x52\x50\x50\x50\x50\xca\x4c\x51\xb2\x52\x50\x4a\xaa\x2c\x48\x2c\x2e\x56\x48\x4e\x2d\x2a\xc9\x4c\xcb\x4c\x4e\x2c\x49\x55\x48\xce\x48\x4d\xce\xce\xcc\x4b\x57\xd2\x81\x28\x2c\x29\x4a\xcc\x2b\xce\x49\x2c\xc9\xcc\xcf\x03\xe9\x08\xce\xcf\x4d\x55\x40\x12\x53\xc8\xcc\x53\x70\x2b\x4a\xcd\x4b\xce\x50\xe2\x52\x50\xa8\xe5\x8a\xe5\x02\x04\x00\x00\xff\xff\x45\xa4\xe9\x62\x65\x00\x00\x00")
 
 func wski18nResourcesFr_frAllJsonBytes() ([]byte, error) {
-	return bindataRead(
-		_wski18nResourcesFr_frAllJson,
-		"wski18n/resources/fr_FR.all.json",
-	)
+    return bindataRead(
+        _wski18nResourcesFr_frAllJson,
+        "wski18n/resources/fr_FR.all.json",
+    )
 }
 
 func wski18nResourcesFr_frAllJson() (*asset, error) {
-	bytes, err := wski18nResourcesFr_frAllJsonBytes()
-	if err != nil {
-		return nil, err
-	}
+    bytes, err := wski18nResourcesFr_frAllJsonBytes()
+    if err != nil {
+        return nil, err
+    }
 
-	info := bindataFileInfo{name: "wski18n/resources/fr_FR.all.json", size: 101, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
+    info := bindataFileInfo{name: "wski18n/resources/fr_FR.all.json", size: 101, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
+    a := &asset{bytes: bytes, info: info}
+    return a, nil
 }
 
 var _wski18nResourcesIt_itAllJson = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
 
 func wski18nResourcesIt_itAllJsonBytes() ([]byte, error) {
-	return bindataRead(
-		_wski18nResourcesIt_itAllJson,
-		"wski18n/resources/it_IT.all.json",
-	)
+    return bindataRead(
+        _wski18nResourcesIt_itAllJson,
+        "wski18n/resources/it_IT.all.json",
+    )
 }
 
 func wski18nResourcesIt_itAllJson() (*asset, error) {
-	bytes, err := wski18nResourcesIt_itAllJsonBytes()
-	if err != nil {
-		return nil, err
-	}
+    bytes, err := wski18nResourcesIt_itAllJsonBytes()
+    if err != nil {
+        return nil, err
+    }
 
-	info := bindataFileInfo{name: "wski18n/resources/it_IT.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
+    info := bindataFileInfo{name: "wski18n/resources/it_IT.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
+    a := &asset{bytes: bytes, info: info}
+    return a, nil
 }
 
 var _wski18nResourcesJa_jaAllJson = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
 
 func wski18nResourcesJa_jaAllJsonBytes() ([]byte, error) {
-	return bindataRead(
-		_wski18nResourcesJa_jaAllJson,
-		"wski18n/resources/ja_JA.all.json",
-	)
+    return bindataRead(
+        _wski18nResourcesJa_jaAllJson,
+        "wski18n/resources/ja_JA.all.json",
+    )
 }
 
 func wski18nResourcesJa_jaAllJson() (*asset, error) {
-	bytes, err := wski18nResourcesJa_jaAllJsonBytes()
-	if err != nil {
-		return nil, err
-	}
+    bytes, err := wski18nResourcesJa_jaAllJsonBytes()
+    if err != nil {
+        return nil, err
+    }
 
-	info := bindataFileInfo{name: "wski18n/resources/ja_JA.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
+    info := bindataFileInfo{name: "wski18n/resources/ja_JA.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
+    a := &asset{bytes: bytes, info: info}
+    return a, nil
 }
 
 var _wski18nResourcesKo_krAllJson = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
 
 func wski18nResourcesKo_krAllJsonBytes() ([]byte, error) {
-	return bindataRead(
-		_wski18nResourcesKo_krAllJson,
-		"wski18n/resources/ko_KR.all.json",
-	)
+    return bindataRead(
+        _wski18nResourcesKo_krAllJson,
+        "wski18n/resources/ko_KR.all.json",
+    )
 }
 
 func wski18nResourcesKo_krAllJson() (*asset, error) {
-	bytes, err := wski18nResourcesKo_krAllJsonBytes()
-	if err != nil {
-		return nil, err
-	}
+    bytes, err := wski18nResourcesKo_krAllJsonBytes()
+    if err != nil {
+        return nil, err
+    }
 
-	info := bindataFileInfo{name: "wski18n/resources/ko_KR.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
+    info := bindataFileInfo{name: "wski18n/resources/ko_KR.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
+    a := &asset{bytes: bytes, info: info}
+    return a, nil
 }
 
 var _wski18nResourcesPt_brAllJson = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
 
 func wski18nResourcesPt_brAllJsonBytes() ([]byte, error) {
-	return bindataRead(
-		_wski18nResourcesPt_brAllJson,
-		"wski18n/resources/pt_BR.all.json",
-	)
+    return bindataRead(
+        _wski18nResourcesPt_brAllJson,
+        "wski18n/resources/pt_BR.all.json",
+    )
 }
 
 func wski18nResourcesPt_brAllJson() (*asset, error) {
-	bytes, err := wski18nResourcesPt_brAllJsonBytes()
-	if err != nil {
-		return nil, err
-	}
+    bytes, err := wski18nResourcesPt_brAllJsonBytes()
+    if err != nil {
+        return nil, err
+    }
 
-	info := bindataFileInfo{name: "wski18n/resources/pt_BR.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
+    info := bindataFileInfo{name: "wski18n/resources/pt_BR.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
+    a := &asset{bytes: bytes, info: info}
+    return a, nil
 }
 
 var _wski18nResourcesZh_hansAllJson = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
 
 func wski18nResourcesZh_hansAllJsonBytes() ([]byte, error) {
-	return bindataRead(
-		_wski18nResourcesZh_hansAllJson,
-		"wski18n/resources/zh_Hans.all.json",
-	)
+    return bindataRead(
+        _wski18nResourcesZh_hansAllJson,
+        "wski18n/resources/zh_Hans.all.json",
+    )
 }
 
 func wski18nResourcesZh_hansAllJson() (*asset, error) {
-	bytes, err := wski18nResourcesZh_hansAllJsonBytes()
-	if err != nil {
-		return nil, err
-	}
+    bytes, err := wski18nResourcesZh_hansAllJsonBytes()
+    if err != nil {
+        return nil, err
+    }
 
-	info := bindataFileInfo{name: "wski18n/resources/zh_Hans.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
+    info := bindataFileInfo{name: "wski18n/resources/zh_Hans.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
+    a := &asset{bytes: bytes, info: info}
+    return a, nil
 }
 
 var _wski18nResourcesZh_hantAllJson = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
 
 func wski18nResourcesZh_hantAllJsonBytes() ([]byte, error) {
-	return bindataRead(
-		_wski18nResourcesZh_hantAllJson,
-		"wski18n/resources/zh_Hant.all.json",
-	)
+    return bindataRead(
+        _wski18nResourcesZh_hantAllJson,
+        "wski18n/resources/zh_Hant.all.json",
+    )
 }
 
 func wski18nResourcesZh_hantAllJson() (*asset, error) {
-	bytes, err := wski18nResourcesZh_hantAllJsonBytes()
-	if err != nil {
-		return nil, err
-	}
+    bytes, err := wski18nResourcesZh_hantAllJsonBytes()
+    if err != nil {
+        return nil, err
+    }
 
-	info := bindataFileInfo{name: "wski18n/resources/zh_Hant.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
+    info := bindataFileInfo{name: "wski18n/resources/zh_Hant.all.json", size: 0, mode: os.FileMode(420), modTime: time.Unix(1500653295, 0)}
+    a := &asset{bytes: bytes, info: info}
+    return a, nil
 }
 
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
 func Asset(name string) ([]byte, error) {
-	cannonicalName := strings.Replace(name, "\\", "/", -1)
-	if f, ok := _bindata[cannonicalName]; ok {
-		a, err := f()
-		if err != nil {
-			return nil, fmt.Errorf("Asset %s can't read by error: %v", name, err)
-		}
-		return a.bytes, nil
-	}
-	return nil, fmt.Errorf("Asset %s not found", name)
+    cannonicalName := strings.Replace(name, "\\", "/", -1)
+    if f, ok := _bindata[cannonicalName]; ok {
+        a, err := f()
+        if err != nil {
+            return nil, fmt.Errorf("Asset %s can't read by error: %v", name, err)
+        }
+        return a.bytes, nil
+    }
+    return nil, fmt.Errorf("Asset %s not found", name)
 }
 
 // MustAsset is like Asset but panics when Asset would return an error.
 // It simplifies safe initialization of global variables.
 func MustAsset(name string) []byte {
-	a, err := Asset(name)
-	if err != nil {
-		panic("asset: Asset(" + name + "): " + err.Error())
-	}
+    a, err := Asset(name)
+    if err != nil {
+        panic("asset: Asset(" + name + "): " + err.Error())
+    }
 
-	return a
+    return a
 }
 
 // AssetInfo loads and returns the asset info for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
 func AssetInfo(name string) (os.FileInfo, error) {
-	cannonicalName := strings.Replace(name, "\\", "/", -1)
-	if f, ok := _bindata[cannonicalName]; ok {
-		a, err := f()
-		if err != nil {
-			return nil, fmt.Errorf("AssetInfo %s can't read by error: %v", name, err)
-		}
-		return a.info, nil
-	}
-	return nil, fmt.Errorf("AssetInfo %s not found", name)
+    cannonicalName := strings.Replace(name, "\\", "/", -1)
+    if f, ok := _bindata[cannonicalName]; ok {
+        a, err := f()
+        if err != nil {
+            return nil, fmt.Errorf("AssetInfo %s can't read by error: %v", name, err)
+        }
+        return a.info, nil
+    }
+    return nil, fmt.Errorf("AssetInfo %s not found", name)
 }
 
 // AssetNames returns the names of the assets.
 func AssetNames() []string {
-	names := make([]string, 0, len(_bindata))
-	for name := range _bindata {
-		names = append(names, name)
-	}
-	return names
+    names := make([]string, 0, len(_bindata))
+    for name := range _bindata {
+        names = append(names, name)
+    }
+    return names
 }
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"wski18n/resources/de_DE.all.json":   wski18nResourcesDe_deAllJson,
-	"wski18n/resources/en_US.all.json":   wski18nResourcesEn_usAllJson,
-	"wski18n/resources/es_ES.all.json":   wski18nResourcesEs_esAllJson,
-	"wski18n/resources/fr_FR.all.json":   wski18nResourcesFr_frAllJson,
-	"wski18n/resources/it_IT.all.json":   wski18nResourcesIt_itAllJson,
-	"wski18n/resources/ja_JA.all.json":   wski18nResourcesJa_jaAllJson,
-	"wski18n/resources/ko_KR.all.json":   wski18nResourcesKo_krAllJson,
-	"wski18n/resources/pt_BR.all.json":   wski18nResourcesPt_brAllJson,
-	"wski18n/resources/zh_Hans.all.json": wski18nResourcesZh_hansAllJson,
-	"wski18n/resources/zh_Hant.all.json": wski18nResourcesZh_hantAllJson,
+    "wski18n/resources/de_DE.all.json": wski18nResourcesDe_deAllJson,
+    "wski18n/resources/en_US.all.json": wski18nResourcesEn_usAllJson,
+    "wski18n/resources/es_ES.all.json": wski18nResourcesEs_esAllJson,
+    "wski18n/resources/fr_FR.all.json": wski18nResourcesFr_frAllJson,
+    "wski18n/resources/it_IT.all.json": wski18nResourcesIt_itAllJson,
+    "wski18n/resources/ja_JA.all.json": wski18nResourcesJa_jaAllJson,
+    "wski18n/resources/ko_KR.all.json": wski18nResourcesKo_krAllJson,
+    "wski18n/resources/pt_BR.all.json": wski18nResourcesPt_brAllJson,
+    "wski18n/resources/zh_Hans.all.json": wski18nResourcesZh_hansAllJson,
+    "wski18n/resources/zh_Hant.all.json": wski18nResourcesZh_hantAllJson,
 }
 
 // AssetDir returns the file names below a certain
@@ -372,92 +372,92 @@ var _bindata = map[string]func() (*asset, error){
 // AssetDir("foo.txt") and AssetDir("notexist") would return an error
 // AssetDir("") will return []string{"data"}.
 func AssetDir(name string) ([]string, error) {
-	node := _bintree
-	if len(name) != 0 {
-		cannonicalName := strings.Replace(name, "\\", "/", -1)
-		pathList := strings.Split(cannonicalName, "/")
-		for _, p := range pathList {
-			node = node.Children[p]
-			if node == nil {
-				return nil, fmt.Errorf("Asset %s not found", name)
-			}
-		}
-	}
-	if node.Func != nil {
-		return nil, fmt.Errorf("Asset %s not found", name)
-	}
-	rv := make([]string, 0, len(node.Children))
-	for childName := range node.Children {
-		rv = append(rv, childName)
-	}
-	return rv, nil
+    node := _bintree
+    if len(name) != 0 {
+        cannonicalName := strings.Replace(name, "\\", "/", -1)
+        pathList := strings.Split(cannonicalName, "/")
+        for _, p := range pathList {
+            node = node.Children[p]
+            if node == nil {
+                return nil, fmt.Errorf("Asset %s not found", name)
+            }
+        }
+    }
+    if node.Func != nil {
+        return nil, fmt.Errorf("Asset %s not found", name)
+    }
+    rv := make([]string, 0, len(node.Children))
+    for childName := range node.Children {
+        rv = append(rv, childName)
+    }
+    return rv, nil
 }
 
 type bintree struct {
-	Func     func() (*asset, error)
-	Children map[string]*bintree
+    Func     func() (*asset, error)
+    Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
-	"wski18n": &bintree{nil, map[string]*bintree{
-		"resources": &bintree{nil, map[string]*bintree{
-			"de_DE.all.json":   &bintree{wski18nResourcesDe_deAllJson, map[string]*bintree{}},
-			"en_US.all.json":   &bintree{wski18nResourcesEn_usAllJson, map[string]*bintree{}},
-			"es_ES.all.json":   &bintree{wski18nResourcesEs_esAllJson, map[string]*bintree{}},
-			"fr_FR.all.json":   &bintree{wski18nResourcesFr_frAllJson, map[string]*bintree{}},
-			"it_IT.all.json":   &bintree{wski18nResourcesIt_itAllJson, map[string]*bintree{}},
-			"ja_JA.all.json":   &bintree{wski18nResourcesJa_jaAllJson, map[string]*bintree{}},
-			"ko_KR.all.json":   &bintree{wski18nResourcesKo_krAllJson, map[string]*bintree{}},
-			"pt_BR.all.json":   &bintree{wski18nResourcesPt_brAllJson, map[string]*bintree{}},
-			"zh_Hans.all.json": &bintree{wski18nResourcesZh_hansAllJson, map[string]*bintree{}},
-			"zh_Hant.all.json": &bintree{wski18nResourcesZh_hantAllJson, map[string]*bintree{}},
-		}},
-	}},
+    "wski18n": &bintree{nil, map[string]*bintree{
+        "resources": &bintree{nil, map[string]*bintree{
+            "de_DE.all.json": &bintree{wski18nResourcesDe_deAllJson, map[string]*bintree{}},
+            "en_US.all.json": &bintree{wski18nResourcesEn_usAllJson, map[string]*bintree{}},
+            "es_ES.all.json": &bintree{wski18nResourcesEs_esAllJson, map[string]*bintree{}},
+            "fr_FR.all.json": &bintree{wski18nResourcesFr_frAllJson, map[string]*bintree{}},
+            "it_IT.all.json": &bintree{wski18nResourcesIt_itAllJson, map[string]*bintree{}},
+            "ja_JA.all.json": &bintree{wski18nResourcesJa_jaAllJson, map[string]*bintree{}},
+            "ko_KR.all.json": &bintree{wski18nResourcesKo_krAllJson, map[string]*bintree{}},
+            "pt_BR.all.json": &bintree{wski18nResourcesPt_brAllJson, map[string]*bintree{}},
+            "zh_Hans.all.json": &bintree{wski18nResourcesZh_hansAllJson, map[string]*bintree{}},
+            "zh_Hant.all.json": &bintree{wski18nResourcesZh_hantAllJson, map[string]*bintree{}},
+        }},
+    }},
 }}
 
 // RestoreAsset restores an asset under the given directory
 func RestoreAsset(dir, name string) error {
-	data, err := Asset(name)
-	if err != nil {
-		return err
-	}
-	info, err := AssetInfo(name)
-	if err != nil {
-		return err
-	}
-	err = os.MkdirAll(_filePath(dir, filepath.Dir(name)), os.FileMode(0755))
-	if err != nil {
-		return err
-	}
-	err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
-	if err != nil {
-		return err
-	}
-	err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
-	if err != nil {
-		return err
-	}
-	return nil
+    data, err := Asset(name)
+    if err != nil {
+        return err
+    }
+    info, err := AssetInfo(name)
+    if err != nil {
+        return err
+    }
+    err = os.MkdirAll(_filePath(dir, filepath.Dir(name)), os.FileMode(0755))
+    if err != nil {
+        return err
+    }
+    err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
+    if err != nil {
+        return err
+    }
+    err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
+    if err != nil {
+        return err
+    }
+    return nil
 }
 
 // RestoreAssets restores an asset under the given directory recursively
 func RestoreAssets(dir, name string) error {
-	children, err := AssetDir(name)
-	// File
-	if err != nil {
-		return RestoreAsset(dir, name)
-	}
-	// Dir
-	for _, child := range children {
-		err = RestoreAssets(dir, filepath.Join(name, child))
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+    children, err := AssetDir(name)
+    // File
+    if err != nil {
+        return RestoreAsset(dir, name)
+    }
+    // Dir
+    for _, child := range children {
+        err = RestoreAssets(dir, filepath.Join(name, child))
+        if err != nil {
+            return err
+        }
+    }
+    return nil
 }
 
 func _filePath(dir, name string) string {
-	cannonicalName := strings.Replace(name, "\\", "/", -1)
-	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
+    cannonicalName := strings.Replace(name, "\\", "/", -1)
+    return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+
