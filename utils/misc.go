@@ -39,8 +39,12 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path"
+    "time"
 )
 
+const (
+    HTTP_TIMEOUT = 30
+)
 // ActionRecord is a container to keep track of
 // a whisk action struct and a location filepath we use to
 // map files and manifest declared actions
@@ -448,22 +452,42 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	http.DefaultClient.Transport = &http.Transport{
 		TLSClientConfig: tlsConfig,
 	}
-	res, err := http.DefaultClient.Do(req)
-	defer res.Body.Close()
+
+    var netTransport = &http.Transport{
+        TLSClientConfig: tlsConfig,
+    }
+
+    var netClient = &http.Client{
+        Timeout: time.Second * HTTP_TIMEOUT,
+        Transport: netTransport,
+    }
+
+	res, err := netClient.Do(req)
+    if err != nil {
+        errString := wski18n.T("Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n",
+            map[string]interface{}{"err": err.Error()})
+        whisk.Debug(whisk.DbgWarn, errString)
+    }
+
+    if res != nil {
+        defer res.Body.Close()
+    }
 
 	// Local openwhisk deployment sometimes only returns "application/json" as the content type
+    openWhiskInfo := OpenWhiskInfo{}
 	if err != nil || !strings.Contains(ct, res.Header.Get("Content-Type")) {
-		fmt.Println("failed get openwhisk info from internet")
-		fmt.Println("Start unmarshal Openwhisk info from local values")
-		err = json.Unmarshal(runtimeInfo, &op)
+        stdout := wski18n.T("Start to unmarshal Openwhisk info from local values.\n")
+        whisk.Debug(whisk.DbgInfo, stdout)
+		err = json.Unmarshal(runtimeInfo, &openWhiskInfo)
 	} else {
 		b, _ := ioutil.ReadAll(res.Body)
 		if b != nil && len(b) > 0 {
-			fmt.Println("Unmarshal Openwhisk info from internet")
-			err = json.Unmarshal(b, &op)
+            stdout := wski18n.T("Unmarshal Openwhisk info from internet.\n")
+            whisk.Debug(whisk.DbgInfo, stdout)
+			err = json.Unmarshal(b, &openWhiskInfo)
 		}
 	}
-	return
+	return openWhiskInfo, err
 }
 
 func ConvertToMap(op OpenWhiskInfo) (rt map[string][]string) {
@@ -476,7 +500,7 @@ func ConvertToMap(op OpenWhiskInfo) (rt map[string][]string) {
 			}
 		}
 	}
-	return
+	return rt
 }
 
 var runtimeInfo = []byte(`{
