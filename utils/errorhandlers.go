@@ -52,7 +52,7 @@ func PrintOpenWhiskError(err error) {
 	fmt.Fprintf(outputStream, "%s%s\n", color.RedString(wski18n.T("Error: ")), err.Error())
 }
 
-func PrintOpenWhiskOutput(err error) {
-	outputStream := colorable.NewColorableStderr()
-	fmt.Fprintf(outputStream, "%s%s\n", color.RedString(wski18n.T("Error: ")), err.Error())
+func PrintOpenWhiskOutput(output string) {
+    outputStream := colorable.NewColorableStdout()
+    fmt.Fprintf(outputStream, "%s", color.GreenString(output))
 }
