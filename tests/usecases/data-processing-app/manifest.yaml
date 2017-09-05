@@ -14,8 +14,9 @@ package:
   triggers:
     kafka-trigger:
       feed: Bluemix_kafka-broker_Credentials-1/messageHubFeed
-  seqeunces:
-    kafka-sequence: mhget-action, kafka/mhpost-action
+  sequences:
+    kafka-sequence:
+      actions: mhget-action, kafka/mhpost-action
   rules:
     kafka-inbound-rule:
       trigger: kafka-trigger
