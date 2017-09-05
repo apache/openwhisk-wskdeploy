@@ -26,7 +26,7 @@ import (
 	"testing"
 )
 
-func IntegrationTestHelloWorld(t *testing.T) {
+func TestHelloWorld(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")

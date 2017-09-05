@@ -59,7 +59,7 @@ func Write(manifest *ManifestYAML, filename string) {
 }
 
 func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
-	err := yaml.Unmarshal(input, manifest)
+	err := yaml.UnmarshalStrict(input, manifest)
 	if err != nil {
 		fmt.Printf("error happened during unmarshal :%v", err)
 		return err

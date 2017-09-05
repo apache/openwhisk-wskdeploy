@@ -53,7 +53,7 @@ type Action struct {
 	Version  string `yaml:"version"`  //used in manifest.yaml
 	Location string `yaml:"location"` //deprecated, used in manifest.yaml
 	Function string `yaml:"function"` //used in manifest.yaml
-	Runtime  string `yaml:"runtime"`  //used in manifest.yaml
+	Runtime  string `yaml:"runtime,omitempty"`  //used in manifest.yaml
 	//mapping to wsk.Action.Namespace
 	Namespace  string                 `yaml:"namespace"`  //used in deployment.yaml
 	Credential string                 `yaml:"credential"` //used in deployment.yaml

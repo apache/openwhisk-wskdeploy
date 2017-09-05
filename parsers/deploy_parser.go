@@ -24,7 +24,7 @@ import (
 )
 
 func (dm *YAMLParser) UnmarshalDeployment(input []byte, deploy *DeploymentYAML) error {
-	err := yaml.Unmarshal(input, deploy)
+	err := yaml.UnmarshalStrict(input, deploy)
 	if err != nil {
 		fmt.Printf("error happened during unmarshal :%v", err)
 		return err
