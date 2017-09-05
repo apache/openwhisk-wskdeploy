@@ -230,11 +230,10 @@ func (dm *YAMLParser) ComposeSequences(namespace string, mani *ManifestYAML) ([]
 	return s1, nil
 }
 
-func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []utils.ActionRecord, aub []*utils.ActionExposedURLBinding, err error) {
+func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []utils.ActionRecord, err error) {
 
 	var errorParser error
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
-	var au []*utils.ActionExposedURLBinding = make([]*utils.ActionExposedURLBinding, 0)
 
 	for key, action := range mani.Package.Actions {
 		splitmanipath := strings.Split(manipath, string(os.PathSeparator))
@@ -246,9 +245,6 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 
 		wskaction := new(whisk.Action)
 		//bind action, and exposed URL
-		aubinding := new(utils.ActionExposedURLBinding)
-		aubinding.ActionName = key
-		aubinding.ExposedUrl = action.ExposedUrl
 
 		wskaction.Exec = new(whisk.Exec)
 		if action.Function != "" {
@@ -322,7 +318,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			keyVal.Value, errorParser = ResolveParameter(name, &param)
 
 			if errorParser != nil {
-				return nil, nil, errorParser
+				return nil, errorParser
 			}
 
 			if keyVal.Value != nil {
@@ -357,14 +353,9 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 		record := utils.ActionRecord{wskaction, mani.Package.Packagename, action.Function}
 		s1 = append(s1, record)
 
-		//only append when the fields are exists
-		if aubinding.ActionName != "" && aubinding.ExposedUrl != "" {
-			au = append(au, aubinding)
-		}
-
 	}
 
-	return s1, au, nil
+	return s1, nil
 
 }
 
@@ -437,13 +428,16 @@ func (dm *YAMLParser) ComposeRules(manifest *ManifestYAML) ([]*whisk.Rule, error
 	return r1, nil
 }
 
-func (action *Action) ComposeWskAction(manipath string) (*whisk.Action, error) {
-	wskaction, err := utils.CreateActionFromFile(manipath, action.Location)
-	utils.Check(err)
-	wskaction.Name = action.Name
-	wskaction.Version = action.Version
-	wskaction.Namespace = action.Namespace
-	return wskaction, err
+func (dm *YAMLParser) ComposeApiRecords(manifest *ManifestYAML) ([]*whisk.ApiCreateRequest, error) {
+	pkg := manifest.Package
+	var acq []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
+	apis := pkg.GetApis()
+	for _, api := range apis {
+		acr := new(whisk.ApiCreateRequest)
+		acr.ApiDoc = api
+		acq = append(acq, acr)
+	}
+	return acq, nil
 }
 
 // TODO(): Support other valid Package Manifest types

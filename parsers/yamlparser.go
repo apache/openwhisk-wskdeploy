@@ -136,15 +136,15 @@ type Package struct {
 	//mapping to wsk.SentPackageNoPublish.Name
 	Packagename string `yaml:"name"` //used in manifest.yaml
 	//mapping to wsk.SentPackageNoPublish.Version
-	Version           string                `yaml:"version"` //used in manifest.yaml
-	License           string                `yaml:"license"` //used in manifest.yaml
-	Repositories      []Repository          `yaml:"repositories,omitempty"`
-	Dependencies      map[string]Dependency `yaml: dependencies`        // used in manifest.yaml
-	Function          string                `yaml:"function"`           //used in deployment.yaml
+	Version      string                `yaml:"version"` //used in manifest.yaml
+	License      string                `yaml:"license"` //used in manifest.yaml
+	Repositories []Repository          `yaml:"repositories,omitempty"`
+	Dependencies map[string]Dependency `yaml: dependencies` // used in manifest.yaml
+	Function     string                `yaml:"function"`    //used in deployment.yaml
 	//mapping to wsk.SentPackageNoPublish.Namespace
 	Namespace   string                 `yaml:"namespace"`  //used in both manifest.yaml and deployment.yaml
 	Credential  string                 `yaml:"credential"` //used in both manifest.yaml and deployment.yaml
-    ApiHost    string                  `yaml:"apiHost"`    //used in both manifest.yaml and deployment.yaml
+	ApiHost     string                 `yaml:"apiHost"`    //used in both manifest.yaml and deployment.yaml
 	Actions     map[string]Action      `yaml:"actions"`    //used in both manifest.yaml and deployment.yaml
 	Triggers    map[string]Trigger     `yaml:"triggers"`   //used in both manifest.yaml and deployment.yaml
 	Feeds       map[string]Feed        `yaml:"feeds"`      //used in both manifest.yaml and deployment.yaml
@@ -153,6 +153,7 @@ type Package struct {
 	Sequences   map[string]Sequence    `yaml:"sequences"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml: parameters` // used in manifest.yaml
+	Apis map[string]map[string]map[string]map[string]string `yaml:"apis"` //used in manifest.yaml
 }
 
 type Application struct {
@@ -162,7 +163,7 @@ type Application struct {
 	ApiHost    string             `yaml:"apiHost"`
 	Version    string             `yaml:"version"`
 	Packages   map[string]Package `yaml:"packages"` //used in deployment.yaml
-	Package    Package            `yaml:"package"`	// being deprecated, used in deployment.yaml
+	Package    Package            `yaml:"package"`  // being deprecated, used in deployment.yaml
 }
 
 type DeploymentYAML struct {
@@ -246,4 +247,30 @@ func (pkg *Package) GetFeedList() []Feed {
 		s1 = append(s1, feed)
 	}
 	return s1
+}
+
+// This is for parse the manifest yaml file.
+func (pkg *Package) GetApis() []*whisk.Api {
+	var apis = make([]*whisk.Api, 0)
+	for k, v := range pkg.Apis {
+		var apiName string = k
+		for k, v := range v {
+			var gatewayBasePath string = k
+			for k, v := range v {
+				var gatewayRelPath string = k
+				for k, v := range v {
+					api := &whisk.Api{}
+					api.ApiName = apiName
+					api.GatewayBasePath = gatewayBasePath
+					api.GatewayRelPath = gatewayRelPath
+					action := &whisk.ApiAction{}
+					action.Name = k
+					action.BackendMethod = v
+					api.Action = action
+					apis = append(apis, api)
+				}
+			}
+		}
+	}
+	return apis
 }

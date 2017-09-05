@@ -63,7 +63,7 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
     var err error
 	deps, err := manifestParser.ComposeDependencies(manifest, deployer.serviceDeployer.ProjectPath)
 
-	actions, aubindings, err := manifestParser.ComposeActions(manifest, deployer.serviceDeployer.ManifestPath)
+	actions, err := manifestParser.ComposeActions(manifest, deployer.serviceDeployer.ManifestPath)
 	utils.Check(err)
 
 	sequences, err := manifestParser.ComposeSequences(deployer.serviceDeployer.ClientConfig.Namespace, manifest)
@@ -74,6 +74,8 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 
 	rules, err := manifestParser.ComposeRules(manifest)
 	utils.Check(err)
+
+	apis, err := manifestParser.ComposeApiRecords(manifest)
 
 	err = deployer.SetDependencies(deps)
 	utils.Check(err)
@@ -90,12 +92,10 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 	err = deployer.SetRules(rules)
 	utils.Check(err)
 
-	//only set api if aubindings
-	if len(aubindings) != 0 {
-		err = deployer.SetApis(sdeployer, aubindings)
-	}
+	err = deployer.SetApis(apis)
 
-	return err
+	return nil
+
 }
 
 func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRecord) error {
@@ -231,9 +231,9 @@ func (reader *ManifestReader) SetSequences(actions []utils.ActionRecord) error {
 		// If the sequence action exists in actions, return error
 		_, exists := reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Actions[seqAction.Action.Name]
 		if exists == true {
-			return errors.New("manifestReader. Error: Conflict sequence action with an action. "+
-					"Found a sequence action with the same name of an action:"+
-					seqAction.Action.Name)
+			return errors.New("manifestReader. Error: Conflict sequence action with an action. " +
+				"Found a sequence action with the same name of an action:" +
+				seqAction.Action.Name)
 		}
 		existAction, exists := reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Sequences[seqAction.Action.Name]
 
@@ -307,17 +307,12 @@ func (reader *ManifestReader) SetRules(rules []*whisk.Rule) error {
 	return nil
 }
 
-func (reader *ManifestReader) SetApis(deployer *ServiceDeployer, aubs []*utils.ActionExposedURLBinding) error {
+func (reader *ManifestReader) SetApis(ar []*whisk.ApiCreateRequest) error {
 	dep := reader.serviceDeployer
 	var apis []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
-
-	for _, aub := range aubs {
-		api := createApiEntity(deployer, aub)
-		apis = append(apis, api)
-	}
 
 	for _, api := range apis {
 		existApi, exist := dep.Deployment.Apis[api.ApiDoc.ApiName]
@@ -329,31 +324,6 @@ func (reader *ManifestReader) SetApis(deployer *ServiceDeployer, aubs []*utils.A
 
 	}
 	return nil
-}
-
-// create the api entity according to the action definition and deployer.
-func createApiEntity(dp *ServiceDeployer, au *utils.ActionExposedURLBinding) *whisk.ApiCreateRequest {
-	sendapi := new(whisk.ApiCreateRequest)
-	api := new(whisk.Api)
-	//Compose the api
-	bindingInfo := strings.Split(au.ExposedUrl, "/")
-	api.Namespace = dp.Client.Namespace
-	//api.ApiName = ""
-	api.GatewayBasePath = bindingInfo[1]
-	api.GatewayRelPath = bindingInfo[2]
-	api.GatewayMethod = strings.ToUpper(bindingInfo[0])
-	api.Id = "API" + ":" + dp.ClientConfig.Namespace + ":" + "/" + api.GatewayBasePath
-	//api.GatewayFullPath = ""
-	//api.Swagger = ""
-	//compose the api action
-	api.Action = new(whisk.ApiAction)
-	api.Action.Name = au.ActionName
-	api.Action.Namespace = dp.ClientConfig.Namespace
-	api.Action.BackendMethod = "POST"
-	api.Action.BackendUrl = "https://" + dp.ClientConfig.Host + "/api/v1/namespaces/" + dp.ClientConfig.Namespace + "/actions/" + au.ActionName
-	api.Action.Auth = dp.Client.Config.AuthToken
-	sendapi.ApiDoc = api
-	return sendapi
 }
 
 // from whisk go client

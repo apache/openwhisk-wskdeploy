@@ -27,7 +27,7 @@ var undeployCmd = &cobra.Command{
 	Use:   "undeploy",
 	Short: "Undeploy assets from OpenWhisk",
 	Long:  `Undeploy removes deployed assets from the manifest and deployment files`,
-	RunE:   UndeployCmdImp,
+	RunE:  UndeployCmdImp,
 }
 
 func UndeployCmdImp(cmd *cobra.Command, args []string) error {

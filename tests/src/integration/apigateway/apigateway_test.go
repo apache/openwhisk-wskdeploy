@@ -1,3 +1,5 @@
+// +build integration
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,37 +17,25 @@
  * limitations under the License.
  */
 
-package utils
+package tests
 
-var Flags struct {
-	WithinOpenWhisk bool   // is this running within an OpenWhisk action?
-	ApiHost         string // OpenWhisk API host
-	Auth            string // OpenWhisk API key
-	Namespace       string
-	ApiVersion      string // OpenWhisk version
-	CfgFile         string
-	CliVersion      string
-	CliBuild        string
-	Verbose         bool
-	ProjectPath     string
-	DeploymentPath  string
-	ManifestPath    string
-	UseDefaults     bool
-	UseInteractive  bool
+import (
+	"testing"
+	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/stretchr/testify/assert"
+	"os"
+)
 
-	//action flag definition
-	//from go cli
-	action struct {
-		docker   bool
-		copy     bool
-		pipe     bool
-		web      string
-		sequence bool
-		timeout  int
-		memory   int
-		logsize  int
-		result   bool
-		kind     string
-		main     string
-	}
+var wskprops = common.GetWskprops()
+
+// TODO: write the integration against openwhisk
+func TestTriggerRule(t *testing.T) {
+	wskdeploy := common.NewWskdeploy()
+	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/apigateway/manifest.yml"
+	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
+	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest file.")
 }
+
+

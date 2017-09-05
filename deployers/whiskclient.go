@@ -23,7 +23,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
     "github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
@@ -32,40 +31,40 @@ import (
 )
 
 const (
-    COMMANDLINE = "wskdeploy command line"
-    DEFAULTVALUE = "default value"
-    WSKPROPS = ".wskprops"
-    WHISKPROPERTY = "whisk.properties"
-    INTERINPUT = "interactve input"
+	COMMANDLINE = "wskdeploy command line"
+	DEFAULTVALUE = "default value"
+	WSKPROPS = ".wskprops"
+	WHISKPROPERTY = "whisk.properties"
+	INTERINPUT = "interactve input"
 )
 
 type PropertyValue struct {
-    Value string
-    Source string
+	Value string
+	Source string
 }
 
 var GetPropertyValue = func (prop PropertyValue, newValue string, source string) PropertyValue {
-    if len(prop.Value) == 0 && len(newValue) > 0 {
-        prop.Value = newValue
-        prop.Source = source
-    }
-    return prop
+	if len(prop.Value) == 0 && len(newValue) > 0 {
+		prop.Value = newValue
+		prop.Source = source
+	}
+	return prop
 }
 
 var GetWskPropFromWskprops = func (pi whisk.Properties, proppath string) (*whisk.Wskprops, error) {
-    return whisk.GetWskPropFromWskprops(pi, proppath)
+	return whisk.GetWskPropFromWskprops(pi, proppath)
 }
 
 var GetWskPropFromWhiskProperty = func (pi whisk.Properties) (*whisk.Wskprops, error) {
-    return whisk.GetWskPropFromWhiskProperty(pi)
+	return whisk.GetWskPropFromWhiskProperty(pi)
 }
 
 var GetCommandLineFlags = func () (string, string, string) {
-    return utils.Flags.ApiHost, utils.Flags.Auth, utils.Flags.Namespace
+	return utils.Flags.ApiHost, utils.Flags.Auth, utils.Flags.Namespace
 }
 
 var CreateNewClient = func (httpClient *http.Client, config_input *whisk.Config) (*whisk.Client, error) {
-    return whisk.NewClient(http.DefaultClient, clientConfig)
+	return whisk.NewClient(http.DefaultClient, clientConfig)
 }
 
 func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string, isInteractive bool) (*whisk.Config, error) {
@@ -198,7 +197,6 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
     stdout = wski18n.T("The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
         map[string]interface{}{"namespace": namespace.Value, "namespacesource": namespace.Source})
     whisk.Debug(whisk.DbgInfo, stdout)
-
     return clientConfig, nil
 }
 
