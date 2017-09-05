@@ -38,6 +38,7 @@ import (
 	"github.com/hokaccha/go-prettyjson"
 	"io/ioutil"
 	"net/http"
+	"path"
 )
 
 // ActionRecord is a container to keep track of
@@ -589,6 +590,26 @@ func CheckExistRuntime(rtname string, rts map[string][]string) bool {
 		}
 	}
 	return false
+}
+
+func GetManifestFilePath(projectPath string) string {
+	if _, err := os.Stat(path.Join(projectPath, ManifestFileNameYaml)); err == nil {
+		return path.Join(projectPath, ManifestFileNameYaml)
+	} else if _, err := os.Stat(path.Join(projectPath, ManifestFileNameYml)); err == nil {
+		return path.Join(projectPath, ManifestFileNameYml)
+	} else {
+		return ""
+	}
+}
+
+func GetDeploymentFilePath(projectPath string) string {
+	if _, err := os.Stat(path.Join(projectPath, DeploymentFileNameYaml)); err == nil {
+		return path.Join(projectPath, DeploymentFileNameYaml)
+	} else if _, err := os.Stat(path.Join(projectPath, DeploymentFileNameYml)); err == nil {
+		return path.Join(projectPath, DeploymentFileNameYml)
+	} else {
+		return ""
+	}
 }
 
 // name of manifest and deployment files

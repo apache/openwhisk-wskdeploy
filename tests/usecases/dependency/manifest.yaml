@@ -3,6 +3,8 @@ package:
   dependencies:
     hellowhisk:
       location: github.com/paulcastro/hellowhisk
+    myhelloworld:
+      location: github.com/daisy-ycguo/wskdeploy-test/helloworld
     myCloudant:
       location: /whisk.system/cloudant
       inputs:
@@ -11,7 +13,7 @@ package:
         myAnnotation: Here it is
   sequences:
     mySequence:
-      actions: hellowhisk/greeting, hellowhisk/httpGet
+      actions: hellowhisk/greeting, hellowhisk/httpGet, myhelloworld/helloworld
   triggers:
     myTrigger:
   rules:

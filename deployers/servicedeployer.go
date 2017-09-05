@@ -839,8 +839,11 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 func (deployer *ServiceDeployer) getDependentDeployer(depName string, depRecord utils.DependencyRecord) (*ServiceDeployer, error) {
 	depServiceDeployer := NewServiceDeployer()
 	projectPath := path.Join(depRecord.ProjectPath, depName+"-"+depRecord.Version)
-	manifestPath := path.Join(projectPath, utils.ManifestFileNameYml)
-	deploymentPath := path.Join(projectPath, utils.DeploymentFileNameYaml)
+	if len(depRecord.SubFolder)>0 {
+		projectPath = path.Join(projectPath,depRecord.SubFolder)
+	}
+	manifestPath := utils.GetManifestFilePath(projectPath)
+	deploymentPath := utils.GetDeploymentFilePath(projectPath)
 	depServiceDeployer.ProjectPath = projectPath
 	depServiceDeployer.ManifestPath = manifestPath
 	depServiceDeployer.DeploymentPath = deploymentPath

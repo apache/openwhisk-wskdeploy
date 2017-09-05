@@ -24,13 +24,44 @@ import (
 )
 
 type DependencyRecord struct {
-	ProjectPath string
-	Packagename string
-	Location    string
-	Version     string
+	ProjectPath string	//root of the source codes of dependent projects, e.g. src_project_path/Packages
+	Packagename string	//name of the package
+	Location    string	//location
+	Version     string	//version
 	Parameters  whisk.KeyValueArr
 	Annotations whisk.KeyValueArr
 	IsBinding   bool
+	BaseRepo    string
+	SubFolder   string
+}
+
+func NewDependencyRecord(projectPath string,
+			packagename string,
+			location string,
+			version string,
+			parameters whisk.KeyValueArr,
+			annotations whisk.KeyValueArr,
+			isBinding bool) DependencyRecord {
+	var record DependencyRecord
+	record.ProjectPath = projectPath
+	record.Packagename = packagename
+	record.Location = location
+	record.Version = version
+	record.Parameters = parameters
+	record.Annotations = annotations
+	record.IsBinding = isBinding
+	//split url to BaseUrl and SubFolder
+	if !record.IsBinding {
+		paths := strings.Split(location, "/")
+		record.BaseRepo = strings.Join([]string{paths[0],paths[1],paths[2],paths[3],paths[4]},"/")
+		if len(paths)>5 {
+			record.SubFolder = strings.TrimPrefix(record.Location,record.BaseRepo)
+		} else {
+			record.SubFolder = ""
+		}
+	}
+
+	return record
 }
 
 func LocationIsBinding(location string) bool {
@@ -48,3 +79,4 @@ func LocationIsGithub(location string) bool {
 
 	return false
 }
+
