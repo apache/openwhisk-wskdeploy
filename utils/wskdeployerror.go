@@ -24,21 +24,22 @@ import (
 )
 
 const (
-	INVALID_YAML_INPUT = "Invalid input of Yaml file"
+    INVALID_YAML_INPUT = "Invalid input of Yaml file"
+    OPENWHISK_CLIENT_ERROR = "OpenWhisk Client Error"
 )
 
 type TestCaseError struct {
-	errorMessage string
+    errorMessage string
 }
 
 func NewTestCaseError(errorMessage string) *TestCaseError {
-	return &TestCaseError{
-		errorMessage: errorMessage,
-	}
+    return &TestCaseError{
+        errorMessage: errorMessage,
+    }
 }
 
 func (e *TestCaseError) Error() string {
-	return e.errorMessage
+    return e.errorMessage
 }
 
 type BaseErr struct {
@@ -81,6 +82,28 @@ func NewInputYamlFileError(errMessage string) *InputYamlFileError {
 
 func (e *InputYamlFileError) Error() string {
     return fmt.Sprintf("%s [%d]: %s =====> %s", e.FileName, e.LineNum, e.errorType, e.Message)
+}
+
+type WhiskClientError struct {
+    BaseErr
+    errorType string
+    errorCode int
+}
+
+func NewWhiskClientError(errMessage string, code int) *WhiskClientError {
+    _, fn, lineNum, _ := runtime.Caller(1)
+    var err = &WhiskClientError{
+        errorType: wski18n.T(OPENWHISK_CLIENT_ERROR),
+        errorCode: code,
+    }
+    err.SetFileName(fn)
+    err.SetLineNum(lineNum)
+    err.SetMessage(errMessage)
+    return err
+}
+
+func (e *WhiskClientError) Error() string {
+    return fmt.Sprintf("%s [%d]: %s =====> %s Error code: %d.", e.FileName, e.LineNum, e.errorType, e.Message, e.errorCode)
 }
 
 type InvalidWskpropsError struct {

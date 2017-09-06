@@ -12,8 +12,8 @@
     "translation": "Missing manifest.yaml file"
   },
   {
-  "id": "authorization `KEY`",
-  "translation": "authorization `KEY`"
+    "id": "authorization `KEY`",
+    "translation": "authorization `KEY`"
   },
   {
     "id": "whisk API `HOST`",
@@ -89,5 +89,123 @@
   {
     "id": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n",
     "translation": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Got error creating action with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "OpenWhisk Client Error",
+    "translation": "OpenWhisk Client Error"
+  },
+  {
+    "id": "Invalid input of Yaml file",
+    "translation": "Invalid input of Yaml file"
+  },
+  {
+    "id": "Got error creating api with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error creating api with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Got error creating rule with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error creating rule with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Got error creating trigger with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error creating trigger with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Got error creating trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error creating trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Got error creating package binding with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error creating package binding with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Deployment of dependency {{.depName}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n",
+    "translation": "Deployment of dependency {{.depName}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
+  },
+  {
+    "id": "Deploying action {{.output}} ...",
+    "translation": "Deploying action {{.output}} ..."
+  },
+  {
+    "id": "Deploying rule {{.output}} ...",
+    "translation": "Deploying rule {{.output}} ..."
+  },
+  {
+    "id": "Deploying trigger feed {{.output}} ...",
+    "translation": "Deploying trigger feed {{.output}} ..."
+  },
+  {
+    "id": "Deploying package {{.output}} ...",
+    "translation": "Deploying package {{.output}} ..."
+  },
+  {
+    "id": "Deploying package binding {{.output}} ...",
+    "translation": "Deploying package binding {{.output}} ..."
+  },
+  {
+    "id": "Deploying dependency {{.output}} ...",
+    "translation": "Deploying dependency {{.output}} ..."
+  },
+  {
+    "id": "OK. Cancelling deployment.\n",
+    "translation": "OK. Cancelling deployment.\n"
+  },
+  {
+    "id": "OK. Canceling undeployment.\n",
+    "translation": "OK. Canceling undeployment.\n"
+  },
+  {
+    "id": "Undeployment did not complete sucessfully.\n",
+    "translation": "Undeployment did not complete sucessfully.\n"
+  },
+  {
+    "id": "Deployment removed successfully.\n",
+    "translation": "Deployment removed successfully.\n"
+  },
+  {
+    "id": "Undeployment did not complete sucessfully.\n",
+    "translation": "Undeployment did not complete sucessfully.\n"
+  },
+  {
+    "id": "Undeploying dependency {{.depName}} ...",
+    "translation": "Undeploying dependency {{.depName}} ..."
+  },
+  {
+    "id": "Undeployment of dependency {{.depName}} did not complete sucessfully.\n",
+    "translation": "Undeployment of dependency {{.depName}} did not complete sucessfully.\n"
+  },
+  {
+    "id": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n"
   }
+
+
 ]
