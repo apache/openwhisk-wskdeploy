@@ -43,11 +43,11 @@ func (reader *DeploymentReader) HandleYaml() error {
 	dep := reader.serviceDeployer
 
 	deploymentParser := parsers.NewYAMLParser()
-	deployment := deploymentParser.ParseDeployment(dep.DeploymentPath)
+	deployment, err := deploymentParser.ParseDeployment(dep.DeploymentPath)
 
 	reader.DeploymentDescriptor = deployment
 
-	return nil
+	return err
 }
 
 // Update entities with deployment settings

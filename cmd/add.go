@@ -38,8 +38,11 @@ var addCmd = &cobra.Command{
 var actionCmd = &cobra.Command{
 	Use:   "action",
 	Short: "add action to the manifest file and create default directory structure.",
-	Run: func(cmd *cobra.Command, args []string) {
-		maniyaml := parsers.ReadOrCreateManifest()
+	RunE: func(cmd *cobra.Command, args []string) error {
+		maniyaml, err := parsers.ReadOrCreateManifest()
+        if err != nil {
+            return err
+        }
 
 		reader := bufio.NewReader(os.Stdin)
 		action := parsers.Action{}
@@ -59,10 +62,12 @@ var actionCmd = &cobra.Command{
 
 		// Create directory structure before update manifest, as a way
 		// to check the action name is a valid path name
-		err := os.MkdirAll("actions/"+action.Name, 0777)
-		utils.Check(err)
+		err = os.MkdirAll("actions/"+action.Name, 0777)
+        if err != nil {
+            return err
+        }
 
-		parsers.Write(maniyaml, utils.ManifestFileNameYaml)
+		return parsers.Write(maniyaml, utils.ManifestFileNameYaml)
 	},
 }
 
@@ -70,8 +75,11 @@ var actionCmd = &cobra.Command{
 var triggerCmd = &cobra.Command{
 	Use:   "trigger",
 	Short: "add trigger to the manifest file.",
-	Run: func(cmd *cobra.Command, args []string) {
-		maniyaml := parsers.ReadOrCreateManifest()
+	RunE: func(cmd *cobra.Command, args []string) error {
+		maniyaml, err := parsers.ReadOrCreateManifest()
+        if err != nil {
+            return err
+        }
 
 		reader := bufio.NewReader(os.Stdin)
 		trigger := parsers.Trigger{}
@@ -89,7 +97,7 @@ var triggerCmd = &cobra.Command{
 		trigger.Feed = utils.Ask(reader, "Feed", "")
 		maniyaml.Package.Triggers[trigger.Name] = trigger
 
-		parsers.Write(maniyaml, utils.ManifestFileNameYaml)
+		return parsers.Write(maniyaml, utils.ManifestFileNameYaml)
 	},
 }
 
@@ -97,8 +105,11 @@ var triggerCmd = &cobra.Command{
 var ruleCmd = &cobra.Command{
 	Use:   "rule",
 	Short: "add rule to the manifest file.",
-	Run: func(cmd *cobra.Command, args []string) {
-		maniyaml := parsers.ReadOrCreateManifest()
+	RunE: func(cmd *cobra.Command, args []string) error {
+		maniyaml, err := parsers.ReadOrCreateManifest()
+        if err != nil {
+            return err
+        }
 
 		reader := bufio.NewReader(os.Stdin)
 		rule := parsers.Rule{}
@@ -117,7 +128,7 @@ var ruleCmd = &cobra.Command{
 		rule.Trigger = utils.Ask(reader, "Trigger", "")
 		maniyaml.Package.Rules[rule.Rule] = rule
 
-		parsers.Write(maniyaml, utils.ManifestFileNameYaml)
+		return parsers.Write(maniyaml, utils.ManifestFileNameYaml)
 	},
 }
 

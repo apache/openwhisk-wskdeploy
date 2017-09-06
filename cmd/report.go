@@ -43,18 +43,18 @@ var reportCmd = &cobra.Command{
 	Long: `Command helps user get an overall report about what's been deployed
 on OpenWhisk with specific OpenWhisk namespace. By default it will read the wsk property file
 located under current user home.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		if wskpropsPath != "" {
 			config, _ := deployers.NewWhiskConfig(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
             client, _ := deployers.CreateNewClient(http.DefaultClient, config)
-            printDeploymentInfo(client)
+            return printDeploymentInfo(client)
 		} else {
             //default to ~/.wskprops
             userHome := utils.GetHomeDirectory()
             propPath := path.Join(userHome, ".wskprops")
             config, _ := deployers.NewWhiskConfig(propPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
             client, _ := deployers.CreateNewClient(http.DefaultClient, config)
-            printDeploymentInfo(client)
+            return printDeploymentInfo(client)
         }
 	},
 }
@@ -85,7 +85,9 @@ func printDeploymentInfo(*whisk.Client) error {
 	// we set the default package list options
 	pkgoptions := &whisk.PackageListOptions{false, 0, 0, 0, false}
 	packages, _, err := client.Packages.List(pkgoptions)
-	utils.Check(err)
+    if err != nil {
+        return err
+    }
 
 	// list all packages under current namespace.
 	go func() {
@@ -94,33 +96,41 @@ func printDeploymentInfo(*whisk.Client) error {
 	}()
 
 	// list all the actions under all the packages.
-	go func() {
+	go func() error {
 		defer wg.Done()
 		acnoptions := &whisk.ActionListOptions{0, 0, false}
 		for _, pkg := range packages {
 			actions, _, err := client.Actions.List(pkg.Name, acnoptions)
-			utils.Check(err)
+            if err != nil {
+                return err
+            }
 			printActionList(actions)
 		}
+        return nil
 	}()
 
 	// list all the triggers under current namespace.
-	go func() {
+	go func() error {
 		defer wg.Done()
 		troptions := &whisk.TriggerListOptions{0, 0, false}
-		_, _, err := client.Triggers.List(troptions)
-		utils.Check(err)
+        _, _, err := client.Triggers.List(troptions)
+        if err != nil {
+            return err
+        }
 		//printTriggerList(triggers)
-
+        return nil
 	}()
 
 	// list all the rules under current namespace.
-	go func() {
+	go func() error {
 		defer wg.Done()
 		roptions := &whisk.RuleListOptions{0, 0, false}
 		rules, _, err := client.Rules.List(roptions)
-		utils.Check(err)
+        if err != nil {
+            return err
+        }
 		printRuleList(rules)
+        return nil
 	}()
 
 	wg.Wait()

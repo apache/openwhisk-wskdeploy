@@ -46,8 +46,7 @@ type LocalReader struct {
 
 func (localReader *LocalReader) ReadLocal(path string) (content []byte, err error) {
 	cont, err := ioutil.ReadFile(path)
-	Check(err)
-	return cont, nil
+	return cont, err
 }
 
 func Read(url string) (content []byte, err error) {

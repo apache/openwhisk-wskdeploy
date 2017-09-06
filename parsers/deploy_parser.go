@@ -41,14 +41,18 @@ func (dm *YAMLParser) MarshalDeployment(deployment *DeploymentYAML) (output []by
 	return data, nil
 }
 
-func (dm *YAMLParser) ParseDeployment(dply string) *DeploymentYAML {
+func (dm *YAMLParser) ParseDeployment(dply string) (*DeploymentYAML, error) {
 	dplyyaml := DeploymentYAML{}
 	content, err := new(utils.ContentReader).LocalReader.ReadLocal(dply)
-	utils.Check(err)
+    if err != nil {
+        return &dplyyaml, utils.NewInputYamlFileError(err.Error())
+    }
 	err = dm.UnmarshalDeployment(content, &dplyyaml)
-	utils.Check(err)
+    if err != nil {
+        return &dplyyaml, utils.NewInputYamlFileError(err.Error())
+    }
 	dplyyaml.Filepath = dply
-	return &dplyyaml
+	return &dplyyaml, nil
 }
 
 //********************Application functions*************************//

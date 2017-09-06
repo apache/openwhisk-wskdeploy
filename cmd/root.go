@@ -153,8 +153,11 @@ func Deploy() error {
 	// also set debug mode to true.
 	whisk.SetDebug(utils.Flags.Verbose)
 
-	projectPath, err := filepath.Abs(utils.Flags.ProjectPath)
-	utils.Check(err)
+    project_Path := strings.TrimSpace(utils.Flags.ProjectPath)
+    if len(project_Path) == 0 {
+        project_Path = utils.DEFAULT_PROJECT_PATH
+    }
+	projectPath, _ := filepath.Abs(project_Path)
 
 	if utils.Flags.ManifestPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
@@ -220,13 +223,11 @@ func Deploy() error {
 		err := deployer.ConstructDeploymentPlan()
 
 		if err != nil {
-			utils.Check(err)
 			return err
 		}
 
 		err = deployer.Deploy()
 		if err != nil {
-			utils.Check(err)
 			return err
 		} else {
 			return nil
@@ -248,8 +249,11 @@ func Undeploy() error {
 	// also set debug mode to true.
 	whisk.SetDebug(utils.Flags.Verbose)
 
-	projectPath, err := filepath.Abs(utils.Flags.ProjectPath)
-	utils.Check(err)
+    project_Path := strings.TrimSpace(utils.Flags.ProjectPath)
+    if len(project_Path) == 0 {
+        project_Path = utils.DEFAULT_PROJECT_PATH
+    }
+    projectPath, _ := filepath.Abs(project_Path)
 
 	if utils.Flags.ManifestPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
@@ -310,7 +314,6 @@ func Undeploy() error {
 		verifiedPlan, err := deployer.ConstructUnDeploymentPlan()
 		err = deployer.UnDeploy(verifiedPlan)
 		if err != nil {
-			utils.Check(err)
 			return err
 		} else {
 			return nil

@@ -115,7 +115,9 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
     manifestReader.IsUndeploy = false
     var err error
     manifest, manifestParser, err := manifestReader.ParseManifest()
-    utils.Check(err)
+    if err != nil {
+        return err
+    }
 
     deployer.RootPackageName = manifest.Package.Packagename
 
@@ -124,14 +126,18 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
     if deployer.IsDefault == true {
         fileReader := NewFileSystemReader(deployer)
         fileActions, err := fileReader.ReadProjectDirectory(manifest)
-        utils.Check(err)
+        if err != nil {
+            return err
+        }
 
         fileReader.SetFileActions(fileActions)
     }
 
     // process manifest file
     err = manifestReader.HandleYaml(deployer, manifestParser, manifest)
-    utils.Check(err)
+    if err != nil {
+        return err
+    }
 
     // process deploymet file
     if utils.FileExists(deployer.DeploymentPath) {
@@ -150,7 +156,9 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
     manifestReader.IsUndeploy = true
     var err error
     manifest, manifestParser, err := manifestReader.ParseManifest()
-    utils.Check(err)
+    if err != nil {
+        return deployer.Deployment, err
+    }
 
     manifestReader.InitRootPackage(manifestParser, manifest)
 
@@ -158,16 +166,22 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
     if deployer.IsDefault == true {
         fileReader := NewFileSystemReader(deployer)
         fileActions, err := fileReader.ReadProjectDirectory(manifest)
-        utils.Check(err)
+        if err != nil {
+            return deployer.Deployment, err
+        }
 
         err = fileReader.SetFileActions(fileActions)
-        utils.Check(err)
+        if err != nil {
+            return deployer.Deployment, err
+        }
 
     }
 
     // process manifest file
     err = manifestReader.HandleYaml(deployer, manifestParser, manifest)
-    utils.Check(err)
+    if err != nil {
+        return deployer.Deployment, err
+    }
 
     // process deployment file
     if utils.FileExists(deployer.DeploymentPath) {
@@ -277,7 +291,9 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
                 bindingPackage.Publish = &pub
 
                 qName, err := utils.ParseQualifiedName(depRecord.Location, pack.Package.Namespace)
-                utils.Check(err)
+                if err != nil {
+                    return err
+                }
                 bindingPackage.Binding = whisk.Binding{qName.Namespace, qName.EntityName}
 
                 bindingPackage.Parameters = depRecord.Parameters
@@ -290,10 +306,14 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 
             } else {
                 depServiceDeployer, err := deployer.getDependentDeployer(depName, depRecord)
-                utils.Check(err)
+                if err != nil {
+                    return err
+                }
 
                 err = depServiceDeployer.ConstructDeploymentPlan()
-                utils.Check(err)
+                if err != nil {
+                    return err
+                }
 
                 if err := depServiceDeployer.deployAssets(); err != nil {
                     errString := wski18n.T("Deployment of dependency {{.depName}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n",
@@ -469,8 +489,9 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
     } else {
 
         qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
-
-        utils.Check(err)
+        if err != nil {
+            return err
+        }
 
         namespace := deployer.Client.Namespace
         deployer.Client.Namespace = qName.Namespace
@@ -648,14 +669,20 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
 
             if depRecord.IsBinding {
                 _, err := deployer.Client.Packages.Delete(depName)
-                utils.Check(err)
+                if err != nil {
+                    return err
+                }
             } else {
 
                 depServiceDeployer, err := deployer.getDependentDeployer(depName, depRecord)
-                utils.Check(err)
+                if err != nil {
+                    return err
+                }
 
                 plan, err := depServiceDeployer.ConstructUnDeploymentPlan()
-                utils.Check(err)
+                if err != nil {
+                    return err
+                }
 
                 if err := depServiceDeployer.unDeployAssets(plan); err != nil {
                     errString := wski18n.T("Undeployment of dependency {{.depName}} did not complete sucessfully.\n",
@@ -797,8 +824,9 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
         }
 
         qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
-
-        utils.Check(err)
+        if err != nil {
+            return err
+        }
 
         namespace := deployer.Client.Namespace
         deployer.Client.Namespace = qName.Namespace
