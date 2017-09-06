@@ -787,10 +787,7 @@ func TestComposeActionsForWebActions(t *testing.T) {
   actions:
     hello:
       function: ../tests/src/integration/helloworld/actions/hello.js
-      annotations:
-        foo: bar
       web-export: true`
-	// (TODO) remove annotations from manifest file after we fix issue # 313
 	dir, _ := os.Getwd()
 	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_web_actions_")
 	if err == nil {
