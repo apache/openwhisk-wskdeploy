@@ -1,0 +1,36 @@
+package:
+  name: manifest2
+  version: 1.0
+  license: Apache-2.0
+  actions:
+    first_action:
+    second_action:
+    third_action:
+  triggers:
+    trigger1:
+    trigger2:
+  rules:
+    rule1:
+      trigger: trigger1
+      action: first_action
+    rule3:
+      trigger: trigger2
+      action: second_action
+    rule2:
+      trigger: trigger1
+      action: second_action
+  feeds:
+    feed1:
+    feed2:
+    feed3:
+    feed4:
+  apis:
+    book-club: #api name
+      club: # shared base path
+        books:   #path
+           getBooks: get #action name:verb
+           postBooks: post
+           putBooks: put
+           deleteBooks: delete
+        members: #path
+           listMembers: get #action name:verb

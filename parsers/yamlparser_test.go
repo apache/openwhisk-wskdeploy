@@ -26,6 +26,7 @@ import (
 )
 
 var manifestfile1 = "../tests/dat/manifest1.yaml"
+var manifestfile2 = "../tests/dat/manifest2.yaml"
 var manifestfile3 = "../tests/dat/manifest3.yaml"
 var manifestfile4 = "../tests/dat/manifest4.yaml"
 var manifestfile5 = "../tests/dat/manifest5.yaml"
@@ -307,4 +308,44 @@ func TestComposeWskRule(t *testing.T) {
 			t.Error("Get rule name failed")
 		}
 	}
+}
+
+func TestGetActionList(t *testing.T) {
+	mm := NewYAMLParser()
+	manifest := mm.ParseManifest(manifestfile2)
+	pkg := manifest.Package
+	actions := pkg.GetActionList()
+	assert.Equal(t,3, len(actions), "Get action list failed.")
+}
+
+func TestGetTriggerList(t *testing.T) {
+	mm := NewYAMLParser()
+	manifest := mm.ParseManifest(manifestfile2)
+	pkg := manifest.Package
+	triggers := pkg.GetTriggerList()
+	assert.Equal(t,2, len(triggers), "Get trigger list failed.")
+}
+
+func TestGetRuleList(t *testing.T) {
+	mm := NewYAMLParser()
+	manifest := mm.ParseManifest(manifestfile2)
+	pkg := manifest.Package
+	rules := pkg.GetRuleList()
+	assert.Equal(t,3, len(rules), "Get trigger list failed.")
+}
+
+func TestGetFeedList(t *testing.T) {
+	mm := NewYAMLParser()
+	manifest := mm.ParseManifest(manifestfile2)
+	pkg := manifest.Package
+	feeds := pkg.GetFeedList()
+	assert.Equal(t,4, len(feeds), "Get feed list failed.")
+}
+
+func TestGetApisList(t *testing.T) {
+	mm := NewYAMLParser()
+	manifest := mm.ParseManifest(manifestfile2)
+	pkg := manifest.Package
+	apis := pkg.GetApis()
+	assert.Equal(t,5, len(apis), "Get api list failed.")
 }
