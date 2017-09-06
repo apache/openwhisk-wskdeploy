@@ -878,3 +878,289 @@ func TestResolveParameterForMultiLineParams(t *testing.T) {
 	assert.Empty(t, r6, "Expected default value of empty string but found "+r6.(string))
 
 }
+
+func _createTmpfile(data string, filename string) (f *os.File, err error) {
+	dir, _ := os.Getwd()
+	tmpfile, err := ioutil.TempFile(dir, filename)
+	if err != nil {
+		return nil, err
+	}
+	_, err = tmpfile.Write([]byte(data))
+	if err != nil {
+		return tmpfile, err
+	}
+	return tmpfile, nil
+}
+
+func TestComposePackage(t *testing.T) {
+	data :=`package:
+  name: helloworld
+  namespace: default`
+	tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
+	if err != nil {
+		assert.Fail(t, "Failed to create temp file")
+	}
+	defer func() {
+		tmpfile.Close()
+		os.Remove(tmpfile.Name())
+	}()
+	// read and parse manifest.yaml file
+	p := NewYAMLParser()
+	m := p.ParseManifest(tmpfile.Name())
+	pkg, err := p.ComposePackage(m)
+	if err == nil {
+		assert.Equal(t, "helloworld", pkg.Name, "Failed to get package name")
+		assert.Equal(t, "default", pkg.Namespace, "Failed to get package namespace")
+	} else {
+		assert.Fail(t, "Failed to compose package")
+	}
+}
+
+func TestComposeSequences(t *testing.T) {
+	data :=`package:
+  name: helloworld
+  sequences:
+    sequence1:
+      actions: action1, action2
+    sequence2:
+      actions: action3, action4, action5`
+	tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
+	if err != nil {
+		assert.Fail(t, "Failed to create temp file")
+	}
+	defer func() {
+		tmpfile.Close()
+		os.Remove(tmpfile.Name())
+	}()
+	// read and parse manifest.yaml file
+	p := NewYAMLParser()
+	m := p.ParseManifest(tmpfile.Name())
+	seqList, err := p.ComposeSequences("", m)
+	if err != nil {
+		assert.Fail(t, "Failed to compose sequences")
+	}
+	assert.Equal(t, 2, len(seqList), "Failed to get sequences")
+	for _, seq := range seqList {
+		wsk_action:=seq.Action
+		switch wsk_action.Name {
+		case "sequence1":
+			assert.Equal(t, "sequence", wsk_action.Exec.Kind, "Failed to set sequence exec kind")
+			assert.Equal(t, 2, len(wsk_action.Exec.Components), "Failed to set sequence exec components")
+			assert.Equal(t, "/helloworld/action1", wsk_action.Exec.Components[0], "Failed to set sequence 1st exec components")
+			assert.Equal(t, "/helloworld/action2", wsk_action.Exec.Components[1], "Failed to set sequence 2nd exec components")
+		case "sequence2":
+			assert.Equal(t, "sequence", wsk_action.Exec.Kind, "Failed to set sequence exec kind")
+			assert.Equal(t, 3, len(wsk_action.Exec.Components), "Failed to set sequence exec components")
+			assert.Equal(t, "/helloworld/action3", wsk_action.Exec.Components[0], "Failed to set sequence 1st exec components")
+			assert.Equal(t, "/helloworld/action4", wsk_action.Exec.Components[1], "Failed to set sequence 2nd exec components")
+			assert.Equal(t, "/helloworld/action5", wsk_action.Exec.Components[2], "Failed to set sequence 3rd exec components")
+		}
+	}
+}
+
+func TestComposeTriggers(t *testing.T) {
+//TODO 'source' should changed to 'feed' according to the spec after #450 is fixed.
+	data :=`package:
+  name: helloworld
+  triggers:
+    trigger1:
+      inputs:
+        name: string
+        place: string
+    trigger2:
+      source: myfeed
+      inputs:
+        name: myname
+        place: myplace`
+	tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
+	if err != nil {
+		assert.Fail(t, "Failed to create temp file")
+	}
+	defer func() {
+		tmpfile.Close()
+		os.Remove(tmpfile.Name())
+	}()
+	// read and parse manifest.yaml file
+	p := NewYAMLParser()
+	m := p.ParseManifest(tmpfile.Name())
+	triggerList, err := p.ComposeTriggers(m)
+	if err != nil {
+		assert.Fail(t, "Failed to compose trigger")
+	}
+
+	assert.Equal(t, 2, len(triggerList), "Failed to get trigger list")
+	for _, trigger := range triggerList {
+		switch trigger.Name {
+		case "trigger1":
+			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
+		case "trigger2":
+			assert.Equal(t, "feed", trigger.Annotations[0].Key, "Failed to set trigger annotation")
+			assert.Equal(t, "myfeed", trigger.Annotations[0].Value, "Failed to set trigger annotation")
+			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
+		}
+	}
+}
+
+func TestComposeRules(t *testing.T) {
+	data :=`package:
+  name: helloworld
+  rules:
+    rule1:
+      trigger: locationUpdate
+      action: greeting
+    rule2:
+      trigger: trigger1
+      action: action1`
+	tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
+	if err != nil {
+		assert.Fail(t, "Failed to create temp file")
+	}
+	defer func() {
+		tmpfile.Close()
+		os.Remove(tmpfile.Name())
+	}()
+	// read and parse manifest.yaml file
+	p := NewYAMLParser()
+	m := p.ParseManifest(tmpfile.Name())
+	ruleList, err := p.ComposeRules(m)
+	if err != nil {
+		assert.Fail(t, "Failed to compose rules")
+	}
+	assert.Equal(t, 2, len(ruleList), "Failed to get rules")
+	for _, rule := range ruleList {
+		switch rule.Name {
+		case "rule1":
+			assert.Equal(t, "locationUpdate", rule.Trigger, "Failed to set rule trigger")
+			assert.Equal(t, "helloworld/greeting", rule.Action, "Failed to set rule action")
+		case "rule2":
+			assert.Equal(t, "trigger1", rule.Trigger, "Failed to set rule trigger")
+			assert.Equal(t, "helloworld/action1", rule.Action, "Failed to set rule action")
+		}
+	}
+}
+
+func TestComposeApiRecords(t *testing.T) {
+	data :=`package:
+  name: helloworld
+  apis:
+    book-club:
+      club:
+        books:
+           putBooks: put
+           deleteBooks: delete
+        members:
+           listMembers: get
+    book-club2:
+      club2:
+        books2:
+           getBooks2: get
+           postBooks2: post
+        members2:
+           listMembers2: get`
+	tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
+	if err != nil {
+		assert.Fail(t, "Failed to create temp file")
+	}
+	defer func() {
+		tmpfile.Close()
+		os.Remove(tmpfile.Name())
+	}()
+	// read and parse manifest.yaml file
+	p := NewYAMLParser()
+	m := p.ParseManifest(tmpfile.Name())
+	apiList, err := p.ComposeApiRecords(m)
+	if err != nil {
+		assert.Fail(t, "Failed to compose api records")
+	}
+	assert.Equal(t, 6, len(apiList), "Failed to get api records")
+	for _, apiRecord := range apiList {
+		apiDoc := apiRecord.ApiDoc
+		action := apiDoc.Action
+		switch action.Name {
+		case "putBooks":
+			assert.Equal(t, "book-club", apiDoc.ApiName, "Failed to set api name")
+			assert.Equal(t, "club", apiDoc.GatewayBasePath, "Failed to set api base path")
+			assert.Equal(t, "books", apiDoc.GatewayRelPath, "Failed to set api rel path")
+			assert.Equal(t, "put", action.BackendMethod, "Failed to set api backend method")
+		case "deleteBooks":
+			assert.Equal(t, "book-club", apiDoc.ApiName, "Failed to set api name")
+			assert.Equal(t, "club", apiDoc.GatewayBasePath, "Failed to set api base path")
+			assert.Equal(t, "books", apiDoc.GatewayRelPath, "Failed to set api rel path")
+			assert.Equal(t, "delete", action.BackendMethod, "Failed to set api backend method")
+		case "listMembers":
+			assert.Equal(t, "book-club", apiDoc.ApiName, "Failed to set api name")
+			assert.Equal(t, "club", apiDoc.GatewayBasePath, "Failed to set api base path")
+			assert.Equal(t, "members", apiDoc.GatewayRelPath, "Failed to set api rel path")
+			assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
+		case "getBooks2":
+			assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
+			assert.Equal(t, "club2", apiDoc.GatewayBasePath, "Failed to set api base path")
+			assert.Equal(t, "books2", apiDoc.GatewayRelPath, "Failed to set api rel path")
+			assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
+		case "postBooks2":
+			assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
+			assert.Equal(t, "club2", apiDoc.GatewayBasePath, "Failed to set api base path")
+			assert.Equal(t, "books2", apiDoc.GatewayRelPath, "Failed to set api rel path")
+			assert.Equal(t, "post", action.BackendMethod, "Failed to set api backend method")
+		case "listMembers2":
+			assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
+			assert.Equal(t, "club2", apiDoc.GatewayBasePath, "Failed to set api base path")
+			assert.Equal(t, "members2", apiDoc.GatewayRelPath, "Failed to set api rel path")
+			assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
+		default:
+			assert.Fail(t, "Failed to get api action name")
+		}
+	}
+}
+
+func TestComposeDependencies(t *testing.T) {
+	data :=`package:
+  name: helloworld
+  dependencies:
+    myhelloworld:
+      location: github.com/user/repo/folder
+    myCloudant:
+      location: /whisk.system/cloudant
+      inputs:
+        dbname: myGreatDB
+      annotations:
+        myAnnotation: Here it is`
+	tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
+	if err != nil {
+		assert.Fail(t, "Failed to create temp file")
+	}
+	defer func() {
+		tmpfile.Close()
+		os.Remove(tmpfile.Name())
+	}()
+	// read and parse manifest.yaml file
+	p := NewYAMLParser()
+	m := p.ParseManifest(tmpfile.Name())
+	depdList, err := p.ComposeDependencies(m, "/project_folder")
+	if err != nil {
+		assert.Fail(t, "Failed to compose rules")
+	}
+	assert.Equal(t, 2, len(depdList), "Failed to get rules")
+	for depdy_name,depdy := range depdList {
+		assert.Equal(t, "helloworld", depdy.Packagename, "Failed to set dependecy isbinding")
+		assert.Equal(t, "/project_folder/Packages", depdy.ProjectPath, "Failed to set dependecy isbinding")
+		switch depdy_name {
+		case "myhelloworld":
+			assert.Equal(t, "https://github.com/user/repo/folder", depdy.Location, "Failed to set dependecy location")
+			assert.Equal(t, false, depdy.IsBinding, "Failed to set dependecy isbinding")
+			assert.Equal(t, "https://github.com/user/repo", depdy.BaseRepo, "Failed to set dependecy base repo url")
+			assert.Equal(t, "/folder", depdy.SubFolder, "Failed to set dependecy sub folder")
+		case "myCloudant":
+			assert.Equal(t, "/whisk.system/cloudant", depdy.Location, "Failed to set rule trigger")
+			assert.Equal(t, true, depdy.IsBinding, "Failed to set dependecy isbinding")
+			assert.Equal(t, 1, len(depdy.Parameters), "Failed to set dependecy parameter")
+			assert.Equal(t, 1, len(depdy.Annotations), "Failed to set dependecy annotation")
+			assert.Equal(t, "myAnnotation", depdy.Annotations[0].Key, "Failed to set dependecy parameter key")
+			assert.Equal(t, "Here it is", depdy.Annotations[0].Value, "Failed to set dependecy parameter value")
+			assert.Equal(t, "dbname", depdy.Parameters[0].Key, "Failed to set dependecy annotation key")
+			assert.Equal(t, "myGreatDB", depdy.Parameters[0].Value, "Failed to set dependecy annotation value")
+		default:
+			assert.Fail(t, "Failed to get dependency name")
+		}
+	}
+}

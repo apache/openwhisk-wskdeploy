@@ -101,7 +101,7 @@ type Trigger struct {
 	//mapping to wsk.Trigger.Name
 	Name        string
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
-	Source      string                 `yaml:source` // used in manifest.yaml
+	Source      string                 `yaml:source` // deprecated, used in manifest.yaml
 	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
 }
 
@@ -149,7 +149,7 @@ type Package struct {
 	Triggers    map[string]Trigger     `yaml:"triggers"`   //used in both manifest.yaml and deployment.yaml
 	Feeds       map[string]Feed        `yaml:"feeds"`      //used in both manifest.yaml and deployment.yaml
 	Rules       map[string]Rule        `yaml:"rules"`      //used in both manifest.yaml and deployment.yaml
-	Inputs      map[string]Parameter   `yaml:"inputs"`     //used in deployment.yaml
+	Inputs      map[string]Parameter   `yaml:"inputs"`     //deprecated, used in deployment.yaml
 	Sequences   map[string]Sequence    `yaml:"sequences"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml: parameters` // used in manifest.yaml
