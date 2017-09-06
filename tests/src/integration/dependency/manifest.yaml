@@ -1,15 +1,15 @@
 package:
   name: TestGitHubDependency
   dependencies:
-    openwhisk-app:
-      location: github.com/pritidesai/openwhisk-app
+    helloworlds:
+      location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
   triggers:
     trigger1:
     trigger2:
   rules:
     rule1:
       trigger: trigger1
-      action: openwhisk-app/hello
+      action: helloworlds/hello-js
     rule2:
       trigger: trigger2
-      action: openwhisk-app/helloworld
+      action: helloworlds/helloworld-js
