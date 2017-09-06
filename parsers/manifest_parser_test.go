@@ -216,16 +216,7 @@ func TestUnmarshalForMissingPackage(t *testing.T) {
 	// Unmarshal reads/parses manifest data and sets the values of ManifestYAML
 	// And returns an error if parsing a manifest data fails
 	err := NewYAMLParser().Unmarshal([]byte(data), &m)
-	fmt.Println("Error: ", err)
-	fmt.Println("Filepath: \"", m.Filepath, "\"")
-	fmt.Println("Package: ", m.Package)
-	fmt.Println("PackageName: \"", m.Package.Packagename, "\"")
-	fmt.Println("Number of Actions: ", len(m.Package.Actions))
-	fmt.Println("Actions: ", m.Package.Actions)
-	// (TODO) Unmarshal does not report any error even if manifest file is missing required section.
-	// (TODO) In this test case, "Package" section is missing which is not reported,
-	// (TODO) instead ManifestYAML is set to its zero values
-	// assert.NotNil(t, err, "Expected some error from Unmarshal but got no error")
+	assert.NotNil(t, err, "Expected some error from Unmarshal but got no error")
 }
 
 /*
