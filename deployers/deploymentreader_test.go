@@ -26,8 +26,8 @@ import (
 
 var sd *ServiceDeployer
 var dr *DeploymentReader
-var deployment_file = "../tests/usecases/openstack/deployment.yaml"
-var manifest_file = "../tests/usecases/openstack/manifest.yaml"
+var deployment_file = "../tests/usecases/github/deployment.yaml"
+var manifest_file = "../tests/usecases/github/manifest.yaml"
 
 func init() {
 	sd = NewServiceDeployer()
@@ -40,7 +40,7 @@ func init() {
 // Check DeploymentReader could handle deployment yaml successfully.
 func TestDeploymentReader_HandleYaml(t *testing.T) {
 	dr.HandleYaml()
-	assert.NotNil(t, dr.DeploymentDescriptor.Application.Packages["JiraBackupSolution"], "DeploymentReader handle deployment yaml failed.")
+	assert.NotNil(t, dr.DeploymentDescriptor.Application.Packages["GitHubCommits"], "DeploymentReader handle deployment yaml failed.")
 }
 
 func TestDeployerCheck(t *testing.T) {
