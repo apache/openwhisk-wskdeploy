@@ -1,0 +1,9 @@
+application:
+  name: IntegrationTest
+  packages:
+    ValidateYMLExtension:
+      actions:
+        helloNodejs:
+          inputs:
+            name: Irma
+            place: Florida

@@ -1,0 +1,9 @@
+application:
+  name: IntegrationTest
+  packages:
+    ValidateRandomFileNames:
+      actions:
+        helloNodejs:
+          inputs:
+            name: Katia
+            place: Gulf of Mexico

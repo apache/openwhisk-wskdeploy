@@ -1,0 +1,9 @@
+application:
+  name: IntegrationTest
+  packages:
+    ValidateYMLManifestWithYAMLDeployment:
+      actions:
+        helloNodejs:
+          inputs:
+            name: Harvey
+            place: Houston
