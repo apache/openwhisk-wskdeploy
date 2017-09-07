@@ -474,20 +474,19 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
     }
 
 	// Local openwhisk deployment sometimes only returns "application/json" as the content type
-    openWhiskInfo := OpenWhiskInfo{}
 	if err != nil || !strings.Contains(ct, res.Header.Get("Content-Type")) {
         stdout := wski18n.T("Start to unmarshal Openwhisk info from local values.\n")
         whisk.Debug(whisk.DbgInfo, stdout)
-		err = json.Unmarshal(runtimeInfo, &openWhiskInfo)
+		err = json.Unmarshal(runtimeInfo, &op)
 	} else {
 		b, _ := ioutil.ReadAll(res.Body)
 		if b != nil && len(b) > 0 {
             stdout := wski18n.T("Unmarshal Openwhisk info from internet.\n")
             whisk.Debug(whisk.DbgInfo, stdout)
-			err = json.Unmarshal(b, &openWhiskInfo)
+			err = json.Unmarshal(b, &op)
 		}
 	}
-	return openWhiskInfo, err
+	return
 }
 
 func ConvertToMap(op OpenWhiskInfo) (rt map[string][]string) {
@@ -500,7 +499,7 @@ func ConvertToMap(op OpenWhiskInfo) (rt map[string][]string) {
 			}
 		}
 	}
-	return rt
+	return
 }
 
 var runtimeInfo = []byte(`{
