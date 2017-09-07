@@ -160,6 +160,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
         return deployer.Deployment, err
     }
 
+    deployer.RootPackageName = manifest.Package.Packagename
     manifestReader.InitRootPackage(manifestParser, manifest)
 
     // process file system
@@ -323,6 +324,25 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
                 } else {
                     fmt.Println("Done!")
                 }
+
+                // if the RootPackageName is different from depName
+                // create a binding to the origin package
+                if (depServiceDeployer.RootPackageName != depName) {
+                    bindingPackage := new(whisk.BindingPackage)
+                    bindingPackage.Namespace = pack.Package.Namespace
+                    bindingPackage.Name = depName
+                    pub := false
+                    bindingPackage.Publish = &pub
+
+                    qName, err := utils.ParseQualifiedName(depServiceDeployer.RootPackageName, depServiceDeployer.Deployment.Packages[depServiceDeployer.RootPackageName].Package.Namespace)
+                    utils.Check(err)
+                    bindingPackage.Binding = whisk.Binding{qName.Namespace, qName.EntityName}
+
+                    bindingPackage.Parameters = depRecord.Parameters
+                    bindingPackage.Annotations = depRecord.Annotations
+
+                    deployer.createBinding(bindingPackage)
+		}
             }
         }
     }
@@ -682,6 +702,12 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
                 plan, err := depServiceDeployer.ConstructUnDeploymentPlan()
                 if err != nil {
                     return err
+                }
+
+		// delete binding pkg if the origin package name is different
+                if (depServiceDeployer.RootPackageName != depName) {
+                    _, err := deployer.Client.Packages.Delete(depName)
+                    utils.Check(err)
                 }
 
                 if err := depServiceDeployer.unDeployAssets(plan); err != nil {
