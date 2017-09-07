@@ -1,10 +1,8 @@
 application:
-  name: wskdeploy-samples
+  name: AppWithTriggerRule
 
   packages:
     triggerrule:
-      name: helloworld
-      namespace: guest
       actions:
         greeting:
           inputs:

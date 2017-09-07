@@ -1,0 +1,9 @@
+application:
+  name: UnitTestDeployers
+  packages:
+    ValidateDeploymentReader:
+      actions:
+        helloNodejs:
+          inputs:
+            name: Amy
+            place: Paris
