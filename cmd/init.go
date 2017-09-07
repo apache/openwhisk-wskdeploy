@@ -28,6 +28,7 @@ import (
 
 var initCmd = &cobra.Command{
 	Use:   "init",
+	SuggestFor: []string {"initialize"},
 	Short: "Init helps you create a manifest file on OpenWhisk",
 	Run: func(cmd *cobra.Command, args []string) {
 		maniyaml := parsers.ReadOrCreateManifest()
