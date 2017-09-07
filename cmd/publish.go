@@ -34,6 +34,7 @@ import (
 // publishCmd represents the publish command
 var publishCmd = &cobra.Command{
 	Use:   "publish",
+	SuggestFor: []string {"publicize"},
 	Short: "Publish a package to a registry",
 	Long:  `Publish a package to the registry set in ~/.wskprops`,
 	Run: func(cmd *cobra.Command, args []string) {

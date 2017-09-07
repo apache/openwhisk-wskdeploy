@@ -30,6 +30,7 @@ import (
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add",
+	SuggestFor: []string {"increase"},
 	Short: "Add an action, feed, trigger or rule to the manifest",
 }
 

@@ -29,6 +29,7 @@ func init() {
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
+	SuggestFor: []string {"edition", "release"},
 	Short: "Print the version number of openwhisk-wskdeploy",
 	Long:  `Print the version number of openwhisk-wskdeploy`,
 	Run: func(cmd *cobra.Command, args []string) {
