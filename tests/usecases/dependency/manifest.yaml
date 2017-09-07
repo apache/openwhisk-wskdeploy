@@ -2,9 +2,9 @@ package:
   name: opentest
   dependencies:
     hellowhisk:
-      location: github.com/paulcastro/hellowhisk
-    newpkg:
-      location: github.com/daisy-ycguo/wskdeploy-test/helloworld
+      location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+    myhelloworlds:
+      location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
     myCloudant:
       location: /whisk.system/cloudant
       inputs:
@@ -13,7 +13,7 @@ package:
         myAnnotation: Here it is
   sequences:
     mySequence:
-      actions: hellowhisk/greeting, hellowhisk/httpGet, newpkg/helloworld
+      actions: hellowhisk/greeting, hellowhisk/httpGet, myhelloworlds/hello-js
   triggers:
     myTrigger:
   rules:
