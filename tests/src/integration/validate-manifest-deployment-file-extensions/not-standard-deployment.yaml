@@ -1,0 +1,9 @@
+application:
+  name: IntegrationTest
+  packages:
+    ValidateNotStandardFileNames:
+      actions:
+        helloNodejs:
+          inputs:
+            name: Jose
+            place: Atlantic Ocean

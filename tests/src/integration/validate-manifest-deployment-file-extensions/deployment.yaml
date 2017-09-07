@@ -1,0 +1,9 @@
+application:
+  name: IntegrationTest
+  packages:
+    ValidateYAMLExtension:
+      actions:
+        helloNodejs:
+          inputs:
+            name: Harvey
+            place: Houston
