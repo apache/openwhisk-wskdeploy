@@ -25,6 +25,7 @@ import (
 
 const (
     INVALID_YAML_INPUT = "Invalid input of Yaml file"
+    INVALID_YAML_FORMAT = "Invalid input of Yaml format"
     OPENWHISK_CLIENT_ERROR = "OpenWhisk Client Error"
 )
 
@@ -80,8 +81,26 @@ func NewInputYamlFileError(errMessage string) *InputYamlFileError {
     return err
 }
 
+func (e *InputYamlFileError) SetErrorType(errorType string) {
+    e.errorType = errorType
+}
+
 func (e *InputYamlFileError) Error() string {
     return fmt.Sprintf("%s [%d]: %s =====> %s", e.FileName, e.LineNum, e.errorType, e.Message)
+}
+
+type InputYamlFormatError struct {
+    InputYamlFileError
+}
+
+func NewInputYamlFormatError(errMessage string) *InputYamlFormatError {
+    _, fn, lineNum, _ := runtime.Caller(1)
+    var err = &InputYamlFormatError{}
+    err.SetErrorType(wski18n.T(INVALID_YAML_FORMAT))
+    err.SetFileName(fn)
+    err.SetLineNum(lineNum)
+    err.SetMessage(errMessage)
+    return err
 }
 
 type WhiskClientError struct {

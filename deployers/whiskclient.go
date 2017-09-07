@@ -75,22 +75,26 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
     // First, we look up the above variables in the deployment file.
     if utils.FileExists(deploymentPath) {
         mm := parsers.NewYAMLParser()
-        deployment := mm.ParseDeployment(deploymentPath)
-        credential.Value = deployment.Application.Credential
-        credential.Source = path.Base(deploymentPath)
-        namespace.Value = deployment.Application.Namespace
-        namespace.Source = path.Base(deploymentPath)
-        apiHost.Value = deployment.Application.ApiHost
-        apiHost.Source = path.Base(deploymentPath)
+        deployment, err := mm.ParseDeployment(deploymentPath)
+        if err == nil {
+            credential.Value = deployment.Application.Credential
+            credential.Source = path.Base(deploymentPath)
+            namespace.Value = deployment.Application.Namespace
+            namespace.Source = path.Base(deploymentPath)
+            apiHost.Value = deployment.Application.ApiHost
+            apiHost.Source = path.Base(deploymentPath)
+        }
     }
 
     if len(credential.Value) == 0 || len(namespace.Value) == 0 || len(apiHost.Value) == 0 {
         if utils.FileExists(manifestPath) {
             mm := parsers.NewYAMLParser()
-            manifest := mm.ParseManifest(manifestPath)
-            credential = GetPropertyValue(credential, manifest.Package.Credential, path.Base(manifestPath))
-            namespace = GetPropertyValue(namespace, manifest.Package.Namespace, path.Base(manifestPath))
-            apiHost = GetPropertyValue(apiHost, manifest.Package.ApiHost, path.Base(manifestPath))
+            manifest, err := mm.ParseManifest(manifestPath)
+            if err == nil {
+                credential = GetPropertyValue(credential, manifest.Package.Credential, path.Base(manifestPath))
+                namespace = GetPropertyValue(namespace, manifest.Package.Namespace, path.Base(manifestPath))
+                apiHost = GetPropertyValue(apiHost, manifest.Package.ApiHost, path.Base(manifestPath))
+            }
         }
     }
 
@@ -130,8 +134,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
     // from the user. The namespace will be set to a default value, when the code reaches this line, because WSKPROPS
     // has a default value for namespace.
     if len(apiHost.Value) == 0 && isInteractive == true {
-        host, err := promptForValue("\nPlease provide the hostname for OpenWhisk [default value is openwhisk.ng.bluemix.net]: ")
-        utils.Check(err)
+        host := promptForValue("\nPlease provide the hostname for OpenWhisk [default value is openwhisk.ng.bluemix.net]: ")
         if host == "" {
             host = "openwhisk.ng.bluemix.net"
         }
@@ -140,15 +143,13 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
     }
 
     if len(credential.Value) == 0 && isInteractive == true {
-        cred, err := promptForValue("\nPlease provide an authentication token: ")
-        utils.Check(err)
+        cred := promptForValue("\nPlease provide an authentication token: ")
         credential.Value = cred
         credential.Source = INTERINPUT
 
         // The namespace is always associated with the credential. Both of them should be picked up from the same source.
         if len(namespace.Value) == 0 || namespace.Value == whisk.DEFAULT_NAMESPACE {
-            ns, err := promptForValue("\nPlease provide a namespace [default value is guest]: ")
-            utils.Check(err)
+            ns := promptForValue("\nPlease provide a namespace [default value is guest]: ")
 
             source := INTERINPUT
             if ns == "" {
@@ -200,13 +201,13 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
     return clientConfig, nil
 }
 
-var promptForValue = func (msg string) (string, error) {
+var promptForValue = func (msg string) (string) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(msg)
 
 	text, _ := reader.ReadString('\n')
 	text = strings.TrimSpace(text)
 
-	return text, nil
+	return text
 
 }

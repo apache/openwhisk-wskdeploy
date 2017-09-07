@@ -35,27 +35,34 @@ import (
 )
 
 // Read existing manifest file or create new if none exists
-func ReadOrCreateManifest() *ManifestYAML {
+func ReadOrCreateManifest() (*ManifestYAML, error) {
 	maniyaml := ManifestYAML{}
 
 	if _, err := os.Stat(utils.ManifestFileNameYaml); err == nil {
 		dat, _ := ioutil.ReadFile(utils.ManifestFileNameYaml)
 		err := NewYAMLParser().Unmarshal(dat, &maniyaml)
-		utils.Check(err)
+		if err != nil {
+            return &maniyaml, utils.NewInputYamlFileError(err.Error())
+        }
 	}
-	return &maniyaml
+	return &maniyaml, nil
 }
 
 // Serialize manifest to local file
-func Write(manifest *ManifestYAML, filename string) {
+func Write(manifest *ManifestYAML, filename string) error {
 	output, err := NewYAMLParser().Marshal(manifest)
-	utils.Check(err)
+    if err != nil {
+        return utils.NewInputYamlFormatError(err.Error())
+    }
 
 	f, err := os.Create(filename)
-	utils.Check(err)
+    if err != nil {
+        return utils.NewInputYamlFileError(err.Error())
+    }
 	defer f.Close()
 
 	f.Write(output)
+    return nil
 }
 
 func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
@@ -76,17 +83,21 @@ func (dm *YAMLParser) Marshal(manifest *ManifestYAML) (output []byte, err error)
 	return data, nil
 }
 
-func (dm *YAMLParser) ParseManifest(mani string) *ManifestYAML {
+func (dm *YAMLParser) ParseManifest(mani string) (*ManifestYAML, error) {
 	mm := NewYAMLParser()
 	maniyaml := ManifestYAML{}
 
 	content, err := utils.Read(mani)
-	utils.Check(err)
+	if err != nil {
+        return &maniyaml, utils.NewInputYamlFileError(err.Error())
+    }
 
 	err = mm.Unmarshal(content, &maniyaml)
-	utils.Check(err)
+    if err != nil {
+        return &maniyaml, utils.NewInputYamlFileError(err.Error())
+    }
 	maniyaml.Filepath = mani
-	return &maniyaml
+	return &maniyaml, nil
 }
 
 func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string) (map[string]utils.DependencyRecord, error) {
@@ -254,7 +265,6 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 				zipName := filePath + ".zip"
 				err = utils.NewZipWritter(filePath, zipName).Zip()
 				defer os.Remove(zipName)
-				utils.Check(err)
 				// To do: support docker and main entry as did by go cli?
 				wskaction.Exec, err = utils.GetExec(zipName, action.Runtime, false, "")
 			} else {
@@ -284,7 +294,9 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 
 				action.Function = filePath
 				dat, err := utils.Read(filePath)
-				utils.Check(err)
+                if err != nil {
+                    return s1, err
+                }
 				code := string(dat)
 				if ext == ".zip" || ext == ".jar" {
 					code = base64.StdEncoding.EncodeToString([]byte(dat))
@@ -343,7 +355,9 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 		if action.Webexport == "true" {
 			//wskaction.Annotations = keyValArr
 			wskaction.Annotations, err = utils.WebAction("yes", keyValArr, action.Name, false)
-			utils.Check(err)
+            if err != nil {
+                return s1, err
+            }
 		}
 
 		wskaction.Name = key

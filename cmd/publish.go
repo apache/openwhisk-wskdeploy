@@ -37,14 +37,16 @@ var publishCmd = &cobra.Command{
 	SuggestFor: []string {"publicize"},
 	Short: "Publish a package to a registry",
 	Long:  `Publish a package to the registry set in ~/.wskprops`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		// Get registry location
 
 		userHome := utils.GetHomeDirectory()
 		propPath := path.Join(userHome, ".wskprops")
 
 		configs, err := utils.ReadProps(propPath)
-		utils.Check(err)
+		if err != nil {
+            return err
+        }
 
 		registry, ok := configs["REGISTRY"]
 		if !ok {
@@ -66,7 +68,10 @@ var publishCmd = &cobra.Command{
 		}
 
 		// Get repo URL
-		maniyaml := parsers.ReadOrCreateManifest()
+		maniyaml, err := parsers.ReadOrCreateManifest()
+        if err != nil {
+            return err
+        }
 
 		if len(maniyaml.Package.Repositories) > 0 {
 			repoURL := maniyaml.Package.Repositories[0].Url
@@ -75,7 +80,7 @@ var publishCmd = &cobra.Command{
 			l := len(paths)
 			if l < 2 {
 				fmt.Print("Fatal error: malformed repository URL in manifest file :" + repoURL)
-				return
+				return nil
 			}
 
 			repo := paths[l-1]
@@ -84,14 +89,18 @@ var publishCmd = &cobra.Command{
 			// Send HTTP request
 			client := &http.Client{}
 			request, err := http.NewRequest("PUT", registry+"?owner="+owner+"&repo="+repo, nil)
-			utils.Check(err)
+			if err != nil {
+                return err
+            }
 			_, err = client.Do(request)
-			utils.Check(err)
+            if err != nil {
+                return err
+            }
 
 		} else {
 			fmt.Print("Fatal error: missing repository URL in manifest file.")
 		}
-
+        return nil
 	},
 }
 

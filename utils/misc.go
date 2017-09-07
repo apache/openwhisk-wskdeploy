@@ -44,6 +44,7 @@ import (
 
 const (
     HTTP_TIMEOUT = 30
+    DEFAULT_PROJECT_PATH = "."
 )
 // ActionRecord is a container to keep track of
 // a whisk action struct and a location filepath we use to

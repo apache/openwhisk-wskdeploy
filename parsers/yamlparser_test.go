@@ -192,7 +192,7 @@ func TestParseManifestYAML_param(t *testing.T) {
 func TestParseDeploymentYAML_Application(t *testing.T) {
 	//var deployment utils.DeploymentYAML
 	mm := NewYAMLParser()
-	deployment := mm.ParseDeployment(testfile1)
+	deployment, _ := mm.ParseDeployment(testfile1)
 
 	//get and verify application name
 	assert.Equal(t, "wskdeploy-samples", deployment.Application.Name, "Get application name failed.")
@@ -204,7 +204,7 @@ func TestParseDeploymentYAML_Application(t *testing.T) {
 func TestParseDeploymentYAML_Package(t *testing.T) {
 	//var deployment utils.DeploymentYAML
 	mm := NewYAMLParser()
-	deployment := mm.ParseDeployment(testfile2)
+	deployment, _ := mm.ParseDeployment(testfile2)
 
 	assert.Equal(t, 1, len(deployment.Application.Packages), "Get package list failed.")
 	for pkg_name := range deployment.Application.Packages {
@@ -224,7 +224,7 @@ func TestParseDeploymentYAML_Package(t *testing.T) {
 
 func TestParseDeploymentYAML_Action(t *testing.T) {
 	mm := NewYAMLParser()
-	deployment := mm.ParseDeployment(testfile2)
+    deployment, _ := mm.ParseDeployment(testfile2)
 
 	for pkg_name := range deployment.Application.Packages {
 
@@ -251,8 +251,8 @@ func TestParseDeploymentYAML_Action(t *testing.T) {
 
 func TestComposeWskPackage(t *testing.T) {
 	mm := NewYAMLParser()
-	deployment := mm.ParseDeployment(testfile2)
-	manifest := mm.ParseManifest(manifestfile1)
+    deployment, _ := mm.ParseDeployment(testfile2)
+	manifest, _ := mm.ParseManifest(manifestfile1)
 
 	pkglist := deployment.Application.GetPackageList()
 	for _, pkg := range pkglist {
@@ -269,8 +269,8 @@ func TestComposeWskPackage(t *testing.T) {
 
 func TestComposeWskTrigger(t *testing.T) {
 	mm := NewYAMLParser()
-	deployment := mm.ParseDeployment(testfile4)
-	manifest := mm.ParseManifest(manifestfile3)
+    deployment, _ := mm.ParseDeployment(testfile4)
+	manifest, _ := mm.ParseManifest(manifestfile3)
 
 	pkg := deployment.Application.GetPackageList()[0]
 	for _, trigger := range pkg.GetTriggerList() {
@@ -295,7 +295,7 @@ func TestComposeWskTrigger(t *testing.T) {
 
 func TestComposeWskRule(t *testing.T) {
 	mm := NewYAMLParser()
-	manifest := mm.ParseManifest(manifestfile4)
+	manifest, _ := mm.ParseManifest(manifestfile4)
 
 	pkg := manifest.Package
 	for _, rule := range pkg.GetRuleList() {
@@ -312,7 +312,7 @@ func TestComposeWskRule(t *testing.T) {
 
 func TestGetActionList(t *testing.T) {
 	mm := NewYAMLParser()
-	manifest := mm.ParseManifest(manifestfile2)
+	manifest, _ := mm.ParseManifest(manifestfile2)
 	pkg := manifest.Package
 	actions := pkg.GetActionList()
 	assert.Equal(t,3, len(actions), "Get action list failed.")
@@ -320,7 +320,7 @@ func TestGetActionList(t *testing.T) {
 
 func TestGetTriggerList(t *testing.T) {
 	mm := NewYAMLParser()
-	manifest := mm.ParseManifest(manifestfile2)
+	manifest, _ := mm.ParseManifest(manifestfile2)
 	pkg := manifest.Package
 	triggers := pkg.GetTriggerList()
 	assert.Equal(t,2, len(triggers), "Get trigger list failed.")
@@ -328,7 +328,7 @@ func TestGetTriggerList(t *testing.T) {
 
 func TestGetRuleList(t *testing.T) {
 	mm := NewYAMLParser()
-	manifest := mm.ParseManifest(manifestfile2)
+	manifest, _ := mm.ParseManifest(manifestfile2)
 	pkg := manifest.Package
 	rules := pkg.GetRuleList()
 	assert.Equal(t,3, len(rules), "Get trigger list failed.")
@@ -336,7 +336,7 @@ func TestGetRuleList(t *testing.T) {
 
 func TestGetFeedList(t *testing.T) {
 	mm := NewYAMLParser()
-	manifest := mm.ParseManifest(manifestfile2)
+	manifest, _ := mm.ParseManifest(manifestfile2)
 	pkg := manifest.Package
 	feeds := pkg.GetFeedList()
 	assert.Equal(t,4, len(feeds), "Get feed list failed.")
@@ -344,7 +344,7 @@ func TestGetFeedList(t *testing.T) {
 
 func TestGetApisList(t *testing.T) {
 	mm := NewYAMLParser()
-	manifest := mm.ParseManifest(manifestfile2)
+	manifest, _ := mm.ParseManifest(manifestfile2)
 	pkg := manifest.Package
 	apis := pkg.GetApis()
 	assert.Equal(t,5, len(apis), "Get api list failed.")

@@ -243,7 +243,7 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
 	// manifest file is located under ../tests folder
 	manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
 	// read and parse manifest.yaml file
-	m := NewYAMLParser().ParseManifest(manifestFile)
+	m, _ := NewYAMLParser().ParseManifest(manifestFile)
 
 	// validate package name should be "validate"
 	expectedPackageName := m.Package.Packagename
@@ -356,7 +356,7 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
 	// manifest file is located under ../tests folder
 	manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
 	// read and parse manifest.yaml file
-	m := NewYAMLParser().ParseManifest(manifestFile)
+	m, _ := NewYAMLParser().ParseManifest(manifestFile)
 
 	// validate package name should be "validate"
 	expectedPackageName := m.Package.Packagename
@@ -484,7 +484,7 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
 		if _, err := tmpfile.Write([]byte(data)); err == nil {
 			// read and parse manifest.yaml file
 			p := NewYAMLParser()
-			m := p.ParseManifest(tmpfile.Name())
+			m, _ := p.ParseManifest(tmpfile.Name())
 			actions, err := p.ComposeActions(m, tmpfile.Name())
 			var expectedResult string
 			if err == nil {
@@ -526,7 +526,7 @@ func TestComposeActionsForInvalidRuntime(t *testing.T) {
 		if _, err := tmpfile.Write([]byte(data)); err == nil {
 			// read and parse manifest.yaml file
 			p := NewYAMLParser()
-			m := p.ParseManifest(tmpfile.Name())
+			m, _ := p.ParseManifest(tmpfile.Name())
 			_, err := p.ComposeActions(m, tmpfile.Name())
 			// (TODO) uncomment the following test case after issue #307 is fixed
 			// (TODO) its failing right now as we are lacking check on invalid runtime
@@ -545,7 +545,7 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
 	manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
-	m := p.ParseManifest(manifestFile)
+	m, _ := p.ParseManifest(manifestFile)
 	actions, err := p.ComposeActions(m, manifestFile)
 
 	if err == nil {
@@ -630,7 +630,7 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
 	manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
-	m := p.ParseManifest(manifestFile)
+	m, _ := p.ParseManifest(manifestFile)
 	actions, err := p.ComposeActions(m, manifestFile)
 
 	if err == nil {
@@ -710,7 +710,7 @@ func TestComposeActionsForFunction(t *testing.T) {
 		if _, err := tmpfile.Write([]byte(data)); err == nil {
 			// read and parse manifest.yaml file
 			p := NewYAMLParser()
-			m := p.ParseManifest(tmpfile.Name())
+			m, _ := p.ParseManifest(tmpfile.Name())
 			actions, err := p.ComposeActions(m, tmpfile.Name())
 			var expectedResult, actualResult string
 			if err == nil {
@@ -795,7 +795,7 @@ func TestComposeActionsForWebActions(t *testing.T) {
 		if _, err := tmpfile.Write([]byte(data)); err == nil {
 			// read and parse manifest.yaml file
 			p := NewYAMLParser()
-			m := p.ParseManifest(tmpfile.Name())
+			m, _ := p.ParseManifest(tmpfile.Name())
 			actions, err := p.ComposeActions(m, tmpfile.Name())
 			if err == nil {
 				for i := 0; i < len(actions); i++ {
@@ -903,7 +903,7 @@ func TestComposePackage(t *testing.T) {
 	}()
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
-	m := p.ParseManifest(tmpfile.Name())
+	m, _ := p.ParseManifest(tmpfile.Name())
 	pkg, err := p.ComposePackage(m)
 	if err == nil {
 		assert.Equal(t, "helloworld", pkg.Name, "Failed to get package name")
@@ -931,7 +931,7 @@ func TestComposeSequences(t *testing.T) {
 	}()
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
-	m := p.ParseManifest(tmpfile.Name())
+	m, _ := p.ParseManifest(tmpfile.Name())
 	seqList, err := p.ComposeSequences("", m)
 	if err != nil {
 		assert.Fail(t, "Failed to compose sequences")
@@ -979,7 +979,7 @@ func TestComposeTriggers(t *testing.T) {
 	}()
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
-	m := p.ParseManifest(tmpfile.Name())
+	m, _ := p.ParseManifest(tmpfile.Name())
 	triggerList, err := p.ComposeTriggers(m)
 	if err != nil {
 		assert.Fail(t, "Failed to compose trigger")
@@ -1018,7 +1018,7 @@ func TestComposeRules(t *testing.T) {
 	}()
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
-	m := p.ParseManifest(tmpfile.Name())
+	m, _ := p.ParseManifest(tmpfile.Name())
 	ruleList, err := p.ComposeRules(m)
 	if err != nil {
 		assert.Fail(t, "Failed to compose rules")
@@ -1064,7 +1064,7 @@ func TestComposeApiRecords(t *testing.T) {
 	}()
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
-	m := p.ParseManifest(tmpfile.Name())
+	m, _ := p.ParseManifest(tmpfile.Name())
 	apiList, err := p.ComposeApiRecords(m)
 	if err != nil {
 		assert.Fail(t, "Failed to compose api records")
@@ -1132,7 +1132,7 @@ func TestComposeDependencies(t *testing.T) {
 	}()
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
-	m := p.ParseManifest(tmpfile.Name())
+	m, _ := p.ParseManifest(tmpfile.Name())
 	depdList, err := p.ComposeDependencies(m, "/project_folder")
 	if err != nil {
 		assert.Fail(t, "Failed to compose rules")
