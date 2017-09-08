@@ -48,14 +48,17 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.ManifestY
 	fmt.Println("Inspecting project directory for actions....")
 
 	projectPathCount, err := reader.getFilePathCount(reader.serviceDeployer.ProjectPath)
-	utils.Check(err)
-
 	actions := make([]utils.ActionRecord, 0)
+    if err != nil {
+        return actions, err
+    }
 
 	err = filepath.Walk(reader.serviceDeployer.ProjectPath, func(fpath string, f os.FileInfo, err error) error {
 		if fpath != reader.serviceDeployer.ProjectPath {
 			pathCount, err := reader.getFilePathCount(fpath)
-			utils.Check(err)
+            if err != nil {
+                return utils.NewInputYamlFileError(err.Error())
+            }
 
 			if !f.IsDir() {
 				if pathCount-projectPathCount == 1 || strings.HasPrefix(fpath, reader.serviceDeployer.ProjectPath+"/"+FileSystemSourceDirectoryName) {
@@ -73,7 +76,9 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.ManifestY
 
 					if foundFile == true {
 						_, action, err := reader.CreateActionFromFile(reader.serviceDeployer.ManifestPath, fpath)
-						utils.Check(err)
+                        if err != nil {
+                            return utils.NewInputYamlFileError(err.Error())
+                        }
 
 						var record utils.ActionRecord
 						record.Action = action
@@ -94,7 +99,7 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.ManifestY
 	})
 
 	if err != nil {
-		return nil, err
+		return actions, err
 	}
 
 	return actions, nil
@@ -122,7 +127,9 @@ func (reader *FileSystemReader) CreateActionFromFile(manipath, filePath string) 
 		}
 
 		dat, err := new(utils.ContentReader).LocalReader.ReadLocal(filePath)
-		utils.Check(err)
+        if err != nil {
+            return name, action, utils.NewInputYamlFileError(err.Error())
+        }
 
 		action.Exec = new(whisk.Exec)
 		code := string(dat)

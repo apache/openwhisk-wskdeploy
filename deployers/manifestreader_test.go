@@ -35,7 +35,7 @@ func init() {
 	sd.ManifestPath = manifest_file
 	mr = NewManfiestReader(sd)
 	ps = parsers.NewYAMLParser()
-	ms = ps.ParseManifest(manifest_file)
+	ms, _ = ps.ParseManifest(manifest_file)
 }
 
 // Test could parse Manifest file successfully
@@ -52,7 +52,7 @@ func TestManifestReader_InitRootPackage(t *testing.T) {
 
 // Test Parameters
 func TestManifestReader_param(t *testing.T) {
-	ms := ps.ParseManifest("../tests/dat/manifest6.yaml")
+	ms, _ := ps.ParseManifest("../tests/dat/manifest6.yaml")
 	err := mr.InitRootPackage(ps, ms)
 	assert.Equal(t, err, nil, "Init Root Package failed")
 
