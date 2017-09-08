@@ -1,20 +1,18 @@
-# A Travis CI configuration file.
-
 sudo: required
 
 language: go
 
 go:
-  - 1.8
+- 1.8
 
 services:
-  - docker
+- docker
 
 git:
   depth: 3
 
 before_install:
-  - ./tools/travis/cloneutils.sh
+  - "./tools/travis/cloneutils.sh"
 
 install:
   - export DEPLOY_BUILD_READY=false
@@ -22,7 +20,7 @@ install:
   - go get -u github.com/stretchr/testify
 
 script:
-  - ./tools/travis/script.sh
+  - "./tools/travis/script.sh"
 
 after_success:
   - DEPLOY_BUILD_READY=true
@@ -33,7 +31,7 @@ after_script:
 before_deploy:
   - export build_file_name=wskdeploy
   - go get github.com/inconshreveable/mousetrap
-  - ./tools/travis/build_tag_releases.sh $build_file_name
+  - "./tools/travis/build_tag_releases.sh $build_file_name"
   - export RELEASE_PKG_FILE=$(ls $build_file_name-*.zip)
   - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."
 
@@ -42,9 +40,14 @@ deploy:
   api_key:
     secure: aQGcP7XKlgZEFZ57y4RzYRHfQAM5HEdaa7Y/vTxNepIsE7zY2945qT99UJnU1hfhSjP9jO5eNlHzo+AqJoUx70+iUIhMTyOp39Qp7wb74OKolkXwcntufzP7Ocron5IYUE311tf/kic3vRb5cwoaE2lGfx5PdCuozVjgpsDbIRvV5quQzNr68Toqe+yegKwAhprYRWHPnuIqGbkfa83csqFv6m0viC/gvtFOCB9/4zGCqk/K3CKrcr/5GvnFPxJoaJNfFA6umSZ9VaJjbIJmcXGD3nU+rWP0uEpvzGKIMYhmQq/0JuUTgvh4jnnT4OVZeTh6pMaUqtWH+3HDrOiLAiLjcfeT91j7ZXPnx8LvM6SuoRlvRCuXA2FYx9mz2Vx0TWV5TMqhj3okVO/CvvnMMWwKWOUDD/nSMLy93BM40NjD7zimGjocPsGAjTT9H1PSfau3fiiMjg6iMRWjUTfNY5ra5Wgb7W5G37XaCBJDBZL77Blq/tNWdV5qW4A3l4FWnH+LwOdTdhU35Lr5JWzMuEDdkvVgEv8AQjb07P/ODtBW6z3GRv9Rslg9T9ylxkgJpXoYwdXCbtYU8GNcFdJiDpTaVHrkMeLvHrBTRrDCSnCnRFc3AxsUtLklo7R/EX1wUoX+QcAGjh/AmJ4nJVP1C09913fx96WczkRX6ANg2Mw=
   file_glob: true
-  file: ${build_file_name}-*.zip
+  file: "${build_file_name}-*.zip"
   skip_cleanup: true
   on:
     repo: apache/incubator-openwhisk-wskdeploy
     tags: true
     condition: "$DEPLOY_BUILD_READY = true"
+
+env:
+  global:
+    - BLUEMIX_APIHOST=openwhisk.ng.bluemix.net
+    - secure: f8CKUxpI0xp2N78ifCQCpOg0/LAzZv7cDhuYZvWB++LJ1tdwN+aHxYCRaDLNI49fogDqCoeIcJCy2uVCmNGEXwcUsGJ0Z28qvRsewsgwwnrny8E+NyqmV/DFfAWvR095lwfQsBiqdGJLcOU2ZXvog3+y2p/I14LCInkThLJSMjA56IDqYkbp8OUy5ncLUZ726PVb/N40hw5TTpgf+yKcHXlXOmRYwH54jvxduxz0RnDSpFuV9k2qCMP10f2GZcWhFUCdOU8kYrTsMbo0Mk712Q1N49V/9QB9ZrMGIbQqufFvp+E/Wf/mL7ANyRmG0C6eOnVrtsnhjzVVJrpv0oyV53HOwmL1FrMzJE65V35B0fi8fUgslEgxnYLXeCxRetOFOyJIjTA/wIZ7uyWPrXQa+QbcQixMLYn4xe7iJHuA+d1u3b5SOcjD+eBa/s+ihISwQoKkeDja6cL+5bROTcccE0hNC4ivadPKsosGdCDdSCQhQlzGbXDGx0psYe7/9J0tGgfPsnPdn1TFyTvJRjGAQyZVULGltgAFBxcVNAoeeez36cMUVmnqsmR0wf1XHNQhCwBuBY4ujyQC74ichPgDYByhLGeQ7aiHBqt1n58AidB9eWjhjvrfEEni/S28bS2StqZ+uSQKHkdgFtWoCRnBbw+p0cdPfyO8g8vIlJpaAKY=
