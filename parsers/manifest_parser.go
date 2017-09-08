@@ -31,6 +31,7 @@ import (
 	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"gopkg.in/yaml.v2"
 )
 
@@ -384,12 +385,21 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 		pub := false
 		wsktrigger.Publish = &pub
 
-		keyValArr := make(whisk.KeyValueArr, 0)
+		//print warning information when .Source is not empty
 		if trigger.Source != "" {
+			warningString := wski18n.T("WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n")
+			whisk.Debug(whisk.DbgWarn, warningString)
+		}
+		if trigger.Feed == "" {
+			trigger.Feed = trigger.Source
+		}
+
+		keyValArr := make(whisk.KeyValueArr, 0)
+		if trigger.Feed != "" {
 			var keyVal whisk.KeyValue
 
 			keyVal.Key = "feed"
-			keyVal.Value = trigger.Source
+			keyVal.Value = trigger.Feed
 
 			keyValArr = append(keyValArr, keyVal)
 

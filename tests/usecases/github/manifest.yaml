@@ -6,7 +6,7 @@ package:
             runtime: nodejs:6
     triggers:
         GitHubWebhookTrigger:
-            source: /whisk.system/github/webhook
+            feed: /whisk.system/github/webhook
     rules:
         rule-for-github-commits:
             action: print-github-commits
