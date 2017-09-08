@@ -9,15 +9,16 @@ BUILD=`git rev-parse HEAD`
 
 deps:
 	@echo "Installing dependencies"
+	rm -rf ${GOPATH}/src/gopkg.in/yaml.v2/
 	go get -d -t ./...
-
+	cp patch/Print-the-correct-line-numbers.patch ${GOPATH}/src/gopkg.in/yaml.v2/Print-the-correct-line-numbers.patch
+	cd ${GOPATH}/src/gopkg.in/yaml.v2; git apply Print-the-correct-line-numbers.patch
 
 LDFLAGS=-ldflags "-X main.Version=`date -u '+%Y-%m-%dT%H:%M:%S'` -X main.Build=`git rev-parse HEAD` "
 
 updatedeps:
 	@echo "Updating all dependencies"
 	@go get -d -u -f -fix -t ./...
-
 
 test: deps
 	@echo "Testing"

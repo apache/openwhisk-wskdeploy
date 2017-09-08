@@ -1,0 +1,39 @@
+From 1427c481ac7a92dee2b805712da66c0f6cff4948 Mon Sep 17 00:00:00 2001
+From: Vincent Hou <shou@us.ibm.com>
+Date: Mon, 11 Sep 2017 11:35:58 -0400
+Subject: [PATCH] Print the correct line numbers
+
+---
+ decode.go      | 2 +-
+ decode_test.go | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/decode.go b/decode.go
+index db1f5f2..0052344 100644
+--- a/decode.go
++++ b/decode.go
+@@ -641,7 +641,7 @@ func (d *decoder) mappingStruct(n *node, out reflect.Value) (good bool) {
+ 			d.unmarshal(n.children[i+1], value)
+ 			inlineMap.SetMapIndex(name, value)
+ 		} else if d.strict {
+-			d.terrors = append(d.terrors, fmt.Sprintf("line %d: field %s not found in struct %s", n.line+1, name.String(), out.Type()))
++			d.terrors = append(d.terrors, fmt.Sprintf("line %d: field %s not found in struct %s", ni.line+1, name.String(), out.Type()))
+ 		}
+ 	}
+ 	return true
+diff --git a/decode_test.go b/decode_test.go
+index 713b1ee..831a808 100644
+--- a/decode_test.go
++++ b/decode_test.go
+@@ -984,7 +984,7 @@ func (s *S) TestUnmarshalStrict(c *C) {
+ 	err = yaml.Unmarshal([]byte("a: 1\nb: 2\nc: 3"), &v)
+ 	c.Check(err, IsNil)
+ 	err = yaml.UnmarshalStrict([]byte("a: 1\nb: 2\nc: 3"), &v)
+-	c.Check(err, ErrorMatches, "yaml: unmarshal errors:\n  line 1: field c not found in struct struct { A int; B int }")
++	c.Check(err, ErrorMatches, "yaml: unmarshal errors:\n  line 3: field c not found in struct struct { A int; B int }")
+ }
+ 
+ //var data []byte
+-- 
+2.8.2
+

@@ -55,18 +55,26 @@ func (reader *GitReader) CloneDependency() error {
 
 	os.MkdirAll(reader.ProjectPath, os.ModePerm)
 	output, err := os.Create(path.Join(reader.ProjectPath, zipFileName))
-	Check(err)
+	if err != nil {
+        return err
+    }
 	defer output.Close()
 
 	response, err := http.Get(zipFilePath)
-	Check(err)
+    if err != nil {
+        return err
+    }
 	defer response.Body.Close()
 
 	_, err = io.Copy(output, response.Body)
-	Check(err)
+    if err != nil {
+        return err
+    }
 
 	zipReader, err := zip.OpenReader(path.Join(reader.ProjectPath, zipFileName))
-	Check(err)
+    if err != nil {
+        return err
+    }
 
 	u, err := url.Parse(reader.Url)
 	team, _ := path.Split(u.Path)
@@ -83,11 +91,15 @@ func (reader *GitReader) CloneDependency() error {
 		}
 
 		fileReader, err := file.Open()
-		Check(err)
+        if err != nil {
+            return err
+        }
 		defer fileReader.Close()
 
 		targetFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
-		Check(err)
+        if err != nil {
+            return err
+        }
 		defer targetFile.Close()
 
 		if _, err := io.Copy(targetFile, fileReader); err != nil {

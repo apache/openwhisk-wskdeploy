@@ -53,7 +53,7 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.ManifestYAML, *parsers
 }
 
 func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
-	packg, err := manifestParser.ComposePackage(manifest)
+	packg, err := manifestParser.ComposePackage(manifest, reader.serviceDeployer.ManifestPath)
 	if err != nil {
         return utils.NewInputYamlFormatError(err.Error())
     }
@@ -66,7 +66,7 @@ func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser
 func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
 
     var err error
-	deps, err := manifestParser.ComposeDependencies(manifest, deployer.serviceDeployer.ProjectPath)
+	deps, err := manifestParser.ComposeDependencies(manifest, deployer.serviceDeployer.ProjectPath, deployer.serviceDeployer.ManifestPath)
     if err != nil {
         return utils.NewInputYamlFormatError(err.Error())
     }
@@ -81,7 +81,7 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
         return utils.NewInputYamlFormatError(err.Error())
     }
 
-	triggers, err := manifestParser.ComposeTriggers(manifest)
+	triggers, err := manifestParser.ComposeTriggers(manifest, deployer.serviceDeployer.ManifestPath)
     if err != nil {
         return utils.NewInputYamlFormatError(err.Error())
     }
