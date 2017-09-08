@@ -142,7 +142,10 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
     // process deploymet file
     if utils.FileExists(deployer.DeploymentPath) {
         var deploymentReader = NewDeploymentReader(deployer)
-        deploymentReader.HandleYaml()
+        err = deploymentReader.HandleYaml()
+        if err != nil {
+            return err
+        }
 
         deploymentReader.BindAssets()
     }
@@ -187,7 +190,10 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
     // process deployment file
     if utils.FileExists(deployer.DeploymentPath) {
         var deploymentReader = NewDeploymentReader(deployer)
-        deploymentReader.HandleYaml()
+        err = deploymentReader.HandleYaml()
+        if err != nil {
+            return deployer.Deployment, err
+        }
 
         deploymentReader.BindAssets()
     }
@@ -335,7 +341,10 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
                     bindingPackage.Publish = &pub
 
                     qName, err := utils.ParseQualifiedName(depServiceDeployer.RootPackageName, depServiceDeployer.Deployment.Packages[depServiceDeployer.RootPackageName].Package.Namespace)
-                    utils.Check(err)
+                    if err != nil {
+                        return err
+                    }
+
                     bindingPackage.Binding = whisk.Binding{qName.Namespace, qName.EntityName}
 
                     bindingPackage.Parameters = depRecord.Parameters
@@ -707,7 +716,13 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
 		// delete binding pkg if the origin package name is different
                 if (depServiceDeployer.RootPackageName != depName) {
                     _, err := deployer.Client.Packages.Delete(depName)
-                    utils.Check(err)
+                    if err != nil {
+                        wskErr := err.(*whisk.WskError)
+                        errString := wski18n.T("Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n",
+                            map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
+                        whisk.Debug(whisk.DbgError, errString)
+                        return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+                    }
                 }
 
                 if err := depServiceDeployer.unDeployAssets(plan); err != nil {
@@ -950,7 +965,12 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
         fmt.Println("Name: " + pack.Package.Name)
         fmt.Println("    bindings: ")
         for _, p := range pack.Package.Parameters {
-            fmt.Printf("        - %s : %v\n", p.Key, utils.PrettyJSON(p.Value))
+            jsonValue, err := utils.PrettyJSON(p.Value)
+            if err != nil {
+                fmt.Printf("        - %s : %s\n", p.Key, "Unknown value")
+            } else {
+                fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+            }
         }
 
         for key, dep := range pack.Dependencies {
@@ -967,7 +987,12 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
             fmt.Println("  * action: " + action.Action.Name)
             fmt.Println("    bindings: ")
             for _, p := range action.Action.Parameters {
-                fmt.Printf("        - %s : %v\n", p.Key, utils.PrettyJSON(p.Value))
+                jsonValue, err := utils.PrettyJSON(p.Value)
+                if err != nil {
+                    fmt.Printf("        - %s : %s\n", p.Key, "Unknown value")
+                } else {
+                    fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+                }
             }
             fmt.Println("    annotations: ")
             for _, p := range action.Action.Annotations {
@@ -990,7 +1015,12 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
         fmt.Println("    bindings: ")
 
         for _, p := range trigger.Parameters {
-            fmt.Printf("        - %s : %v\n", p.Key, utils.PrettyJSON(p.Value))
+            jsonValue, err := utils.PrettyJSON(p.Value)
+            if err != nil {
+                fmt.Printf("        - %s : %s\n", p.Key, "Unknown value")
+            } else {
+                fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+            }
         }
 
         fmt.Println("    annotations: ")

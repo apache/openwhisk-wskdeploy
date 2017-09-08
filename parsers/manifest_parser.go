@@ -69,7 +69,6 @@ func Write(manifest *ManifestYAML, filename string) error {
 func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
 	err := yaml.UnmarshalStrict(input, manifest)
 	if err != nil {
-		fmt.Printf("error happened during unmarshal :%v", err)
 		return err
 	}
 	return nil
@@ -84,24 +83,25 @@ func (dm *YAMLParser) Marshal(manifest *ManifestYAML) (output []byte, err error)
 	return data, nil
 }
 
-func (dm *YAMLParser) ParseManifest(mani string) (*ManifestYAML, error) {
+func (dm *YAMLParser) ParseManifest(manifestPath string) (*ManifestYAML, error) {
 	mm := NewYAMLParser()
 	maniyaml := ManifestYAML{}
 
-	content, err := utils.Read(mani)
+	content, err := utils.Read(manifestPath)
 	if err != nil {
         return &maniyaml, utils.NewInputYamlFileError(err.Error())
     }
 
 	err = mm.Unmarshal(content, &maniyaml)
     if err != nil {
-        return &maniyaml, utils.NewInputYamlFileError(err.Error())
+        lines, msgs := dm.convertErrorToLinesMsgs(err.Error())
+        return &maniyaml, utils.NewParserErr(manifestPath, lines, msgs)
     }
-	maniyaml.Filepath = mani
+	maniyaml.Filepath = manifestPath
 	return &maniyaml, nil
 }
 
-func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {
 
 	var errorParser error
 	depMap := make(map[string]utils.DependencyRecord)
@@ -137,7 +137,7 @@ func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value, errorParser = ResolveParameter(name, &param)
+			keyVal.Value, errorParser = ResolveParameter(name, &param, filePath)
 
 			if errorParser != nil {
 				return nil, errorParser
@@ -165,7 +165,7 @@ func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string
 }
 
 // Is we consider multi pacakge in one yaml?
-func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error) {
+func (dm *YAMLParser) ComposePackage(mani *ManifestYAML, filePath string) (*whisk.Package, error) {
 	var errorParser error
 
 	//mani := dm.ParseManifest(manipath)
@@ -181,7 +181,7 @@ func (dm *YAMLParser) ComposePackage(mani *ManifestYAML) (*whisk.Package, error)
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
 
-		keyVal.Value, errorParser = ResolveParameter(name, &param)
+		keyVal.Value, errorParser = ResolveParameter(name, &param, filePath)
 
 		if errorParser != nil {
 			return nil, errorParser
@@ -328,7 +328,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value, errorParser = ResolveParameter(name, &param)
+			keyVal.Value, errorParser = ResolveParameter(name, &param, manipath)
 
 			if errorParser != nil {
 				return nil, errorParser
@@ -374,7 +374,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 
 }
 
-func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger, error) {
+func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML, filePath string) ([]*whisk.Trigger, error) {
 	var errorParser error
 	var t1 []*whisk.Trigger = make([]*whisk.Trigger, 0)
 	pkg := manifest.Package
@@ -411,7 +411,7 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML) ([]*whisk.Trigger,
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value, errorParser = ResolveParameter(name, &param)
+			keyVal.Value, errorParser = ResolveParameter(name, &param, filePath)
 
 			if errorParser != nil {
 				return nil, errorParser
@@ -516,7 +516,7 @@ func getTypeDefaultValue(typeName string) interface{} {
 	return nil
 }
 
-func ResolveParamTypeFromValue(value interface{}) (string, error) {
+func ResolveParamTypeFromValue(value interface{}, filePath string) (string, error) {
 	// Note: string is the default type if not specified.
 	var paramType string = "string"
 	var err error = nil
@@ -531,7 +531,9 @@ func ResolveParamTypeFromValue(value interface{}) (string, error) {
 
 		} else {
 			// raise an error if param is not a known type
-			err = utils.NewParserErr("Parameter value is not a known type. ["+actualType+"]")
+            lines := []string{"Line Unknown"}
+            msgs := []string{"Parameter value is not a known type. ["+actualType+"]"}
+			err = utils.NewParserErr(filePath, lines, msgs)
 		}
 	} else {
 
@@ -544,7 +546,7 @@ func ResolveParamTypeFromValue(value interface{}) (string, error) {
 
 // Resolve input parameter (i.e., type, value, default)
 // Note: parameter values may set later (overriddNen) by an (optional) Deployment file
-func ResolveParameter(paramName string, param *Parameter) (interface{}, error) {
+func ResolveParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
 
 	var errorParser error
 	var tempType string
@@ -558,7 +560,7 @@ func ResolveParameter(paramName string, param *Parameter) (interface{}, error) {
 	if !param.multiline {
 		// we have a single-line parameter declaration
 		// We need to identify parameter Type here for later validation
-		param.Type, errorParser = ResolveParamTypeFromValue(param.Value)
+		param.Type, errorParser = ResolveParamTypeFromValue(param.Value, filePath)
 
 	} else {
 		// we have a multi-line parameter declaration
@@ -570,11 +572,13 @@ func ResolveParameter(paramName string, param *Parameter) (interface{}, error) {
 
 		// if we also have a type at this point, verify value (and/or default) matches type, if not error
 		// Note: if either the value or default is in conflict with the type then this is an error
-		tempType, errorParser = ResolveParamTypeFromValue(param.Value)
+		tempType, errorParser = ResolveParamTypeFromValue(param.Value, filePath)
 
 		// if we do not have a value or default, but have a type, find its default and use it for the value
 		if param.Type != "" && !isValidParameterType(param.Type) {
-			return value, utils.NewParserErr("Invalid Type for parameter. ["+param.Type+"]")
+            lines := []string{"Line Unknown"}
+            msgs := []string{"Invalid Type for parameter. ["+param.Type+"]"}
+			return value, utils.NewParserErr(filePath, lines, msgs)
 		} else if param.Type == "" {
 			param.Type = tempType
 		}

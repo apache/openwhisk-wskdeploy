@@ -31,8 +31,7 @@ var contentReader = new(ContentReader)
 var testfile = "../tests/dat/deployment.yaml"
 
 func TestLocalReader_ReadLocal(t *testing.T) {
-	b, err := contentReader.ReadLocal(testfile)
-	Check(err)
+	b, _ := contentReader.ReadLocal(testfile)
 	if b == nil {
 		t.Error("get local centent failed")
 	}
@@ -40,8 +39,7 @@ func TestLocalReader_ReadLocal(t *testing.T) {
 
 func TestURLReader_ReadUrl(t *testing.T) {
 	var exampleUrl = "http://www.baidu.com"
-	b, err := contentReader.ReadUrl(exampleUrl)
-	Check(err)
+	b, _ := contentReader.ReadUrl(exampleUrl)
 	if b == nil {
 		t.Error("get web content failed")
 	}

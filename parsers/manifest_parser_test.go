@@ -20,73 +20,73 @@
 package parsers
 
 import (
-	"fmt"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"reflect"
-	"strconv"
-	"testing"
+    "github.com/apache/incubator-openwhisk-wskdeploy/utils"
+    "github.com/stretchr/testify/assert"
+    "io/ioutil"
+    "os"
+    "testing"
+    "fmt"
+    "path/filepath"
+    "reflect"
+    "strconv"
 )
 
 // Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloNodeJS(t *testing.T) {
-	data := `
+    data := `
 package:
   name: helloworld
   actions:
     helloNodejs:
       function: actions/hello.js
       runtime: nodejs:6`
-	// set the zero value of struct ManifestYAML
-	m := ManifestYAML{}
-	// Unmarshal reads/parses manifest data and sets the values of ManifestYAML
-	// And returns an error if parsing a manifest data fails
-	err := NewYAMLParser().Unmarshal([]byte(data), &m)
-	if err == nil {
-		// ManifestYAML.Filepath does not get set by Parsers.Unmarshal
-		// as it takes manifest YAML data as a function parameter
-		// instead of file name of a manifest file, therefore there is
-		// no way for Unmarshal function to set ManifestYAML.Filepath field
-		// (TODO) Ideally we should change this functionality so that
-		// (TODO) filepath is set to the actual path of the manifest file
-		expectedResult := ""
-		actualResult := m.Filepath
-		assert.Equal(t, expectedResult, actualResult, "Expected filepath to be an empty"+
-			" string instead its set to "+actualResult+" which is invalid value")
-		// package name should be "helloworld"
-		expectedResult = "helloworld"
-		actualResult = m.Package.Packagename
-		assert.Equal(t, expectedResult, actualResult, "Expected package name "+expectedResult+" but got "+actualResult)
-		// manifest should contain only one action
-		expectedResult = string(1)
-		actualResult = string(len(m.Package.Actions))
-		assert.Equal(t, expectedResult, actualResult, "Expected 1 but got "+actualResult)
-		// get the action payload from the map of actions which is stored in
-		// ManifestYAML.Package.Actions with the type of map[string]Action
-		actionName := "helloNodejs"
-		if action, ok := m.Package.Actions[actionName]; ok {
-			// location/function of an action should be "actions/hello.js"
-			expectedResult = "actions/hello.js"
-			actualResult = action.Function
-			assert.Equal(t, expectedResult, actualResult, "Expected action function "+expectedResult+" but got "+actualResult)
-			// runtime of an action should be "nodejs:6"
-			expectedResult = "nodejs:6"
-			actualResult = action.Runtime
-			assert.Equal(t, expectedResult, actualResult, "Expected action runtime "+expectedResult+" but got "+actualResult)
-		} else {
-			t.Error("Action named " + actionName + " does not exist.")
-		}
-	}
+    // set the zero value of struct ManifestYAML
+    m := ManifestYAML{}
+    // Unmarshal reads/parses manifest data and sets the values of ManifestYAML
+    // And returns an error if parsing a manifest data fails
+    err := NewYAMLParser().Unmarshal([]byte(data), &m)
+    if err == nil {
+        // ManifestYAML.Filepath does not get set by Parsers.Unmarshal
+        // as it takes manifest YAML data as a function parameter
+        // instead of file name of a manifest file, therefore there is
+        // no way for Unmarshal function to set ManifestYAML.Filepath field
+        // (TODO) Ideally we should change this functionality so that
+        // (TODO) filepath is set to the actual path of the manifest file
+        expectedResult := ""
+        actualResult := m.Filepath
+        assert.Equal(t, expectedResult, actualResult, "Expected filepath to be an empty" +
+            " string instead its set to " + actualResult + " which is invalid value")
+        // package name should be "helloworld"
+        expectedResult = "helloworld"
+        actualResult = m.Package.Packagename
+        assert.Equal(t, expectedResult, actualResult, "Expected package name " + expectedResult + " but got " + actualResult)
+        // manifest should contain only one action
+        expectedResult = string(1)
+        actualResult = string(len(m.Package.Actions))
+        assert.Equal(t, expectedResult, actualResult, "Expected 1 but got " + actualResult)
+        // get the action payload from the map of actions which is stored in
+        // ManifestYAML.Package.Actions with the type of map[string]Action
+        actionName := "helloNodejs"
+        if action, ok := m.Package.Actions[actionName]; ok {
+            // location/function of an action should be "actions/hello.js"
+            expectedResult = "actions/hello.js"
+            actualResult = action.Function
+            assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
+            // runtime of an action should be "nodejs:6"
+            expectedResult = "nodejs:6"
+            actualResult = action.Runtime
+            assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+        } else {
+            t.Error("Action named " + actionName + " does not exist.")
+        }
+    }
 }
 
 // Test 2: validate manifest_parser:Unmarshal() method with a sample manifest in Java
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloJava(t *testing.T) {
-	data := `
+    data := `
 package:
   name: helloworld
   actions:
@@ -94,87 +94,87 @@ package:
       function: actions/hello.jar
       runtime: java
       main: Hello`
-	m := ManifestYAML{}
-	err := NewYAMLParser().Unmarshal([]byte(data), &m)
-	// nothing to test if Unmarshal returns an err
-	if err == nil {
-		// get an action from map of actions where key is action name and
-		// value is Action struct
-		actionName := "helloJava"
-		if action, ok := m.Package.Actions[actionName]; ok {
-			// runtime of an action should be java
-			expectedResult := "java"
-			actualResult := action.Runtime
-			assert.Equal(t, expectedResult, actualResult, "Expected action runtime "+expectedResult+" but got "+actualResult)
-			// Main field should be set to "Hello"
-			expectedResult = action.Main
-			actualResult = "Hello"
-			assert.Equal(t, expectedResult, actualResult, "Expected action main function "+expectedResult+" but got "+actualResult)
-		} else {
-			t.Error("Expected action named " + actionName + " but does not exist.")
-		}
-	}
+    m := ManifestYAML{}
+    err := NewYAMLParser().Unmarshal([]byte(data), &m)
+    // nothing to test if Unmarshal returns an err
+    if err == nil {
+        // get an action from map of actions where key is action name and
+        // value is Action struct
+        actionName := "helloJava"
+        if action, ok := m.Package.Actions[actionName]; ok {
+            // runtime of an action should be java
+            expectedResult := "java"
+            actualResult := action.Runtime
+            assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+            // Main field should be set to "Hello"
+            expectedResult = action.Main
+            actualResult = "Hello"
+            assert.Equal(t, expectedResult, actualResult, "Expected action main function " + expectedResult + " but got " + actualResult)
+        } else {
+            t.Error("Expected action named " + actionName + " but does not exist.")
+        }
+    }
 }
 
 // Test 3: validate manifest_parser:Unmarshal() method with a sample manifest in Python
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloPython(t *testing.T) {
-	data := `
+    data := `
 package:
   name: helloworld
   actions:
     helloPython:
       function: actions/hello.py
       runtime: python`
-	m := ManifestYAML{}
-	err := NewYAMLParser().Unmarshal([]byte(data), &m)
-	// nothing to test if Unmarshal returns an err
-	if err == nil {
-		// get an action from map of actions which is defined as map[string]Action{}
-		actionName := "helloPython"
-		if action, ok := m.Package.Actions[actionName]; ok {
-			// runtime of an action should be python
-			expectedResult := "python"
-			actualResult := action.Runtime
-			assert.Equal(t, expectedResult, actualResult, "Expected action runtime "+expectedResult+" but got "+actualResult)
-		} else {
-			t.Error("Expected action named " + actionName + " but does not exist.")
-		}
-	}
+    m := ManifestYAML{}
+    err := NewYAMLParser().Unmarshal([]byte(data), &m)
+    // nothing to test if Unmarshal returns an err
+    if err == nil {
+        // get an action from map of actions which is defined as map[string]Action{}
+        actionName := "helloPython"
+        if action, ok := m.Package.Actions[actionName]; ok {
+            // runtime of an action should be python
+            expectedResult := "python"
+            actualResult := action.Runtime
+            assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+        } else {
+            t.Error("Expected action named " + actionName + " but does not exist.")
+        }
+    }
 }
 
 // Test 4: validate manifest_parser:Unmarshal() method with a sample manifest in Swift
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloSwift(t *testing.T) {
-	data := `
+    data := `
 package:
   name: helloworld
   actions:
     helloSwift:
       function: actions/hello.swift
       runtime: swift`
-	m := ManifestYAML{}
-	err := NewYAMLParser().Unmarshal([]byte(data), &m)
-	// nothing to test if Unmarshal returns an err
-	if err == nil {
-		// get an action from map of actions which is defined as map[string]Action{}
-		actionName := "helloSwift"
-		if action, ok := m.Package.Actions[actionName]; ok {
-			// runtime of an action should be swift
-			expectedResult := "swift"
-			actualResult := action.Runtime
-			assert.Equal(t, expectedResult, actualResult, "Expected action runtime "+expectedResult+" but got "+actualResult)
-		} else {
-			t.Error("Expected action named " + actionName + " but does not exist.")
-		}
-	}
+    m := ManifestYAML{}
+    err := NewYAMLParser().Unmarshal([]byte(data), &m)
+    // nothing to test if Unmarshal returns an err
+    if err == nil {
+        // get an action from map of actions which is defined as map[string]Action{}
+        actionName := "helloSwift"
+        if action, ok := m.Package.Actions[actionName]; ok {
+            // runtime of an action should be swift
+            expectedResult := "swift"
+            actualResult := action.Runtime
+            assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+        } else {
+            t.Error("Expected action named " + actionName + " but does not exist.")
+        }
+    }
 }
 
 // Test 5: validate manifest_parser:Unmarshal() method for an action with parameters
 // validate that manifest_parser is able to read and parse the manifest data, specially
 // validate two input parameters and their values
 func TestUnmarshalForHelloWithParams(t *testing.T) {
-	var data = `
+    var data = `
 package:
    name: helloworld
    actions:
@@ -184,39 +184,39 @@ package:
        inputs:
          name: Amy
          place: Paris`
-	m := ManifestYAML{}
-	err := NewYAMLParser().Unmarshal([]byte(data), &m)
-	if err == nil {
-		actionName := "helloWithParams"
-		if action, ok := m.Package.Actions[actionName]; ok {
-			expectedResult := "Amy"
-			actualResult := action.Inputs["name"].Value.(string)
-			assert.Equal(t, expectedResult, actualResult,
-				"Expected input parameter "+expectedResult+" but got "+actualResult+"for name")
-			expectedResult = "Paris"
-			actualResult = action.Inputs["place"].Value.(string)
-			assert.Equal(t, expectedResult, actualResult,
-				"Expected input parameter "+expectedResult+" but got "+actualResult+"for place")
-		}
-	}
+    m := ManifestYAML{}
+    err := NewYAMLParser().Unmarshal([]byte(data), &m)
+    if err == nil {
+        actionName := "helloWithParams"
+        if action, ok := m.Package.Actions[actionName]; ok {
+            expectedResult := "Amy"
+            actualResult := action.Inputs["name"].Value.(string)
+            assert.Equal(t, expectedResult, actualResult,
+                "Expected input parameter " + expectedResult + " but got " + actualResult + "for name")
+            expectedResult = "Paris"
+            actualResult = action.Inputs["place"].Value.(string)
+            assert.Equal(t, expectedResult, actualResult,
+                "Expected input parameter " + expectedResult + " but got " + actualResult + "for place")
+        }
+    }
 }
 
 // Test 6: validate manifest_parser:Unmarshal() method for an invalid manifest
 // manifest_parser should report an error when a package section is missing
 func TestUnmarshalForMissingPackage(t *testing.T) {
-	data := `
+    data := `
   actions:
     helloNodejs:
       function: actions/hello.js
       runtime: nodejs:6
     helloJava:
       function: actions/hello.java`
-	// set the zero value of struct ManifestYAML
-	m := ManifestYAML{}
-	// Unmarshal reads/parses manifest data and sets the values of ManifestYAML
-	// And returns an error if parsing a manifest data fails
-	err := NewYAMLParser().Unmarshal([]byte(data), &m)
-	assert.NotNil(t, err, "Expected some error from Unmarshal but got no error")
+    // set the zero value of struct ManifestYAML
+    m := ManifestYAML{}
+    // Unmarshal reads/parses manifest data and sets the values of ManifestYAML
+    // And returns an error if parsing a manifest data fails
+    err := NewYAMLParser().Unmarshal([]byte(data), &m)
+    assert.NotNil(t, err, "Expected some error from Unmarshal but got no error")
 }
 
 /*
@@ -240,231 +240,231 @@ func TestUnmarshalForMissingPackage(t *testing.T) {
     default: <default value>
 */
 func TestParseManifestForMultiLineParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
-	// read and parse manifest.yaml file
-	m, _ := NewYAMLParser().ParseManifest(manifestFile)
+    // manifest file is located under ../tests folder
+    manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
+    // read and parse manifest.yaml file
+    m, _ := NewYAMLParser().ParseManifest(manifestFile)
 
-	// validate package name should be "validate"
-	expectedPackageName := m.Package.Packagename
-	actualPackageName := "validate"
-	assert.Equal(t, expectedPackageName, actualPackageName,
-		"Expected "+expectedPackageName+" but got "+actualPackageName)
+    // validate package name should be "validate"
+    expectedPackageName := m.Package.Packagename
+    actualPackageName := "validate"
+    assert.Equal(t, expectedPackageName, actualPackageName,
+        "Expected " + expectedPackageName + " but got " + actualPackageName)
 
-	// validate this package contains one action
-	expectedActionsCount := 1
-	actualActionsCount := len(m.Package.Actions)
-	assert.Equal(t, expectedActionsCount, actualActionsCount,
-		"Expected "+string(expectedActionsCount)+" but got "+string(actualActionsCount))
+    // validate this package contains one action
+    expectedActionsCount := 1
+    actualActionsCount := len(m.Package.Actions)
+    assert.Equal(t, expectedActionsCount, actualActionsCount,
+        "Expected " + string(expectedActionsCount) + " but got " + string(actualActionsCount))
 
-	// here Package.Actions holds a map of map[string]Action
-	// where string is the action name so in case you create two actions with
-	// same name, will go unnoticed
-	// also, the Action struct does not have name field set it to action name
-	actionName := "validate_multiline_params"
-	if action, ok := m.Package.Actions[actionName]; ok {
-		// validate location/function of an action to be "actions/dump_params.js"
-		expectedResult := "actions/dump_params.js"
-		actualResult := action.Function
-		assert.Equal(t, expectedResult, actualResult, "Expected action function "+expectedResult+" but got "+actualResult)
+    // here Package.Actions holds a map of map[string]Action
+    // where string is the action name so in case you create two actions with
+    // same name, will go unnoticed
+    // also, the Action struct does not have name field set it to action name
+    actionName := "validate_multiline_params"
+    if action, ok := m.Package.Actions[actionName]; ok {
+        // validate location/function of an action to be "actions/dump_params.js"
+        expectedResult := "actions/dump_params.js"
+        actualResult := action.Function
+        assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
 
-		// validate runtime of an action to be "nodejs:6"
-		expectedResult = "nodejs:6"
-		actualResult = action.Runtime
-		assert.Equal(t, expectedResult, actualResult, "Expected action runtime "+expectedResult+" but got "+actualResult)
+        // validate runtime of an action to be "nodejs:6"
+        expectedResult = "nodejs:6"
+        actualResult = action.Runtime
+        assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
 
-		// validate the number of inputs to this action
-		expectedResult = strconv.FormatInt(10, 10)
-		actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // validate the number of inputs to this action
+        expectedResult = strconv.FormatInt(10, 10)
+        actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// validate inputs to this action
-		for input, param := range action.Inputs {
-			switch input {
-			case "param_string_value_only":
-				expectedResult = "foo"
-				actualResult = param.Value.(string)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_int_value_only":
-				expectedResult = strconv.FormatInt(123, 10)
-				actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_float_value_only":
-				expectedResult = strconv.FormatFloat(3.14, 'f', -1, 64)
-				actualResult = strconv.FormatFloat(param.Value.(float64), 'f', -1, 64)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_string_type_and_value_only":
-				expectedResult = "foo"
-				actualResult = param.Value.(string)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-				expectedResult = "string"
-				actualResult = param.Type
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_string_type_only":
-				expectedResult = "string"
-				actualResult = param.Type
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_integer_type_only":
-				expectedResult = "integer"
-				actualResult = param.Type
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_float_type_only":
-				expectedResult = "float"
-				actualResult = param.Type
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_string_with_default":
-				expectedResult = "string"
-				actualResult = param.Type
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-				expectedResult = "bar"
-				actualResult = param.Default.(string)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_integer_with_default":
-				expectedResult = "integer"
-				actualResult = param.Type
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-				expectedResult = strconv.FormatInt(-1, 10)
-				actualResult = strconv.FormatInt(int64(param.Default.(int)), 10)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_float_with_default":
-				expectedResult = "float"
-				actualResult = param.Type
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-				expectedResult = strconv.FormatFloat(2.9, 'f', -1, 64)
-				actualResult = strconv.FormatFloat(param.Default.(float64), 'f', -1, 64)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			}
-		}
+        // validate inputs to this action
+        for input, param := range action.Inputs {
+            switch input {
+            case "param_string_value_only":
+                expectedResult = "foo"
+                actualResult = param.Value.(string)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_int_value_only":
+                expectedResult = strconv.FormatInt(123, 10)
+                actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_float_value_only":
+                expectedResult = strconv.FormatFloat(3.14, 'f', -1, 64)
+                actualResult = strconv.FormatFloat(param.Value.(float64), 'f', -1, 64)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_string_type_and_value_only":
+                expectedResult = "foo"
+                actualResult = param.Value.(string)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                expectedResult = "string"
+                actualResult = param.Type
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_string_type_only":
+                expectedResult = "string"
+                actualResult = param.Type
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_integer_type_only":
+                expectedResult = "integer"
+                actualResult = param.Type
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_float_type_only":
+                expectedResult = "float"
+                actualResult = param.Type
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_string_with_default":
+                expectedResult = "string"
+                actualResult = param.Type
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                expectedResult = "bar"
+                actualResult = param.Default.(string)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_integer_with_default":
+                expectedResult = "integer"
+                actualResult = param.Type
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                expectedResult = strconv.FormatInt(-1, 10)
+                actualResult = strconv.FormatInt(int64(param.Default.(int)), 10)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_float_with_default":
+                expectedResult = "float"
+                actualResult = param.Type
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                expectedResult = strconv.FormatFloat(2.9, 'f', -1, 64)
+                actualResult = strconv.FormatFloat(param.Default.(float64), 'f', -1, 64)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            }
+        }
 
-		// validate outputs
-		// output payload is of type string and has a description
-		if payload, ok := action.Outputs["payload"]; ok {
-			p := payload.(map[interface{}]interface{})
-			expectedResult = "string"
-			actualResult = p["type"].(string)
-			assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			expectedResult = "parameter dump"
-			actualResult = p["description"].(string)
-			assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-		}
-	}
+        // validate outputs
+        // output payload is of type string and has a description
+        if payload, ok := action.Outputs["payload"]; ok {
+            p := payload.(map[interface{}]interface{})
+            expectedResult = "string"
+            actualResult = p["type"].(string)
+            assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            expectedResult = "parameter dump"
+            actualResult = p["description"].(string)
+            assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        }
+    }
 }
 
 // Test 8: validate manifest_parser:ParseManifest() method for single line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestParseManifestForSingleLineParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
-	// read and parse manifest.yaml file
-	m, _ := NewYAMLParser().ParseManifest(manifestFile)
+    // manifest file is located under ../tests folder
+    manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
+    // read and parse manifest.yaml file
+    m, _ := NewYAMLParser().ParseManifest(manifestFile)
 
-	// validate package name should be "validate"
-	expectedPackageName := m.Package.Packagename
-	actualPackageName := "validate"
-	assert.Equal(t, expectedPackageName, actualPackageName,
-		"Expected "+expectedPackageName+" but got "+actualPackageName)
+    // validate package name should be "validate"
+    expectedPackageName := m.Package.Packagename
+    actualPackageName := "validate"
+    assert.Equal(t, expectedPackageName, actualPackageName,
+        "Expected " + expectedPackageName + " but got " + actualPackageName)
 
-	// validate this package contains one action
-	expectedActionsCount := 1
-	actualActionsCount := len(m.Package.Actions)
-	assert.Equal(t, expectedActionsCount, actualActionsCount,
-		"Expected "+string(expectedActionsCount)+" but got "+string(actualActionsCount))
+    // validate this package contains one action
+    expectedActionsCount := 1
+    actualActionsCount := len(m.Package.Actions)
+    assert.Equal(t, expectedActionsCount, actualActionsCount,
+        "Expected " + string(expectedActionsCount) + " but got " + string(actualActionsCount))
 
-	actionName := "validate_singleline_params"
-	if action, ok := m.Package.Actions[actionName]; ok {
-		// validate location/function of an action to be "actions/dump_params.js"
-		expectedResult := "actions/dump_params.js"
-		actualResult := action.Function
-		assert.Equal(t, expectedResult, actualResult, "Expected action function "+expectedResult+" but got "+actualResult)
+    actionName := "validate_singleline_params"
+    if action, ok := m.Package.Actions[actionName]; ok {
+        // validate location/function of an action to be "actions/dump_params.js"
+        expectedResult := "actions/dump_params.js"
+        actualResult := action.Function
+        assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
 
-		// validate runtime of an action to be "nodejs:6"
-		expectedResult = "nodejs:6"
-		actualResult = action.Runtime
-		assert.Equal(t, expectedResult, actualResult, "Expected action runtime "+expectedResult+" but got "+actualResult)
+        // validate runtime of an action to be "nodejs:6"
+        expectedResult = "nodejs:6"
+        actualResult = action.Runtime
+        assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
 
-		// validate the number of inputs to this action
-		expectedResult = strconv.FormatInt(17, 10)
-		actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // validate the number of inputs to this action
+        expectedResult = strconv.FormatInt(17, 10)
+        actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// validate inputs to this action
-		for input, param := range action.Inputs {
-			switch input {
-			case "param_simple_string":
-				expectedResult = "foo"
-				actualResult = param.Value.(string)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_simple_integer_1":
-				expectedResult = strconv.FormatInt(1, 10)
-				actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_simple_integer_2":
-				expectedResult = strconv.FormatInt(0, 10)
-				actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_simple_integer_3":
-				expectedResult = strconv.FormatInt(-1, 10)
-				actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_simple_integer_4":
-				expectedResult = strconv.FormatInt(99999, 10)
-				actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_simple_integer_5":
-				expectedResult = strconv.FormatInt(-99999, 10)
-				actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_simple_float_1":
-				expectedResult = strconv.FormatFloat(1.1, 'f', -1, 64)
-				actualResult = strconv.FormatFloat(param.Value.(float64), 'f', -1, 64)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_simple_float_2":
-				expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
-				actualResult = strconv.FormatFloat(param.Value.(float64), 'f', -1, 64)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_simple_float_3":
-				expectedResult = strconv.FormatFloat(-1.1, 'f', -1, 64)
-				actualResult = strconv.FormatFloat(param.Value.(float64), 'f', -1, 64)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_simple_env_var_1":
-				expectedResult = "$GOPATH"
-				actualResult = param.Value.(string)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_simple_invalid_env_var":
-				expectedResult = "$DollarSignNotInEnv"
-				actualResult = param.Value.(string)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			case "param_simple_implied_empty":
-				assert.Nil(t, param.Value, "Expected nil")
-			case "param_simple_explicit_empty_1":
-				actualResult = param.Value.(string)
-				assert.Empty(t, actualResult, "Expected empty string but got "+actualResult)
-			case "param_simple_explicit_empty_2":
-				actualResult = param.Value.(string)
-				assert.Empty(t, actualResult, "Expected empty string but got "+actualResult)
-			}
-		}
+        // validate inputs to this action
+        for input, param := range action.Inputs {
+            switch input {
+            case "param_simple_string":
+                expectedResult = "foo"
+                actualResult = param.Value.(string)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_simple_integer_1":
+                expectedResult = strconv.FormatInt(1, 10)
+                actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_simple_integer_2":
+                expectedResult = strconv.FormatInt(0, 10)
+                actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_simple_integer_3":
+                expectedResult = strconv.FormatInt(-1, 10)
+                actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_simple_integer_4":
+                expectedResult = strconv.FormatInt(99999, 10)
+                actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_simple_integer_5":
+                expectedResult = strconv.FormatInt(-99999, 10)
+                actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_simple_float_1":
+                expectedResult = strconv.FormatFloat(1.1, 'f', -1, 64)
+                actualResult = strconv.FormatFloat(param.Value.(float64), 'f', -1, 64)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_simple_float_2":
+                expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
+                actualResult = strconv.FormatFloat(param.Value.(float64), 'f', -1, 64)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_simple_float_3":
+                expectedResult = strconv.FormatFloat(-1.1, 'f', -1, 64)
+                actualResult = strconv.FormatFloat(param.Value.(float64), 'f', -1, 64)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_simple_env_var_1":
+                expectedResult = "$GOPATH"
+                actualResult = param.Value.(string)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_simple_invalid_env_var":
+                expectedResult = "$DollarSignNotInEnv"
+                actualResult = param.Value.(string)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            case "param_simple_implied_empty":
+                assert.Nil(t, param.Value, "Expected nil")
+            case "param_simple_explicit_empty_1":
+                actualResult = param.Value.(string)
+                assert.Empty(t, actualResult, "Expected empty string but got " + actualResult)
+            case "param_simple_explicit_empty_2":
+                actualResult = param.Value.(string)
+                assert.Empty(t, actualResult, "Expected empty string but got " + actualResult)
+            }
+        }
 
-		// validate outputs
-		// output payload is of type string and has a description
-		if payload, ok := action.Outputs["payload"]; ok {
-			p := payload.(map[interface{}]interface{})
-			expectedResult = "string"
-			actualResult = p["type"].(string)
-			assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			expectedResult = "parameter dump"
-			actualResult = p["description"].(string)
-			assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-		}
-	}
+        // validate outputs
+        // output payload is of type string and has a description
+        if payload, ok := action.Outputs["payload"]; ok {
+            p := payload.(map[interface{}]interface{})
+            expectedResult = "string"
+            actualResult = p["type"].(string)
+            assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            expectedResult = "parameter dump"
+            actualResult = p["description"].(string)
+            assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        }
+    }
 }
 
 // Test 9: validate manifest_parser.ComposeActions() method for implicit runtimes
 // when a runtime of an action is not provided, manifest_parser determines the runtime
 // based on the file extension of an action file
 func TestComposeActionsForImplicitRuntimes(t *testing.T) {
-	data :=
-		`package:
+    data :=
+        `package:
   name: helloworld
   actions:
     helloNodejs:
@@ -477,259 +477,259 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
     helloSwift:
       function: ../tests/src/integration/helloworld/actions/hello.swift`
 
-	dir, _ := os.Getwd()
-	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtimes_")
-	if err == nil {
-		defer os.Remove(tmpfile.Name()) // clean up
-		if _, err := tmpfile.Write([]byte(data)); err == nil {
-			// read and parse manifest.yaml file
-			p := NewYAMLParser()
-			m, _ := p.ParseManifest(tmpfile.Name())
-			actions, err := p.ComposeActions(m, tmpfile.Name())
-			var expectedResult string
-			if err == nil {
-				for i := 0; i < len(actions); i++ {
-					if actions[i].Action.Name == "helloNodejs" {
-						expectedResult = "nodejs:6"
-					} else if actions[i].Action.Name == "helloJava" {
-						expectedResult = "java"
-					} else if actions[i].Action.Name == "helloPython" {
-						expectedResult = "python"
-					} else if actions[i].Action.Name == "helloSwift" {
-						expectedResult = "swift:3"
-					}
-					actualResult := actions[i].Action.Exec.Kind
-					assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-				}
-			}
+    dir, _ := os.Getwd()
+    tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtimes_")
+    if err == nil {
+        defer os.Remove(tmpfile.Name()) // clean up
+        if _, err := tmpfile.Write([]byte(data)); err == nil {
+            // read and parse manifest.yaml file
+            p := NewYAMLParser()
+            m, _ := p.ParseManifest(tmpfile.Name())
+            actions, err := p.ComposeActions(m, tmpfile.Name())
+            var expectedResult string
+            if err == nil {
+                for i := 0; i < len(actions); i++ {
+                    if actions[i].Action.Name == "helloNodejs" {
+                        expectedResult = "nodejs:6"
+                    } else if actions[i].Action.Name == "helloJava" {
+                        expectedResult = "java"
+                    } else if actions[i].Action.Name == "helloPython" {
+                        expectedResult = "python"
+                    } else if actions[i].Action.Name == "helloSwift" {
+                        expectedResult = "swift:3"
+                    }
+                    actualResult := actions[i].Action.Exec.Kind
+                    assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                }
+            }
 
-		}
-		tmpfile.Close()
-	}
+        }
+        tmpfile.Close()
+    }
 }
 
 // Test 10: validate manifest_parser.ComposeActions() method for invalid runtimes
 // when a runtime of an action is set to some garbage, manifest_parser should
 // report an error for that action
 func TestComposeActionsForInvalidRuntime(t *testing.T) {
-	data :=
-		`package:
+    data :=
+        `package:
    name: helloworld
    actions:
      helloInvalidRuntime:
        function: ../tests/src/integration/helloworld/actions/hello.js
        runtime: invalid`
-	dir, _ := os.Getwd()
-	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtime_")
-	if err == nil {
-		defer os.Remove(tmpfile.Name()) // clean up
-		if _, err := tmpfile.Write([]byte(data)); err == nil {
-			// read and parse manifest.yaml file
-			p := NewYAMLParser()
-			m, _ := p.ParseManifest(tmpfile.Name())
-			_, err := p.ComposeActions(m, tmpfile.Name())
-			// (TODO) uncomment the following test case after issue #307 is fixed
-			// (TODO) its failing right now as we are lacking check on invalid runtime
-			// assert.NotNil(t, err, "Invalid runtime, ComposeActions should report an error")
-			// (TODO) remove this print statement after uncommenting above test case
-			fmt.Println(err)
-		}
-		tmpfile.Close()
-	}
+    dir, _ := os.Getwd()
+    tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtime_")
+    if err == nil {
+        defer os.Remove(tmpfile.Name()) // clean up
+        if _, err := tmpfile.Write([]byte(data)); err == nil {
+            // read and parse manifest.yaml file
+            p := NewYAMLParser()
+            m, _ := p.ParseManifest(tmpfile.Name())
+            _, err := p.ComposeActions(m, tmpfile.Name())
+            // (TODO) uncomment the following test case after issue #307 is fixed
+            // (TODO) its failing right now as we are lacking check on invalid runtime
+            // assert.NotNil(t, err, "Invalid runtime, ComposeActions should report an error")
+            // (TODO) remove this print statement after uncommenting above test case
+            fmt.Println(err)
+        }
+        tmpfile.Close()
+    }
 }
 
 // Test 11: validate manfiest_parser.ComposeActions() method for single line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestComposeActionsForSingleLineParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, _ := p.ParseManifest(manifestFile)
-	actions, err := p.ComposeActions(m, manifestFile)
+    // manifest file is located under ../tests folder
+    manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
+    // read and parse manifest.yaml file
+    p := NewYAMLParser()
+    m, _ := p.ParseManifest(manifestFile)
+    actions, err := p.ComposeActions(m, manifestFile)
 
-	if err == nil {
-		// assert that the actions variable has only one action
-		assert.Equal(t, 1, len(actions), "We have defined only one action but we got "+string(len(actions)))
+    if err == nil {
+        // assert that the actions variable has only one action
+        assert.Equal(t, 1, len(actions), "We have defined only one action but we got " + string(len(actions)))
 
-		action := actions[0]
+        action := actions[0]
 
-		// param_simple_string should value "foo"
-		expectedResult := "foo"
-		actualResult := action.Action.Parameters.GetValue("param_simple_string").(string)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_simple_string should value "foo"
+        expectedResult := "foo"
+        actualResult := action.Action.Parameters.GetValue("param_simple_string").(string)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_simple_integer_1 should have value 1
-		expectedResult = strconv.FormatInt(1, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_simple_integer_1").(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_simple_integer_1 should have value 1
+        expectedResult = strconv.FormatInt(1, 10)
+        actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_simple_integer_1").(int)), 10)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_simple_integer_2 should have value 0
-		expectedResult = strconv.FormatInt(0, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_simple_integer_2").(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_simple_integer_2 should have value 0
+        expectedResult = strconv.FormatInt(0, 10)
+        actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_simple_integer_2").(int)), 10)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_simple_integer_3 should have value -1
-		expectedResult = strconv.FormatInt(-1, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_simple_integer_3").(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_simple_integer_3 should have value -1
+        expectedResult = strconv.FormatInt(-1, 10)
+        actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_simple_integer_3").(int)), 10)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_simple_integer_4 should have value 99999
-		expectedResult = strconv.FormatInt(99999, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_simple_integer_4").(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_simple_integer_4 should have value 99999
+        expectedResult = strconv.FormatInt(99999, 10)
+        actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_simple_integer_4").(int)), 10)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_simple_integer_5 should have value -99999
-		expectedResult = strconv.FormatInt(-99999, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_simple_integer_5").(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_simple_integer_5 should have value -99999
+        expectedResult = strconv.FormatInt(-99999, 10)
+        actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_simple_integer_5").(int)), 10)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_simple_float_1 should have value 1.1
-		expectedResult = strconv.FormatFloat(1.1, 'f', -1, 64)
-		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_simple_float_1").(float64), 'f', -1, 64)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_simple_float_1 should have value 1.1
+        expectedResult = strconv.FormatFloat(1.1, 'f', -1, 64)
+        actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_simple_float_1").(float64), 'f', -1, 64)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_simple_float_2 should have value 0.0
-		expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
-		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_simple_float_2").(float64), 'f', -1, 64)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_simple_float_2 should have value 0.0
+        expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
+        actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_simple_float_2").(float64), 'f', -1, 64)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_simple_float_3 should have value -1.1
-		expectedResult = strconv.FormatFloat(-1.1, 'f', -1, 64)
-		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_simple_float_3").(float64), 'f', -1, 64)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_simple_float_3 should have value -1.1
+        expectedResult = strconv.FormatFloat(-1.1, 'f', -1, 64)
+        actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_simple_float_3").(float64), 'f', -1, 64)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_simple_env_var_1 should have value of env. variable $GOPATH
-		expectedResult = os.Getenv("GOPATH")
-		actualResult = action.Action.Parameters.GetValue("param_simple_env_var_1").(string)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_simple_env_var_1 should have value of env. variable $GOPATH
+        expectedResult = os.Getenv("GOPATH")
+        actualResult = action.Action.Parameters.GetValue("param_simple_env_var_1").(string)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_simple_invalid_env_var should have value of ""
-		expectedResult = ""
-		actualResult = action.Action.Parameters.GetValue("param_simple_invalid_env_var").(string)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_simple_invalid_env_var should have value of ""
+        expectedResult = ""
+        actualResult = action.Action.Parameters.GetValue("param_simple_invalid_env_var").(string)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_simple_implied_empty should be ""
-		actualResult = action.Action.Parameters.GetValue("param_simple_implied_empty").(string)
-		assert.Empty(t, actualResult, "Expected empty string but got "+actualResult)
+        // param_simple_implied_empty should be ""
+        actualResult = action.Action.Parameters.GetValue("param_simple_implied_empty").(string)
+        assert.Empty(t, actualResult, "Expected empty string but got " + actualResult)
 
-		// param_simple_explicit_empty_1 should be ""
-		actualResult = action.Action.Parameters.GetValue("param_simple_explicit_empty_1").(string)
-		assert.Empty(t, actualResult, "Expected empty string but got "+actualResult)
+        // param_simple_explicit_empty_1 should be ""
+        actualResult = action.Action.Parameters.GetValue("param_simple_explicit_empty_1").(string)
+        assert.Empty(t, actualResult, "Expected empty string but got " + actualResult)
 
-		// param_simple_explicit_empty_2 should be ""
-		actualResult = action.Action.Parameters.GetValue("param_simple_explicit_empty_2").(string)
-		assert.Empty(t, actualResult, "Expected empty string but got "+actualResult)
-	}
+        // param_simple_explicit_empty_2 should be ""
+        actualResult = action.Action.Parameters.GetValue("param_simple_explicit_empty_2").(string)
+        assert.Empty(t, actualResult, "Expected empty string but got " + actualResult)
+    }
 }
 
 // Test 12: validate manfiest_parser.ComposeActions() method for multi line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestComposeActionsForMultiLineParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, _ := p.ParseManifest(manifestFile)
-	actions, err := p.ComposeActions(m, manifestFile)
+    // manifest file is located under ../tests folder
+    manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
+    // read and parse manifest.yaml file
+    p := NewYAMLParser()
+    m, _ := p.ParseManifest(manifestFile)
+    actions, err := p.ComposeActions(m, manifestFile)
 
-	if err == nil {
-		// assert that the actions variable has only one action
-		assert.Equal(t, 1, len(actions), "We have defined only one action but we got "+string(len(actions)))
+    if err == nil {
+        // assert that the actions variable has only one action
+        assert.Equal(t, 1, len(actions), "We have defined only one action but we got " + string(len(actions)))
 
-		action := actions[0]
+        action := actions[0]
 
-		fmt.Println(action.Action.Parameters)
+        fmt.Println(action.Action.Parameters)
 
-		// param_string_value_only should be "foo"
-		expectedResult := "foo"
-		actualResult := action.Action.Parameters.GetValue("param_string_value_only").(string)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_string_value_only should be "foo"
+        expectedResult := "foo"
+        actualResult := action.Action.Parameters.GetValue("param_string_value_only").(string)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_int_value_only should be 123
-		expectedResult = strconv.FormatInt(123, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_int_value_only").(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_int_value_only should be 123
+        expectedResult = strconv.FormatInt(123, 10)
+        actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_int_value_only").(int)), 10)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_float_value_only should be 3.14
-		expectedResult = strconv.FormatFloat(3.14, 'f', -1, 64)
-		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_float_value_only").(float64), 'f', -1, 64)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_float_value_only should be 3.14
+        expectedResult = strconv.FormatFloat(3.14, 'f', -1, 64)
+        actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_float_value_only").(float64), 'f', -1, 64)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_string_type_and_value_only should be foo
-		expectedResult = "foo"
-		actualResult = action.Action.Parameters.GetValue("param_string_type_and_value_only").(string)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_string_type_and_value_only should be foo
+        expectedResult = "foo"
+        actualResult = action.Action.Parameters.GetValue("param_string_type_and_value_only").(string)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_string_type_only should be ""
-		actualResult = action.Action.Parameters.GetValue("param_string_type_only").(string)
-		assert.Empty(t, actualResult, "Expected empty string but got "+actualResult)
+        // param_string_type_only should be ""
+        actualResult = action.Action.Parameters.GetValue("param_string_type_only").(string)
+        assert.Empty(t, actualResult, "Expected empty string but got " + actualResult)
 
-		// param_integer_type_only should be 0
-		expectedResult = strconv.FormatInt(0, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_integer_type_only").(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_integer_type_only should be 0
+        expectedResult = strconv.FormatInt(0, 10)
+        actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_integer_type_only").(int)), 10)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_float_type_only should be 0
-		expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
-		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_float_type_only").(float64), 'f', -1, 64)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_float_type_only should be 0
+        expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
+        actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_float_type_only").(float64), 'f', -1, 64)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_string_with_default should be "bar"
-		expectedResult = "bar"
-		actualResult = action.Action.Parameters.GetValue("param_string_with_default").(string)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_string_with_default should be "bar"
+        expectedResult = "bar"
+        actualResult = action.Action.Parameters.GetValue("param_string_with_default").(string)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_integer_with_default should be -1
-		expectedResult = strconv.FormatInt(-1, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_integer_with_default").(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+        // param_integer_with_default should be -1
+        expectedResult = strconv.FormatInt(-1, 10)
+        actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_integer_with_default").(int)), 10)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-		// param_float_with_default should be 2.9
-		expectedResult = strconv.FormatFloat(2.9, 'f', -1, 64)
-		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_float_with_default").(float64), 'f', -1, 64)
-		assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-	}
+        // param_float_with_default should be 2.9
+        expectedResult = strconv.FormatFloat(2.9, 'f', -1, 64)
+        actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_float_with_default").(float64), 'f', -1, 64)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+    }
 }
 
 // Test 13: validate manfiest_parser.ComposeActions() method
 func TestComposeActionsForFunction(t *testing.T) {
-	data :=
-		`package:
+    data :=
+        `package:
   name: helloworld
   actions:
     hello1:
       function: ../tests/src/integration/helloworld/actions/hello.js`
-	// (TODO) uncomment this after we add support for action file content from URL
-	// hello2:
-	//  function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/isrc/integration/helloworld/manifest.yaml`
-	dir, _ := os.Getwd()
-	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_locations_")
-	if err == nil {
-		defer os.Remove(tmpfile.Name()) // clean up
-		if _, err := tmpfile.Write([]byte(data)); err == nil {
-			// read and parse manifest.yaml file
-			p := NewYAMLParser()
-			m, _ := p.ParseManifest(tmpfile.Name())
-			actions, err := p.ComposeActions(m, tmpfile.Name())
-			var expectedResult, actualResult string
-			if err == nil {
-				for i := 0; i < len(actions); i++ {
-					if actions[i].Action.Name == "hello1" {
-						expectedResult, _ = filepath.Abs("../tests/src/integration/helloworld/actions/hello.js")
-						actualResult, _ = filepath.Abs(actions[i].Filepath)
-						assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-						// (TODO) Uncomment the following condition, hello2
-						// (TODO) after issue # 311 is fixed
-						//} else if actions[i].Action.Name == "hello2" {
-						//  assert.NotNil(t, actions[i].Action.Exec.Code, "Expected source code from an action file but found it empty")
-					}
-				}
-			}
+    // (TODO) uncomment this after we add support for action file content from URL
+    // hello2:
+    //  function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/isrc/integration/helloworld/manifest.yaml`
+    dir, _ := os.Getwd()
+    tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_locations_")
+    if err == nil {
+        defer os.Remove(tmpfile.Name()) // clean up
+        if _, err := tmpfile.Write([]byte(data)); err == nil {
+            // read and parse manifest.yaml file
+            p := NewYAMLParser()
+            m, _ := p.ParseManifest(tmpfile.Name())
+            actions, err := p.ComposeActions(m, tmpfile.Name())
+            var expectedResult, actualResult string
+            if err == nil {
+                for i := 0; i < len(actions); i++ {
+                    if actions[i].Action.Name == "hello1" {
+                        expectedResult, _ = filepath.Abs("../tests/src/integration/helloworld/actions/hello.js")
+                        actualResult, _ = filepath.Abs(actions[i].Filepath)
+                        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                        // (TODO) Uncomment the following condition, hello2
+                        // (TODO) after issue # 311 is fixed
+                        //} else if actions[i].Action.Name == "hello2" {
+                        //  assert.NotNil(t, actions[i].Action.Exec.Code, "Expected source code from an action file but found it empty")
+                    }
+                }
+            }
 
-		}
-		tmpfile.Close()
-	}
+        }
+        tmpfile.Close()
+    }
 
 }
 
@@ -781,182 +781,184 @@ func TestComposeActionsForFunction(t *testing.T) {
 
 // Test 15: validate manfiest_parser.ComposeActions() method
 func TestComposeActionsForWebActions(t *testing.T) {
-	data :=
-		`package:
+    data :=
+        `package:
   name: helloworld
   actions:
     hello:
       function: ../tests/src/integration/helloworld/actions/hello.js
       web-export: true`
-	dir, _ := os.Getwd()
-	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_web_actions_")
-	if err == nil {
-		defer os.Remove(tmpfile.Name()) // clean up
-		if _, err := tmpfile.Write([]byte(data)); err == nil {
-			// read and parse manifest.yaml file
-			p := NewYAMLParser()
-			m, _ := p.ParseManifest(tmpfile.Name())
-			actions, err := p.ComposeActions(m, tmpfile.Name())
-			if err == nil {
-				for i := 0; i < len(actions); i++ {
-					if actions[i].Action.Name == "hello" {
-						for _, a := range actions[i].Action.Annotations {
-							switch a.Key {
-							case "web-export":
-								assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
-							case "raw-http":
-								assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
-							case "final":
-								assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
-							}
-						}
-					}
-				}
-			}
+    dir, _ := os.Getwd()
+    tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_web_actions_")
+    if err == nil {
+        defer os.Remove(tmpfile.Name()) // clean up
+        if _, err := tmpfile.Write([]byte(data)); err == nil {
+            // read and parse manifest.yaml file
+            p := NewYAMLParser()
+            m, _ := p.ParseManifest(tmpfile.Name())
+            actions, err := p.ComposeActions(m, tmpfile.Name())
+            if err == nil {
+                for i := 0; i < len(actions); i++ {
+                    if actions[i].Action.Name == "hello" {
+                        for _, a := range actions[i].Action.Annotations {
+                            switch a.Key {
+                            case "web-export":
+                                assert.Equal(t, true, a.Value, "Expected true for web-export but got " + strconv.FormatBool(a.Value.(bool)))
+                            case "raw-http":
+                                assert.Equal(t, false, a.Value, "Expected false for raw-http but got " + strconv.FormatBool(a.Value.(bool)))
+                            case "final":
+                                assert.Equal(t, true, a.Value, "Expected true for final but got " + strconv.FormatBool(a.Value.(bool)))
+                            }
+                        }
+                    }
+                }
+            }
 
-		}
-		tmpfile.Close()
-	}
+        }
+        tmpfile.Close()
+    }
 }
 
 // Test 16: validate manifest_parser.ResolveParameter() method
 func TestResolveParameterForMultiLineParams(t *testing.T) {
-	p := "name"
-	v := "foo"
-	y := reflect.TypeOf(v).Name() // y := string
-	d := "default_name"
+    p := "name"
+    v := "foo"
+    y := reflect.TypeOf(v).Name() // y := string
+    d := "default_name"
 
-	// type string - value only param
-	param1 := Parameter{Value: v, multiline: true}
-	r1, _ := ResolveParameter(p, &param1)
-	assert.Equal(t, v, r1, "Expected value "+v+" but got "+r1.(string))
-	assert.IsType(t, v, r1, "Expected parameter %v of type %T but found %T", p, v, r1)
+    // type string - value only param
+    param1 := Parameter{Value: v, multiline: true}
+    r1, _ := ResolveParameter(p, &param1, "")
+    assert.Equal(t, v, r1, "Expected value " + v + " but got " + r1.(string))
+    assert.IsType(t, v, r1, "Expected parameter %v of type %T but found %T", p, v, r1)
 
-	// type string - type and value only param
-	param2 := Parameter{Type: y, Value: v, multiline: true}
-	r2, _ := ResolveParameter(p, &param2)
-	assert.Equal(t, v, r2, "Expected value "+v+" but got "+r2.(string))
-	assert.IsType(t, v, r2, "Expected parameter %v of type %T but found %T", p, v, r2)
+    // type string - type and value only param
+    param2 := Parameter{Type: y, Value: v, multiline: true}
+    r2, _ := ResolveParameter(p, &param2, "")
+    assert.Equal(t, v, r2, "Expected value " + v + " but got " + r2.(string))
+    assert.IsType(t, v, r2, "Expected parameter %v of type %T but found %T", p, v, r2)
 
-	// type string - type, no value, but default value param
-	param3 := Parameter{Type: y, Default: d, multiline: true}
-	r3, _ := ResolveParameter(p, &param3)
-	assert.Equal(t, d, r3, "Expected value "+d+" but got "+r3.(string))
-	assert.IsType(t, d, r3, "Expected parameter %v of type %T but found %T", p, d, r3)
+    // type string - type, no value, but default value param
+    param3 := Parameter{Type: y, Default: d, multiline: true}
+    r3, _ := ResolveParameter(p, &param3, "")
+    assert.Equal(t, d, r3, "Expected value " + d + " but got " + r3.(string))
+    assert.IsType(t, d, r3, "Expected parameter %v of type %T but found %T", p, d, r3)
 
-	// type string - type and value only param
-	// type is "string" and value is of type "int"
-	// ResolveParameter matches specified type with the type of the specified value
-	// it fails if both types don't match
-	// ResolveParameter determines type from the specified value
-	// in this case, ResolveParameter returns value of type int
-	v1 := 11
-	param4 := Parameter{Type: y, Value: v1, multiline: true}
-	r4, _ := ResolveParameter(p, &param4)
-	assert.Equal(t, v1, r4, "Expected value "+strconv.FormatInt(int64(v1), 10)+" but got "+strconv.FormatInt(int64(r4.(int)), 10))
-	assert.IsType(t, v1, r4, "Expected parameter %v of type %T but found %T", p, v1, r4)
+    // type string - type and value only param
+    // type is "string" and value is of type "int"
+    // ResolveParameter matches specified type with the type of the specified value
+    // it fails if both types don't match
+    // ResolveParameter determines type from the specified value
+    // in this case, ResolveParameter returns value of type int
+    v1 := 11
+    param4 := Parameter{Type: y, Value: v1, multiline: true}
+    r4, _ := ResolveParameter(p, &param4, "")
+    assert.Equal(t, v1, r4, "Expected value " + strconv.FormatInt(int64(v1), 10) + " but got " + strconv.FormatInt(int64(r4.(int)), 10))
+    assert.IsType(t, v1, r4, "Expected parameter %v of type %T but found %T", p, v1, r4)
 
-	// type invalid - type only param
-	param5 := Parameter{Type: "invalid", multiline: true}
-	_, err := ResolveParameter(p, &param5)
-	assert.NotNil(t, err, "Expected error saying Invalid type for parameter")
-	expectedErr := utils.NewParserErr("Invalid Type for parameter. [invalid]")
+    // type invalid - type only param
+    param5 := Parameter{Type: "invalid", multiline: true}
+    _, err := ResolveParameter(p, &param5, "")
+    assert.NotNil(t, err, "Expected error saying Invalid type for parameter")
+    lines := []string{"Line Unknown"}
+    msgs := []string{"Invalid Type for parameter. [invalid]"}
+    expectedErr := utils.NewParserErr("", lines, msgs)
     switch errorType := err.(type) {
-        default:
-            assert.Fail(t, "Wrong error type received: We are expecting ParserErr.")
-        case *utils.ParserErr:
-            assert.Equal(t, expectedErr.Message, errorType.Message,
-                "Expected error " + expectedErr.Message + " but found " + errorType.Message)
+    default:
+        assert.Fail(t, "Wrong error type received: We are expecting ParserErr.")
+    case *utils.ParserErr:
+        assert.Equal(t, expectedErr.Message, errorType.Message,
+            "Expected error " + expectedErr.Message + " but found " + errorType.Message)
     }
 
-	// type none - param without type, without value, and without default value
-	param6 := Parameter{multiline: true}
-	r6, _ := ResolveParameter("none", &param6)
-	assert.Empty(t, r6, "Expected default value of empty string but found "+r6.(string))
+    // type none - param without type, without value, and without default value
+    param6 := Parameter{multiline: true}
+    r6, _ := ResolveParameter("none", &param6, "")
+    assert.Empty(t, r6, "Expected default value of empty string but found " + r6.(string))
 
 }
 
 func _createTmpfile(data string, filename string) (f *os.File, err error) {
-	dir, _ := os.Getwd()
-	tmpfile, err := ioutil.TempFile(dir, filename)
-	if err != nil {
-		return nil, err
-	}
-	_, err = tmpfile.Write([]byte(data))
-	if err != nil {
-		return tmpfile, err
-	}
-	return tmpfile, nil
+    dir, _ := os.Getwd()
+    tmpfile, err := ioutil.TempFile(dir, filename)
+    if err != nil {
+        return nil, err
+    }
+    _, err = tmpfile.Write([]byte(data))
+    if err != nil {
+        return tmpfile, err
+    }
+    return tmpfile, nil
 }
 
 func TestComposePackage(t *testing.T) {
-	data :=`package:
+    data := `package:
   name: helloworld
   namespace: default`
-	tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
-	if err != nil {
-		assert.Fail(t, "Failed to create temp file")
-	}
-	defer func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}()
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, _ := p.ParseManifest(tmpfile.Name())
-	pkg, err := p.ComposePackage(m)
-	if err == nil {
-		assert.Equal(t, "helloworld", pkg.Name, "Failed to get package name")
-		assert.Equal(t, "default", pkg.Namespace, "Failed to get package namespace")
-	} else {
-		assert.Fail(t, "Failed to compose package")
-	}
+    tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
+    if err != nil {
+        assert.Fail(t, "Failed to create temp file")
+    }
+    defer func() {
+        tmpfile.Close()
+        os.Remove(tmpfile.Name())
+    }()
+    // read and parse manifest.yaml file
+    p := NewYAMLParser()
+    m, _ := p.ParseManifest(tmpfile.Name())
+    pkg, err := p.ComposePackage(m, tmpfile.Name())
+    if err == nil {
+        assert.Equal(t, "helloworld", pkg.Name, "Failed to get package name")
+        assert.Equal(t, "default", pkg.Namespace, "Failed to get package namespace")
+    } else {
+        assert.Fail(t, "Failed to compose package")
+    }
 }
 
 func TestComposeSequences(t *testing.T) {
-	data :=`package:
+    data := `package:
   name: helloworld
   sequences:
     sequence1:
       actions: action1, action2
     sequence2:
       actions: action3, action4, action5`
-	tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
-	if err != nil {
-		assert.Fail(t, "Failed to create temp file")
-	}
-	defer func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}()
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, _ := p.ParseManifest(tmpfile.Name())
-	seqList, err := p.ComposeSequences("", m)
-	if err != nil {
-		assert.Fail(t, "Failed to compose sequences")
-	}
-	assert.Equal(t, 2, len(seqList), "Failed to get sequences")
-	for _, seq := range seqList {
-		wsk_action:=seq.Action
-		switch wsk_action.Name {
-		case "sequence1":
-			assert.Equal(t, "sequence", wsk_action.Exec.Kind, "Failed to set sequence exec kind")
-			assert.Equal(t, 2, len(wsk_action.Exec.Components), "Failed to set sequence exec components")
-			assert.Equal(t, "/helloworld/action1", wsk_action.Exec.Components[0], "Failed to set sequence 1st exec components")
-			assert.Equal(t, "/helloworld/action2", wsk_action.Exec.Components[1], "Failed to set sequence 2nd exec components")
-		case "sequence2":
-			assert.Equal(t, "sequence", wsk_action.Exec.Kind, "Failed to set sequence exec kind")
-			assert.Equal(t, 3, len(wsk_action.Exec.Components), "Failed to set sequence exec components")
-			assert.Equal(t, "/helloworld/action3", wsk_action.Exec.Components[0], "Failed to set sequence 1st exec components")
-			assert.Equal(t, "/helloworld/action4", wsk_action.Exec.Components[1], "Failed to set sequence 2nd exec components")
-			assert.Equal(t, "/helloworld/action5", wsk_action.Exec.Components[2], "Failed to set sequence 3rd exec components")
-		}
-	}
+    tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
+    if err != nil {
+        assert.Fail(t, "Failed to create temp file")
+    }
+    defer func() {
+        tmpfile.Close()
+        os.Remove(tmpfile.Name())
+    }()
+    // read and parse manifest.yaml file
+    p := NewYAMLParser()
+    m, _ := p.ParseManifest(tmpfile.Name())
+    seqList, err := p.ComposeSequences("", m)
+    if err != nil {
+        assert.Fail(t, "Failed to compose sequences")
+    }
+    assert.Equal(t, 2, len(seqList), "Failed to get sequences")
+    for _, seq := range seqList {
+        wsk_action := seq.Action
+        switch wsk_action.Name {
+        case "sequence1":
+            assert.Equal(t, "sequence", wsk_action.Exec.Kind, "Failed to set sequence exec kind")
+            assert.Equal(t, 2, len(wsk_action.Exec.Components), "Failed to set sequence exec components")
+            assert.Equal(t, "/helloworld/action1", wsk_action.Exec.Components[0], "Failed to set sequence 1st exec components")
+            assert.Equal(t, "/helloworld/action2", wsk_action.Exec.Components[1], "Failed to set sequence 2nd exec components")
+        case "sequence2":
+            assert.Equal(t, "sequence", wsk_action.Exec.Kind, "Failed to set sequence exec kind")
+            assert.Equal(t, 3, len(wsk_action.Exec.Components), "Failed to set sequence exec components")
+            assert.Equal(t, "/helloworld/action3", wsk_action.Exec.Components[0], "Failed to set sequence 1st exec components")
+            assert.Equal(t, "/helloworld/action4", wsk_action.Exec.Components[1], "Failed to set sequence 2nd exec components")
+            assert.Equal(t, "/helloworld/action5", wsk_action.Exec.Components[2], "Failed to set sequence 3rd exec components")
+        }
+    }
 }
 
 func TestComposeTriggers(t *testing.T) {
-	data :=`package:
+    data := `package:
   name: helloworld
   triggers:
     trigger1:
@@ -968,37 +970,37 @@ func TestComposeTriggers(t *testing.T) {
       inputs:
         name: myname
         place: myplace`
-	tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-	if err != nil {
-		assert.Fail(t, "Failed to create temp file")
-	}
-	defer func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}()
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, _ := p.ParseManifest(tmpfile.Name())
-	triggerList, err := p.ComposeTriggers(m)
-	if err != nil {
-		assert.Fail(t, "Failed to compose trigger")
-	}
+    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
+    if err != nil {
+        assert.Fail(t, "Failed to create temp file")
+    }
+    defer func() {
+        tmpfile.Close()
+        os.Remove(tmpfile.Name())
+    }()
+    // read and parse manifest.yaml file
+    p := NewYAMLParser()
+    m, _ := p.ParseManifest(tmpfile.Name())
+    triggerList, err := p.ComposeTriggers(m, tmpfile.Name())
+    if err != nil {
+        assert.Fail(t, "Failed to compose trigger")
+    }
 
-	assert.Equal(t, 2, len(triggerList), "Failed to get trigger list")
-	for _, trigger := range triggerList {
-		switch trigger.Name {
-		case "trigger1":
-			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
-		case "trigger2":
-			assert.Equal(t, "feed", trigger.Annotations[0].Key, "Failed to set trigger annotation")
-			assert.Equal(t, "myfeed", trigger.Annotations[0].Value, "Failed to set trigger annotation")
-			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
-		}
-	}
+    assert.Equal(t, 2, len(triggerList), "Failed to get trigger list")
+    for _, trigger := range triggerList {
+        switch trigger.Name {
+        case "trigger1":
+            assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
+        case "trigger2":
+            assert.Equal(t, "feed", trigger.Annotations[0].Key, "Failed to set trigger annotation")
+            assert.Equal(t, "myfeed", trigger.Annotations[0].Value, "Failed to set trigger annotation")
+            assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
+        }
+    }
 }
 
 func TestComposeRules(t *testing.T) {
-	data :=`package:
+    data := `package:
   name: helloworld
   rules:
     rule1:
@@ -1007,36 +1009,36 @@ func TestComposeRules(t *testing.T) {
     rule2:
       trigger: trigger1
       action: action1`
-	tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
-	if err != nil {
-		assert.Fail(t, "Failed to create temp file")
-	}
-	defer func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}()
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, _ := p.ParseManifest(tmpfile.Name())
-	ruleList, err := p.ComposeRules(m)
-	if err != nil {
-		assert.Fail(t, "Failed to compose rules")
-	}
-	assert.Equal(t, 2, len(ruleList), "Failed to get rules")
-	for _, rule := range ruleList {
-		switch rule.Name {
-		case "rule1":
-			assert.Equal(t, "locationUpdate", rule.Trigger, "Failed to set rule trigger")
-			assert.Equal(t, "helloworld/greeting", rule.Action, "Failed to set rule action")
-		case "rule2":
-			assert.Equal(t, "trigger1", rule.Trigger, "Failed to set rule trigger")
-			assert.Equal(t, "helloworld/action1", rule.Action, "Failed to set rule action")
-		}
-	}
+    tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
+    if err != nil {
+        assert.Fail(t, "Failed to create temp file")
+    }
+    defer func() {
+        tmpfile.Close()
+        os.Remove(tmpfile.Name())
+    }()
+    // read and parse manifest.yaml file
+    p := NewYAMLParser()
+    m, _ := p.ParseManifest(tmpfile.Name())
+    ruleList, err := p.ComposeRules(m)
+    if err != nil {
+        assert.Fail(t, "Failed to compose rules")
+    }
+    assert.Equal(t, 2, len(ruleList), "Failed to get rules")
+    for _, rule := range ruleList {
+        switch rule.Name {
+        case "rule1":
+            assert.Equal(t, "locationUpdate", rule.Trigger, "Failed to set rule trigger")
+            assert.Equal(t, "helloworld/greeting", rule.Action, "Failed to set rule action")
+        case "rule2":
+            assert.Equal(t, "trigger1", rule.Trigger, "Failed to set rule trigger")
+            assert.Equal(t, "helloworld/action1", rule.Action, "Failed to set rule action")
+        }
+    }
 }
 
 func TestComposeApiRecords(t *testing.T) {
-	data :=`package:
+    data := `package:
   name: helloworld
   apis:
     book-club:
@@ -1053,64 +1055,64 @@ func TestComposeApiRecords(t *testing.T) {
            postBooks2: post
         members2:
            listMembers2: get`
-	tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-	if err != nil {
-		assert.Fail(t, "Failed to create temp file")
-	}
-	defer func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}()
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, _ := p.ParseManifest(tmpfile.Name())
-	apiList, err := p.ComposeApiRecords(m)
-	if err != nil {
-		assert.Fail(t, "Failed to compose api records")
-	}
-	assert.Equal(t, 6, len(apiList), "Failed to get api records")
-	for _, apiRecord := range apiList {
-		apiDoc := apiRecord.ApiDoc
-		action := apiDoc.Action
-		switch action.Name {
-		case "putBooks":
-			assert.Equal(t, "book-club", apiDoc.ApiName, "Failed to set api name")
-			assert.Equal(t, "club", apiDoc.GatewayBasePath, "Failed to set api base path")
-			assert.Equal(t, "books", apiDoc.GatewayRelPath, "Failed to set api rel path")
-			assert.Equal(t, "put", action.BackendMethod, "Failed to set api backend method")
-		case "deleteBooks":
-			assert.Equal(t, "book-club", apiDoc.ApiName, "Failed to set api name")
-			assert.Equal(t, "club", apiDoc.GatewayBasePath, "Failed to set api base path")
-			assert.Equal(t, "books", apiDoc.GatewayRelPath, "Failed to set api rel path")
-			assert.Equal(t, "delete", action.BackendMethod, "Failed to set api backend method")
-		case "listMembers":
-			assert.Equal(t, "book-club", apiDoc.ApiName, "Failed to set api name")
-			assert.Equal(t, "club", apiDoc.GatewayBasePath, "Failed to set api base path")
-			assert.Equal(t, "members", apiDoc.GatewayRelPath, "Failed to set api rel path")
-			assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
-		case "getBooks2":
-			assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
-			assert.Equal(t, "club2", apiDoc.GatewayBasePath, "Failed to set api base path")
-			assert.Equal(t, "books2", apiDoc.GatewayRelPath, "Failed to set api rel path")
-			assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
-		case "postBooks2":
-			assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
-			assert.Equal(t, "club2", apiDoc.GatewayBasePath, "Failed to set api base path")
-			assert.Equal(t, "books2", apiDoc.GatewayRelPath, "Failed to set api rel path")
-			assert.Equal(t, "post", action.BackendMethod, "Failed to set api backend method")
-		case "listMembers2":
-			assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
-			assert.Equal(t, "club2", apiDoc.GatewayBasePath, "Failed to set api base path")
-			assert.Equal(t, "members2", apiDoc.GatewayRelPath, "Failed to set api rel path")
-			assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
-		default:
-			assert.Fail(t, "Failed to get api action name")
-		}
-	}
+    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
+    if err != nil {
+        assert.Fail(t, "Failed to create temp file")
+    }
+    defer func() {
+        tmpfile.Close()
+        os.Remove(tmpfile.Name())
+    }()
+    // read and parse manifest.yaml file
+    p := NewYAMLParser()
+    m, _ := p.ParseManifest(tmpfile.Name())
+    apiList, err := p.ComposeApiRecords(m)
+    if err != nil {
+        assert.Fail(t, "Failed to compose api records")
+    }
+    assert.Equal(t, 6, len(apiList), "Failed to get api records")
+    for _, apiRecord := range apiList {
+        apiDoc := apiRecord.ApiDoc
+        action := apiDoc.Action
+        switch action.Name {
+        case "putBooks":
+            assert.Equal(t, "book-club", apiDoc.ApiName, "Failed to set api name")
+            assert.Equal(t, "club", apiDoc.GatewayBasePath, "Failed to set api base path")
+            assert.Equal(t, "books", apiDoc.GatewayRelPath, "Failed to set api rel path")
+            assert.Equal(t, "put", action.BackendMethod, "Failed to set api backend method")
+        case "deleteBooks":
+            assert.Equal(t, "book-club", apiDoc.ApiName, "Failed to set api name")
+            assert.Equal(t, "club", apiDoc.GatewayBasePath, "Failed to set api base path")
+            assert.Equal(t, "books", apiDoc.GatewayRelPath, "Failed to set api rel path")
+            assert.Equal(t, "delete", action.BackendMethod, "Failed to set api backend method")
+        case "listMembers":
+            assert.Equal(t, "book-club", apiDoc.ApiName, "Failed to set api name")
+            assert.Equal(t, "club", apiDoc.GatewayBasePath, "Failed to set api base path")
+            assert.Equal(t, "members", apiDoc.GatewayRelPath, "Failed to set api rel path")
+            assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
+        case "getBooks2":
+            assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
+            assert.Equal(t, "club2", apiDoc.GatewayBasePath, "Failed to set api base path")
+            assert.Equal(t, "books2", apiDoc.GatewayRelPath, "Failed to set api rel path")
+            assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
+        case "postBooks2":
+            assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
+            assert.Equal(t, "club2", apiDoc.GatewayBasePath, "Failed to set api base path")
+            assert.Equal(t, "books2", apiDoc.GatewayRelPath, "Failed to set api rel path")
+            assert.Equal(t, "post", action.BackendMethod, "Failed to set api backend method")
+        case "listMembers2":
+            assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
+            assert.Equal(t, "club2", apiDoc.GatewayBasePath, "Failed to set api base path")
+            assert.Equal(t, "members2", apiDoc.GatewayRelPath, "Failed to set api rel path")
+            assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
+        default:
+            assert.Fail(t, "Failed to get api action name")
+        }
+    }
 }
 
 func TestComposeDependencies(t *testing.T) {
-	data :=`package:
+    data := `package:
   name: helloworld
   dependencies:
     myhelloworld:
@@ -1121,42 +1123,102 @@ func TestComposeDependencies(t *testing.T) {
         dbname: myGreatDB
       annotations:
         myAnnotation: Here it is`
-	tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-	if err != nil {
-		assert.Fail(t, "Failed to create temp file")
-	}
-	defer func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}()
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, _ := p.ParseManifest(tmpfile.Name())
-	depdList, err := p.ComposeDependencies(m, "/project_folder")
-	if err != nil {
-		assert.Fail(t, "Failed to compose rules")
-	}
-	assert.Equal(t, 2, len(depdList), "Failed to get rules")
-	for depdy_name,depdy := range depdList {
-		assert.Equal(t, "helloworld", depdy.Packagename, "Failed to set dependecy isbinding")
-		assert.Equal(t, "/project_folder/Packages", depdy.ProjectPath, "Failed to set dependecy isbinding")
-		switch depdy_name {
-		case "myhelloworld":
-			assert.Equal(t, "https://github.com/user/repo/folder", depdy.Location, "Failed to set dependecy location")
-			assert.Equal(t, false, depdy.IsBinding, "Failed to set dependecy isbinding")
-			assert.Equal(t, "https://github.com/user/repo", depdy.BaseRepo, "Failed to set dependecy base repo url")
-			assert.Equal(t, "/folder", depdy.SubFolder, "Failed to set dependecy sub folder")
-		case "myCloudant":
-			assert.Equal(t, "/whisk.system/cloudant", depdy.Location, "Failed to set rule trigger")
-			assert.Equal(t, true, depdy.IsBinding, "Failed to set dependecy isbinding")
-			assert.Equal(t, 1, len(depdy.Parameters), "Failed to set dependecy parameter")
-			assert.Equal(t, 1, len(depdy.Annotations), "Failed to set dependecy annotation")
-			assert.Equal(t, "myAnnotation", depdy.Annotations[0].Key, "Failed to set dependecy parameter key")
-			assert.Equal(t, "Here it is", depdy.Annotations[0].Value, "Failed to set dependecy parameter value")
-			assert.Equal(t, "dbname", depdy.Parameters[0].Key, "Failed to set dependecy annotation key")
-			assert.Equal(t, "myGreatDB", depdy.Parameters[0].Value, "Failed to set dependecy annotation value")
-		default:
-			assert.Fail(t, "Failed to get dependency name")
-		}
-	}
+    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
+    if err != nil {
+        assert.Fail(t, "Failed to create temp file")
+    }
+    defer func() {
+        tmpfile.Close()
+        os.Remove(tmpfile.Name())
+    }()
+    // read and parse manifest.yaml file
+    p := NewYAMLParser()
+    m, _ := p.ParseManifest(tmpfile.Name())
+    depdList, err := p.ComposeDependencies(m, "/project_folder", tmpfile.Name())
+    if err != nil {
+        assert.Fail(t, "Failed to compose rules")
+    }
+    assert.Equal(t, 2, len(depdList), "Failed to get rules")
+    for depdy_name, depdy := range depdList {
+        assert.Equal(t, "helloworld", depdy.Packagename, "Failed to set dependecy isbinding")
+        assert.Equal(t, "/project_folder/Packages", depdy.ProjectPath, "Failed to set dependecy isbinding")
+        switch depdy_name {
+        case "myhelloworld":
+            assert.Equal(t, "https://github.com/user/repo/folder", depdy.Location, "Failed to set dependecy location")
+            assert.Equal(t, false, depdy.IsBinding, "Failed to set dependecy isbinding")
+            assert.Equal(t, "https://github.com/user/repo", depdy.BaseRepo, "Failed to set dependecy base repo url")
+            assert.Equal(t, "/folder", depdy.SubFolder, "Failed to set dependecy sub folder")
+        case "myCloudant":
+            assert.Equal(t, "/whisk.system/cloudant", depdy.Location, "Failed to set rule trigger")
+            assert.Equal(t, true, depdy.IsBinding, "Failed to set dependecy isbinding")
+            assert.Equal(t, 1, len(depdy.Parameters), "Failed to set dependecy parameter")
+            assert.Equal(t, 1, len(depdy.Annotations), "Failed to set dependecy annotation")
+            assert.Equal(t, "myAnnotation", depdy.Annotations[0].Key, "Failed to set dependecy parameter key")
+            assert.Equal(t, "Here it is", depdy.Annotations[0].Value, "Failed to set dependecy parameter value")
+            assert.Equal(t, "dbname", depdy.Parameters[0].Key, "Failed to set dependecy annotation key")
+            assert.Equal(t, "myGreatDB", depdy.Parameters[0].Value, "Failed to set dependecy annotation value")
+        default:
+            assert.Fail(t, "Failed to get dependency name")
+        }
+    }
+}
+
+func TestInvalidKeyManifestYaml(t *testing.T) {
+    data := `package:
+  name: helloWorldTriggerRule
+  version: 1.0
+  invalidKey: test
+  license: Apache-2.0`
+    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
+    if err != nil {
+        assert.Fail(t, "Failed to create temp file")
+    }
+    defer func() {
+        tmpfile.Close()
+        os.Remove(tmpfile.Name())
+    }()
+    p := NewYAMLParser()
+    _, err = p.ParseManifest(tmpfile.Name())
+    assert.NotNil(t, err)
+    // go-yaml/yaml prints the wrong line number for mapping values. It should be 4.
+    assert.Contains(t, err.Error(), "field invalidKey not found in struct parsers.Package: Line 2, its neighbour lines, or the lines on the same level")
+}
+
+func TestMappingValueManifestYaml(t *testing.T) {
+    data := `package:
+  name: helloWorldTriggerRule
+  version: 1.0
+  license: Apache-2.0
+    actions: test`
+    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
+    if err != nil {
+        assert.Fail(t, "Failed to create temp file")
+    }
+    defer func() {
+        tmpfile.Close()
+        os.Remove(tmpfile.Name())
+    }()
+    p := NewYAMLParser()
+    _, err = p.ParseManifest(tmpfile.Name())
+    assert.NotNil(t, err)
+    // go-yaml/yaml prints the wrong line number for mapping values. It should be 5.
+    assert.Contains(t, err.Error(), "mapping values are not allowed in this context: Line 4, its neighbour lines, or the lines on the same level")
+}
+
+func TestMissingRootValueManifestYaml(t *testing.T) {
+    data := `actions:
+  helloNodejs:
+    function: actions/hello.js`
+    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
+    if err != nil {
+        assert.Fail(t, "Failed to create temp file")
+    }
+    defer func() {
+        tmpfile.Close()
+        os.Remove(tmpfile.Name())
+    }()
+    p := NewYAMLParser()
+    _, err = p.ParseManifest(tmpfile.Name())
+    assert.NotNil(t, err)
+    assert.Contains(t, err.Error(), "field actions not found in struct parsers.ManifestYAML: Line 1, its neighbour lines, or the lines on the same level")
 }
