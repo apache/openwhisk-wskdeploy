@@ -1,12 +1,13 @@
+# A Travis CI configuration file.
 sudo: required
 
 language: go
 
 go:
-- 1.8
+  - 1.8
 
 services:
-- docker
+  - docker
 
 git:
   depth: 3
