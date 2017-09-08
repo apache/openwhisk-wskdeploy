@@ -28,6 +28,8 @@ func TestNewWhiskConfig(t *testing.T) {
 	propPath := ""
 	manifestPath := ""
 	deploymentPath := ""
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	_, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
 	assert.NotNil(t, err, "Failed to produce an error when credentials could not be retrieved")
 }
+
+
