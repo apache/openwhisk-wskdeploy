@@ -2,10 +2,8 @@ application:
   name: wskdeploy-samples
   packages:
     zipaction:
-      name: cat
-      namespace: guest
       actions:
-        greeting:
+        cat:
           inputs:
             name: Bernie
             place: Vermont
