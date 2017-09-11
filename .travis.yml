@@ -1,5 +1,4 @@
 # A Travis CI configuration file.
-
 sudo: required
 
 language: go
@@ -48,3 +47,8 @@ deploy:
     repo: apache/incubator-openwhisk-wskdeploy
     tags: true
     condition: "$DEPLOY_BUILD_READY = true"
+
+env:
+  global:
+    - BLUEMIX_APIHOST=openwhisk.ng.bluemix.net
+    - secure: f8CKUxpI0xp2N78ifCQCpOg0/LAzZv7cDhuYZvWB++LJ1tdwN+aHxYCRaDLNI49fogDqCoeIcJCy2uVCmNGEXwcUsGJ0Z28qvRsewsgwwnrny8E+NyqmV/DFfAWvR095lwfQsBiqdGJLcOU2ZXvog3+y2p/I14LCInkThLJSMjA56IDqYkbp8OUy5ncLUZ726PVb/N40hw5TTpgf+yKcHXlXOmRYwH54jvxduxz0RnDSpFuV9k2qCMP10f2GZcWhFUCdOU8kYrTsMbo0Mk712Q1N49V/9QB9ZrMGIbQqufFvp+E/Wf/mL7ANyRmG0C6eOnVrtsnhjzVVJrpv0oyV53HOwmL1FrMzJE65V35B0fi8fUgslEgxnYLXeCxRetOFOyJIjTA/wIZ7uyWPrXQa+QbcQixMLYn4xe7iJHuA+d1u3b5SOcjD+eBa/s+ihISwQoKkeDja6cL+5bROTcccE0hNC4ivadPKsosGdCDdSCQhQlzGbXDGx0psYe7/9J0tGgfPsnPdn1TFyTvJRjGAQyZVULGltgAFBxcVNAoeeez36cMUVmnqsmR0wf1XHNQhCwBuBY4ujyQC74ichPgDYByhLGeQ7aiHBqt1n58AidB9eWjhjvrfEEni/S28bS2StqZ+uSQKHkdgFtWoCRnBbw+p0cdPfyO8g8vIlJpaAKY=
