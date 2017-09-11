@@ -169,22 +169,31 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
         Insecure:  true, // true if you want to ignore certificate signing
     }
 
-    if len(credential.Value) == 0 {
-        errStr := wski18n.T("The authentication key is not configured.\n")
-        whisk.Debug(whisk.DbgError, errStr)
-        return clientConfig, utils.NewInvalidWskpropsError(errStr)
-    }
+    if (len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0) {
+	    var errStr string
+	    if len(credential.Value) == 0 {
+		    errStr += wski18n.T("The authentication key is not configured.\n")
+	    } else {
+		    errStr += wski18n.T("The authenitcation key is set from {{.authsource}}.\n",
+			    map[string]interface{}{"authsource": credential.Source})
+	    }
 
-    if len(apiHost.Value) == 0 {
-        errStr := wski18n.T("The API host is not configured.\n")
-        whisk.Debug(whisk.DbgError, errStr)
-        return clientConfig, utils.NewInvalidWskpropsError(errStr)
-    }
+	    if len(apiHost.Value) == 0 {
+		    errStr += wski18n.T("The API host is not configured.\n")
+	    } else {
+		    errStr += wski18n.T("The API host is {{.apihost}}, from {{.apisource}}.\n",
+			    map[string]interface{}{"apihost": apiHost.Value, "apisource": apiHost.Source})
+	    }
 
-    if len(namespace.Value) == 0 {
-        errStr := wski18n.T("The namespace is not configured.\n")
-        whisk.Debug(whisk.DbgError, errStr)
-        return clientConfig, utils.NewInvalidWskpropsError(errStr)
+	    if len(namespace.Value) == 0 {
+		    errStr += wski18n.T("The namespace is not configured.\n")
+	    } else {
+		    errStr += wski18n.T("The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
+			    map[string]interface{}{"namespace": namespace.Value, "namespacesource": namespace.Source})
+
+	    }
+	    whisk.Debug(whisk.DbgError, errStr)
+	    return clientConfig, utils.NewInvalidWskpropsError(errStr)
     }
 
     stdout := wski18n.T("The API host is {{.apihost}}, from {{.apisource}}.\n",
