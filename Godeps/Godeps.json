@@ -162,7 +162,7 @@
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
-			"Rev": "f8db564a0a4a5f6d04f66522493597f18e5ab4ae"
+			"Rev": "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
 		},
         {
             "ImportPath": "github.com/palantir/stacktrace",

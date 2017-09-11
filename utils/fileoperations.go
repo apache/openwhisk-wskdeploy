@@ -49,12 +49,16 @@ func FileExists(file string) bool {
 
 func IsDirectory(filePath string) bool {
 	f, err := os.Open(filePath)
-	Check(err)
-
-	defer f.Close()
+	if err != nil {
+        return false
+    } else {
+        defer f.Close()
+    }
 
 	fi, err := f.Stat()
-	Check(err)
+    if err != nil {
+        return false
+    }
 
 	switch mode := fi.Mode(); {
 	case mode.IsDir():
@@ -102,9 +106,11 @@ func CreateActionFromFile(manipath, filePath string) (*whisk.Action, error) {
 			dat, err = new(ContentReader).URLReader.ReadUrl(filePath)
 		}
 
+        if err != nil {
+            return action, err
+        }
 		code := string(dat)
 		pub := false
-		Check(err)
 		action.Exec = new(whisk.Exec)
 		action.Exec.Code = &code
 		action.Exec.Kind = kind
@@ -161,26 +167,24 @@ func WriteProps(path string, props map[string]string) error {
 
 	for k, v := range props {
 		_, err := file.WriteString(k)
-		Check(err)
+        if err != nil {
+            return err
+        }
 
 		_, err = file.WriteString("=")
-		Check(err)
+        if err != nil {
+            return err
+        }
 
 		_, err = file.WriteString(v)
-		Check(err)
+        if err != nil {
+            return err
+        }
 
 		_, err = file.WriteString("\n")
-		Check(err)
+        if err != nil {
+            return err
+        }
 	}
 	return nil
-}
-
-// Load configuration will load properties from a file
-func LoadConfiguration(propPath string) ([]string, error) {
-	props, err := ReadProps(propPath)
-	Check(err)
-	Namespace := props["NAMESPACE"]
-	Apihost := props["APIHOST"]
-	Authtoken := props["AUTH"]
-	return []string{Namespace, Apihost, Authtoken}, nil
 }

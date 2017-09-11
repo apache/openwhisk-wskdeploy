@@ -20,15 +20,15 @@
 package parsers
 
 import (
-	"fmt"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
-	"path/filepath"
-	"reflect"
-	"strconv"
 	"testing"
+    "fmt"
+    "path/filepath"
+    "reflect"
+    "strconv"
 )
 
 // Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
@@ -828,19 +828,19 @@ func TestResolveParameterForMultiLineParams(t *testing.T) {
 
 	// type string - value only param
 	param1 := Parameter{Value: v, multiline: true}
-	r1, _ := ResolveParameter(p, &param1)
+	r1, _ := ResolveParameter(p, &param1, "")
 	assert.Equal(t, v, r1, "Expected value "+v+" but got "+r1.(string))
 	assert.IsType(t, v, r1, "Expected parameter %v of type %T but found %T", p, v, r1)
 
 	// type string - type and value only param
 	param2 := Parameter{Type: y, Value: v, multiline: true}
-	r2, _ := ResolveParameter(p, &param2)
+	r2, _ := ResolveParameter(p, &param2, "")
 	assert.Equal(t, v, r2, "Expected value "+v+" but got "+r2.(string))
 	assert.IsType(t, v, r2, "Expected parameter %v of type %T but found %T", p, v, r2)
 
 	// type string - type, no value, but default value param
 	param3 := Parameter{Type: y, Default: d, multiline: true}
-	r3, _ := ResolveParameter(p, &param3)
+	r3, _ := ResolveParameter(p, &param3, "")
 	assert.Equal(t, d, r3, "Expected value "+d+" but got "+r3.(string))
 	assert.IsType(t, d, r3, "Expected parameter %v of type %T but found %T", p, d, r3)
 
@@ -852,15 +852,15 @@ func TestResolveParameterForMultiLineParams(t *testing.T) {
 	// in this case, ResolveParameter returns value of type int
 	v1 := 11
 	param4 := Parameter{Type: y, Value: v1, multiline: true}
-	r4, _ := ResolveParameter(p, &param4)
+	r4, _ := ResolveParameter(p, &param4, "")
 	assert.Equal(t, v1, r4, "Expected value "+strconv.FormatInt(int64(v1), 10)+" but got "+strconv.FormatInt(int64(r4.(int)), 10))
 	assert.IsType(t, v1, r4, "Expected parameter %v of type %T but found %T", p, v1, r4)
 
 	// type invalid - type only param
 	param5 := Parameter{Type: "invalid", multiline: true}
-	_, err := ResolveParameter(p, &param5)
+	_, err := ResolveParameter(p, &param5, "")
 	assert.NotNil(t, err, "Expected error saying Invalid type for parameter")
-	expectedErr := utils.NewParserErr("Invalid Type for parameter. [invalid]")
+	expectedErr := utils.NewParserErr("", "Invalid Type for parameter. [invalid]")
     switch errorType := err.(type) {
         default:
             assert.Fail(t, "Wrong error type received: We are expecting ParserErr.")
@@ -871,7 +871,7 @@ func TestResolveParameterForMultiLineParams(t *testing.T) {
 
 	// type none - param without type, without value, and without default value
 	param6 := Parameter{multiline: true}
-	r6, _ := ResolveParameter("none", &param6)
+	r6, _ := ResolveParameter("none", &param6, "")
 	assert.Empty(t, r6, "Expected default value of empty string but found "+r6.(string))
 
 }
@@ -904,7 +904,7 @@ func TestComposePackage(t *testing.T) {
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
 	m, _ := p.ParseManifest(tmpfile.Name())
-	pkg, err := p.ComposePackage(m)
+	pkg, err := p.ComposePackage(m, tmpfile.Name())
 	if err == nil {
 		assert.Equal(t, "helloworld", pkg.Name, "Failed to get package name")
 		assert.Equal(t, "default", pkg.Namespace, "Failed to get package namespace")
@@ -980,7 +980,7 @@ func TestComposeTriggers(t *testing.T) {
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
 	m, _ := p.ParseManifest(tmpfile.Name())
-	triggerList, err := p.ComposeTriggers(m)
+	triggerList, err := p.ComposeTriggers(m, tmpfile.Name())
 	if err != nil {
 		assert.Fail(t, "Failed to compose trigger")
 	}
@@ -1133,7 +1133,7 @@ func TestComposeDependencies(t *testing.T) {
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
 	m, _ := p.ParseManifest(tmpfile.Name())
-	depdList, err := p.ComposeDependencies(m, "/project_folder")
+	depdList, err := p.ComposeDependencies(m, "/project_folder", tmpfile.Name())
 	if err != nil {
 		assert.Fail(t, "Failed to compose rules")
 	}
@@ -1160,4 +1160,47 @@ func TestComposeDependencies(t *testing.T) {
 			assert.Fail(t, "Failed to get dependency name")
 		}
 	}
+}
+
+func TestInvalidManifestYaml(t *testing.T) {
+    data :=`package:
+  name: helloWorldTriggerRule
+  version: 1.0
+  invalidKey: test
+  license: Apache-2.0`
+    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
+    if err != nil {
+        assert.Fail(t, "Failed to create temp file")
+    }
+    defer func() {
+        tmpfile.Close()
+        os.Remove(tmpfile.Name())
+    }()
+    p := NewYAMLParser()
+    _, err = p.ParseManifest(tmpfile.Name())
+    assert.NotNil(t, err)
+    fmt.Println(err.Error())
+    assert.Contains(t, err.Error(), "line 4: field invalidKey not found in struct parsers.Package")
+}
+
+func TestMappingValueManifestYaml(t *testing.T) {
+    data :=`package:
+  name: helloWorldTriggerRule
+  version: 1.0
+  license: Apache-2.0
+    actions: test`
+    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
+    if err != nil {
+        assert.Fail(t, "Failed to create temp file")
+    }
+    defer func() {
+        tmpfile.Close()
+        os.Remove(tmpfile.Name())
+    }()
+    p := NewYAMLParser()
+    _, err = p.ParseManifest(tmpfile.Name())
+    assert.NotNil(t, err)
+    fmt.Println(err.Error())
+    // go-yaml/yaml prints the wrong line number for mapping values. It should be 5.
+    assert.Contains(t, err.Error(), "line 4: mapping values are not allowed in this context")
 }

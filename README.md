@@ -55,6 +55,17 @@ $ cd $GOPATH
 $ go get github.com/apache/incubator-openwhisk-wskdeploy  # see known issues below if you get an error
 ```
 
+Patch gopkg.in/yaml.v2 in order to work properly. The package yaml.v2 is used to parse the files in YAML format. As we
+discover an valid issue reported on [this page](https://github.com/go-yaml/yaml/issues/280), we provide a patch to fix it under the folder of patch in the HOME
+directory of this project. Please run the commands as below to patch gopkg.in/yaml.v2:
+
+```sh
+$ cd src/github.com/apache/incubator-openwhisk-wskdeploy/
+$ cp patch/Print-the-correct-line-numbers.patch $GOPATH/src/gopkg.in/yaml.v2/
+$ cd $GOPATH/src/gopkg.in/yaml.v2
+$ git apply Print-the-correct-line-numbers.patch
+```
+
 And finally build `wskdeploy`
 
 ```sh

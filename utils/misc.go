@@ -81,7 +81,9 @@ func GetURLBase(host string) (*url.URL, error) {
 
 func GetHomeDirectory() string {
 	usr, err := user.Current()
-	Check(err)
+	if err != nil {
+        return ""
+    }
 
 	return usr.HomeDir
 }
@@ -113,11 +115,13 @@ func IsJSON(s string) (interface{}, bool) {
 
 }
 
-func PrettyJSON(j interface{}) string {
+func PrettyJSON(j interface{}) (string, error) {
 	formatter := prettyjson.NewFormatter()
 	bytes, err := formatter.Marshal(j)
-	Check(err)
-	return string(bytes)
+	if err != nil {
+        return "", err
+    }
+	return string(bytes), nil
 }
 
 // Common utilities
@@ -248,7 +252,9 @@ func GetExec(artifact string, kind string, isDocker bool, mainEntry string) (*wh
 
 	if !isDocker || ext == ".zip" {
 		content, err = new(ContentReader).ReadLocal(artifact)
-		Check(err)
+		if err != nil {
+            return nil, err
+        }
 		code = string(content)
 		exec.Code = &code
 	}

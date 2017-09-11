@@ -16,6 +16,10 @@ ADD . /src/github.com/apache/incubator-openwhisk-wskdeploy
 RUN echo "Restoring Go dependencies"
 RUN cd /src/github.com/apache/incubator-openwhisk-wskdeploy && /bin/godep restore -v
 
+RUN echo "Patching gopkg.in/yaml.v2 to print the correct line numbers of YAML files"
+RUN cp /src/github.com/apache/incubator-openwhisk-wskdeploy/patch/Print-the-correct-line-numbers.patch /src/gopkg.in/yaml.v2/Print-the-correct-line-numbers.patch
+RUN cd /src/gopkg.in/yaml.v2 && git apply Print-the-correct-line-numbers.patch
+
 # All of the Go CLI binaries will be placed under a build folder
 RUN rm -rf /src/github.com/apache/incubator-openwhisk-wskdeploy/build
 RUN mkdir /src/github.com/apache/incubator-openwhisk-wskdeploy/build

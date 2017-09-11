@@ -205,7 +205,9 @@
   {
     "id": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n",
     "translation": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n"
   }
-
-
 ]
