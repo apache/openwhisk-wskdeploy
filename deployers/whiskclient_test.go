@@ -23,6 +23,7 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
 const (
@@ -41,55 +42,26 @@ const (
 	WSKPROPS_HOST = "openwhisk.ng.bluemix.net"
 	WSKPROPS_AUTH = "a4f8c502:123zO3xZCLrMN6v2BKK"
 	WSKPROPS_NAMESPACE = "guest"
-
-	WHISK_PROPERTY_HOST = "172.17.0.1"
-	WHISK_PROPERTY_AUTH = ""
-	WHISK_PROPERTY_NAMESPACE = "guest"
-
-	DEFAULT_NAMESPACE = "guest"
-
 )
 
-// this test generates varied results depending on the environment in which its running
-// credentials are retrieved (for wskdeploy running in non-interactive mode) in the following precedence order:
-// (1) deployment file
-// (2) manifest file
-// (3) wskdeploy command line
-// (4) .wskprops
-// (5) whisk.properties
-// in this test, credentials could be coming from
-// whisk.properties if you have OPENWHISK_HOME set to valid path
-// $HOME/.wskprops if you have set openwhisk properties using wsk CLI
-// this test works great in Travis as unit tests are run before deploying openwhisk
-// but might fail in developer's environment and therefore commenting out
-/*func TestNewWhiskConfig(t *testing.T) {
+func TestNewWhiskConfig(t *testing.T) {
 	propPath := ""
 	manifestPath := ""
 	deploymentPath := ""
-	_, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	if err == nil {
+		pi := whisk.PropertiesImp {
+			OsPackage: whisk.OSPackageImp{},
+		}
+		wskprops, err := whisk.GetDefaultWskProp(pi)
+		if err == nil {
+			assert.Equal(t, config.Namespace, wskprops.Namespace, "")
+			assert.Equal(t, config.Host, wskprops.APIHost, "")
+			assert.Equal(t, config.AuthToken, wskprops.AuthKey, "")
+		}
+		return
+	}
 	assert.NotNil(t, err, "Failed to produce an error when credentials could not be retrieved")
-}*/
-
-func TestNewWhiskConfigWithOnlyDeploymentFile(t *testing.T) {
-	propPath := ""
-	manifestPath := ""
-	deploymentPath := "../tests/dat/deployment_validate_credentials.yaml"
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
-	assert.Nil(t, err, "Failed to read credentials from deployment file")
-	assert.Equal(t, config.Host, DEPLOYMENT_HOST, "Failed to get host name from deployment file")
-	assert.Equal(t, config.AuthToken, DEPLOYMENT_AUTH, "Failed to get auth token from deployment file")
-	assert.Equal(t, config.Namespace, DEPLOYMENT_NAMESPACE, "Failed to get namespace from deployment file")
-}
-
-func TestNewWhiskConfigWithOnlyManifestFile(t *testing.T) {
-	propPath := ""
-	manifestPath := "../tests/dat/manifest_validate_credentials.yaml"
-	deploymentPath := ""
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
-	assert.Nil(t, err, "Failed to read credentials from manifest file")
-	assert.Equal(t, config.Host, MANIFEST_HOST, "Failed to get host name from manifest file")
-	assert.Equal(t, config.AuthToken, MANIFEST_AUTH, "Failed to get auth token from manifest file")
-	assert.Equal(t, config.Namespace, MANIFEST_NAMESPACE, "Failed to get namespace from manifest file")
 }
 
 func TestNewWhiskConfigCommandLine(t *testing.T) {
@@ -102,7 +74,7 @@ func TestNewWhiskConfigCommandLine(t *testing.T) {
 	assert.Nil(t, err, "Failed to read credentials from wskdeploy command line")
 	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy command line")
 	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy command line")
-	assert.Equal(t, config.Namespace, DEFAULT_NAMESPACE, "Failed to get namespace from defaults")
+	assert.Equal(t, config.Namespace, whisk.DEFAULT_NAMESPACE, "Failed to get namespace from defaults")
 
 	utils.Flags.Namespace = CLI_NAMESPACE
 	config_with_ns, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
@@ -113,6 +85,29 @@ func TestNewWhiskConfigCommandLine(t *testing.T) {
 	utils.Flags.Namespace = ""
 	utils.Flags.ApiHost = ""
 }
+
+func TestNewWhiskConfigDeploymentFile(t *testing.T) {
+	propPath := ""
+	manifestPath := ""
+	deploymentPath := "../tests/dat/deployment_validate_credentials.yaml"
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	assert.Nil(t, err, "Failed to read credentials from deployment file")
+	assert.Equal(t, config.Host, DEPLOYMENT_HOST, "Failed to get host name from deployment file")
+	assert.Equal(t, config.AuthToken, DEPLOYMENT_AUTH, "Failed to get auth token from deployment file")
+	assert.Equal(t, config.Namespace, DEPLOYMENT_NAMESPACE, "Failed to get namespace from deployment file")
+}
+
+func TestNewWhiskConfigManifestFile(t *testing.T) {
+	propPath := ""
+	manifestPath := "../tests/dat/manifest_validate_credentials.yaml"
+	deploymentPath := ""
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	assert.Nil(t, err, "Failed to read credentials from manifest file")
+	assert.Equal(t, config.Host, MANIFEST_HOST, "Failed to get host name from manifest file")
+	assert.Equal(t, config.AuthToken, MANIFEST_AUTH, "Failed to get auth token from manifest file")
+	assert.Equal(t, config.Namespace, MANIFEST_NAMESPACE, "Failed to get namespace from manifest file")
+}
+
 
 func TestNewWhiskConfigWithWskProps(t *testing.T) {
 	propPath := "../tests/dat/wskprops"
@@ -134,18 +129,48 @@ func TestNewWhiskConfigWithWskProps(t *testing.T) {
 	assert.Nil(t, err, "Failed to read credentials in interactive mode")
 }*/
 
-func TestNewWhiskConfigWithDeploymentAndManifestFile(t *testing.T) {
+func TestNewWhiskConfigWithCLIDeploymentAndManifestFile(t *testing.T) {
 	propPath := ""
 	manifestPath := "../tests/dat/manifest_validate_credentials.yaml"
 	deploymentPath := "../tests/dat/deployment_validate_credentials.yaml"
+
+	utils.Flags.ApiHost = CLI_HOST
+	utils.Flags.Auth = CLI_AUTH
+	utils.Flags.Namespace = CLI_NAMESPACE
+
 	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
-	assert.Nil(t, err, "Failed to read credentials from manifest or deployment file")
-	assert.Equal(t, config.Host, DEPLOYMENT_HOST, "Failed to get host name from deployment file")
-	assert.Equal(t, config.AuthToken, DEPLOYMENT_AUTH, "Failed to get auth token from deployment file")
-	assert.Equal(t, config.Namespace, DEPLOYMENT_NAMESPACE, "Failed to get namespace from deployment file")
+	assert.Nil(t, err, "Failed to read credentials from CLI or deployment or manifest file")
+	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy CLI")
+	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy CLI")
+	assert.Equal(t, config.Namespace, CLI_NAMESPACE, "Failed to get namespace from wskdeploy CLI")
+
+	utils.Flags.Auth = ""
+	utils.Flags.Namespace = ""
+	utils.Flags.ApiHost = ""
 }
 
-func TestNewWhiskConfigWithManifestAndCLI(t *testing.T) {
+
+func TestNewWhiskConfigWithCLIAndDeployment(t *testing.T) {
+	propPath := ""
+	manifestPath := "../tests/dat/deployment_validate_credentials.yaml"
+	deploymentPath := ""
+
+	utils.Flags.ApiHost = CLI_HOST
+	utils.Flags.Auth = CLI_AUTH
+	utils.Flags.Namespace = CLI_NAMESPACE
+
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	assert.Nil(t, err, "Failed to read credentials from wskdeploy CLI")
+	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy CLI")
+	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy CLI")
+	assert.Equal(t, config.Namespace, CLI_NAMESPACE, "Failed to get namespace from wskdeploy CLI")
+
+	utils.Flags.Auth = ""
+	utils.Flags.Namespace = ""
+	utils.Flags.ApiHost = ""
+}
+
+func TestNewWhiskConfigWithCLIAndManifest(t *testing.T) {
 	propPath := ""
 	manifestPath := "../tests/dat/manifest_validate_credentials.yaml"
 	deploymentPath := ""
@@ -156,9 +181,9 @@ func TestNewWhiskConfigWithManifestAndCLI(t *testing.T) {
 
 	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
 	assert.Nil(t, err, "Failed to read credentials from manifest file")
-	assert.Equal(t, config.Host, MANIFEST_HOST, "Failed to get host name from manifest file")
-	assert.Equal(t, config.AuthToken, MANIFEST_AUTH, "Failed to get auth token from manifest file")
-	assert.Equal(t, config.Namespace, MANIFEST_NAMESPACE, "Failed to get namespace from manifest file")
+	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy CLI")
+	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy CLI")
+	assert.Equal(t, config.Namespace, CLI_NAMESPACE, "Failed to get namespace from wskdeploy CLI")
 
 	utils.Flags.Auth = ""
 	utils.Flags.Namespace = ""
@@ -183,3 +208,15 @@ func TestNewWhiskConfigWithCLIAndWskProps(t *testing.T) {
 	utils.Flags.Namespace = ""
 	utils.Flags.ApiHost = ""
 }
+
+func TestNewWhiskConfigWithDeploymentAndManifestFile(t *testing.T) {
+	propPath := ""
+	manifestPath := "../tests/dat/manifest_validate_credentials.yaml"
+	deploymentPath := "../tests/dat/deployment_validate_credentials.yaml"
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	assert.Nil(t, err, "Failed to read credentials from manifest or deployment file")
+	assert.Equal(t, config.Host, DEPLOYMENT_HOST, "Failed to get host name from deployment file")
+	assert.Equal(t, config.AuthToken, DEPLOYMENT_AUTH, "Failed to get auth token from deployment file")
+	assert.Equal(t, config.Namespace, DEPLOYMENT_NAMESPACE, "Failed to get namespace from deployment file")
+}
+

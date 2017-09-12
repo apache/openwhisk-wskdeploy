@@ -20,30 +20,29 @@ package deployers
 import (
 	"bufio"
 	"fmt"
-	"net/http"
-	"os"
-	"strings"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
-    "github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-    "path"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"net/http"
+	"os"
+	"path"
+	"strings"
 )
 
 const (
-	COMMANDLINE = "wskdeploy command line"
+	COMMANDLINE  = "wskdeploy command line"
 	DEFAULTVALUE = "default value"
-	WSKPROPS = ".wskprops"
-	WHISKPROPERTY = "whisk.properties"
-	INTERINPUT = "interactve input"
+	WSKPROPS     = ".wskprops"
+	INTERINPUT   = "interactve input"
 )
 
 type PropertyValue struct {
-	Value string
+	Value  string
 	Source string
 }
 
-var GetPropertyValue = func (prop PropertyValue, newValue string, source string) PropertyValue {
+var GetPropertyValue = func(prop PropertyValue, newValue string, source string) PropertyValue {
 	if len(prop.Value) == 0 && len(newValue) > 0 {
 		prop.Value = newValue
 		prop.Source = source
@@ -51,165 +50,163 @@ var GetPropertyValue = func (prop PropertyValue, newValue string, source string)
 	return prop
 }
 
-var GetWskPropFromWskprops = func (pi whisk.Properties, proppath string) (*whisk.Wskprops, error) {
+var GetWskPropFromWskprops = func(pi whisk.Properties, proppath string) (*whisk.Wskprops, error) {
 	return whisk.GetWskPropFromWskprops(pi, proppath)
 }
 
-var GetWskPropFromWhiskProperty = func (pi whisk.Properties) (*whisk.Wskprops, error) {
+var GetWskPropFromWhiskProperty = func(pi whisk.Properties) (*whisk.Wskprops, error) {
 	return whisk.GetWskPropFromWhiskProperty(pi)
 }
 
-var GetCommandLineFlags = func () (string, string, string) {
+var GetCommandLineFlags = func() (string, string, string) {
 	return utils.Flags.ApiHost, utils.Flags.Auth, utils.Flags.Namespace
 }
 
-var CreateNewClient = func (httpClient *http.Client, config_input *whisk.Config) (*whisk.Client, error) {
+var CreateNewClient = func(httpClient *http.Client, config_input *whisk.Config) (*whisk.Client, error) {
 	return whisk.NewClient(http.DefaultClient, clientConfig)
 }
 
+// we are reading openwhisk credentials (apihost, namespace, and auth) in the following precedence order:
+// (1) wskdeploy command line `wskdeploy --apihost --namespace --auth`
+// (2) deployment file
+// (3) manifest file
+// (4) .wskprops
+// (5) prompt for values in interactive mode if any of them are missing
 func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string, isInteractive bool) (*whisk.Config, error) {
-    credential := PropertyValue {}
-    namespace := PropertyValue {}
-    apiHost := PropertyValue {}
+	// struct to store credential, namespace, and host with their respective source
+	credential := PropertyValue{}
+	namespace := PropertyValue{}
+	apiHost := PropertyValue{}
 
-    // First, we look up the above variables in the deployment file.
-    if utils.FileExists(deploymentPath) {
-        mm := parsers.NewYAMLParser()
-        deployment := mm.ParseDeployment(deploymentPath)
-        credential.Value = deployment.Application.Credential
-        credential.Source = path.Base(deploymentPath)
-        namespace.Value = deployment.Application.Namespace
-        namespace.Source = path.Base(deploymentPath)
-        apiHost.Value = deployment.Application.ApiHost
-        apiHost.Source = path.Base(deploymentPath)
-    }
+	// read credentials from command line
+	apihost, auth, ns := GetCommandLineFlags()
+	credential = GetPropertyValue(credential, auth, COMMANDLINE)
+	namespace = GetPropertyValue(namespace, ns, COMMANDLINE)
+	apiHost = GetPropertyValue(apiHost, apihost, COMMANDLINE)
 
-    if len(credential.Value) == 0 || len(namespace.Value) == 0 || len(apiHost.Value) == 0 {
-        if utils.FileExists(manifestPath) {
-            mm := parsers.NewYAMLParser()
-            manifest := mm.ParseManifest(manifestPath)
-            credential = GetPropertyValue(credential, manifest.Package.Credential, path.Base(manifestPath))
-            namespace = GetPropertyValue(namespace, manifest.Package.Namespace, path.Base(manifestPath))
-            apiHost = GetPropertyValue(apiHost, manifest.Package.ApiHost, path.Base(manifestPath))
-        }
-    }
+	// now, read them from deployment file if not found on command line
+	if len(credential.Value) == 0 || len(namespace.Value) == 0 || len(apiHost.Value) == 0 {
+		if utils.FileExists(deploymentPath) {
+			mm := parsers.NewYAMLParser()
+			deployment := mm.ParseDeployment(deploymentPath)
+			credential = GetPropertyValue(credential, deployment.Application.Credential, path.Base(deploymentPath))
+			namespace = GetPropertyValue(namespace, deployment.Application.Namespace, path.Base(deploymentPath))
+			apiHost = GetPropertyValue(apiHost, deployment.Application.ApiHost, path.Base(deploymentPath))
+		}
+	}
 
-    // If the variables are not correctly assigned, we look up auth key and api host in the command line. The namespace
-    // is currently not available in command line, which can be added later.
-    apihost, auth, ns := GetCommandLineFlags()
-    credential = GetPropertyValue(credential, auth, COMMANDLINE)
-    namespace = GetPropertyValue(namespace, ns, COMMANDLINE)
-    apiHost = GetPropertyValue(apiHost, apihost, COMMANDLINE)
+	// read credentials from manifest file as didn't find them on command line and in deployment file
+	if len(credential.Value) == 0 || len(namespace.Value) == 0 || len(apiHost.Value) == 0 {
+		if utils.FileExists(manifestPath) {
+			mm := parsers.NewYAMLParser()
+			manifest := mm.ParseManifest(manifestPath)
+			credential = GetPropertyValue(credential, manifest.Package.Credential, path.Base(manifestPath))
+			namespace = GetPropertyValue(namespace, manifest.Package.Namespace, path.Base(manifestPath))
+			apiHost = GetPropertyValue(apiHost, manifest.Package.ApiHost, path.Base(manifestPath))
+		}
+	}
 
-    // Third, we need to look up the variables in .wskprops file.
-    pi := whisk.PropertiesImp {
-        OsPackage: whisk.OSPackageImp{},
-    }
+	// Third, we need to look up the variables in .wskprops file.
+	pi := whisk.PropertiesImp{
+		OsPackage: whisk.OSPackageImp{},
+	}
 
-    // The error raised here can be neglected, because we will handle it in the end of this function.
-    wskprops, _ := GetWskPropFromWskprops(pi, proppath)
-    credential = GetPropertyValue(credential, wskprops.AuthKey, WSKPROPS)
-    namespace = GetPropertyValue(namespace, wskprops.Namespace, WSKPROPS)
-    apiHost = GetPropertyValue(apiHost, wskprops.APIHost, WSKPROPS)
+	// The error raised here can be neglected, because we will handle it in the end of this function.
+	wskprops, _ := GetWskPropFromWskprops(pi, proppath)
+	credential = GetPropertyValue(credential, wskprops.AuthKey, WSKPROPS)
+	namespace = GetPropertyValue(namespace, wskprops.Namespace, WSKPROPS)
+	apiHost = GetPropertyValue(apiHost, wskprops.APIHost, WSKPROPS)
 
-    // Fourth, we look up the variables in whisk.properties on a local openwhisk deployment.
-    if len(credential.Value) == 0 || len(apiHost.Value) == 0 {
-        // No need to keep the default value for namespace, since both of auth and apihost are not set after .wskprops.
-        // whisk.property will set the default value as well.
-        apiHost.Value = ""
-        apiHost.Source = DEFAULTVALUE
-    }
+	if len(apiHost.Value) != 0 && len(credential.Value) != 0 && len(namespace.Value) == 0 {
+		namespace.Value = whisk.DEFAULT_NAMESPACE
+		namespace.Source = DEFAULTVALUE
+	}
 
-    // The error raised here can be neglected, because we will handle it in the end of this function.
-    whiskproperty, _ := GetWskPropFromWhiskProperty(pi)
-    credential = GetPropertyValue(credential, whiskproperty.AuthKey, WHISKPROPERTY)
-    namespace = GetPropertyValue(namespace, whiskproperty.Namespace, WHISKPROPERTY)
-    apiHost = GetPropertyValue(apiHost, whiskproperty.APIHost, WHISKPROPERTY)
+	// If we still can not find the values we need, check if it is interactive mode.
+	// If so, we prompt users for the input.
+	// The namespace is set to a default value at this point if not provided.
+	if len(apiHost.Value) == 0 && isInteractive == true {
+		host, err := promptForValue("\nPlease provide the hostname for OpenWhisk [default value is openwhisk.ng.bluemix.net]: ")
+		utils.Check(err)
+		if host == "" {
+			host = "openwhisk.ng.bluemix.net"
+		}
+		apiHost.Value = host
+		apiHost.Source = INTERINPUT
+	}
 
-    // If we still can not find the variables we need, check if it is interactive mode. If so, we accept the input
-    // from the user. The namespace will be set to a default value, when the code reaches this line, because WSKPROPS
-    // has a default value for namespace.
-    if len(apiHost.Value) == 0 && isInteractive == true {
-        host, err := promptForValue("\nPlease provide the hostname for OpenWhisk [default value is openwhisk.ng.bluemix.net]: ")
-        utils.Check(err)
-        if host == "" {
-            host = "openwhisk.ng.bluemix.net"
-        }
-        apiHost.Value = host
-        apiHost.Source = INTERINPUT
-    }
+	if len(credential.Value) == 0 && isInteractive == true {
+		cred, err := promptForValue("\nPlease provide an authentication token: ")
+		utils.Check(err)
+		credential.Value = cred
+		credential.Source = INTERINPUT
 
-    if len(credential.Value) == 0 && isInteractive == true {
-        cred, err := promptForValue("\nPlease provide an authentication token: ")
-        utils.Check(err)
-        credential.Value = cred
-        credential.Source = INTERINPUT
+		// The namespace is always associated with the credential. Both of them should be picked up from the same source.
+		if len(namespace.Value) == 0 || namespace.Value == whisk.DEFAULT_NAMESPACE {
+			ns, err := promptForValue("\nPlease provide a namespace [default value is guest]: ")
+			utils.Check(err)
+			source := INTERINPUT
 
-        // The namespace is always associated with the credential. Both of them should be picked up from the same source.
-        if len(namespace.Value) == 0 || namespace.Value == whisk.DEFAULT_NAMESPACE {
-            ns, err := promptForValue("\nPlease provide a namespace [default value is guest]: ")
-            utils.Check(err)
+			if ns == "" {
+				ns = whisk.DEFAULT_NAMESPACE
+				source = DEFAULTVALUE
+			}
 
-            source := INTERINPUT
-            if ns == "" {
-                ns = whisk.DEFAULT_NAMESPACE
-                source = DEFAULTVALUE
-            }
-            namespace.Value = ns
-            namespace.Source = source
-        }
-    }
+			namespace.Value = ns
+			namespace.Source = source
+		}
+	}
 
-    clientConfig = &whisk.Config{
-        AuthToken: credential.Value, //Authtoken
-        Namespace: namespace.Value,  //Namespace
-        Host: apiHost.Value,
-        Version:   "v1",
-        Insecure:  true, // true if you want to ignore certificate signing
-    }
+	clientConfig = &whisk.Config{
+		AuthToken: credential.Value, //Authtoken
+		Namespace: namespace.Value,  //Namespace
+		Host:      apiHost.Value,
+		Version:   "v1",
+		Insecure:  true, // true if you want to ignore certificate signing
+	}
 
-    if (len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0) {
-	    var errStr string
-	    if len(credential.Value) == 0 {
-		    errStr += wski18n.T("The authentication key is not configured.\n")
-	    } else {
-		    errStr += wski18n.T("The authenitcation key is set from {{.authsource}}.\n",
-			    map[string]interface{}{"authsource": credential.Source})
-	    }
+	if len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0 {
+		var errStr string
+		if len(credential.Value) == 0 {
+			errStr += wski18n.T("The authentication key is not configured.\n")
+		} else {
+			errStr += wski18n.T("The authenitcation key is set from {{.authsource}}.\n",
+				map[string]interface{}{"authsource": credential.Source})
+		}
 
-	    if len(apiHost.Value) == 0 {
-		    errStr += wski18n.T("The API host is not configured.\n")
-	    } else {
-		    errStr += wski18n.T("The API host is {{.apihost}}, from {{.apisource}}.\n",
-			    map[string]interface{}{"apihost": apiHost.Value, "apisource": apiHost.Source})
-	    }
+		if len(apiHost.Value) == 0 {
+			errStr += wski18n.T("The API host is not configured.\n")
+		} else {
+			errStr += wski18n.T("The API host is {{.apihost}}, from {{.apisource}}.\n",
+				map[string]interface{}{"apihost": apiHost.Value, "apisource": apiHost.Source})
+		}
 
-	    if len(namespace.Value) == 0 {
-		    errStr += wski18n.T("The namespace is not configured.\n")
-	    } else {
-		    errStr += wski18n.T("The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
-			    map[string]interface{}{"namespace": namespace.Value, "namespacesource": namespace.Source})
+		if len(namespace.Value) == 0 {
+			errStr += wski18n.T("The namespace is not configured.\n")
+		} else {
+			errStr += wski18n.T("The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
+				map[string]interface{}{"namespace": namespace.Value, "namespacesource": namespace.Source})
 
-	    }
-	    whisk.Debug(whisk.DbgError, errStr)
-	    return clientConfig, utils.NewInvalidWskpropsError(errStr)
-    }
+		}
+		whisk.Debug(whisk.DbgError, errStr)
+		return clientConfig, utils.NewInvalidWskpropsError(errStr)
+	}
 
-    stdout := wski18n.T("The API host is {{.apihost}}, from {{.apisource}}.\n",
-        map[string]interface{}{"apihost": apiHost.Value, "apisource": apiHost.Source})
-    whisk.Debug(whisk.DbgInfo, stdout)
+	stdout := wski18n.T("The API host is {{.apihost}}, from {{.apisource}}.\n",
+		map[string]interface{}{"apihost": apiHost.Value, "apisource": apiHost.Source})
+	whisk.Debug(whisk.DbgInfo, stdout)
 
-    stdout = wski18n.T("The auth key is set, from {{.authsource}}.\n",
-        map[string]interface{}{"authsource": credential.Source})
-    whisk.Debug(whisk.DbgInfo, stdout)
+	stdout = wski18n.T("The auth key is set, from {{.authsource}}.\n",
+		map[string]interface{}{"authsource": credential.Source})
+	whisk.Debug(whisk.DbgInfo, stdout)
 
-    stdout = wski18n.T("The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
-        map[string]interface{}{"namespace": namespace.Value, "namespacesource": namespace.Source})
-    whisk.Debug(whisk.DbgInfo, stdout)
-    return clientConfig, nil
+	stdout = wski18n.T("The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
+		map[string]interface{}{"namespace": namespace.Value, "namespacesource": namespace.Source})
+	whisk.Debug(whisk.DbgInfo, stdout)
+	return clientConfig, nil
 }
 
-var promptForValue = func (msg string) (string, error) {
+var promptForValue = func(msg string) (string, error) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(msg)
 
