@@ -94,27 +94,27 @@ func (wskdeploy *Wskdeploy) RunCommand(s ...string) (string, error) {
 }
 
 func (wskdeploy *Wskdeploy) Deploy(manifestPath string, deploymentPath string) (string, error) {
-	return wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath)
+	return wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath, "--verbose")
 }
 
 func (wskdeploy *Wskdeploy) Undeploy(manifestPath string, deploymentPath string) (string, error) {
-	return wskdeploy.RunCommand("undeploy", "-m", manifestPath, "-d", deploymentPath)
+	return wskdeploy.RunCommand("undeploy", "-m", manifestPath, "-d", deploymentPath, "--verbose")
 }
 
 func (wskdeploy *Wskdeploy) DeployProjectPathOnly(projectPath string) (string, error) {
-	return wskdeploy.RunCommand("-p", projectPath)
+	return wskdeploy.RunCommand("-p", projectPath, "--verbose")
 }
 
 func (wskdeploy *Wskdeploy) UndeployProjectPathOnly(projectPath string) (string, error) {
-	return wskdeploy.RunCommand("undeploy", "-p", projectPath)
+	return wskdeploy.RunCommand("undeploy", "-p", projectPath, "--verbose")
 
 }
 
 func (wskdeploy *Wskdeploy) DeployManifestPathOnly(manifestpath string) (string, error) {
-	return wskdeploy.RunCommand("-m", manifestpath)
+	return wskdeploy.RunCommand("-m", manifestpath, "--verbose")
 }
 
 func (wskdeploy *Wskdeploy) UndeployManifestPathOnly(manifestpath string) (string, error) {
-	return wskdeploy.RunCommand("undeploy", "-m", manifestpath)
+	return wskdeploy.RunCommand("undeploy", "-m", manifestpath, "--verbose")
 
 }
