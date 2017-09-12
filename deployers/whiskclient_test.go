@@ -70,16 +70,13 @@ func TestNewWhiskConfigCommandLine(t *testing.T) {
 	deploymentPath := ""
 	utils.Flags.ApiHost = CLI_HOST
 	utils.Flags.Auth = CLI_AUTH
+	utils.Flags.Namespace = CLI_NAMESPACE
+
 	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
 	assert.Nil(t, err, "Failed to read credentials from wskdeploy command line")
 	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy command line")
 	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy command line")
-	assert.Equal(t, config.Namespace, whisk.DEFAULT_NAMESPACE, "Failed to get namespace from defaults")
-
-	utils.Flags.Namespace = CLI_NAMESPACE
-	config_with_ns, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
-	assert.Nil(t, err, "Failed to read credentials from wskdeploy command line")
-	assert.Equal(t, config_with_ns.Namespace, CLI_NAMESPACE, "Failed to get namespace from wskdeploy command line")
+	assert.Equal(t, config.Namespace, CLI_NAMESPACE, "Failed to get namespace from wskdeploy command line")
 
 	utils.Flags.Auth = ""
 	utils.Flags.Namespace = ""
