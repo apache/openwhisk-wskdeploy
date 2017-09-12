@@ -17,7 +17,7 @@ package:
                     description: a simple greeting message, Hello World!
     triggers:
         Every12Hours:
-            source: /whisk.system/alarms/alarm
+            feed: /whisk.system/alarms/alarm
     rules:
         helloworldEvery12Hours:
             action: helloworld

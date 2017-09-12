@@ -956,7 +956,6 @@ func TestComposeSequences(t *testing.T) {
 }
 
 func TestComposeTriggers(t *testing.T) {
-//TODO 'source' should changed to 'feed' according to the spec after #450 is fixed.
 	data :=`package:
   name: helloworld
   triggers:
@@ -965,7 +964,7 @@ func TestComposeTriggers(t *testing.T) {
         name: string
         place: string
     trigger2:
-      source: myfeed
+      feed: myfeed
       inputs:
         name: myname
         place: myplace`

@@ -205,6 +205,10 @@
   {
     "id": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n",
     "translation": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n",
+    "translation": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n"
   }
 
 
