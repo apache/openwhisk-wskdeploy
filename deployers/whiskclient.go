@@ -34,6 +34,7 @@ const (
 	COMMANDLINE  = "wskdeploy command line"
 	DEFAULTVALUE = "default value"
 	WSKPROPS     = ".wskprops"
+	WHISKPROPERTY = "whisk.properties"
 	INTERINPUT   = "interactve input"
 )
 
@@ -117,6 +118,26 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	namespace = GetPropertyValue(namespace, wskprops.Namespace, WSKPROPS)
 	apiHost = GetPropertyValue(apiHost, wskprops.APIHost, WSKPROPS)
 
+	// now, read credentials from whisk.properties but this is only acceptable within Travis
+	// whisk.properties will soon be deprecated and should not be used for any production deployment
+	whiskproperty, _ := GetWskPropFromWhiskProperty(pi)
+	credential = GetPropertyValue(credential, whiskproperty.AuthKey, WHISKPROPERTY)
+	if credential.Source == WHISKPROPERTY {
+		fmt.Println("WARNING: The authentication key was retrieved from whisk.properties." +
+			"whisk.properties will soon be deprecated please do not use it outside of Travis builds.")
+	}
+	namespace = GetPropertyValue(namespace, whiskproperty.Namespace, WHISKPROPERTY)
+	if namespace.Source == WHISKPROPERTY {
+		fmt.Println("WARNING: The namespace was retrieved from whisk.properties." +
+			"whisk.properties will soon be deprecated please do not use it outside of Travis builds.")
+	}
+	apiHost = GetPropertyValue(apiHost, whiskproperty.APIHost, WHISKPROPERTY)
+	if apiHost.Source == WHISKPROPERTY {
+		fmt.Println("WARNING: The API host was retrieved from whisk.properties." +
+			"whisk.properties will soon be deprecated please do not use it outside of Travis builds.")
+	}
+
+	// set namespace to default namespace if not yet found
 	if len(apiHost.Value) != 0 && len(credential.Value) != 0 && len(namespace.Value) == 0 {
 		namespace.Value = whisk.DEFAULT_NAMESPACE
 		namespace.Source = DEFAULTVALUE
