@@ -1,5 +1,5 @@
 # Whisk Deploy Tool by Example
-_A step-by-step guide for deploying Apache OpenWhisk applications using a Package Manifest file_
+_A step-by-step guide for deploying Apache OpenWhisk applications using Package Manifest files._
 
 This guide, by example, will walk you through how to describe OpenWhisk applications using the OpenWhisk Packaging specification and deply them through the wskdeploy utility to any OpenWhisk Serverless provider.  
 
