@@ -7,9 +7,9 @@
   *
   * In this case, the params variable will look like:
   *     {
-  *			"message": "xxxx",
-  *			"slack_package": "xxxx",
-  *		}
+  *         "message": "xxxx",
+  *         "slack_package": "xxxx",
+  *     }
   *
   * @return which must be a JSON object.
   *         It will be the output of this action.
@@ -18,15 +18,15 @@
 
 
 function main(params) {
-	// require the OpenWhisk npm package
-	var openwhisk = require("openwhisk");
+    // require the OpenWhisk npm package
+    var openwhisk = require("openwhisk");
 
-	// instantiate the openwhisk instance before you can use it
+    // instantiate the openwhisk instance before you can use it
     wsk = openwhisk();
 
-	//read Params
+    //read Params
     var message = params.message;
-	var slackPackage = params.slack_package;
+    var slackPackage = params.slack_package;
 
     console.log(message);
 
@@ -37,23 +37,23 @@ function main(params) {
     packageName = "/" + namespace + "/" + slackPackage;
 
     return wsk.actions.invoke({
-    	actionName: packageName + "/post",
+        actionName: packageName + "/post",
         params: {
             "text": message,
         },
         blocking: true
     })
     .then(activation => {
-    	console.log("Posted message to slack");
-    	return {
-    		message: activation
-    	};
+        console.log("Posted message to slack");
+        return {
+            message: activation
+        };
     })
     .catch(function (err) {
-		console.log("Error posting message to slack")
-		return {
-			error: err
-		};
+        console.log("Error posting message to slack")
+        return {
+            error: err
+        };
     });
 }
 
