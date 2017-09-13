@@ -21,12 +21,15 @@ import (
     "fmt"
     "runtime"
     "github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+    "strings"
 )
 
 const (
     INVALID_YAML_INPUT = "Invalid input of Yaml file"
     INVALID_YAML_FORMAT = "Invalid input of Yaml format"
     OPENWHISK_CLIENT_ERROR = "OpenWhisk Client Error"
+    UNKNOWN = "Unknown"
+    LINE = "line"
 )
 
 type TestCaseError struct {
@@ -50,7 +53,7 @@ type BaseErr struct {
 }
 
 func (e *BaseErr) Error() string {
-    return fmt.Sprintf("%s [%d]: %s", e.FileName, e.LineNum, e.Message)
+    return fmt.Sprintf("%s [%d]: %s\n", e.FileName, e.LineNum, e.Message)
 }
 
 func (e *BaseErr) SetFileName(fileName string) {
@@ -86,7 +89,7 @@ func (e *InputYamlFileError) SetErrorType(errorType string) {
 }
 
 func (e *InputYamlFileError) Error() string {
-    return fmt.Sprintf("%s [%d]: %s =====> %s", e.FileName, e.LineNum, e.errorType, e.Message)
+    return fmt.Sprintf("%s [%d]: %s =====> %s\n", e.FileName, e.LineNum, e.errorType, e.Message)
 }
 
 type InputYamlFormatError struct {
@@ -122,7 +125,7 @@ func NewWhiskClientError(errMessage string, code int) *WhiskClientError {
 }
 
 func (e *WhiskClientError) Error() string {
-    return fmt.Sprintf("%s [%d]: %s =====> %s Error code: %d.", e.FileName, e.LineNum, e.errorType, e.Message, e.errorCode)
+    return fmt.Sprintf("%s [%d]: %s =====> %s Error code: %d.\n", e.FileName, e.LineNum, e.errorType, e.Message, e.errorCode)
 }
 
 type InvalidWskpropsError struct {
@@ -140,13 +143,33 @@ func NewInvalidWskpropsError(errMessage string) *InvalidWskpropsError {
 
 type ParserErr struct {
     BaseErr
+    YamlFile string
+    lines []string
+    msgs []string
 }
 
-func NewParserErr(msg string) *ParserErr {
+func NewParserErr(yamlFile string, lines []string, msgs []string) *ParserErr {
     _, fn, line, _ := runtime.Caller(1)
-    var err = &ParserErr{}
+    var err = &ParserErr{
+        YamlFile: yamlFile,
+        lines: lines,
+        msgs: msgs,
+    }
     err.SetFileName(fn)
     err.SetLineNum(line)
-    err.SetMessage(msg)
     return err
+}
+
+func (e *ParserErr) Error() string {
+    result := make([]string, len(e.msgs))
+    for index, each := range e.msgs {
+        var s string
+        if e.lines[index] == UNKNOWN {
+            s = fmt.Sprintf("%s", each)
+        } else {
+            s = fmt.Sprintf("%s: Line %s, its neighbour lines, or the lines on the same level.", each, e.lines[index])
+        }
+        result[index] = s
+    }
+    return fmt.Sprintf("%s [%d]:\n Failed to parse the yaml file %s\n =====> %s\n", e.FileName, e.LineNum, e.YamlFile, strings.Join(result, "\n "))
 }

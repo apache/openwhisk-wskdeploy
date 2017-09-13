@@ -193,10 +193,6 @@ func Deploy() error {
 		deployer.ProjectPath = projectPath
 		deployer.ManifestPath = utils.Flags.ManifestPath
 		deployer.DeploymentPath = utils.Flags.DeploymentPath
-		// perform some quick check here.
-		go func() {
-			deployer.Check()
-		}()
 		deployer.IsDefault = utils.Flags.UseDefaults
 
 		deployer.IsInteractive = utils.Flags.UseInteractive

@@ -34,10 +34,15 @@ type URLReader struct {
 
 func (urlReader *URLReader) ReadUrl(url string) (content []byte, err error) {
 	resp, err := http.Get(url)
-	Check(err)
+	if err != nil {
+        return content, err
+    }
 	b, err := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
-	Check(err)
+    if err != nil {
+        return content, err
+    } else {
+        defer resp.Body.Close()
+    }
 	return b, nil
 }
 
