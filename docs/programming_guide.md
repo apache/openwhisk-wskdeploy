@@ -3,7 +3,7 @@ _A step-by-step guide for deploying Apache OpenWhisk applications using Package 
 
 This guide, by example, will walk you through how to describe OpenWhisk applications using the OpenWhisk Packaging specification and deply them through the wskdeploy utility to any OpenWhisk Serverless provider.  
 
-It assumes that you have setup and can run the ```wskdeploy``` as described in the [project README](https://github.com/apache/incubator-openwhisk-wskdeploy).  If so, then the utility will use the OpenWhisk APIHOST and AUTH variable values in your .wskprops file to attempt deployment.
+It assumes that you have setup and can run the ```wskdeploy``` as described in the [project README](https://github.com/apache/incubator-openwhisk-wskdeploy#).  If so, then the utility will use the OpenWhisk APIHOST and AUTH variable values in your .wskprops file to attempt deployment.
 
 ## Creating an OpenWhisk Package
 
