@@ -43,7 +43,7 @@ import (
 )
 
 const (
-    HTTP_TIMEOUT = 30
+    DEFAULT_HTTP_TIMEOUT = 30
     DEFAULT_PROJECT_PATH = "."
 )
 // ActionRecord is a container to keep track of
@@ -450,16 +450,12 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 		InsecureSkipVerify: true,
 	}
 
-	http.DefaultClient.Transport = &http.Transport{
-		TLSClientConfig: tlsConfig,
-	}
-
     var netTransport = &http.Transport{
         TLSClientConfig: tlsConfig,
     }
 
     var netClient = &http.Client{
-        Timeout: time.Second * HTTP_TIMEOUT,
+        Timeout: time.Second * DEFAULT_HTTP_TIMEOUT,
         Transport: netTransport,
     }
 

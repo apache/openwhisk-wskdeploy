@@ -27,7 +27,6 @@ import (
 	"github.com/spf13/cobra"
 	"path"
 	"sync"
-    "net/http"
 )
 
 var wskpropsPath string
@@ -46,14 +45,14 @@ located under current user home.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if wskpropsPath != "" {
 			config, _ := deployers.NewWhiskConfig(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
-            client, _ := deployers.CreateNewClient(http.DefaultClient, config)
+            client, _ := deployers.CreateNewClient(config)
             return printDeploymentInfo(client)
 		} else {
             //default to ~/.wskprops
             userHome := utils.GetHomeDirectory()
             propPath := path.Join(userHome, ".wskprops")
             config, _ := deployers.NewWhiskConfig(propPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
-            client, _ := deployers.CreateNewClient(http.DefaultClient, config)
+            client, _ := deployers.CreateNewClient(config)
             return printDeploymentInfo(client)
         }
 	},

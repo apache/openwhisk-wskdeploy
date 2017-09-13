@@ -29,7 +29,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-    "net/http"
 	"regexp"
 	"strings"
 )
@@ -209,7 +208,7 @@ func Deploy() error {
             return error
         }
 
-        whiskClient, error := deployers.CreateNewClient(http.DefaultClient, clientConfig)
+        whiskClient, error := deployers.CreateNewClient(clientConfig)
         if error != nil {
             return error
         }
@@ -300,7 +299,7 @@ func Undeploy() error {
             return error
         }
 
-        whiskClient, error := deployers.CreateNewClient(http.DefaultClient, clientConfig)
+        whiskClient, error := deployers.CreateNewClient(clientConfig)
         if error != nil {
             return error
         }
