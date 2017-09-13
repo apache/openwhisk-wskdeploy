@@ -1,0 +1,13 @@
+application:
+    name: AppToPostToSlack
+    packages:
+        SlackPackage:
+            actions:
+                post-to-slack:
+                    inputs:
+                        message: "Hello from WskDeploy!"
+                        slack_package: slack-package-to-post-messages
+            triggers:
+                everyhour:
+                    inputs:
+                        cron: "0 */1 * * *"
