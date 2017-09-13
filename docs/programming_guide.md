@@ -22,11 +22,14 @@ Save this into a file called "manifest.yaml" in a directory of your choice.
 
 ### Executing the wskdeploy utility
 
-Simply execute the wskdeploy binary against the directory you saved your "manifest.yaml" file in.
+Simply execute the wskdeploy binary against the directory you saved your "manifest.yaml" file in by pointing it to the package location using the ```-p``` flag.
 
 ```
-$ wskdeploy <my_directory>
+$ wskdeploy -p <my_directory>
 ```
+wskdeploy will automatically look for any file named "manifest.yaml" or "manifest.yml" in the directory it is pointed; however, the manifest file can be called anything as long as it has a .yaml or .yml extension and passed on the command line using the ```-m``` flag._
 
-_Please note that the wskdeploy utility will automatically look for any file named "manifest.yaml" or "manifest.yml" in the directory it is pointed to; however, the manifest file can be called anything as long as it has a .yaml or .yml extension and passed on the command line using the "-m" argument._
-
+For example, if you called your manifest "my_pkg_manifest.yml" you could simply provide the manifest file name as follows:
+```
+$ wskdeploy -p <my_directory> -m my_pkg_manifest.yaml
+```
