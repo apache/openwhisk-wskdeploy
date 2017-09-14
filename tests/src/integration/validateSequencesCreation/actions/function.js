@@ -1,5 +1,5 @@
 /**
- * Return a simple string to 
+ * Return a simple string to
  * confirm this function has been visited.
  *
  * @param visited the visited function list
