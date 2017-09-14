@@ -43,9 +43,18 @@
     "id": "Using {{.manifestPath}} for undeployment.\n",
     "translation": "Using {{.manifestPath}} for undeployment.\n"
   },
-
-
-
+  {
+    "id": "the runtime is not supported by Openwhisk platform.\n",
+    "translation": "the runtime is not supported by Openwhisk platform.\n"
+  },
+  {
+    "id": "wskdeploy has chosen a particular runtime for the action.\n",
+    "translation": "wskdeploy has chosen a particular runtime for the action.\n"
+  },
+  {
+    "id": "Unsupported runtime type, set to nodejs",
+    "translation": "Unsupported runtime type, set to nodejs"
+  },
   {
     "id": "The authentication key is not configured.\n",
     "translation": "The authentication key is not configured.\n"
