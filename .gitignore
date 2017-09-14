@@ -29,6 +29,7 @@ _testmain.go
 
 #binaries
 openwhisk-wskdeploy
+incubator-openwhisk-wskdeploy
 wskdeploy
 
 #GoGlanD IDE
