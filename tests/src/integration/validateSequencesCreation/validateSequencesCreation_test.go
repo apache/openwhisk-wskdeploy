@@ -27,6 +27,7 @@ import (
 	"strconv"
 	"fmt"
 	"strings"
+	"testing"
 )
 
 var wskprops = common.GetWskprops()
@@ -95,7 +96,7 @@ func TestValidateSequenceCreation(t *testing.T) {
 		}
 
 		fmt.Printf("Deploying sequence %d\n:",i)
-		_, err := wskdeploy.Deploy(tmpManifile.Name(), tmpDeplyfile.Name())
+		_, err = wskdeploy.Deploy(tmpManifile.Name(), tmpDeplyfile.Name())
 		assert.Equal(t, nil, err, "Failed to deploy sequence.")
 		_, err = wskdeploy.Undeploy(tmpManifile.Name(), tmpDeplyfile.Name())
 		assert.Equal(t, nil, err, "Failed to undeploy sequence.")
