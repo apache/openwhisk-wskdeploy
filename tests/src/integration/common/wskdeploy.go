@@ -21,14 +21,21 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+    "github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/fatih/color"
 	"github.com/mattn/go-colorable"
 	"os"
 	"os/exec"
 	"strings"
+    "errors"
 )
 
-const cmd = "wskdeploy"
+const (
+    cmd = "wskdeploy"
+    BLUEMIX_APIHOST = "BLUEMIX_APIHOST"
+    BLUEMIX_NAMESPACE = "BLUEMIX_NAMESPACE"
+    BLUEMIX_AUTH = "BLUEMIX_AUTH"
+)
 
 type Wskdeploy struct {
 	Path string
@@ -38,6 +45,39 @@ type Wskdeploy struct {
 func NewWskdeploy() *Wskdeploy {
 	return NewWskWithPath(os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/")
 }
+
+func GetWskpropsFromEnvVars(apiHost string, namespace string, authKey string) *whisk.Wskprops {
+    return GetWskpropsFromValues(os.Getenv(apiHost), os.Getenv(namespace), os.Getenv(authKey), "v1")
+}
+
+func GetWskpropsFromValues(apiHost string, namespace string, authKey string, version string) *whisk.Wskprops {
+    dep := whisk.Wskprops {
+        APIHost: apiHost,
+        AuthKey: authKey,
+        Namespace: namespace,
+        AuthAPIGWKey: "",
+        APIGWSpaceSuid: "",
+        Apiversion: version,
+        Key: "",
+        Cert: "",
+        Source: "",
+    }
+    return &dep
+}
+
+func ValidateWskprops(wskprops *whisk.Wskprops) error {
+    if len(wskprops.APIHost) == 0 {
+        return errors.New("Missing APIHost for wskprops.")
+    }
+    if len(wskprops.Namespace) == 0 {
+        return errors.New("Missing Namespace for wskprops.")
+    }
+    if len(wskprops.AuthKey) == 0 {
+        return errors.New("Missing AuthKey for wskprops.")
+    }
+    return nil
+}
+
 
 func NewWskWithPath(path string) *Wskdeploy {
 	var dep Wskdeploy
@@ -66,39 +106,49 @@ func printOutput(outs string) {
 }
 
 func (wskdeploy *Wskdeploy) RunCommand(s ...string) (string, error) {
-	command := exec.Command(wskdeploy.Path, s...)
-	command.Dir = wskdeploy.Dir
+    command := exec.Command(wskdeploy.Path, s...)
+    command.Dir = wskdeploy.Dir
 
-	fmt.Println("wskdeploy.Path is " + wskdeploy.Path)
-	//fmt.Println("s is " + string(s))
-	printCommand(command)
+    fmt.Println("wskdeploy.Path is " + wskdeploy.Path)
+    //fmt.Println("s is " + string(s))
+    printCommand(command)
 
-	var outb, errb bytes.Buffer
-	command.Stdout = &outb
-	command.Stderr = &errb
-	err := command.Run()
+    var outb, errb bytes.Buffer
+    command.Stdout = &outb
+    command.Stderr = &errb
+    err := command.Run()
 
-	var returnError error = nil
-	if err != nil {
-		returnError = err
-	} else {
-		if len(errb.String()) > 0 {
-			returnError = utils.NewTestCaseError(errb.String())
-		}
-	}
-	printOutput(outb.String())
-	if returnError != nil {
-		printError(returnError.Error())
-	}
-	return outb.String(), returnError
+    var returnError error = nil
+    if err != nil {
+        returnError = err
+    } else {
+        if len(errb.String()) > 0 {
+            returnError = utils.NewTestCaseError(errb.String())
+        }
+    }
+    printOutput(outb.String())
+    if returnError != nil {
+        printError(returnError.Error())
+    }
+    return outb.String(), returnError
 }
 
 func (wskdeploy *Wskdeploy) Deploy(manifestPath string, deploymentPath string) (string, error) {
 	return wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath)
 }
 
+func (wskdeploy *Wskdeploy) DeployWithCredentials(manifestPath string, deploymentPath string, wskprops *whisk.Wskprops) (string, error) {
+    return wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath, "--auth", wskprops.AuthKey,
+        "--namespace", wskprops.Namespace, "--apihost", wskprops.APIHost, "--apiversion", wskprops.Apiversion)
+}
+
 func (wskdeploy *Wskdeploy) Undeploy(manifestPath string, deploymentPath string) (string, error) {
 	return wskdeploy.RunCommand("undeploy", "-m", manifestPath, "-d", deploymentPath)
+}
+
+func (wskdeploy *Wskdeploy) UndeployWithCredentials(manifestPath string, deploymentPath string, wskprops *whisk.Wskprops) (string, error) {
+    return wskdeploy.RunCommand("undeploy", "-m", manifestPath, "-d", deploymentPath, "--auth", wskprops.AuthKey,
+        "--namespace", wskprops.Namespace, "--apihost", wskprops.APIHost, "--apiversion", wskprops.Apiversion)
 }
 
 func (wskdeploy *Wskdeploy) DeployProjectPathOnly(projectPath string) (string, error) {
