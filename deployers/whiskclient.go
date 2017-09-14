@@ -28,6 +28,7 @@ import (
     "github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
     "path"
+    "time"
 )
 
 const (
@@ -63,8 +64,11 @@ var GetCommandLineFlags = func () (string, string, string) {
 	return utils.Flags.ApiHost, utils.Flags.Auth, utils.Flags.Namespace
 }
 
-var CreateNewClient = func (httpClient *http.Client, config_input *whisk.Config) (*whisk.Client, error) {
-	return whisk.NewClient(http.DefaultClient, clientConfig)
+var CreateNewClient = func (config_input *whisk.Config) (*whisk.Client, error) {
+    var netClient = &http.Client{
+        Timeout: time.Second * utils.DEFAULT_HTTP_TIMEOUT,
+    }
+	return whisk.NewClient(netClient, clientConfig)
 }
 
 func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string, isInteractive bool) (*whisk.Config, error) {
