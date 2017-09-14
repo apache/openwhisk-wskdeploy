@@ -30,6 +30,11 @@ import (
 	"strings"
 	"time"
 )
+<<<<<<< HEAD
+	"time"
+=======
+>>>>>>> 151743c26c2c121d36535f19ae5008ee0e68430c
+)
 
 const (
 	COMMANDLINE  = "wskdeploy command line"
