@@ -87,7 +87,7 @@ func TestValidateSequenceCreation(t *testing.T) {
 	count := 10
 	wskdeploy := common.NewWskdeploy()
 	for i := 1; i < count+1; i++ {
-		maniData,deplyData := composeDeployFiles(i)
+		maniData,deplyData := composeDeployFiles(i+1)
 		tmpManifile, err := _createTmpfile(maniData, "sequence_test_mani_")
 		tmpDeplyfile, err := _createTmpfile(deplyData, "sequence_test_deply_")
 		if err != nil {
