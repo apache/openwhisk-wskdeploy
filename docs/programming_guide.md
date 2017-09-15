@@ -14,12 +14,13 @@ In addition to the normal output the wskdeploy utility provides, you may enable 
 As with most language introductions, here we show a minimal "hello world" application as encoded in an OpenWhisk Package Manifest YAML file:
 
 ```
-package:
-  name: HelloWorld
+helloworld:
+  version: 1.0
+  license: Apache-2.0
   actions:
-    # helloworld action in NodeJS
-    helloNodejs:
-      function: actions/hello.js
+    hello:
+      version: 1.0
+      function: src/hello/hello.js
 ```
 
 where "hello.js" contains the following JavaScript code:

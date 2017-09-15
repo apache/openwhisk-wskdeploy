@@ -25,7 +25,15 @@ WSK_CLI_DEBUG=1
 
 Wskpdeloy uses named errors that describe the type of any error found along with additional values that correspond with an error.
 
-For example, if you have an error in your Manifest's YAML, you may see an
+For example, if you have an error in your Manifest's YAML, you may see an error such as:
+```
+[50]: Invalid input of Yaml file =====> incubator-openwhisk-wskdeploy/parsers/manifest_parser.go
+[98]: Failed to parse the yaml file manifest_bad_yaml.yaml
+ =====> yaml: line 13: could not find expected ':'
+```
 
-All current named errors supported by the utility can be found in the lates ```wskdeployerror.go``` source file:
+The named error **NewInputYamlFormatError** provides direct indication of both where in the utilities GoLang code the error was reported, but also details provided from the YAML parser regarding where the Manifest file may contain a grammar error.
+
+
+All current named errors supported by the utility can be found in the latest ```wskdeployerror.go``` source file:
 [wskdeployerror.go](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/utils/wskdeployerror.go)
