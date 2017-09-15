@@ -4,7 +4,7 @@ _A step-by-step guide for deploying Apache OpenWhisk applications using Package 
 This guide will walk you through how to describe OpenWhisk applications using the [OpenWhisk Packaging Specification](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/specification) and deploy them through the Whisk Deploy utility.
 
 ### Setting up your Host and Credentials
-In order to deply your OpenWhisk package, at minimum, the wskdeploy utility needs valid OpenWhisk APIHOST and AUTH variable to attempt deployment. Please read the [Configuring wskdeploy](wskdeploy_configuring.#configuring_wskdeploy)
+In order to deply your OpenWhisk package, at minimum, the wskdeploy utility needs valid OpenWhisk APIHOST and AUTH variable to attempt deployment. Please read the [Configuring wskdeploy](wskdeploy_configuring.md)
 
 # Debugging your package
 In addition to the normal output the wskdeploy utility provides, you may enable additional information that may further assist you in debugging. Please read the [Debugging Whisk Deploy](wskdeploy_debugging.md) document.
