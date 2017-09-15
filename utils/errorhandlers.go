@@ -57,6 +57,10 @@ func PrintOpenWhiskOutput(output string) {
     fmt.Fprintf(outputStream, "%s", color.GreenString(output))
 }
 
+func PrintOpenWhiskOutputln(output string) {
+    fmt.Println(output)
+}
+
 func PrintOpenWhiskErrorMessage(err string) {
     outputStream := colorable.NewColorableStderr()
     fmt.Fprintf(outputStream, "%s", color.RedString(err))

@@ -18,8 +18,6 @@
 package deployers
 
 import (
-	"fmt"
-
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
@@ -68,7 +66,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 	if reader.DeploymentDescriptor.Application.Packages == nil {
 		// a single package is specified in deployment YAML file with "package" key
 		packMap[reader.DeploymentDescriptor.Application.Package.Packagename] = reader.DeploymentDescriptor.Application.Package
-		fmt.Println("WARNING: The package YAML key in deployment file will soon be deprecated. Please use packages instead as described in specifications.")
+        utils.PrintOpenWhiskOutputln("WARNING: The package YAML key in deployment file will soon be deprecated. Please use packages instead as described in specifications.")
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.Application.Packages {
 			depPacks.Packagename = packName
@@ -81,7 +79,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 		serviceDeployPack := reader.serviceDeployer.Deployment.Packages[packName]
 
 		if serviceDeployPack == nil {
-			fmt.Println("WARNING: Package name in deployment file " + packName + " does not match with manifest file.")
+            utils.PrintOpenWhiskOutputln("WARNING: Package name in deployment file " + packName + " does not match with manifest file.")
 			break
 		}
 
@@ -242,7 +240,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 					}
 
 					for _, keyVal := range wskTrigger.Parameters {
-						fmt.Println("Checking key " + keyVal.Key)
+                        utils.PrintOpenWhiskOutputln("Checking key " + keyVal.Key)
 						if _, exists := depParams[keyVal.Key]; !exists {
 							keyValArr = append(keyValArr, keyVal)
 						}

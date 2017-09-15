@@ -32,8 +32,12 @@
     "translation": "Manifest file not found at path {{.projectPath}}.\n"
   },
   {
-    "id": "Missing {{.yaml}}/{{.yml}} file.\n",
-    "translation": "Missing {{.yaml}}/{{.yml}} file.\n"
+    "id": "Missing {{.yaml}}/{{.yml}} file. Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
+    "translation": "Missing {{.yaml}}/{{.yml}} file. Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n"
+  },
+  {
+    "id": "Manifest file is not found at the path [{{.filePath}}].\n",
+    "translation": "Manifest file is not found at the path [{{.filePath}}].\n"
   },
   {
     "id": "Using {{.manifestPath}} for deployment.\n",
@@ -222,5 +226,51 @@
   {
     "id": "Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n",
     "translation": "Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "Dependency {{.output}} has been successfully deployed.\n",
+    "translation": "Dependency {{.output}} has been successfully deployed.\n"
+  },
+  {
+    "id": "Package binding {{.output}} has been successfully deployed.\n",
+    "translation": "Package binding {{.output}} has been successfully deployed.\n"
+  },
+  {
+    "id": "Package {{.output}} has been successfully deployed.\n",
+    "translation": "Package {{.output}} has been successfully deployed.\n"
+  },
+  {
+    "id": "Trigger {{.output}} has been successfully deployed.\n",
+    "translation": "Trigger {{.output}} has been successfully deployed.\n"
+  },
+  {
+    "id": "Trigger feed {{.output}} has been successfully deployed.\n",
+    "translation": "Trigger feed {{.output}} has been successfully deployed.\n"
+  },
+  {
+    "id": "Rule {{.output}} has been successfully deployed.\n",
+    "translation": "Rule {{.output}} has been successfully deployed.\n"
+  },
+  {
+    "id": "Action {{.output}} has been successfully deployed.\n",
+    "translation": "Action {{.output}} has been successfully deployed.\n"
+  },
+  {
+    "id": "Dependency {{.depName}} has been successfully undeployed.\n",
+    "translation": "Dependency {{.depName}} has been successfully undeployed.\n"
+  },
+  {
+    "id": "Trigger {{.trigger}} has been removed.\n",
+    "translation": "Trigger {{.trigger}} has been removed.\n"
+  },
+  {
+    "id": "Rule {{.rule}} has been removed.\n",
+    "translation": "Rule {{.rule}} has been removed.\n"
+  },
+  {
+    "id": "Action {{.action}} has been removed.\n",
+    "translation": "Action {{.action}} has been removed.\n"
   }
+
+
 ]

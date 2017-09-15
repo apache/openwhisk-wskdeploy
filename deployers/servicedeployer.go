@@ -309,6 +309,10 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
                 error := deployer.createBinding(bindingPackage)
                 if error != nil {
                     return error
+                } else {
+                    output := wski18n.T("Dependency {{.output}} has been successfully deployed.\n",
+                        map[string]interface{}{"output": depName})
+                    whisk.Debug(whisk.DbgInfo, output)
                 }
 
             } else {
@@ -327,8 +331,6 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
                         map[string]interface{}{"depName": depName})
                     utils.PrintOpenWhiskErrorMessage(errString)
                     return err
-                } else {
-                    fmt.Println("Done!")
                 }
 
                 // if the RootPackageName is different from depName
@@ -350,8 +352,15 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
                     bindingPackage.Parameters = depRecord.Parameters
                     bindingPackage.Annotations = depRecord.Annotations
 
-                    deployer.createBinding(bindingPackage)
-		}
+                    err = deployer.createBinding(bindingPackage)
+                    if err != nil {
+                        return err
+                    } else {
+                        output := wski18n.T("Dependency {{.output}} has been successfully deployed.\n",
+                            map[string]interface{}{"output": depName})
+                        whisk.Debug(whisk.DbgInfo, output)
+                    }
+		        }
             }
         }
     }
@@ -451,8 +460,11 @@ func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) erro
             map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
         whisk.Debug(whisk.DbgError, errString)
         return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+    } else {
+        output := wski18n.T("Package binding {{.output}} has been successfully deployed.\n",
+            map[string]interface{}{"output": packa.Name})
+        whisk.Debug(whisk.DbgInfo, output)
     }
-    fmt.Println("Done!")
     return nil
 }
 
@@ -467,12 +479,18 @@ func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) error {
             map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
         whisk.Debug(whisk.DbgError, errString)
         return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+    } else {
+        output := wski18n.T("Package {{.output}} has been successfully deployed.\n",
+            map[string]interface{}{"output": packa.Name})
+        whisk.Debug(whisk.DbgInfo, output)
     }
-    fmt.Println("Done!")
     return nil
 }
 
 func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) error {
+    output := wski18n.T("Deploying trigger {{.output}} ...",
+        map[string]interface{}{"output": trigger.Name})
+    whisk.Debug(whisk.DbgInfo, output)
     _, _, err := deployer.Client.Triggers.Insert(trigger, true)
     if err != nil {
         wskErr := err.(*whisk.WskError)
@@ -480,8 +498,11 @@ func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) error {
             map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
         whisk.Debug(whisk.DbgError, errString)
         return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+    } else {
+        output := wski18n.T("Trigger {{.output}} has been successfully deployed.\n",
+            map[string]interface{}{"output": trigger.Name})
+        whisk.Debug(whisk.DbgInfo, output)
     }
-    fmt.Println("Done!")
     return nil
 }
 
@@ -535,7 +556,9 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
             return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
         }
     }
-    fmt.Println("Done!")
+    output = wski18n.T("Trigger feed {{.output}} has been successfully deployed.\n",
+        map[string]interface{}{"output": trigger.Name})
+    whisk.Debug(whisk.DbgInfo, output)
     return nil
 }
 
@@ -574,7 +597,9 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
         whisk.Debug(whisk.DbgError, errString)
         return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
     }
-    fmt.Println("Done!")
+    output = wski18n.T("Rule {{.output}} has been successfully deployed.\n",
+        map[string]interface{}{"output": rule.Name})
+    whisk.Debug(whisk.DbgInfo, output)
     return nil
 }
 
@@ -596,8 +621,11 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
             map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
         whisk.Debug(whisk.DbgError, errString)
         return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+    } else {
+        output := wski18n.T("Action {{.output}} has been successfully deployed.\n",
+            map[string]interface{}{"output": action.Name})
+        whisk.Debug(whisk.DbgInfo, output)
     }
-    fmt.Println("Done!")
     return nil
 }
 
@@ -611,7 +639,6 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
         whisk.Debug(whisk.DbgError, errString)
         return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
     }
-    fmt.Println("Done!")
     return nil
 }
 
@@ -730,10 +757,11 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
                         map[string]interface{}{"depName": depName})
                     whisk.Debug(whisk.DbgError, errString)
                     return err
-                } else {
-                    fmt.Println("Done!")
                 }
             }
+            output = wski18n.T("Dependency {{.depName}} has been successfully undeployed.\n",
+                map[string]interface{}{"depName": depName})
+            whisk.Debug(whisk.DbgInfo, output)
         }
     }
 
@@ -822,7 +850,6 @@ func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
         whisk.Debug(whisk.DbgError, errString)
         return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
     }
-    fmt.Println("Done!")
     return nil
 }
 
@@ -837,8 +864,11 @@ func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
             map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
         whisk.Debug(whisk.DbgError, errString)
         return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+    } else {
+        output := wski18n.T("Trigger {{.trigger}} has been removed.\n",
+            map[string]interface{}{"trigger": trigger.Name})
+        whisk.Debug(whisk.DbgInfo, output)
     }
-    fmt.Println("Done!")
     return nil
 }
 
@@ -883,7 +913,6 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 
         }
     }
-    fmt.Println("Done!")
     return nil
 }
 
@@ -910,9 +939,10 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
             whisk.Debug(whisk.DbgError, errString)
             return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
         }
-
-        fmt.Println("Done!")
     }
+    output = wski18n.T("Rule {{.rule}} has been removed.\n",
+        map[string]interface{}{"rule": rule.Name})
+    whisk.Debug(whisk.DbgInfo, output)
     return nil
 }
 
@@ -937,7 +967,9 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
         return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
 
     }
-    fmt.Println("Done!")
+    output = wski18n.T("Action {{.action}} has been removed.\n",
+        map[string]interface{}{"action": action.Name})
+    whisk.Debug(whisk.DbgInfo, output)
     return nil
 }
 
@@ -958,12 +990,12 @@ func (deployer *ServiceDeployer) getQualifiedName(name string, namespace string)
 func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplication) {
 
     // pretty ASCII OpenWhisk graphic
-    fmt.Println("         ____      ___                   _    _ _     _     _\n        /\\   \\    / _ \\ _ __   ___ _ __ | |  | | |__ (_)___| | __\n   /\\  /__\\   \\  | | | | '_ \\ / _ \\ '_ \\| |  | | '_ \\| / __| |/ /\n  /  \\____ \\  /  | |_| | |_) |  __/ | | | |/\\| | | | | \\__ \\   <\n  \\   \\  /  \\/    \\___/| .__/ \\___|_| |_|__/\\__|_| |_|_|___/_|\\_\\ \n   \\___\\/              |_|\n")
+    utils.PrintOpenWhiskOutputln("         ____      ___                   _    _ _     _     _\n        /\\   \\    / _ \\ _ __   ___ _ __ | |  | | |__ (_)___| | __\n   /\\  /__\\   \\  | | | | '_ \\ / _ \\ '_ \\| |  | | '_ \\| / __| |/ /\n  /  \\____ \\  /  | |_| | |_) |  __/ | | | |/\\| | | | | \\__ \\   <\n  \\   \\  /  \\/    \\___/| .__/ \\___|_| |_|__/\\__|_| |_|_|___/_|\\_\\ \n   \\___\\/              |_|\n")
 
-    fmt.Println("Packages:")
+    utils.PrintOpenWhiskOutputln("Packages:")
     for _, pack := range assets.Packages {
-        fmt.Println("Name: " + pack.Package.Name)
-        fmt.Println("    bindings: ")
+        utils.PrintOpenWhiskOutputln("Name: " + pack.Package.Name)
+        utils.PrintOpenWhiskOutputln("    bindings: ")
         for _, p := range pack.Package.Parameters {
             jsonValue, err := utils.PrettyJSON(p.Value)
             if err != nil {
@@ -974,18 +1006,18 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
         }
 
         for key, dep := range pack.Dependencies {
-            fmt.Println("  * dependency: " + key)
-            fmt.Println("    location: " + dep.Location)
+            utils.PrintOpenWhiskOutputln("  * dependency: " + key)
+            utils.PrintOpenWhiskOutputln("    location: " + dep.Location)
             if !dep.IsBinding {
-                fmt.Println("    local path: " + dep.ProjectPath)
+                utils.PrintOpenWhiskOutputln("    local path: " + dep.ProjectPath)
             }
         }
 
-        fmt.Println("")
+        utils.PrintOpenWhiskOutputln("")
 
         for _, action := range pack.Actions {
-            fmt.Println("  * action: " + action.Action.Name)
-            fmt.Println("    bindings: ")
+            utils.PrintOpenWhiskOutputln("  * action: " + action.Action.Name)
+            utils.PrintOpenWhiskOutputln("    bindings: ")
             for _, p := range action.Action.Parameters {
                 jsonValue, err := utils.PrettyJSON(p.Value)
                 if err != nil {
@@ -994,25 +1026,25 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
                     fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
                 }
             }
-            fmt.Println("    annotations: ")
+            utils.PrintOpenWhiskOutputln("    annotations: ")
             for _, p := range action.Action.Annotations {
                 fmt.Printf("        - %s : %v\n", p.Key, p.Value)
 
             }
         }
 
-        fmt.Println("")
+        utils.PrintOpenWhiskOutputln("")
         for _, action := range pack.Sequences {
-            fmt.Println("  * sequence: " + action.Action.Name)
+            utils.PrintOpenWhiskOutputln("  * sequence: " + action.Action.Name)
         }
 
-        fmt.Println("")
+        utils.PrintOpenWhiskOutputln("")
     }
 
-    fmt.Println("Triggers:")
+    utils.PrintOpenWhiskOutputln("Triggers:")
     for _, trigger := range assets.Triggers {
-        fmt.Println("* trigger: " + trigger.Name)
-        fmt.Println("    bindings: ")
+        utils.PrintOpenWhiskOutputln("* trigger: " + trigger.Name)
+        utils.PrintOpenWhiskOutputln("    bindings: ")
 
         for _, p := range trigger.Parameters {
             jsonValue, err := utils.PrettyJSON(p.Value)
@@ -1023,24 +1055,24 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
             }
         }
 
-        fmt.Println("    annotations: ")
+        utils.PrintOpenWhiskOutputln("    annotations: ")
         for _, p := range trigger.Annotations {
 
             value := "?"
             if str, ok := p.Value.(string); ok {
                 value = str
             }
-            fmt.Println("        - name: " + p.Key + " value: " + value)
+            utils.PrintOpenWhiskOutputln("        - name: " + p.Key + " value: " + value)
         }
     }
 
-    fmt.Println("\n Rules")
+    utils.PrintOpenWhiskOutputln("\n Rules")
     for _, rule := range assets.Rules {
-        fmt.Println("* rule: " + rule.Name)
-        fmt.Println("    - trigger: " + rule.Trigger.(string) + "\n    - action: " + rule.Action.(string))
+        utils.PrintOpenWhiskOutputln("* rule: " + rule.Name)
+        utils.PrintOpenWhiskOutputln("    - trigger: " + rule.Trigger.(string) + "\n    - action: " + rule.Action.(string))
     }
 
-    fmt.Println("")
+    utils.PrintOpenWhiskOutputln("")
 
 }
 

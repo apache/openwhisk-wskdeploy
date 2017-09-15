@@ -128,7 +128,7 @@ func initConfig() {
 		_, err := whisk.ReadProps(utils.Flags.CfgFile)
 		if err != nil {
 			utils.Flags.CfgFile = defaultPath
-			fmt.Println("Invalid config file detected, so by bdefault it is set to " + utils.Flags.CfgFile)
+            utils.PrintOpenWhiskOutputln("Invalid config file detected, so by bdefault it is set to " + utils.Flags.CfgFile)
 		}
 
 	} else {
@@ -171,9 +171,10 @@ func Deploy() error {
 			stderr = wski18n.T("Manifest file not found at path {{.projectPath}}.\n",
 				map[string]interface{}{"projectPath": projectPath})
 			whisk.Debug(whisk.DbgError, stderr)
-			errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file.\n",
-				map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml})
-			return utils.NewInputYamlFileError(errString)
+			errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
+				map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml,
+                    "projectPath": projectPath})
+			return utils.NewErrorManifestFileNotFound(errString)
 		}
 		whisk.Debug(whisk.DbgInfo, stdout)
 	}
@@ -229,10 +230,10 @@ func Deploy() error {
 		}
 
 	} else {
-		errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file.\n",
-			map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml})
+        errString := wski18n.T("Manifest file is not found at the path [{{.filePath}}].\n",
+            map[string]interface{}{"filePath": utils.Flags.ManifestPath})
 		whisk.Debug(whisk.DbgError, errString)
-		return utils.NewInputYamlFileError(errString)
+		return utils.NewErrorManifestFileNotFound(errString)
 	}
 
 }
@@ -263,9 +264,10 @@ func Undeploy() error {
 			stderr = wski18n.T("Manifest file not found at path {{.projectPath}}.\n",
 				map[string]interface{}{"projectPath": projectPath})
 			whisk.Debug(whisk.DbgError, stderr)
-			errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file.\n",
-				map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml})
-			return utils.NewInputYamlFileError(errString)
+			errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
+				map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml,
+                    "projectPath": projectPath})
+			return utils.NewErrorManifestFileNotFound(errString)
 		}
 		whisk.Debug(whisk.DbgInfo, stdout)
 	}
@@ -315,9 +317,9 @@ func Undeploy() error {
 		}
 
 	} else {
-		errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file.\n",
-			map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml})
+        errString := wski18n.T("Manifest file is not found at the path [{{.filePath}}].\n",
+            map[string]interface{}{"filePath": utils.Flags.ManifestPath})
 		whisk.Debug(whisk.DbgError, errString)
-		return utils.NewInputYamlFileError(errString)
+		return utils.NewErrorManifestFileNotFound(errString)
 	}
 }

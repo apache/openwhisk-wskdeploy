@@ -19,7 +19,6 @@ package deployers
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -45,7 +44,7 @@ func NewFileSystemReader(serviceDeployer *ServiceDeployer) *FileSystemReader {
 
 func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.ManifestYAML) ([]utils.ActionRecord, error) {
 
-	fmt.Println("Inspecting project directory for actions....")
+    utils.PrintOpenWhiskOutputln("Inspecting project directory for actions....")
 
 	projectPathCount, err := reader.getFilePathCount(reader.serviceDeployer.ProjectPath)
 	actions := make([]utils.ActionRecord, 0)
@@ -89,7 +88,7 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.ManifestY
 					}
 				}
 			} else if strings.HasPrefix(fpath, reader.serviceDeployer.ProjectPath+"/"+FileSystemSourceDirectoryName) {
-				fmt.Println("Searching directory " + filepath.Base(fpath) + " for action source code.")
+                utils.PrintOpenWhiskOutputln("Searching directory " + filepath.Base(fpath) + " for action source code.")
 			} else {
 				return filepath.SkipDir
 			}
