@@ -1,4 +1,4 @@
-# Configuring ```wskdeploy```
+# Configuring wskdeploy
 
 At minimum, the wskdeploy utility needs valid OpenWhisk APIHOST and AUTH variable to attempt deployment. In this case the default target namespace is assumed; otherwise, NAMESPACE also needs to be provided.
 
