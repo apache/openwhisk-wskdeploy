@@ -3,7 +3,7 @@
 ## Creating an OpenWhisk Package
 
 ### Start with a Package Manifest (YAML) file
-The wskdeploy utility maninly uses a single file, that uses a YAML syntax, called a "Package Manifest", to describe all the OpenWhisk components that make up your OpenWhisk Package including Actions, Triggers, Rules, etc.
+The wskdeploy utility mainly uses a single file, that uses a YAML syntax, called a "Package Manifest", to describe all the OpenWhisk components that make up your OpenWhisk Package including Actions, Triggers, Rules, etc.
 
 The minimal manifest file would include only a package declaration, a version number and a license for the package:
 ```

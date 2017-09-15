@@ -9,32 +9,30 @@ In order to deply your OpenWhisk package, at minimum, the wskdeploy utility need
 # Debugging your package
 In addition to the normal output the wskdeploy utility provides, you may enable additional information that may further assist you in debugging. Please read the [Debugging Whisk Deploy](wskdeploy_debugging.md) document.
 
-# Working with packages
+# Creating a "hello world" application
 
-## Creating an OpenWhisk Package
+As with most language introductions, here we show a minimal "hello world" application as encoded in an OpenWhisk Package Manifest YAML file:
 
-### Start with a Package Manifest (YAML) file
-The wskdeploy utility maninly uses a single file, that uses a YAML syntax, called a "Package Manifest", to describe all the OpenWhisk components that make up your OpenWhisk Package including Actions, Triggers, Rules, etc.
-
-The minimal manifest file would include only a package declaration, a version number and a license for the package:
 ```
 package:
-  name: helloworld
-  version: 1.0
-  license: Apache-2.0
+  name: HelloWorld
+  actions:
+    # helloworld action in NodeJS
+    helloNodejs:
+      function: actions/hello.js
 ```
 
-Save this into a file called "manifest.yaml" in a directory of your choice.
+where "hello.js" contains the following JavaScript code:
+```
+function main(params) {
+    console.log('hello', params.payload+'!');
+    return { payload:  msg };
+}
+```
 
-### Executing the wskdeploy utility
-Simply execute the wskdeploy binary against the directory you saved your "manifest.yaml" file in by pointing it to the package location using the ```-p``` flag.
+## Creating a valid Package
 
-```
-$ wskdeploy -p <my_directory>
-```
-wskdeploy will automatically look for any file named "manifest.yaml" or "manifest.yml" in the directory it is pointed; however, the manifest file can be called anything as long as it has a .yaml or .yml extension and passed on the command line using the ```-m``` flag.
+The "hello world" example, however, does not represent the minimum valid Manifest file which would need to include only the required parts of the Package desciptor.
 
-For example, if you called your manifest "my_pkg_manifest.yml" you could simply provide the manifest file name as follows:
-```
-$ wskdeploy -p <my_directory> -m my_pkg_manifest.yaml
-```
+Please see [wskdeploy_packages.md](wskdeploy_packages.md) for an exploration of the **Packages** schema.
+
