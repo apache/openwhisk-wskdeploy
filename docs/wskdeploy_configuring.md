@@ -10,12 +10,13 @@ Wskdeploy attempts to find these values in the following order:
 
 Values supplied on the command line using the ```apihost```, ```auth``` and ```namespace``` flags will override values supplied elsewhere (below).
 
-for example:
+for example the following flags can be used:
 
 ```
 $ wskdeploy --apihost <host> --auth <auth> --namespace <namespace>
 ```
-should override anything in static Deployment or Manifest YAML files. That is, the user has taken a manual action to supply the latest values.
+
+Command line is considered highes in precedence since it is an intenional user action to override with the latest values.
 
 2. **Deployment file**
 
