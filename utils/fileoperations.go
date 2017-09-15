@@ -19,14 +19,9 @@ package utils
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
-	"path"
-	"path/filepath"
 	"strings"
-
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
 func MayExists(file string) bool {
@@ -40,7 +35,6 @@ func MayExists(file string) bool {
 func FileExists(file string) bool {
 	_, err := os.Stat(file)
 	if err != nil {
-		err = errors.New("File not found.")
 		return false
 	} else {
 		return true
@@ -70,61 +64,6 @@ func IsDirectory(filePath string) bool {
 	}
 }
 
-func CreateActionFromFile(manipath, filePath string) (*whisk.Action, error) {
-	ext := path.Ext(filePath)
-	baseName := path.Base(filePath)
-	//check if the file if from local or from web
-	//currently only consider http
-	islocal := !strings.HasPrefix(filePath, "http")
-	name := strings.TrimSuffix(baseName, filepath.Ext(baseName))
-	action := new(whisk.Action)
-	//better refactor this
-	if islocal {
-		splitmanipath := strings.Split(manipath, string(os.PathSeparator))
-		filePath = strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + filePath
-	}
-	// process source code files
-	if ext == ".swift" || ext == ".js" || ext == ".py" {
-
-		kind := "nodejs:default"
-
-		switch ext {
-		case ".swift":
-			kind = "swift:default"
-		case ".js":
-			kind = "nodejs:default"
-		case ".py":
-			kind = "python"
-		}
-
-		var dat []byte
-		var err error
-
-		if islocal {
-			dat, err = new(ContentReader).LocalReader.ReadLocal(filePath)
-		} else {
-			dat, err = new(ContentReader).URLReader.ReadUrl(filePath)
-		}
-
-        if err != nil {
-            return action, err
-        }
-		code := string(dat)
-		pub := false
-		action.Exec = new(whisk.Exec)
-		action.Exec.Code = &code
-		action.Exec.Kind = kind
-		action.Name = name
-		action.Publish = &pub
-		return action, nil
-		//dat, err := new(ContentReader).URLReader.ReadUrl(filePath)
-		//Check(err)
-
-	}
-	// If the action is not supported, we better to return an error.
-	return nil, errors.New("Unsupported action type.")
-}
-
 func ReadProps(path string) (map[string]string, error) {
 
 	props := map[string]string{}
@@ -133,7 +72,7 @@ func ReadProps(path string) (map[string]string, error) {
 	if err != nil {
 		// If file does not exist, just return props
 		fmt.Printf("Warning: Unable to read whisk properties file '%s' (file open error: %s)\n", path, err)
-		return props, nil
+		return props, err
 	}
 	defer file.Close()
 
