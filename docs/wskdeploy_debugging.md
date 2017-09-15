@@ -16,8 +16,10 @@ Wskdeploy uses the OpenWhisk GoLang Client to format and invoke OpenWhisk's APIs
 
 To enable this trace, set the following environment variable in Bash:
 
+```
 # set to any value > 0
 WSK_CLI_DEBUG=1
+```
 
 ## Pay attention to Named error messages
 

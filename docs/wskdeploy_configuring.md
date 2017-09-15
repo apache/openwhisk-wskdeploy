@@ -16,7 +16,7 @@ for example the following flags can be used:
 $ wskdeploy --apihost <host> --auth <auth> --namespace <namespace>
 ```
 
-Command line is considered highes in precedence since it is an intenional user action to override with the latest values.
+Command line values are considered higher in precedence since they indicate an intentional user action to override values that may have been supplied in files.
 
 2. **Deployment file**
 
