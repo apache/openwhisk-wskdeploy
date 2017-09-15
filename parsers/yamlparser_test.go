@@ -25,14 +25,14 @@ import (
 	"testing"
 )
 
-var manifestfile1 = "../tests/dat/manifest1.yaml"
-var manifestfile2 = "../tests/dat/manifest2.yaml"
+var manifestfile_val_pkg = "../tests/dat/manifest_validate_package_grammar.yaml"
+var manifestfile_val_tar = "../tests/dat/manifest_validate_trigger_action_rule_grammar.yaml"
 var manifestfile3 = "../tests/dat/manifest3.yaml"
 var manifestfile4 = "../tests/dat/manifest4.yaml"
 var manifestfile5 = "../tests/dat/manifest5.yaml"
 var manifestfile6 = "../tests/dat/manifest6.yaml"
-var testfile1 = "../tests/dat/deploy1.yaml"
-var testfile2 = "../tests/dat/deploy2.yaml"
+var deploymentfile_data_app = "../tests/dat/deployment_data_application.yaml"
+var deploymentfile_data_app_pkg = "../tests/dat/deployment_data_application_package.yaml"
 var testfile3 = "../tests/dat/deploy3.yaml"
 var testfile4 = "../tests/dat/deploy4.yaml"
 
@@ -192,7 +192,7 @@ func TestParseManifestYAML_param(t *testing.T) {
 func TestParseDeploymentYAML_Application(t *testing.T) {
 	//var deployment utils.DeploymentYAML
 	mm := NewYAMLParser()
-	deployment, _ := mm.ParseDeployment(testfile1)
+	deployment, _ := mm.ParseDeployment(deploymentfile_data_app)
 
 	//get and verify application name
 	assert.Equal(t, "wskdeploy-samples", deployment.Application.Name, "Get application name failed.")
@@ -204,7 +204,7 @@ func TestParseDeploymentYAML_Application(t *testing.T) {
 func TestParseDeploymentYAML_Package(t *testing.T) {
 	//var deployment utils.DeploymentYAML
 	mm := NewYAMLParser()
-	deployment, _ := mm.ParseDeployment(testfile2)
+	deployment, _ := mm.ParseDeployment(deploymentfile_data_app_pkg)
 
 	assert.Equal(t, 1, len(deployment.Application.Packages), "Get package list failed.")
 	for pkg_name := range deployment.Application.Packages {
@@ -224,7 +224,7 @@ func TestParseDeploymentYAML_Package(t *testing.T) {
 
 func TestParseDeploymentYAML_Action(t *testing.T) {
 	mm := NewYAMLParser()
-    deployment, _ := mm.ParseDeployment(testfile2)
+    deployment, _ := mm.ParseDeployment(deploymentfile_data_app_pkg)
 
 	for pkg_name := range deployment.Application.Packages {
 
@@ -251,8 +251,8 @@ func TestParseDeploymentYAML_Action(t *testing.T) {
 
 func TestComposeWskPackage(t *testing.T) {
 	mm := NewYAMLParser()
-    deployment, _ := mm.ParseDeployment(testfile2)
-	manifest, _ := mm.ParseManifest(manifestfile1)
+    deployment, _ := mm.ParseDeployment(deploymentfile_data_app_pkg)
+	manifest, _ := mm.ParseManifest(manifestfile_val_pkg)
 
 	pkglist := deployment.Application.GetPackageList()
 	for _, pkg := range pkglist {
@@ -312,7 +312,7 @@ func TestComposeWskRule(t *testing.T) {
 
 func TestGetActionList(t *testing.T) {
 	mm := NewYAMLParser()
-	manifest, _ := mm.ParseManifest(manifestfile2)
+	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
 	pkg := manifest.Package
 	actions := pkg.GetActionList()
 	assert.Equal(t,3, len(actions), "Get action list failed.")
@@ -320,7 +320,7 @@ func TestGetActionList(t *testing.T) {
 
 func TestGetTriggerList(t *testing.T) {
 	mm := NewYAMLParser()
-	manifest, _ := mm.ParseManifest(manifestfile2)
+	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
 	pkg := manifest.Package
 	triggers := pkg.GetTriggerList()
 	assert.Equal(t,2, len(triggers), "Get trigger list failed.")
@@ -328,7 +328,7 @@ func TestGetTriggerList(t *testing.T) {
 
 func TestGetRuleList(t *testing.T) {
 	mm := NewYAMLParser()
-	manifest, _ := mm.ParseManifest(manifestfile2)
+	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
 	pkg := manifest.Package
 	rules := pkg.GetRuleList()
 	assert.Equal(t,3, len(rules), "Get trigger list failed.")
@@ -336,7 +336,7 @@ func TestGetRuleList(t *testing.T) {
 
 func TestGetFeedList(t *testing.T) {
 	mm := NewYAMLParser()
-	manifest, _ := mm.ParseManifest(manifestfile2)
+	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
 	pkg := manifest.Package
 	feeds := pkg.GetFeedList()
 	assert.Equal(t,4, len(feeds), "Get feed list failed.")
@@ -344,7 +344,7 @@ func TestGetFeedList(t *testing.T) {
 
 func TestGetApisList(t *testing.T) {
 	mm := NewYAMLParser()
-	manifest, _ := mm.ParseManifest(manifestfile2)
+	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
 	pkg := manifest.Package
 	apis := pkg.GetApis()
 	assert.Equal(t,5, len(apis), "Get api list failed.")

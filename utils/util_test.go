@@ -28,7 +28,7 @@ import (
 )
 
 var contentReader = new(ContentReader)
-var testfile = "../tests/dat/deployment.yaml"
+var testfile = "../tests/dat/deployment_data_action_with_inputs_outputs.yaml"
 
 func TestLocalReader_ReadLocal(t *testing.T) {
 	b, _ := contentReader.ReadLocal(testfile)

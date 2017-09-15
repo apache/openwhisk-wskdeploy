@@ -139,7 +139,7 @@ type Package struct {
 	Version      string                `yaml:"version"` //used in manifest.yaml
 	License      string                `yaml:"license"` //used in manifest.yaml
 	Repositories []Repository          `yaml:"repositories,omitempty"`
-	Dependencies map[string]Dependency `yaml: dependencies` // used in manifest.yaml
+	Dependencies map[string]Dependency `yaml: dependencies` //used in manifest.yaml
 	Function     string                `yaml:"function"`    //used in deployment.yaml
 	//mapping to wsk.SentPackageNoPublish.Namespace
 	Namespace   string                 `yaml:"namespace"`  //used in both manifest.yaml and deployment.yaml
