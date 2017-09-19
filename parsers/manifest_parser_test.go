@@ -680,10 +680,12 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
         assert.Empty(t, "", "Expected empty string but got " + actualResult)
 
         // param_simple_type_integer should be 0.0 when value set to "integer"
+        expectedResult = strconv.FormatInt(0, 10)
         actualResult = action.Action.Parameters.GetValue("param_simple_type_float").(string)
         assert.Empty(t, 0, "Expected empty string but got " + actualResult)
 
         // param_simple_type_float should be 0 when value set to "float"
+        expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
         actualResult = action.Action.Parameters.GetValue("param_simple_type_float").(string)
         assert.Empty(t, 0.0, "Expected empty string but got " + actualResult)
 
