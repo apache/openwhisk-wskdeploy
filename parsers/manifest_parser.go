@@ -536,8 +536,11 @@ func ResolveParamTypeFromValue(value interface{}, filePath string) (string, erro
 
 		} else {
 			// raise an error if param is not a known type
-            lines := []string{"Line Unknown"}
-            msgs := []string{"Parameter value is not a known type. ["+actualType+"]"}
+			// TODO(): We have information to display to user on an error or warning here
+			// TODO(): specifically, we have the parameter name, its value to show on error/warning
+			// TODO(): perhaps this is a different Class of error?  e.g., ErrorParameterMismatchError
+                        lines := []string{"Line Unknown"}
+                        msgs := []string{"Parameter value is not a known type. ["+actualType+"]"}
 			err = utils.NewParserErr(filePath, lines, msgs)
 		}
 	} else {
@@ -567,6 +570,20 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 		// We need to identify parameter Type here for later validation
 		param.Type, errorParser = ResolveParamTypeFromValue(param.Value, filePath)
 
+		// In single-line format, the param's <value> can be a "Type name" and NOT an actual value.
+		// if this is the case, we must detect it and set the value to the default for that type name.
+		//if param.Type == "string" {
+		//	// The value is a <string>; now we must test if is the name of a known Type
+		//	var tempValue = param.Value.(string)
+		//	if isValidParameterType(tempValue) {
+		//              // If the value is indeed the name of a Type, we must change BOTH its
+		//		// Type to be that type and its value to that Type's default value
+		//		// (which happens later by setting it to nil here
+		//		param.Type = param.Value.(string)
+		//		param.Value = nil
+		//	}
+		//}
+
 	} else {
 		// we have a multi-line parameter declaration
 
@@ -581,8 +598,8 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 		// if we do not have a value or default, but have a type, find its default and use it for the value
 		if param.Type != "" && !isValidParameterType(param.Type) {
-            lines := []string{"Line Unknown"}
-            msgs := []string{"Invalid Type for parameter. ["+param.Type+"]"}
+                        lines := []string{"Line Unknown"}
+                        msgs := []string{"Invalid Type for parameter. ["+param.Type+"]"}
 			return value, utils.NewParserErr(filePath, lines, msgs)
 		} else if param.Type == "" {
 			param.Type = tempType
@@ -595,7 +612,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	typ := param.Type
 
 	// TODO(Priti): need to validate type is one of the supported primitive types with unit testing
-	// TODO(): with the new logic, when would the fpllowing Unmarhsall() call be used?
+	// TODO(): with the new logic, when would the following Unmarhsall() call be used?
 	// if value is of type 'string' and its not empty <OR> if type is not 'string'
 	if str, ok := value.(string); ok && (len(typ) == 0 || typ != "string") {
 		var parsed interface{}
