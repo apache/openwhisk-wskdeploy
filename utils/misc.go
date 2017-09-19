@@ -25,7 +25,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net/url"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -45,6 +44,11 @@ import (
 const (
     DEFAULT_HTTP_TIMEOUT = 30
     DEFAULT_PROJECT_PATH = "."
+    // name of manifest and deployment files
+    ManifestFileNameYaml = "manifest.yaml"
+    ManifestFileNameYml = "manifest.yml"
+    DeploymentFileNameYaml = "deployment.yaml"
+    DeploymentFileNameYml = "deployment.yml"
 )
 // ActionRecord is a container to keep track of
 // a whisk action struct and a location filepath we use to
@@ -63,20 +67,6 @@ type TriggerRecord struct {
 type RuleRecord struct {
 	Rule        *whisk.Rule
 	Packagename string
-}
-
-// Utility to convert hostname to URL object
-func GetURLBase(host string) (*url.URL, error) {
-
-	urlBase := fmt.Sprintf("%s/api", host)
-	url, err := url.Parse(urlBase)
-
-	if len(url.Scheme) == 0 || len(url.Host) == 0 {
-		urlBase = fmt.Sprintf("https://%s/api", host)
-		url, err = url.Parse(urlBase)
-	}
-
-	return url, err
 }
 
 func GetHomeDirectory() string {
@@ -104,15 +94,6 @@ func IsFeedAction(trigger *whisk.Trigger) (string, bool) {
 	}
 
 	return "", false
-}
-
-func IsJSON(s string) (interface{}, bool) {
-	var js interface{}
-	if json.Unmarshal([]byte(s), &js) == nil {
-		return js, true
-	}
-	return nil, false
-
 }
 
 func PrettyJSON(j interface{}) (string, error) {
@@ -638,8 +619,3 @@ func GetDeploymentFilePath(projectPath string) string {
 	}
 }
 
-// name of manifest and deployment files
-const ManifestFileNameYaml = "manifest.yaml"
-const ManifestFileNameYml = "manifest.yml"
-const DeploymentFileNameYaml = "deployment.yaml"
-const DeploymentFileNameYml = "deployment.yml"

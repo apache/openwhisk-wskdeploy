@@ -287,7 +287,8 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 					kind = "java"
 				default:
 					kind = "nodejs:6"
-					fmt.Println("Unsupported runtime type, set to nodejs")
+                    errStr := wski18n.T("Unsupported runtime type, set to nodejs")
+                    whisk.Debug(whisk.DbgWarn, errStr)
 					//add the user input kind here
 				}
 
@@ -314,9 +315,13 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			if utils.CheckExistRuntime(action.Runtime, utils.Rts) {
 				wskaction.Exec.Kind = action.Runtime
 			} else {
-				fmt.Println("the runtime is not supported by Openwhisk platform.")
+                errStr := wski18n.T("the runtime is not supported by Openwhisk platform.\n")
+                whisk.Debug(whisk.DbgWarn, errStr)
 			}
-		}
+		} else {
+            errStr := wski18n.T("wskdeploy has chosen a particular runtime for the action.\n")
+            whisk.Debug(whisk.DbgWarn, errStr)
+        }
 
 		// we can specify the name of the action entry point using main
 		if action.Main != "" {
