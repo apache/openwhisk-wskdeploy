@@ -383,7 +383,7 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
         assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
 
         // validate the number of inputs to this action
-        expectedResult = strconv.FormatInt(17, 10)
+        expectedResult = strconv.FormatInt(22, 10)
         actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
         assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
