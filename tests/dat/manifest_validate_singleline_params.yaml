@@ -6,24 +6,24 @@ package:
             runtime: nodejs:6
             inputs:
                 # simple string
-             #   param_simple_string: foo
+                param_simple_string: foo
                 # simple integers
-             #   param_simple_integer_1: 1
-             #   param_simple_integer_2: 0
-             #   param_simple_integer_3: -1
-             #   param_simple_integer_4: 99999
-             #   param_simple_integer_5: -99999
+                param_simple_integer_1: 1
+                param_simple_integer_2: 0
+                param_simple_integer_3: -1
+                param_simple_integer_4: 99999
+                param_simple_integer_5: -99999
                 # simple floats
-             #   param_simple_float_1: 1.1
-             #   param_simple_float_2: 0.0
-             #   param_simple_float_3: -1.1
+                param_simple_float_1: 1.1
+                param_simple_float_2: 0.0
+                param_simple_float_3: -1.1
                 # simple Environment variables
-             #   param_simple_env_var_1: $GOPATH
-             #   param_simple_invalid_env_var: $DollarSignNotInEnv
+                param_simple_env_var_1: $GOPATH
+                param_simple_invalid_env_var: $DollarSignNotInEnv
                 # Empty (string)
-             #   param_simple_implied_empty:
-             #   param_simple_explicit_empty_1: ''
-             #   param_simple_explicit_empty_2: ""
+                param_simple_implied_empty:
+                param_simple_explicit_empty_1: ''
+                param_simple_explicit_empty_2: ""
                 # Type names (should default to a value for that type)
                 param_simple_type_string: string
                 param_simple_type_integer: integer
