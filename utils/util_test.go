@@ -57,6 +57,13 @@ func TestGetEnvVar(t *testing.T) {
 	assert.Equal(t, "oh, dollars!", GetEnvVar("$WithDollar"), "dollar sign should be handled.")
 	assert.Equal(t, "5000", GetEnvVar("5000"), "Should be no difference between integer and string.")
 	assert.Equal(t, "", GetEnvVar("$WithDollarAgain"), "if not found in environemnt, return empty string.")
+	assert.Equal(t, "oh, dollars!.ccc.aaa", GetEnvVar("${WithDollar}.ccc.aaa"), "String concatenation fail")
+	assert.Equal(t, "ddd.NO dollar.aaa", GetEnvVar("ddd.${NoDollar}.aaa"), "String concatenation fail")
+	assert.Equal(t, "oh, dollars!.NO dollar.aaa", GetEnvVar("${WithDollar}.${NoDollar}.aaa"), "String concatenation fail")
+	assert.Equal(t, "ddd.ccc.oh, dollars!", GetEnvVar("ddd.ccc.${WithDollar}"), "String concatenation fail")
+	assert.Equal(t, "", GetEnvVar("$WithDollarAgain.ccc.aaa"), "String concatenation fail")
+	assert.Equal(t, "ddd..aaa", GetEnvVar("ddd.${WithDollarAgain}.aaa"), "String concatenation fail")
+	assert.Equal(t, "oh, dollars!NO dollar.NO dollar", GetEnvVar("${WithDollar}${NoDollar}.${NoDollar}"), "String concatenation fail")
 }
 
 func TestDependencies(t *testing.T) {
