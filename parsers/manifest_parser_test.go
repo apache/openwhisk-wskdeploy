@@ -29,6 +29,7 @@ import (
     "path/filepath"
     "reflect"
     "strconv"
+    "github.com/davecgh/go-spew/spew"
 )
 
 // Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
@@ -908,8 +909,10 @@ func TestComposePackage(t *testing.T) {
     m, _ := p.ParseManifest(tmpfile.Name())
     pkg, err := p.ComposePackage(m, tmpfile.Name())
     if err == nil {
-        assert.Equal(t, "helloworld", pkg.Name, "Failed to get package name")
-        assert.Equal(t, "default", pkg.Namespace, "Failed to get package namespace")
+        n := "helloworld"
+        assert.NotNil(t, pkg[n], "Failed to get the whole package")
+        assert.Equal(t, n, pkg[n].Name, "Failed to get package name")
+        assert.Equal(t, "default", pkg[n].Namespace, "Failed to get package namespace")
     } else {
         assert.Fail(t, "Failed to compose package")
     }
@@ -1221,4 +1224,56 @@ func TestMissingRootValueManifestYaml(t *testing.T) {
     _, err = p.ParseManifest(tmpfile.Name())
     assert.NotNil(t, err)
     assert.Contains(t, err.Error(), "field actions not found in struct parsers.ManifestYAML: Line 1, its neighbour lines, or the lines on the same level")
+
+}
+
+// validate manifest_parser:Unmarshal() method for package in manifest YAML
+// validate that manifest_parser is able to read and parse the manifest data
+func TestUnmarshalForPackages(t *testing.T) {
+    data := `
+packages:
+  package1:
+    actions:
+      helloNodejs:
+        function: actions/hello.js
+        runtime: nodejs:6
+  package2:
+    actions:
+      helloPython:
+        function: actions/hello.py
+        runtime: python`
+    // set the zero value of struct ManifestYAML
+    m := ManifestYAML{}
+    // Unmarshal reads/parses manifest data and sets the values of ManifestYAML
+    // And returns an error if parsing a manifest data fails
+    err := NewYAMLParser().Unmarshal([]byte(data), &m)
+    if err == nil {
+        expectedResult := string(2)
+        actualResult := string(len(m.Packages))
+        assert.Equal(t, expectedResult, actualResult, "Expected 2 packages but got " + actualResult)
+        spew.Dump(m)
+/*        // package name should be "helloworld"
+        expectedResult = "helloworld"
+        actualResult = m.Package.Packagename
+        assert.Equal(t, expectedResult, actualResult, "Expected package name " + expectedResult + " but got " + actualResult)
+        // manifest should contain only one action
+        expectedResult = string(1)
+        actualResult = string(len(m.Package.Actions))
+        assert.Equal(t, expectedResult, actualResult, "Expected 1 but got " + actualResult)
+        // get the action payload from the map of actions which is stored in
+        // ManifestYAML.Package.Actions with the type of map[string]Action
+        actionName := "helloNodejs"
+        if action, ok := m.Package.Actions[actionName]; ok {
+            // location/function of an action should be "actions/hello.js"
+            expectedResult = "actions/hello.js"
+            actualResult = action.Function
+            assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
+            // runtime of an action should be "nodejs:6"
+            expectedResult = "nodejs:6"
+            actualResult = action.Runtime
+            assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+        } else {
+            t.Error("Action named " + actionName + " does not exist.")
+        }*/
+    }
 }

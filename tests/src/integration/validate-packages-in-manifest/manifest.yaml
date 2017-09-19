@@ -1,0 +1,70 @@
+packages:
+    packageNodeJS:
+        actions:
+            helloNodejs-1:
+                function: actions/hello.js
+                runtime: nodejs:6
+            helloNodejs-2:
+                function: actions/hello.js
+                runtime: nodejs:6
+            helloNodejs-3:
+                function: actions/hello.js
+                runtime: nodejs:6
+        sequences:
+            helloworldnodejs-series:
+                actions: helloNodejs-1, helloNodejs-2, helloNodejs-3
+        triggers:
+            triggerNodeJS:
+        rules:
+            ruleNodeJS:
+                trigger: triggerNodeJS
+                action: helloworldnodejs-series
+    packagePython:
+        actions:
+            helloPython-1:
+                function: actions/hello.py
+                runtime: python
+            helloPython-2:
+                function: actions/hello.py
+                runtime: python
+            helloPython-3:
+                function: actions/hello.py
+                runtime: python
+        sequences:
+            helloworldpython-series:
+                actions: helloPython-1, helloPython-2, helloPython-3
+        triggers:
+            triggerPython:
+        rules:
+            rulePython:
+                trigger: triggerPython
+                action: helloworldPython-series
+    packageJava:
+        actions:
+            helloJava-1:
+                function: actions/hello.jar
+                runtime: java
+                main: Hello
+            helloJava-2:
+                function: actions/hello.jar
+                runtime: java
+                main: Hello
+            helloJava-3:
+                function: actions/hello.jar
+                runtime: java
+                main: Hello
+        triggers:
+            triggerJava:
+        rules:
+            ruleJava:
+                trigger: triggerJava
+                action: helloJava-1
+    packageBuggy:
+        actions:
+            helloJava-1:
+                function: actions/hello.jar
+                runtime: java
+                main: Hello
+        triggers:
+            triggerJava:
+

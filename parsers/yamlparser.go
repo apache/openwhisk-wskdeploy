@@ -173,6 +173,7 @@ type DeploymentYAML struct {
 
 type ManifestYAML struct {
 	Package  Package `yaml:"package"` //used in both manifest.yaml and deployment.yaml
+	Packages map[string]Package `yaml:"packages"`
 	Filepath string  //file path of the yaml file
 }
 

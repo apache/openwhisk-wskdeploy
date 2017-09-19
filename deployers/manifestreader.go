@@ -25,6 +25,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/davecgh/go-spew/spew"
 )
 
 var clientConfig *whisk.Config
@@ -46,18 +47,18 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.ManifestYAML, *parsers
 	manifestParser := parsers.NewYAMLParser()
 	manifest, err := manifestParser.ParseManifest(dep.ManifestPath)
 
-    if err != nil {
-        return manifest, manifestParser, utils.NewInputYamlFileError(err.Error())
-    }
+	if err != nil {
+		return manifest, manifestParser, utils.NewInputYamlFileError(err.Error())
+	}
 	return manifest, manifestParser, nil
 }
 
 func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
-	packg, err := manifestParser.ComposePackage(manifest, reader.serviceDeployer.ManifestPath)
+	packages, err := manifestParser.ComposeAllPackages(manifest, reader.serviceDeployer.ManifestPath)
 	if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
-	reader.SetPackage(packg)
+		return utils.NewInputYamlFormatError(err.Error())
+	}
+	reader.SetPackage(packages)
 
 	return nil
 }
@@ -65,66 +66,68 @@ func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser
 // Wrapper parser to handle yaml dir
 func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
 
-    var err error
+	var err error
 	deps, err := manifestParser.ComposeDependencies(manifest, deployer.serviceDeployer.ProjectPath, deployer.serviceDeployer.ManifestPath)
-    if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
-
-	actions, err := manifestParser.ComposeActions(manifest, deployer.serviceDeployer.ManifestPath)
-    if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
-
-	sequences, err := manifestParser.ComposeSequences(deployer.serviceDeployer.ClientConfig.Namespace, manifest)
 	if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
+		return utils.NewInputYamlFormatError(err.Error())
+	}
 
-	triggers, err := manifestParser.ComposeTriggers(manifest, deployer.serviceDeployer.ManifestPath)
-    if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
+	actions, err := manifestParser.ComposeActionsFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath)
+	if err != nil {
+		return utils.NewInputYamlFormatError(err.Error())
+	}
 
-	rules, err := manifestParser.ComposeRules(manifest)
-    if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
+	spew.Dump(actions)
 
-	apis, err := manifestParser.ComposeApiRecords(manifest)
-    if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
+	sequences, err := manifestParser.ComposeSequencesFromAllPackages(deployer.serviceDeployer.ClientConfig.Namespace, manifest)
+	if err != nil {
+		return utils.NewInputYamlFormatError(err.Error())
+	}
+
+	triggers, err := manifestParser.ComposeTriggersFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath)
+	if err != nil {
+		return utils.NewInputYamlFormatError(err.Error())
+	}
+
+	rules, err := manifestParser.ComposeRulesFromAllPackages(manifest)
+	if err != nil {
+		return utils.NewInputYamlFormatError(err.Error())
+	}
+
+	apis, err := manifestParser.ComposeApiRecordsFromAllPackages(manifest)
+	if err != nil {
+		return utils.NewInputYamlFormatError(err.Error())
+	}
 
 	err = deployer.SetDependencies(deps)
-    if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
+	if err != nil {
+		return utils.NewInputYamlFormatError(err.Error())
+	}
 
 	err = deployer.SetActions(actions)
-    if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
+	if err != nil {
+		return utils.NewInputYamlFormatError(err.Error())
+	}
 
 	err = deployer.SetSequences(sequences)
-    if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
+	if err != nil {
+		return utils.NewInputYamlFormatError(err.Error())
+	}
 
 	err = deployer.SetTriggers(triggers)
-    if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
+	if err != nil {
+		return utils.NewInputYamlFormatError(err.Error())
+	}
 
 	err = deployer.SetRules(rules)
-    if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
+	if err != nil {
+		return utils.NewInputYamlFormatError(err.Error())
+	}
 
 	err = deployer.SetApis(apis)
-    if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
+	if err != nil {
+		return utils.NewInputYamlFormatError(err.Error())
+	}
 
 	return nil
 
@@ -137,9 +140,9 @@ func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRe
 				// dependency
 				gitReader := utils.NewGitReader(depName, dep)
 				err := gitReader.CloneDependency()
-                if err != nil {
-                    return utils.NewInputYamlFormatError(err.Error())
-                }
+				if err != nil {
+					return utils.NewInputYamlFormatError(err.Error())
+				}
 			} else {
 				// TODO: we should do a check to make sure this dependency is compatible with an already installed one.
 				// If not, we should throw dependency mismatch error.
@@ -155,32 +158,34 @@ func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRe
 	return nil
 }
 
-func (reader *ManifestReader) SetPackage(pkg *whisk.Package) error {
+func (reader *ManifestReader) SetPackage(packages map[string]*whisk.Package) error {
 
 	dep := reader.serviceDeployer
 
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
-	depPkg, exist := dep.Deployment.Packages[pkg.Name]
-	if exist {
-		if dep.IsDefault == true {
-			existPkg := depPkg.Package
-			existPkg.Annotations = pkg.Annotations
-			existPkg.Namespace = pkg.Namespace
-			existPkg.Parameters = pkg.Parameters
-			existPkg.Publish = pkg.Publish
-			existPkg.Version = pkg.Version
 
-			dep.Deployment.Packages[pkg.Name].Package = existPkg
-			return nil
-		} else {
-			return errors.New("Package " + pkg.Name + "exists twice")
+	for _, pkg := range packages {
+		depPkg, exist := dep.Deployment.Packages[pkg.Name]
+		if exist {
+			if dep.IsDefault == true {
+				existPkg := depPkg.Package
+				existPkg.Annotations = pkg.Annotations
+				existPkg.Namespace = pkg.Namespace
+				existPkg.Parameters = pkg.Parameters
+				existPkg.Publish = pkg.Publish
+				existPkg.Version = pkg.Version
+
+				dep.Deployment.Packages[pkg.Name].Package = existPkg
+				return nil
+			} else {
+				return errors.New("Package " + pkg.Name + "exists twice")
+			}
 		}
+		newPack := NewDeploymentPackage()
+		newPack.Package = pkg
+		dep.Deployment.Packages[pkg.Name] = newPack
 	}
-
-	newPack := NewDeploymentPackage()
-	newPack.Package = pkg
-	dep.Deployment.Packages[pkg.Name] = newPack
 	return nil
 }
 
@@ -218,9 +223,9 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 				}
 
 				err := reader.checkAction(existAction)
-                if err != nil {
-                    return utils.NewInputYamlFormatError(err.Error())
-                }
+				if err != nil {
+					return utils.NewInputYamlFormatError(err.Error())
+				}
 
 			} else {
 				// Action exists, but references two different sources
@@ -229,9 +234,9 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 		} else {
 			// not a new action so update the action in the package
 			err := reader.checkAction(manifestAction)
-            if err != nil {
-                return utils.NewInputYamlFormatError(err.Error())
-            }
+			if err != nil {
+				return utils.NewInputYamlFormatError(err.Error())
+			}
 			reader.serviceDeployer.Deployment.Packages[manifestAction.Packagename].Actions[manifestAction.Action.Name] = manifestAction
 		}
 	}
@@ -287,9 +292,9 @@ func (reader *ManifestReader) SetSequences(actions []utils.ActionRecord) error {
 		} else {
 			// not a new action so update the action in the package
 			err := reader.checkAction(seqAction)
-            if err != nil {
-                return utils.NewInputYamlFormatError(err.Error())
-            }
+			if err != nil {
+				return utils.NewInputYamlFormatError(err.Error())
+			}
 			reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Sequences[seqAction.Action.Name] = seqAction
 		}
 	}
