@@ -10,6 +10,17 @@ The first thing you should do is turn on _"verbose mode"_ using the flag ```-v``
 $ wskdeploy -v -m manifest.yaml
 ```
 
+## Enable console logging in your Action
+
+You may call ```console.log(<text>)`` within your Action (function) code to aid in debugging.  For example, in NodeJS (JavaScript) you could output your entire JSON payload before returning it:
+```
+function main(params) {
+    msg = "Hello, " + params.name + " from " + params.place;
+    console.log(msg)
+    return { payload:  msg };
+}
+```
+
 ## Enable additional trace in Go Client
 
 Wskdeploy uses the OpenWhisk GoLang Client to format and invoke OpenWhisk's APIs which has additional debug tracing available.
