@@ -567,17 +567,17 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 		// In single-line format, the param's <value> can be a "Type name" and NOT an actual value.
 		// if this is the case, we must detect it and set the value to the default for that type name.
-		if param.Type == "string" {
-			// The value is a <string>; now we must test if is the name of a known Type
-			var tempValue = param.Value.(string)
-			if isValidParameterType(tempValue) {
-                                // If the value is indeed the name of a Type, we must change BOTH its
-				// Type to be that type and its value to that Type's default value
-				// (which happens later by setting it to nil here
-				param.Type = param.Value.(string)
-				param.Value = nil
-			}
-		}
+		//if param.Type == "string" {
+		//	// The value is a <string>; now we must test if is the name of a known Type
+		//	var tempValue = param.Value.(string)
+		//	if isValidParameterType(tempValue) {
+		//              // If the value is indeed the name of a Type, we must change BOTH its
+		//		// Type to be that type and its value to that Type's default value
+		//		// (which happens later by setting it to nil here
+		//		param.Type = param.Value.(string)
+		//		param.Value = nil
+		//	}
+		//}
 
 	} else {
 		// we have a multi-line parameter declaration
