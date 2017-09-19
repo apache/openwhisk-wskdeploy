@@ -5,7 +5,7 @@ This is a test case for `wskdeploy`. This package demonstrates how to create ala
 It can be deployed and tested with:
 
 ```bash
-$ wskdeploy -p tests/usecases/alarmtrigger
+$ wskdeploy -p tests/src/integration/alarmtrigger
 $ wsk activation poll
 $ wsk trigger fire Every12Hours
 $ wsk activation get <HelloWorldActivationID>
