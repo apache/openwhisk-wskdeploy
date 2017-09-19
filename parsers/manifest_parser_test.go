@@ -658,17 +658,35 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
         /*
          * Empty string tests
          */
+
         // param_simple_implied_empty should be ""
         actualResult = action.Action.Parameters.GetValue("param_simple_implied_empty").(string)
-        assert.Empty(t, actualResult, "Expected empty string but got " + actualResult)
+        assert.Empty(t, "", "Expected empty string but got " + actualResult)
 
         // param_simple_explicit_empty_1 should be ""
         actualResult = action.Action.Parameters.GetValue("param_simple_explicit_empty_1").(string)
-        assert.Empty(t, actualResult, "Expected empty string but got " + actualResult)
+        assert.Empty(t, "", "Expected empty string but got " + actualResult)
 
         // param_simple_explicit_empty_2 should be ""
         actualResult = action.Action.Parameters.GetValue("param_simple_explicit_empty_2").(string)
-        assert.Empty(t, actualResult, "Expected empty string but got " + actualResult)
+        assert.Empty(t, "", "Expected empty string but got " + actualResult)
+
+        /*
+         * Test values that contain "Type names" (e.g., "string", "integer", "float, etc.)
+         */
+
+        // param_simple_type_string should be "" when value set to "string"
+        actualResult = action.Action.Parameters.GetValue("param_simple_type_string").(string)
+        assert.Empty(t, "", "Expected empty string but got " + actualResult)
+
+        // param_simple_type_integer should be 0.0 when value set to "integer"
+        actualResult = action.Action.Parameters.GetValue("param_simple_type_float").(string)
+        assert.Empty(t, 0, "Expected empty string but got " + actualResult)
+
+        // param_simple_type_float should be 0 when value set to "float"
+        actualResult = action.Action.Parameters.GetValue("param_simple_type_float").(string)
+        assert.Empty(t, 0.0, "Expected empty string but got " + actualResult)
+
     }
 }
 
