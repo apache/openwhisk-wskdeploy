@@ -554,10 +554,18 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
 
         action := actions[0]
 
+        /*
+         * Simple 'string' value tests
+         */
+
         // param_simple_string should value "foo"
         expectedResult := "foo"
         actualResult := action.Action.Parameters.GetValue("param_simple_string").(string)
         assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+        /*
+         * Simple 'integer' value tests
+         */
 
         // param_simple_integer_1 should have value 1
         expectedResult = strconv.FormatInt(1, 10)
@@ -584,6 +592,10 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
         actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_simple_integer_5").(int)), 10)
         assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
+        /*
+         * Simple 'float' value tests
+         */
+
         // param_simple_float_1 should have value 1.1
         expectedResult = strconv.FormatFloat(1.1, 'f', -1, 64)
         actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_simple_float_1").(float64), 'f', -1, 64)
@@ -599,9 +611,23 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
         actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_simple_float_3").(float64), 'f', -1, 64)
         assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
+        /*
+         * Environment Variable / dollar ($) notation tests
+         */
+
         // param_simple_env_var_1 should have value of env. variable $GOPATH
         expectedResult = os.Getenv("GOPATH")
         actualResult = action.Action.Parameters.GetValue("param_simple_env_var_1").(string)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+        // param_simple_env_var_2 should have value of env. variable $GOPATH
+        expectedResult = os.Getenv("GOPATH")
+        actualResult = action.Action.Parameters.GetValue("param_simple_env_var_2").(string)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+        // param_simple_env_var_3 should have value of env. variable "${}"
+        expectedResult = "${}"
+        actualResult = action.Action.Parameters.GetValue("param_simple_env_var_3").(string)
         assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
         // param_simple_invalid_env_var should have value of ""
@@ -609,6 +635,29 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
         actualResult = action.Action.Parameters.GetValue("param_simple_invalid_env_var").(string)
         assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
+        /*
+         * Environment Variable concatenation tests
+         */
+
+        // param_simple_env_var_concat_1 should have value of env. variable "$GOPTH/test" empty string
+        expectedResult = os.Getenv("GOPATH") + "/test"
+        actualResult = action.Action.Parameters.GetValue("param_simple_env_var_concat_1").(string)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+        // param_simple_env_var_concat_2 should have value of env. variable "" empty string
+        // as the "/test" is treated as part of the environment var. and not concatenated.
+        expectedResult = ""
+        actualResult = action.Action.Parameters.GetValue("param_simple_env_var_concat_2").(string)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+        // param_simple_env_var_concat_3 should have value of env. variable "" empty string
+        expectedResult = "ddd.ccc." + os.Getenv("GOPATH")
+        actualResult = action.Action.Parameters.GetValue("param_simple_env_var_concat_3").(string)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+        /*
+         * Empty string tests
+         */
         // param_simple_implied_empty should be ""
         actualResult = action.Action.Parameters.GetValue("param_simple_implied_empty").(string)
         assert.Empty(t, actualResult, "Expected empty string but got " + actualResult)

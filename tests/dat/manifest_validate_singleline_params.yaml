@@ -19,7 +19,12 @@ package:
                 param_simple_float_3: -1.1
                 # simple Environment variables
                 param_simple_env_var_1: $GOPATH
+                param_simple_env_var_2: ${GOPATH}
+                param_simple_env_var_3: ${}
                 param_simple_invalid_env_var: $DollarSignNotInEnv
+                param_simple_env_var_concat_1: ${GOPATH}/test
+                param_simple_env_var_concat_2: $GOPATH/test
+                param_simple_env_var_concat_3: ddd.ccc.${GOPATH}
                 # Empty (string)
                 param_simple_implied_empty:
                 param_simple_explicit_empty_1: ''
