@@ -1,0 +1,26 @@
+application:
+  name: IntegrationTest
+  packages:
+    packageNodeJS:
+      actions:
+        helloNodejs-1:
+          inputs:
+            name: Amy
+            place: Paris
+        helloNodejs-3:
+          inputs:
+            name: Arthur
+            place: Hawaii
+    packagePython:
+      actions:
+        helloPython-1:
+          inputs:
+            name: Henry
+        helloPython-2:
+          inputs:
+            name: Alex
+    packageJava:
+      actions:
+        helloJava-1:
+          inputs:
+            name: Bob

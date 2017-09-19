@@ -25,7 +25,6 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/davecgh/go-spew/spew"
 )
 
 var clientConfig *whisk.Config
@@ -76,8 +75,6 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 	if err != nil {
 		return utils.NewInputYamlFormatError(err.Error())
 	}
-
-	spew.Dump(actions)
 
 	sequences, err := manifestParser.ComposeSequencesFromAllPackages(deployer.serviceDeployer.ClientConfig.Namespace, manifest)
 	if err != nil {
