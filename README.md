@@ -66,12 +66,6 @@ $ godep get                     # Download and install packages with specified d
 $ godep go build -o wskdeploy   # build the wskdeploy tool.
 ```
 
-### Verifying your build
-
-```sh
-./wskdeploy --help
-```
-
 <!-- ----------------------------------------------------------------------------- -->
 
 ## Running ```wskdeploy```
@@ -80,12 +74,12 @@ After building the wskdeploy binary, you can run it as follows:
 
 #### Running the Binary file
 
-Start by invoking command line help:
+Start by verifying the utility can display the command line help:
 ```sh
 $ ./wskdeploy --help
 ```
 
-Then try deploying an OpenWhisk Manifest and Deployment file:
+then try deploying an OpenWhisk Manifest and Deployment file:
 ```sh
 $ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
