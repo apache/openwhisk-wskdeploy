@@ -3,7 +3,9 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.org/apache/incubator-openwhisk-wskdeploy.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-wskdeploy)
 
-`wskdeploy` is a utility to help you create and deploy OpenWhisk packages and their entities using a Manifest file written in YAML. Use it to deploy all your Packages, Actions, Triggers and Rules using a single command! You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses the OpenWhisk "Go" CLI to create its HTTP REST calls for deploying and undeploying your packages.
+`wskdeploy` is a utility to help you create and deploy  OpenWhisk packages and any part of the OpenWhisk programming model using a Manifest file written in YAML. Use it to deploy all your Packages, Actions, Triggers and Rules using a single command!
+
+You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses the OpenWhisk "Go" CLI to create its HTTP REST calls for deploying and undeploying your packages.
 
 # Here are some quick links for:
 
