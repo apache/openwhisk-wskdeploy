@@ -7,15 +7,15 @@
 
 # Here are some quick links for:
 
-- [Building the project](#building)
-- [Running wskdeploy](#running)
+- [Building the project](#building-the-project)
+- [Running wskdeploy](#running-wskdeploy)
 - [Downloading released binaries](#downloading)
 - [Writing Package manifests for wskdeploy](#docs/programming_guide.md)
-- [Contributing to the project](#contributing)
+- [Contributing to the project](#contributing-to-the-project)
 - [Debugging wskdeploy](#docs/wskdeploy_debugging.md)
 - [Troubleshooting](#troubleshooting)
 
-## Building
+## Building the project
 
 ### GoLang setup
 
@@ -24,7 +24,7 @@ The wskdeploy utility is a GoLang program so you will first need to [Download an
 Make sure your `$GOPATH` is defined correctly in your environment. For detailed setup of your GoLang development environment, please read [How to Write Go Code](https://golang.org/doc/code.html).
 
 
-### Getting the code from GitHub
+### Get the source code from GitHub
 
 Once your environment is setup, download `wskdeploy` and its dependencies:
 
@@ -33,9 +33,9 @@ $ cd $GOPATH
 $ go get github.com/apache/incubator-openwhisk-wskdeploy  # see known issues below if you get an error
 ```
 
-### building the code
+### Build the binary
 
-Build the ```wskdeploy``` binary as follows:
+Use the Go utility to build the ```wskdeploy``` binary as follows:
 ```sh
 $ cd src/github.com/apache/incubator-openwhisk-wskdeploy/
 $ go build -o wskdeploy
@@ -63,44 +63,41 @@ $ godep go build -o wskdeploy   # build the wskdeploy tool.
 ./wskdeploy --help
 ```
 
-## Running
+## Running ```wskdeploy```
 
-
-`wskdeploy` is written in GoLang. You can invoke it as a Go program, or run its binary file `wskdeploy` directly after building.
-
-The following examples show you how to invoke wskdeploy's command line help using both methods, as well as deploy the `triggerrule` test case:
+After building the wskdeploy binary, you can run it as follows:
 
 #### Running the Binary file
 
-invoking command line help:
+Start by invoking command line help:
 ```sh
 $ ./wskdeploy --help
 ```
 
-Example: Deploying the ```triggerrule``` test case using the ```wskdeploy``` binary
+Then try to deploying an OpenWhisk Manifest and Deployment file:
 ```sh
 $ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
 
 #### Running as a Go program
 
-invoking command line help:
+Since ```wskdeploy``` is a GoLang program, you may choose to run it using the Go utility:
 ```sh
 $ go run main.go --help
 ```
 
-Example: Deploying the ```triggerrule``` test case using Go
+and deploying using the Go utility would look like:
 ```sh
 $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
 
-## Downloading
+## Downloading released binaries
 
 Binaries of `wskdeploy` are available on the release page of openwhisk-wskdeploy project: [click here to download](https://github.com/apache/incubator-openwhisk-wskdeploy/releases).
 
 For each release, we typically provide binaries built for Linux, Mac OS and Windows on the amd64 architecture. However, we provide instructions on how to build your own binaries as well from source code with the Go tool.  See [Building wskdeploy](#building-wskdeploy)
 
-## Contributing
+## Contributing to the project
 
 Start by creating a fork of `incubator-openwhisk-wskdeploy` and then change the git `origin` to point to your forked repository, as follows:
 
