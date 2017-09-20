@@ -10,9 +10,9 @@
 - [Building the project](#building-the-project) - download and build the GoLang source code
 - [Running wskdeploy](#running-wskdeploy) - run wskdeploy as a binary or Go program
 - [Downloading released binaries](#downloading-released-binaries) - for Linux, Mac OS and Windows
-- [Writing Package manifests](#docs/programming_guide.md) - step-by-step guide on writing Package Manifest and deployment files for ```wskdeploy```
+- [Writing Package manifests](docs/programming_guide.md) - step-by-step guide on writing Package Manifest and deployment files for ```wskdeploy```
 - [Contributing to the project](#contributing-to-the-project) - join us!
-- [Debugging wskdeploy](#docs/wskdeploy_debugging.md) - helpful tips for debugging the code and your manifest files
+- [Debugging wskdeploy](docs/wskdeploy_debugging.md) - helpful tips for debugging the code and your manifest files
 - [Troubleshooting](#troubleshooting)
 
 <!-- ----------------------------------------------------------------------------- -->
@@ -114,7 +114,7 @@ For each release, we typically provide binaries built for Linux, Mac OS (Darwin)
 
 Start by creating a fork of `incubator-openwhisk-wskdeploy` and then change the git `origin` to point to your forked repository, as follows:
 
-```
+```sh
 $ cd $GOPATH/src/github.com/apache/incubator-openwhisk-wskdeploy
 $ git remote rename origin upstream
 $ git remote add origin https://github.com/<your fork>/incubator-openwhisk-wskdeploy
@@ -124,7 +124,7 @@ $ git branch --set-upstream-to origin/master  # track master from origin now
 
 You can now use `git push` to push changes to your repository and submit pull requests.
 
-# How to Cross Compile Binary with Gradle/Docker
+### How to Cross Compile Binary with Gradle/Docker
 
 If you don't want to bother with go installation, build, git clone etc, and you can do it with Gradle/Docker.
 
