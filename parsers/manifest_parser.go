@@ -304,7 +304,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 					code = base64.StdEncoding.EncodeToString([]byte(dat))
 				}
 				if ext == ".zip" && action.Runtime == "" {
-					fmt.Println("need explicit action Runtime value")
+                    utils.PrintOpenWhiskOutputln("need explicit action Runtime value")
 				}
 				wskaction.Exec.Code = &code
 			}

@@ -106,31 +106,29 @@ func printOutput(outs string) {
 }
 
 func (wskdeploy *Wskdeploy) RunCommand(s ...string) (string, error) {
-    command := exec.Command(wskdeploy.Path, s...)
-    command.Dir = wskdeploy.Dir
+	command := exec.Command(wskdeploy.Path, s...)
+	command.Dir = wskdeploy.Dir
 
-    fmt.Println("wskdeploy.Path is " + wskdeploy.Path)
-    //fmt.Println("s is " + string(s))
-    printCommand(command)
+	printCommand(command)
 
-    var outb, errb bytes.Buffer
-    command.Stdout = &outb
-    command.Stderr = &errb
-    err := command.Run()
+	var outb, errb bytes.Buffer
+	command.Stdout = &outb
+	command.Stderr = &errb
+	err := command.Run()
 
-    var returnError error = nil
-    if err != nil {
-        returnError = err
-    } else {
-        if len(errb.String()) > 0 {
-            returnError = utils.NewTestCaseError(errb.String())
+	var returnError error = nil
+	if err != nil {
+		if len(errb.String()) > 0 {
+			returnError = utils.NewTestCaseError(errb.String())
+		} else {
+            returnError = err
         }
-    }
-    printOutput(outb.String())
-    if returnError != nil {
-        printError(returnError.Error())
-    }
-    return outb.String(), returnError
+	}
+	printOutput(outb.String())
+	if returnError != nil {
+		printError(returnError.Error())
+	}
+	return outb.String(), returnError
 }
 
 func (wskdeploy *Wskdeploy) Deploy(manifestPath string, deploymentPath string) (string, error) {

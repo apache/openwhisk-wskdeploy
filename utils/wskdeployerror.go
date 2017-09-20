@@ -28,6 +28,7 @@ const (
     INVALID_YAML_INPUT = "Invalid input of Yaml file"
     INVALID_YAML_FORMAT = "Invalid input of Yaml format"
     OPENWHISK_CLIENT_ERROR = "OpenWhisk Client Error"
+    MANIFEST_NOT_FOUND = INVALID_YAML_INPUT
     UNKNOWN = "Unknown"
     LINE = "line"
 )
@@ -66,6 +67,26 @@ func (e *BaseErr) SetLineNum(lineNum int) {
 
 func (e *BaseErr) SetMessage(message string) {
     e.Message = message
+}
+
+type ErrorManifestFileNotFound struct {
+    BaseErr
+    errorType string
+}
+
+func NewErrorManifestFileNotFound(errMessage string) *ErrorManifestFileNotFound {
+    _, fn, lineNum, _ := runtime.Caller(1)
+    var err = &ErrorManifestFileNotFound{
+        errorType: wski18n.T(MANIFEST_NOT_FOUND),
+    }
+    err.SetFileName(fn)
+    err.SetLineNum(lineNum)
+    err.SetMessage(errMessage)
+    return err
+}
+
+func (e *ErrorManifestFileNotFound) Error() string {
+    return fmt.Sprintf("%s [%d]: %s =====> %s\n", e.FileName, e.LineNum, e.errorType, e.Message)
 }
 
 type InputYamlFileError struct {
