@@ -27,8 +27,6 @@ import (
 	"fmt"
 )
 
-var wskprops = common.GetWskprops()
-
 func TestCloudant(t *testing.T) {
 	wskprops := common.GetWskpropsFromEnvVars(common.BLUEMIX_APIHOST, common.BLUEMIX_NAMESPACE, common.BLUEMIX_AUTH)
 	err := common.ValidateWskprops(wskprops)
@@ -45,7 +43,7 @@ func TestCloudant(t *testing.T) {
 }
 
 var (
-	manifestPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/cloudant/manifest.yml"
+	manifestPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/cloudant/manifest.yaml"
 	deploymentPath = ""
 )
 
