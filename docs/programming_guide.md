@@ -13,7 +13,7 @@ In addition to the normal output the wskdeploy utility provides, you may enable 
 
 As with most language introductions, here we show a minimal "hello world" application as encoded in an OpenWhisk Package Manifest YAML file:
 
-```
+```yaml
 package:
   helloworld:
     version: 1.0
@@ -25,7 +25,7 @@ package:
 ```
 
 where "hello.js" contains the following JavaScript code:
-```
+```javascript
 function main(params) {
     msg = "Hello, " + params.name + " from " + params.place;
     return { payload:  msg };
