@@ -276,13 +276,13 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 	return s1, nil
 }
 
-func (dm *YAMLParser) ComposeActionsFromAllPackages(mani *ManifestYAML, manipath string) (ar []utils.ActionRecord, err error) {
+func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *ManifestYAML, filePath string) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
-	if mani.Package.Packagename != "" {
-		return dm.ComposeActions(manipath, mani.Package.Actions, mani.Package.Packagename)
-	} else if mani.Packages != nil {
-		for n, p := range mani.Packages {
-			a, err := dm.ComposeActions(manipath, p.Actions, n)
+	if manifest.Package.Packagename != "" {
+		return dm.ComposeActions(filePath, manifest.Package.Actions, manifest.Package.Packagename)
+	} else if manifest.Packages != nil {
+		for n, p := range manifest.Packages {
+			a, err := dm.ComposeActions(filePath, p.Actions, n)
 			if err == nil {
 				s1 = append(s1, a...)
 			} else {
@@ -293,13 +293,13 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(mani *ManifestYAML, manipath
 	return s1, nil
 }
 
-func (dm *YAMLParser) ComposeActions(manipath string, actions map[string]Action, packageName string) (ar []utils.ActionRecord, err error) {
+func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action, packageName string) ([]utils.ActionRecord, error) {
 
 	var errorParser error
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
 
 	for key, action := range actions {
-		splitmanipath := strings.Split(manipath, string(os.PathSeparator))
+		splitFilePath := strings.Split(filePath, string(os.PathSeparator))
 		//set action.Function to action.Location
 		//because Location is deprecated in Action entity
 		if action.Function == "" && action.Location != "" {
@@ -311,11 +311,14 @@ func (dm *YAMLParser) ComposeActions(manipath string, actions map[string]Action,
 
 		wskaction.Exec = new(whisk.Exec)
 		if action.Function != "" {
-			filePath := strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + action.Function
+			filePath := strings.TrimRight(filePath, splitFilePath[len(splitFilePath)-1]) + action.Function
 
 			if utils.IsDirectory(filePath) {
 				zipName := filePath + ".zip"
-				err = utils.NewZipWritter(filePath, zipName).Zip()
+				err := utils.NewZipWritter(filePath, zipName).Zip()
+				if err != nil {
+					return nil, err
+				}
 				defer os.Remove(zipName)
 				// To do: support docker and main entry as did by go cli?
 				wskaction.Exec, err = utils.GetExec(zipName, action.Runtime, false, "")
@@ -384,7 +387,7 @@ func (dm *YAMLParser) ComposeActions(manipath string, actions map[string]Action,
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value, errorParser = ResolveParameter(name, &param, manipath)
+			keyVal.Value, errorParser = ResolveParameter(name, &param, filePath)
 
 			if errorParser != nil {
 				return nil, errorParser
@@ -410,9 +413,9 @@ func (dm *YAMLParser) ComposeActions(manipath string, actions map[string]Action,
 		// only set the webaction when the annotations are not empty.
 		if action.Webexport == "true" {
 			//wskaction.Annotations = keyValArr
-			wskaction.Annotations, err = utils.WebAction("yes", keyValArr, action.Name, false)
-			if err != nil {
-				return s1, err
+			wskaction.Annotations, errorParser = utils.WebAction("yes", keyValArr, action.Name, false)
+			if errorParser != nil {
+				return s1, errorParser
 			}
 		}
 

@@ -29,7 +29,6 @@ import (
     "path/filepath"
     "reflect"
     "strconv"
-    "github.com/davecgh/go-spew/spew"
 )
 
 // Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
@@ -486,7 +485,7 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
             // read and parse manifest.yaml file
             p := NewYAMLParser()
             m, _ := p.ParseManifest(tmpfile.Name())
-            actions, err := p.ComposeActions(m, tmpfile.Name())
+            actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
             var expectedResult string
             if err == nil {
                 for i := 0; i < len(actions); i++ {
@@ -528,7 +527,7 @@ func TestComposeActionsForInvalidRuntime(t *testing.T) {
             // read and parse manifest.yaml file
             p := NewYAMLParser()
             m, _ := p.ParseManifest(tmpfile.Name())
-            _, err := p.ComposeActions(m, tmpfile.Name())
+            _, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
             // (TODO) uncomment the following test case after issue #307 is fixed
             // (TODO) its failing right now as we are lacking check on invalid runtime
             // assert.NotNil(t, err, "Invalid runtime, ComposeActions should report an error")
@@ -547,7 +546,7 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(manifestFile)
-    actions, err := p.ComposeActions(m, manifestFile)
+    actions, err := p.ComposeActionsFromAllPackages(m, manifestFile)
 
     if err == nil {
         // assert that the actions variable has only one action
@@ -632,7 +631,7 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(manifestFile)
-    actions, err := p.ComposeActions(m, manifestFile)
+    actions, err := p.ComposeActionsFromAllPackages(m, manifestFile)
 
     if err == nil {
         // assert that the actions variable has only one action
@@ -712,7 +711,7 @@ func TestComposeActionsForFunction(t *testing.T) {
             // read and parse manifest.yaml file
             p := NewYAMLParser()
             m, _ := p.ParseManifest(tmpfile.Name())
-            actions, err := p.ComposeActions(m, tmpfile.Name())
+            actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
             var expectedResult, actualResult string
             if err == nil {
                 for i := 0; i < len(actions); i++ {
@@ -797,7 +796,7 @@ func TestComposeActionsForWebActions(t *testing.T) {
             // read and parse manifest.yaml file
             p := NewYAMLParser()
             m, _ := p.ParseManifest(tmpfile.Name())
-            actions, err := p.ComposeActions(m, tmpfile.Name())
+            actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
             if err == nil {
                 for i := 0; i < len(actions); i++ {
                     if actions[i].Action.Name == "hello" {
@@ -907,7 +906,7 @@ func TestComposePackage(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(tmpfile.Name())
-    pkg, err := p.ComposePackage(m, tmpfile.Name())
+    pkg, err := p.ComposeAllPackages(m, tmpfile.Name())
     if err == nil {
         n := "helloworld"
         assert.NotNil(t, pkg[n], "Failed to get the whole package")
@@ -937,7 +936,7 @@ func TestComposeSequences(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(tmpfile.Name())
-    seqList, err := p.ComposeSequences("", m)
+    seqList, err := p.ComposeSequencesFromAllPackages("", m)
     if err != nil {
         assert.Fail(t, "Failed to compose sequences")
     }
@@ -984,7 +983,7 @@ func TestComposeTriggers(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(tmpfile.Name())
-    triggerList, err := p.ComposeTriggers(m, tmpfile.Name())
+    triggerList, err := p.ComposeTriggersFromAllPackages(m, tmpfile.Name())
     if err != nil {
         assert.Fail(t, "Failed to compose trigger")
     }
@@ -1023,7 +1022,7 @@ func TestComposeRules(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(tmpfile.Name())
-    ruleList, err := p.ComposeRules(m)
+    ruleList, err := p.ComposeRulesFromAllPackages(m)
     if err != nil {
         assert.Fail(t, "Failed to compose rules")
     }
@@ -1069,7 +1068,7 @@ func TestComposeApiRecords(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(tmpfile.Name())
-    apiList, err := p.ComposeApiRecords(m)
+    apiList, err := p.ComposeApiRecordsFromAllPackages(m)
     if err != nil {
         assert.Fail(t, "Failed to compose api records")
     }
@@ -1251,29 +1250,51 @@ packages:
         expectedResult := string(2)
         actualResult := string(len(m.Packages))
         assert.Equal(t, expectedResult, actualResult, "Expected 2 packages but got " + actualResult)
-        spew.Dump(m)
-/*        // package name should be "helloworld"
-        expectedResult = "helloworld"
-        actualResult = m.Package.Packagename
-        assert.Equal(t, expectedResult, actualResult, "Expected package name " + expectedResult + " but got " + actualResult)
-        // manifest should contain only one action
-        expectedResult = string(1)
-        actualResult = string(len(m.Package.Actions))
-        assert.Equal(t, expectedResult, actualResult, "Expected 1 but got " + actualResult)
-        // get the action payload from the map of actions which is stored in
-        // ManifestYAML.Package.Actions with the type of map[string]Action
-        actionName := "helloNodejs"
-        if action, ok := m.Package.Actions[actionName]; ok {
-            // location/function of an action should be "actions/hello.js"
-            expectedResult = "actions/hello.js"
-            actualResult = action.Function
-            assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
-            // runtime of an action should be "nodejs:6"
-            expectedResult = "nodejs:6"
-            actualResult = action.Runtime
-            assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
-        } else {
-            t.Error("Action named " + actionName + " does not exist.")
-        }*/
+        // we have two packages
+        // package name should be "helloNodejs" and "helloPython"
+        for k, v := range m.Packages {
+            switch k {
+            case "package1":
+                assert.Equal(t, "package1", k, "Expected package name package1 but got " + k)
+                expectedResult = string(1)
+                actualResult = string(len(v.Actions))
+                assert.Equal(t, expectedResult, actualResult, "Expected 1 but got " + actualResult)
+                // get the action payload from the map of actions which is stored in
+                // ManifestYAML.Package.Actions with the type of map[string]Action
+                actionName := "helloNodejs"
+                if action, ok := v.Actions[actionName]; ok {
+                    // location/function of an action should be "actions/hello.js"
+                    expectedResult = "actions/hello.js"
+                    actualResult = action.Function
+                    assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
+                    // runtime of an action should be "nodejs:6"
+                    expectedResult = "nodejs:6"
+                    actualResult = action.Runtime
+                    assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+                } else {
+                    t.Error("Action named " + actionName + " does not exist.")
+                }
+            case "package2":
+                assert.Equal(t, "package2", k, "Expected package name package2 but got " + k)
+                expectedResult = string(1)
+                actualResult = string(len(v.Actions))
+                assert.Equal(t, expectedResult, actualResult, "Expected 1 but got " + actualResult)
+                // get the action payload from the map of actions which is stored in
+                // ManifestYAML.Package.Actions with the type of map[string]Action
+                actionName := "helloPython"
+                if action, ok := v.Actions[actionName]; ok {
+                    // location/function of an action should be "actions/hello.js"
+                    expectedResult = "actions/hello.py"
+                    actualResult = action.Function
+                    assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
+                    // runtime of an action should be "python"
+                    expectedResult = "python"
+                    actualResult = action.Runtime
+                    assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+                } else {
+                    t.Error("Action named " + actionName + " does not exist.")
+                }
+            }
+        }
     }
 }

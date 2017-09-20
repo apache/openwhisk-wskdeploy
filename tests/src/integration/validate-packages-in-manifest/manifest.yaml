@@ -72,7 +72,7 @@ packages:
         rules:
             rulePython:
                 trigger: triggerPython
-                action: helloworldPython-series
+                action: helloworldpython-series
     packageJava:
         actions:
             helloJava-1:
