@@ -10,7 +10,7 @@
 - [Building the project](#building-the-project) - download and build the GoLang source code
 - [Running wskdeploy](#running-wskdeploy) - run wskdeploy as a binary or Go program
 - [Downloading released binaries](#downloading-released-binaries) - for Linux, Mac OS and Windows
-- [Writing Package manifests](#docs/programming_guide.md) - learn, step-by-step, how to write Package Manifest and deplyment files for ```wskdeploy```
+- [Writing Package manifests](#docs/programming_guide.md) - step-by-step guide on writing Package Manifest and deployment files for ```wskdeploy```
 - [Contributing to the project](#contributing-to-the-project) - join us!
 - [Debugging wskdeploy](#docs/wskdeploy_debugging.md) - helpful tips for debugging the code and your manifest files
 - [Troubleshooting](#troubleshooting)
