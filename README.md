@@ -15,6 +15,7 @@
 - [Debugging wskdeploy](#docs/wskdeploy_debugging.md)
 - [Troubleshooting](#troubleshooting)
 
+<!-- ----------------------------------------------------------------------------- -->
 ## Building the project
 
 ### GoLang setup
@@ -41,13 +42,19 @@ $ cd src/github.com/apache/incubator-openwhisk-wskdeploy/
 $ go build -o wskdeploy
 ```
 
-If you would like to build the binary for a specific operating system, you may add the arguments GOOS and GOARCH into the Go build command. You have to set GOARCH to amd64 or 386. GOOS can be set to "linux" "darwin" or "windows".
+### building for other Operating Systems (GOOS) and Architectures (GOARCH)
+
+If you would like to build the binary for a specific operating system, you may add the arguments GOOS and GOARCH into the Go build command. You may set
+- ```GOOS``` to "linux" "darwin" or "windows"
+- ```GOARCH`` "amd64" or "386"
 
 For example, run the following command to build the binary for 64-bit Linux:
 
 ```sh
 $ GOOS=linux GOARCH=amd64 go build -o wskdeploy
 ```
+
+### build using GoDep tool
 
 If you want to build with the godep tool, please execute the following commands.
 
@@ -63,6 +70,8 @@ $ godep go build -o wskdeploy   # build the wskdeploy tool.
 ./wskdeploy --help
 ```
 
+<!-- ----------------------------------------------------------------------------- -->
+
 ## Running ```wskdeploy```
 
 After building the wskdeploy binary, you can run it as follows:
@@ -74,7 +83,7 @@ Start by invoking command line help:
 $ ./wskdeploy --help
 ```
 
-Then try to deploying an OpenWhisk Manifest and Deployment file:
+Then try deploying an OpenWhisk Manifest and Deployment file:
 ```sh
 $ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
@@ -93,9 +102,10 @@ $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/tr
 
 ## Downloading released binaries
 
-Binaries of `wskdeploy` are available on the release page of openwhisk-wskdeploy project: [click here to download](https://github.com/apache/incubator-openwhisk-wskdeploy/releases).
+Binaries of `wskdeploy` are available for download on the project's GitHub release page:
+- [https://github.com/apache/incubator-openwhisk-wskdeploy/releases](https://github.com/apache/incubator-openwhisk-wskdeploy/releases).
 
-For each release, we typically provide binaries built for Linux, Mac OS and Windows on the amd64 architecture. However, we provide instructions on how to build your own binaries as well from source code with the Go tool.  See [Building wskdeploy](#building-wskdeploy)
+For each release, we typically provide binaries built for Linux, Mac OS (Darwin) and Windows on the AMD64 architecture. However, we provide instructions on how to build your own binaries as well from source code with the Go tool.  See [Building the project](#building-the-project).
 
 ## Contributing to the project
 
