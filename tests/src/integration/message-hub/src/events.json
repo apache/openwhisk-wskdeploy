@@ -1,0 +1,41 @@
+{
+  "events": [{
+    "id": "1",
+    "eventType": "update",
+    "timestamp": "2017-09-01T11:11:11.111+02",
+    "payload": {
+      "category": 4,
+      "name": "Harvey",
+      "location": "Houston"
+    }
+  }, {
+    "id": "2",
+    "eventType": "update",
+    "timestamp": "2017-09-10T11:11:11.111+02",
+    "payload": {
+      "category": 3,
+      "name": "Irma",
+      "location": "Florida"
+    }
+  },
+    {
+      "id": "3",
+      "eventType": "update",
+      "timestamp": "2017-09-15T11:11:11.111+02",
+      "payload": {
+        "category": 1,
+        "name": "Jose",
+        "location": "New York"
+      }
+    }, {
+    "id": "4",
+    "eventType": "update",
+    "timestamp": "2017-09-20T11:11:11.111+02",
+    "payload": {
+      "category": 4,
+      "name": "Maria",
+      "location": "Puerto Rico"
+    }
+  }]
+}
+

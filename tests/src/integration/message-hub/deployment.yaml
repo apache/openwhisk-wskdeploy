@@ -1,0 +1,15 @@
+application:
+    name: DataProcessingApp
+    packages:
+        data-processing-with-messagehub:
+            actions:
+                process-messages-received-from-messagehub:
+                    inputs:
+                        messagehub_instance: wskdeployMessageHub
+                        topic:  $DEST_TOPIC
+            triggers:
+                wskdeployMessageHubTrigger2:
+                    inputs:
+                        isJSONData: true
+                        topic: $SRC_TOPIC
+
