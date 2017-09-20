@@ -129,7 +129,6 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
         if err != nil {
             return err
         }
-
         fileReader.SetFileActions(fileActions)
     }
 

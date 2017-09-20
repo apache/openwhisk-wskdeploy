@@ -43,8 +43,8 @@ func ReadOrCreateManifest() (*ManifestYAML, error) {
 		dat, _ := ioutil.ReadFile(utils.ManifestFileNameYaml)
 		err := NewYAMLParser().Unmarshal(dat, &maniyaml)
 		if err != nil {
-            return &maniyaml, utils.NewInputYamlFileError(err.Error())
-        }
+			return &maniyaml, utils.NewInputYamlFileError(err.Error())
+		}
 	}
 	return &maniyaml, nil
 }
@@ -52,18 +52,18 @@ func ReadOrCreateManifest() (*ManifestYAML, error) {
 // Serialize manifest to local file
 func Write(manifest *ManifestYAML, filename string) error {
 	output, err := NewYAMLParser().Marshal(manifest)
-    if err != nil {
-        return utils.NewInputYamlFormatError(err.Error())
-    }
+	if err != nil {
+		return utils.NewInputYamlFormatError(err.Error())
+	}
 
 	f, err := os.Create(filename)
-    if err != nil {
-        return utils.NewInputYamlFileError(err.Error())
-    }
+	if err != nil {
+		return utils.NewInputYamlFileError(err.Error())
+	}
 	defer f.Close()
 
 	f.Write(output)
-    return nil
+	return nil
 }
 
 func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
@@ -89,14 +89,14 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*ManifestYAML, error) 
 
 	content, err := utils.Read(manifestPath)
 	if err != nil {
-        return &maniyaml, utils.NewInputYamlFileError(err.Error())
-    }
+		return &maniyaml, utils.NewInputYamlFileError(err.Error())
+	}
 
 	err = mm.Unmarshal(content, &maniyaml)
-    if err != nil {
-        lines, msgs := dm.convertErrorToLinesMsgs(err.Error())
-        return &maniyaml, utils.NewParserErr(manifestPath, lines, msgs)
-    }
+	if err != nil {
+		lines, msgs := dm.convertErrorToLinesMsgs(err.Error())
+		return &maniyaml, utils.NewParserErr(manifestPath, lines, msgs)
+	}
 	maniyaml.Filepath = manifestPath
 	return &maniyaml, nil
 }
@@ -164,20 +164,39 @@ func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string
 	return depMap, nil
 }
 
-// Is we consider multi pacakge in one yaml?
-func (dm *YAMLParser) ComposePackage(mani *ManifestYAML, filePath string) (*whisk.Package, error) {
-	var errorParser error
+func (dm *YAMLParser) ComposeAllPackages(manifest *ManifestYAML, filePath string) (map[string]*whisk.Package, error) {
+	packages := map[string]*whisk.Package{}
+	if manifest.Package.Packagename != "" {
+		s, err := dm.ComposePackage(manifest.Package, manifest.Package.Packagename, filePath)
+		if err == nil {
+			packages[manifest.Package.Packagename] = s
+		} else {
+			return nil, err
+		}
+	} else if manifest.Packages != nil {
+		for n, p := range manifest.Packages {
+			s, err := dm.ComposePackage(p, n, filePath)
+			if err == nil {
+				packages[n] = s
+			} else {
+				return nil, err
+			}
+		}
+	}
+	return packages, nil
+}
 
-	//mani := dm.ParseManifest(manipath)
+func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath string) (*whisk.Package, error) {
+	var errorParser error
 	pag := &whisk.Package{}
-	pag.Name = mani.Package.Packagename
+	pag.Name = packageName
 	//The namespace for this package is absent, so we use default guest here.
-	pag.Namespace = mani.Package.Namespace
+	pag.Namespace = pkg.Namespace
 	pub := false
 	pag.Publish = &pub
 
 	keyValArr := make(whisk.KeyValueArr, 0)
-	for name, param := range mani.Package.Inputs {
+	for name, param := range pkg.Inputs {
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
 
@@ -198,9 +217,26 @@ func (dm *YAMLParser) ComposePackage(mani *ManifestYAML, filePath string) (*whis
 	return pag, nil
 }
 
-func (dm *YAMLParser) ComposeSequences(namespace string, mani *ManifestYAML) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *ManifestYAML) (ar []utils.ActionRecord, err error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
-	for key, sequence := range mani.Package.Sequences {
+	if mani.Package.Packagename != "" {
+		return dm.ComposeSequences(namespace, mani.Package.Sequences, mani.Package.Packagename)
+	} else if mani.Packages != nil {
+		for n, p := range mani.Packages {
+			s, err := dm.ComposeSequences(namespace, p.Sequences, n)
+			if err == nil {
+				s1 = append(s1, s...)
+			} else {
+				return nil, err
+			}
+		}
+	}
+	return s1, nil
+}
+
+func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Sequence, packageName string) ([]utils.ActionRecord, error) {
+	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
+	for key, sequence := range sequences {
 		wskaction := new(whisk.Action)
 		wskaction.Exec = new(whisk.Exec)
 		wskaction.Exec.Kind = "sequence"
@@ -208,11 +244,9 @@ func (dm *YAMLParser) ComposeSequences(namespace string, mani *ManifestYAML) ([]
 
 		var components []string
 		for _, a := range actionList {
-
 			act := strings.TrimSpace(a)
-
-			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, mani.Package.Packagename+"/") {
-				act = path.Join(mani.Package.Packagename, act)
+			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName +"/") {
+				act = path.Join(packageName, act)
 			}
 			components = append(components, path.Join("/"+namespace, act))
 		}
@@ -236,19 +270,36 @@ func (dm *YAMLParser) ComposeSequences(namespace string, mani *ManifestYAML) ([]
 			wskaction.Annotations = keyValArr
 		}
 
-		record := utils.ActionRecord{wskaction, mani.Package.Packagename, key}
+		record := utils.ActionRecord{Action: wskaction, Packagename: packageName, Filepath: key}
 		s1 = append(s1, record)
 	}
 	return s1, nil
 }
 
-func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []utils.ActionRecord, err error) {
+func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *ManifestYAML, filePath string) ([]utils.ActionRecord, error) {
+	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
+	if manifest.Package.Packagename != "" {
+		return dm.ComposeActions(filePath, manifest.Package.Actions, manifest.Package.Packagename)
+	} else if manifest.Packages != nil {
+		for n, p := range manifest.Packages {
+			a, err := dm.ComposeActions(filePath, p.Actions, n)
+			if err == nil {
+				s1 = append(s1, a...)
+			} else {
+				return nil, err
+			}
+		}
+	}
+	return s1, nil
+}
+
+func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action, packageName string) ([]utils.ActionRecord, error) {
 
 	var errorParser error
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
 
-	for key, action := range mani.Package.Actions {
-		splitmanipath := strings.Split(manipath, string(os.PathSeparator))
+	for key, action := range actions {
+		splitFilePath := strings.Split(filePath, string(os.PathSeparator))
 		//set action.Function to action.Location
 		//because Location is deprecated in Action entity
 		if action.Function == "" && action.Location != "" {
@@ -260,11 +311,14 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 
 		wskaction.Exec = new(whisk.Exec)
 		if action.Function != "" {
-			filePath := strings.TrimRight(manipath, splitmanipath[len(splitmanipath)-1]) + action.Function
+			filePath := strings.TrimRight(filePath, splitFilePath[len(splitFilePath)-1]) + action.Function
 
 			if utils.IsDirectory(filePath) {
 				zipName := filePath + ".zip"
-				err = utils.NewZipWritter(filePath, zipName).Zip()
+				err := utils.NewZipWritter(filePath, zipName).Zip()
+				if err != nil {
+					return nil, err
+				}
 				defer os.Remove(zipName)
 				// To do: support docker and main entry as did by go cli?
 				wskaction.Exec, err = utils.GetExec(zipName, action.Runtime, false, "")
@@ -287,8 +341,8 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 					kind = "java"
 				default:
 					kind = "nodejs:6"
-                    errStr := wski18n.T("Unsupported runtime type, set to nodejs")
-                    whisk.Debug(whisk.DbgWarn, errStr)
+					errStr := wski18n.T("Unsupported runtime type, set to nodejs")
+					whisk.Debug(whisk.DbgWarn, errStr)
 					//add the user input kind here
 				}
 
@@ -296,9 +350,9 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 
 				action.Function = filePath
 				dat, err := utils.Read(filePath)
-                if err != nil {
-                    return s1, err
-                }
+				if err != nil {
+					return s1, err
+				}
 				code := string(dat)
 				if ext == ".zip" || ext == ".jar" {
 					code = base64.StdEncoding.EncodeToString([]byte(dat))
@@ -315,13 +369,13 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			if utils.CheckExistRuntime(action.Runtime, utils.Rts) {
 				wskaction.Exec.Kind = action.Runtime
 			} else {
-                errStr := wski18n.T("the runtime is not supported by Openwhisk platform.\n")
-                whisk.Debug(whisk.DbgWarn, errStr)
+				errStr := wski18n.T("the runtime is not supported by Openwhisk platform.\n")
+				whisk.Debug(whisk.DbgWarn, errStr)
 			}
 		} else {
-            errStr := wski18n.T("wskdeploy has chosen a particular runtime for the action.\n")
-            whisk.Debug(whisk.DbgWarn, errStr)
-        }
+			errStr := wski18n.T("wskdeploy has chosen a particular runtime for the action.\n")
+			whisk.Debug(whisk.DbgWarn, errStr)
+		}
 
 		// we can specify the name of the action entry point using main
 		if action.Main != "" {
@@ -333,7 +387,7 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 
-			keyVal.Value, errorParser = ResolveParameter(name, &param, manipath)
+			keyVal.Value, errorParser = ResolveParameter(name, &param, filePath)
 
 			if errorParser != nil {
 				return nil, errorParser
@@ -343,7 +397,6 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 				keyValArr = append(keyValArr, keyVal)
 			}
 		}
-
 		if len(keyValArr) > 0 {
 			wskaction.Parameters = keyValArr
 		}
@@ -360,29 +413,44 @@ func (dm *YAMLParser) ComposeActions(mani *ManifestYAML, manipath string) (ar []
 		// only set the webaction when the annotations are not empty.
 		if action.Webexport == "true" {
 			//wskaction.Annotations = keyValArr
-			wskaction.Annotations, err = utils.WebAction("yes", keyValArr, action.Name, false)
-            if err != nil {
-                return s1, err
-            }
+			wskaction.Annotations, errorParser = utils.WebAction("yes", keyValArr, action.Name, false)
+			if errorParser != nil {
+				return s1, errorParser
+			}
 		}
 
 		wskaction.Name = key
 		pub := false
 		wskaction.Publish = &pub
 
-		record := utils.ActionRecord{wskaction, mani.Package.Packagename, action.Function}
+		record := utils.ActionRecord{Action: wskaction, Packagename: packageName, Filepath: action.Function}
 		s1 = append(s1, record)
-
 	}
 
 	return s1, nil
 
 }
 
-func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML, filePath string) ([]*whisk.Trigger, error) {
+func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *ManifestYAML, filePath string) ([]*whisk.Trigger, error) {
+	var triggers []*whisk.Trigger = make([]*whisk.Trigger, 0)
+	if manifest.Package.Packagename != "" {
+		return dm.ComposeTriggers(filePath, manifest.Package)
+	} else if manifest.Packages != nil {
+		for _, p := range manifest.Packages {
+			t, err := dm.ComposeTriggers(filePath, p)
+			if err == nil {
+				triggers = append(triggers, t...)
+			} else {
+				return nil, err
+			}
+		}
+	}
+	return triggers, nil
+}
+
+func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package) ([]*whisk.Trigger, error) {
 	var errorParser error
 	var t1 []*whisk.Trigger = make([]*whisk.Trigger, 0)
-	pkg := manifest.Package
 	for _, trigger := range pkg.GetTriggerList() {
 		wsktrigger := new(whisk.Trigger)
 		wsktrigger.Name = trigger.Name
@@ -436,29 +504,56 @@ func (dm *YAMLParser) ComposeTriggers(manifest *ManifestYAML, filePath string) (
 	return t1, nil
 }
 
-func (dm *YAMLParser) ComposeRules(manifest *ManifestYAML) ([]*whisk.Rule, error) {
+func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *ManifestYAML) ([]*whisk.Rule, error) {
+	var rules []*whisk.Rule = make([]*whisk.Rule, 0)
+	if manifest.Package.Packagename != "" {
+		return dm.ComposeRules(manifest.Package, manifest.Package.Packagename)
+	} else if manifest.Packages != nil {
+		for n, p := range manifest.Packages {
+			r, err := dm.ComposeRules(p, n)
+			if err == nil {
+				rules = append(rules, r...)
+			} else {
+				return nil, err
+			}
+		}
+	}
+	return rules, nil
+}
 
+
+func (dm *YAMLParser) ComposeRules(pkg Package, packageName string) ([]*whisk.Rule, error) {
 	var r1 []*whisk.Rule = make([]*whisk.Rule, 0)
-	pkg := manifest.Package
 	for _, rule := range pkg.GetRuleList() {
 		wskrule := rule.ComposeWskRule()
-
 		act := strings.TrimSpace(wskrule.Action.(string))
-
-		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, pkg.Packagename+"/") {
-			act = path.Join(pkg.Packagename, act)
+		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") {
+			act = path.Join(packageName, act)
 		}
-
 		wskrule.Action = act
-
 		r1 = append(r1, wskrule)
 	}
-
 	return r1, nil
 }
 
-func (dm *YAMLParser) ComposeApiRecords(manifest *ManifestYAML) ([]*whisk.ApiCreateRequest, error) {
-	pkg := manifest.Package
+func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *ManifestYAML) ([]*whisk.ApiCreateRequest, error) {
+	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
+	if manifest.Package.Packagename != "" {
+		return dm.ComposeApiRecords(manifest.Package)
+	} else if manifest.Packages != nil {
+		for _, p := range manifest.Packages {
+			r, err := dm.ComposeApiRecords(p)
+			if err == nil {
+				requests = append(requests, r...)
+			} else {
+				return nil, err
+			}
+		}
+	}
+	return requests, nil
+}
+
+func (dm *YAMLParser) ComposeApiRecords(pkg Package) ([]*whisk.ApiCreateRequest, error) {
 	var acq []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 	apis := pkg.GetApis()
 	for _, api := range apis {
@@ -539,8 +634,8 @@ func ResolveParamTypeFromValue(value interface{}, filePath string) (string, erro
 			// TODO(): We have information to display to user on an error or warning here
 			// TODO(): specifically, we have the parameter name, its value to show on error/warning
 			// TODO(): perhaps this is a different Class of error?  e.g., ErrorParameterMismatchError
-                        lines := []string{"Line Unknown"}
-                        msgs := []string{"Parameter value is not a known type. ["+actualType+"]"}
+			lines := []string{"Line Unknown"}
+			msgs := []string{"Parameter value is not a known type. [" + actualType + "]"}
 			err = utils.NewParserErr(filePath, lines, msgs)
 		}
 	} else {
@@ -598,8 +693,8 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 		// if we do not have a value or default, but have a type, find its default and use it for the value
 		if param.Type != "" && !isValidParameterType(param.Type) {
-                        lines := []string{"Line Unknown"}
-                        msgs := []string{"Invalid Type for parameter. ["+param.Type+"]"}
+			lines := []string{"Line Unknown"}
+			msgs := []string{"Invalid Type for parameter. [" + param.Type + "]"}
 			return value, utils.NewParserErr(filePath, lines, msgs)
 		} else if param.Type == "" {
 			param.Type = tempType

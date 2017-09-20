@@ -485,7 +485,7 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
             // read and parse manifest.yaml file
             p := NewYAMLParser()
             m, _ := p.ParseManifest(tmpfile.Name())
-            actions, err := p.ComposeActions(m, tmpfile.Name())
+            actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
             var expectedResult string
             if err == nil {
                 for i := 0; i < len(actions); i++ {
@@ -527,7 +527,7 @@ func TestComposeActionsForInvalidRuntime(t *testing.T) {
             // read and parse manifest.yaml file
             p := NewYAMLParser()
             m, _ := p.ParseManifest(tmpfile.Name())
-            _, err := p.ComposeActions(m, tmpfile.Name())
+            _, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
             // (TODO) uncomment the following test case after issue #307 is fixed
             // (TODO) its failing right now as we are lacking check on invalid runtime
             // assert.NotNil(t, err, "Invalid runtime, ComposeActions should report an error")
@@ -546,7 +546,7 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(manifestFile)
-    actions, err := p.ComposeActions(m, manifestFile)
+    actions, err := p.ComposeActionsFromAllPackages(m, manifestFile)
 
     if err == nil {
         // assert that the actions variable has only one action
@@ -631,7 +631,7 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(manifestFile)
-    actions, err := p.ComposeActions(m, manifestFile)
+    actions, err := p.ComposeActionsFromAllPackages(m, manifestFile)
 
     if err == nil {
         // assert that the actions variable has only one action
@@ -711,7 +711,7 @@ func TestComposeActionsForFunction(t *testing.T) {
             // read and parse manifest.yaml file
             p := NewYAMLParser()
             m, _ := p.ParseManifest(tmpfile.Name())
-            actions, err := p.ComposeActions(m, tmpfile.Name())
+            actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
             var expectedResult, actualResult string
             if err == nil {
                 for i := 0; i < len(actions); i++ {
@@ -796,7 +796,7 @@ func TestComposeActionsForWebActions(t *testing.T) {
             // read and parse manifest.yaml file
             p := NewYAMLParser()
             m, _ := p.ParseManifest(tmpfile.Name())
-            actions, err := p.ComposeActions(m, tmpfile.Name())
+            actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
             if err == nil {
                 for i := 0; i < len(actions); i++ {
                     if actions[i].Action.Name == "hello" {
@@ -906,10 +906,12 @@ func TestComposePackage(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(tmpfile.Name())
-    pkg, err := p.ComposePackage(m, tmpfile.Name())
+    pkg, err := p.ComposeAllPackages(m, tmpfile.Name())
     if err == nil {
-        assert.Equal(t, "helloworld", pkg.Name, "Failed to get package name")
-        assert.Equal(t, "default", pkg.Namespace, "Failed to get package namespace")
+        n := "helloworld"
+        assert.NotNil(t, pkg[n], "Failed to get the whole package")
+        assert.Equal(t, n, pkg[n].Name, "Failed to get package name")
+        assert.Equal(t, "default", pkg[n].Namespace, "Failed to get package namespace")
     } else {
         assert.Fail(t, "Failed to compose package")
     }
@@ -934,7 +936,7 @@ func TestComposeSequences(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(tmpfile.Name())
-    seqList, err := p.ComposeSequences("", m)
+    seqList, err := p.ComposeSequencesFromAllPackages("", m)
     if err != nil {
         assert.Fail(t, "Failed to compose sequences")
     }
@@ -981,7 +983,7 @@ func TestComposeTriggers(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(tmpfile.Name())
-    triggerList, err := p.ComposeTriggers(m, tmpfile.Name())
+    triggerList, err := p.ComposeTriggersFromAllPackages(m, tmpfile.Name())
     if err != nil {
         assert.Fail(t, "Failed to compose trigger")
     }
@@ -1020,7 +1022,7 @@ func TestComposeRules(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(tmpfile.Name())
-    ruleList, err := p.ComposeRules(m)
+    ruleList, err := p.ComposeRulesFromAllPackages(m)
     if err != nil {
         assert.Fail(t, "Failed to compose rules")
     }
@@ -1066,7 +1068,7 @@ func TestComposeApiRecords(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(tmpfile.Name())
-    apiList, err := p.ComposeApiRecords(m)
+    apiList, err := p.ComposeApiRecordsFromAllPackages(m)
     if err != nil {
         assert.Fail(t, "Failed to compose api records")
     }
@@ -1221,4 +1223,78 @@ func TestMissingRootValueManifestYaml(t *testing.T) {
     _, err = p.ParseManifest(tmpfile.Name())
     assert.NotNil(t, err)
     assert.Contains(t, err.Error(), "field actions not found in struct parsers.ManifestYAML: Line 1, its neighbour lines, or the lines on the same level")
+
+}
+
+// validate manifest_parser:Unmarshal() method for package in manifest YAML
+// validate that manifest_parser is able to read and parse the manifest data
+func TestUnmarshalForPackages(t *testing.T) {
+    data := `
+packages:
+  package1:
+    actions:
+      helloNodejs:
+        function: actions/hello.js
+        runtime: nodejs:6
+  package2:
+    actions:
+      helloPython:
+        function: actions/hello.py
+        runtime: python`
+    // set the zero value of struct ManifestYAML
+    m := ManifestYAML{}
+    // Unmarshal reads/parses manifest data and sets the values of ManifestYAML
+    // And returns an error if parsing a manifest data fails
+    err := NewYAMLParser().Unmarshal([]byte(data), &m)
+    if err == nil {
+        expectedResult := string(2)
+        actualResult := string(len(m.Packages))
+        assert.Equal(t, expectedResult, actualResult, "Expected 2 packages but got " + actualResult)
+        // we have two packages
+        // package name should be "helloNodejs" and "helloPython"
+        for k, v := range m.Packages {
+            switch k {
+            case "package1":
+                assert.Equal(t, "package1", k, "Expected package name package1 but got " + k)
+                expectedResult = string(1)
+                actualResult = string(len(v.Actions))
+                assert.Equal(t, expectedResult, actualResult, "Expected 1 but got " + actualResult)
+                // get the action payload from the map of actions which is stored in
+                // ManifestYAML.Package.Actions with the type of map[string]Action
+                actionName := "helloNodejs"
+                if action, ok := v.Actions[actionName]; ok {
+                    // location/function of an action should be "actions/hello.js"
+                    expectedResult = "actions/hello.js"
+                    actualResult = action.Function
+                    assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
+                    // runtime of an action should be "nodejs:6"
+                    expectedResult = "nodejs:6"
+                    actualResult = action.Runtime
+                    assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+                } else {
+                    t.Error("Action named " + actionName + " does not exist.")
+                }
+            case "package2":
+                assert.Equal(t, "package2", k, "Expected package name package2 but got " + k)
+                expectedResult = string(1)
+                actualResult = string(len(v.Actions))
+                assert.Equal(t, expectedResult, actualResult, "Expected 1 but got " + actualResult)
+                // get the action payload from the map of actions which is stored in
+                // ManifestYAML.Package.Actions with the type of map[string]Action
+                actionName := "helloPython"
+                if action, ok := v.Actions[actionName]; ok {
+                    // location/function of an action should be "actions/hello.js"
+                    expectedResult = "actions/hello.py"
+                    actualResult = action.Function
+                    assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
+                    // runtime of an action should be "python"
+                    expectedResult = "python"
+                    actualResult = action.Runtime
+                    assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+                } else {
+                    t.Error("Action named " + actionName + " does not exist.")
+                }
+            }
+        }
+    }
 }
