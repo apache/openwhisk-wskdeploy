@@ -110,6 +110,8 @@ Binaries of `wskdeploy` are available for download on the project's GitHub relea
 
 For each release, we typically provide binaries built for Linux, Mac OS (Darwin) and Windows on the AMD64 architecture. However, we provide instructions on how to build your own binaries as well from source code with the Go tool.  See [Building the project](#building-the-project).
 
+*If you are a Developer or Contributor, we recommend building from the latest source code from the project's master branch.*
+
 <!-- ----------------------------------------------------------------------------- -->
 
 ## Contributing to the project
