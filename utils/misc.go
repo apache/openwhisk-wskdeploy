@@ -644,3 +644,42 @@ func GetDeploymentFilePath(projectPath string) string {
 	}
 }
 
+// agnostic util reader to fetch content from web or local path or potentially other places.
+type ContentReader struct {
+	URLReader
+	LocalReader
+}
+
+type URLReader struct {
+}
+
+func (urlReader *URLReader) ReadUrl(url string) (content []byte, err error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return content, err
+	}
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return content, err
+	} else {
+		defer resp.Body.Close()
+	}
+	return b, nil
+}
+
+type LocalReader struct {
+}
+
+func (localReader *LocalReader) ReadLocal(path string) (content []byte, err error) {
+	cont, err := ioutil.ReadFile(path)
+	return cont, err
+}
+
+func Read(url string) (content []byte, err error) {
+	if strings.HasPrefix(url, "http") {
+		return new(ContentReader).URLReader.ReadUrl(url)
+	} else {
+		return new(ContentReader).LocalReader.ReadLocal(url)
+	}
+}
+
