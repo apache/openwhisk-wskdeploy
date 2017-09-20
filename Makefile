@@ -47,4 +47,4 @@ install:
 clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY}; fi
 
-.PHONY: clean install
+.PHONY: clean install build deps updatedeps format lint test integration_test
