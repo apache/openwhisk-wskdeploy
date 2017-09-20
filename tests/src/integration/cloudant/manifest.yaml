@@ -1,0 +1,38 @@
+# This manifest file reads following env. variables:
+#   CLOUDANT_USERNAME
+#   CLOUDANT_PASSWORD
+
+package:
+    name: cloudant-sample
+    dependencies:
+        # binding cloudant package named openwhisk-cloudant
+        openwhisk-cloudant:
+            location: /whisk.system/cloudant
+            inputs:
+                username: $CLOUDANT_USERNAME
+                password: $CLOUDANT_PASSWORD
+                host: ${CLOUDANT_USERNAME}.cloudant.com
+    triggers:
+        # Trigger named "data-inserted-trigger"
+        # Creating trigger to fire events when data is inserted into database
+        data-inserted-trigger:
+            source: openwhisk-cloudant/changes
+            inputs:
+                dbname: testdb
+    actions:
+        # Action named "process-change"
+        # Creating action that is printing data which is written to the database
+        process-change:
+            location: actions/process-change.js
+
+    sequences:
+        # Sequence named "process-change-cloudant-sequence"
+        # Creating sequence to connect the cloudant "read" action with the "process-change" action
+        process-change-cloudant-sequence:
+            actions: openwhisk-cloudant/read, process-change
+    rules:
+        # Rule named "log-change-rule"
+        # Creating rule that maps database change trigger to sequence
+        log-change-rule:
+            trigger: data-inserted-trigger
+            action: process-change-cloudant-sequence
