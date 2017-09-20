@@ -9,9 +9,9 @@
 
 - [Building the project](#building-the-project) - download and build the GoLang source code
 - [Running wskdeploy](#running-wskdeploy) - run wskdeploy as a binary or Go program
-- [Downloading released binaries](#downloading-released-binaries)
+- [Downloading released binaries](#downloading-released-binaries) - for Linux, Mac OS and Windows
 - [Writing Package manifests](#docs/programming_guide.md) - learn, step-by-step, how to write Package Manifest and deplyment files for ```wskdeploy```
-- [Contributing to the project](#contributing-to-the-project)
+- [Contributing to the project](#contributing-to-the-project) - join us!
 - [Debugging wskdeploy](#docs/wskdeploy_debugging.md) - helpful tips for debugging the code and your manifest files
 - [Troubleshooting](#troubleshooting)
 
@@ -99,6 +99,7 @@ and deploying using the Go utility would look like:
 ```sh
 $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
+<!-- ----------------------------------------------------------------------------- -->
 
 ## Downloading released binaries
 
@@ -106,6 +107,8 @@ Binaries of `wskdeploy` are available for download on the project's GitHub relea
 - [https://github.com/apache/incubator-openwhisk-wskdeploy/releases](https://github.com/apache/incubator-openwhisk-wskdeploy/releases).
 
 For each release, we typically provide binaries built for Linux, Mac OS (Darwin) and Windows on the AMD64 architecture. However, we provide instructions on how to build your own binaries as well from source code with the Go tool.  See [Building the project](#building-the-project).
+
+<!-- ----------------------------------------------------------------------------- -->
 
 ## Contributing to the project
 
@@ -122,7 +125,9 @@ $ git branch --set-upstream-to origin/master  # track master from origin now
 You can now use `git push` to push changes to your repository and submit pull requests.
 
 # How to Cross Compile Binary with Gradle/Docker
+
 If you don't want to bother with go installation, build, git clone etc, and you can do it with Gradle/Docker.
+
 After compiling, a suitable wskdeploy binary that works for your OS platform will be available under /bin directory.
 
 1. First you need a docker daemon running locally on your machine.
@@ -147,8 +152,9 @@ If you would like to build the binaries available for all the operating systems 
 $ ./gradlew distDocker -PcrossCompileCLI=true
 ```
 
-Then, you will find the binaries and their compressed packages generated under the folder bin/<os>/<cpu arc>/ for each
-operating system and CPU architecture pair. We supports both amd64 and 386 for Linux, Mac and Windows operating systems.
+Then, you will find the binaries and their compressed packages generated under the folder bin/<os>/<cpu arc>/ for each operating system and CPU architecture pair. We supports both amd64 and 386 for Linux, Mac and Windows operating systems.
+
+<!-- ----------------------------------------------------------------------------- -->
 
 ## Troubleshooting
 
