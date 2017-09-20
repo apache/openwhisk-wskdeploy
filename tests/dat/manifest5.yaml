@@ -1,4 +1,4 @@
-package:
+packages:
   feeds:
     feed1:
       location: https://my.company.com/services/eventHub

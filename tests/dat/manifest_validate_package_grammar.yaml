@@ -1,5 +1,5 @@
 # This test file is used to test the basic Package grammar
-package:
-  name: helloworld
-  version: 1.0
-  license: Apache-2.0
+packages:
+  helloworld:
+    version: 1.0
+    license: Apache-2.0

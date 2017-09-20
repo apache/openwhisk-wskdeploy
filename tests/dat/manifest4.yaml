@@ -1,4 +1,4 @@
-package:
+packages:
   rules:
     rule1:
       trigger: trigger1

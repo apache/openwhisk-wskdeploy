@@ -1,24 +1,24 @@
-package:
-  name: helloWorldFlags
-  version: 1.0
-  license: Apache-2.0
-  actions:
-    greeting:
-      web-export: true
+packages:
+  helloWorldFlags:
       version: 1.0
-      function: src/greeting.js
-      runtime: nodejs:6
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-  triggers:
-    locationUpdateFlags:
-  rules:
-    myRule:
-      trigger: locationUpdateFlags
-      #the action name and the action file greeting.js should consistent.
-      #currently the implementation deside the action name consistent with action file name?
-      action: greeting
+      license: Apache-2.0
+      actions:
+        greeting:
+          web-export: true
+          version: 1.0
+          function: src/greeting.js
+          runtime: nodejs:6
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+      triggers:
+        locationUpdateFlags:
+      rules:
+        myRule:
+          trigger: locationUpdateFlags
+          #the action name and the action file greeting.js should consistent.
+          #currently the implementation deside the action name consistent with action file name?
+          action: greeting
 
