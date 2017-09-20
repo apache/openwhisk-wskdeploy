@@ -769,6 +769,7 @@ func TestComposeActionsForFunction(t *testing.T) {
   name: helloworld
   actions:
     hello1:
+      version: 1.1
       function: ../tests/src/integration/helloworld/actions/hello.js`
     // (TODO) uncomment this after we add support for action file content from URL
     // hello2:
@@ -789,6 +790,7 @@ func TestComposeActionsForFunction(t *testing.T) {
                         expectedResult, _ = filepath.Abs("../tests/src/integration/helloworld/actions/hello.js")
                         actualResult, _ = filepath.Abs(actions[i].Filepath)
                         assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                        assert.Equal(t, "1.1", actions[i].Action.Version, "Failed to get Action Version")
                         // (TODO) Uncomment the following condition, hello2
                         // (TODO) after issue # 311 is fixed
                         //} else if actions[i].Action.Name == "hello2" {
@@ -964,7 +966,9 @@ func _createTmpfile(data string, filename string) (f *os.File, err error) {
 func TestComposePackage(t *testing.T) {
     data := `package:
   name: helloworld
-  namespace: default`
+  namespace: default
+  version: 1.0.0
+  license: Apache-2`
     tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
     if err != nil {
         assert.Fail(t, "Failed to create temp file")
@@ -982,6 +986,8 @@ func TestComposePackage(t *testing.T) {
         assert.NotNil(t, pkg[n], "Failed to get the whole package")
         assert.Equal(t, n, pkg[n].Name, "Failed to get package name")
         assert.Equal(t, "default", pkg[n].Namespace, "Failed to get package namespace")
+        assert.Equal(t, "1.0.0", pkg[n].Version, "Failed to get package namespace")
+	assert.Equal(t, "Apache-2", pkg[n].Annotations[0].Value, "Failed to get package namespace")
     } else {
         assert.Fail(t, "Failed to compose package")
     }

@@ -270,7 +270,14 @@
   {
     "id": "Action {{.action}} has been removed.\n",
     "translation": "Action {{.action}} has been removed.\n"
+  },
+  {
+    "id": "WARNING: Mandatory field Package Version is not set. Use a default version 0.0.1 instead.\n",
+    "translation": "WARNING: Mandatory field Package Version is not set. Use a default version 0.0.1 instead.\n"
+  },
+  {
+    "id": "WARNING: Mandatory field Package License is not set. Use a default string UNKNOWN instead.\n",
+    "translation": "WARNING: Mandatory field Package License is not set. Use a default string UNKNOWN instead.\n"
   }
-
 
 ]
