@@ -150,7 +150,7 @@ If you would like to build the binaries available for all the operating systems 
 $ ./gradlew distDocker -PcrossCompileCLI=true
 ```
 
-Then, you will find the binaries and their compressed packages generated under the folder ```bin/<os>/<cpu arc>/``` for each operating system and CPU architecture pair. We supports both amd64 and 386 for Linux, Mac and Windows operating systems.
+Then, you will find the binaries and their compressed packages generated under the folder ```bin/<os>/<arch>/``` for each operating system and CPU architecture pair. We supports both amd64 and 386 for Linux, Mac and Windows operating systems.
 
 <!-- ----------------------------------------------------------------------------- -->
 
