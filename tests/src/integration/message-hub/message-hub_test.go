@@ -35,7 +35,7 @@ import (
  *	MESSAGEHUB_USER
  *	MESSAGEHUB_PASSWORD
  */
-func TestAlarmTrigger(t *testing.T) {
+func TestMessageHub(t *testing.T) {
 	os.Setenv("MESSAGEHUB_ADMIN_HOST", "https://kafka-admin-prod01.messagehub.services.us-south.bluemix.net:443")
 	os.Setenv("KAFKA_BROKERS_SASL", "[\"kafka01-prod01.messagehub.services.us-south.bluemix.net:9093\", \"kafka02-prod01.messagehub.services.us-south.bluemix.net:9093\", \"kafka03-prod01.messagehub.services.us-south.bluemix.net:9093\"]")
 	os.Setenv("SRC_TOPIC", "in-topic")
