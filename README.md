@@ -7,12 +7,12 @@
 
 # Here are some quick links for:
 
-- [Building the project](#building-the-project)
-- [Running wskdeploy](#running-wskdeploy)
-- [Downloading released binaries](#downloading)
-- [Writing Package manifests for wskdeploy](#docs/programming_guide.md)
+- [Building the project](#building-the-project) - download and build the GoLang source code
+- [Running wskdeploy](#running-wskdeploy) - run wskdeploy as a binary or Go program
+- [Downloading released binaries](#downloading-released-binaries)
+- [Writing Package manifests](#docs/programming_guide.md) - learn, step-by-step, how to write Package Manifest and deplyment files for ```wskdeploy```
 - [Contributing to the project](#contributing-to-the-project)
-- [Debugging wskdeploy](#docs/wskdeploy_debugging.md)
+- [Debugging wskdeploy](#docs/wskdeploy_debugging.md) - helpful tips for debugging the code and your manifest files
 - [Troubleshooting](#troubleshooting)
 
 <!-- ----------------------------------------------------------------------------- -->
