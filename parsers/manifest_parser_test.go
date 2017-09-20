@@ -29,6 +29,7 @@ import (
     "path/filepath"
     "reflect"
     "strconv"
+    "strings"
 )
 
 // Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
@@ -1205,7 +1206,7 @@ func TestComposeDependencies(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(tmpfile.Name())
-    depdList, err := p.ComposeDependencies(m, "/project_folder", tmpfile.Name())
+    depdList, err := p.ComposeDependenciesFromAllPackages(m, "/project_folder", tmpfile.Name())
     if err != nil {
         assert.Fail(t, "Failed to compose rules")
     }
@@ -1213,7 +1214,9 @@ func TestComposeDependencies(t *testing.T) {
     for depdy_name, depdy := range depdList {
         assert.Equal(t, "helloworld", depdy.Packagename, "Failed to set dependecy isbinding")
         assert.Equal(t, "/project_folder/Packages", depdy.ProjectPath, "Failed to set dependecy isbinding")
-        switch depdy_name {
+        d := strings.Split(depdy_name, ":")
+        assert.NotEqual(t, d[1], "", "Failed to get dependency name")
+        switch d[1] {
         case "myhelloworld":
             assert.Equal(t, "https://github.com/user/repo/folder", depdy.Location, "Failed to set dependecy location")
             assert.Equal(t, false, depdy.IsBinding, "Failed to set dependecy isbinding")

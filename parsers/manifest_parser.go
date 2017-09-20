@@ -101,11 +101,30 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*ManifestYAML, error) 
 	return &maniyaml, nil
 }
 
-func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *ManifestYAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {
+	dependencies := make(map[string]utils.DependencyRecord)
+	if manifest.Package.Packagename != "" {
+		return dm.ComposeDependencies(manifest.Package, projectPath, filePath, manifest.Package.Packagename)
+	} else if manifest.Packages != nil {
+		for n, p := range manifest.Packages {
+			d, err := dm.ComposeDependencies(p, projectPath, filePath, n)
+			if err == nil {
+				for k, v := range d {
+					dependencies[k] = v
+				}
+			} else {
+				return nil, err
+			}
+		}
+	}
+	return dependencies, nil
+}
+
+func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string) (map[string]utils.DependencyRecord, error) {
 
 	var errorParser error
 	depMap := make(map[string]utils.DependencyRecord)
-	for key, dependency := range mani.Package.Dependencies {
+	for key, dependency := range pkg.Dependencies {
 		version := dependency.Version
 		if version == "" {
 			version = "master"
@@ -158,7 +177,8 @@ func (dm *YAMLParser) ComposeDependencies(mani *ManifestYAML, projectPath string
 		}
 
 		packDir := path.Join(projectPath, "Packages")
-		depMap[key] = utils.NewDependencyRecord(packDir, mani.Package.Packagename, location, version, keyValArrParams, keyValArrAnot, isBinding)
+		depName := packageName + ":" + key
+		depMap[depName] = utils.NewDependencyRecord(packDir, packageName, location, version, keyValArrParams, keyValArrAnot, isBinding)
 	}
 
 	return depMap, nil
@@ -217,7 +237,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	return pag, nil
 }
 
-func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *ManifestYAML) (ar []utils.ActionRecord, err error) {
+func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *ManifestYAML) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
 	if mani.Package.Packagename != "" {
 		return dm.ComposeSequences(namespace, mani.Package.Sequences, mani.Package.Packagename)

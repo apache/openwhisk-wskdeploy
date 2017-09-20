@@ -66,7 +66,7 @@ func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser
 func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
 
 	var err error
-	deps, err := manifestParser.ComposeDependencies(manifest, deployer.serviceDeployer.ProjectPath, deployer.serviceDeployer.ManifestPath)
+	deps, err := manifestParser.ComposeDependenciesFromAllPackages(manifest, deployer.serviceDeployer.ProjectPath, deployer.serviceDeployer.ManifestPath)
 	if err != nil {
 		return utils.NewInputYamlFormatError(err.Error())
 	}
@@ -131,7 +131,12 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 }
 
 func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRecord) error {
-	for depName, dep := range deps {
+	for name, dep := range deps {
+		n := strings.Split(name, ":")
+		depName := n[1]
+		if (depName == "") {
+			return nil
+		}
 		if !dep.IsBinding && !reader.IsUndeploy {
 			if _, exists := reader.serviceDeployer.DependencyMaster[depName]; !exists {
 				// dependency
