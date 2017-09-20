@@ -48,7 +48,7 @@ $ go build -o wskdeploy
 
 If you would like to build the binary for a specific operating system, you may add the arguments GOOS and GOARCH into the Go build command. You may set
 - ```GOOS``` to "linux" "darwin" or "windows"
-- ```GOARCH`` "amd64" or "386"
+- ```GOARCH``` "amd64" or "386"
 
 For example, run the following command to build the binary for 64-bit Linux:
 
