@@ -1,13 +1,19 @@
+
+<!--
+********************************
+  Normative Reference
+********************************
+-->
 <h2>Normative References</h2>
 <p>&nbsp;</p>
 <table width="100%">
  <tr>
-  <td>
+  <th>
   <p>Tag</p>
-  </td>
-  <td>
+  </th>
+  <th>
   <p>Description</p>
-  </td>
+  </th>
  </tr>
  <tr>
   <td>
@@ -47,7 +53,7 @@
   <p><a>OpenAPI-2.0</a></p>
   </td>
   <td>
-  <p>The OpenAPI (f.k.a. ÒSwaggerÓ) specification for defining REST APIs as JSON.</p>
+  <p>The OpenAPI (f.k.a. 'Swagger') specification for defining REST APIs as JSON.</p>
   <p><a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md">https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md</a></p>
   </td>
  </tr>
@@ -71,6 +77,11 @@
  </tr>
 </table>
 
+<!--
+********************************
+  Non-normative Reference
+********************************
+-->
 
 <h2>Non-normative References</h2>
 <p>&nbsp;</p>

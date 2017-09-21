@@ -8,18 +8,18 @@ aliases that SHALL be used when defining parameters or properties within an
 OpenWhisk package manifest:<a> </a></p>
 <p>&nbsp;</p>
 <table width="100%">
- <tr>
-  <td>
+ <th>
+  <th>
   <p>Type Name</p>
-  </td>
+  </th>
 
-  <td>
+  <th>
   <p>Type URI</p>
-  </td>
+  </th>
 
-  <td>
+  <th>
   <p>Notes</p>
-  </td>
+  </th>
 
  </tr>
  <tr>
@@ -173,6 +173,7 @@ OpenWhisk package manifest:<a> </a></p>
 
  </tr>
 </table>
+
 <h4>Requirements</h4>
 <ul>
 <li>The 'string' type SHALL be the default type when not specified on a parameter or property declaration.</li>
