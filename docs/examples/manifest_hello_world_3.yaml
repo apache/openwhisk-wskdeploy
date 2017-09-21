@@ -1,13 +1,20 @@
-# Example 1: Basic Hello World using NodeJS (JavaScript)
+# Example 3: inputs and output parameters with explicit types and descriptions
 package:
   name: hello_world_package
   version: 1.0
   license: Apache-2.0
   actions:
-    hello_world_2:
-      function: src/hello.js
+    hello_world_3:
+      function: src/hello/hello.js
+      runtime: nodejs@6
       inputs:
-        name: string
-        place: string
+        name:
+          type: string
+          description: name of person
+        place:
+          type: string
+          description: location of person
       outputs:
-        greeting: string
+        greeting:
+          type: string
+          description: greeting string
