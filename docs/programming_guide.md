@@ -2,9 +2,10 @@
 _A step-by-step guide for deploying Apache OpenWhisk applications using Package Manifest files._
 
 This guide will walk you through how to describe OpenWhisk applications and packages using the [OpenWhisk Packaging Specification](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/specification#openwhisk-packaging-specification) and deploy them through the Whisk Deploy (```wskdeploy```) utility.  
+
 Please use the specification as the ultimate reference for all Manifest file grammar and syntax.
 
-# Getting started
+## Getting started
 
 ### Setting up your Host and Credentials
 In order to deploy your OpenWhisk package, at minimum, the ```wskdeploy``` utility needs valid OpenWhisk APIHOST and AUTH variable to attempt deployment. Please read the [Configuring wskdeploy](wskdeploy_configuring.md#configuring-wskdeploy)
@@ -13,7 +14,7 @@ In order to deploy your OpenWhisk package, at minimum, the ```wskdeploy``` utili
 
 In addition to the normal output the ```wskdeploy``` utility provides, you may enable additional information that may further assist you in debugging. Please read the [Debugging Whisk Deploy](wskdeploy_debugging.md#debugging-wskdeploy) document.
 
-# Creating a "hello world" application
+## Creating a "hello world" application
 
 As with most language introductions, here we show a minimal "hello world" application as encoded in an OpenWhisk Package Manifest YAML file:
 
@@ -41,7 +42,7 @@ The source code for the manifest and JavaScript files can be found here:
 - [hello.js](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/src/hello.js)
 
 
-## Deploying "hello world"
+### Deploying "hello world"
 
 You can actually deploy the "hello world" manifest from the incubator-openwhisk-wskdeploy project directory if you have downloaded it from GitHub:
 
@@ -80,7 +81,7 @@ Do you really want to deploy this? (y/N):
 
 ```
 
-## Examining the "hello world" Manifest
+### Examining the "hello world" Manifest
 
 The "hello world" example represents the minimum valid Manifest file which includes only the required parts of the Package and Action desciptors.
 
