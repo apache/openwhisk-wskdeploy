@@ -29,7 +29,7 @@ where "hello.js" contains the following JavaScript code:
 ```javascript
 function main(params) {
     msg = "Hello, " + params.name + " from " + params.place;
-    return { payload:  msg };
+    return { greeting:  msg };
 }
 ```
 
@@ -55,14 +55,6 @@ $ ./wskdeploy -i -m docs/examples/manifest_hello_world.yaml
 
 and the utility will stop, show you all the OpenWhisk package components it will deply and ask you if you want to deploy them or not.
 
-<!--
-         ____      ___                   _    _ _     _     _
-        /\   \    / _ \ _ __   ___ _ __ | |  | | |__ (_)___| | __
-   /\  /__\   \  | | | | '_ \ / _ \ '_ \| |  | | '_ \| / __| |/ /
-  /  \____ \  /  | |_| | |_) |  __/ | | | |/\| | | | | \__ \   <
-  \   \  /  \/    \___/| .__/ \___|_| |_|__/\__|_| |_|_|___/_|\_\
-   \___\/              |_|
--->
 ```
 Package:
   name: hello_world_package
