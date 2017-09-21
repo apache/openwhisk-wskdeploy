@@ -105,9 +105,19 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		if utils.FileExists(manifestPath) {
 			mm := parsers.NewYAMLParser()
 			manifest, _ := mm.ParseManifest(manifestPath)
-			credential = GetPropertyValue(credential, manifest.Package.Credential, path.Base(manifestPath))
-			namespace = GetPropertyValue(namespace, manifest.Package.Namespace, path.Base(manifestPath))
-			apiHost = GetPropertyValue(apiHost, manifest.Package.ApiHost, path.Base(manifestPath))
+			if manifest.Package.Packagename != "" {
+				credential = GetPropertyValue(credential, manifest.Package.Credential, path.Base(manifestPath))
+				namespace = GetPropertyValue(namespace, manifest.Package.Namespace, path.Base(manifestPath))
+				apiHost = GetPropertyValue(apiHost, manifest.Package.ApiHost, path.Base(manifestPath))
+			} else if manifest.Packages != nil {
+				if len(manifest.Packages) == 1 {
+					for _, pkg := range manifest.Packages {
+						credential = GetPropertyValue(credential, pkg.Credential, path.Base(manifestPath))
+						namespace = GetPropertyValue(namespace, pkg.Namespace, path.Base(manifestPath))
+						apiHost = GetPropertyValue(apiHost, pkg.ApiHost, path.Base(manifestPath))
+					}
+				}
+			}
 		}
 	}
 

@@ -128,7 +128,7 @@ func initConfig() {
 		_, err := whisk.ReadProps(utils.Flags.CfgFile)
 		if err != nil {
 			utils.Flags.CfgFile = defaultPath
-            utils.PrintOpenWhiskOutputln("Invalid config file detected, so by bdefault it is set to " + utils.Flags.CfgFile)
+			utils.PrintOpenWhiskOutputln("Invalid config file detected, so by bdefault it is set to " + utils.Flags.CfgFile)
 		}
 
 	} else {
@@ -152,10 +152,10 @@ func Deploy() error {
 	// also set debug mode to true.
 	whisk.SetDebug(utils.Flags.Verbose)
 
-    project_Path := strings.TrimSpace(utils.Flags.ProjectPath)
-    if len(project_Path) == 0 {
-        project_Path = utils.DEFAULT_PROJECT_PATH
-    }
+	project_Path := strings.TrimSpace(utils.Flags.ProjectPath)
+	if len(project_Path) == 0 {
+		project_Path = utils.DEFAULT_PROJECT_PATH
+	}
 	projectPath, _ := filepath.Abs(project_Path)
 
 	if utils.Flags.ManifestPath == "" {
@@ -173,7 +173,7 @@ func Deploy() error {
 			whisk.Debug(whisk.DbgError, stderr)
 			errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
 				map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml,
-                    "projectPath": projectPath})
+					"projectPath": projectPath})
 			return utils.NewErrorManifestFileNotFound(errString)
 		}
 		whisk.Debug(whisk.DbgInfo, stdout)
@@ -200,17 +200,17 @@ func Deploy() error {
 		// master record of any dependency that has been downloaded
 		deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
 
-        clientConfig, error := deployers.NewWhiskConfig(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
-        if error != nil {
-            return error
-        }
+		clientConfig, error := deployers.NewWhiskConfig(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
+		if error != nil {
+			return error
+		}
 
-        whiskClient, error := deployers.CreateNewClient(clientConfig)
-        if error != nil {
-            return error
-        }
+		whiskClient, error := deployers.CreateNewClient(clientConfig)
+		if error != nil {
+			return error
+		}
 
-        deployer.Client = whiskClient
+		deployer.Client = whiskClient
 		deployer.ClientConfig = clientConfig
 
 		// The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
@@ -230,8 +230,8 @@ func Deploy() error {
 		}
 
 	} else {
-        errString := wski18n.T("Manifest file is not found at the path [{{.filePath}}].\n",
-            map[string]interface{}{"filePath": utils.Flags.ManifestPath})
+		errString := wski18n.T("Manifest file is not found at the path [{{.filePath}}].\n",
+			map[string]interface{}{"filePath": utils.Flags.ManifestPath})
 		whisk.Debug(whisk.DbgError, errString)
 		return utils.NewErrorManifestFileNotFound(errString)
 	}
@@ -245,11 +245,11 @@ func Undeploy() error {
 	// also set debug mode to true.
 	whisk.SetDebug(utils.Flags.Verbose)
 
-    project_Path := strings.TrimSpace(utils.Flags.ProjectPath)
-    if len(project_Path) == 0 {
-        project_Path = utils.DEFAULT_PROJECT_PATH
-    }
-    projectPath, _ := filepath.Abs(project_Path)
+	project_Path := strings.TrimSpace(utils.Flags.ProjectPath)
+	if len(project_Path) == 0 {
+		project_Path = utils.DEFAULT_PROJECT_PATH
+	}
+	projectPath, _ := filepath.Abs(project_Path)
 
 	if utils.Flags.ManifestPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
@@ -266,7 +266,7 @@ func Undeploy() error {
 			whisk.Debug(whisk.DbgError, stderr)
 			errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
 				map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml,
-                    "projectPath": projectPath})
+					"projectPath": projectPath})
 			return utils.NewErrorManifestFileNotFound(errString)
 		}
 		whisk.Debug(whisk.DbgInfo, stdout)
@@ -292,17 +292,17 @@ func Undeploy() error {
 		deployer.IsInteractive = utils.Flags.UseInteractive
 		deployer.IsDefault = utils.Flags.UseDefaults
 
-        clientConfig, error := deployers.NewWhiskConfig(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
-        if error != nil {
-            return error
-        }
+		clientConfig, error := deployers.NewWhiskConfig(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
+		if error != nil {
+			return error
+		}
 
-        whiskClient, error := deployers.CreateNewClient(clientConfig)
-        if error != nil {
-            return error
-        }
+		whiskClient, error := deployers.CreateNewClient(clientConfig)
+		if error != nil {
+			return error
+		}
 
-        deployer.Client = whiskClient
+		deployer.Client = whiskClient
 		deployer.ClientConfig = clientConfig
 
 		// The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
@@ -317,8 +317,8 @@ func Undeploy() error {
 		}
 
 	} else {
-        errString := wski18n.T("Manifest file is not found at the path [{{.filePath}}].\n",
-            map[string]interface{}{"filePath": utils.Flags.ManifestPath})
+		errString := wski18n.T("Manifest file is not found at the path [{{.filePath}}].\n",
+			map[string]interface{}{"filePath": utils.Flags.ManifestPath})
 		whisk.Debug(whisk.DbgError, errString)
 		return utils.NewErrorManifestFileNotFound(errString)
 	}
