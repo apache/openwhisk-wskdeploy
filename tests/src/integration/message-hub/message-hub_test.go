@@ -37,9 +37,9 @@ import (
  */
 func TestMessageHub(t *testing.T) {
 	os.Setenv("MESSAGEHUB_ADMIN_HOST", "https://kafka-admin-prod01.messagehub.services.us-south.bluemix.net:443")
-	os.Setenv("KAFKA_BROKERS_SASL", "[\"kafka01-prod01.messagehub.services.us-south.bluemix.net:9093\", \"kafka02-prod01.messagehub.services.us-south.bluemix.net:9093\", \"kafka03-prod01.messagehub.services.us-south.bluemix.net:9093\"]")
-	os.Setenv("SRC_TOPIC", "in-topic")
-	os.Setenv("DEST_TOPIC", "out-topic")
+	os.Setenv("KAFKA_BROKERS_SASL", "[kafka01-prod01.messagehub.services.us-south.bluemix.net:9093 kafka02-prod01.messagehub.services.us-south.bluemix.net:9093 kafka03-prod01.messagehub.services.us-south.bluemix.net:9093 kafka04-prod01.messagehub.services.us-south.bluemix.net:9093 kafka05-prod01.messagehub.services.us-south.bluemix.net:9093]")
+	os.Setenv("SOURCE_TOPIC", "in-topic")
+	os.Setenv("DESTINATION_TOPIC", "out-topic")
 
 	wskprops := common.GetWskpropsFromEnvVars(common.BLUEMIX_APIHOST, common.BLUEMIX_NAMESPACE, common.BLUEMIX_AUTH)
 	err := common.ValidateWskprops(wskprops)

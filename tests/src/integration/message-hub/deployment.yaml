@@ -6,10 +6,10 @@ application:
                 process-messages-received-from-messagehub:
                     inputs:
                         messagehub_instance: wskdeployMessageHub
-                        topic:  $DEST_TOPIC
+                        topic:  $DESTINATION_TOPIC
             triggers:
                 wskdeployMessageHubTrigger:
                     inputs:
                         isJSONData: true
-                        topic: $SRC_TOPIC
+                        topic: $SOURCE_TOPIC
 
