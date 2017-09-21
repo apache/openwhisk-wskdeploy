@@ -48,10 +48,11 @@ func TestComposeWskPackage(t *testing.T) {
 		assert.Equal(t, "/wskdeploy/samples/test", wskpkg.Namespace, "Get package namespace failed.")
 	}
 
-	pkg := manifest.Package
-	wskpkg := pkg.ComposeWskPackage()
-	assert.Equal(t, "helloworld", wskpkg.Name, "Get package name failed.")
-	assert.Equal(t, "1.0", wskpkg.Version, "Get package version failed.")
+	for n, p := range manifest.Packages{
+		wskpkg := p.ComposeWskPackage()
+		assert.Equal(t, "helloworld", n, "Get package name failed.")
+		assert.Equal(t, "1.0", wskpkg.Version, "Get package version failed.")
+	}
 }
 
 func TestComposeWskTrigger(t *testing.T) {
@@ -100,7 +101,7 @@ func TestComposeWskRule(t *testing.T) {
 func TestGetActionList(t *testing.T) {
 	mm := NewYAMLParser()
 	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
-	pkg := manifest.Package
+	pkg := manifest.Packages["manifest2"]
 	actions := pkg.GetActionList()
 	assert.Equal(t,3, len(actions), "Get action list failed.")
 }
@@ -108,7 +109,7 @@ func TestGetActionList(t *testing.T) {
 func TestGetTriggerList(t *testing.T) {
 	mm := NewYAMLParser()
 	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
-	pkg := manifest.Package
+	pkg := manifest.Packages["manifest2"]
 	triggers := pkg.GetTriggerList()
 	assert.Equal(t,2, len(triggers), "Get trigger list failed.")
 }
@@ -116,7 +117,7 @@ func TestGetTriggerList(t *testing.T) {
 func TestGetRuleList(t *testing.T) {
 	mm := NewYAMLParser()
 	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
-	pkg := manifest.Package
+	pkg := manifest.Packages["manifest2"]
 	rules := pkg.GetRuleList()
 	assert.Equal(t,3, len(rules), "Get trigger list failed.")
 }
@@ -124,7 +125,7 @@ func TestGetRuleList(t *testing.T) {
 func TestGetFeedList(t *testing.T) {
 	mm := NewYAMLParser()
 	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
-	pkg := manifest.Package
+	pkg := manifest.Packages["manifest2"]
 	feeds := pkg.GetFeedList()
 	assert.Equal(t,4, len(feeds), "Get feed list failed.")
 }
@@ -132,7 +133,7 @@ func TestGetFeedList(t *testing.T) {
 func TestGetApisList(t *testing.T) {
 	mm := NewYAMLParser()
 	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
-	pkg := manifest.Package
+	pkg := manifest.Packages["manifest2"]
 	apis := pkg.GetApis()
 	assert.Equal(t,5, len(apis), "Get api list failed.")
 }

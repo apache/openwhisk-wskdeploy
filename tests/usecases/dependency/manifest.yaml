@@ -1,25 +1,25 @@
-package:
-  name: opentest
-  dependencies:
-    hellowhisk:
-      location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
-    myhelloworlds:
-      location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
-    myCloudant:
-      location: /whisk.system/cloudant
-      inputs:
-        dbname: myGreatDB
-      annotations:
-        myAnnotation: Here it is
-  sequences:
-    mySequence:
-      actions: hellowhisk/greeting, hellowhisk/httpGet, myhelloworlds/hello-js
-  triggers:
-    myTrigger:
-  rules:
-    myRule:
-      trigger: myTrigger
-      action: hellowhisk/httpGet
-    myCloudantRule:
-      trigger: myTrigger
-      action: myCloudant/create-database
+packages:
+  opentest:
+      dependencies:
+        hellowhisk:
+          location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+        myhelloworlds:
+          location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+        myCloudant:
+          location: /whisk.system/cloudant
+          inputs:
+            dbname: myGreatDB
+          annotations:
+            myAnnotation: Here it is
+      sequences:
+        mySequence:
+          actions: hellowhisk/greeting, hellowhisk/httpGet, myhelloworlds/hello-js
+      triggers:
+        myTrigger:
+      rules:
+        myRule:
+          trigger: myTrigger
+          action: hellowhisk/httpGet
+        myCloudantRule:
+          trigger: myTrigger
+          action: myCloudant/create-database

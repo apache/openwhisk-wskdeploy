@@ -1,14 +1,14 @@
-package:
-  name: BadYAML
-  actions:
-    # helloworld action in NodeJS
-    helloNodejs:
-      function: actions/hello.js
-      inputs:
-        name:
-          type: string
-          description: name of a person
-        place:
-          type: string
-          /// bad description
-          description: location of a person
+packages:
+  BadYAML:
+    actions:
+      # helloworld action in NodeJS
+      helloNodejs:
+        function: actions/hello.js
+        inputs:
+          name:
+            type: string
+            description: name of a person
+          place:
+            type: string
+            /// bad description
+            description: location of a person

@@ -1,22 +1,22 @@
-package:
-  name: helloWorldTriggerRule
-  version: 1.0
-  license: Apache-2.0
-  actions:
-    greeting:
+packages:
+  helloWorldTriggerRule:
       version: 1.0
-      function: src/greeting.js
-      runtime: nodejs:6
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-  triggers:
-    locationUpdateTriggerRule:
-  rules:
-    myRuleTriggerRule:
-      trigger: locationUpdateTriggerRule
-      #the action name and the action file greeting.js should consistent.
-      #currently the implementation decide the action name consistent with action file name?
-      action: greeting
+      license: Apache-2.0
+      actions:
+        greeting:
+          version: 1.0
+          function: src/greeting.js
+          runtime: nodejs:6
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+      triggers:
+        locationUpdateTriggerRule:
+      rules:
+        myRuleTriggerRule:
+          trigger: locationUpdateTriggerRule
+          #the action name and the action file greeting.js should consistent.
+          #currently the implementation decide the action name consistent with action file name?
+          action: greeting

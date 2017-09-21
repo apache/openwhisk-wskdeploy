@@ -1,15 +1,15 @@
-package:
-  name: TestGitHubDependency
-  dependencies:
-    helloworlds:
-      location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
-  triggers:
-    trigger1:
-    trigger2:
-  rules:
-    rule1:
-      trigger: trigger1
-      action: helloworlds/hello-js
-    rule2:
-      trigger: trigger2
-      action: helloworlds/helloworld-js
+packages:
+  TestGitHubDependency:
+      dependencies:
+        helloworlds:
+          location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+      triggers:
+        trigger1:
+        trigger2:
+      rules:
+        rule1:
+          trigger: trigger1
+          action: helloworlds/hello-js
+        rule2:
+          trigger: trigger2
+          action: helloworlds/helloworld-js

@@ -1,28 +1,28 @@
-package:
-    name: SlackPackage
-    dependencies:
-        slack-package-to-post-messages:
-            location: /whisk.system/slack
-            inputs:
-                username: $SLACK_USERNAME
-                url: $SLACK_URL
-                channel: $SLACK_CHANNEL
-    actions:
-        post-to-slack:
-            function: actions/post-to-slack.js
-            runtime: nodejs:6
-            inputs:
-                message:
-                    type: string
-                    description: message to post on slack
-                slack_package:
-                    type: string
-                    description: slack package name
-    triggers:
-        everyhour:
-            feed: /whisk.system/alarms/alarm
-    rules:
-        post-to-slack-every-hour:
-            action: post-to-slack
-            trigger: everyhour
+packages:
+    SlackPackage:
+        dependencies:
+            slack-package-to-post-messages:
+                location: /whisk.system/slack
+                inputs:
+                    username: $SLACK_USERNAME
+                    url: $SLACK_URL
+                    channel: $SLACK_CHANNEL
+        actions:
+            post-to-slack:
+                function: actions/post-to-slack.js
+                runtime: nodejs:6
+                inputs:
+                    message:
+                        type: string
+                        description: message to post on slack
+                    slack_package:
+                        type: string
+                        description: slack package name
+        triggers:
+            everyhour:
+                feed: /whisk.system/alarms/alarm
+        rules:
+            post-to-slack-every-hour:
+                action: post-to-slack
+                trigger: everyhour
 

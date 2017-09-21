@@ -1,21 +1,21 @@
-package:
-  name: triggerrule
-  version: 1.0
-  license: Apache-2.0
-  actions:
-    greeting:
+packages:
+  triggerrule:
       version: 1.0
-      function: src/greeting.js
-      runtime: nodejs:6
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-  triggers:
-    locationUpdate:
-  rules:
-    myRule:
-      trigger: locationUpdate
-      action: greeting
+      license: Apache-2.0
+      actions:
+        greeting:
+          version: 1.0
+          function: src/greeting.js
+          runtime: nodejs:6
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+      triggers:
+        locationUpdate:
+      rules:
+        myRule:
+          trigger: locationUpdate
+          action: greeting
 

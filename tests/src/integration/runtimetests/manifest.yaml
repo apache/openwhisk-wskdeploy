@@ -1,125 +1,125 @@
-package:
-  name: TestExplicitRuntimes
-  version: 1.0
-  license: Apache-2.0
-  actions:
-    greetingnodejs-with-explicit-runtime:
-      web-export: true
+packages:
+  TestExplicitRuntimes:
       version: 1.0
-      function: src/greeting.js
-      runtime: nodejs:6
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-    greetingnodejs-without-explicit-runtime:
-      web-export: true
-      version: 1.0
-      function: src/greeting.js
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-    greetingphp-with-explicit-runtime:
-      web-export: true
-      version: 1.0
-      function: src/hello.php
-      runtime: php:7.1
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-    greetingphp-without-explicit-runtime:
-      web-export: true
-      version: 1.0
-      function: src/hello.php
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-    greetingpython-with-explicit-runtime:
-      web-export: true
-      version: 1.0
-      function: src/hello.py
-      runtime: python
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-    greetingpython-without-explicit-runtime:
-      web-export: true
-      version: 1.0
-      function: src/hello.py
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-    greetingpython2-with-explicit-runtime:
-      web-export: true
-      version: 1.0
-      function: src/hello.py
-      runtime: python:2
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-    greetingpython3-with-explicit-runtime:
-      web-export: true
-      version: 1.0
-      function: src/hello.py
-      runtime: python:3
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-    greetingswift311-with-explicit-runtime:
-      web-export: true
-      version: 1.0
-      function: src/hello.swift
-      runtime: swift:3.1.1
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-    greetingswift3-with-explicit-runtime:
-      web-export: true
-      version: 1.0
-      function: src/hello.swift
-      runtime: swift:3
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-    greetingswift-without-explicit-runtime:
-      web-export: true
-      version: 1.0
-      function: src/hello.swift
-      inputs:
-        name: string
-        place: string
-      outputs:
-        payload: string
-    helloworldjava-with-explicit-runtime:
-      function: src/hello.jar
-      runtime: java
-      main: Hello
-    helloworldjava-without-explicit-runtime:
-      function: src/hello.jar
-      main: Hello
-  triggers:
-    locationUpdateRuntime:
-  rules:
-    myRuleRuntime:
-      trigger: locationUpdateRuntime
-      action:  greetingnodejs-with-explicit-runtime
+      license: Apache-2.0
+      actions:
+        greetingnodejs-with-explicit-runtime:
+          web-export: true
+          version: 1.0
+          function: src/greeting.js
+          runtime: nodejs:6
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+        greetingnodejs-without-explicit-runtime:
+          web-export: true
+          version: 1.0
+          function: src/greeting.js
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+        greetingphp-with-explicit-runtime:
+          web-export: true
+          version: 1.0
+          function: src/hello.php
+          runtime: php:7.1
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+        greetingphp-without-explicit-runtime:
+          web-export: true
+          version: 1.0
+          function: src/hello.php
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+        greetingpython-with-explicit-runtime:
+          web-export: true
+          version: 1.0
+          function: src/hello.py
+          runtime: python
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+        greetingpython-without-explicit-runtime:
+          web-export: true
+          version: 1.0
+          function: src/hello.py
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+        greetingpython2-with-explicit-runtime:
+          web-export: true
+          version: 1.0
+          function: src/hello.py
+          runtime: python:2
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+        greetingpython3-with-explicit-runtime:
+          web-export: true
+          version: 1.0
+          function: src/hello.py
+          runtime: python:3
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+        greetingswift311-with-explicit-runtime:
+          web-export: true
+          version: 1.0
+          function: src/hello.swift
+          runtime: swift:3.1.1
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+        greetingswift3-with-explicit-runtime:
+          web-export: true
+          version: 1.0
+          function: src/hello.swift
+          runtime: swift:3
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+        greetingswift-without-explicit-runtime:
+          web-export: true
+          version: 1.0
+          function: src/hello.swift
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
+        helloworldjava-with-explicit-runtime:
+          function: src/hello.jar
+          runtime: java
+          main: Hello
+        helloworldjava-without-explicit-runtime:
+          function: src/hello.jar
+          main: Hello
+      triggers:
+        locationUpdateRuntime:
+      rules:
+        myRuleRuntime:
+          trigger: locationUpdateRuntime
+          action:  greetingnodejs-with-explicit-runtime
 

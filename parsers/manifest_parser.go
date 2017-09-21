@@ -187,6 +187,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 func (dm *YAMLParser) ComposeAllPackages(manifest *ManifestYAML, filePath string) (map[string]*whisk.Package, error) {
 	packages := map[string]*whisk.Package{}
 	if manifest.Package.Packagename != "" {
+		fmt.Println("WARNING: using package inside of manifest file will soon be deprecated, please use packages instead.")
 		s, err := dm.ComposePackage(manifest.Package, manifest.Package.Packagename, filePath)
 		if err == nil {
 			packages[manifest.Package.Packagename] = s

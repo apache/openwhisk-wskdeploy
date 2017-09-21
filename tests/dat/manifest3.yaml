@@ -1,6 +1,7 @@
-package:
-  triggers:
-    trigger1:
-    trigger2:
-      feed: myfeed
+packages:
+  manifest3:
+    triggers:
+      trigger1:
+      trigger2:
+        feed: myfeed
       
