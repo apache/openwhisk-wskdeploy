@@ -1,7 +1,8 @@
 # ```wskdeploy``` utility by example
 _A step-by-step guide for deploying Apache OpenWhisk applications using Package Manifest files._
 
-This guide will walk you through how to describe OpenWhisk applications using the [OpenWhisk Packaging Specification](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/specification#openwhisk-packaging-specification) and deploy them through the Whisk Deploy utility.  Please use the specification as the ultimate reference for all Manifest file grammar and syntax.
+This guide will walk you through how to describe OpenWhisk applications and packages using the [OpenWhisk Packaging Specification](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/specification#openwhisk-packaging-specification) and deploy them through the Whisk Deploy (```wskdeploy```) utility.  
+Please use the specification as the ultimate reference for all Manifest file grammar and syntax.
 
 # Getting started
 
@@ -10,7 +11,7 @@ In order to deploy your OpenWhisk package, at minimum, the ```wskdeploy``` utili
 
 ### Debugging your Package Manifests
 
-In addition to the normal output the wskdeploy utility provides, you may enable additional information that may further assist you in debugging. Please read the [Debugging Whisk Deploy](wskdeploy_debugging.md#debugging-wskdeploy) document.
+In addition to the normal output the ```wskdeploy``` utility provides, you may enable additional information that may further assist you in debugging. Please read the [Debugging Whisk Deploy](wskdeploy_debugging.md#debugging-wskdeploy) document.
 
 # Creating a "hello world" application
 
