@@ -1,8 +1,7 @@
 <h2>YAML Types</H2>
 <p>Many of the types we use in this profile are <i>built-in</i> types from the <a
 href="http://www.yaml.org/spec/1.2/spec.html">YAML 1.2 specification</a>
-(i.e., those identified by the Òtag:yaml.org,2002Ó version tag). </p>
-<p>&nbsp;</p>
+(i.e., those identified by the 'tag:yaml.org,2002' version tag). </p>
 <p>The following table declares the valid YAML type URIs and
 aliases that SHALL be used when defining parameters or properties within an
 OpenWhisk package manifest:<a> </a></p>

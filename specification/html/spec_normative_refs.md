@@ -87,12 +87,12 @@
 <p>&nbsp;</p>
 <table width="100%">
  <tr>
-  <td>
+  <th>
   <p>Tag</p>
-  </td>
-  <td>
+  </th>
+  <th>
   <p>Description</p>
-  </td>
+  </th>
  </tr>
  <tr>
   <td>
