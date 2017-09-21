@@ -6,6 +6,10 @@ This guide will walk you through how to describe OpenWhisk applications using th
 ### Setting up your Host and Credentials
 In order to deploy your OpenWhisk package, at minimum, the ```wskdeploy``` utility needs valid OpenWhisk APIHOST and AUTH variable to attempt deployment. Please read the [Configuring wskdeploy](wskdeploy_configuring.md#configuring-wskdeploy)
 
+# Debugging your Package Manifests
+
+In addition to the normal output the wskdeploy utility provides, you may enable additional information that may further assist you in debugging. Please read the [Debugging Whisk Deploy](wskdeploy_debugging.md#debugging-wskdeploy) document.
+
 # Creating a "hello world" application
 
 As with most language introductions, here we show a minimal "hello world" application as encoded in an OpenWhisk Package Manifest YAML file:
@@ -80,7 +84,3 @@ The "hello world" example represents the minimum valid Manifest file which inclu
 If you want to explore all possible Package and Action declarations (i.e., their schema) you can read:
 - [Exploring Packages](wskdeploy_packages.md) - step-by-step guide on the **Package** schema.
 - [Exploring Actions](wskdeploy_actions.md) - step-by-step guide on the **Action** schema.
-
-# Debugging your Package Manifests
-
-In addition to the normal output the wskdeploy utility provides, you may enable additional information that may further assist you in debugging. Please read the [Debugging Whisk Deploy](wskdeploy_debugging.md#debugging-wskdeploy) document.
