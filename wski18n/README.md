@@ -11,7 +11,7 @@ $ go get -u github.com/jteeuwen/go-bindata/...
 Then, go the HOME directory of wskdeploy and run the following command:
 
 ```
-$ go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources;
+$ $GOPATH/bin/go-bindata -pkg wski18n -o wski18n/i18n_resources.go wski18n/resources;
 ```
 
 Finally, add the default ASF license header to i18n_resources.go. Since each file of
