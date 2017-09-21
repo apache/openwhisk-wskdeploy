@@ -1,0 +1,30 @@
+packages:
+    data-processing-with-messagehub:
+        dependencies:
+            wskdeployMessageHub:
+                location: /whisk.system/messaging
+                inputs:
+                    user: $MESSAGEHUB_USER
+                    password: $MESSAGEHUB_PASSWORD
+                    kafka_admin_url: $MESSAGEHUB_ADMIN_HOST
+                    kafka_brokers_sasl: $KAFKA_BROKERS_SASL
+                    topic: $MESSAGEHUB_TOPIC
+        actions:
+            receive-messages-from-messagehub:
+                function: src/receive-messages.js
+                runtime: nodejs:6
+            process-messages-received-from-messagehub:
+                function: src/process-messages.js
+                runtime: nodejs:6
+        sequences:
+            data-processing-sequence:
+                actions: receive-messages-from-messagehub, process-messages-received-from-messagehub
+        triggers:
+            wskdeployMessageHubTrigger:
+                feed: wskdeployMessageHub/messageHubFeed
+        rules:
+            data-processing-rule:
+                trigger: wskdeployMessageHubTrigger
+                action: data-processing-sequence
+
+

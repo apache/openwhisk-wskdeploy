@@ -876,46 +876,47 @@ func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
 
 func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedName string) error {
 
-	params := make(whisk.KeyValueArr, 0)
-	params = append(params, whisk.KeyValue{Key: "authKey", Value: deployer.ClientConfig.AuthToken})
-	params = append(params, whisk.KeyValue{Key: "lifecycleEvent", Value: "DELETE"})
-	params = append(params, whisk.KeyValue{Key: "triggerName", Value: "/" + deployer.Client.Namespace + "/" + trigger.Name})
+    params := make(whisk.KeyValueArr, 0)
+    params = append(params, whisk.KeyValue{Key: "authKey", Value: deployer.ClientConfig.AuthToken})
+    params = append(params, whisk.KeyValue{Key: "lifecycleEvent", Value: "DELETE"})
+    params = append(params, whisk.KeyValue{Key: "triggerName", Value: "/" + deployer.Client.Namespace + "/" + trigger.Name})
 
-	trigger.Parameters = nil
 
-	_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
-	if err != nil {
-		wskErr := err.(*whisk.WskError)
-		errString := wski18n.T("Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
-			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-		whisk.Debug(whisk.DbgError, errString)
-		return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
-	} else {
-		parameters := make(map[string]interface{})
-		for _, keyVal := range params {
-			parameters[keyVal.Key] = keyVal.Value
-		}
+    parameters := make(map[string]interface{})
+    for _, keyVal := range params {
+        parameters[keyVal.Key] = keyVal.Value
+    }
 
-		qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
-		if err != nil {
-			return err
-		}
+    qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
+    if err != nil {
+        return err
+    }
 
-		namespace := deployer.Client.Namespace
-		deployer.Client.Namespace = qName.Namespace
-		_, _, err = deployer.Client.Actions.Invoke(qName.EntityName, parameters, true, true)
-		deployer.Client.Namespace = namespace
+    namespace := deployer.Client.Namespace
+    deployer.Client.Namespace = qName.Namespace
+    _, _, err = deployer.Client.Actions.Invoke(qName.EntityName, parameters, true, false)
+    deployer.Client.Namespace = namespace
 
-		if err != nil {
-			wskErr := err.(*whisk.WskError)
-			errString := wski18n.T("Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
-				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-			whisk.Debug(whisk.DbgError, errString)
-			return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+    if err != nil {
+        wskErr := err.(*whisk.WskError)
+        errString := wski18n.T("Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
+            map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
+        whisk.Debug(whisk.DbgError, errString)
+        return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
 
-		}
-	}
-	return nil
+    } else {
+        trigger.Parameters = nil
+        _, _, err := deployer.Client.Triggers.Delete(trigger.Name)
+        if err != nil {
+            wskErr := err.(*whisk.WskError)
+            errString := wski18n.T("Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
+                map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
+            whisk.Debug(whisk.DbgError, errString)
+            return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+        }
+    }
+
+    return nil
 }
 
 func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
