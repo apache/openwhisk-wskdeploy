@@ -28,7 +28,11 @@ function main(params) {
 }
 ```
 
-The source code for this example can be found here [https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world.yaml)
+#### Source code
+The source code for the manifest and JavaScript files can be found here:
+- [manifest_hello_world.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world.yaml)
+- [hello.js](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/src/hello.js)
+
 
 ## Deploying "hello world"
 

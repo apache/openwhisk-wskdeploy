@@ -1,0 +1,13 @@
+# Example 1: Basic Hello World using NodeJS (JavaScript)
+package:
+  name: hello_world_package
+  version: 1.0
+  license: Apache-2.0
+  actions:
+    hello_world_2:
+      function: src/hello.js
+      inputs:
+        name: string
+        place: string
+      outputs:
+        greeting: string
