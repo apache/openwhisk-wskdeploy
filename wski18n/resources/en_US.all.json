@@ -275,5 +275,24 @@
     "id": "Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
     "translation": "Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
   }
-
+  {
+    "id": "WARNING: Mandatory field Package Version must be set.\n",
+    "translation": "WARNING: Mandatory field Package Version must be set.\n"
+  }
+  {
+    "id": "WARNING: Package Version is not saved in the current wskdeploy version.\n",
+    "translation": "WARNING: Package Version is not saved in the current wskdeploy version.\n"
+  }
+  {
+    "id": "WARNING: Mandatory field Package License must be set.\n",
+    "translation": "WARNING: Mandatory field Package License must be set.\n"
+  }
+  {
+    "id": "WARNING: Package License is not saved in the current wskdeploy version.\n",
+    "translation": "WARNING: Package License is not saved in the current wskdeploy version.\n"
+  }
+  {
+    "id": "WARNING: License {{.licenseID}} is not a valid one.\n",
+    "translation": "WARNING: License {{.licenseID}} is not a valid one.\n"
+  }
 ]

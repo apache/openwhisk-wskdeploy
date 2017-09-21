@@ -136,8 +136,8 @@ type Package struct {
 	//mapping to wsk.SentPackageNoPublish.Name
 	Packagename string `yaml:"name"` //used in manifest.yaml
 	//mapping to wsk.SentPackageNoPublish.Version
-	Version      string                `yaml:"version"` //used in manifest.yaml
-	License      string                `yaml:"license"` //used in manifest.yaml
+	Version      string                `yaml:"version"` //used in manifest.yaml, mandatory
+	License      string                `yaml:"license"` //used in manifest.yaml, mandatory
 	Repositories []Repository          `yaml:"repositories,omitempty"`
 	Dependencies map[string]Dependency `yaml: dependencies` //used in manifest.yaml
 	Function     string                `yaml:"function"`    //used in deployment.yaml
