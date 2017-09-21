@@ -270,7 +270,10 @@
   {
     "id": "Action {{.action}} has been removed.\n",
     "translation": "Action {{.action}} has been removed.\n"
+  },
+  {
+    "id": "Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
+    "translation": "Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
   }
-
 
 ]
