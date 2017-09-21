@@ -8,7 +8,7 @@ application:
                         messagehub_instance: wskdeployMessageHub
                         topic:  $DEST_TOPIC
             triggers:
-                wskdeployMessageHubTrigger2:
+                wskdeployMessageHubTrigger:
                     inputs:
                         isJSONData: true
                         topic: $SRC_TOPIC
