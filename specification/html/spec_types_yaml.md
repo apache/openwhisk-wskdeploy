@@ -88,7 +88,7 @@ OpenWhisk package manifest:<a> </a></p>
  </tr>
  <tr>
   <td>
-  <p><a></a><a href="https://maven.apache.org/index.html">version</a></p>
+  <p>version</p>
   </td>
   <td>
   <p>tag:maven.apache.org:version (see <a href="spec_normative_refs.md">Maven version</a>)</p>
