@@ -215,6 +215,31 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	pub := false
 	pag.Publish = &pub
 
+	//Version is a mandatory value
+	//If it is an empty string, it will be set to default value
+	//And print an warning message
+	if pkg.Version == "" {
+		warningString := wski18n.T("WARNING: Mandatory field Package Version is not set. Use a default version 0.0.1 instead.\n")
+		whisk.Debug(whisk.DbgWarn, warningString)
+		pkg.Version = "0.0.1"
+	}
+	pag.Version = pkg.Version //set Version
+
+	//License is a mandatory value
+	//set license to unknown if it is an empty string
+	//And print an warning message
+	if pkg.License == "" {
+		warningString := wski18n.T("WARNING: Mandatory field Package License is not set. Use a default string UNKNOWN instead.\n")
+		whisk.Debug(whisk.DbgWarn, warningString)
+		pkg.License = "unknown"
+	}
+	pag.Annotations = make(whisk.KeyValueArr, 0)
+	var license_annotation whisk.KeyValue
+	license_annotation.Key = "License"
+	license_annotation.Value = pkg.License
+	pag.Annotations = append(pag.Annotations,license_annotation)
+
+	//set parameters
 	keyValArr := make(whisk.KeyValueArr, 0)
 	for name, param := range pkg.Inputs {
 		var keyVal whisk.KeyValue
@@ -442,6 +467,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		wskaction.Name = key
 		pub := false
 		wskaction.Publish = &pub
+		wskaction.Version = action.Version //set Version
 
 		record := utils.ActionRecord{Action: wskaction, Packagename: packageName, Filepath: action.Function}
 		s1 = append(s1, record)
