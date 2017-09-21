@@ -69,7 +69,7 @@ OpenWhisk package manifest:<a> </a></p>
   <p><a>timestamp</a></p>
   </td>
   <td>
-  <p>tag:yaml.org,2002:timestamp (see <a href="#REF_YAML_TIMESTAMP_1_1">YAML-TS-1.1</a>)</p>
+  <p>tag:yaml.org,2002:timestamp (see <a href="spec_normative)ref.md">YAML-TS-1.1</a>)</p>
   </td>
   <td>
   <p>ISO 8601 compatible.</p>
@@ -88,10 +88,10 @@ OpenWhisk package manifest:<a> </a></p>
  </tr>
  <tr>
   <td>
-  <p><a></a><a href="#REF_MAVEN_VERSION">version</a></p>
+  <p><a></a><a href="https://maven.apache.org/index.html">version</a></p>
   </td>
   <td>
-  <p>tag:maven.apache.org:version (see <a href="#REF_MAVEN_VERSION">Maven version</a>)</p>
+  <p>tag:maven.apache.org:version (see <a href="spec_normative)ref.md">Maven version</a>)</p>
   </td>
   <td>
   <p>Typically found in modern tooling (i.e., 'package@version' or 'package:version' format).</p>
