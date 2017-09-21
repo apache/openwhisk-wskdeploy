@@ -359,19 +359,18 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
     m, _ := NewYAMLParser().ParseManifest(manifestFile)
 
     // validate package name should be "validate"
-    expectedPackageName := m.Package.Packagename
-    actualPackageName := "validate"
-    assert.Equal(t, expectedPackageName, actualPackageName,
-        "Expected " + expectedPackageName + " but got " + actualPackageName)
+    packageName := "validate"
+    assert.NotNil(t, m.Packages[packageName],
+        "Expected package named "+ packageName + " but got none")
 
     // validate this package contains one action
     expectedActionsCount := 1
-    actualActionsCount := len(m.Package.Actions)
+    actualActionsCount := len(m.Packages[packageName].Actions)
     assert.Equal(t, expectedActionsCount, actualActionsCount,
         "Expected " + string(expectedActionsCount) + " but got " + string(actualActionsCount))
 
     actionName := "validate_singleline_params"
-    if action, ok := m.Package.Actions[actionName]; ok {
+    if action, ok := m.Packages[packageName].Actions[actionName]; ok {
         // validate location/function of an action to be "actions/dump_params.js"
         expectedResult := "actions/dump_params.js"
         actualResult := action.Function
@@ -1407,9 +1406,11 @@ func TestParseManifestYAML_rule(t *testing.T) {
 		panic(err)
 	}
 
-	assert.Equal(t, 1, len(manifest.Package.Rules), "Get trigger list failed.")
-	for rule_name := range manifest.Package.Rules {
-		var rule = manifest.Package.Rules[rule_name]
+        packageName := "manifest4"
+
+	assert.Equal(t, 1, len(manifest.Packages[packageName].Rules), "Get trigger list failed.")
+	for rule_name := range manifest.Packages[packageName].Rules {
+		var rule = manifest.Packages[packageName].Rules[rule_name]
 		switch rule_name {
 		case "rule1":
 			assert.Equal(t, "trigger1", rule.Trigger, "Get trigger name failed.")
@@ -1433,9 +1434,11 @@ func TestParseManifestYAML_feed(t *testing.T) {
 		panic(err)
 	}
 
-	assert.Equal(t, 1, len(manifest.Package.Feeds), "Get feed list failed.")
-	for feed_name := range manifest.Package.Feeds {
-		var feed = manifest.Package.Feeds[feed_name]
+        packageName := "manifest5"
+
+	assert.Equal(t, 1, len(manifest.Packages[packageName].Feeds), "Get feed list failed.")
+	for feed_name := range manifest.Packages[packageName].Feeds {
+		var feed = manifest.Packages[packageName].Feeds[feed_name]
 		switch feed_name {
 		case "feed1":
 			assert.Equal(t, "https://my.company.com/services/eventHub", feed.Location, "Get feed location failed.")
@@ -1467,9 +1470,11 @@ func TestParseManifestYAML_param(t *testing.T) {
 		panic(err)
 	}
 
-	assert.Equal(t, 1, len(manifest.Package.Actions), "Get action list failed.")
-	for action_name := range manifest.Package.Actions {
-		var action = manifest.Package.Actions[action_name]
+        packageName := "manifest6"
+
+	assert.Equal(t, 1, len(manifest.Packages[packageName].Actions), "Get action list failed.")
+	for action_name := range manifest.Packages[packageName].Actions {
+		var action = manifest.Packages[packageName].Actions[action_name]
 		switch action_name {
 		case "action1":
 			for param_name := range action.Inputs {

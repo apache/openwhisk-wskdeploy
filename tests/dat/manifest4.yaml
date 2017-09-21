@@ -1,7 +1,8 @@
 packages:
-  rules:
-    rule1:
-      trigger: trigger1
-      action: hellpworld
-      rule: true
+  manifest4:
+    rules:
+      rule1:
+        trigger: trigger1
+        action: hellpworld
+        rule: true
       
