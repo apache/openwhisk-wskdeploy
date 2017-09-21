@@ -1,4 +1,4 @@
-// +build integration
+//// +build integration
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -35,10 +35,19 @@ import (
  *	MESSAGEHUB_USER
  *	MESSAGEHUB_PASSWORD
  */
+
 func TestMessageHub(t *testing.T) {
-	os.Setenv("MESSAGEHUB_ADMIN_HOST", "https://kafka-admin-prod01.messagehub.services.us-south.bluemix.net:443")
-	os.Setenv("KAFKA_BROKERS_SASL", "[\"kafka01-prod01.messagehub.services.us-south.bluemix.net:9093\", \"kafka02-prod01.messagehub.services.us-south.bluemix.net:9093\", \"kafka03-prod01.messagehub.services.us-south.bluemix.net:9093\"]")
-	os.Setenv("SRC_TOPIC", "in-topic")
+    os.Setenv(common.BLUEMIX_APIHOST, "openwhisk.ng.bluemix.net")
+    os.Setenv(common.BLUEMIX_NAMESPACE, "lime@us.ibm.com_wskdeploy_test")
+    os.Setenv(common.BLUEMIX_AUTH, "521c3786-4298-4185-94af-1d6945a4b025:A0zRaFA44KVALhv7U4tR1F3EnmRKF8rLf4e3QCajTRAionK7ZLhR7OQf3WK48fSS")
+
+    os.Setenv("MESSAGEHUB_ADMIN_HOST", "https://kafka-admin-prod01.messagehub.services.us-south.bluemix.net:443")
+	os.Setenv("KAFKA_BROKERS_SASL", "[kafka01-prod01.messagehub.services.us-south.bluemix.net:9093 kafka02-prod01.messagehub.services.us-south.bluemix.net:9093 kafka03-prod01.messagehub.services.us-south.bluemix.net:9093 kafka04-prod01.messagehub.services.us-south.bluemix.net:9093 kafka05-prod01.messagehub.services.us-south.bluemix.net:9093]")
+    os.Setenv("MESSAGEHUB_PASSWORD", "7AoHMBptpNP2LTCJL0QYo19lPXIjpH7j")
+    os.Setenv("MESSAGEHUB_USER", "i27gilbtmoV1Fph1")
+    os.Setenv("MESSAGEHUB_TOPIC", "test")
+
+    os.Setenv("SRC_TOPIC", "in-topic")
 	os.Setenv("DEST_TOPIC", "out-topic")
 
 	wskprops := common.GetWskpropsFromEnvVars(common.BLUEMIX_APIHOST, common.BLUEMIX_NAMESPACE, common.BLUEMIX_AUTH)
@@ -48,9 +57,9 @@ func TestMessageHub(t *testing.T) {
 		fmt.Println("Wsk properties are not properly configured, so tests are skipped.")
 	} else {
 		wskdeploy := common.NewWskdeploy()
-		_, err := wskdeploy.DeployWithCredentials(manifestPath, deploymentPath, wskprops)
+		_, err := wskdeploy.DeployWithCredentials(manifestPath, "", wskprops)
 		assert.Equal(t, nil, err, "Failed to deploy the manifest file.")
-		_, err = wskdeploy.UndeployWithCredentials(manifestPath, deploymentPath, wskprops)
+		_, err = wskdeploy.UndeployWithCredentials(manifestPath, "", wskprops)
 		assert.Equal(t, nil, err, "Failed to undeploy the manifest file.")
 	}
 }

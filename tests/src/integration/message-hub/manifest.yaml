@@ -8,6 +8,7 @@ packages:
                     password: $MESSAGEHUB_PASSWORD
                     kafka_admin_url: $MESSAGEHUB_ADMIN_HOST
                     kafka_brokers_sasl: $KAFKA_BROKERS_SASL
+                    topic: $MESSAGEHUB_TOPIC
         actions:
             receive-messages-from-messagehub:
                 function: src/receive-messages.js
