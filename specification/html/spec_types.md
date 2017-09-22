@@ -238,57 +238,57 @@ portion is missing on a property or attribute declaration derived from any
 scalar-unit type.</p>
 
 <h3>Recognized units for sizes (i.e., scalar-unit.size)</h3>
-<table width="86%">
+<table width="100%">
 
   <tr>
-   <th width="13%">
+   <th>
    <p>Unit</p>
    </th>
-   <th width="86%">
+   <th>
    <p>Description</p>
    </th>
   </tr>
 
  <tr>
-  <td width="13%">
+  <td>
   <p>B</p>
   </td>
-  <td width="86%">
+  <td>
   <p>byte</p>
   </td>
  </tr>
  <tr>
-  <td width="13%">
+  <td>
   <p>kB</p>
   </td>
-  <td width="86%">
+  <td>
   <p>kilobyte (1000 bytes)</p>
   </td>
  </tr>
  <tr>
-  <td width="13%">
+  <td>
   <p>MB</p>
   </td>
-  <td width="86%">
+  <td>
   <p>megabyte (1000000 bytes)</p>
   </td>
  </tr>
  <tr>
-  <td width="13%">
+  <td>
   <p>GB</p>
   </td>
-  <td width="86%">
+  <td>
   <p>gigabyte (1000000000 bytes)</p>
   </td>
  </tr>
  <tr>
-  <td width="13%">
+  <td>
   <p>TB</a><a
 
   href="#_msocom_1"
  >[MR1]</a>&nbsp;</p>
   </td>
-  <td width="86%">
+  <td>
   <p>terabyte (1000000000000 bytes)</p>
   </td>
  </tr>
@@ -307,61 +307,61 @@ inputs:
 
 <html>
 <h3>Recognized units for times (i.e., scalar-unit.time)</h3>
-<table width="86%">
+<table>
   <tr>
-   <th width="13%">
+   <th width="20%">
    <p>Unit</p>
    </th>
-   <th width="86%">
+   <th width="80%">
    <p>Description</p>
    </th>
   </tr>
 
  <tr>
-  <td width="13%">
+  <td>
   <p>d</p>
   </td>
-  <td width="86%">
+  <td>
   <p>days</p>
   </td>
  </tr>
  <tr>
-  <td width="13%">
+  <td>
   <p>h</p>
   </td>
-  <td width="86%">
+  <td>
   <p>hours</p>
   </td>
  </tr>
  <tr>
-  <td width="13%">
+  <td>
   <p>m</p>
   </td>
-  <td width="86%">
+  <td>
   <p>minutes</p>
   </td>
  </tr>
  <tr>
-  <td width="13%">
+  <td>
   <p>s</p>
   </td>
-  <td width="86%">
+  <td>
   <p>seconds</p>
   </td>
  </tr>
  <tr>
-  <td width="13%">
+  <td>
   <p>ms</p>
   </td>
-  <td width="86%">
+  <td>
   <p>milliseconds</p>
   </td>
  </tr>
  <tr>
-  <td width="13%">
+  <td>
   <p>us</p>
   </td>
-  <td width="86%">
+  <td>
   <p>microseconds</p>
   </td>
  </tr>
