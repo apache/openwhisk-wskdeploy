@@ -11,8 +11,7 @@
 href="http://www.yaml.org/spec/1.2/spec.html">YAML 1.2 specification</a>
 (i.e., those identified by the 'tag:yaml.org,2002' version tag). </p>
 
-<p>The following table declares the valid YAML type URIs and
-aliases that SHALL be used when defining parameters or properties within an
+<p>The following table declares the valid YAML type URIs and aliases that SHALL be used when defining parameters or properties within an
 OpenWhisk package manifest:<a> </a></p>
 
 <table width="100%">
@@ -217,10 +216,14 @@ OpenWhisk package manifest:<a> </a></p>
  </tr>
 </table>
 
+
+<!--
+********************************
+  scalar-unit types
+********************************
+-->
 <h2>scalar-unit types</h2>
-<p>Scalar-unit types can be used to define scalar values along
-with a unit from the list of recognized units (a subset of GNU units) provided
-below.</p>
+<p>Scalar-unit types can be used to define scalar values along with a unit from the list of recognized units (a subset of GNU units) provided below.</p>
 </html>
 
 ### Grammar
@@ -231,11 +234,9 @@ below.</p>
 <html>
 <h3>Requirements</h3>
 <ul>
-<li><b>Whitespace</b>: any number of spaces (including zero or none) SHALL
-be allowed between the scalar value and the unit value.</p>
-<p> It SHALL be considered an error if either the scalar or unit
-portion is missing on a property or attribute declaration derived from any
-scalar-unit type.</p>
+<li><b>Whitespace</b>: any number of spaces (including zero or none) SHALL be allowed between the scalar value and the unit value.</p>
+<li> It SHALL be considered an error if either the scalar or unit portion is missing on a property or attribute declaration derived from any scalar-unit type.</li>
+</ul>
 
 <h3>Recognized units for sizes (i.e., scalar-unit.size)</h3>
 <table width="100%">
