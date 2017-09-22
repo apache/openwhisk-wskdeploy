@@ -1,3 +1,10 @@
+
+<!--
+********************************
+  YAML Types
+********************************
+-->
+
 <h2>YAML Types</H2>
 
 <p>Many of the types we use in this profile are <i>built-in</i> types from the <a
@@ -86,50 +93,6 @@ OpenWhisk package manifest:<a> </a></p>
   <p>Different meaning than an empty string, map, list, etc.</p>
   </td>
  </tr>
- <tr>
-  <td>
-  <p>version</p>
-  </td>
-  <td>
-  <p>tag:maven.apache.org:version (see <a href="spec_normative_refs.md#normative-references">Maven version</a>)</p>
-  </td>
-  <td>
-  <p>Typically found in modern tooling (i.e., 'package@version' or 'package:version' format).</p>
-  </td>
- </tr>
- <tr>
-  <td>
-  <p><a>string256</a></p>
-  </td>
-  <td>
-  <p>long length strings (e.g., descriptions)</p>
-  </td>
-  <td>
-  <p>A string type limited to 256 characters.</p>
-  </td>
- </tr>
- <tr>
-  <td>
-  <p><a>string64</a></p>
-  </td>
-  <td>
-  <p>medium length strings (e.g., abstracts, hover text)</p>
-  </td>
-  <td>
-  <p>A string type limited to 64 characters.</p>
-  </td>
- </tr>
- <tr>
-  <td>
-  <p><a>string16</a></p>
-  </td>
-  <td>
-  <p>short length strings (e.g., small form-factor list displays)</p>
-  </td>
-  <td>
-  <p>A string type limited to 16 characters.</p>
-  </td>
- </tr>
 </table>
 
 <h4>Requirements</h4>
@@ -139,8 +102,13 @@ OpenWhisk package manifest:<a> </a></p>
 </ul>
 <html>
 
+<!--
+********************************
+  OpenWhisk Types
+********************************
+-->
 <html>
-<h3>OpenWhisk Types</h3>
+<h2>OpenWhisk Types</h2>
 <p>In addition to the YAML built-in types, OpenWhisk supports the types listed in the table below. A complete description of each of these types is provided below.</p>
 <p>&nbsp;</p>
 <table width="100%">
