@@ -283,10 +283,7 @@ scalar-unit type.</p>
  </tr>
  <tr>
   <td>
-  <p>TB</a><a
-
-  href="#_msocom_1"
- >[MR1]</a>&nbsp;</p>
+  <p>TB</p>
   </td>
   <td>
   <p>terabyte (1000000000000 bytes)</p>
