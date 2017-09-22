@@ -16,15 +16,9 @@ OpenWhisk package manifest:<a> </a></p>
 
 <table width="100%">
  <tr>
-  <th>
-  <p>Type Name</p>
-  </th>
-  <th>
-  <p>Type URI</p>
-  </th>
-  <th>
-  <p>Notes</p>
-  </th>
+  <th width=20%>Type Name</th>
+  <th width=30%>Type URI</th>
+  <th width=50%>Notes</th>
  </tr>
  <tr>
   <td>
