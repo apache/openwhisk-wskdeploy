@@ -1,4 +1,9 @@
-# Working with packages
+# Packages
+
+The wskdeploy utility works primarily with the OpenWhisk **Package** resource as described in the [OpenWhisk Packaging Specification](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/specification#openwhisk-packaging-specification).
+
+For convenience, the schema and grammar for declaring a **Package** can be found here:
+[https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_packages.md#packages](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_packages.md#packages)
 
 ## Creating an OpenWhisk Package
 
