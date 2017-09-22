@@ -252,7 +252,10 @@
     apis: <list of API>
 ```
 
+<html>
 <h3>Example</h3>
+</html>
+
 ```yaml
 my_whisk_package:
   description: A complete package for my awesome action to be deployed
