@@ -364,8 +364,9 @@ inputs:
  </tr>
 </table>
 
-<h3>Example</h3>
 </html>
+
+### Example
 ```yaml
 inputs:
   max_execution_time:
@@ -373,11 +374,10 @@ inputs:
     value: 600 s
 ```
 
-<html>
-<h3>Object type example</h3>
 
-<p>The Object type allows for complex objects to be declared as parameters with an optional validatable schema.</p>
-</html>
+### Object type example
+
+The Object type allows for complex objects to be declared as parameters with an optional validatable schema.
 
 ```yaml
 inputs:
