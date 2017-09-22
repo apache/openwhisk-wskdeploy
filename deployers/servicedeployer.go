@@ -547,6 +547,8 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 		deployer.Client.Namespace = namespace
 
 		if err != nil {
+            // Remove the created trigger
+            deployer.Client.Triggers.Delete(trigger.Name)
 			wskErr := err.(*whisk.WskError)
 			errString := wski18n.T("Got error creating trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
 				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
