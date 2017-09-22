@@ -289,7 +289,7 @@ my_whisk_package:
 <li>However, their information may be retrieved using respectively:</li>
 <ul>
 <li><code>$ wsk trigger list -v</li></code>
-<li><code>$ wsk api list -v</li>
+<li><code>$ wsk api list -v</code></li>
 </ul>
 </ul>
 </html>
