@@ -1,3 +1,4 @@
+<html>
 <h2>Package entity</h2>
 <p>&nbsp;</p>
 <p>The Package entity schema is used to define an OpenWhisk package within a manifest.</p>
@@ -235,6 +236,8 @@
 </table>
 
 <h3>Grammar</h3>
+</html>
+
 ```yaml
 <packageName>:
     version: <version>
@@ -266,6 +269,7 @@ my_whisk_package:
       <Rule schema>
 ```
 
+<html>
 <h3>Requirements</h3>
 <ul>
 <li>The Package name MUST be less than or equal to 256 characters.</li>
@@ -289,3 +293,4 @@ my_whisk_package:
     <li><code>$ wsk api list -v</li>
   </ul>
 </ul>
+</html>
