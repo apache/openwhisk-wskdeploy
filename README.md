@@ -147,7 +147,7 @@ commands will start the wskdeploy cross compile for your specific OS platform in
 If you would like to build the binaries available for all the operating systems and architectures, run the following command:
 
 ```sh
-$ ./gradlew distDocker -PcrossCompileCLI=true
+$ ./gradlew distDocker -PcrossCompileWSKDEPLOY=true
 ```
 
 Then, you will find the binaries and their compressed packages generated under the folder ```bin/<os>/<arch>/``` for each supported Operating System and CPU Architecture pair.
