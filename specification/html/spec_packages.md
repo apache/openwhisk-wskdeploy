@@ -1,11 +1,8 @@
 <html>
-<h2>Package entity</h2>
-<p>&nbsp;</p>
+<h2>Package</h2>
 <p>The Package entity schema is used to define an OpenWhisk package within a manifest.</p>
-
 <h3>Fields</h3>
 <table width="100%">
-
  <tr>
   <th width="16%">
    <p>Key Name</p>
@@ -23,7 +20,6 @@
    <p>Description</p>
   </th>
  </tr>
-
  <tr>
   <td>
    <p>version</p>
