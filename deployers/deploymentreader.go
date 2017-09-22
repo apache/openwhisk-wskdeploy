@@ -110,7 +110,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 			serviceDeployPack.Package.Parameters = keyValArr
 		}
 
-		keyValArr = keyValArr[:0]
+		keyValArr = make(whisk.KeyValueArr, 0)
 
 		if len(pack.Annotations) > 0 {
 			for name, input := range pack.Annotations {
@@ -180,7 +180,7 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 				}
 			}
 
-			keyValArr = keyValArr[:0]
+			keyValArr = make(whisk.KeyValueArr, 0)
 
 			if len(action.Annotations) > 0 {
 				for name, input := range action.Annotations {
@@ -249,7 +249,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 				}
 			}
 
-			keyValArr = keyValArr[:0]
+			keyValArr = make(whisk.KeyValueArr, 0)
 
 			if len(trigger.Annotations) > 0 {
 				for name, input := range trigger.Annotations {

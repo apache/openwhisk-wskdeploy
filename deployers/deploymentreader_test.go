@@ -22,6 +22,7 @@ package deployers
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
 var sd *ServiceDeployer
@@ -49,4 +50,38 @@ func TestDeployerCheck(t *testing.T) {
 	sd.ManifestPath = "../tests/usecases/badyaml/manifest.yaml"
 	// The system will exit thus the test will fail.
 	// sd.Check()
+}
+
+func TestDeploymentReader_bindTrigger(t *testing.T) {
+	//init variables
+	sDeployer := NewServiceDeployer()
+	sDeployer.DeploymentPath = "../tests/dat/deployment-deploymentreader-test.yml"
+	sDeployer.Deployment.Triggers["locationUpdate"] = new(whisk.Trigger)
+
+	//parse deployment and bind triggers input and annotation
+	dReader := NewDeploymentReader(sDeployer)
+	dReader.HandleYaml()
+	dReader.bindTriggerInputsAndAnnotations()
+
+	trigger := sDeployer.Deployment.Triggers["locationUpdate"]
+	for _, param := range trigger.Parameters {
+		switch param.Key {
+		case "name":
+			assert.Equal(t, "Bernie", param.Value, "Failed to set inputs")
+		case "place":
+			assert.Equal(t, "DC", param.Value, "Failed to set inputs")
+		default:
+			assert.Fail(t, "Failed to get inputs key")
+
+		}
+	}
+	for _, annos := range trigger.Annotations {
+		switch annos.Key {
+		case "bbb":
+			assert.Equal(t, "this is an annotation", annos.Value, "Failed to set annotations")
+		default:
+			assert.Fail(t, "Failed to get annotation key")
+
+		}
+	}
 }
