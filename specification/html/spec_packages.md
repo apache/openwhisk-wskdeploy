@@ -283,13 +283,13 @@ my_whisk_package:
 <li>Currently, the 'version' value is not stored in Apache OpenWhisk, but there are plans to support it in the future.</li>
 <li>Currently, the 'license' value is not stored in Apache OpenWhisk, but there are plans to support it in the future.</li>
 <li>The Trigger and API entities within the OpenWhisk programming model are considered outside the scope of the Package. This means that Trigger and API information will not be returned when using the OpenWhisk Package API:</li>
-    <ul>
-    <li><code>$ wsk package list &lt;package name&gt;</code></li>
-  </ul>
+<ul>
+<li><code>$ wsk package list &lt;package name&gt;</code></li>
+</ul>
 <li>However, their information may be retrieved using respectively:</li>
-  <ul>
-    <li><code>$ wsk trigger list -v</li></code>
-    <li><code>$ wsk api list -v</li>
-  </ul>
+<ul>
+<li><code>$ wsk trigger list -v</li></code>
+<li><code>$ wsk api list -v</li>
+</ul>
 </ul>
 </html>
