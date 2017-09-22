@@ -8,7 +8,7 @@ The wskdeploy utility mainly uses a single file, that uses a YAML syntax, called
 The minimal manifest file would include only a package declaration, a version number and a license for the package:
 ```
 package:
-  name: helloworld
+  name: hello_world_package
   version: 1.0
   license: Apache-2.0
 ```

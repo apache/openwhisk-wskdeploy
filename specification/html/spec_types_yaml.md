@@ -9,7 +9,7 @@ aliases that SHALL be used when defining parameters or properties within an
 OpenWhisk package manifest:<a> </a></p>
 
 <table width="100%">
- <th>
+ <tr>
   <th>
   <p>Type Name</p>
   </th>
