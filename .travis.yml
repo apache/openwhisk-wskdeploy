@@ -37,7 +37,7 @@ before_deploy:
   - export build_file_name=wskdeploy
   - go get github.com/inconshreveable/mousetrap
   - ./tools/travis/build_tag_releases.sh $build_file_name
-  - export RELEASE_PKG_FILE=$(ls $build_file_name-*.zip)
+  - export RELEASE_PKG_FILE=$(ls $build_file_name-*.*)
   - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."
 
 deploy:
@@ -45,7 +45,8 @@ deploy:
   api_key:
     secure: aQGcP7XKlgZEFZ57y4RzYRHfQAM5HEdaa7Y/vTxNepIsE7zY2945qT99UJnU1hfhSjP9jO5eNlHzo+AqJoUx70+iUIhMTyOp39Qp7wb74OKolkXwcntufzP7Ocron5IYUE311tf/kic3vRb5cwoaE2lGfx5PdCuozVjgpsDbIRvV5quQzNr68Toqe+yegKwAhprYRWHPnuIqGbkfa83csqFv6m0viC/gvtFOCB9/4zGCqk/K3CKrcr/5GvnFPxJoaJNfFA6umSZ9VaJjbIJmcXGD3nU+rWP0uEpvzGKIMYhmQq/0JuUTgvh4jnnT4OVZeTh6pMaUqtWH+3HDrOiLAiLjcfeT91j7ZXPnx8LvM6SuoRlvRCuXA2FYx9mz2Vx0TWV5TMqhj3okVO/CvvnMMWwKWOUDD/nSMLy93BM40NjD7zimGjocPsGAjTT9H1PSfau3fiiMjg6iMRWjUTfNY5ra5Wgb7W5G37XaCBJDBZL77Blq/tNWdV5qW4A3l4FWnH+LwOdTdhU35Lr5JWzMuEDdkvVgEv8AQjb07P/ODtBW6z3GRv9Rslg9T9ylxkgJpXoYwdXCbtYU8GNcFdJiDpTaVHrkMeLvHrBTRrDCSnCnRFc3AxsUtLklo7R/EX1wUoX+QcAGjh/AmJ4nJVP1C09913fx96WczkRX6ANg2Mw=
   file_glob: true
-  file: ${build_file_name}-*.zip
+  file: ${build_file_name}-*.*
+  overwrite: true
   skip_cleanup: true
   on:
     repo: apache/incubator-openwhisk-wskdeploy
