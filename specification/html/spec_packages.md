@@ -28,7 +28,7 @@
    <p>yes</p>
   </td>
   <td>
-   <p><a href="spec_normative_refs.md#normative-references">version</a></p>
+   <p><a href="spec_types_yaml.md#yaml-types">version</a></p>
   </td>
   <td>
    <p>N/A</p>
