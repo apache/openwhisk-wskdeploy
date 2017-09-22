@@ -1,43 +1,20 @@
-# Dependent Packages with `wskdeploy` 
+# Show case for dependencies
 
-`wskdeploy` supports dependencies where it allows you to declare other OpenWhisk
-packages that your application or project (manifest) is dependent on. With declaring
-dependent packages, `wskdeploy` supports automatic deployment of those dependent
-packages.
+This is a show case for `wskdeploy`. This package shows how to deploy a package with dependencies to existing system packages or external resources.
 
-Dependencies are classified into two different categories:
-
-1. Package with `manifest.yaml` and/or `deployment.yaml` 
-
-For example, our `sample` application has three dependencies:
- 
-1. `hellowhisk`: `hellowhisk` is an external package whose source code is located in
- GitHub repo at https://github.com/apache/incubator-openwhisk-test/. When we deploy
- `sample` application, `hellowhisk` will be deployed based on the manifest and
- deployment files located in the folder `packages/hellowhisk` of this repo.
-2. `helloworlds`: `helloworlds` again is an external pacakge located at https://github.com/apache/incubator-openwhisk-test/packages/helloworlds
-3. `cloudant-package-binding` which is a package binding to `/whisk.system/cloudant`
-
-We can declare these dependencies in `manifest.yaml` with:
-
+Below is the `dependencies` segement in `manifest.yaml`.
 ```
 dependencies:
-    hellowhisk:
-        location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
-    myhelloworlds:
-        location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
-    cloudant-package-binding:
-        location: /whisk.system/cloudant
-        inputs:
-            username: $CLOUDANT_USERNAME
-            password: $CLOUDANT_PASSWORD
-            host: ${CLOUDANT_USERNAME}.cloudant.com
-            dbname: $CLOUDANT_DATABASE
-triggers:
-    cloudant-trigger:
-        source: cloudant-package-binding/changes
-        inputs:
-            dbname: $CLOUDANT_DATABASE
+  hellowhisk:
+    location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+  myhelloworlds:
+    location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+  myCloudant:
+    location: /whisk.system/cloudant
+    inputs:
+      dbname: myGreatDB
+    annotations:
+      myAnnotation: Here it is
 ```
 
 It defines three dependencies:
