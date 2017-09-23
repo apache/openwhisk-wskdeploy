@@ -77,7 +77,7 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
   <td>no</td>
   <td>boolean</td>
   <td>false</td>
-  <td>Optionally, turns the Action into a <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md">&quot;<em><u>web actions</u></em>&quot;</a>
+  <td>Optionally, turns the Action into a <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md">&quot;<em><u>web actions</u></em>&quot;</a>
   causing it to return HTTP content without use of an API Gateway.
   </td>
  </tr>
