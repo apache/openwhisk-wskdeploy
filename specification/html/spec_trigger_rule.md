@@ -78,14 +78,10 @@ The Trigger entity schema contains the necessary information to describe the str
   <td>
   <p>N/A</p>
   </td>
-  <td>
-  <p>The optional list of valid Event schema the trigger
-  supports. OpenWhisk would validate incoming Event data for conformance
-  against any Event schema declared under this key. </p>
+  <td>The optional list of valid Event schema the trigger supports. OpenWhisk would validate incoming Event data for conformance against any Event schema declared under this key.
   <p><b><i>Note</i></b><i>: This feature is <u>not supported at
   this time</u>. This is viewed as a possible feature that may be
-  implemented along with configurable options for handling of invalid events.</i></p>
-  </td>
+  implemented along with configurable options for handling of invalid events.</i></p></td>
  </tr>
 </table>
 </html>
@@ -107,7 +103,19 @@ declared above.
 
 ### Grammar
 ```yaml
+<triggerName>:
+  <Entity schema>
+  feed: <feed name>
+  credential: <Credential>
+  inputs:
+    <list of parameter>
+```
 
+### Example
+```yaml
+triggers:
+  everyhour:
+    feed: /whisk.system/alarms/alarm
 ```
 
 ---
@@ -169,16 +177,14 @@ The Rule entity schema contains the information necessary to associates one trig
   <p>no</p>
   </td>
   <td>
-  <p>regex </p>
+  <p>regex</p>
   </td>
   <td>
   <p>true</p>
   </td>
   <td>
-  <p>The optional regular expression that determines if the
-  Action is fired.</p>
-  <p><br>
-  Note: In this version of the specification, only the expression ÒtrueÓ is currently supported.&nbsp; </p>
+  <p>The optional regular expression that determines if the Action is fired.</p>
+  <p><i>Note: In this version of the specification, only the expression 'true' is currently supported.</i></p>
   </td>
  </tr>
 </table>
@@ -189,13 +195,23 @@ The Rule entity schema contains the information necessary to associates one trig
 - The Rule entity schema includes all general [Entity Schem](#TBD) fields in addition to any fields
 declared above.
 
+### Notes
+- OpenWhisk only supports a value of '```true```' for the '```rule```' key's value at this time.
+
 ### Grammar
 ```yaml
-
+<ruleName>:
+  description: <string>
+  trigger: <string>
+  action: <string>
+  rule: <regex>
 ```
 
 ### Example
 
 ```yaml
-
+my_rule:
+  description: Enable events for my Action
+  trigger: my_trigger
+  action: my_action
 ```

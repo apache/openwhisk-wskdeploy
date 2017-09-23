@@ -114,9 +114,9 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
   function: <string>
   runtime: <name>[@<[range of ]version>]
   inputs:
-    <list of Parameter>
+    <list of parameter>
   outputs:
-    <list of Parameter>
+    <list of parameter>
   limits:
     <list of limit key-values>
   feed: <boolean> # default: false
