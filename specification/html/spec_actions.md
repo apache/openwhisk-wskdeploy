@@ -239,7 +239,7 @@ following file extensions are recognized and will be run on the latest version o
 <table>
   <tr>
    <th>File extension</th>
-   <th>>Runtime used</th>
+   <th>Runtime used</th>
    <th>Description</th>
   </tr>
 
