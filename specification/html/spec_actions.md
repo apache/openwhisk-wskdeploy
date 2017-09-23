@@ -270,7 +270,7 @@ following file extensions are recognized and will be run on the latest version o
 </table>
 </html>
 
-#### Valid Limit keys
+### Valid Limit keys
 
 <html>
 <table id="TABLE_LIMIT_KEYS">
@@ -337,6 +337,7 @@ following file extensions are recognized and will be run on the latest version o
 </html>
 
 #### Notes
+
 - The default values and ranges for limit configurations reflect the defaults for the OpenWhisk platform (open source code).&nbsp; These values may be changed over time to reflect the open source community consensus.
 
 ### Web Actions
