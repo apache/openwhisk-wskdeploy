@@ -1,7 +1,9 @@
+
+## Package
+The Package entity schema is used to define an OpenWhisk package within a manifest.
+
+### Fields
 <html>
-<h2>Package</h2>
-<p>The Package entity schema is used to define an OpenWhisk package within a manifest.</p>
-<h3>Fields</h3>
 <table width="100%">
  <tr>
   <th width="16%">
@@ -21,21 +23,11 @@
   </th>
  </tr>
  <tr>
-  <td>
-   <p>version</p>
-  </td>
-  <td>
-   <p>yes</p>
-  </td>
-  <td>
-   <p><a href="spec_types_yaml.md#yaml-types">version</a></p>
-  </td>
-  <td>
-   <p>N/A</p>
-  </td>
-  <td>
-   <p>The required user-controlled version for the Package. </p>
-  </td>
+  <td>version</td>
+  <td>yes</td>
+  <td><a href="spec_types_yaml.md#yaml-types">version</a></td>
+  <td>N/A</td>
+  <td>The required user-controlled version for the Package.</td>
  </tr>
  <tr>
   <td>
@@ -248,9 +240,7 @@
     apis: <list of API>
 ```
 
-<html>
-<h3>Example</h3>
-</html>
+### Example
 
 ```yaml
 my_whisk_package:
@@ -268,28 +258,20 @@ my_whisk_package:
       <Rule schema>
 ```
 
-<html>
-<h3>Requirements</h3>
-<ul>
-<li>The Package name MUST be less than or equal to 256 characters.</li>
-<li>The Package entity schema includes all general <a href="#SCHEMA_ENTITY">Entity Schema</a> fields in addition to any fields declared above.</li>
-<li>A valid Package license value MUST be one of the <a href="#REF_LINUX_SPDX">Linux SPDX</a> license values; for example: Apache-2.0 or GPL-2.0+, or the value 'unlicensed'.</li>
-<li>Multiple (mixed) licenses MAY be described using using <a href="#REF_NPM_SPDX_SYNTAX">NPM SPDX license syntax</a>.</li>
-<li>A valid Package entity MUST have one or more valid Actions defined.</li>
-</ul>
+### Requirements
 
-<h3>Notes</h3>
-<ul>
-<li>Currently, the 'version' value is not stored in Apache OpenWhisk, but there are plans to support it in the future.</li>
-<li>Currently, the 'license' value is not stored in Apache OpenWhisk, but there are plans to support it in the future.</li>
-<li>The Trigger and API entities within the OpenWhisk programming model are considered outside the scope of the Package. This means that Trigger and API information will not be returned when using the OpenWhisk Package API:</li>
-<ul>
-<li><code>$ wsk package list &lt;package name&gt;</code></li>
-</ul>
-<li>However, their information may be retrieved using respectively:</li>
-<ul>
-<li><code>$ wsk trigger list -v</li></code>
-<li><code>$ wsk api list -v</code></li>
-</ul>
-</ul>
-</html>
+- The Package name MUST be less than or equal to 256 characters.
+- The Package entity schema includes all general <a href="#SCHEMA_ENTITY">Entity Schema</a> fields in addition to any fields declared above.
+- A valid Package license value MUST be one of the <a href="#REF_LINUX_SPDX">Linux SPDX</a> license values; for example: Apache-2.0 or GPL-2.0+, or the value 'unlicensed'.
+- Multiple (mixed) licenses MAY be described using using <a href="#REF_NPM_SPDX_SYNTAX">NPM SPDX license syntax</a>.
+- A valid Package entity MUST have one or more valid Actions defined.
+
+### Notes
+
+- Currently, the 'version' value is not stored in Apache OpenWhisk, but there are plans to support it in the future.
+- Currently, the 'license' value is not stored in Apache OpenWhisk, but there are plans to support it in the future.
+- The Trigger and API entities within the OpenWhisk programming model are considered outside the scope of the Package. This means that Trigger and API information will not be returned when using the OpenWhisk Package API:
+  - ```$ wsk package list <package name>```
+- However, their information may be retrieved using respectively:</li>
+  - ```$ wsk trigger list -v```
+  - ```$ wsk api list -v```
