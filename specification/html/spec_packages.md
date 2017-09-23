@@ -1,5 +1,5 @@
-
 ## Package
+
 The Package entity schema is used to define an OpenWhisk package within a manifest.
 
 ### Fields
@@ -30,37 +30,18 @@ The Package entity schema is used to define an OpenWhisk package within a manife
   <td>The required user-controlled version for the Package.</td>
  </tr>
  <tr>
-  <td>
-   <p>license</p>
-  </td>
-  <td>
-   <p>no</p>
-  </td>
-  <td>
-   <p>string</p>
-  </td>
-  <td>
-   <p>N/A</p>
-  </td>
-  <td>
-   <p>The required value that indicates the type of license the
-    Package is governed by.</p>
-   <p>The value is required to be a valid Linux-SPDX value. See <a href="https://spdx.org/licenses/">https://spdx.org/licenses/</a>.</p>
-  </td>
+  <td>license</td>
+  <td>no</td>
+  <td>string</td>
+  <td>N/A</td>
+  <td>The required value that indicates the type of license the Package is governed by.
+   <p>The value is required to be a valid Linux-SPDX value. See <a href="https://spdx.org/licenses/">https://spdx.org/licenses/</a>.</p></td>
  </tr>
  <tr>
-  <td>
-   <p>credential</p>
-  </td>
-  <td>
-   <p>no</p>
-  </td>
-  <td>
-   <p>string</p>
-  </td>
-  <td>
-   <p>N/A</p>
-  </td>
+  <td>credential</td>
+  <td>no</td>
+  <td>string</td>
+  <td>N/A</td>
   <td>
    <p>The optional Credential used for all entities within the Package.</p>
    <p>The value contains either:</p>
@@ -69,162 +50,72 @@ The Package entity schema is used to define an OpenWhisk package within a manife
   </td>
  </tr>
  <tr>
-  <td>
-   <p>dependencies</p>
-  </td>
-  <td>
-   <p>no</p>
-  </td>
-  <td>
-   <p>list of Dependency</p>
-  </td>
-  <td>
-   <p>N/A</p>
-  </td>
-  <td>
-   <p>The optional list of external OpenWhisk packages the manifest needs deployed before it can be deployed.</p>
-  </td>
+  <td>dependencies</td>
+  <td>no</td>
+  <td>list of Dependency</td>
+  <td>N/A</td>
+  <td>The optional list of external OpenWhisk packages the manifest needs deployed before it can be deployed.</td>
  </tr>
  <tr>
-  <td>
-   <p>repositories</p>
-  </td>
-  <td>
-   <p>no</p>
-  </td>
-  <td>
-   <p>list of Repository</p>
-  </td>
-  <td>
-   <p>N/A</p>
-  </td>
-  <td>
-   <p>The optional list of external repositories that contain functions and other artifacts that can be found by tooling.</p>
-  </td>
+  <td>repositories</td>
+  <td>no</td>
+  <td>list of Repository</td>
+  <td>N/A</td>
+  <td>The optional list of external repositories that contain functions and other artifacts that can be found by tooling.</td>
  </tr>
  <tr>
-  <td>
-   <p>actions</p>
-  </td>
-  <td>
-   <p>no</p>
-  </td>
-  <td>
-   <p>list of Action</p>
-  </td>
-  <td>
-   <p>N/A</p>
-  </td>
-  <td>
-   <p>Optional list of OpenWhisk Action entity definitions.</p>
-  </td>
+  <td>actions</td>
+  <td>no</td>
+  <td>list of Action</td>
+  <td>N/A</td>
+  <td>Optional list of OpenWhisk Action entity definitions.</td>
  </tr>
  <tr>
-  <td>
-   <p>sequences</p>
-  </td>
-  <td>
-   <p>no</p>
-  </td>
-  <td>
-   <p>list of Sequence</p>
-  </td>
-  <td>
-   <p>N/A</p>
-  </td>
-  <td>
-   <p>Optional list of OpenWhisk Sequence entity definitions.</p>
-  </td>
+  <td>sequences</td>
+  <td>no</td>
+  <td>list of Sequence</td>
+  <td>N/A</td>
+  <td>Optional list of OpenWhisk Sequence entity definitions.</td>
  </tr>
  <tr>
-  <td>
-   <p>triggers</p>
-  </td>
-  <td>
-   <p>no</p>
-  </td>
-  <td>
-   <p>list of Trigger</p>
-  </td>
-  <td>
-   <p>N/A</p>
-  </td>
-  <td>
-   <p>Optional list of OpenWhisk Trigger entity definitions.</p>
-  </td>
+  <td>triggers</td>
+  <td>no</td>
+  <td>list of Trigger</td>
+  <td>N/A</td>
+  <td>Optional list of OpenWhisk Trigger entity definitions.</td>
  </tr>
  <tr>
-  <td>
-   <p>rules</p>
-  </td>
-  <td>
-   <p>no</p>
-  </td>
-  <td>
-   <p>list of Rule</p>
-  </td>
-  <td>
-   <p>N/A</p>
-  </td>
-  <td>
-   <p>Optional list of OpenWhisk Rule entity definitions.</p>
-  </td>
+  <td>rules</td>
+  <td>no</td>
+  <td>list of Rule</td>
+  <td>N/A</td>
+  <td>Optional list of OpenWhisk Rule entity definitions.</td>
  </tr>
  <tr>
-  <td>
-   <p>feeds</p>
-  </td>
-  <td>
-   <p>no</p>
-  </td>
-  <td>
-   <p>list of Feed</p>
-  </td>
-  <td>
-   <p>N/A</p>
-  </td>
-  <td>
-   <p>Optional list of OpenWhisk Feed entity definitions.</p>
-  </td>
+  <td>feeds</td>
+  <td>no</td>
+  <td>list of Feed</td>
+  <td>N/A</td>
+  <td>Optional list of OpenWhisk Feed entity definitions.</td>
  </tr>
  <tr>
-  <td>
-   <p>compositions</p>
-  </td>
-  <td>
-   <p>no</p>
-  </td>
-  <td>
-   <p>list of Composition</p>
-  </td>
-  <td>
-   <p>N/A</p>
-  </td>
-  <td>
-   <p>Optional list of OpenWhisk Composition entity definitions.</p>
-  </td>
+  <td>compositions</td>
+  <td>no</td>
+  <td>list of Composition</td>
+  <td>N/A</td>
+  <td>Optional list of OpenWhisk Composition entity definitions.</td>
  </tr>
  <tr>
-  <td>
-   <p>apis</p>
-  </td>
-  <td>
-   <p>no</p>
-  </td>
-  <td>
-   <p>list of API</p>
-  </td>
-  <td>
-   <p>N/A</p>
-  </td>
-  <td>
-   <p>Optional list of API entity definitions.</p>
-  </td>
+  <td>apis</td>
+  <td>no</td>
+  <td>list of API</td>
+  <td>N/A</td>
+  <td>Optional list of API entity definitions.</td>
  </tr>
 </table>
-
-<h3>Grammar</h3>
 </html>
+
+### Grammar
 
 ```yaml
 <packageName>:
