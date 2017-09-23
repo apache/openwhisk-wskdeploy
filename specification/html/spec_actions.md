@@ -15,111 +15,70 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
   </tr>
 
  <tr>
-  <td>
-  <p>version</p>
-  </td>
-  <td>
-  <p>no</p>
-  </td>
-  <td>
-  <p>version</p>
-  </td>
-  <td>
-  <p>N/A</p>
-  </td>
-  <td>
-  <p>The optional user-controlled version for the Action. </p>
+  <td>version</td>
+  <td>no</td>
+  <td>version</td>
+  <td>N/A</td>
+  <td>The optional user-controlled version for the Action.</td>
+ </tr>
+ <tr>
+  <td>function</td>
+  <td>yes</td>
+  <td>string</td>
+  <td>N/A</td>
+  <td>Required source location (path inclusive) of the Action code either:
+    <ul>
+      <li>Relative to the Package manifest file.</li>
+      <li>Relative to the specified Repository.</li>
+    </ul>
   </td>
  </tr>
  <tr>
-  <td>
-  <p>function</p>
-  </td>
-  <td>
-  <p>yes</p>
-  </td>
-  <td>
-  <p>string</p>
-  </td>
-  <td>
-  <p>N/A</p>
-  </td>
-  <td>
-  <p>Required source location (path inclusive) of the Action code   either</p>
-  <p>á Relative to the Package manifest file.</p>
-  <p>á Relative to the specified Repository.</p>
-  </td>
- </tr>
- <tr>
-  <td>
-  <p>runtime</p>
-  </td>
-  <td>
-  <p>no</p>
-  </td>
-  <td>
-  <p>string</p>
-  </td>
-  <td>
-  <p>N/A</p>
-  </td>
-  <td>
-  <p>The required runtime name (and optional version) that the Action code requires for an execution environment.</p>
+  <td>runtime</td>
+  <td>no</td>
+  <td>string</td>
+  <td>N/A</td>
+  <td>The required runtime name (and optional version) that the Action code requires for an execution environment.
   <p><i>Note: May be optional if tooling allowed to make assumptions about file extensions.</i></p>
   </td>
  </tr>
  <tr>
-  <td>
-  <p>limits</p>
-  </td>
-  <td>
-  <p>no</p>
-  </td>
-  <td>
-  <p>map of &lt;<a href="#TABLE_LIMIT_KEYS">limit keys and values</a>&gt;</p>
-  </td>
-  <td>
-  <p>N/A</p>
-  </td>
-  <td>
-  <p>Optional map of limit keys and their values. </p>
-  <p>&nbsp;</p>
-  <p><i>See section Ò</i><a href="#TABLE_LIMIT_KEYS"><i>Valid limit keys</i></a><i>Ó below for a listing of recognized keys and values.</i></p>
+  <td>inputs</td>
+  <td>no</td>
+  <td>list of parameter</td>
+  <td>N/A</td>
+  <td>The optional ordered list inputs to the Action.</td>
+ </tr>
+ <tr>
+  <td>outputs</td>
+  <td>no</td>
+  <td>list of parameter</td>
+  <td>N/A</td>
+  <td>The optional outputs from the Action.</td>
+ </tr>
+ <tr>
+  <td>limits</td>
+  <td>no</td>
+  <td>map of limit keys and values</a></td>
+  <td>N/A</td>
+  <td>Optional map of limit keys and their values.
+  <p><i>See section '</i><a href="#TABLE_LIMIT_KEYS"><i>Valid limit keys</i></a><i>' below for a listing of recognized keys and values.</i></p>
   </td>
  </tr>
  <tr>
-  <td>
-  <p>feed</p>
-  </td>
-  <td>
-  <p>no</p>
-  </td>
-  <td>
-  <p>boolean</p>
-  </td>
-  <td>
-  <p>false</p>
-  </td>
-  <td>
-  <p>Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action.</p>
-  </td>
+  <td>feed</td>
+  <td>no</td>
+  <td>boolean</td>
+  <td>false</td>
+  <td>Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action.</td>
  </tr>
  <tr>
-  <td>
-  <p>web-export</p>
-  </td>
-  <td>
-  <p>no</p>
-  </td>
-  <td>
-  <p>boolean</p>
-  </td>
-  <td>
-  <p>false</p>
-  </td>
-  <td>
-  <p>Optionally, turns the Action into a <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/actions">&quot;<em><u>web actions</u></em>&quot;</a>
-  causing it to return HTTP content without use of an API Gateway.</p>
+  <td>web-export</td>
+  <td>no</td>
+  <td>boolean</td>
+  <td>false</td>
+  <td>Optionally, turns the Action into a <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md">&quot;<em><u>web actions</u></em>&quot;</a>
+  causing it to return HTTP content without use of an API Gateway.
   </td>
  </tr>
 </table>
@@ -127,17 +86,16 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 
 ### Requirements
 - The Action name (i.e., &lt;actionName&gt; MUST be less than or equal to 256 characters.</p>
-- The Action entity schema includes all general <a href="#SCHEMA_ENTITY">Entity Schema</a> fields in addition to any fields declared above.</p>
-- Supplying a runtime name without a version
-indicates that OpenWhisk SHOULD use the most current version.</p>
+- The Action entity schema includes all general <a href="#SCHEMA_ENTITY">Entity Schema</a> fields in addition to any fields declared above.
+- Supplying a runtime name without a version indicates that OpenWhisk SHOULD use the most current version.
 - Supplying a runtime <i>major version</i> without a <i>minor version</i> (et al.) indicates OpenWhisk SHOULD use the most current <i>minor version</i>.
-- Unrecognized limit keys (and their values) SHALL be ignored.</p>
-- Invalid values for known limit keys SHALL result in an error.</p>
+- Unrecognized limit keys (and their values) SHALL be ignored.
+- Invalid values for known limit keys SHALL result in an error.
 - If the Feed is a Feed Action (i.e., the feed key's value is set to true), it MUST support the following parameters:
   - **lifecycleEvent**: one of 'CREATE', 'DELETE', 'PAUSE',or 'UNPAUSE'. These operation names MAY be supplied in lowercase (i.e., 'create',
 'delete', 'pause', etc.).
   - **triggerName**: the fully-qualified name of the trigger which contains events produced from this feed.
-  - **authKey**: the Basic auth. credentials of the OpenWhisk user who owns the trigger just mentioned.
+  - **authKey**: the Basic auth. credentials of the OpenWhisk user who owns the trigger.
 
 ### Notes
 - The maximum code size for an Action currently must be less than 48 MB.
@@ -421,10 +379,10 @@ following file extensions are recognized and will be run on the latest version o
 </table>
 </html>
 
-####Valid Limit keys
+#### Valid Limit keys
 
 <html>
-<table>
+<table id="TABLE_LIMIT_KEYS">
   <tr>
    <th>Limit Keyname</th>
    <th>Allowed values</th>
