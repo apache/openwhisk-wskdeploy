@@ -85,7 +85,8 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 </html>
 
 ### Requirements
-- The Action name (i.e., &lt;actionName&gt; MUST be less than or equal to 256 characters.</p>
+
+- The Action name (i.e., &lt;actionName&gt; MUST be less than or equal to 256 characters.
 - The Action entity schema includes all general <a href="#SCHEMA_ENTITY">Entity Schema</a> fields in addition to any fields declared above.
 - Supplying a runtime name without a version indicates that OpenWhisk SHOULD use the most current version.
 - Supplying a runtime <i>major version</i> without a <i>minor version</i> (et al.) indicates OpenWhisk SHOULD use the most current <i>minor version</i>.
@@ -98,23 +99,34 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
   - **authKey**: the Basic auth. credentials of the OpenWhisk user who owns the trigger.
 
 ### Notes
+
+- Input and output parameters are implemented as JSON Objects within the OpenWhisk framework.
 - The maximum code size for an Action currently must be less than 48 MB.
 - The maximum payload size for an Action (i.e., POST content length or size) currently must be less than 1 MB.
 - The maximum parameter size for an Action currently must be less than 1 MB.
+- if no value for runtime is supplied, the value ‘language:default’ will be assumed.
 
 ### Grammar
+
 ```yaml
-# Note: the optional [.<type>] grammar is used for naming Web Actions.
 <actionName>[.<type>]:
-  <Entity schema> # Common to all OpenWhisk Entities
+  <Entity schema>
+  version: <version>
   function: <string>
   runtime: <name>[@<[range of ]version>]
+  inputs:
+    <list of Parameter>
+  outputs:
+    <list of Parameter>
   limits:
     <list of limit key-values>
   feed: <boolean> # default: false
+  web-export: <boolean>
 ```
+_**Note**: the optional [.<type>] grammar is used for naming Web Actions._
 
 ### Example
+
 ```yaml
 my_awesome_action:
   version: 1.0
@@ -146,161 +158,71 @@ These packages may vary by OpenWhisk release; examples of supported runtimes as 
 <table>
 
   <tr>
-   <td>
-   <p>Runtime value</p>
-   </td>
-   <td>
-   <p>OpenWhisk kind</p>
-   </td>
-   <td>
-   <p>image name</p>
-   </td>
-   <td>
-   <p>Description</p>
-   </td>
+   <th>Runtime value</th>
+   <th>OpenWhisk kind</th>
+   <th>image name</th>
+   <th>Description</th>
   </tr>
 
  <tr>
-  <td>
-  <p>nodejs</p>
-  </td>
-  <td>
-  <p>nodejs</p>
-  </td>
-  <td>
-  <p>nodejsaction:latest</p>
-  </td>
-  <td>
-  <p>Latest NodeJS runtime</p>
-  </td>
+  <td>nodejs</td>
+  <td>nodejs</td>
+  <td>nodejsaction:latest</td>
+  <td>Latest NodeJS runtime</td>
  </tr>
  <tr>
-  <td>
-  <p>nodejs@6</p>
-  </td>
-  <td>
-  <p>nodejs:6</p>
-  </td>
-  <td>
-  <p>nodejs6action:latest</p>
-  </td>
-  <td>
-  <p>Latest NodeJS 6 runtime</p>
-  </td>
+  <td>nodejs@6</td>
+  <td>nodejs:6</td>
+  <td>nodejs6action:latest</td>
+  <td>Latest NodeJS 6 runtime</td>
  </tr>
  <tr>
-  <td>
-  <p>java, java@8</p>
-  </td>
-  <td>
-  <p>java</p>
-  </td>
-  <td>
-  <p>java8action:latest</p>
-  </td>
-  <td>
-  <p>Latest Java language runtime</p>
-  </td>
+  <td>java, java@8</td>
+  <td>java</td>
+  <td>java8action:latest</td>
+  <td>Latest Java language runtime</td>
  </tr>
  <tr>
-  <td>
-  <p>python, python@2</p>
-  </td>
-  <td>
-  <p>python:2</p>
-  </td>
-  <td>
-  <p>python2action:latest</p>
-  <p>&nbsp;</p>
-  </td>
-  <td>
-  <p>Latest Python 2 language runtime</p>
-  </td>
+  <td>python, python@2</td>
+  <td>python:2</td>
+  <td>python2action:latest</td>
+  <td>Latest Python 2 language runtime</td>
  </tr>
  <tr>
-  <td>
-  <p>python@3</p>
-  </td>
-  <td>
-  <p>python:3</p>
-  </td>
-  <td>
-  <p>python3action:latest</p>
-  </td>
-  <td>
-  <p>Latest Python 3 language runtime</p>
-  </td>
+  <td>python@3</td>
+  <td>python:3</td>
+  <td>python3action:latest</td>
+  <td>Latest Python 3 language runtime</td>
  </tr>
  <tr>
-  <td>
-  <p>swift, swift@2</p>
-  </td>
-  <td>
-  <p>swift</p>
-  </td>
-  <td>
-  <p>swiftaction:latest</p>
-  </td>
-  <td>
-  <p>Latest Swift 2 language runtime</p>
-  </td>
+  <td>swift, swift@2</td>
+  <td>swift</td>
+  <td>swiftaction:latest</td>
+  <td>Latest Swift 2 language runtime</td>
  </tr>
  <tr>
-  <td>
-  <p>swift@3</p>
-  </td>
-  <td>
-  <p>swift:3</p>
-  </td>
-  <td>
-  <p>swift3action:latest</p>
-  </td>
-  <td>
-  <p>Latest Swift 3 language runtime</p>
-  </td>
+  <td>swift@3</td>
+  <td>swift:3</td>
+  <td>swift3action:latest</td>
+  <td>Latest Swift 3 language runtime</td>
  </tr>
  <tr>
-  <td>
-  <p>swift@3.1.1</p>
-  </td>
-  <td>
-  <p>swift:3.1.1</p>
-  </td>
-  <td>
-  <p>action-swift-v3.1.1:latest</p>
-  </td>
-  <td>
-  <p>Latest Swift 3.1.1 language runtime</p>
-  </td>
+  <td>swift@3.1.1</td>
+  <td>swift:3.1.1</td>
+  <td>action-swift-v3.1.1:latest</td>
+  <td>Latest Swift 3.1.1 language runtime</td>
  </tr>
  <tr>
-  <td>
-  <p>php</p>
-  </td>
-  <td>
-  <p>php:7.1</p>
-  </td>
-  <td>
-  <p>action-php-v7.1:latest</p>
-  </td>
-  <td>
-  <p>Latest PHP language runtime</p>
-  </td>
+  <td>php</td>
+  <td>php:7.1</td>
+  <td>action-php-v7.1:latest</td>
+  <td>Latest PHP language runtime</td>
  </tr>
  <tr>
-  <td>
-  <p>language:default</p>
-  </td>
-  <td>
-  <p>N/A</p>
-  </td>
-  <td>
-  <p>N/A</p>
-  </td>
-  <td>
-  <p>Permit the OpenWhisk platform to select the correct default
-  language runtime.</p>
-  </td>
+  <td>language:default</td>
+  <td>N/A</td>
+  <td>N/A</td>
+  <td>Permit the OpenWhisk platform to select the correct default language runtime.</td>
  </tr>
 </table>
 </html>
@@ -322,59 +244,29 @@ following file extensions are recognized and will be run on the latest version o
   </tr>
 
  <tr>
-  <td>
-  <p>.js</p>
-  </td>
-  <td>
-  <p>nodejs</p>
-  </td>
-  <td>
-  <p>Latest Node.js runtime.</p>
-  </td>
+  <td>.js</td>
+  <td>nodejs</td>
+  <td>Latest Node.js runtime.</td>
  </tr>
  <tr>
-  <td>
-  <p>.java</p>
-  </td>
-  <td>
-  <p>java</p>
-  </td>
-  <td>
-  <p>Latest Java language runtime.</p>
-  </td>
+  <td>.java</td>
+  <td>java</td>
+  <td>Latest Java language runtime.</td>
  </tr>
  <tr>
-  <td>
-  <p>.py</p>
-  </td>
-  <td>
-  <p>python</p>
-  </td>
-  <td>
-  <p>Latest Python language runtime.</p>
-  </td>
+  <td>.py</td>
+  <td>python</td>
+  <td>Latest Python language runtime.</td>
  </tr>
  <tr>
-  <td>
-  <p>.swift</p>
-  </td>
-  <td>
-  <p>swift</p>
-  </td>
-  <td>
-  <p>Latest Swift language runtime.</p>
-  </td>
+  <td>.swift</td>
+  <td>swift</td>
+  <td>Latest Swift language runtime.</td>
  </tr>
  <tr>
-  <td>
-  <p>.php</p>
-  </td>
-  <td>
-  <p>php</p>
-  </td>
-  <td>
-  <p>Latest PHP language runtime.</p>
-  </td>
+  <td>.php</td>
+  <td>php</td>
+  <td>Latest PHP language runtime.</td>
  </tr>
 </table>
 </html>
@@ -392,139 +284,55 @@ following file extensions are recognized and will be run on the latest version o
   </tr>
 
  <tr>
-  <td>
-  <p>timeout</p>
-  </td>
-  <td>
-  <p>scalar-unit.time</p>
-  </td>
-  <td>
-  <p>60000 ms</p>
-  </td>
-  <td>
-  <p>[100 ms, 300000 ms]</p>
-  </td>
-  <td>
-  <p>The per-invocation Action timeout.&nbsp; Default unit is
-  assumed to be milliseconds (ms).</p>
+  <td>timeout</td>
+  <td>scalar-unit.time</td>
+  <td>60000 ms</td>
+  <td>[100 ms, 300000 ms]</td>
+  <td>The per-invocation Action timeout. Default unit is assumed to be milliseconds (ms).</td>
+ </tr>
+ <tr>
+  <td>memorySize</td>
+  <td>scalar-unit.size</td>
+  <td>256 MB</td>
+  <td>[128 MB, 512 MB]</td>
+  <td>The per-Action memory. Default unit is assumed to be in megabytes (MB).</p>
   </td>
  </tr>
  <tr>
-  <td>
-  <p>memorySize</p>
-  </td>
-  <td>
-  <p>scalar-unit.size</p>
-  </td>
-  <td>
-  <p>256 MB</p>
-  </td>
-  <td>
-  <p>[128 MB, 512 MB]</p>
-  </td>
-  <td>
-  <p>The per-Action memory. Default unit is assumed to be in
-  megabytes (MB).</p>
-  </td>
+  <td>logSize</td>
+  <td>scalar-unit.size</td>
+  <td>10 MB</td>
+  <td>[0 MB, 10 MB]</td>
+  <td>The action log size. Default unit is assumed to be in megabytes (MB).</td>
  </tr>
  <tr>
-  <td>
-  <p>logSize</p>
-  </td>
-  <td>
-  <p>scalar-unit.size</p>
-  </td>
-  <td>
-  <p>10 MB</p>
-  </td>
-  <td>
-  <p>[0 MB, 10 MB]</p>
-  </td>
-  <td>
-  <p>The action log size. Default unit is assumed to be in
-  megabytes (MB).</p>
-  </td>
+  <td>concurrentActivations</td>
+  <td>integer</td>
+  <td>1000</td>
+  <td><i>See description</i></td>
+  <td>The maximum number of concurrent Action activations allowed (per-namespace). <p><i>Note: This value is not changeable via APIs at this time.</i></p></td>
  </tr>
  <tr>
-  <td>
-  <p>concurrentActivations</p>
-  </td>
-  <td>
-  <p>integer</p>
-  </td>
-  <td>
-  <p>1000</p>
-  </td>
-  <td>
-  <p><i>See description</i></p>
-  </td>
-  <td>
-  <p>The maximum number of concurrent Action activations
-  allowed (per-namespace). </p>
-  <p>&nbsp;</p>
-  <p><i>Note: This value is not changeable via APIs at this
-  time.</i></p>
-  </td>
+  <td>userInvocationRate</td>
+  <td>integer</td>
+  <td>5000</td>
+  <td><i>See description</i></td>
+  <td>The maximum number of Action invocations allowed per user, per minute. <p><i>Note: This value is not changeable via APIs at this time.</i></p></td>
  </tr>
  <tr>
-  <td>
-  <p>userInvocationRate</p>
-  </td>
-  <td>
-  <p>integer</p>
-  </td>
-  <td>
-  <p>5000</p>
-  </td>
-  <td>
-  <p><i>See description</i></p>
-  </td>
-  <td>
-  <p>The maximum number of Action invocations allowed per user,
-  per minute.&nbsp;&nbsp;&nbsp; </p>
-  <p>&nbsp;</p>
-  <p><i>Note: This value is not changeable via APIs at this time.</i></p>
-  </td>
+  <td>codeSize</td>
+  <td>scalar-unit.size</td>
+  <td>48 MB</td>
+  <td><i>See description</i></td>
+  <td>The maximum size of the Action code.<p><i>Note: This value is not changeable via APIs at this
+  time.</i></p></td>
  </tr>
  <tr>
-  <td>
-  <p>codeSize</p>
-  </td>
-  <td>
-  <p>scalar-unit.size</p>
-  </td>
-  <td>
-  <p>48 MB</p>
-  </td>
-  <td>
-  <p><i>See description</i></p>
-  </td>
-  <td>
-  <p>The maximum size of the Action code.</p>
-  <p>&nbsp;</p>
-  <p><i>Note: This value is not changeable via APIs at this
-  time.</i></p>
-  </td>
- </tr>
- <tr>
-  <td>
-  <p>parameterSize</p>
-  </td>
-  <td>
-  <p>scalar-unit.size</p>
-  </td>
-  <td>
-  <p>1 MB</p>
-  </td>
-  <td>
-  <p><i>See description</i></p>
-  </td>
-  <td>
-  <p>The maximum size </p>
-  <p>&nbsp;</p>
-  <p><i>Note: This value is not changeable via APIs at this
-  time.</i></p>
-  </td>
+  <td>parameterSize</td>
+  <td>scalar-unit.size</td>
+  <td>1 MB</td>
+  <td><i>See description</i></td>
+  <td>The maximum size<p><i>Note: This value is not changeable via APIs at this time.</i></p></td>
  </tr>
 </table>
 </html>
