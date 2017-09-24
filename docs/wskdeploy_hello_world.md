@@ -32,7 +32,7 @@ $ ./wskdeploy -m docs/examples/manifest_hello_world.yaml
 ```sh
 $ wsk action invoke hello_world_package/hello_world --blocking
 ```
-should return an 'ok' invoked with a response that looks like
+should return an 'ok' with a response that looks like:
 ```sh
     "response": {
         "result": {
@@ -45,14 +45,11 @@ should return an 'ok' invoked with a response that looks like
 
 ### Discussion
 
-In the above example,
-
 This "hello world" example represents the minimum valid Manifest file which includes only the required parts of the Package and Action descriptors.
 
-In the above example, the ```wskdeploy``` utility:
-- Deployed the package and its action to the user’s default namespace using the ‘package’ and 'action' names.
+- The package and action were deployed to the user’s default namespace:
   - ```/<default namespace>/hello_world_package/hello_world```
-- The ```wskdeploy``` utility detects that the NodeJS runtime is needed based upon the file extension ```'.js'``` of the function's source file 'hello.js'.
+- The NodeJS runtime was selected automatically based upon the file extension '```.js```'' of the function's source file '```hello.js```'.
 - The parameters 'name' and 'place' in this example are not set to any default values; therefore 'greeting' will appear a follows:
   - ```"greeting": "Hello, undefined from undefined"```
   we will explore setting these values in later examples.
