@@ -1,6 +1,6 @@
 # Parameters
 
-- [Dollar Notation ($)](dollar-notation-($)-schema-for-values)
+- [Dollar Notation ($)](dollar-notation-schema-for-values)
 
 ## Parameter schema
 The Parameter schema is used to define input and/or output data to be used by OpenWhisk entities for the purposes of validation.
