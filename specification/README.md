@@ -12,7 +12,7 @@ In general, the goal of this specification is to evolve a simple grammar to desc
 - **Deployment file**: Contains the values and bindings used configure a Package to a target OpenWhisk platform provider’s environment and supply input parameter values for Packages, Actions and Triggers.  This can include Namespace bindings, security and policy information.
 
 # Programming Guide
-If you want to learn how to write Packages and Applications using the specification and deploy them using the ```wskdeploy``` utility, please read the step-by-step guide:
+If you want to learn how to write Packages and Applications by example using the specification and deploy them using the ```wskdeploy``` utility, please read the step-by-step guide:
 - "[wskdeploy utility by example](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/programming_guide.md#wskdeploy-utility-by-example)"
 
 # OpenWhisk Package Specification (HTML)
@@ -43,6 +43,8 @@ The following images outline the basic process for creating and using both Manif
 
 #### Conceptual Manifest file creation
 ![Manifest file creation](images/OpenWhisk%20-%20Conceptual%20Manifest%20File%20Creation.png "image 1")
+
+---
 
 #### Conceptual Manifest file deployment
 ![Manifest file deployment](images/OpenWhisk%20-%20Conceptual%20Manifest%20File%20Deployment.png "image 1")
