@@ -26,7 +26,7 @@ Simply execute the wskdeploy binary against the directory you saved your "manife
 ```sh
 $ wskdeploy -p <my_directory>
 ```
-wskdeploy will automatically look for any file named "manifest.yaml" or "manifest.yml" in the directory it is pointed; however, the manifest file can be called anything as long as it has a .yaml or .yml extension and passed on the command line using the ```-m``` flag.
+wskdeploy will automatically look for any file named ```"manifest.yaml"``` or ```"manifest.yml"``` in the directory it is pointed; however, the _manifest file can be called anything_ as long as it has a .yaml or .yml extension and passed on the command line using the ```-m``` flag.
 
 For example, if you called your manifest "my_pkg_manifest.yml" you could simply provide the manifest file name as follows:
 ```sh
@@ -72,10 +72,12 @@ The source code for the manifest and JavaScript files can be found here:
 ### What if ```wskdeploy``` encounters an error during deployment?
 
 -  The ```wskdeploy``` utility will cease deploying as soon as it receives an error from the target platform and display what error information it receives to you.
-- It will then attempt to undeploy any entities that it attempted to deploy.
-  - If "interactive mode" was used to deploy then you will be prompted to confirm you wish to undeploy.
+- then it will attempt to undeploy any entities that it attempted to deploy.
+  - If "interactive mode" was used to deploy, then you will be prompted to confirm you wish to undeploy.
 
 ---
+
+When ready, you can navigate to the next example _'Creating a "hello world" package'_.
 <!--
  Bottom Navigation
 -->
