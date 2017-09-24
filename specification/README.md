@@ -46,5 +46,5 @@ The following images outline the basic process for creating and using both Manif
 
 ---
 
-#### Conceptual Manifest file deployment
+### Conceptual Manifest file deployment
 ![Manifest file deployment](images/OpenWhisk%20-%20Conceptual%20Manifest%20File%20Deployment.png "image 1")
