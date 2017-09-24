@@ -6,7 +6,7 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 <html>
 <table>
   <tr>
-   <th>Key Name</th>
+   <th width="80">Key Name</th>
    <th>Required</th>
    <th>Value Type</th>
    <th>Default</th>

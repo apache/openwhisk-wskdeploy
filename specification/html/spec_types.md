@@ -103,7 +103,7 @@ OpenWhisk package manifest:
 ********************************
 -->
 
-##OpenWhisk Types
+## OpenWhisk Types
 In addition to the YAML built-in types, OpenWhisk supports the types listed in the table below. A complete description of each of these types is provided below.
 
 <html>
