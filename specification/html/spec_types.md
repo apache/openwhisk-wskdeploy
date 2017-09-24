@@ -1,3 +1,10 @@
+# Parameter Types
+
+- [YAML Types](#yaml-types)
+- [OpenWhisk Types](#openwhisk-types)
+  - [scalar-unit Types](#scalar-unit-types)
+  - [scalar-unit.size](#scalar-unit.size)
+  - [scalar-unit.time](#scalar-unit.time)
 
 <!--
 ********************************
@@ -5,15 +12,14 @@
 ********************************
 -->
 
-<h2>YAML Types</H2>
+## YAML Types
 
-<p>Many of the types we use in this profile are <i>built-in</i> types from the <a
-href="http://www.yaml.org/spec/1.2/spec.html">YAML 1.2 specification</a>
-(i.e., those identified by the 'tag:yaml.org,2002' version tag). </p>
+Many of the types we use in this profile are <i>built-in</i> types from the [YAML 1.2 specification](http://www.yaml.org/spec/1.2/spec.html) (i.e., those identified by the 'tag:yaml.org,2002' version tag).
 
-<p>The following table declares the valid YAML type URIs and aliases that SHALL be used when defining parameters or properties within an
-OpenWhisk package manifest:<a> </a></p>
+The following table declares the valid YAML type URIs and aliases that SHALL be used when defining parameters or properties within an
+OpenWhisk package manifest:
 
+<html>
 <table width="100%">
  <tr>
   <th width=20%>Type Name</th>
@@ -87,23 +93,22 @@ OpenWhisk package manifest:<a> </a></p>
   </td>
  </tr>
 </table>
+</html>
 
-<h4>Requirements</h4>
-<ul>
-<li>The 'string' type SHALL be the default type when not specified on a parameter or property declaration.</li>
-<li>All 'boolean' values SHALL be lowercased (i.e., 'true' or 'false').</li>
-</ul>
-<html>
+### Requirements
+- The 'string' type SHALL be the default type when not specified on a parameter or property declaration.
+- All 'boolean' values SHALL be lowercased (i.e., 'true' or 'false').
 
 <!--
 ********************************
   OpenWhisk Types
 ********************************
 -->
+
+##OpenWhisk Types
+In addition to the YAML built-in types, OpenWhisk supports the types listed in the table below. A complete description of each of these types is provided below.
+
 <html>
-<h2>OpenWhisk Types</h2>
-<p>In addition to the YAML built-in types, OpenWhisk supports the types listed in the table below. A complete description of each of these types is provided below.</p>
-<p>&nbsp;</p>
 <table width="100%">
  <tr>
   <th width=20%>Type Name</th>
@@ -209,39 +214,35 @@ OpenWhisk package manifest:<a> </a></p>
   </td>
  </tr>
 </table>
-
+</html>
 
 <!--
 ********************************
   scalar-unit types
 ********************************
 -->
-<h2>scalar-unit types</h2>
-<p>Scalar-unit types can be used to define scalar values along with a unit from the list of recognized units (a subset of GNU units) provided below.</p>
-</html>
+### scalar-unit types
+Scalar-unit types can be used to define scalar values along with a unit from the list of recognized units (a subset of GNU units) provided below.
 
 ### Grammar
 ```
 <scalar> <unit>
 ```
 
-<html>
-<h3>Requirements</h3>
-<ul>
-<li><b>Whitespace</b>: any number of spaces (including zero or none) SHALL be allowed between the scalar value and the unit value.</p>
-<li> It SHALL be considered an error if either the scalar or unit portion is missing on a property or attribute declaration derived from any scalar-unit type.</li>
-</ul>
+### Requirements
 
-<h3>Recognized units for sizes (i.e., scalar-unit.size)</h3>
+- **Whitespace**: any number of spaces (including zero or none) SHALL be allowed between the scalar value and the unit value.
+- It SHALL be considered an error if either the scalar or unit portion is missing on a property or attribute declaration derived from any scalar-unit type.
+
+### scalar-unit.size
+
+### Recognized units for sizes (i.e., scalar-unit.size)
+<html>
 <table width="100%">
 
   <tr>
-   <th>
-   <p>Unit</p>
-   </th>
-   <th>
-   <p>Description</p>
-   </th>
+   <th>Unit</th>
+   <th>Description</th>
   </tr>
 
  <tr>
@@ -285,11 +286,9 @@ OpenWhisk package manifest:<a> </a></p>
   </td>
  </tr>
 </table>
-
-<h3>Example</h3>
-
 </html>
 
+### Example
 ```yaml
 inputs:
   memory_size:
@@ -297,8 +296,10 @@ inputs:
     value: 256 MB
 ```
 
+### scalar-unit.time
+
+#### Recognized units for times (i.e., scalar-unit.time)
 <html>
-<h3>Recognized units for times (i.e., scalar-unit.time)</h3>
 <table>
   <tr>
    <th width="20%">
@@ -368,7 +369,6 @@ inputs:
     type: scalar-unit.time
     value: 600 s
 ```
-
 
 ### Object type example
 
