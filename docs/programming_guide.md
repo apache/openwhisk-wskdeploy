@@ -13,71 +13,23 @@ In addition to the normal output the ```wskdeploy``` utility provides, you may e
 
 ---
 
-## Creating a "hello world" application
+# Guided Examples
 
-As with most language introductions, here we show a minimal "hello world" application as encoded in an OpenWhisk Package Manifest YAML file:
+Below is the list of "guided examples" where you can start by "Creating a 'hello world' application" and traverse through each example or jump to any example that interests you.
 
-```yaml
-package:
-  name: hello_world_package
-  version: 1.0
-  license: Apache-2.0
-  actions:
-    hello_world:
-      function: src/hello.js
-```
+Each example shows the "code", that is the Package Manifest, Deployment file and Actions that will be used to deploy that application or package, as well as discusses the interesting features the example is highlighting.
 
-where "hello.js" contains the following JavaScript code:
-```javascript
-function main(params) {
-    msg = "Hello, " + params.name + " from " + params.place;
-    return { greeting:  msg };
-}
-```
+- [Creating a "Hello World" package](wsdeploy_hello_world.md#creating-a-hello-world-package)
+- [Creating a minimal Package](wskdeploy_packages.md#packages) - creating a basic package and deploying it from your
 
-#### Source code
-The source code for the manifest and JavaScript files can be found here:
-- [manifest_hello_world.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world.yaml)
-- [hello.js](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/src/hello.js)
+---
 
-
-### Deploying "hello world"
-
-You can actually deploy the "hello world" manifest from the incubator-openwhisk-wskdeploy project directory if you have downloaded it from GitHub:
-
-```sh
-$ ./wskdeploy -m docs/examples/manifest_hello_world.yaml
-```
-
-if you want to simply verify your manifest is able to read and parse your manifest file, you can add the ```-i``` or ```--allow-interactive``` flag:
-
-```sh
-$ ./wskdeploy -i -m docs/examples/manifest_hello_world.yaml
-```
-
-and the utility will stop, show you all the OpenWhisk package components it will deply and ask you if you want to deploy them or not.
-
-```
-Package:
-  name: hello_world_package
-  bindings:
-
-  * action: hello_world
-    bindings:
-    annotations:
-
-  Triggers:
-  Rules:
-
-Do you really want to deploy this? (y/N):
-```
-
-### Examining the "hello world" Manifest
-
-The "hello world" example represents the minimum valid Manifest file which includes only the required parts of the Package and Action desciptors.
-
-<!--
-If you want to explore all possible Package and Action declarations (i.e., their schema) you can read:
-- [Exploring Packages](wskdeploy_packages.md) - step-by-step guide on the **Package** schema.
-- [Exploring Actions](wskdeploy_actions.md) - step-by-step guide on the **Action** schema.
--->
+<html>
+<table align="center">
+  <tr>
+    <td><a href="wsdeploy_hello_world.md#creating-a-hello-world-package">previous</a></td>
+    <td></td>
+    <td><a>next</a></td>
+  </tr>
+</table>
+</html>
