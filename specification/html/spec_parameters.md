@@ -15,7 +15,6 @@ The Parameter schema is used to define input and/or output data to be used by Op
    <th>Default</th>
    <th>Description</th>
   </tr>
-
  <tr>
   <td>
   <p>type</p>
@@ -172,7 +171,7 @@ The 'type' key acknowledges some popular schema (e.g., JSON) to use when validat
 
 Where <YAML type> is inferred to be a YAML type as shown in the YAML Types section above (e.g., string, integer, float, boolean, etc.).
 
-If you wish the parser to validate against a different schema, then the multi-line grammar MUST be used where the value would be supplied on the keyname ÒvalueÓ and the type (e.g., json) and/or schema (e.g., OpenAPI) can be supplied.
+If you wish the parser to validate against a different schema, then the multi-line grammar MUST be used where the value would be supplied on the keyname 'value' and the type (e.g., 'json') and/or schema (e.g., OpenAPI) can be supplied.
 
 #### Multi-line
 ```yaml
@@ -237,7 +236,7 @@ In a Manifest or Deployment file, a parameter value may be set from the local ex
 
 ### Requirements
 
-- Processors or tooling that encounter ($) Dollar notation and are unable to locate the value in the execution environment SHOULD resolve the value to be the default value for the type (e.g., an empty string for type string).
+- Processors or tooling that encounter ($) Dollar notation and are unable to locate the value in the execution environment SHOULD resolve the value to be the default value for the type (e.g., an empty string ("") for type 'string').
 
 ### Notes
 

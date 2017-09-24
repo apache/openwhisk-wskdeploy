@@ -9,9 +9,9 @@ If you want to learn how to write Packages and Applications using the specificat
 
 ## Index
 - [Parameters](spec_parameters.md#parameters) - grammar, schema and examples for input and output parameters.
-- [Parameter Types](spec_types.md#parameter-types) - Includes supported YAML and OpenWhisk Types.
+- [Parameter Types](spec_types.md#parameter-types) - supported YAML and OpenWhisk Types.
 - [Shared Entity Schema](spec_shared_entity_schema.md#shared-entity-schema) - fields that are common among entities in the programming model.
 - [Packages](spec_packages.md#packages) - grammar, schema and examples for Packages.
 - [Actions](spec_actions.md#actions) - grammar, schema and examples for Actions.
-- [Triggers and Rules](spec_trigger_rule.md#triggers-and-rules) - drammar, schema and examples for Triggers and Rules.
+- [Triggers and Rules](spec_trigger_rule.md#triggers-and-rules) - grammar, schema and examples for Triggers and Rules.
 - [Normative & Non-normative References](spec_normative_refs.md)

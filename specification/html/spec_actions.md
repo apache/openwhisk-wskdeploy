@@ -12,7 +12,6 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
    <th>Default</th>
    <th>Description</th>
   </tr>
-
  <tr>
   <td>version</td>
   <td>no</td>
