@@ -1,4 +1,4 @@
-## Creating a "hello world" application
+## Creating a "hello world" package
 
 As with most language introductions, here we show a minimal "hello world" application as encoded in an OpenWhisk Package Manifest YAML file:
 
