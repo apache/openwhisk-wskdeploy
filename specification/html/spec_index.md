@@ -8,7 +8,7 @@ If you want to learn how to write Packages and Applications using the specificat
 - "[wskdeploy utility by example](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/programming_guide.md#wskdeploy-utility-by-example)"
 
 ## Index
-- [Parameter Types](spec_types.md#yaml-types) - Includes supported YAML and OpenWhisk Types.
+- [Parameter Types](spec_types.md#parameter-types) - Includes supported YAML and OpenWhisk Types.
 - [Shared Entity Schema](spec_shared_entity_schema.md#shared-entity-schema) - Defines keys that are common to all entities in the programming model.
 - [Packages](spec_packages.md#Packages) - Grammar, schema and examples for Packages.
 - [Actions](spec_actions.md#Actions) - Grammar, schema and examples for Actions.
