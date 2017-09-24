@@ -12,5 +12,5 @@ If you want to learn how to write Packages and Applications using the specificat
 - [Shared Entity Schema](spec_shared_entity_schema.md#shared-entity-schema) - Defines keys that are common to all entities in the programming model.
 - [Packages](spec_packages.md#packages) - Grammar, schema and examples for Packages.
 - [Actions](spec_actions.md#actions) - Grammar, schema and examples for Actions.
-- [Triggers and Rules](spec_triggers_rules.md#triggers-and-rules) - Grammar, schema and examples for Triggers and Rules.
+- [Triggers and Rules](spec_trigger_rule.md#triggers-and-rules) - Grammar, schema and examples for Triggers and Rules.
 - [Normative & Non-normative References](spec_normative_refs.md)
