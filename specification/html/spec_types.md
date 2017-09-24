@@ -223,8 +223,19 @@ In addition to the YAML built-in types, OpenWhisk supports the types listed in t
 Scalar-unit types can be used to define scalar values along with a unit from the list of recognized units (a subset of GNU units) provided below.
 
 ### Grammar
-```
+```yaml
 <scalar> <unit>
+```
+
+### Example
+```yaml
+inputs:
+  max_storage_size:
+    type: scalar-unit.size
+    default: 10 GB
+  archive_period:
+    type: scalar-unit.time
+    default: 30 d
 ```
 
 ### Requirements
