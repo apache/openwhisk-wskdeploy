@@ -3,8 +3,6 @@
 - [YAML Types](#yaml-types)
 - [OpenWhisk Types](#openwhisk-types)
   - [scalar-unit Types](#scalar-unit-types)
-  - [scalar-unit.size](#scalar-unit-size)
-  - [scalar-unit.time](#scalar-unit-time)
 
 <!--
 ********************************
