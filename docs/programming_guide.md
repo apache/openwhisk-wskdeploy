@@ -27,9 +27,9 @@ Each example shows the "code", that is the Package Manifest, Deployment file and
 <html>
 <table align="center">
   <tr>
-    <td><a href="wsdeploy_hello_world.md#creating-a-hello-world-package">previous</a></td>
-    <td></td>
-    <td><a>next</a></td>
+    <td><a>previous</a></td>
+    <td><a href="programming_guide.md#guided-examples">Index</a></td>
+    <td><a href="wsdeploy_hello_world.md#creating-a-hello-world-package">next</a></td>
   </tr>
 </table>
 </html>
