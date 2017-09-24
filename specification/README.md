@@ -6,7 +6,7 @@ Current version (link):  [openwhisk_v0.8.9.pdf](https://github.com/apache/incuba
 
 ## Purpose
 
-In general, the goal of this specificatio is to evolve a simple grammar to describe and deploy a complete OpenWhisk package without having to use any APIs.  Specifically, this specification defines two file artifacts, along with YAML schema, that are used to describe OpenWhisk Packages for deployment to a target OpenWhisk platform; these are:
+In general, the goal of this specification is to evolve a simple grammar to describe and deploy a complete OpenWhisk package without having to use any APIs.  Specifically, this specification defines two file artifacts, along with YAML schema, that are used to describe OpenWhisk Packages for deployment to a target OpenWhisk platform; these are:
 
 - **Package Manifest file**: Contains the Package definition along with any included Action, Trigger or Rule definitions that comprise the package.  This file includes the schema of input and output data to each entity for validation purposes.
 - **Deployment file**: Contains the values and bindings used configure a Package to a target OpenWhisk platform provider’s environment and supply input parameter values for Packages, Actions and Triggers.  This can include Namespace bindings, security and policy information.
@@ -15,12 +15,12 @@ In general, the goal of this specificatio is to evolve a simple grammar to descr
 If you want to learn how to write Packages and Applications using the specification and deploy them using the ```wskdeploy``` utility, please read the step-by-step guide:
 - "[wskdeploy utility by example](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/programming_guide.md#wskdeploy-utility-by-example)"
 
-# Specification (HTML format)
+# OpenWhisk Package Specification (HTML)
 
-Portions of the OpenWhisk Packaging Specification, for convenience, are made available here in HTML format. The canonical source for the specification is in PDF format and can be found within this repository:
-- [https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/specification](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/specification)
+Portions of the OpenWhisk Packaging Specification, for convenience, are made available here in HTML format. The canonical source for the specification is in PDF format and can be found within this directory.
 
 ## Index
+
 - [Parameters](spec_parameters.md#parameters) - grammar, schema and examples for input and output parameters.
 - [Parameter Types](spec_types.md#parameter-types) - supported YAML and OpenWhisk Types.
 - [Shared Entity Schema](spec_shared_entity_schema.md#shared-entity-schema) - fields that are common among entities in the programming model.
