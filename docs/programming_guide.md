@@ -32,7 +32,7 @@ Each example shows the "code", that is the Package Manifest, Deployment file and
   <tr>
     <td><a>&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Index</a></td>
-    <td><a href="wskdeploy_hello_world.md#creating-a-hello-world-package">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_packages.md#packages">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>
