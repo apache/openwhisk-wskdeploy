@@ -18,7 +18,7 @@ package:
   license: Apache-2.0
 ```
 
-Save this into a file called "manifest.yaml" in a directory of your choice.
+Save this into a file called ```"manifest.yaml"``` in a directory of your choice.
 
 ### Executing the wskdeploy utility
 Simply execute the wskdeploy binary against the directory you saved your "manifest.yaml" file in by pointing it to the package location using the ```-p``` flag.
@@ -57,7 +57,13 @@ Package:
 Do you really want to deploy this? (y/N):
 ```
 
-Now you can see what will be deployed
+Now you can verify what the utility intends to deploy and decide whether to continue onto actual deployment with your chosen provider.
+
+#### Source code
+The source code for the manifest and JavaScript files can be found here:
+- [manifest_package_minimal.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_package_minimal.yaml)
+
+## Common questions
 
 ### What if ```wskdeploy``` finds an error in my manifest?
 
