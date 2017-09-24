@@ -23,7 +23,9 @@ Each example shows the "code", that is the Package Manifest, Deployment file and
 - [Creating a minimal Package](wskdeploy_packages.md#packages) - creating a basic package and deploying it from your
 
 ---
-
+<!--
+ Bottom Navigation
+-->
 <html>
 <div align="center">
 <table align="center">
