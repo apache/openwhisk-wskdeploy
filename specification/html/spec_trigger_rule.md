@@ -1,4 +1,9 @@
-## Trigger
+## Triggers and Rules
+
+- [Triggers](#trigger)
+- [Rules](#rules)
+
+## Triggers
 
 The Trigger entity schema contains the necessary information to describe the stream of events that it represents. For more information, see the document "[Creating Triggers and Rules](https://github.com/apache/incubator-openwhisk/blob/master/docs/triggers_rules.md)".
 
@@ -120,7 +125,7 @@ triggers:
 
 ---
 
-## Rule
+## Rules
 
 The Rule entity schema contains the information necessary to associates one trigger with one action, with every firing of the trigger causing the corresponding action to be invoked with the trigger event as input. For more information, see the document "[Creating Triggers and Rules](https://github.com/apache/incubator-openwhisk/blob/master/docs/triggers_rules.md)".
 

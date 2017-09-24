@@ -1,4 +1,4 @@
-## Action entity
+## Actions
 
 The Action entity schema contains the necessary information to deploy an OpenWhisk function and define its deployment configurations, inputs and outputs.
 

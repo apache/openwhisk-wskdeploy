@@ -1,4 +1,4 @@
-## Package
+## Packages
 
 The Package entity schema is used to define an OpenWhisk package within a manifest.
 
