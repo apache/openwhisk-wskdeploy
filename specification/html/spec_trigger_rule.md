@@ -1,6 +1,6 @@
 ## Triggers and Rules
 
-- [Triggers](#trigger)
+- [Triggers](#triggers)
 - [Rules](#rules)
 
 ## Triggers
