@@ -26,7 +26,7 @@ function main(params) {
 You can actually deploy the "hello world" manifest from the incubator-openwhisk-wskdeploy project directory if you have downloaded it from GitHub:
 
 ```sh
-$ ./wskdeploy -m docs/examples/manifest_hello_world.yaml
+$ wskdeploy -m docs/examples/manifest_hello_world.yaml
 ```
 
 ### Invoking
@@ -38,9 +38,9 @@ $ wsk action invoke hello_world_package/hello_world --blocking
 The invocation should return an 'ok' with a response that includes this result:
 
 ```sh
-  "result": {
-      "greeting": "Hello, undefined from undefined"
-  },
+"result": {
+    "greeting": "Hello, undefined from undefined"
+},
 ```
 
 The output parameter '```greeting```''s value included "_undefined_" values for the '```name```' and '```place```' input parameters as they were not provided in the manifest.
