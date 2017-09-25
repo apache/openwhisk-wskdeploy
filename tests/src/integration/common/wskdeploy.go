@@ -19,22 +19,25 @@ package common
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-    "github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/fatih/color"
 	"github.com/mattn/go-colorable"
 	"os"
 	"os/exec"
 	"strings"
-    "errors"
+	"path/filepath"
+	"path"
 )
 
 const (
-    cmd = "wskdeploy"
-    BLUEMIX_APIHOST = "BLUEMIX_APIHOST"
-    BLUEMIX_NAMESPACE = "BLUEMIX_NAMESPACE"
-    BLUEMIX_AUTH = "BLUEMIX_AUTH"
+	cmd               = "wskdeploy"
+	BLUEMIX_APIHOST   = "BLUEMIX_APIHOST"
+	BLUEMIX_NAMESPACE = "BLUEMIX_NAMESPACE"
+	BLUEMIX_AUTH      = "BLUEMIX_AUTH"
 )
 
 type Wskdeploy struct {
@@ -47,37 +50,36 @@ func NewWskdeploy() *Wskdeploy {
 }
 
 func GetWskpropsFromEnvVars(apiHost string, namespace string, authKey string) *whisk.Wskprops {
-    return GetWskpropsFromValues(os.Getenv(apiHost), os.Getenv(namespace), os.Getenv(authKey), "v1")
+	return GetWskpropsFromValues(os.Getenv(apiHost), os.Getenv(namespace), os.Getenv(authKey), "v1")
 }
 
 func GetWskpropsFromValues(apiHost string, namespace string, authKey string, version string) *whisk.Wskprops {
-    dep := whisk.Wskprops {
-        APIHost: apiHost,
-        AuthKey: authKey,
-        Namespace: namespace,
-        AuthAPIGWKey: "",
-        APIGWSpaceSuid: "",
-        Apiversion: version,
-        Key: "",
-        Cert: "",
-        Source: "",
-    }
-    return &dep
+	dep := whisk.Wskprops{
+		APIHost:        apiHost,
+		AuthKey:        authKey,
+		Namespace:      namespace,
+		AuthAPIGWKey:   "",
+		APIGWSpaceSuid: "",
+		Apiversion:     version,
+		Key:            "",
+		Cert:           "",
+		Source:         "",
+	}
+	return &dep
 }
 
 func ValidateWskprops(wskprops *whisk.Wskprops) error {
-    if len(wskprops.APIHost) == 0 {
-        return errors.New("Missing APIHost for wskprops.")
-    }
-    if len(wskprops.Namespace) == 0 {
-        return errors.New("Missing Namespace for wskprops.")
-    }
-    if len(wskprops.AuthKey) == 0 {
-        return errors.New("Missing AuthKey for wskprops.")
-    }
-    return nil
+	if len(wskprops.APIHost) == 0 {
+		return errors.New("Missing APIHost for wskprops.")
+	}
+	if len(wskprops.Namespace) == 0 {
+		return errors.New("Missing Namespace for wskprops.")
+	}
+	if len(wskprops.AuthKey) == 0 {
+		return errors.New("Missing AuthKey for wskprops.")
+	}
+	return nil
 }
-
 
 func NewWskWithPath(path string) *Wskdeploy {
 	var dep Wskdeploy
@@ -121,8 +123,8 @@ func (wskdeploy *Wskdeploy) RunCommand(s ...string) (string, error) {
 		if len(errb.String()) > 0 {
 			returnError = utils.NewTestCaseError(errb.String())
 		} else {
-            returnError = err
-        }
+			returnError = err
+		}
 	}
 	printOutput(outb.String())
 	if returnError != nil {
@@ -136,8 +138,8 @@ func (wskdeploy *Wskdeploy) Deploy(manifestPath string, deploymentPath string) (
 }
 
 func (wskdeploy *Wskdeploy) DeployWithCredentials(manifestPath string, deploymentPath string, wskprops *whisk.Wskprops) (string, error) {
-    return wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath, "--auth", wskprops.AuthKey,
-        "--namespace", wskprops.Namespace, "--apihost", wskprops.APIHost, "--apiversion", wskprops.Apiversion)
+	return wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath, "--auth", wskprops.AuthKey,
+		"--namespace", wskprops.Namespace, "--apihost", wskprops.APIHost, "--apiversion", wskprops.Apiversion)
 }
 
 func (wskdeploy *Wskdeploy) Undeploy(manifestPath string, deploymentPath string) (string, error) {
@@ -145,8 +147,8 @@ func (wskdeploy *Wskdeploy) Undeploy(manifestPath string, deploymentPath string)
 }
 
 func (wskdeploy *Wskdeploy) UndeployWithCredentials(manifestPath string, deploymentPath string, wskprops *whisk.Wskprops) (string, error) {
-    return wskdeploy.RunCommand("undeploy", "-m", manifestPath, "-d", deploymentPath, "--auth", wskprops.AuthKey,
-        "--namespace", wskprops.Namespace, "--apihost", wskprops.APIHost, "--apiversion", wskprops.Apiversion)
+	return wskdeploy.RunCommand("undeploy", "-m", manifestPath, "-d", deploymentPath, "--auth", wskprops.AuthKey,
+		"--namespace", wskprops.Namespace, "--apihost", wskprops.APIHost, "--apiversion", wskprops.Apiversion)
 }
 
 func (wskdeploy *Wskdeploy) DeployProjectPathOnly(projectPath string) (string, error) {
@@ -164,5 +166,45 @@ func (wskdeploy *Wskdeploy) DeployManifestPathOnly(manifestpath string) (string,
 
 func (wskdeploy *Wskdeploy) UndeployManifestPathOnly(manifestpath string) (string, error) {
 	return wskdeploy.RunCommand("undeploy", "-m", manifestpath)
+}
 
+// This method is only for testing
+// This method will mock a construction of deployment plan, creating all the memory objects
+// This method CANNOT be used for real deployment!
+// Param manifestPath & deploymentPath MUST be the absolute path.
+func (wskdeploy *Wskdeploy) GetDeploymentObjects(manifestPath string, deploymentPath string) (*deployers.DeploymentApplication, error) {
+	//create ServiceDeployer and set default values
+	deployer := deployers.NewServiceDeployer()
+	deployer.ProjectPath = filepath.Dir(manifestPath)
+	deployer.ManifestPath = manifestPath
+	deployer.DeploymentPath = deploymentPath
+	deployer.IsDefault = false
+	deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
+
+	//create client config with namespace, apihost, authkey and etc.
+	//these values might be mock values because it's only for testing
+	userHome := utils.GetHomeDirectory()
+	defaultPath := path.Join(userHome, whisk.DEFAULT_LOCAL_CONFIG)
+	clientConfig, err := deployers.NewWhiskConfig(defaultPath, deploymentPath, manifestPath, false)
+	if err != nil {
+		return nil, err
+	}
+	deployer.ClientConfig = clientConfig
+
+	//setSupportedRuntimes(apiHost string)
+	//only for testing, mock values
+	op, err := utils.ParseOpenWhisk(clientConfig.Host)
+	if err == nil {
+		utils.Rts = utils.ConvertToMap(op)
+	} else {
+		utils.Rts = utils.DefaultRts
+	}
+
+	//invokce ConstructDeploymentPlan to create the in memory objects for deployment
+	err = deployer.ConstructDeploymentPlan()
+	if err != nil {
+		return nil,err
+	}
+	//return the deployment objects
+	return deployer.Deployment, nil
 }
