@@ -414,14 +414,14 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		if action.Runtime != "" {
 			if utils.CheckExistRuntime(action.Runtime, utils.Rts) {
 				wskaction.Exec.Kind = action.Runtime
-			} else {
-				errStr := wski18n.T("the runtime is not supported by Openwhisk platform.\n")
-				whisk.Debug(whisk.DbgWarn, errStr)
-			}
-		} else {
-			errStr := wski18n.T("wskdeploy has chosen a particular runtime for the action.\n")
-			whisk.Debug(whisk.DbgWarn, errStr)
-		}
+
+			} else if utils.Flags.Strict {
+                wskaction.Exec.Kind = action.Runtime
+            } else {
+                errStr := wski18n.T("wskdeploy has chosen a particular runtime for the action.\n")
+			    whisk.Debug(whisk.DbgWarn, errStr)
+            }
+        }
 
 		// we can specify the name of the action entry point using main
 		if action.Main != "" {

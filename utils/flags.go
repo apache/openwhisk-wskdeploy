@@ -32,6 +32,7 @@ var Flags struct {
 	ManifestPath    string
 	UseDefaults     bool
 	UseInteractive  bool
+	Strict          bool   // strict flag to support user defined runtime version.
 
 	//action flag definition
 	//from go cli
