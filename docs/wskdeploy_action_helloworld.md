@@ -57,8 +57,8 @@ In the above example,
 
 ### Source code
 The source code for the manifest and JavaScript files can be found here:
-- [manifest_hello_world.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world.yaml)
-- [hello.js](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/src/hello.js)
+- [manifest_hello_world.yaml](examples/manifest_hello_world.yaml)
+- [hello.js](examples/src/hello.js)
 
 ### Specification
 For convenience, the Packages and Actions grammar can be found here:
