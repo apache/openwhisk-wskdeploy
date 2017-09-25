@@ -11,8 +11,8 @@ In order to deploy your OpenWhisk package, at minimum, the ```wskdeploy``` utili
 ### Debugging your Package Manifests
 In addition to the normal output the ```wskdeploy``` utility provides, you may enable additional information that may further assist you in debugging. Please read the [Debugging Whisk Deploy](wskdeploy_debugging.md#debugging-wskdeploy) document.
 
-### FAQ for the ```wskdeploy``` utility
-Answers to Frequently asked questions may be found in the [wskdeploy utility FAQ](wskdeploy_faq.md).
+### FAQ for ```wskdeploy```
+Answers to Frequently Asked Questions may be found in the [wskdeploy utility FAQ](wskdeploy_faq.md).
 
 ---
 

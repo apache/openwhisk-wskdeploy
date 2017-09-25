@@ -2,9 +2,6 @@
 
 The wskdeploy utility works primarily with the OpenWhisk **Package** resource as described in the [OpenWhisk Packaging Specification](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/specification#openwhisk-packaging-specification).
 
-For convenience, the schema and grammar for declaring a **Package** can be found here:
-[https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_packages.md#packages](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_packages.md#packages)
-
 ## Creating an OpenWhisk Package
 
 ### Start with a Package Manifest (YAML) file
@@ -23,6 +20,8 @@ package:
 Save this into a file called ```"manifest.yaml"``` in a directory of your choice.
 
 ### Deploying
+
+#### using the project path
 Simply execute the ```wskdeploy``` utility binary against the directory you saved your "manifest.yaml" file in by pointing it to the package location using the ```-p``` flag.
 
 ```sh
@@ -30,13 +29,10 @@ $ wskdeploy -p <my_directory>
 ```
 wskdeploy will automatically look for any file named ```"manifest.yaml"``` or ```"manifest.yml"``` in the directory it is pointed; however, the _manifest file can be called anything_ as long as it has a .yaml or .yml extension and passed on the command line using the ```-m``` flag.
 
+#### using a named manifest file
 For example, if you called your manifest "my_pkg_manifest.yml" you could simply provide the manifest file name as follows:
 ```sh
 $ wskdeploy -p <my_directory> -m my_pkg_manifest.yaml
-```
-
-### Result
-```sh
 ```
 
 #### Interactive mode
@@ -44,7 +40,7 @@ $ wskdeploy -p <my_directory> -m my_pkg_manifest.yaml
 if you want to simply verify your manifest is able to read and parse your manifest file, you can add the ```-i``` or ```--allow-interactive``` flag:
 
 ```sh
-$ ./wskdeploy -i -m docs/examples/manifest_hello_world.yaml
+$ ./wskdeploy -i -m docs/examples/manifest_helloworld.yaml
 ```
 
 and the utility will stop, show you all the OpenWhisk package components it will deploy and ask you if you want to deploy them or not.
@@ -64,15 +60,29 @@ Package:
 Do you really want to deploy this? (y/N):
 ```
 
-Now you can verify what the utility intends to deploy and decide whether to continue onto actual deployment with your chosen provider.
+### Result
+You can use the Whisk CLI to confirm your package was created:
+```sh
+$ wsk package list
+
+packages
+/<default_namespace>/hello_world_package
+
+```
 
 ### Discussion
 
-TBD
+- The package '```hello_world_package```' was created in the user's default namespace at their target OpenWhisk provider.
+- Currently, OpenWhisk does not yet support the 'version' or 'license' fields, but are planned for future versions.
 
 #### Source code
 The source code for the manifest and JavaScript files can be found here:
 - [manifest_package_minimal.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_package_minimal.yaml)
+
+
+### Specification
+For convenience, the Packages grammar can be found here:
+- **[Packages](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_packages.md#packages)**
 
 ---
 

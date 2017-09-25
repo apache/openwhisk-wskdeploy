@@ -65,6 +65,11 @@ The source code for the manifest and JavaScript files can be found here:
 - [manifest_helloworld.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world_1.yaml)
 - [hello.js](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/src/hello.js)
 
+### Specification
+For convenience, the Packages and Actions grammar can be found here:
+- **[Packages](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_packages.md#packages)**
+- **[Actions](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions)**
+
 ---
 <!--
  Bottom Navigation
