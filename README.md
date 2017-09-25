@@ -191,3 +191,8 @@ This is caused by newer `git` versions not forwarding requests anymore. One solu
 ```
 $ git config --global http.https://gopkg.in.followRedirects true
 ```
+
+## Creating Tagged Releases
+
+Committers can find instructions on how to create tagged releases here:
+- [creating_tagged_releases.md](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/docs/creating_tagged_releases.md)

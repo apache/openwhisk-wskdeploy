@@ -12,7 +12,7 @@ $ wskdeploy -v -m manifest.yaml
 
 ## Enable console logging in your Action
 
-You may call ```console.log(<text>)`` within your Action (function) code to aid in debugging.  For example, in NodeJS (JavaScript) you could output your entire JSON payload before returning it:
+You may call ```console.log(<text>)``` within your Action (function) code to aid in debugging.  For example, in NodeJS (JavaScript) you could output your entire JSON payload before returning it:
 ```
 function main(params) {
     msg = "Hello, " + params.name + " from " + params.place;
