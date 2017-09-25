@@ -11,7 +11,7 @@ This example:
 
 If we want to do more than declare the type (i.e., ‘string’, ‘integer’, ‘float’, etc.) of the input parameter, we can use the multi-line grammar.
 
-#### Example 3: input and output parameters with explicit types and descriptions
+#### _Example: input and output parameters with explicit types and descriptions_
 ```yaml
 package:
   name: hello_world_package

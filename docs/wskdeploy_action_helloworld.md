@@ -3,6 +3,8 @@
 As with most language introductions, here we show a simple "hello world" action as encoded in an OpenWhisk Package Manifest YAML file:
 
 ### Manifest file
+
+#### _Example: “Hello world” using a NodeJS (JavaScript) action_
 ```yaml
 package:
   name: hello_world_package

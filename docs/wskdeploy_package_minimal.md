@@ -32,7 +32,7 @@ wskdeploy will automatically look for any file named ```"manifest.yaml"``` or ``
 #### using a named manifest file
 If you called your manifest "manifest_helloworld.yaml" (not using the default manifest.yaml name) and placed it in a directory below your project directory, you could simply provide the project-relative path to the manifest file as follows:
 ```sh
-$ wskdeploy -p <my_directory> -m docs/examples/manifest_helloworld.yaml
+$ wskdeploy -p <my_directory> -m docs/examples/manifest_package_minimal.yaml
 ```
 
 #### Interactive mode
@@ -40,14 +40,14 @@ $ wskdeploy -p <my_directory> -m docs/examples/manifest_helloworld.yaml
 If you want to simply verify your manifest file can be read and parsed properly before deploying, you can add the ```-i``` or ```--allow-interactive``` flag:
 
 ```sh
-$ ./wskdeploy -i -m docs/examples/manifest_helloworld.yaml
+$ ./wskdeploy -i -m docs/examples/manifest_package_minimal.yaml
 ```
 
 and the utility will stop, show you all the OpenWhisk package components it will deploy from your manifest and ask you if you want to deploy them or not.
 
 ```sh
 Package:
-  name: hello_world_package
+Name: hello_world_package
   bindings:
   annotations:
 Triggers:

@@ -8,7 +8,7 @@ It shows how to:
 
 ### Manifest File
 
-#### Example 2: 'Hello world' with explicit input and output parameter declarations
+#### _Example: 'Hello world' with explicit input and output parameter declarations_
 ```yaml
 package:
   name: hello_world_package
