@@ -2,7 +2,7 @@
 
 The wskdeploy utility works primarily with the OpenWhisk **Package** resource as described in the [OpenWhisk Packaging Specification](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/specification#openwhisk-packaging-specification).
 
-## Creating an OpenWhisk Package
+## Creating a minimal OpenWhisk Package
 
 ### Start with a Package Manifest (YAML) file
 The ```wskdeploy``` utility mainly uses a single YAML file, called a "Package Manifest", to describe all the OpenWhisk components that make up your OpenWhisk Package including Actions, Triggers, Rules, etc.
@@ -30,9 +30,9 @@ $ wskdeploy -p <my_directory>
 wskdeploy will automatically look for any file named ```"manifest.yaml"``` or ```"manifest.yml"``` in the directory it is pointed; however, the _manifest file can be called anything_ as long as it has a .yaml or .yml extension and passed on the command line using the ```-m``` flag.
 
 #### using a named manifest file
-For example, if you called your manifest "my_pkg_manifest.yml" you could simply provide the manifest file name as follows:
+For example, if you called your manifest "manifest_helloworld.yaml" and placed it in a directory below your project directory, you could simply provide the project-relative path to the manifest file as follows:
 ```sh
-$ wskdeploy -p <my_directory> -m my_pkg_manifest.yaml
+$ wskdeploy -p <my_directory> -m docs/examples/manifest_helloworld.yaml
 ```
 
 #### Interactive mode
@@ -49,13 +49,9 @@ and the utility will stop, show you all the OpenWhisk package components it will
 Package:
   name: hello_world_package
   bindings:
-
-  * action: hello_world
-    bindings:
-    annotations:
-
-  Triggers:
-  Rules:
+  annotations:
+Triggers:
+Rules:
 
 Do you really want to deploy this? (y/N):
 ```
@@ -73,12 +69,11 @@ packages
 ### Discussion
 
 - The package '```hello_world_package```' was created in the user's default namespace at their target OpenWhisk provider.
-- Currently, OpenWhisk does not yet support the 'version' or 'license' fields, but are planned for future versions.
+- Currently, OpenWhisk does not yet support the '```version```' or '```license```' fields, but are planned for future versions.  However, their values will be validated against the specification.
 
 #### Source code
 The source code for the manifest and JavaScript files can be found here:
 - [manifest_package_minimal.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_package_minimal.yaml)
-
 
 ### Specification
 For convenience, the Packages grammar can be found here:
@@ -86,7 +81,6 @@ For convenience, the Packages grammar can be found here:
 
 ---
 
-When ready, you can navigate to the next example _'Creating a "hello world" package'_.
 <!--
  Bottom Navigation
 -->
