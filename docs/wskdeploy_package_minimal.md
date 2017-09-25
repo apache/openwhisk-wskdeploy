@@ -84,8 +84,8 @@ When ready, you can navigate to the next example _'Creating a "hello world" pack
 <div align="center">
 <table align="center">
   <tr>
-    <td><a href="programming_guide.md#guided-examples">&lt;&lt;&nbsp;previous</a></td>
-    <td><a href="programming_guide.md">Example Index</a></td>
+    <td><a href="programming_guide.md">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
     <td><a href="wskdeploy_hello_world.md#creating-a-hello-world-package">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>

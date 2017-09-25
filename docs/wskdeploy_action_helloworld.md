@@ -74,7 +74,7 @@ The source code for the manifest and JavaScript files can be found here:
 <table align="center">
   <tr>
     <td><a href="wskdeploy_package_minimal.md#packages">&lt;&lt;&nbsp;previous</a></td>
-    <td><a href="programming_guide.md">Example Index</a></td>
+    <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
     <td><a href="">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
