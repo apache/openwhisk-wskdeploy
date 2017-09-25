@@ -216,6 +216,31 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	pub := false
 	pag.Publish = &pub
 
+	//Version is a mandatory value
+	//If it is an empty string, it will be set to default value
+	//And print an warning message
+	if pkg.Version == "" {
+		warningString := wski18n.T("WARNING: Mandatory field Package Version must be set.\n")
+		whisk.Debug(whisk.DbgWarn, warningString)
+		warningString = wski18n.T("WARNING: Package Version is not saved in the current wskdeploy version.\n")
+		whisk.Debug(whisk.DbgWarn, warningString)
+		pkg.Version = "0.0.1"
+	}
+
+	//License is a mandatory value
+	//set license to unknown if it is an empty string
+	//And print an warning message
+	if pkg.License == "" {
+		warningString := wski18n.T("WARNING: Mandatory field Package License must be set.\n")
+		whisk.Debug(whisk.DbgWarn, warningString)
+		warningString = wski18n.T("WARNING: Package License is not saved in the current wskdeploy version.\n")
+		whisk.Debug(whisk.DbgWarn, warningString)
+		pkg.License = "unlicensed"
+	} else {
+		utils.CheckLicense(pkg.License)
+	}
+
+	//set parameters
 	keyValArr := make(whisk.KeyValueArr, 0)
 	for name, param := range pkg.Inputs {
 		var keyVal whisk.KeyValue
