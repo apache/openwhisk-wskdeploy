@@ -37,6 +37,10 @@ In this example:
 The manifest file for this example can be found here:
 - [manifest_hello_world_2.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world_2.yaml)
 
+### Specification
+For convenience, the schema and grammar for declaring an **Action** can be found here:
+[https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions)
+
 ---
 <!--
  Bottom Navigation

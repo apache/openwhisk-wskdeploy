@@ -2,6 +2,7 @@
 
 As with most language introductions, here we show a minimal "hello world" application as encoded in an OpenWhisk Package Manifest YAML file:
 
+### Manifest file
 ```yaml
 package:
   name: hello_world_package
