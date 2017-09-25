@@ -54,7 +54,7 @@ This "hello world" example represents the minimum valid Manifest file which incl
   - ```"greeting": "Hello, undefined from undefined"```
   we will explore setting these values in later examples.
 
-#### Source code
+### Source code
 The source code for the manifest and JavaScript files can be found here:
 - [manifest_hello_world.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world.yaml)
 - [hello.js](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/src/hello.js)
@@ -69,7 +69,7 @@ The source code for the manifest and JavaScript files can be found here:
   <tr>
     <td><a href="wskdeploy_packages.md#creating-a-hello-world-package">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Index</a></td>
-    <td><a href="wskdeploy_helloworld_basic_io.md#"hello-world-action-with-input-and-output-parameters">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_helloworld_basic_parms.md#hello-world-action-with-basic-parameters">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>

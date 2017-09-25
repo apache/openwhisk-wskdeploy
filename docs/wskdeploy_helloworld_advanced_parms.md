@@ -1,4 +1,4 @@
-## "Hello world" Action with input and output parameters
+## "Hello world" Action with basic parameters
 
 This use case extends the 'Hello world' example with explicit input and output Parameter declarations.
 
@@ -32,6 +32,10 @@ In this example:
 
 - The default values for the '```name```' and '```place```' inputs would be set to empty strings (i.e., ''), since they are of type 'string', when passed to the 'hello.js' function; therefore 'greeting' will appear a follows:
   - ```"greeting": "Hello, from "```
+
+### Source code
+The source code for the manifest and JavaScript files can be found here:
+- [manifest_hello_world_2.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world_2.yaml)
 
 ---
 <!--

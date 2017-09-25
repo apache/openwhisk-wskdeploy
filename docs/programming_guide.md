@@ -21,6 +21,7 @@ Each example shows the "code", that is the Package Manifest, Deployment file and
 
 - [Creating a minimal Package](wskdeploy_packages.md#packages) - creating a basic package manifet and deploying it.
 - [Creating a "Hello World" package](wsdeploy_hello_world.md#creating-a-hello-world-package) - deploy your first function using a manifest.
+- [Helloworld with Input & Output Parameters](wskdeploy_helloworld_basic_parms.md#hello-world-action-with-basic-parameters) - declare named input and output parameters on an Action with their types.
 
 ---
 <!--
