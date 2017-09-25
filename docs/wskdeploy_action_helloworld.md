@@ -1,6 +1,6 @@
 ## The "Hello World" Action
 
-As with most language introductions, here we show a minimal "hello world" action as encoded in an OpenWhisk Package Manifest YAML file:
+As with most language introductions, here we show a simple "hello world" action as encoded in an OpenWhisk Package Manifest YAML file:
 
 ### Manifest file
 ```yaml
