@@ -21,32 +21,37 @@ function main(params) {
 }
 ```
 
-### Deploying "hello world"
+### Deploying
 
 You can actually deploy the "hello world" manifest from the incubator-openwhisk-wskdeploy project directory if you have downloaded it from GitHub:
 
 ```sh
-$ ./wskdeploy -m docs/examples/manifest_hello_world.yaml
+$ ./wskdeploy -m docs/examples/manifest_hello_world_1.yaml
 ```
 
-### Running
+### Invoking
 ```sh
 $ wsk action invoke hello_world_package/hello_world --blocking
 ```
-should return an 'ok' with a response that looks like:
+
+### Result
+The invocation should return an 'ok' with a response that includes this result:
+
 ```sh
-    "response": {
-        "result": {
-            "greeting": "Hello, undefined from undefined"
-        },
-        "status": "success",
-        "success": true
-    },
+  "result": {
+      "greeting": "Hello, undefined from undefined"
+  },
 ```
 
 ### Discussion
 
 This "hello world" example represents the minimum valid Manifest file which includes only the required parts of the Package and Action descriptors.
+
+In the above example,
+- The Package and its Action were deployed to the user’s default namespace using the ‘package’ name.
+  - ```/<default namespace>/hello_world_package/hello_world```
+- The default runtime (i.e., ```runtime: nodejs```) was automatically selected based upon the ‘```.js```’ extension on the Action function’s source file '```hello.js```'.
+
 
 - The package and action were deployed to the user’s default namespace:
   - ```/<default namespace>/hello_world_package/hello_world```
@@ -57,7 +62,7 @@ This "hello world" example represents the minimum valid Manifest file which incl
 
 ### Source code
 The source code for the manifest and JavaScript files can be found here:
-- [manifest_hello_world.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world.yaml)
+- [manifest_hello_world_1.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world_1.yaml)
 - [hello.js](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/src/hello.js)
 
 ---

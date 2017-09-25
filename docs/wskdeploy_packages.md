@@ -8,7 +8,9 @@ For convenience, the schema and grammar for declaring a **Package** can be found
 ## Creating an OpenWhisk Package
 
 ### Start with a Package Manifest (YAML) file
-The wskdeploy utility mainly uses a single file, that uses a YAML syntax, called a "Package Manifest", to describe all the OpenWhisk components that make up your OpenWhisk Package including Actions, Triggers, Rules, etc.
+The ```wskdeploy``` utility mainly uses a single YAML file, called a "Package Manifest", to describe all the OpenWhisk components that make up your OpenWhisk Package including Actions, Triggers, Rules, etc.
+
+### Manifest
 
 The minimal manifest file would include only a package declaration, a version number and a license for the package:
 ```
@@ -63,18 +65,6 @@ Now you can verify what the utility intends to deploy and decide whether to cont
 The source code for the manifest and JavaScript files can be found here:
 - [manifest_package_minimal.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_package_minimal.yaml)
 
-## Common questions
-
-### What if ```wskdeploy``` finds an error in my manifest?
-
-- The ```wskdeploy``` utility will not attempt to deploy a package if an error in the manifest is detected, but will report as much information as it can to help you locate the error in the YAML file.
-
-### What if ```wskdeploy``` encounters an error during deployment?
-
--  The ```wskdeploy``` utility will cease deploying as soon as it receives an error from the target platform and display what error information it receives to you.
-- then it will attempt to undeploy any entities that it attempted to deploy.
-  - If "interactive mode" was used to deploy, then you will be prompted to confirm you wish to undeploy.
-
 ---
 
 When ready, you can navigate to the next example _'Creating a "hello world" package'_.
@@ -86,7 +76,7 @@ When ready, you can navigate to the next example _'Creating a "hello world" pack
 <table align="center">
   <tr>
     <td><a href="programming_guide.md#guided-examples">&lt;&lt;&nbsp;previous</a></td>
-    <td><a href="programming_guide.md#guided-examples">Index</a></td>
+    <td><a href="programming_guide.md">Index</a></td>
     <td><a href="wskdeploy_hello_world.md#creating-a-hello-world-package">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
