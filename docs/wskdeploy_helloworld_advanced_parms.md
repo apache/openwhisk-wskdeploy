@@ -1,4 +1,4 @@
-## Action with advanced parameters
+## Actions with advanced parameters
 
 This example builds on the previous “Hello world with basic input and output parameters” example with more robust input and output parameter declarations by using a multi-line format for declaration.
 
@@ -43,8 +43,9 @@ The manifest file for this example can be found here:
 - [manifest_hello_world_3.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world_2.yaml)
 
 ### Specification
-For convenience, the schema and grammar for declaring an **Parameters** can be found here:
-[https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_parameters.md#parameters](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_parameters.md#parameters)
+For convenience, links to the schema and grammar for Actions and Parameters:
+- **Actions**: [https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions)
+- **Parameters** [https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_parameters.md#parameters](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_parameters.md#parameters)
 
 ---
 <!--

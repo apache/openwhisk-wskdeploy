@@ -1,6 +1,6 @@
 ## Actions with basic parameters
 
-This use case extends the 'Hello world' example with explicit input and output Parameter declarations.
+This example extends the 'Hello world' example with explicit input and output Parameter declarations.
 
 This example:
 - shows how to declare input and output parameters on the action 'hello_world'
@@ -38,8 +38,9 @@ The manifest file for this example can be found here:
 - [manifest_hello_world_2.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world_2.yaml)
 
 ### Specification
-For convenience, the schema and grammar for declaring an **Action** can be found here:
-[https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions)
+For convenience, links to the schema and grammar for Actions and Parameters:
+- **Actions**: [https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions)
+- **Parameters** [https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_parameters.md#parameters](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_parameters.md#parameters)
 
 ---
 <!--
