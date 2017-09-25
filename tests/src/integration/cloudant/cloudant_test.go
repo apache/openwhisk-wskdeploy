@@ -30,7 +30,7 @@ import (
 func TestCloudant(t *testing.T) {
 	os.Setenv("CLOUDANT_DATABASE", "testdb")
 	wskprops := common.GetWskpropsFromEnvVars(common.BLUEMIX_APIHOST, common.BLUEMIX_NAMESPACE, common.BLUEMIX_AUTH)
-	err := common.ValidateWskprops(wskprops)
+    err := common.ValidateWskprops(wskprops)
 	if err != nil {
 		fmt.Println(err.Error())
 		fmt.Println("Wsk properties are not properly configured, so tests are skipped.")
