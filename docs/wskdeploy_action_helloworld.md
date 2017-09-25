@@ -26,7 +26,7 @@ function main(params) {
 You can actually deploy the "hello world" manifest from the incubator-openwhisk-wskdeploy project directory if you have downloaded it from GitHub:
 
 ```sh
-$ ./wskdeploy -m docs/examples/manifest_helloworld.yaml
+$ ./wskdeploy -m docs/examples/manifest_hello_world.yaml
 ```
 
 ### Invoking
@@ -43,26 +43,21 @@ The invocation should return an 'ok' with a response that includes this result:
   },
 ```
 
+The output parameter '```greeting```''s value included "_undefined_" values for the '```name```' and '```place```' input parameters as they were not provided in the manifest.
+
 ### Discussion
 
 This "hello world" example represents the minimum valid Manifest file which includes only the required parts of the Package and Action descriptors.
 
 In the above example,
-- The Package and its Action were deployed to the user’s default namespace using the ‘package’ name.
+- The Package and its Action were deployed to the user’s default namespace using the ‘package’ and 'action' names from the manifest.
   - ```/<default namespace>/hello_world_package/hello_world```
-- The default runtime (i.e., ```runtime: nodejs```) was automatically selected based upon the ‘```.js```’ extension on the Action function’s source file '```hello.js```'.
+- The NodeJS default runtime (i.e., ```runtime: nodejs```) was selected automatically based upon the file extension '```.js```'' of the function's source file '```hello.js```'.
 
-
-- The package and action were deployed to the user’s default namespace:
-  - ```/<default namespace>/hello_world_package/hello_world```
-- The NodeJS runtime was selected automatically based upon the file extension '```.js```'' of the function's source file '```hello.js```'.
-- The parameters 'name' and 'place' in this example are not set to any default values; therefore 'greeting' will appear a follows:
-  - ```"greeting": "Hello, undefined from undefined"```
-  we will explore setting these values in later examples.
 
 ### Source code
 The source code for the manifest and JavaScript files can be found here:
-- [manifest_helloworld.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world_1.yaml)
+- [manifest_hello_world.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world.yaml)
 - [hello.js](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/src/hello.js)
 
 ### Specification
