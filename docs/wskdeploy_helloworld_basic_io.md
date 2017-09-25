@@ -1,15 +1,16 @@
-## "Hello world" with basic input and output parameters
+## "Hello world" Action with input and output parameters
 
-This use case extends the ÒHello worldÓ example with explicit input and output Parameter declarations.
+This use case extends the 'Hello world' example with explicit input and output Parameter declarations.
 
 This example:
-- shows how to declare input and output parameters on the action Ôhello_worldÕ
-using a simple, single-line grammar.</p>
-- adds two input parameters, ÔnameÕ and ÔplaceÕ, both of type ÔstringÕ to the Ôhello_worldÕ action.
-- adds one output parameter, ÔgreetingÕ of type string to the Ôhello_worldÕ action.</p>
-Manifest File
+- shows how to declare input and output parameters on the action 'hello_world'
+using a simple, single-line grammar.
+- adds two input parameters, '```name```' and '```place```', both of type '```string```' to the '```hello_world```' action.
+- adds one output parameter, '```greeting```' of type string to the '```hello_world```' action.
 
-### Example 2: ÒHello worldÓ with explicit input and output parameter declarations
+### Manifest File
+
+#### Example 2: 'Hello world' with explicit input and output parameter declarations
 ```yaml
 package:
   name: hello_world_package
@@ -29,4 +30,21 @@ This packaging specification grammar places an emphasis on simplicity for the ca
 
 In this example:
 
-- The default values for the ÔnameÕ and ÔplaceÕ inputs would be set to empty strings (i.e., ÒÓ), since they are of type ÔstringÕ, when passed to the Ôhello.jsÕ function.</p>
+- The default values for the '```name```' and '```place```' inputs would be set to empty strings (i.e., ''), since they are of type 'string', when passed to the 'hello.js' function; therefore 'greeting' will appear a follows:
+  - ```"greeting": "Hello, from "```
+
+---
+<!--
+ Bottom Navigation
+-->
+<html>
+<div align="center">
+<table align="center">
+  <tr>
+    <td><a href="wskdeploy_hello_world.md#creating-a-hello-world-package">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="programming_guide.md#guided-examples">Index</a></td>
+    <td><a href="">next&nbsp;&gt;&gt;</a></td>
+  </tr>
+</table>
+</div>
+</html>

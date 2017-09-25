@@ -67,9 +67,9 @@ The source code for the manifest and JavaScript files can be found here:
 <div align="center">
 <table align="center">
   <tr>
-    <td><a href="wskdeploy_hello_world.md#creating-a-hello-world-package">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="wskdeploy_packages.md#creating-a-hello-world-package">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Index</a></td>
-    <td><a href="">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_helloworld_basic_io.md#"hello-world-action-with-input-and-output-parameters">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>
