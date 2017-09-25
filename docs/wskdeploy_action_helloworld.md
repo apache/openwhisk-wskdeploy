@@ -1,6 +1,6 @@
-## Creating a "hello world" package
+## The "Hello World" Action
 
-As with most language introductions, here we show a minimal "hello world" application as encoded in an OpenWhisk Package Manifest YAML file:
+As with most language introductions, here we show a minimal "hello world" action as encoded in an OpenWhisk Package Manifest YAML file:
 
 ### Manifest file
 ```yaml
@@ -26,7 +26,7 @@ function main(params) {
 You can actually deploy the "hello world" manifest from the incubator-openwhisk-wskdeploy project directory if you have downloaded it from GitHub:
 
 ```sh
-$ ./wskdeploy -m docs/examples/manifest_hello_world_1.yaml
+$ ./wskdeploy -m docs/examples/manifest_helloworld.yaml
 ```
 
 ### Invoking
@@ -62,7 +62,7 @@ In the above example,
 
 ### Source code
 The source code for the manifest and JavaScript files can be found here:
-- [manifest_hello_world_1.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world_1.yaml)
+- [manifest_helloworld.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world_1.yaml)
 - [hello.js](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/src/hello.js)
 
 ---
@@ -73,9 +73,9 @@ The source code for the manifest and JavaScript files can be found here:
 <div align="center">
 <table align="center">
   <tr>
-    <td><a href="wskdeploy_packages.md#packages">&lt;&lt;&nbsp;previous</a></td>
-    <td><a href="programming_guide.md#guided-examples">Index</a></td>
-    <td><a href="wskdeploy_helloworld_basic_parms.md#hello-world-action-with-basic-parameters">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_package_minimal.md#packages">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="programming_guide.md">Example Index</a></td>
+    <td><a href="">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>

@@ -1,16 +1,15 @@
-## Actions with basic parameters
+## Actions with typed input and output parameters
 
 This example extends the 'Hello world' example with explicit input and output Parameter declarations.
 
-This example:
-- shows how to declare input and output parameters on the action 'hello_world'
-using a simple, single-line grammar.
-- adds two input parameters, '```name```' and '```place```', both of type '```string```' to the '```hello_world```' action.
+It shows how to:
+- declare input and output parameters on the action '```hello_world```' using a simple, single-line format.
+- add two input parameters, '```name```' and '```place```', both of type '```string```' to the '```hello_world```' action.
 - adds one output parameter, '```greeting```' of type string to the '```hello_world```' action.
 
 ### Manifest File
 
-#### Example 2: 'Hello world' with explicit input and output parameter declarations
+#### Example 3: 'Hello world' with typed input and output parameter declarations
 ```yaml
 package:
   name: hello_world_package
@@ -38,9 +37,9 @@ The manifest file for this example can be found here:
 - [manifest_hello_world_2.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world_2.yaml)
 
 ### Specification
-For convenience, links to the schema and grammar for Actions and Parameters:
-- **Actions**: [https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions)
-- **Parameters** [https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_parameters.md#parameters](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_parameters.md#parameters)
+For convenience, the Actions and Parameters grammar can be found here:
+- **[Actions](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions)**
+- **[Parameters](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_parameters.md#parameters)**
 
 ---
 <!--
@@ -50,9 +49,9 @@ For convenience, links to the schema and grammar for Actions and Parameters:
 <div align="center">
 <table align="center">
   <tr>
-    <td><a href="wskdeploy_hello_world.md#creating-a-hello-world-package">&lt;&lt;&nbsp;previous</a></td>
-    <td><a href="programming_guide.md#guided-examples">Index</a></td>
-    <td><a href="wskdeploy_helloworld_advanced_parms.md#actions-with-advanced-parameters">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
+    <td><a href="">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>

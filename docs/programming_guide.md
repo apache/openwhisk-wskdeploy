@@ -11,7 +11,7 @@ In order to deploy your OpenWhisk package, at minimum, the ```wskdeploy``` utili
 ### Debugging your Package Manifests
 In addition to the normal output the ```wskdeploy``` utility provides, you may enable additional information that may further assist you in debugging. Please read the [Debugging Whisk Deploy](wskdeploy_debugging.md#debugging-wskdeploy) document.
 
-### FAQ
+### ```wskdeploy``` FAQ
 Commonly asked questions along with answers may be found in the [wskdeploy utility FAQ](wskdeploy_faq.md).
 
 ---
@@ -23,11 +23,11 @@ Below is the list of "guided examples" where you can start by "Creating a 'hello
 Each example shows the "code", that is the Package Manifest, Deployment file and Actions that will be used to deploy that application or package, as well as discusses the interesting features the example is highlighting.
 
 - Package examples
-  - [Creating a minimal Package](wskdeploy_packages.md#packages) - creating a basic package manifest and deploying it.
+  - [Creating a minimal Package](wskdeploy_package_minimal.md#packages) - creating a basic package manifest and deploying it.
 - Action examples
-  - [The "Hello World" Action](wskdeploy_hello_world.md#creating-a-hello-world-package) - deploy a "hello world" JavaScript function using a manifest.
+  - [The "Hello World" Action](wskdeploy_action_helloworld.md) - deploy a "hello world" JavaScript function using a manifest.
   - [Adding fixed input parameters](wskdeploy_action_fixed_parms.md) - TBD
-  - [Delaring basic typed Parameters](wskdeploy_action_basic_typed_parms.md) - declare named input and output parameters on an Action with their types.
+  - [Declaring typed Parameters](wskdeploy_action_basic_typed_parms.md) - declare named input and output parameters on an Action with their types.
   - [Declaring advanced Parameters](wskdeploy_action_advanced_parms.md) - input and output parameter declarations with more detailed information.
 - Trigger and Rule examples
   - TBD
@@ -41,7 +41,7 @@ Each example shows the "code", that is the Package Manifest, Deployment file and
 <table align="center">
   <tr>
     <td><a>&lt;&lt;&nbsp;previous</a></td>
-    <td><a href="programming_guide.md#guided-examples">Index</a></td>
+    <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
     <td><a href="wskdeploy_packages.md#packages">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>

@@ -22,8 +22,8 @@ package:
 
 Save this into a file called ```"manifest.yaml"``` in a directory of your choice.
 
-### Executing the wskdeploy utility
-Simply execute the wskdeploy binary against the directory you saved your "manifest.yaml" file in by pointing it to the package location using the ```-p``` flag.
+### Deploying
+Simply execute the ```wskdeploy``` utility binary against the directory you saved your "manifest.yaml" file in by pointing it to the package location using the ```-p``` flag.
 
 ```sh
 $ wskdeploy -p <my_directory>
@@ -34,7 +34,12 @@ For example, if you called your manifest "my_pkg_manifest.yml" you could simply 
 ```sh
 $ wskdeploy -p <my_directory> -m my_pkg_manifest.yaml
 ```
-### Interactive mode
+
+### Result
+```sh
+```
+
+#### Interactive mode
 
 if you want to simply verify your manifest is able to read and parse your manifest file, you can add the ```-i``` or ```--allow-interactive``` flag:
 
@@ -61,6 +66,10 @@ Do you really want to deploy this? (y/N):
 
 Now you can verify what the utility intends to deploy and decide whether to continue onto actual deployment with your chosen provider.
 
+### Discussion
+
+TBD
+
 #### Source code
 The source code for the manifest and JavaScript files can be found here:
 - [manifest_package_minimal.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_package_minimal.yaml)
@@ -76,7 +85,7 @@ When ready, you can navigate to the next example _'Creating a "hello world" pack
 <table align="center">
   <tr>
     <td><a href="programming_guide.md#guided-examples">&lt;&lt;&nbsp;previous</a></td>
-    <td><a href="programming_guide.md">Index</a></td>
+    <td><a href="programming_guide.md">Example Index</a></td>
     <td><a href="wskdeploy_hello_world.md#creating-a-hello-world-package">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
