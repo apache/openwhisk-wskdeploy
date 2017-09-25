@@ -1,4 +1,4 @@
-## "Hello world" Action with basic parameters
+## Actions with basic parameters
 
 This use case extends the 'Hello world' example with explicit input and output Parameter declarations.
 
@@ -34,7 +34,7 @@ In this example:
   - ```"greeting": "Hello, from "```
 
 ### Source code
-The source code for the manifest and JavaScript files can be found here:
+The manifest file for this example can be found here:
 - [manifest_hello_world_2.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world_2.yaml)
 
 ---
@@ -47,7 +47,7 @@ The source code for the manifest and JavaScript files can be found here:
   <tr>
     <td><a href="wskdeploy_hello_world.md#creating-a-hello-world-package">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Index</a></td>
-    <td><a href="wskdeploy_helloworld_advanced_parms.md">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_helloworld_advanced_parms.md#actions-with-advanced-parameters">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>
