@@ -12,7 +12,7 @@ In order to deploy your OpenWhisk package, at minimum, the ```wskdeploy``` utili
 In addition to the normal output the ```wskdeploy``` utility provides, you may enable additional information that may further assist you in debugging. Please read the [Debugging Whisk Deploy](wskdeploy_debugging.md#debugging-wskdeploy) document.
 
 ### FAQ
-[wskdeploy utility FAQ](wskdeploy_faq.md)
+Commonly asked questions along with answers may be found in the [wskdeploy utility FAQ](wskdeploy_faq.md).
 
 ---
 
