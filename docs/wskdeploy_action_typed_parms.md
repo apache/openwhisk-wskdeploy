@@ -50,9 +50,11 @@ $ wsk action invoke hello_world_package/hello_world_typed_parms --blocking
 ```
 
 ### Result
+The invocation should return an 'ok' with a response that includes this result:
 ```sh
 "result": {
-    "greeting": "Hello,  from "
+  "greeting": "Hello,  from ",
+  "details": "You have 0 children and are 0 m. tall."
 },
 ```
 
@@ -60,10 +62,9 @@ $ wsk action invoke hello_world_package/hello_world_typed_parms --blocking
 
 In this example:
 
-- The default values for the '```name```' and '```place```' inputs would be set to empty strings (i.e., \"\"), which is the default value for type '```string```', when passed to the 'hello.js' function; therefore 'greeting' will appear a follows:
-  - ```"greeting": "Hello, from "```
-- The default value for integer, zero (0), will be assigned to the 'age' parameter.
-- The default value for float, zero (0.0), will be assigned to the 'height' parameter.
+- The default value for the '```string```' type is the empty string (i.e., \"\"); it was assigned to the '```name```' and '```place```' input parameters.
+- The default value for the '```integer```' type is zero (0); it was assigned to the 'age' input parameter.
+- The default value for the '```float```' type is zero (0.0f); it was assigned to the 'height' input parameter.
 
 ### Source code
 The manifest file for this example can be found here:
