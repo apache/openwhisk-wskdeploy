@@ -5,7 +5,7 @@ package:
   license: Apache-2.0
   actions:
     hello_world_typed_parms:
-      function: src/hello.js
+      function: src/hello_plus.js
       inputs:
         name: string
         place: string

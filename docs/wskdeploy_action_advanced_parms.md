@@ -20,7 +20,7 @@ package:
   ... # Package keys omitted for brevity
   actions:
     hello_world_advanced_parms:
-      function: src/hello/hello.js
+      function: src/hello/hello_plus.js
       runtime: nodejs@6
       inputs:
         name:
@@ -56,6 +56,7 @@ $ wsk action invoke hello_world_package/hello_world_advanced_parms --blocking
 ```
 
 ### Result
+The invocation should return an 'ok' with a response that includes this result:
 ```sh
 "result": {
     "greeting": "Hello, Sam from unknown"

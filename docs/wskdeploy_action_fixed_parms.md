@@ -35,6 +35,7 @@ $ wsk action invoke hello_world_package/hello_world_fixed_parms --blocking
 ```
 
 ### Result
+The invocation should return an 'ok' with a response that includes this result:
 ```sh
 "result": {
     "greeting": "Hello, Sam from the Shire"

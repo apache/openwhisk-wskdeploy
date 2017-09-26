@@ -2,7 +2,7 @@
 
 ## Typed parameters
 
-This example extends the 'Hello world' example with typed input and output Parameters.
+This example shows the 'Hello world' example with typed input and output Parameters.
 
 It shows how to:
 - Declare input and output parameters on the action '```hello_world```' using a simple, single-line format.
@@ -20,16 +20,18 @@ package:
   ... # Package keys omitted for brevity
   actions:
     hello_world_typed_parms:
-      function: src/hello.js
+      function: src/hello_plus.js
       inputs:
         name: string
         place: string
         children: integer
         height: float
       outputs:
-greeting: string
-      outputs:
         greeting: string
+```
+
+```javascript
+
 ```
 
 ### Deploying
