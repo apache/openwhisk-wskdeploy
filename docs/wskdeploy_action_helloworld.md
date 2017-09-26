@@ -2,7 +2,11 @@
 
 ## The "Hello World" Action
 
-As with most language introductions, here we show a simple "hello world" action as encoded in an OpenWhisk Package Manifest YAML file:
+As with most language introductions, in this first example we encode a simple "hello world" action, written in JavaScript, using an OpenWhisk Package Manifest YAML file.
+
+It shows how to:
+- declare a single Action named ‘hello_world’ within the ‘hello_world_package’ Package.
+- associate the JavaScript function’s source code, stored in the file ‘src/hello.js’, to the ‘hello_world’ Action.
 
 ### Manifest file
 
@@ -17,7 +21,8 @@ package:
       function: src/hello.js
 ```
 
-where "hello.js" contains the following JavaScript code:
+where "hello.js", within the package-relative subdirectory named ‘src’, contains the following JavaScript code:
+
 ```javascript
 function main(params) {
     msg = "Hello, " + params.name + " from " + params.place;
@@ -58,7 +63,6 @@ In the above example,
   - ```/<default namespace>/hello_world_package/hello_world```
 - The NodeJS default runtime (i.e., ```runtime: nodejs```) was selected automatically based upon the file extension '```.js```'' of the function's source file '```hello.js```'.
 
-
 ### Source code
 The source code for the manifest and JavaScript files can be found here:
 - [manifest_hello_world.yaml](examples/manifest_hello_world.yaml)
@@ -66,8 +70,8 @@ The source code for the manifest and JavaScript files can be found here:
 
 ### Specification
 For convenience, the Packages and Actions grammar can be found here:
-- **[Packages](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_packages.md#packages)**
-- **[Actions](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions)**
+- **[Packages](../specification/html/spec_packages.md#packages)**
+- **[Actions](../specification/html/spec_actions.md#actions)**
 
 ---
 <!--

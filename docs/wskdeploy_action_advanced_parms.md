@@ -6,8 +6,6 @@ This example builds on the previous [“Hello world" with typed input and output
 
 This example:
 - shows how to declare input and output parameters on the action ‘```hello_world```’ using a multi-line grammar.
-- adds the ‘```name```’ and ‘```place```’ input parameters, both of type ‘```string```’, to the ‘```hello_world``’ action each also includes an associated ‘```description```’ value.
-- adds the ‘```greeting```’ output parameter of explicit ‘```type```’ of ‘```string```’ to the ‘```hello_world```’ action with a ‘```description```’.
 
 ### Manifest File
 
@@ -26,11 +24,11 @@ package:
         name:
           type: string
           description: name of person
-          value: Sam
+          default: unknown person
         place:
           type: string
           description: location of person
-          default: unknown
+          value: the Shire
         children:
           type: integer
           description: Number of children
@@ -43,6 +41,8 @@ package:
         greeting:
           type: string
           description: greeting string
+        details:
+          type: string
 ```
 
 ### Deploying

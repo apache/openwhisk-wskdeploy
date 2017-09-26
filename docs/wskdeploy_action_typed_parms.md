@@ -9,11 +9,11 @@ It shows how to:
 - Add two input parameters, '```name```' and '```place```', both of type '```string```' to the '```hello_world```' action.
 - Add an '```integer```' parameter, '```age```', to the action.
 - Add a '```float```' parameter, '```height```', to the action.
-- Add an output parameter, '```greeting```' of type string to the '```hello_world```' action.
+- Add two output parameters, '```greeting```' and '```details```', both of type '```string```' to the action.
 
 ### Manifest File
 
-#### Example 3: 'Hello world' with typed input and output parameter declarations
+#### Example: 'Hello world' with typed input and output parameter declarations
 ```yaml
 package:
   name: hello_world_package
@@ -28,10 +28,16 @@ package:
         height: float
       outputs:
         greeting: string
+        details: string
 ```
-
+where the function '```hello_plus.js```', within the package-relative subdirectory named ‘```src```’, is updated to use the new parameters:
 ```javascript
-
+function main(params) {
+    msg = "Hello, " + params.name + " from " + params.place;
+    family = "You have " + params.children + " children ";
+    stats = "and are " + params.height + " m. tall.";
+    return { greeting:  msg, details: family + stats };
+}
 ```
 
 ### Deploying

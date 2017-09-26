@@ -10,11 +10,11 @@ package:
         name:
           type: string
           description: name of person
-          value: Sam
+          default: unknown person
         place:
           type: string
           description: location of person
-          default: unknown
+          value: the Shire
         children:
           type: integer
           description: Number of children
@@ -27,3 +27,5 @@ package:
         greeting:
           type: string
           description: greeting string
+        details:
+          type: string
