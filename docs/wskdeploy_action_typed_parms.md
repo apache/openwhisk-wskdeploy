@@ -1,6 +1,6 @@
 # Actions
 
-## Typed input and output parameters
+## Typed parameters
 
 This example extends the 'Hello world' example with typed input and output Parameters.
 
