@@ -69,6 +69,7 @@ In this example:
 ### Source code
 The manifest file for this example can be found here:
 - [manifest_hello_world_typed_parms.yaml](examples/manifest_hello_world_typed_parms.yaml)
+- [hello_plus.js](examples/src/hello_plus.js)
 
 ### Specification
 For convenience, the Actions and Parameters grammar can be found here:
