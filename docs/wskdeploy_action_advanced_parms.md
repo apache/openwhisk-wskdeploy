@@ -2,7 +2,7 @@
 
 ## Advanced parameters
 
-This example builds on the previous [“Hello world" with typed input and output parameters](wskdeploy_hello_world_typed_parms.md#actions) example with more robust input and output parameter declarations by using a multi-line format for declaration.
+This example builds on the previous [“Hello world" with typed input and output parameters](wskdeploy_action_typed_parms.md#actions) example with more robust input and output parameter declarations by using a multi-line format for declaration.
 
 This example:
 - shows how to declare input and output parameters on the action ‘```hello_world```’ using a multi-line grammar.
@@ -84,9 +84,9 @@ For convenience, the Actions and Parameters grammar can be found here:
 <div align="center">
 <table align="center">
   <tr>
-    <td><a href="wskdeploy_helloworld_basic_parms.md#actions-with-basic-parameters">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="wskdeploy_action_typed_parms.md#actions">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <td><a href="">next&nbsp;&gt;&gt;</a></td>
+<!--    <td><a href="">next&nbsp;&gt;&gt;</a></td> -->
   </tr>
 </table>
 </div>
