@@ -1,13 +1,15 @@
-# Example 2: “Hello world” with explicit input and output parameter declarations
+# Example: “Hello world” with explicit input and output parameter declarations
 package:
   name: hello_world_package
   version: 1.0
   license: Apache-2.0
   actions:
-    hello_world_2:
+    hello_world_typed_parms:
       function: src/hello.js
       inputs:
         name: string
         place: string
+        children: integer
+        height: float
       outputs:
         greeting: string

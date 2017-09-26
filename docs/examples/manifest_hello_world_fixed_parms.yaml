@@ -1,0 +1,11 @@
+# Example: “Hello world” with fixed input values for ‘name’ and ‘place’
+package:
+  name: hello_world_package
+  version: 1.0
+  license: Apache-2.0
+  actions:
+    hello_world_fixed_parms:
+      function: src/hello.js
+      inputs:
+        name: Sam
+        place: the Shire
