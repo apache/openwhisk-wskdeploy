@@ -5,7 +5,6 @@ package:
   actions:
     hello_world_triggerrule:
       function: src/hello_plus.js
-      runtime: nodejs
       inputs:
         name: string
         place: string
@@ -18,10 +17,10 @@ package:
   triggers:
     meetPerson:
       inputs:
-        name: string
-        place: string
-        children: integer
-        height: float
+        name: Sam
+        place: the Shire
+        children: 13
+        height: 1.2
 
   rules:
     meetPersonRule:

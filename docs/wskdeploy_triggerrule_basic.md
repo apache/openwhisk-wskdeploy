@@ -7,7 +7,7 @@ This example shows how to create a Trigger that is compatible with the previous,
 #### _Example: “Hello world” Action with a compatible Trigger and Rule_
 ```yaml
 package:
-  name: hello_world
+  name: hello_world_package
   version: 1.0
   license: Apache-2.0
   actions:
@@ -53,6 +53,15 @@ $ wsk action invoke hello_world_package/hello_world_triggerrule --blocking
   "details": "You have 0 children and are 0 m. tall.",
   "greeting": "Hello,  from "
 },
+```
+
+### Triggering
+```sh
+$ wsk trigger fire meetPerson
+```
+### Result
+```sh
+
 ```
 
 ### Discussion
