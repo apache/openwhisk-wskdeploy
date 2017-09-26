@@ -26,8 +26,8 @@ package:
   triggers:
     meetPerson:
       inputs:
-        name: string
-        place: string
+        name: person
+        place: the Shire
         children: integer
         height: float
 
@@ -39,18 +39,19 @@ package:
 
 ### Deploying
 ```sh
-$ wskdeploy -m
+$ wskdeploy -m docs/examples/manifest_hello_world_triggerrule.yaml
 ```
 
 ### Invoking
 ```sh
-$ wsk action invoke
+$ wsk action invoke hello_world_package/hello_world_triggerrule --blocking
 ```
 
 ### Result
 ```sh
 "result": {
-
+  "details": "You have 0 children and are 0 m. tall.",
+  "greeting": "Hello,  from "
 },
 ```
 
@@ -58,7 +59,9 @@ $ wsk action invoke
 TODO
 
 ### Source code
-TODO
+- [manifest_hello_world_triggerrule.yaml](examples/manifest_hello_world_triggerrule.yaml)
+- [deployment_hello_world_triggerrule.yaml](examples/deployment_hello_world_triggerrule.yaml)
+- [hello_plus.js](examples/src/hello_plus.js)
 
 ### Specification
 For convenience, the Actions and Parameters grammar can be found here:
