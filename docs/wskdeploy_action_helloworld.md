@@ -52,7 +52,7 @@ The invocation should return an 'ok' with a response that includes this result:
 },
 ```
 
-The output parameter '```greeting```''s value included "_undefined_" values for the '```name```' and '```place```' input parameters as they were not provided in the manifest.
+The output parameter '```greeting```' contains "_undefined_" values for the '```name```' and '```place```' input parameters as they were not provided in the manifest.
 
 ### Discussion
 
