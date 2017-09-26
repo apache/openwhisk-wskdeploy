@@ -2,7 +2,7 @@
 
 ## Typed input and output parameters
 
-This example extends the 'Hello world' example with explicit input and output Parameter declarations.
+This example extends the 'Hello world' example with typed input and output Parameters.
 
 It shows how to:
 - declare input and output parameters on the action '```hello_world```' using a simple, single-line format.
@@ -27,7 +27,6 @@ package:
 ```
 
 ### Discussion
-This packaging specification grammar places an emphasis on simplicity for the casual developer who may wish to hand-code a Manifest File; however, it also provides a robust optional schema that can be advantaged when integrating with larger application projects using design and development tooling such as IDEs.
 
 In this example:
 
