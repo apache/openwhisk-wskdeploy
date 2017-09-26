@@ -44,9 +44,9 @@ $ wsk action invoke hello_world_package/hello_world_fixed_parms --blocking
 ### Discussion
 
 In this example:
-- The value for the ‘name’ input parameter would be set to “Sam” and
-- The value for the ‘place’ input parameter would be set to “the Shire”.
-- The wskdeploy utility would infer both of their Types were strings.
+- The value for the ‘```name```’ input parameter would be set to “```Sam```” and
+- The value for the ‘```place```’ input parameter would be set to “```the Shire```”.
+- The wskdeploy utility would infer both of their Types were '```string```'.
 
 ### Source code
 The manifest file for this example can be found here:
