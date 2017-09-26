@@ -5,15 +5,14 @@
 This example shows the 'Hello world' example with typed input and output Parameters.
 
 It shows how to:
-- Declare input and output parameters on the action '```hello_world```' using a simple, single-line format.
-- Add two input parameters, '```name```' and '```place```', both of type '```string```' to the '```hello_world```' action.
-- Add an '```integer```' parameter, '```age```', to the action.
-- Add a '```float```' parameter, '```height```', to the action.
-- Add two output parameters, '```greeting```' and '```details```', both of type '```string```' to the action.
+- declare input and output parameters on the action '```hello_world```' using a simple, single-line format.
+- add two input parameters, '```name```' and '```place```', both of type '```string```' to the '```hello_world```' action.
+- add an '```integer```' parameter, '```age```', to the action.
+- add a '```float```' parameter, '```height```', to the action.
+- add two output parameters, '```greeting```' and '```details```', both of type '```string```', to the action.
 
 ### Manifest File
-
-#### Example: 'Hello world' with typed input and output parameter declarations
+#### _Example: 'Hello world' with typed input and output parameter declarations_
 ```yaml
 package:
   name: hello_world_package

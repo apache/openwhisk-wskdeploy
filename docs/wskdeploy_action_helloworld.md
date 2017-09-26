@@ -9,7 +9,6 @@ It shows how to:
 - associate the JavaScript function’s source code, stored in the file ‘src/hello.js’, to the ‘hello_world’ Action.
 
 ### Manifest file
-
 #### _Example: “Hello world” using a NodeJS (JavaScript) action_
 ```yaml
 package:

@@ -9,7 +9,6 @@ It shows how to:
 - add ‘```name```’ and ‘```place```’ as input parameters with the fixed values “```Sam```” and “```the Shire```” respectively.
 
 ### Manifest File
-
 #### _Example: “Hello world” with fixed input values for ‘name’ and ‘place’_
 ```yaml
 package:

@@ -8,7 +8,6 @@ This example:
 - shows how to declare input and output parameters on the action ‘```hello_world```’ using a multi-line grammar.
 
 ### Manifest File
-
 If we want to do more than declare the type (i.e., ‘string’, ‘integer’, ‘float’, etc.) of the input parameter, we can use the multi-line grammar.
 
 #### _Example: input and output parameters with explicit types and descriptions_

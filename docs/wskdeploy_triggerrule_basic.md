@@ -1,10 +1,9 @@
 # Triggers and Rules
 
-## Adding fixed input parameters
-TODO
+## Creating a Trigger for an Action
+This example shows how to create a Trigger that is compatible with the previous, more advanced "Hello world" Action, which has multiple input parameters of different types, and connect them together using a Rule.
 
 ### Manifest File
-
 #### _Example: “Hello world” with fixed input values for ‘name’ and ‘place’_
 ```yaml
 package:
