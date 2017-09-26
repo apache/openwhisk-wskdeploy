@@ -65,9 +65,11 @@ The invocation should return an 'ok' with a response that includes this result:
 ```
 
 ### Discussion
-Describing the input and output parameter types, descriptions, defaults and other data:
-- enables tooling to validate values users may input and prompt for missing values using the descriptions provided.
-- allows verification that outputs of an Action are compatible with the expected inputs of another Action so that they can be composed in a sequence.
+- Describing the input and output parameter types, descriptions, defaults and other data:
+  - enables tooling to validate values users may input and prompt for missing values using the descriptions provided.
+  - allows verification that outputs of an Action are compatible with the expected inputs of another Action so that they can be composed in a sequence.
+- The '```name```' input parameter was assigned the '```default```' key's value "```unknown person```".
+- The '```place```' input parameter was assigned the '```value```' key's value "```the Shire```".
 
 ### Source code
 The manifest file for this example can be found here:
