@@ -5,8 +5,8 @@
 This example builds upon the previous “hello world” example and shows how fixed values can be supplied to the input parameters of an Action.
 
 It shows how to:
-- declare input parameters on the action ‘```hello_world```’ using a single-line grammar.
-- add the ‘```name```’ and ‘```place```’ input parameters, with fixed values “```Sam```” and “```the Shire```” respectively.
+- Declare input parameters on the action ‘```hello_world```’ using a single-line grammar.
+- Add ‘```name```’ and ‘```place```’ as input parameters with the fixed values “```Sam```” and “```the Shire```” respectively.
 
 ### Manifest File
 

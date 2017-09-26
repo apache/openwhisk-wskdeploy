@@ -5,9 +5,9 @@
 This example extends the 'Hello world' example with typed input and output Parameters.
 
 It shows how to:
-- declare input and output parameters on the action '```hello_world```' using a simple, single-line format.
-- add two input parameters, '```name```' and '```place```', both of type '```string```' to the '```hello_world```' action.
-- adds one output parameter, '```greeting```' of type string to the '```hello_world```' action.
+- Declare input and output parameters on the action '```hello_world```' using a simple, single-line format.
+- Add two input parameters, '```name```' and '```place```', both of type '```string```' to the '```hello_world```' action.
+- Add an output parameter, '```greeting```' of type string to the '```hello_world```' action.
 
 ### Manifest File
 
@@ -24,6 +24,23 @@ package:
         place: string
       outputs:
         greeting: string
+```
+
+### Deploying
+```sh
+$ wskdeploy -m docs/examples/manifest_hello_world_typed_parms.yaml
+```
+
+### Invoking
+```sh
+$ wsk action invoke hello_world_package/hello_world_typed_parms --blocking
+```
+
+### Result
+```sh
+"result": {
+    "greeting": "Hello,  from "
+},
 ```
 
 ### Discussion
