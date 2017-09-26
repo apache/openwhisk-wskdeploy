@@ -4,7 +4,7 @@
 This example shows how to create a Trigger that is compatible with the previous, more advanced "Hello world" Action, which has multiple input parameters of different types, and connect them together using a Rule.
 
 ### Manifest File
-#### _Example: “Hello world” with fixed input values for ‘name’ and ‘place’_
+#### _Example: “Hello world” Action with a compatible Trigger and Rule_
 ```yaml
 package:
   name: hello_world

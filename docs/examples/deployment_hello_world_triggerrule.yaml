@@ -1,0 +1,9 @@
+package:
+  hello_world:
+    triggers:
+      meetPerson:
+        inputs:
+          name: Sam
+          place: the Shire.
+          children: 13
+          height: 1.2
