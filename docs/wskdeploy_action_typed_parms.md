@@ -63,8 +63,8 @@ The invocation should return an 'ok' with a response that includes this result:
 In this example:
 
 - The default value for the '```string```' type is the empty string (i.e., \"\"); it was assigned to the '```name```' and '```place```' input parameters.
-- The default value for the '```integer```' type is zero (0); it was assigned to the 'age' input parameter.
-- The default value for the '```float```' type is zero (0.0f); it was assigned to the 'height' input parameter.
+- The default value for the '```integer```' type is zero (0); it was assigned to the '```age```' input parameter.
+- The default value for the '```float```' type is zero (0.0f); it was assigned to the '```height```' input parameter.
 
 ### Source code
 The manifest file for this example can be found here:
