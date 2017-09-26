@@ -7,11 +7,34 @@ This example shows how to create a Trigger that is compatible with the previous,
 #### _Example: “Hello world” with fixed input values for ‘name’ and ‘place’_
 ```yaml
 package:
-  name: hello_world_package
+  name: hello_world
   version: 1.0
   license: Apache-2.0
   actions:
+    hello_world_triggerrule:
+      function: src/hello_plus.js
+      runtime: nodejs
+      inputs:
+        name: string
+        place: string
+        children: integer
+        height: float
+      outputs:
+        greeting: string
+        details: string
 
+  triggers:
+    meetPerson:
+      inputs:
+        name: string
+        place: string
+        children: integer
+        height: float
+
+  rules:
+    meetPersonRule:
+      trigger: meetPerson
+      action: hello_world_triggerrule
 ```
 
 ### Deploying

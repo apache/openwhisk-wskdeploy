@@ -24,6 +24,6 @@ package:
         height: float
 
   rules:
-    myRule:
+    meetPersonRule:
       trigger: meetPerson
       action: hello_world_triggerrule
