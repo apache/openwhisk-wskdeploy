@@ -47,7 +47,7 @@ $ wsk action invoke hello_world_package/hello_world_typed_parms --blocking
 
 In this example:
 
-- The default values for the '```name```' and '```place```' inputs would be set to empty strings (i.e., ''), since they are of type 'string', when passed to the 'hello.js' function; therefore 'greeting' will appear a follows:
+- The default values for the '```name```' and '```place```' inputs would be set to empty strings (i.e., \"\"), which is the default value for type '```string```', when passed to the 'hello.js' function; therefore 'greeting' will appear a follows:
   - ```"greeting": "Hello, from "```
 
 ### Source code

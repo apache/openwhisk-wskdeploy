@@ -1,6 +1,6 @@
 ## Actions with advanced parameters
 
-This example builds on the previous “Hello world with basic input and output parameters” example with more robust input and output parameter declarations by using a multi-line format for declaration.
+This example builds on the previous [“Hello world" with typed input and output parameters](wskdeploy_hello_world_typed_parms.md#actions) example with more robust input and output parameter declarations by using a multi-line format for declaration.
 
 This example:
 - shows how to declare input and output parameters on the action ‘```hello_world```’ using a multi-line grammar.
