@@ -1,7 +1,8 @@
 # Example: input and output parameters with advanced fields
 package:
   name: hello_world_package
-  ... # Package keys omitted for brevity
+  version: 1.0
+  license: Apache-2.0
   actions:
     hello_world_advanced_parms:
       function: src/hello/hello_plus.js
@@ -29,3 +30,4 @@ package:
           description: greeting string
         details:
           type: string
+          description: detailed information about the person

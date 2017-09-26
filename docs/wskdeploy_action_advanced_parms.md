@@ -42,6 +42,7 @@ package:
           description: greeting string
         details:
           type: string
+          description: detailed information about the person
 ```
 
 ### Deploying
@@ -70,6 +71,7 @@ Describing the input and output parameter types, descriptions, defaults and othe
 ### Source code
 The manifest file for this example can be found here:
 - [manifest_hello_world_advanced_parms.yaml](examples/manifest_hello_world_advanced_parms.yaml)
+- [hello_plus.js](examples/src/hello_plus.js)
 
 ### Specification
 For convenience, the Actions and Parameters grammar can be found here:
