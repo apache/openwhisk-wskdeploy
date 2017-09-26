@@ -7,6 +7,8 @@ This example extends the 'Hello world' example with typed input and output Param
 It shows how to:
 - Declare input and output parameters on the action '```hello_world```' using a simple, single-line format.
 - Add two input parameters, '```name```' and '```place```', both of type '```string```' to the '```hello_world```' action.
+- Add an '```integer```' parameter, '```age```', to the action.
+- Add a '```float```' parameter, '```height```', to the action.
 - Add an output parameter, '```greeting```' of type string to the '```hello_world```' action.
 
 ### Manifest File
@@ -22,6 +24,10 @@ package:
       inputs:
         name: string
         place: string
+        children: integer
+        height: float
+      outputs:
+greeting: string
       outputs:
         greeting: string
 ```
@@ -49,6 +55,8 @@ In this example:
 
 - The default values for the '```name```' and '```place```' inputs would be set to empty strings (i.e., \"\"), which is the default value for type '```string```', when passed to the 'hello.js' function; therefore 'greeting' will appear a follows:
   - ```"greeting": "Hello, from "```
+- The default value for integer, zero (0), will be assigned to the 'age' parameter.
+- The default value for float, zero (0.0), will be assigned to the 'height' parameter.
 
 ### Source code
 The manifest file for this example can be found here:
