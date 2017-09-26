@@ -127,3 +127,52 @@ func LicenseRemoteValidation(license string) bool {
 	}
 	return false
 }
+
+//if valid or nil, true
+//or else, false
+func LimitsTimeoutValidation(timeout *int) bool {
+	if timeout == nil {
+		return true
+	}
+	if *timeout < 100 || *timeout > 300000 {
+		errString := wski18n.T("timeout of limits in manifest should be an integer between 100 and 300000.\n")
+		whisk.Debug(whisk.DbgError, errString)
+		return false
+	}
+	return true
+}
+
+//if valid or nil, true
+//or else, false
+func LimitsMemoryValidation(memory *int) bool {
+	if memory == nil {
+		return true
+	}
+	if *memory < 128 || *memory > 512 {
+		errString := wski18n.T("memorySize of limits in manifest should be an integer between 128 and 512.\n")
+		whisk.Debug(whisk.DbgError, errString)
+		return false
+	}
+	return true
+}
+
+//if valid or nil, true
+//or else, false
+func LimitsLogsizeValidation(logsize *int) bool {
+	if logsize == nil {
+		return true
+	}
+	if *logsize < 0 || *logsize > 10 {
+		errString := wski18n.T("logSize of limits in manifest should be an integer between 0 and 10.\n")
+		whisk.Debug(whisk.DbgError, errString)
+		return false
+	}
+	return true
+}
+
+func NotSupportLimits(value *int, name string) {
+	if value != nil {
+		warningString := wski18n.T("WARNING: Limits {{.limitname}} is not changable, which will be ignored.\n", map[string]interface{}{"limitname": name})
+		whisk.Debug(whisk.DbgWarn, warningString)
+	}
+}
