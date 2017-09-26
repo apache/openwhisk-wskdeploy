@@ -73,8 +73,8 @@ The manifest file for this example can be found here:
 
 ### Specification
 For convenience, the Actions and Parameters grammar can be found here:
-- **[Actions](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions)**
-- **[Parameters](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_parameters.md#parameters)**
+- **[Actions](../specification/html/spec_actions.md#actions)**
+- **[Parameters](../specification/html/spec_parameters.md#parameters)**
 
 ---
 <!--

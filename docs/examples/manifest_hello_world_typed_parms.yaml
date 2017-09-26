@@ -1,4 +1,4 @@
-# Example: “Hello world” with explicit input and output parameter declarations
+# Example: “Hello world” with typed input and output parameter declarations
 package:
   name: hello_world_package
   version: 1.0
@@ -13,3 +13,4 @@ package:
         height: float
       outputs:
         greeting: string
+        details: string
