@@ -90,7 +90,7 @@ For convenience, the Packages grammar can be found here:
   <tr>
     <td><a href="programming_guide.md">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <td><a href="wskdeploy_action_helloworld.md">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_action_helloworld.md#actions">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>

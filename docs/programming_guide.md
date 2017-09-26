@@ -25,13 +25,13 @@ Each example shows the "code", that is the Package Manifest, Deployment file and
 - Package examples
   - [Creating a minimal Package](wskdeploy_package_minimal.md#packages) - creating a basic package manifest and deploying it.
 - Action examples
-  - [The "Hello World" Action](wskdeploy_action_helloworld.md) - deploy a "hello world" JavaScript function using a manifest.
+  - [The "Hello World" Action](wskdeploy_action_helloworld.md#actions) - deploy a "hello world" JavaScript function using a manifest.
 <!--
     - [Declaring Runtime version]() - TBD
 -->
-  - [Adding fixed input parameters](wskdeploy_action_fixed_parms.md) - bind fixed values to input parameters.
-  - [Declaring typed Parameters](wskdeploy_action_basic_typed_parms.md) - declare named input and output parameters on an Action with their types.
-  - [Declaring advanced Parameters](wskdeploy_action_advanced_parms.md) - input and output parameter declarations with more detailed information.
+  - [Adding fixed input parameters](wskdeploy_action_fixed_parms.md#actions) - bind fixed values to input parameters.
+  - [Typed Parameters](wskdeploy_action_typed_parms.md#actions) - declare named input and output parameters on an Action with their types.
+  - [Advanced Parameters](wskdeploy_action_advanced_parms.md#actions) - input and output parameter declarations with more detailed information.
 - Trigger and Rule examples
   - TBD
 
