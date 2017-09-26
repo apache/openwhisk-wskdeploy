@@ -33,7 +33,7 @@ package:
           default: unknown
         children:
           type: integer
-          description: # of children
+          description: Number of children
           default: 0
         height:
           type: float
@@ -86,7 +86,7 @@ For convenience, the Actions and Parameters grammar can be found here:
   <tr>
     <td><a href="wskdeploy_action_typed_parms.md#actions">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-<!--    <td><a href="">next&nbsp;&gt;&gt;</a></td> -->
+    <td><a href="wskdeploy_triggerrule_basic.md">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>

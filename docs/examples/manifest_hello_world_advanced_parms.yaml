@@ -10,14 +10,14 @@ package:
         name:
           type: string
           description: name of person
-          default: unknown
+          value: Sam
         place:
           type: string
           description: location of person
           default: unknown
         children:
           type: integer
-          description: # of children
+          description: Number of children
           default: 0
         height:
           type: float
