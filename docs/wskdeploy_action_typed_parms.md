@@ -53,8 +53,8 @@ $ wsk action invoke hello_world_package/hello_world_typed_parms --blocking
 The invocation should return an 'ok' with a response that includes this result:
 ```sh
 "result": {
-  "greeting": "Hello,  from ",
-  "details": "You have 0 children and are 0 m. tall."
+  "details": "You have 0 children and are 0 m. tall.",
+  "greeting": "Hello,  from "
 },
 ```
 
