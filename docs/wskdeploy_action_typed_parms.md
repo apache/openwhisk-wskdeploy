@@ -1,4 +1,6 @@
-## Actions with typed input and output parameters
+# Actions
+
+## Typed input and output parameters
 
 This example extends the 'Hello world' example with explicit input and output Parameter declarations.
 
@@ -15,7 +17,7 @@ package:
   name: hello_world_package
   ... # Package keys omitted for brevity
   actions:
-    hello_world_2:
+    hello_world_typed_parms:
       function: src/hello.js
       inputs:
         name: string
@@ -49,9 +51,9 @@ For convenience, the Actions and Parameters grammar can be found here:
 <div align="center">
 <table align="center">
   <tr>
-    <td><a href="">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="wskdeploy_action_fixed_parms.md#actions">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <td><a href="">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_action_advanced_parms.md#actions">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>

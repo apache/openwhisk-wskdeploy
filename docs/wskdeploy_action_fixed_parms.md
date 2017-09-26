@@ -1,4 +1,6 @@
-## Actions with fixed input parameters
+# Actions
+
+## Adding fixed input parameters
 
 This example builds upon the previous “hello world” example and shows how fixed values can be supplied to the input parameters of an Action.
 
@@ -8,7 +10,7 @@ It shows how to:
 
 ### Manifest File
 
-#### _Example: 'Hello world' with explicit input and output parameter declarations_
+#### _Example: “Hello world” with fixed input values for ‘name’ and ‘place’_
 ```yaml
 package:
   name: hello_world_package
@@ -21,6 +23,7 @@ package:
         name: Sam
         place: the Shire
 ```
+
 ### Deploying
 ```sh
 $ wskdeploy -m docs/examples/manifest_hello_world_fixed_parms.yaml
@@ -30,6 +33,7 @@ $ wskdeploy -m docs/examples/manifest_hello_world_fixed_parms.yaml
 ```sh
 $ wsk action invoke hello_world_package/hello_world_fixed_parms --blocking
 ```
+
 ### Result
 ```sh
 "result": {
@@ -38,12 +42,11 @@ $ wsk action invoke hello_world_package/hello_world_fixed_parms --blocking
 ```
 
 ### Discussion
-This packaging specification grammar places an emphasis on simplicity for the casual developer who may wish to hand-code a Manifest File; however, it also provides a robust optional schema that can be advantaged when integrating with larger application projects using design and development tooling such as IDEs.
 
 In this example:
-
-- The default values for the '```name```' and '```place```' inputs would be set to empty strings (i.e., ''), since they are of type 'string', when passed to the 'hello.js' function; therefore 'greeting' will appear a follows:
-  - ```"greeting": "Hello, from "```
+- The value for the ‘name’ input parameter would be set to “Sam” and
+- The value for the ‘place’ input parameter would be set to “the Shire”.
+- The wskdeploy utility would infer both of their Types were strings.
 
 ### Source code
 The manifest file for this example can be found here:
@@ -64,7 +67,7 @@ For convenience, the Actions and Parameters grammar can be found here:
   <tr>
     <td><a href="">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <td><a href="">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_action_typed_parms.md#actions">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>

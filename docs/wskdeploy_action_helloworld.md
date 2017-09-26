@@ -1,3 +1,5 @@
+# Actions
+
 ## The "Hello World" Action
 
 As with most language introductions, here we show a simple "hello world" action as encoded in an OpenWhisk Package Manifest YAML file:
@@ -77,7 +79,7 @@ For convenience, the Packages and Actions grammar can be found here:
   <tr>
     <td><a href="wskdeploy_package_minimal.md#packages">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <td><a href="">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_action_fixed_parms.md#actions">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>

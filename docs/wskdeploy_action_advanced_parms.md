@@ -17,16 +17,26 @@ package:
   name: hello_world_package
   ... # Package keys omitted for brevity
   actions:
-    hello_world_3:
+    hello_world_advanced_parms:
       function: src/hello/hello.js
       runtime: nodejs@6
       inputs:
         name:
           type: string
           description: name of person
+          default: unknown
         place:
           type: string
           description: location of person
+          default: unknown
+        children:
+          type: integer
+          description: # of children
+          default: 0
+        height:
+          type: float
+          description: height in meters
+          default: 0.0
       outputs:
         greeting:
           type: string
@@ -40,12 +50,10 @@ Describing the input and output parameter types, descriptions and other meta-dat
 
 ### Source code
 The manifest file for this example can be found here:
-- [manifest_hello_world_3.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_hello_world_2.yaml)
+- [manifest_hello_world_advanced_parms.yaml](examples/manifest_hello_world_advanced_parms.yaml)
 
 ### Specification
-For convenience, links to the schema and grammar for Actions and Parameters:
-- **Actions**: [https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_actions.md#actions)
-- **Parameters** [https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_parameters.md#parameters](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_parameters.md#parameters)
+
 
 ---
 <!--
