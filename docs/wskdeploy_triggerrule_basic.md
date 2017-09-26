@@ -1,7 +1,7 @@
 # Triggers and Rules
 
 ## Adding fixed input parameters
-
+TODO
 
 ### Manifest File
 
@@ -33,9 +33,10 @@ $ wsk action invoke
 ```
 
 ### Discussion
+TODO
 
 ### Source code
-
+TODO
 
 ### Specification
 For convenience, the Actions and Parameters grammar can be found here:
