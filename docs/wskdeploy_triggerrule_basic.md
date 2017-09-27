@@ -43,7 +43,7 @@ $ wskdeploy -m docs/examples/manifest_hello_world_triggerrule.yaml
 ```
 
 ### Invoking
-First, let's try to invoke the hello_world_triggerrule' Action directly without the Trigger.
+First, let's try _"invoking"_ the hello_world_triggerrule' Action directly without the Trigger.
 ```sh
 $ wsk action invoke hello_world_package/hello_world_triggerrule --blocking
 ```
@@ -55,11 +55,11 @@ $ wsk action invoke hello_world_package/hello_world_triggerrule --blocking
   "greeting": "Hello,  from "
 },
 ```
-As you can see, the results verify that the default values for the input parameters on the 'hello_world_triggerrule' Action were used to compose the 'greeting' and 'details' output parameters. This is as expected since we did not bind any values or provide any defaults when we defined the hello_world_triggerrule' Action in the manifest file.
+As you can see, the results verify that the default values (i.e., empty strings and zeros) for the input parameters on the '```hello_world_triggerrule```' Action were used to compose the '```greeting```' and '```details```' output parameters. This is as expected since we did not bind any values or provide any defaults when we defined the '```hello_world_triggerrule```' Action in the manifest file.
 
 ### Triggering
 
-Actions are invoked; Triggers are "fired". Here we "fire" the 'meetPerson' Trigger which results in an Activation Identifier:
+Instead of invoking the Action, _"firing"_ the '```meetPerson```' Trigger which results in an Activation Identifier:
 ```sh
 $ wsk trigger fire meetPerson
 ```
@@ -69,7 +69,7 @@ $ wsk trigger fire meetPerson
 ok: triggered /_/meetPerson with id a8e9246777a7499b85c4790280318404
 ```
 
-The 'meetPerson' Trigger is associated with 'hello_world_triggerrule' Action the via the 'meetPersonRule' Rule. We can verify that firing the Trigger indeed cause the Rule to be activated which in turn casues the Action to be invoked:
+The '```meetPerson```' Trigger is associated with '```hello_world_triggerrule```' Action the via the '```meetPersonRule```' Rule. We can verify that firing the Trigger indeed cause the Rule to be activated which in turn casues the Action to be invoked:
 ```sh
 $ wsk activation list
 
@@ -78,7 +78,7 @@ d03ee729428d4f31bd7f61d8d3ecc043 hello_world_triggerrule
 5ff4804336254bfba045ceaa1eeb4182 meetPerson
 ```
 
-we can then use the 'hello_world_triggerrule' Action's Activation ID to see the result:
+we can then use the '```hello_world_triggerrule```' Action's Activation ID to see the result:
 ```sh
 $ wsk activation get d03ee729428d4f31bd7f61d8d3ecc043
 ```
@@ -90,10 +90,11 @@ $ wsk activation get d03ee729428d4f31bd7f61d8d3ecc043
 }
 ```
 
-which verifies that the binding of the values "Sam" and "the Shire" on the Trigger were passed to the Action's input parameters correctly.
+which verifies that the binding of the values _"Sam"_ and _"the Shire"_ on the Trigger were passed to the Action's input parameters correctly.
 
 ### Discussion
-TODO
+- Firing the '```meetPerson```' Trigger correctly causes non-serialized "activations" of the associated ```meetPersonRule```' Rule and subsequently the '```hello_world_triggerrule```' Action.
+- The Trigger's parameter bindings were correctly passed to the corresponding input parameters on the '```hello_world_triggerrule```' Action.
 
 ### Source code
 - [manifest_hello_world_triggerrule.yaml](examples/manifest_hello_world_triggerrule.yaml)
