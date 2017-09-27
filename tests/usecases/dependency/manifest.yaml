@@ -1,25 +1,29 @@
 packages:
-  opentest:
-      dependencies:
-        hellowhisk:
-          location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
-        myhelloworlds:
-          location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
-        myCloudant:
-          location: /whisk.system/cloudant
-          inputs:
-            dbname: myGreatDB
-          annotations:
-            myAnnotation: Here it is
-      sequences:
-        mySequence:
-          actions: hellowhisk/greeting, hellowhisk/httpGet, myhelloworlds/hello-js
-      triggers:
-        myTrigger:
-      rules:
-        myRule:
-          trigger: myTrigger
-          action: hellowhisk/httpGet
-        myCloudantRule:
-          trigger: myTrigger
-          action: myCloudant/create-database
+    dependency-demo:
+        dependencies:
+            hellowhisk:
+                location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+            myhelloworlds:
+                location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+            cloudant-package-binding:
+                location: /whisk.system/cloudant
+                inputs:
+                    username: $CLOUDANT_USERNAME
+                    password: $CLOUDANT_PASSWORD
+                    host: ${CLOUDANT_USERNAME}.cloudant.com
+        sequences:
+            hello-series:
+                actions: hellowhisk/greeting, hellowhisk/httpGet, myhelloworlds/hello-js
+        triggers:
+            github-trigger:
+            cloudant-binding-trigger:
+                    source: cloudant-package-binding/changes
+                    inputs:
+                        dbname: $CLOUDANT_DATABASE
+        rules:
+            github-rule:
+                trigger: github-trigger
+                action: hello-series
+            cloudant-binding-Rule:
+                trigger: cloudant-binding-trigger
+                action: cloudant-package-binding/read
