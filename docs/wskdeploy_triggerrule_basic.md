@@ -54,6 +54,7 @@ $ wsk action invoke hello_world_package/hello_world_triggerrule --blocking
   "greeting": "Hello,  from "
 },
 ```
+As you can see, the results verify that the default values for the input parameters on the 'hello_world_triggerrule' Action were used to compose the 'greeting' and 'details' output parameters. This is as expected since we did not bind any values or provide any defaults when we defined the hello_world_triggerrule' Action in the manifest file.
 
 ### Triggering
 
