@@ -59,7 +59,7 @@ As you can see, the results verify that the default values (i.e., empty strings 
 
 ### Triggering
 
-Instead of invoking the Action, _"firing"_ the '```meetPerson```' Trigger which results in an Activation Identifier:
+Instead of invoking the Action, here try _"firing"_ the '```meetPerson```' Trigger which results in an Activation ID:
 ```sh
 $ wsk trigger fire meetPerson
 ```
