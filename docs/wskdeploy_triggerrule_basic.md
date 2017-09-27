@@ -28,8 +28,8 @@ package:
       inputs:
         name: Sam
         place: the Shire
-        children: integer
-        height: float
+        children: 13
+        height: 1.2
 
   rules:
     meetPersonRule:
@@ -91,7 +91,7 @@ $ wsk activation get d03ee729428d4f31bd7f61d8d3ecc043
 }
 ```
 
-which verifies that the binding of the values _"Sam"_ and _"the Shire"_ on the Trigger were passed to the Action's input parameters correctly.
+which verifies that the paramters bindings of the values _"Sam"_ (name), _"the Shire"_ (place), '13' (age) and '1.2' (height) on the Trigger were passed to the Action's corresponding input parameters correctly.
 
 ### Discussion
 - Firing the '```meetPerson```' Trigger correctly causes non-serialized "activations" of the associated ```meetPersonRule```' Rule and subsequently the '```hello_world_triggerrule```' Action.
