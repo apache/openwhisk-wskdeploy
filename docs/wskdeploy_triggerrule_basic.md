@@ -48,7 +48,7 @@ First, let's try _"invoking"_ the hello_world_triggerrule' Action directly witho
 $ wsk action invoke hello_world_package/hello_world_triggerrule --blocking
 ```
 
-### Result
+#### Result
 ```sh
 "result": {
   "details": "You have 0 children and are 0 m. tall.",
@@ -59,12 +59,13 @@ As you can see, the results verify that the default values (i.e., empty strings 
 
 ### Triggering
 
-Instead of invoking the Action, here try _"firing"_ the '```meetPerson```' Trigger which results in an Activation ID:
+Instead of invoking the Action, here try _"firing"_ the '```meetPerson```' Trigger:
 ```sh
 $ wsk trigger fire meetPerson
 ```
 
-### Result
+#### Result
+which results in an Activation ID:
 ```sh
 ok: triggered /_/meetPerson with id a8e9246777a7499b85c4790280318404
 ```
