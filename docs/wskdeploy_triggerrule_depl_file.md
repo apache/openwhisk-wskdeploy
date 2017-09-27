@@ -1,7 +1,7 @@
 # Triggers and Rules
 
-## Creating a Trigger for an Action
-This example shows how to create a Trigger that is compatible with the previous, more advanced "Hello world" Action, which has multiple input parameters of different types, and connect them together using a Rule.
+## Using a Deployment file to bind Trigger parameters
+This example
 
 ### Manifest File
 #### _Example: “Hello world” Action with a compatible Trigger and Rule_
@@ -11,7 +11,7 @@ package:
   version: 1.0
   license: Apache-2.0
   actions:
-    hello_world_triggerrule:
+    hello_world_triggerrule_unbound:
       function: src/hello_plus.js
       runtime: nodejs
       inputs:
@@ -26,10 +26,10 @@ package:
   triggers:
     meetPerson:
       inputs:
-        name: Sam
-        place: the Shire
-        children: 13
-        height: 1.2
+        name: string
+        place: string
+        children: int
+        height: float
 
   rules:
     meetPersonRule:
@@ -83,7 +83,7 @@ we can then use the '```hello_world_triggerrule```' Action's Activation ID to se
 ```sh
 $ wsk activation get d03ee729428d4f31bd7f61d8d3ecc043
 ```
-to view the actual results from the action:
+
 ```json
 "result": {
    "details": "You have 13 children and are 1.2 m. tall.",
@@ -91,10 +91,10 @@ to view the actual results from the action:
 }
 ```
 
-which verifies that the parameter bindings of the values (i.e, _"Sam"_ (name), _"the Shire"_ (place), _'13'_ (age) and _'1.2'_ (height)) on the Trigger were passed to the Action's corresponding input parameters correctly.
+which verifies that the paramters bindings of the values _"Sam"_ (name), _"the Shire"_ (place), '13' (age) and '1.2' (height) on the Trigger were passed to the Action's corresponding input parameters correctly.
 
 ### Discussion
-- Firing the '```meetPerson```' Trigger correctly causes non-serialized "activations" of the associated '```meetPersonRule```' Rule and subsequently the '```hello_world_triggerrule```' Action.
+- Firing the '```meetPerson```' Trigger correctly causes non-serialized "activations" of the associated ```meetPersonRule```' Rule and subsequently the '```hello_world_triggerrule```' Action.
 - The Trigger's parameter bindings were correctly passed to the corresponding input parameters on the '```hello_world_triggerrule```' Action.
 
 ### Source code
