@@ -1,10 +1,9 @@
-# Example: “Hello world” with typed input and output parameter declarations
 package:
   name: hello_world_package
   version: 1.0
   license: Apache-2.0
   actions:
-    hello_world_typed_parms:
+    hello_world_triggerrule:
       function: src/hello_plus.js
       inputs:
         name: string
@@ -14,3 +13,16 @@ package:
       outputs:
         greeting: string
         details: string
+
+  triggers:
+    meetPerson:
+      inputs:
+        name: Sam
+        place: the Shire
+        children: 13
+        height: 1.2
+
+  rules:
+    meetPersonRule:
+      trigger: meetPerson
+      action: hello_world_triggerrule

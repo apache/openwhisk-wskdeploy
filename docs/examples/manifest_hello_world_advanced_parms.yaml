@@ -1,20 +1,20 @@
 # Example: input and output parameters with advanced fields
 package:
   name: hello_world_package
-  ... # Package keys omitted for brevity
+  version: 1.0
+  license: Apache-2.0
   actions:
     hello_world_advanced_parms:
-      function: src/hello/hello.js
-      runtime: nodejs@6
+      function: src/hello_plus.js
       inputs:
         name:
           type: string
           description: name of person
-          value: Sam
+          default: unknown person
         place:
           type: string
           description: location of person
-          default: unknown
+          value: the Shire
         children:
           type: integer
           description: Number of children
@@ -27,3 +27,6 @@ package:
         greeting:
           type: string
           description: greeting string
+        details:
+          type: string
+          description: detailed information about the person

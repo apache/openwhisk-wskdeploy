@@ -1,9 +1,0 @@
-application:
-  name: foo
-  packages:
-    hello_world_package:
-      actions:
-        ello_world:
-          inputs:
-            name: Amy
-            place: Paris

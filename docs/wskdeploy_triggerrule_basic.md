@@ -1,42 +1,106 @@
 # Triggers and Rules
 
-## Adding fixed input parameters
-TODO
+## Creating a Trigger for an Action
+This example shows how to create a Trigger that is compatible with the previous, more advanced "Hello world" Action, which has multiple input parameters of different types, and connect them together using a Rule.
 
 ### Manifest File
-
-#### _Example: “Hello world” with fixed input values for ‘name’ and ‘place’_
+#### _Example: “Hello world” Action with a compatible Trigger and Rule_
 ```yaml
 package:
   name: hello_world_package
   version: 1.0
   license: Apache-2.0
   actions:
+    hello_world_triggerrule:
+      function: src/hello_plus.js
+      runtime: nodejs
+      inputs:
+        name: string
+        place: string
+        children: integer
+        height: float
+      outputs:
+        greeting: string
+        details: string
 
+  triggers:
+    meetPerson:
+      inputs:
+        name: Sam
+        place: the Shire
+        children: 13
+        height: 1.2
+
+  rules:
+    meetPersonRule:
+      trigger: meetPerson
+      action: hello_world_triggerrule
 ```
 
 ### Deploying
 ```sh
-$ wskdeploy -m
+$ wskdeploy -m docs/examples/manifest_hello_world_triggerrule.yaml
 ```
 
 ### Invoking
+First, let's try _"invoking"_ the hello_world_triggerrule' Action directly without the Trigger.
 ```sh
-$ wsk action invoke
+$ wsk action invoke hello_world_package/hello_world_triggerrule --blocking
 ```
 
-### Result
+#### Result
 ```sh
 "result": {
-
+  "details": "You have 0 children and are 0 m. tall.",
+  "greeting": "Hello,  from "
 },
 ```
+As you can see, the results verify that the default values (i.e., empty strings and zeros) for the input parameters on the '```hello_world_triggerrule```' Action were used to compose the '```greeting```' and '```details```' output parameters. This is as expected since we did not bind any values or provide any defaults when we defined the '```hello_world_triggerrule```' Action in the manifest file.
+
+### Triggering
+
+Instead of invoking the Action, here try _"firing"_ the '```meetPerson```' Trigger:
+```sh
+$ wsk trigger fire meetPerson
+```
+
+#### Result
+which results in an Activation ID:
+```sh
+ok: triggered /_/meetPerson with id a8e9246777a7499b85c4790280318404
+```
+
+The '```meetPerson```' Trigger is associated with '```hello_world_triggerrule```' Action the via the '```meetPersonRule```' Rule. We can verify that firing the Trigger indeed cause the Rule to be activated which in turn casues the Action to be invoked:
+```sh
+$ wsk activation list
+
+d03ee729428d4f31bd7f61d8d3ecc043 hello_world_triggerrule
+3e10a54cb6914b37a8abcab53596dcc9 meetPersonRule
+5ff4804336254bfba045ceaa1eeb4182 meetPerson
+```
+
+we can then use the '```hello_world_triggerrule```' Action's Activation ID to see the result:
+```sh
+$ wsk activation get d03ee729428d4f31bd7f61d8d3ecc043
+```
+
+```yaml
+"result": {
+   "details": "You have 13 children and are 1.2 m. tall.",
+   "greeting": "Hello, Sam from the Shire"
+}
+```
+
+which verifies that the paramters bindings of the values _"Sam"_ (name), _"the Shire"_ (place), '13' (age) and '1.2' (height) on the Trigger were passed to the Action's corresponding input parameters correctly.
 
 ### Discussion
-TODO
+- Firing the '```meetPerson```' Trigger correctly causes non-serialized "activations" of the associated ```meetPersonRule```' Rule and subsequently the '```hello_world_triggerrule```' Action.
+- The Trigger's parameter bindings were correctly passed to the corresponding input parameters on the '```hello_world_triggerrule```' Action.
 
 ### Source code
-TODO
+- [manifest_hello_world_triggerrule.yaml](examples/manifest_hello_world_triggerrule.yaml)
+- [deployment_hello_world_triggerrule.yaml](examples/deployment_hello_world_triggerrule.yaml)
+- [hello_plus.js](examples/src/hello_plus.js)
 
 ### Specification
 For convenience, the Actions and Parameters grammar can be found here:
