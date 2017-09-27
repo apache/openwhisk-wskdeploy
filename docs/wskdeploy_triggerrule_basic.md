@@ -43,6 +43,7 @@ $ wskdeploy -m docs/examples/manifest_hello_world_triggerrule.yaml
 ```
 
 ### Invoking
+First, let's try to invoke the hello_world_triggerrule' Action directly without the Trigger.
 ```sh
 $ wsk action invoke hello_world_package/hello_world_triggerrule --blocking
 ```
