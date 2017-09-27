@@ -26,7 +26,7 @@ package:
   triggers:
     meetPerson:
       inputs:
-        name: person
+        name: Sam
         place: the Shire
         children: integer
         height: float
@@ -56,13 +56,39 @@ $ wsk action invoke hello_world_package/hello_world_triggerrule --blocking
 ```
 
 ### Triggering
+
+Actions are invoked; Triggers are "fired". Here we "fire" the 'meetPerson' Trigger which results in an Activation Identifier:
 ```sh
 $ wsk trigger fire meetPerson
 ```
+
 ### Result
 ```sh
-
+ok: triggered /_/meetPerson with id a8e9246777a7499b85c4790280318404
 ```
+
+The 'meetPerson' Trigger is associated with 'hello_world_triggerrule' Action the via the 'meetPersonRule' Rule. We can verify that firing the Trigger indeed cause the Rule to be activated which in turn casues the Action to be invoked:
+```sh
+$ wsk activation list
+
+d03ee729428d4f31bd7f61d8d3ecc043 hello_world_triggerrule
+3e10a54cb6914b37a8abcab53596dcc9 meetPersonRule
+5ff4804336254bfba045ceaa1eeb4182 meetPerson
+```
+
+we can then use the 'hello_world_triggerrule' Action's Activation ID to see the result:
+```sh
+$ wsk activation get d03ee729428d4f31bd7f61d8d3ecc043
+```
+
+```yaml
+"result": {
+   "details": "You have 13 children and are 1.2 m. tall.",
+   "greeting": "Hello, Sam from the Shire"
+}
+```
+
+which verifies that the binding of the values "Sam" and "the Shire" on the Trigger were passed to the Action's input parameters correctly.
 
 ### Discussion
 TODO
