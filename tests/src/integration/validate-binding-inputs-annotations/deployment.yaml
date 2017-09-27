@@ -1,0 +1,27 @@
+application:
+  name: BindingTest
+  packages:
+    packagebinding:
+      inputs:
+        name: daisy
+        city: Beijing
+      annotations:
+        tag: hello
+        aaa: this is an annotation
+      actions:
+        helloworld:
+          inputs:
+            name: Amy
+            place: Paris
+          annotations:
+            tag: hello
+            aaa: this is an annotation
+      triggers:
+        dbtrigger:
+          inputs:
+            dbname: cats
+            docid: 1234567
+          annotations:
+            tag: hello
+            aaa: this is an annotation
+
