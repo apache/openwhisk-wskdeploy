@@ -94,7 +94,7 @@ to view the actual results from the action:
 which verifies that the parameter bindings of the values (i.e, _"Sam"_ (name), _"the Shire"_ (place), _'13'_ (age) and _'1.2'_ (height)) on the Trigger were passed to the Action's corresponding input parameters correctly.
 
 ### Discussion
-- Firing the '```meetPerson```' Trigger correctly causes non-serialized "activations" of the associated '```meetPersonRule```' Rule and subsequently the '```hello_world_triggerrule```' Action.
+- Firing the '```meetPerson```' Trigger correctly causes a series of non-blocking "activations" of the associated '```meetPersonRule```' Rule and subsequently the '```hello_world_triggerrule```' Action.
 - The Trigger's parameter bindings were correctly passed to the corresponding input parameters on the '```hello_world_triggerrule```' Action.
 
 ### Source code

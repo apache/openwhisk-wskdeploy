@@ -1,17 +1,16 @@
 # Triggers and Rules
 
 ## Using a Deployment file to bind Trigger parameters
-This example
+This example builds on the previous Trigger-Rule example and will demonstrate how to use a Deployment File to bind values for a Trigger’s input parameters when applied against a compatible Manifest File
 
 ### Manifest File
 #### _Example: “Hello world” Action with a compatible Trigger and Rule_
 ```yaml
 package:
   name: hello_world_package
-  version: 1.0
-  license: Apache-2.0
+  ... # Package keys omitted for brevity
   actions:
-    hello_world_triggerrule_unbound:
+    hello_world_triggerrule:
       function: src/hello_plus.js
       runtime: nodejs
       inputs:
@@ -28,7 +27,7 @@ package:
       inputs:
         name: string
         place: string
-        children: int
+        children: integer
         height: float
 
   rules:
@@ -37,25 +36,21 @@ package:
       action: hello_world_triggerrule
 ```
 
+```yaml
+package:
+  hello_world_triggerrule:
+    triggers:
+      meetPerson:
+        inputs:
+          name: Sam
+          place: the Shire
+          children: 13
+          height: 1.2
+```
 ### Deploying
 ```sh
-$ wskdeploy -m docs/examples/manifest_hello_world_triggerrule.yaml
+$ wskdeploy -m docs/examples/manifest_hello_world_triggerrule_unbound.yaml
 ```
-
-### Invoking
-First, let's try _"invoking"_ the '```hello_world_triggerrule```' Action directly without the Trigger.
-```sh
-$ wsk action invoke hello_world_package/hello_world_triggerrule --blocking
-```
-
-#### Result
-```json
-"result": {
-  "details": "You have 0 children and are 0 m. tall.",
-  "greeting": "Hello,  from "
-},
-```
-As you can see, the results verify that the default values (i.e., empty strings and zeros) for the input parameters on the '```hello_world_triggerrule```' Action were used to compose the '```greeting```' and '```details```' output parameters. This is as expected since we did not bind any values or provide any defaults when we defined the '```hello_world_triggerrule```' Action in the manifest file.
 
 ### Triggering
 
