@@ -115,7 +115,6 @@ func TestParseDeploymentYAML_Package(t *testing.T) {
 	for pkg_name := range deployment.Application.Packages {
 		assert.Equal(t, "test_package", pkg_name, "Get package name failed.")
 		var pkg = deployment.Application.Packages[pkg_name]
-		assert.Equal(t, "http://abc.com/bbb", pkg.Function, "Get package function failed.")
 		assert.Equal(t, "/wskdeploy/samples/test", pkg.Namespace, "Get package namespace failed.")
 		assert.Equal(t, "12345678ABCDEF", pkg.Credential, "Get package credential failed.")
 		assert.Equal(t, 1, len(pkg.Inputs), "Get package input list failed.")

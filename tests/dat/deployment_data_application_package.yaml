@@ -5,7 +5,6 @@ application:
   packages:
     test_package:
       name: test_package
-      function: http://abc.com/bbb
       namespace: /wskdeploy/samples/test
       credential: 12345678ABCDEF
       inputs:
