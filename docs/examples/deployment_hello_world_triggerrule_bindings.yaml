@@ -1,9 +1,12 @@
-package:
-  hello_world_package:
-    triggers:
-      meetPerson:
-        inputs:
-          name: Sam
-          place: the Shire
-          children: 13
-          height: 1.2
+application:
+  name: meetPerson-bindings
+
+  packages:
+      hello_world_package:
+        triggers:
+          meetPerson:
+            inputs:
+              name: Sam
+              place: the Shire
+              children: 13
+              height: 1.2
