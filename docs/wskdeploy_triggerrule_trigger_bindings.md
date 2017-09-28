@@ -39,7 +39,7 @@ package:
 ```
 
 ### Deployment file
-Let’s create a Deployment file that is desined to be applied to the Manifest file (above) which will contain the parameter bindings (i.e., the values) for the 'meetPerson' Trigger.
+Let’s create a Deployment file that is designed to be applied to the Manifest file (above) which will contain the parameter bindings (i.e., the values) for the 'meetPerson' Trigger.
 
 #### _Example: Deployment file that binds parameters to the 'meetPerson' Trigger_
 ```yaml
@@ -53,20 +53,22 @@ package:
           children: integer
           height: float
 ```
+
 ### Deploying
+Provide the Manifest file and the Deployment file to the wskdeploy utility:
 ```sh
 $ wskdeploy -m docs/examples/manifest_hello_world_triggerrule_unbound.yaml -d docs/examples/deployment_hello_world_triggerrule_bindings.yaml
 ```
 
 ### Triggering
-
 Fire the '```meetPerson```' Trigger:
 ```sh
 $ wsk trigger fire meetPerson
 ```
 
 #### Result
-which results in an Activation ID:
+Find the activation ID for the “hello_world_triggerrule’ Action that firing the Trigger initiated and get the results from the activation record.
+
 ```
 $ wsk activation list
 

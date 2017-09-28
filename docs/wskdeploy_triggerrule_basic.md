@@ -55,7 +55,7 @@ $ wsk action invoke hello_world_package/hello_world_triggerrule --blocking
   "greeting": "Hello,  from "
 },
 ```
-As you can see, the results verify that the default values (i.e., empty strings and zeros) for the input parameters on the '```hello_world_triggerrule```' Action were used to compose the '```greeting```' and '```details```' output parameters. This is as expected since we did not bind any values or provide any defaults when we defined the '```hello_world_triggerrule```' Action in the manifest file.
+As you can see, the results verify that the default values (i.e., empty strings and zeros) for the input parameters on the '```hello_world_triggerrule```' Action were used to compose the '```greeting```' and '```details```' output parameters. This result is expected since we did not bind any values or provide any defaults when we defined the '```hello_world_triggerrule```' Action in the manifest file.
 
 ### Triggering
 
@@ -70,7 +70,7 @@ which results in an Activation ID:
 ok: triggered /_/meetPerson with id a8e9246777a7499b85c4790280318404
 ```
 
-The '```meetPerson```' Trigger is associated with '```hello_world_triggerrule```' Action the via the '```meetPersonRule```' Rule. We can verify that firing the Trigger indeed cause the Rule to be activated which in turn casues the Action to be invoked:
+The '```meetPerson```' Trigger is associated with '```hello_world_triggerrule```' Action the via the '```meetPersonRule```' Rule. We can verify that firing the Trigger indeed cause the Rule to be activated which in turn causes the Action to be invoked:
 ```sh
 $ wsk activation list
 
