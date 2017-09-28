@@ -42,7 +42,18 @@ const (
 	WSKPROPS_HOST = "openwhisk.ng.bluemix.net"
 	WSKPROPS_AUTH = "a4f8c502:123zO3xZCLrMN6v2BKK"
 	WSKPROPS_NAMESPACE = "guest"
+
+    WSKPROPS_KEY = "test_key_file"
+    WSKPROPS_CERT = "test_cert_file"
 )
+
+func initializeFlags() {
+    utils.Flags.Auth = ""
+    utils.Flags.Namespace = ""
+    utils.Flags.ApiHost = ""
+    utils.Flags.Key = ""
+    utils.Flags.Cert = ""
+}
 
 func TestNewWhiskConfig(t *testing.T) {
 	propPath := ""
@@ -74,13 +85,23 @@ func TestNewWhiskConfigCommandLine(t *testing.T) {
 
 	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
 	assert.Nil(t, err, "Failed to read credentials from wskdeploy command line")
-	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy command line")
-	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy command line")
-	assert.Equal(t, config.Namespace, CLI_NAMESPACE, "Failed to get namespace from wskdeploy command line")
+    assert.Equal(t, CLI_HOST, config.Host, "Failed to get host name from wskdeploy command line")
+    assert.Equal(t, CLI_AUTH, config.AuthToken, "Failed to get auth token from wskdeploy command line")
+    assert.Equal(t, CLI_NAMESPACE, config.Namespace, "Failed to get namespace from wskdeploy command line")
+    assert.True(t, config.Insecure, "Config should set insecure to true")
 
-	utils.Flags.Auth = ""
-	utils.Flags.Namespace = ""
-	utils.Flags.ApiHost = ""
+    utils.Flags.Key = WSKPROPS_KEY
+    utils.Flags.Cert = WSKPROPS_CERT
+    config, err = NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+    assert.Nil(t, err, "Failed to read credentials from wskdeploy command line")
+    assert.Equal(t, CLI_HOST, config.Host, "Failed to get host name from wskdeploy command line")
+    assert.Equal(t, CLI_AUTH, config.AuthToken, "Failed to get auth token from wskdeploy command line")
+    assert.Equal(t, CLI_NAMESPACE, config.Namespace, "Failed to get namespace from wskdeploy command line")
+    assert.Equal(t, WSKPROPS_KEY, config.Key, "Failed to get key file from wskdeploy command line")
+    assert.Equal(t, WSKPROPS_CERT, config.Cert, "Failed to get cert file from wskdeploy command line")
+    assert.False(t, config.Insecure, "Config should set insecure to false")
+
+    initializeFlags()
 }
 
 func TestNewWhiskConfigDeploymentFile(t *testing.T) {
@@ -89,9 +110,10 @@ func TestNewWhiskConfigDeploymentFile(t *testing.T) {
 	deploymentPath := "../tests/dat/deployment_validate_credentials.yaml"
 	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
 	assert.Nil(t, err, "Failed to read credentials from deployment file")
-	assert.Equal(t, config.Host, DEPLOYMENT_HOST, "Failed to get host name from deployment file")
-	assert.Equal(t, config.AuthToken, DEPLOYMENT_AUTH, "Failed to get auth token from deployment file")
-	assert.Equal(t, config.Namespace, DEPLOYMENT_NAMESPACE, "Failed to get namespace from deployment file")
+	assert.Equal(t, DEPLOYMENT_HOST, config.Host, "Failed to get host name from deployment file")
+	assert.Equal(t, DEPLOYMENT_AUTH, config.AuthToken, "Failed to get auth token from deployment file")
+	assert.Equal(t, DEPLOYMENT_NAMESPACE, config.Namespace, "Failed to get namespace from deployment file")
+    assert.True(t, config.Insecure, "Config should set insecure to true")
 }
 
 func TestNewWhiskConfigManifestFile(t *testing.T) {
@@ -100,9 +122,10 @@ func TestNewWhiskConfigManifestFile(t *testing.T) {
 	deploymentPath := ""
 	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
 	assert.Nil(t, err, "Failed to read credentials from manifest file")
-	assert.Equal(t, config.Host, MANIFEST_HOST, "Failed to get host name from manifest file")
-	assert.Equal(t, config.AuthToken, MANIFEST_AUTH, "Failed to get auth token from manifest file")
-	assert.Equal(t, config.Namespace, MANIFEST_NAMESPACE, "Failed to get namespace from manifest file")
+	assert.Equal(t, MANIFEST_HOST, config.Host, "Failed to get host name from manifest file")
+	assert.Equal(t, MANIFEST_AUTH, config.AuthToken, "Failed to get auth token from manifest file")
+	assert.Equal(t, MANIFEST_NAMESPACE, config.Namespace, "Failed to get namespace from manifest file")
+    assert.True(t, config.Insecure, "Config should set insecure to true")
 }
 
 
@@ -112,9 +135,22 @@ func TestNewWhiskConfigWithWskProps(t *testing.T) {
 	deploymentPath := ""
 	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
 	assert.Nil(t, err, "Failed to read credentials from wskprops")
-	assert.Equal(t, config.Host, WSKPROPS_HOST, "Failed to get host name from wskprops")
-	assert.Equal(t, config.AuthToken, WSKPROPS_AUTH, "Failed to get auth token from wskprops")
-	assert.Equal(t, config.Namespace, WSKPROPS_NAMESPACE, "Failed to get namespace from wskprops")
+	assert.Equal(t, WSKPROPS_HOST, config.Host, "Failed to get host name from wskprops")
+	assert.Equal(t, WSKPROPS_AUTH, config.AuthToken, "Failed to get auth token from wskprops")
+	assert.Equal(t, WSKPROPS_NAMESPACE, config.Namespace, "Failed to get namespace from wskprops")
+    assert.Equal(t, WSKPROPS_KEY, config.Key, "Failed to get key file from wskprops")
+    assert.Equal(t, WSKPROPS_CERT, config.Cert, "Failed to get cert file from wskprops")
+    assert.False(t, config.Insecure, "Config should set insecure to false")
+
+    propPath = "../tests/dat/wskpropsnokeycert"
+    config, err = NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+    assert.Nil(t, err, "Failed to read credentials from wskprops")
+    assert.Equal(t, WSKPROPS_HOST, config.Host, "Failed to get host name from wskprops")
+    assert.Equal(t, WSKPROPS_AUTH, config.AuthToken, "Failed to get auth token from wskprops")
+    assert.Equal(t, WSKPROPS_NAMESPACE, config.Namespace, "Failed to get namespace from wskprops")
+    assert.Empty(t, config.Key, "Failed to get key file from wskprops")
+    assert.Empty(t, config.Cert, "Failed to get cert file from wskprops")
+    assert.True(t, config.Insecure, "Config should set insecure to true")
 }
 
 // (TODO) add the following test
@@ -140,10 +176,9 @@ func TestNewWhiskConfigWithCLIDeploymentAndManifestFile(t *testing.T) {
 	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy CLI")
 	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy CLI")
 	assert.Equal(t, config.Namespace, CLI_NAMESPACE, "Failed to get namespace from wskdeploy CLI")
+    assert.True(t, config.Insecure, "Config should set insecure to true")
 
-	utils.Flags.Auth = ""
-	utils.Flags.Namespace = ""
-	utils.Flags.ApiHost = ""
+    initializeFlags()
 }
 
 
@@ -161,10 +196,9 @@ func TestNewWhiskConfigWithCLIAndDeployment(t *testing.T) {
 	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy CLI")
 	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy CLI")
 	assert.Equal(t, config.Namespace, CLI_NAMESPACE, "Failed to get namespace from wskdeploy CLI")
+    assert.True(t, config.Insecure, "Config should set insecure to true")
 
-	utils.Flags.Auth = ""
-	utils.Flags.Namespace = ""
-	utils.Flags.ApiHost = ""
+    initializeFlags()
 }
 
 func TestNewWhiskConfigWithCLIAndManifest(t *testing.T) {
@@ -181,14 +215,13 @@ func TestNewWhiskConfigWithCLIAndManifest(t *testing.T) {
 	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy CLI")
 	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy CLI")
 	assert.Equal(t, config.Namespace, CLI_NAMESPACE, "Failed to get namespace from wskdeploy CLI")
+    assert.True(t, config.Insecure, "Config should set insecure to true")
 
-	utils.Flags.Auth = ""
-	utils.Flags.Namespace = ""
-	utils.Flags.ApiHost = ""
+    initializeFlags()
 }
 
 func TestNewWhiskConfigWithCLIAndWskProps(t *testing.T) {
-	propPath := "../tests/dat/wskprops"
+	propPath := "../tests/dat/wskpropsnokeycert"
 	manifestPath := ""
 	deploymentPath := ""
 
@@ -200,10 +233,9 @@ func TestNewWhiskConfigWithCLIAndWskProps(t *testing.T) {
 	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy command line")
 	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy command line")
 	assert.Equal(t, config.Namespace, CLI_NAMESPACE, "Failed to get namespace from wskdeploy command line")
+    assert.True(t, config.Insecure, "Config should set insecure to true")
 
-	utils.Flags.Auth = ""
-	utils.Flags.Namespace = ""
-	utils.Flags.ApiHost = ""
+    initializeFlags()
 }
 
 func TestNewWhiskConfigWithDeploymentAndManifestFile(t *testing.T) {
@@ -215,4 +247,5 @@ func TestNewWhiskConfigWithDeploymentAndManifestFile(t *testing.T) {
 	assert.Equal(t, config.Host, DEPLOYMENT_HOST, "Failed to get host name from deployment file")
 	assert.Equal(t, config.AuthToken, DEPLOYMENT_AUTH, "Failed to get auth token from deployment file")
 	assert.Equal(t, config.Namespace, DEPLOYMENT_NAMESPACE, "Failed to get namespace from deployment file")
+    assert.True(t, config.Insecure, "Config should set insecure to true")
 }

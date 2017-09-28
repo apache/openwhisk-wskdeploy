@@ -37,6 +37,8 @@ var stderr = ""
 var stdout = ""
 var RootCmd = &cobra.Command{
 	Use:   "wskdeploy",
+    SilenceErrors: true,
+    SilenceUsage: true,
 	Short: "A tool set to help deploy your openwhisk packages in batch.",
 	Long: `A tool to deploy openwhisk packages with a manifest and/or deployment yaml file.
 
@@ -49,8 +51,6 @@ wskdeploy without any commands or flags deploys openwhisk package in the current
 }
 
 func RootCmdImp(cmd *cobra.Command, args []string) error {
-	cmd.SilenceErrors = true
-	cmd.SilenceUsage = true
 	return Deploy()
 }
 
@@ -119,6 +119,8 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Namespace, "namespace", "n", "", wski18n.T("namespace"))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Auth, "auth", "u", "", wski18n.T("authorization `KEY`"))
 	RootCmd.PersistentFlags().StringVar(&utils.Flags.ApiVersion, "apiversion", "", wski18n.T("whisk API `VERSION`"))
+    RootCmd.PersistentFlags().StringVarP(&utils.Flags.Key, "key", "k", "", wski18n.T("path of the .key file"))
+    RootCmd.PersistentFlags().StringVarP(&utils.Flags.Cert, "cert", "c", "", wski18n.T("path of the .cert file"))
 }
 
 // initConfig reads in config file and ENV variables if set.

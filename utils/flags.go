@@ -33,6 +33,8 @@ var Flags struct {
 	UseDefaults     bool
 	UseInteractive  bool
 	Strict          bool   // strict flag to support user defined runtime version.
+    Key  string
+    Cert    string
 
 	//action flag definition
 	//from go cli

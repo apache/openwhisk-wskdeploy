@@ -1,5 +1,3 @@
 AUTH=a4f8c502:123zO3xZCLrMN6v2BKK
 APIHOST=openwhisk.ng.bluemix.net
 NAMESPACE=guest
-CERT=test_cert_file
-KEY=test_key_file
