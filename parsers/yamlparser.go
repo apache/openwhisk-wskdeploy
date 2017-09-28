@@ -66,6 +66,18 @@ type Action struct {
 	ExposedUrl string `yaml:"exposedUrl"` // used in manifest.yaml
 	Webexport  string `yaml:"web-export"` // used in manifest.yaml
 	Main       string `yaml:"main"`       // used in manifest.yaml
+	Limits     *Limits `yaml:"limits"`       // used in manifest.yaml
+}
+
+
+type Limits struct {
+	Timeout *int `yaml:"timeout,omitempty"` //in ms, [100 ms,300000ms]
+	Memory  *int `yaml:"memorySize,omitempty"`//in MB, [128 MB,512 MB]
+	Logsize *int `yaml:"logSize,omitempty"`//in MB, [0MB,10MB]
+	ConcurrentActivations *int `yaml:"concurrentActivations,omitempty"` //not changeable via APIs
+	UserInvocationRate *int `yaml:"userInvocationRate,omitempty"` //not changeable via APIs
+	CodeSize *int `yaml:"codeSize,omitempty"` //not changeable via APIs
+	ParameterSize *int `yaml:"parameterSize,omitempty"` //not changeable via APIs
 }
 
 type Sequence struct {

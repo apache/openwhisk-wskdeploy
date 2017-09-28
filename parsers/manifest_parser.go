@@ -465,6 +465,38 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			}
 		}
 
+		//set limitations
+		if action.Limits!=nil {
+			wsklimits :=  new(whisk.Limits)
+			if utils.LimitsTimeoutValidation(action.Limits.Timeout) {
+				wsklimits.Timeout = action.Limits.Timeout
+			} else {
+				warningString := wski18n.T("WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n")
+				whisk.Debug(whisk.DbgWarn, warningString)
+			}
+			if utils.LimitsMemoryValidation(action.Limits.Memory) {
+				wsklimits.Memory = action.Limits.Memory
+			} else {
+				warningString := wski18n.T("WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n")
+				whisk.Debug(whisk.DbgWarn, warningString)
+			}
+			if utils.LimitsLogsizeValidation(action.Limits.Logsize) {
+				wsklimits.Logsize = action.Limits.Logsize
+			} else {
+				warningString := wski18n.T("WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n")
+				whisk.Debug(whisk.DbgWarn, warningString)
+			}
+			if wsklimits.Timeout!=nil || wsklimits.Memory!=nil || wsklimits.Logsize!=nil {
+				wskaction.Limits = wsklimits
+			}
+
+			//emit warning errors if these limits are not nil
+			utils.NotSupportLimits(action.Limits.ConcurrentActivations,"concurrentActivations")
+			utils.NotSupportLimits(action.Limits.UserInvocationRate,"userInvocationRate")
+			utils.NotSupportLimits(action.Limits.CodeSize,"codeSize")
+			utils.NotSupportLimits(action.Limits.ParameterSize,"parameterSize")
+		}
+
 		wskaction.Name = key
 		pub := false
 		wskaction.Publish = &pub

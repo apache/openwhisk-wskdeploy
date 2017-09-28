@@ -295,4 +295,32 @@
     "id": "WARNING: License {{.licenseID}} is not a valid one.\n",
     "translation": "WARNING: License {{.licenseID}} is not a valid one.\n"
   }
+  {
+    "id": "memorySize of limits in manifest should be an integer between 128 and 512.\n",
+    "translation": "memorySize of limits in manifest should be an integer between 128 and 512.\n"
+  }
+  {
+    "id": "timeout of limits in manifest should be an integer between 100 and 300000.\n",
+    "translation": "timeout of limits in manifest should be an integer between 100 and 300000.\n"
+  }
+  {
+    "id": "logSize of limits in manifest should be an integer between 0 and 10.\n",
+    "translation": "logSize of limits in manifest should be an integer between 0 and 10.\n"
+  }
+  {
+    "id": "WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n",
+    "translation": "WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n"
+  }
+  {
+    "id": "WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n",
+    "translation": "WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n"
+  }
+  {
+    "id": "WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n",
+    "translation": "WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n"
+  }
+  {
+    "id": "WARNING: Limits  {{.limitname}}  is not changable as to now, which will be ignored.\n",
+    "translation": "WARNING: Limits  {{.limitname}}  is not changable as to now, which will be ignored.\n"
+  }
 ]
