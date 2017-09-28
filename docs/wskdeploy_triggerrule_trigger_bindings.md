@@ -43,15 +43,16 @@ Let’s create a Deployment file that is designed to be applied to the Manifest 
 
 #### _Example: Deployment file that binds parameters to the 'meetPerson' Trigger_
 ```yaml
-package:
-  hello_world_package:
-    triggers:
-      meetPerson:
-        inputs:
-          name: string
-          place: string
-          children: integer
-          height: float
+application:
+  packages:
+      hello_world_package:
+        triggers:
+          meetPerson:
+            inputs:
+              name: Elrond
+              place: Rivendell
+              children: 3
+              height: 1.88
 ```
 
 ### Deploying
@@ -72,15 +73,15 @@ Find the activation ID for the “hello_world_triggerrule’ Action that firing 
 ```
 $ wsk activation list
 
-d03ee729428d4f31bd7f61d8d3ecc043 hello_world_triggerrule
-3e10a54cb6914b37a8abcab53596dcc9 meetPersonRule
-5ff4804336254bfba045ceaa1eeb4182 meetPerson
+3a7c92468b4e4170bc92468b4eb170f1 hello_world_triggerrule
+afb2c02bb686484cb2c02bb686084cab meetPersonRule
+9dc9324c601a4ebf89324c601a1ebf4b meetPerson
 
-$ wsk activation get d03ee729428d4f31bd7f61d8d3ecc043
+$ wsk activation get 3a7c92468b4e4170bc92468b4eb170f1
 
 "result": {
-   "details": "You have 13 children and are 1.2 m. tall.",
-   "greeting": "Hello, Sam from the Shire"
+  "details": "You have 3 children and are 1.88 m. tall.",
+  "greeting": "Hello, Elrond from Rivendell"
 }
 ```
 
