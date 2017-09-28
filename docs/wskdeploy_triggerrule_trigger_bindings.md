@@ -1,7 +1,7 @@
 # Triggers and Rules
 
 ## Using a Deployment file to bind Trigger parameters
-This example builds on the previous [Trigger-Rule example](wskdeploy_triggerrule_basic.md) and will demonstrate how to use a Deployment File to bind values for a Trigger’s input parameters when applied against a compatible Manifest File
+This example builds on the previous [Trigger-Rule example](wskdeploy_triggerrule_basic.md#triggers-and-rules) and will demonstrate how to use a Deployment File to bind values for a Trigger’s input parameters when applied against a compatible Manifest File
 
 ### Manifest File
 Let’s use a variant of the Manifest file from the previous Trigger Rule example; however, we will leave the parameters on the ‘meetPerson’ Trigger unbound and only with type declarations.

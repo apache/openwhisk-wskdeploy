@@ -1,7 +1,7 @@
 # Triggers and Rules
 
 ## Creating a Trigger for an Action
-This example shows how to create a Trigger that is compatible with the previous, more advanced "Hello world" Action, which has multiple input parameters of different types, and connect them together using a Rule.
+This example shows how to create a Trigger that is compatible with the previous, more [advanced "Hello world" Action example](wskdeploy_action_advanced_parms.md#actions), which has multiple input parameters of different types, and connect them together using a Rule.
 
 ### Manifest File
 #### _Example: “Hello world” Action with a compatible Trigger and Rule_
@@ -115,7 +115,7 @@ For convenience, the Actions and Parameters grammar can be found here:
   <tr>
     <td><a href="wskdeploy_action_advanced_parms.md#actions">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <td><a href="wskdeploy_triggerrule_trigger_bindings.md#triggers-and-rules">next&nbsp;&gt;&gt;</a></td> -->
+    <td><a href="wskdeploy_triggerrule_trigger_bindings.md#triggers-and-rules">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>
