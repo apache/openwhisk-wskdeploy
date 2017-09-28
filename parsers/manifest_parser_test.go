@@ -1373,7 +1373,7 @@ packages:
 }
 
 func TestParseManifestYAML_trigger(t *testing.T) {
-	data, err := ioutil.ReadFile("../tests/dat/manifest3.yaml")
+	data, err := ioutil.ReadFile("../tests/dat/manifest_validate_triggerfeed.yaml")
 	if err != nil {
 		panic(err)
 	}
@@ -1400,7 +1400,7 @@ func TestParseManifestYAML_trigger(t *testing.T) {
 }
 
 func TestParseManifestYAML_rule(t *testing.T) {
-	data, err := ioutil.ReadFile("../tests/dat/manifest4.yaml")
+	data, err := ioutil.ReadFile("../tests/dat/manifest_validate_rule.yaml")
 	if err != nil {
 		panic(err)
 	}
@@ -1428,7 +1428,7 @@ func TestParseManifestYAML_rule(t *testing.T) {
 }
 
 func TestParseManifestYAML_feed(t *testing.T) {
-	data, err := ioutil.ReadFile("../tests/dat/manifest5.yaml")
+	data, err := ioutil.ReadFile("../tests/dat/manifest_validate_feed.yaml")
 	if err != nil {
 		panic(err)
 	}
@@ -1464,7 +1464,7 @@ func TestParseManifestYAML_feed(t *testing.T) {
 }
 
 func TestParseManifestYAML_param(t *testing.T) {
-	data, err := ioutil.ReadFile("../tests/dat/manifest6.yaml")
+	data, err := ioutil.ReadFile("../tests/dat/manifest_validate_params.yaml")
 	if err != nil {
 		panic(err)
 	}
