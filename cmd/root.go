@@ -106,7 +106,7 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	RootCmd.Flags().StringVarP(&utils.Flags.ProjectPath, "pathpath", "p", ".", "path to serverless project")
+	RootCmd.Flags().StringVarP(&utils.Flags.ProjectPath, "project", "p", ".", "path to serverless project")
 	RootCmd.Flags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", "path to manifest file")
 	RootCmd.Flags().StringVarP(&utils.Flags.DeploymentPath, "deployment", "d", "", "path to deployment file")
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Strict,"strict", "s", false, "allow user defined runtime version")
