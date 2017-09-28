@@ -1,10 +1,12 @@
 # Triggers and Rules
 
 ## Using a Deployment file to bind Trigger parameters
-This example builds on the previous Trigger-Rule example and will demonstrate how to use a Deployment File to bind values for a Trigger’s input parameters when applied against a compatible Manifest File
+This example builds on the previous [Trigger-Rule example](wskdeploy_triggerrule_basic.md) and will demonstrate how to use a Deployment File to bind values for a Trigger’s input parameters when applied against a compatible Manifest File
 
 ### Manifest File
-#### _Example: “Hello world” Action with a compatible Trigger and Rule_
+Let’s use a variant of the Manifest file from the previous Trigger Rule example; however, we will leave the parameters on the ‘meetPerson’ Trigger unbound and only with type declarations.
+
+#### _Example: “Hello world” Action, Trigger and Rule with no Parameter bindings_
 ```yaml
 package:
   name: hello_world_package
@@ -36,65 +38,56 @@ package:
       action: hello_world_triggerrule
 ```
 
+### Deployment file
+Let’s create a Deployment file that is desined to be applied to the Manifest file (above) which will contain the parameter bindings (i.e., the values) for the 'meetPerson' Trigger.
+
+#### _Example: Deployment file that binds parameters to the 'meetPerson' Trigger_
 ```yaml
 package:
-  hello_world_triggerrule:
+  hello_world_package:
     triggers:
       meetPerson:
         inputs:
-          name: Sam
-          place: the Shire
-          children: 13
-          height: 1.2
+          name: string
+          place: string
+          children: integer
+          height: float
 ```
 ### Deploying
 ```sh
-$ wskdeploy -m docs/examples/manifest_hello_world_triggerrule_unbound.yaml
+$ wskdeploy -m docs/examples/manifest_hello_world_triggerrule_unbound.yaml -d docs/examples/deployment_hello_world_triggerrule_bindings.yaml
 ```
 
 ### Triggering
 
-Instead of invoking the Action, here try _"firing"_ the '```meetPerson```' Trigger:
+Fire the '```meetPerson```' Trigger:
 ```sh
 $ wsk trigger fire meetPerson
 ```
 
 #### Result
 which results in an Activation ID:
-```sh
-ok: triggered /_/meetPerson with id a8e9246777a7499b85c4790280318404
 ```
-
-The '```meetPerson```' Trigger is associated with '```hello_world_triggerrule```' Action the via the '```meetPersonRule```' Rule. We can verify that firing the Trigger indeed cause the Rule to be activated which in turn casues the Action to be invoked:
-```sh
 $ wsk activation list
 
 d03ee729428d4f31bd7f61d8d3ecc043 hello_world_triggerrule
 3e10a54cb6914b37a8abcab53596dcc9 meetPersonRule
 5ff4804336254bfba045ceaa1eeb4182 meetPerson
-```
 
-we can then use the '```hello_world_triggerrule```' Action's Activation ID to see the result:
-```sh
 $ wsk activation get d03ee729428d4f31bd7f61d8d3ecc043
-```
 
-```json
 "result": {
    "details": "You have 13 children and are 1.2 m. tall.",
    "greeting": "Hello, Sam from the Shire"
 }
 ```
 
-which verifies that the paramters bindings of the values _"Sam"_ (name), _"the Shire"_ (place), '13' (age) and '1.2' (height) on the Trigger were passed to the Action's corresponding input parameters correctly.
-
 ### Discussion
-- Firing the '```meetPerson```' Trigger correctly causes non-serialized "activations" of the associated ```meetPersonRule```' Rule and subsequently the '```hello_world_triggerrule```' Action.
-- The Trigger's parameter bindings were correctly passed to the corresponding input parameters on the '```hello_world_triggerrule```' Action.
+TBD
 
 ### Source code
 - [manifest_hello_world_triggerrule.yaml](examples/manifest_hello_world_triggerrule.yaml)
-- [deployment_hello_world_triggerrule.yaml](examples/deployment_hello_world_triggerrule.yaml)
+- [deployment_hello_world_triggerrule_bindings.yaml](docs/examples/deployment_hello_world_triggerrule_bindings.yaml)
 - [hello_plus.js](examples/src/hello_plus.js)
 
 ### Specification
@@ -109,7 +102,7 @@ For convenience, the Actions and Parameters grammar can be found here:
 <div align="center">
 <table align="center">
   <tr>
-    <td><a href="wskdeploy_action_advanced_parms.md#actions">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="wskdeploy_triggerrule_basic.md#triggers-and-rules">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
 <!--    <td><a href="">next&nbsp;&gt;&gt;</a></td> -->
   </tr>

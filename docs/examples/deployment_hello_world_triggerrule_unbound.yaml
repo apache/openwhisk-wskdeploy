@@ -3,7 +3,7 @@ package:
     triggers:
       meetPerson:
         inputs:
-          name: Sam
-          place: the Shire.
-          children: 13
-          height: 1.2
+          name: string
+          place: string
+          children: integer
+          height: float

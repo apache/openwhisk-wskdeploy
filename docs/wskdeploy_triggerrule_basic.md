@@ -99,7 +99,6 @@ which verifies that the parameter bindings of the values (i.e, _"Sam"_ (name), _
 
 ### Source code
 - [manifest_hello_world_triggerrule.yaml](examples/manifest_hello_world_triggerrule.yaml)
-- [deployment_hello_world_triggerrule.yaml](examples/deployment_hello_world_triggerrule.yaml)
 - [hello_plus.js](examples/src/hello_plus.js)
 
 ### Specification
@@ -116,7 +115,7 @@ For convenience, the Actions and Parameters grammar can be found here:
   <tr>
     <td><a href="wskdeploy_action_advanced_parms.md#actions">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-<!--    <td><a href="">next&nbsp;&gt;&gt;</a></td> -->
+    <td><a href="wskdeploy_triggerrule_trigger_bindings.md#triggers-and-rules">next&nbsp;&gt;&gt;</a></td> -->
   </tr>
 </table>
 </div>
