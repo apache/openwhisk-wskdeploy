@@ -92,7 +92,7 @@ $ wsk activation get 3a7c92468b4e4170bc92468b4eb170f1
 - The ```wskdeploy``` utility applied the parameter values (after checking for Type compatibility) from the Deployment file to the matching (by name) parameters within the Manifest file.
 
 ### Source code
-- [manifest_hello_world_triggerrule_unbound.yaml](examples/manifest_hello_world_triggerrule.yaml)
+- [manifest_hello_world_triggerrule_unbound.yaml](examples/manifest_hello_world_triggerrule_unbound.yaml)
 - [deployment_hello_world_triggerrule_bindings.yaml](examples/deployment_hello_world_triggerrule_bindings.yaml)
 - [hello_plus.js](examples/src/hello_plus.js)
 
