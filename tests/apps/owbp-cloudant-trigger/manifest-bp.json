@@ -1,0 +1,17 @@
+{
+  "_id": "d8cf3281dabeab2946d55276beb13020",
+  "_rev": "7-6bd988c10a1ff8c04b5700b5d800c275",
+  "name": "New Cloudant Item",
+  "description": "When a cloudant DB has a data item edited or added, log the change in the console.",
+  "long_description": "This blueprint will create a sequence of actions, and a trigger that will kick off that sequence.  The trigger is fired when there is a change in the connected Cloudant DB, which should be a database of cats, with a name and a color.  The expected data item is a cat, with a name and a color defined.  When a new cat is added to the database, or a current cat edited, the data will be logged to the console.",
+  "url": "https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/tests/apps/owbp-cloudant-trigger",
+  "runtime": {
+    "name": "Node.js 6",
+    "kind": "nodejs:6",
+    "type": "node"
+  },
+  "categories": [
+    "nodejs",
+    "cloudant"
+  ]
+}
