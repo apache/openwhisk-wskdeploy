@@ -39,9 +39,9 @@ package:
 ```
 
 ### Deployment file
-Let’s create a Deployment file that is designed to be applied to the Manifest file (above) which will contain the parameter bindings (i.e., the values) for the 'meetPerson' Trigger.
+Let’s create a Deployment file that is designed to be applied to the Manifest file (above) which will contain the parameter bindings (i.e., the values) for the '```meetPerson```' Trigger.
 
-#### _Example: Deployment file that binds parameters to the 'meetPerson' Trigger_
+#### _Example: Deployment file that binds parameters to the '```meetPerson```' Trigger_
 ```yaml
 application:
   packages:
@@ -54,6 +54,7 @@ application:
               children: 3
               height: 1.88
 ```
+As you can see, the package name '```hello_world_package```' and the trigger name '```meetPerson```' both match the names in the corresponding Manifest file.
 
 ### Deploying
 Provide the Manifest file and the Deployment file to the wskdeploy utility:
@@ -68,7 +69,7 @@ $ wsk trigger fire meetPerson
 ```
 
 #### Result
-Find the activation ID for the “```hello_world_triggerrule```’ Action that firing the Trigger initiated and get the results from the activation record.
+Find the activation ID for the “```hello_world_triggerrule```’ Action that firing the Trigger initiated and get the results from the activation record:
 
 ```
 $ wsk activation list
@@ -91,8 +92,8 @@ $ wsk activation get 3a7c92468b4e4170bc92468b4eb170f1
 - The ```wskdeploy``` utility applied the parameter values (after checking for Type compatibility) from the Deployment file to the matching (by name) parameters within the Manifest file.
 
 ### Source code
-- [manifest_hello_world_triggerrule.yaml](examples/manifest_hello_world_triggerrule.yaml)
-- [deployment_hello_world_triggerrule_bindings.yaml](docs/examples/deployment_hello_world_triggerrule_bindings.yaml)
+- [manifest_hello_world_triggerrule_unbound.yaml](examples/manifest_hello_world_triggerrule.yaml)
+- [deployment_hello_world_triggerrule_bindings.yaml](examples/deployment_hello_world_triggerrule_bindings.yaml)
 - [hello_plus.js](examples/src/hello_plus.js)
 
 ### Specification
