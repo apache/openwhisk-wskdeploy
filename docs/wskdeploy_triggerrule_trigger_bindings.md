@@ -4,7 +4,7 @@
 This example builds on the previous [Trigger-Rule example](wskdeploy_triggerrule_basic.md#triggers-and-rules) and will demonstrate how to use a Deployment File to bind values for a Trigger’s input parameters when applied against a compatible Manifest File
 
 ### Manifest File
-Let’s use a variant of the Manifest file from the previous Trigger Rule example; however, we will leave the parameters on the ‘meetPerson’ Trigger unbound and only with type declarations.
+Let’s use a variant of the Manifest file from the previous Trigger Rule example; however, we will leave the parameters on the ‘```meetPerson```’ Trigger unbound and only with type declarations.
 
 #### _Example: “Hello world” Action, Trigger and Rule with no Parameter bindings_
 ```yaml
@@ -68,7 +68,7 @@ $ wsk trigger fire meetPerson
 ```
 
 #### Result
-Find the activation ID for the “hello_world_triggerrule’ Action that firing the Trigger initiated and get the results from the activation record.
+Find the activation ID for the “```hello_world_triggerrule```’ Action that firing the Trigger initiated and get the results from the activation record.
 
 ```
 $ wsk activation list
@@ -86,7 +86,9 @@ $ wsk activation get 3a7c92468b4e4170bc92468b4eb170f1
 ```
 
 ### Discussion
-TBD
+- The '```hello_world_triggerrule```' Action and the '```meetPerson```' Trigger in the Manifest file both had input parameter declarations that had no values assigned to them (only Types).
+- The matching '```meetPerson```' Trigger in the Deployment file had values bound its parameters.
+- The ```wskdeploy``` utility applied the parameter values (after checking Type compatibility) from the Deployment file to the matching (by name) parameters within the Manifest file.
 
 ### Source code
 - [manifest_hello_world_triggerrule.yaml](examples/manifest_hello_world_triggerrule.yaml)
