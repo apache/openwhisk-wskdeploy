@@ -53,7 +53,7 @@ func NewGitReader(projectName string, record DependencyRecord) *GitReader {
 
 func (reader *GitReader) CloneDependency() error {
 	reader.mt.Lock()
-	reader.mt.Unlock()
+	defer reader.mt.Unlock()
 	zipFileName := reader.Name + "." + reader.Version + ".zip"
 	zipFilePath := reader.Url + "/zipball" + "/" + reader.Version
 
