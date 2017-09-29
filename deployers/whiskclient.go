@@ -60,8 +60,8 @@ var GetWskPropFromWhiskProperty = func(pi whisk.Properties) (*whisk.Wskprops, er
 	return whisk.GetWskPropFromWhiskProperty(pi)
 }
 
-var GetCommandLineFlags = func() (string, string, string) {
-	return utils.Flags.ApiHost, utils.Flags.Auth, utils.Flags.Namespace
+var GetCommandLineFlags = func() (string, string, string, string, string) {
+	return utils.Flags.ApiHost, utils.Flags.Auth, utils.Flags.Namespace, utils.Flags.Key, utils.Flags.Cert
 }
 
 var CreateNewClient = func (config_input *whisk.Config) (*whisk.Client, error) {
@@ -82,12 +82,16 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	credential := PropertyValue{}
 	namespace := PropertyValue{}
 	apiHost := PropertyValue{}
+    key := PropertyValue{}
+    cert := PropertyValue{}
 
 	// read credentials from command line
-	apihost, auth, ns := GetCommandLineFlags()
+	apihost, auth, ns, keyfile, certfile := GetCommandLineFlags()
 	credential = GetPropertyValue(credential, auth, COMMANDLINE)
 	namespace = GetPropertyValue(namespace, ns, COMMANDLINE)
 	apiHost = GetPropertyValue(apiHost, apihost, COMMANDLINE)
+    key = GetPropertyValue(key, keyfile, COMMANDLINE)
+    cert = GetPropertyValue(cert, certfile, COMMANDLINE)
 
 	// now, read them from deployment file if not found on command line
 	if len(credential.Value) == 0 || len(namespace.Value) == 0 || len(apiHost.Value) == 0 {
@@ -131,6 +135,8 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	credential = GetPropertyValue(credential, wskprops.AuthKey, WSKPROPS)
 	namespace = GetPropertyValue(namespace, wskprops.Namespace, WSKPROPS)
 	apiHost = GetPropertyValue(apiHost, wskprops.APIHost, WSKPROPS)
+    key = GetPropertyValue(key, wskprops.Key, WSKPROPS)
+    cert = GetPropertyValue(cert, wskprops.Cert, WSKPROPS)
 
 	// now, read credentials from whisk.properties but this is only acceptable within Travis
 	// whisk.properties will soon be deprecated and should not be used for any production deployment
@@ -189,12 +195,19 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		}
 	}
 
-	clientConfig = &whisk.Config{
+    mode := true
+    if (len(cert.Value) != 0 && len(key.Value) != 0) {
+        mode = false
+    }
+
+	clientConfig = &whisk.Config {
 		AuthToken: credential.Value, //Authtoken
 		Namespace: namespace.Value,  //Namespace
 		Host:      apiHost.Value,
 		Version:   "v1",
-		Insecure:  true, // true if you want to ignore certificate signing
+        Cert:      cert.Value,
+        Key:       key.Value,
+		Insecure:  mode, // true if you want to ignore certificate signing
 	}
 
 	if len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0 {
