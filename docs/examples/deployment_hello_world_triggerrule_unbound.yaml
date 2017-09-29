@@ -1,0 +1,10 @@
+application:
+  package:
+    hello_world_package:
+      triggers:
+        meetPerson:
+          inputs:
+            name: string
+            place: string
+            children: integer
+            height: float
