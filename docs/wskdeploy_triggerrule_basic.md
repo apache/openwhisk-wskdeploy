@@ -43,13 +43,13 @@ $ wskdeploy -m docs/examples/manifest_hello_world_triggerrule.yaml
 ```
 
 ### Invoking
-First, let's try _"invoking"_ the '```hello_world_triggerrule```' Action directly without the Trigger.
+First, let's try _"invoking"_ the hello_world_triggerrule' Action directly without the Trigger.
 ```sh
 $ wsk action invoke hello_world_package/hello_world_triggerrule --blocking
 ```
 
 #### Result
-```json
+```sh
 "result": {
   "details": "You have 0 children and are 0 m. tall.",
   "greeting": "Hello,  from "
@@ -83,18 +83,18 @@ we can then use the '```hello_world_triggerrule```' Action's Activation ID to se
 ```sh
 $ wsk activation get d03ee729428d4f31bd7f61d8d3ecc043
 ```
-to view the actual results from the action:
-```json
+
+```yaml
 "result": {
    "details": "You have 13 children and are 1.2 m. tall.",
    "greeting": "Hello, Sam from the Shire"
 }
 ```
 
-which verifies that the parameter bindings of the values (i.e, _"Sam"_ (name), _"the Shire"_ (place), _'13'_ (age) and _'1.2'_ (height)) on the Trigger were passed to the Action's corresponding input parameters correctly.
+which verifies that the paramters bindings of the values _"Sam"_ (name), _"the Shire"_ (place), '13' (age) and '1.2' (height) on the Trigger were passed to the Action's corresponding input parameters correctly.
 
 ### Discussion
-- Firing the '```meetPerson```' Trigger correctly causes a series of non-blocking "activations" of the associated '```meetPersonRule```' Rule and subsequently the '```hello_world_triggerrule```' Action.
+- Firing the '```meetPerson```' Trigger correctly causes non-serialized "activations" of the associated ```meetPersonRule```' Rule and subsequently the '```hello_world_triggerrule```' Action.
 - The Trigger's parameter bindings were correctly passed to the corresponding input parameters on the '```hello_world_triggerrule```' Action.
 
 ### Source code

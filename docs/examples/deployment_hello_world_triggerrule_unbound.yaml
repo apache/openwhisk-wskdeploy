@@ -1,5 +1,5 @@
 package:
-  hello_world_package:
+  hello_world:
     triggers:
       meetPerson:
         inputs:
