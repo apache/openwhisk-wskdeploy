@@ -5,4 +5,4 @@ packages:
         trigger: trigger1
         action: hellpworld
         rule: true
-      
+

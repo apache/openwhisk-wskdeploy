@@ -26,14 +26,11 @@ import (
 
 var manifestfile_val_pkg = "../tests/dat/manifest_validate_package_grammar.yaml"
 var manifestfile_val_tar = "../tests/dat/manifest_validate_trigger_action_rule_grammar.yaml"
-var manifestfile3 = "../tests/dat/manifest3.yaml"
-var manifestfile4 = "../tests/dat/manifest4.yaml"
-var manifestfile5 = "../tests/dat/manifest5.yaml"
-var manifestfile6 = "../tests/dat/manifest6.yaml"
+var manifest_validate_triggerfeed = "../tests/dat/manifest_validate_triggerfeed.yaml"
+var manifest_validate_rule = "../tests/dat/manifest_validate_rule.yaml"
 var deploymentfile_data_app = "../tests/dat/deployment_data_application.yaml"
 var deploymentfile_data_app_pkg = "../tests/dat/deployment_data_application_package.yaml"
-var testfile3 = "../tests/dat/deploy3.yaml"
-var testfile4 = "../tests/dat/deploy4.yaml"
+var deployment_compose_trigger = "../tests/dat/deployment_compose_trigger.yaml"
 
 
 func TestComposeWskPackage(t *testing.T) {
@@ -57,8 +54,8 @@ func TestComposeWskPackage(t *testing.T) {
 
 func TestComposeWskTrigger(t *testing.T) {
 	mm := NewYAMLParser()
-    deployment, _ := mm.ParseDeployment(testfile4)
-	manifest, _ := mm.ParseManifest(manifestfile3)
+    deployment, _ := mm.ParseDeployment(deployment_compose_trigger)
+	manifest, _ := mm.ParseManifest(manifest_validate_triggerfeed)
 
 	pkg := deployment.Application.GetPackageList()[0]
 	for _, trigger := range pkg.GetTriggerList() {
@@ -83,7 +80,7 @@ func TestComposeWskTrigger(t *testing.T) {
 
 func TestComposeWskRule(t *testing.T) {
 	mm := NewYAMLParser()
-	manifest, _ := mm.ParseManifest(manifestfile4)
+	manifest, _ := mm.ParseManifest(manifest_validate_rule)
 
 	pkg := manifest.Package
 	for _, rule := range pkg.GetRuleList() {
