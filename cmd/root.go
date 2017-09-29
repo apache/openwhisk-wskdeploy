@@ -49,6 +49,8 @@ wskdeploy without any commands or flags deploys openwhisk package in the current
 }
 
 func RootCmdImp(cmd *cobra.Command, args []string) error {
+	cmd.SilenceErrors = true
+	cmd.SilenceUsage = true
 	return Deploy()
 }
 
