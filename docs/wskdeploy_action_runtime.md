@@ -49,7 +49,7 @@ In the above example,
 
 ### Source code
 The source code for the manifest and JavaScript files can be found here:
-- [manifest_hello_world.yaml](examples/manifest_hello_world.yaml)
+- [manifest_hello_world_runtime.yaml](examples/manifest_hello_world_runtime.yaml)
 - [hello.js](examples/src/hello.js)
 
 ### Specification
