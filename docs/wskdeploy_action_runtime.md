@@ -1,0 +1,74 @@
+# Actions
+
+## Setting your Function's runtime
+
+In the previous ["Hello world" example](), the wskdeploy utility user the file extension of the function "hello.js" to select the most current NodeJS runtime.  In most cases, allowing the utility to select the runtime works well using this implicit method. However, perhaps your code is dependent on a specific version of a language runtime and you want to explicitly set it?
+
+This example shows how to:
+- declare an explicit runtime for your Action's function.
+
+### Manifest file
+#### _Example: explicit selection of the NodeJS version 6 runtime_
+```yaml
+package:
+  name: hello_world_package
+  version: 1.0
+  license: Apache-2.0
+  actions:
+    hello_world_runtime:
+      function: src/hello.js
+      runtime: nodejs@6
+```
+
+### Deploying
+
+```sh
+$ wskdeploy -m docs/examples/manifest_hello_world_runtime.yaml
+```
+
+### Invoking
+```sh
+$ wsk action invoke hello_world_package/hello_world_runtime --blocking
+```
+
+### Result
+The invocation should return an 'ok' with a response that includes this result:
+
+```json
+"result": {
+    "greeting": "Hello, undefined from undefined"
+},
+```
+
+### Discussion
+
+In the above example,
+- The value for the 'runtime' key was a valid name and version supported by OpenWhisk
+  - Please see the current supported list here: - **[Actions - Valid runtime names](../specification/html/spec_actions.md#valid-runtime-names)**
+
+
+### Source code
+The source code for the manifest and JavaScript files can be found here:
+- [manifest_hello_world.yaml](examples/manifest_hello_world.yaml)
+- [hello.js](examples/src/hello.js)
+
+### Specification
+For convenience, the Packages and Actions grammar can be found here:
+- **[Actions](../specification/html/spec_actions.md#actions)**
+- **[Actions - Valid runtime names](../specification/html/spec_actions.md#valid-runtime-names)**
+
+---
+<!--
+ Bottom Navigation
+-->
+<html>
+<div align="center">
+<table align="center">
+  <tr>
+    <td><a href="wskdeploy_action_helloworld.md#actions">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
+    <td><a href="wskdeploy_action_fixed_parms.md#actions">next&nbsp;&gt;&gt;</a></td>
+  </tr>
+</table>
+</div>
+</html>

@@ -66,7 +66,7 @@ For convenience, the Actions and Parameters grammar can be found here:
 <div align="center">
 <table align="center">
   <tr>
-    <td><a href="wskdeploy_action_helloworld.md#actions">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="wskdeploy_action_runtime.md#actions">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
     <td><a href="wskdeploy_action_typed_parms.md#actions">next&nbsp;&gt;&gt;</a></td>
   </tr>

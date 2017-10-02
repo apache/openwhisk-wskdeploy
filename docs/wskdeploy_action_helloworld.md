@@ -82,7 +82,7 @@ For convenience, the Packages and Actions grammar can be found here:
   <tr>
     <td><a href="wskdeploy_package_minimal.md#packages">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <td><a href="wskdeploy_action_fixed_parms.md#actions">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_action_runtime.md#actions">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>
