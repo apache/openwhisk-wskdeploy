@@ -57,7 +57,7 @@ $ wsk action invoke hello_world_package/hello_world_advanced_parms --blocking
 
 ### Result
 The invocation should return an 'ok' with a response that includes this result:
-```sh
+```json
 "result": {
             "details": "You have 0 children and are 0 m. tall.",
             "greeting": "Hello, unknown person from the Shire"
@@ -91,7 +91,7 @@ For convenience, the Actions and Parameters grammar can be found here:
   <tr>
     <td><a href="wskdeploy_action_typed_parms.md#actions">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <td><a href="wskdeploy_triggerrule_basic.md#triggers-and-rules">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_action_env_var_parms.md#actions">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>

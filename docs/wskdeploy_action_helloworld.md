@@ -45,7 +45,7 @@ $ wsk action invoke hello_world_package/hello_world --blocking
 ### Result
 The invocation should return an 'ok' with a response that includes this result:
 
-```sh
+```json
 "result": {
     "greeting": "Hello, undefined from undefined"
 },

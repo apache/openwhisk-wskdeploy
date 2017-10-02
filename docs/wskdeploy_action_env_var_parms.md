@@ -26,8 +26,9 @@ package:
 ```
 
 ### Deploying
+Set the values for the three environment variables expected by the Action and deploy:
 ```sh
-$ wskdeploy -m docs/examples/manifest_hello_world_env_var_parms.yaml
+$ FIRSTNAME=Sam TOWN="the Shire" COUNTRY="middle earth" wskdeploy -m docs/examples/manifest_hello_world_env_var_parms.yaml
 ```
 
 ### Invoking
@@ -37,22 +38,33 @@ $ wsk action invoke hello_world_package/hello_world_env_var_parms --blocking
 
 ### Result
 The invocation should return an 'ok' with a response that includes this result:
-```sh
+```yaml
 "result": {
-    "greeting": "Hello, Sam from the Shire"
+   "greeting": "Hello, Sam from the Shire, middle earth"
 },
+```
+
+if we modify the three environment variables to different values, update the action and invoke it again:
+### Invoking
+```sh
+$ FIRSTNAME=Elrond TOWN="the Shire" COUNTRY="middle earth"
+$ set
+```
+
+### Result
+the results will reflect the changes to the environment variables:
+```json
+
 ```
 
 ### Discussion
 
 In this example:
-- The value for the ‘```name```’ input parameter would be set to “```Sam```”.
-- The value for the ‘```place```’ input parameter would be set to “```the Shire```”.
-- The wskdeploy utility would infer that both ‘```name```’ and ‘```place```’ input parameters to be of type ‘```string```’.
+- TBD
 
 ### Source code
 The manifest file for this example can be found here:
-- [manifest_hello_world_fixed_parms.yaml](examples/manifest_hello_world_fixed_parms.yaml)
+- [manifest_hello_world_env_var_parms.yaml](examples/manifest_hello_world_env_var_parms.yaml)
 
 ### Specification
 For convenience, the Actions and Parameters grammar can be found here:
@@ -67,9 +79,9 @@ For convenience, the Actions and Parameters grammar can be found here:
 <div align="center">
 <table align="center">
   <tr>
-    <td><a href="wskdeploy_action_helloworld.md#actions">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="wskdeploy_action_advanced_parms.md#actions">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <td><a href="wskdeploy_action_typed_parms.md#actions">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_triggerrule_basic.md#triggers-and-rules">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>
