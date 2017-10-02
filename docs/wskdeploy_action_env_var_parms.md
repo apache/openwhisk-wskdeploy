@@ -44,8 +44,8 @@ The invocation should return an 'ok' with a response that includes this result:
 },
 ```
 
-if we modify the three environment variables to different values, update the action and invoke it again:
 ### Invoking
+if we modify the three environment variables to different values, update the action and invoke it again:
 ```sh
 $ export FIRSTNAME=Elrond TOWN="Rivendell" COUNTRY="M.E."
 $ wskdeploy -m docs/examples/manifest_hello_world_env_var_parms.yaml
