@@ -28,7 +28,7 @@ package:
 ### Deploying
 Set the values for the three environment variables expected by the Action and deploy:
 ```sh
-$ FIRSTNAME=Sam TOWN="the Shire" COUNTRY="middle earth" wskdeploy -m docs/examples/manifest_hello_world_env_var_parms.yaml
+$ FIRSTNAME=Sam TOWN="the Shire" COUNTRY="Middle-earth" wskdeploy -m docs/examples/manifest_hello_world_env_var_parms.yaml
 ```
 
 ### Invoking
@@ -38,29 +38,36 @@ $ wsk action invoke hello_world_package/hello_world_env_var_parms --blocking
 
 ### Result
 The invocation should return an 'ok' with a response that includes this result:
-```yaml
+```json
 "result": {
-   "greeting": "Hello, Sam from the Shire, middle earth"
+   "greeting": "Hello, Sam from the Shire, Middle-earth"
 },
 ```
 
 if we modify the three environment variables to different values, update the action and invoke it again:
 ### Invoking
 ```sh
-$ FIRSTNAME=Elrond TOWN="the Shire" COUNTRY="middle earth"
-$ set
+$ export FIRSTNAME=Elrond TOWN="Rivendell" COUNTRY="M.E."
+$ wskdeploy -m docs/examples/manifest_hello_world_env_var_parms.yaml
+$ wsk action invoke hello_world_package/hello_world_env_var_parms --blocking
 ```
 
 ### Result
-the results will reflect the changes to the environment variables:
+the result will reflect the changes to the environment variables:
 ```json
-
+"result": {
+   "greeting": "Hello, Elrond from Rivendell, M.E."
+},
 ```
 
 ### Discussion
 
 In this example:
-- TBD
+- it was shown how values provided by environment variables, within the execution of the wskdeploy utility, could be bound to input parameter values within a Manifest file.
+- we further demonstrated how string values from environment variables could be concatenated with other strings within a Manifest file
+
+### Notes:
+- These methods for binidng environment variables to input parameters are also available within Deployment files.
 
 ### Source code
 The manifest file for this example can be found here:
