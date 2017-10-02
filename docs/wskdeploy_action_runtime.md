@@ -2,7 +2,9 @@
 
 ## Setting your Function's runtime
 
-In the previous ["Hello world" example](), the wskdeploy utility user the file extension of the function "hello.js" to select the most current NodeJS runtime.  In most cases, allowing the utility to select the runtime works well using this implicit method. However, perhaps your code is dependent on a specific version of a language runtime and you want to explicitly set it?
+In the previous ["Hello world" example](), the ```wskdeploy``` utility used the file extension of the function "hello.js" to select the most current NodeJS runtime.
+
+In most cases, allowing the utility to select the runtime works well using this implicit method. However, perhaps your code is dependent on a specific version of a language runtime and you want to explicitly set it?
 
 This example shows how to:
 - declare an explicit runtime for your Action's function.
@@ -43,7 +45,7 @@ The invocation should return an 'ok' with a response that includes this result:
 ### Discussion
 
 In the above example,
-- The value for the 'runtime' key was a valid name and version supported by OpenWhisk
+- The value for the '```runtime```' key was a valid name and version supported by OpenWhisk
   - Please see the current supported list here: - **[Actions - Valid runtime names](../specification/html/spec_actions.md#valid-runtime-names)**
 
 
