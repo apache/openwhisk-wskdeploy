@@ -49,7 +49,7 @@ In the above example,
   - Please see the current supported list here: **[Actions - Valid runtime names](../specification/html/spec_actions.md#valid-runtime-names)**
 
 #### Runtime mismatch for function
-If the language runtime you requested is not compatible with the function's language, then you will receive an error response when invoking the Action.  For example, the following manifest indicates a JavaScript (.js) function, but the runtime selected as "python":
+If the language runtime you requested is not compatible with the function's language, then you will receive an **error** response when invoking the Action.  For example, the following manifest indicates a JavaScript (```.js```) function, but the runtime selected as "```python```":
 ```yaml
 package:
   name: hello_world_package
