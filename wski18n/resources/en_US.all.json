@@ -32,8 +32,8 @@
     "translation": "Manifest file not found at path {{.projectPath}}.\n"
   },
   {
-    "id": "Missing {{.yaml}}/{{.yml}} file. Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
-    "translation": "Missing {{.yaml}}/{{.yml}} file. Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n"
+    "id": "Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
+    "translation": "Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n"
   },
   {
     "id": "Manifest file is not found at the path [{{.filePath}}].\n",
