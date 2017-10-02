@@ -48,6 +48,27 @@ In the above example,
 - The value for the '```runtime```' key was a valid name and version supported by OpenWhisk
   - Please see the current supported list here: - **[Actions - Valid runtime names](../specification/html/spec_actions.md#valid-runtime-names)**
 
+#### Runtime mismatch for function
+If the language runtime you requested is not compatible with the function's language, then you will receive an error response when invoking the Action.  For example, the following manifest indicates a JavaScript (.js) function, but the runtime selected as "python":
+```yaml
+package:
+  name: hello_world_package
+  ...
+  actions:
+    hello_world_runtime:
+      function: src/hello.js
+      runtime: python
+```
+
+The result would a "failure" with a failed response:
+```json
+"response": {
+    "result": {
+        "error": "The action failed to generate or locate a binary. See logs for details."
+    },
+    "status": "action developer error",
+    "success": false
+```
 
 ### Source code
 The source code for the manifest and JavaScript files can be found here:
