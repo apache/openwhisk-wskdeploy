@@ -49,11 +49,8 @@ func (dm *YAMLParser) ParseDeployment(deploymentPath string) (*DeploymentYAML, e
     }
 	err = dm.UnmarshalDeployment(content, &dplyyaml)
     if err != nil {
-        if err != nil {
-
-            lines, msgs := dm.convertErrorToLinesMsgs(err.Error())
-            return &dplyyaml, utils.NewParserErr(deploymentPath, lines, msgs)
-        }
+        lines, msgs := dm.convertErrorToLinesMsgs(err.Error())
+        return &dplyyaml, utils.NewParserErr(deploymentPath, lines, msgs)
     }
 	dplyyaml.Filepath = deploymentPath
 	return &dplyyaml, nil

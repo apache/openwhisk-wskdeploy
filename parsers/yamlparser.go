@@ -178,7 +178,9 @@ type Application struct {
 }
 
 type DeploymentYAML struct {
-	Application Application `yaml:"application"` //used in deployment.yaml
+	Application Application       `yaml:"application"` //used in deployment.yaml
+    Packages   map[string]Package `yaml:"packages"` //used in deployment.yaml
+    Package    Package            `yaml:"package"`
 	Filepath    string      //file path of the yaml file
 }
 
@@ -186,6 +188,7 @@ type ManifestYAML struct {
 	Package  Package `yaml:"package"` //used in both manifest.yaml and deployment.yaml
 	Packages map[string]Package `yaml:"packages"`
 	Filepath string  //file path of the yaml file
+    Application Application       `yaml:"application"` //used in manifest.yaml
 }
 
 //********************Trigger functions*************************//
