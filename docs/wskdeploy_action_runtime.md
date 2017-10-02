@@ -57,6 +57,11 @@ For convenience, the Packages and Actions grammar can be found here:
 - **[Actions](../specification/html/spec_actions.md#actions)**
 - **[Actions - Valid runtime names](../specification/html/spec_actions.md#valid-runtime-names)**
 
+### Notes
+
+- If you use the following curl command, you can see the latest runtimes and version supported by the IBM Cloud Functions platform:
+  - ```curl -k https://openwhisk.ng.bluemix.net```
+
 ---
 <!--
  Bottom Navigation
