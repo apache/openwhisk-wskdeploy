@@ -29,6 +29,7 @@ Each example shows the "code", that is the Package Manifest, Deployment file and
   - [Adding fixed input parameters](wskdeploy_action_fixed_parms.md#actions) - bind fixed values to the input parameters of "hello world".
   - [Typed Parameters](wskdeploy_action_typed_parms.md#actions) - declare named input and output parameters on an Action with their types.
   - [Advanced Parameters](wskdeploy_action_advanced_parms.md#actions) - input and output parameter declarations with types, descriptions, defaults and more.
+  - [Using Environment Variables](wskdeploy_action_env_var_parms.md#actions) - shows how to reference values from environment variables and bind them to an Action's input parameters.
 - Trigger and Rule examples.
   - [Basic Trigger and Rule](wskdeploy_triggerrule_basic.md#triggers-and-rules) - adding a basic trigger and rule to the advanced Parameter "hello world".
   - [Binding parameters in a Deployment file](wskdeploy_triggerrule_trigger_bindings.md#triggers-and-rules) - using a deployment file to bind values to a Trigger’s parameters and applying them to a compatible manifest file.
