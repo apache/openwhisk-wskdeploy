@@ -138,13 +138,29 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		return err
 	}
 
+    applicationName := ""
+    if len(manifest.Application.Packages) != 0 {
+        applicationName = manifest.Application.Name
+    }
+
 	// process deploymet file
 	if utils.FileExists(deployer.DeploymentPath) {
 		var deploymentReader = NewDeploymentReader(deployer)
 		err = deploymentReader.HandleYaml()
+
 		if err != nil {
 			return err
 		}
+        // compare the name of the application
+        if len(deploymentReader.DeploymentDescriptor.Application.Packages) != 0 && len(applicationName) != 0 {
+            appNameDeploy := deploymentReader.DeploymentDescriptor.Application.Name
+            if appNameDeploy != applicationName {
+                errorString := wski18n.T("The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
+                    map[string]interface{}{"appNameDeploy": appNameDeploy, "deploymentFile": deployer.DeploymentPath,
+                        "appNameManifest": applicationName,  "manifestFile": deployer.ManifestPath })
+                return utils.NewInputYamlFormatError(errorString)
+            }
+        }
 
 		deploymentReader.BindAssets()
 	}
@@ -186,6 +202,11 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
 		return deployer.Deployment, err
 	}
 
+    applicationName := ""
+    if len(manifest.Application.Packages) != 0 {
+        applicationName = manifest.Application.Name
+    }
+
 	// process deployment file
 	if utils.FileExists(deployer.DeploymentPath) {
 		var deploymentReader = NewDeploymentReader(deployer)
@@ -193,7 +214,16 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
 		if err != nil {
 			return deployer.Deployment, err
 		}
-
+        // compare the name of the application
+        if len(deploymentReader.DeploymentDescriptor.Application.Packages) != 0 && len(applicationName) != 0 {
+            appNameDeploy := deploymentReader.DeploymentDescriptor.Application.Name
+            if appNameDeploy != applicationName {
+                errorString := wski18n.T("The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
+                    map[string]interface{}{"appNameDeploy": appNameDeploy, "deploymentFile": deployer.DeploymentPath,
+                        "appNameManifest": applicationName,  "manifestFile": deployer.ManifestPath })
+                return deployer.Deployment, utils.NewInputYamlFormatError(errorString)
+            }
+        }
 		deploymentReader.BindAssets()
 	}
 

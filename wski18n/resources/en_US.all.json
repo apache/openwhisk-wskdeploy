@@ -330,5 +330,10 @@
   {
     "id": "path of the .cert file",
     "translation": "path of the .cert file"
+  },
+  {
+    "id": "The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
+    "translation": "The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}]."
   }
+
 ]

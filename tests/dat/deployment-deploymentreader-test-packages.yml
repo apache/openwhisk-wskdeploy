@@ -1,0 +1,16 @@
+packages:
+    triggerrule:
+      actions:
+        greeting:
+          inputs:
+            name: Amy
+            place: Paris
+          annotations:
+            aaa: this is an annotation
+      triggers:
+        locationUpdate:
+          inputs:
+            name: Bernie
+            place: DC
+          annotations:
+            bbb: this is an annotation
