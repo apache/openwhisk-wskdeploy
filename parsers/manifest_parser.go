@@ -36,8 +36,8 @@ import (
 )
 
 // Read existing manifest file or create new if none exists
-func ReadOrCreateManifest() (*ManifestYAML, error) {
-	maniyaml := ManifestYAML{}
+func ReadOrCreateManifest() (*YAML, error) {
+	maniyaml := YAML{}
 
 	if _, err := os.Stat(utils.ManifestFileNameYaml); err == nil {
 		dat, _ := ioutil.ReadFile(utils.ManifestFileNameYaml)
@@ -50,7 +50,7 @@ func ReadOrCreateManifest() (*ManifestYAML, error) {
 }
 
 // Serialize manifest to local file
-func Write(manifest *ManifestYAML, filename string) error {
+func Write(manifest *YAML, filename string) error {
 	output, err := NewYAMLParser().Marshal(manifest)
 	if err != nil {
 		return utils.NewInputYamlFormatError(err.Error())
@@ -66,7 +66,7 @@ func Write(manifest *ManifestYAML, filename string) error {
 	return nil
 }
 
-func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
+func (dm *YAMLParser) Unmarshal(input []byte, manifest *YAML) error {
 	err := yaml.UnmarshalStrict(input, manifest)
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
 	return nil
 }
 
-func (dm *YAMLParser) Marshal(manifest *ManifestYAML) (output []byte, err error) {
+func (dm *YAMLParser) Marshal(manifest *YAML) (output []byte, err error) {
 	data, err := yaml.Marshal(manifest)
 	if err != nil {
 		fmt.Printf("err happened during marshal :%v", err)
@@ -83,9 +83,9 @@ func (dm *YAMLParser) Marshal(manifest *ManifestYAML) (output []byte, err error)
 	return data, nil
 }
 
-func (dm *YAMLParser) ParseManifest(manifestPath string) (*ManifestYAML, error) {
+func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
 	mm := NewYAMLParser()
-	maniyaml := ManifestYAML{}
+	maniyaml := YAML{}
 
 	content, err := utils.Read(manifestPath)
 	if err != nil {
@@ -101,7 +101,7 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*ManifestYAML, error) 
 	return &maniyaml, nil
 }
 
-func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *ManifestYAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {
 	dependencies := make(map[string]utils.DependencyRecord)
     packages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
@@ -190,7 +190,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 	return depMap, nil
 }
 
-func (dm *YAMLParser) ComposeAllPackages(manifest *ManifestYAML, filePath string) (map[string]*whisk.Package, error) {
+func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string) (map[string]*whisk.Package, error) {
 	packages := map[string]*whisk.Package{}
     manifestPackages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
@@ -277,7 +277,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	return pag, nil
 }
 
-func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *ManifestYAML) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YAML) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
     manifestPackages := make(map[string]Package)
 	if mani.Package.Packagename != "" {
@@ -342,7 +342,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 	return s1, nil
 }
 
-func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *ManifestYAML, filePath string) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath string) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
     manifestPackages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
@@ -535,7 +535,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 }
 
-func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *ManifestYAML, filePath string) ([]*whisk.Trigger, error) {
+func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath string) ([]*whisk.Trigger, error) {
 	var triggers []*whisk.Trigger = make([]*whisk.Trigger, 0)
     manifestPackages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
@@ -614,7 +614,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package) ([]*whisk.Tr
 	return t1, nil
 }
 
-func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *ManifestYAML) ([]*whisk.Rule, error) {
+func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML) ([]*whisk.Rule, error) {
 	var rules []*whisk.Rule = make([]*whisk.Rule, 0)
     manifestPackages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
@@ -652,7 +652,7 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string) ([]*whisk.Ru
 	return r1, nil
 }
 
-func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *ManifestYAML) ([]*whisk.ApiCreateRequest, error) {
+func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *YAML) ([]*whisk.ApiCreateRequest, error) {
 	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
     manifestPackages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {

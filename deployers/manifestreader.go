@@ -41,7 +41,7 @@ func NewManfiestReader(serviceDeployer *ServiceDeployer) *ManifestReader {
 	return &dep
 }
 
-func (deployer *ManifestReader) ParseManifest() (*parsers.ManifestYAML, *parsers.YAMLParser, error) {
+func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLParser, error) {
 	dep := deployer.serviceDeployer
 	manifestParser := parsers.NewYAMLParser()
 	manifest, err := manifestParser.ParseManifest(dep.ManifestPath)
@@ -52,7 +52,7 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.ManifestYAML, *parsers
 	return manifest, manifestParser, nil
 }
 
-func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
+func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser, manifest *parsers.YAML) error {
 	packages, err := manifestParser.ComposeAllPackages(manifest, reader.serviceDeployer.ManifestPath)
 	if err != nil {
 		return utils.NewInputYamlFormatError(err.Error())
@@ -63,7 +63,7 @@ func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser
 }
 
 // Wrapper parser to handle yaml dir
-func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.ManifestYAML) error {
+func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.YAML) error {
 
 	var err error
 	deps, err := manifestParser.ComposeDependenciesFromAllPackages(manifest, deployer.serviceDeployer.ProjectPath, deployer.serviceDeployer.ManifestPath)

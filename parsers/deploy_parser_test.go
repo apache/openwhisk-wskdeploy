@@ -91,7 +91,7 @@ func TestMissingRootNodeDeploymentYaml(t *testing.T) {
     _, err = p.ParseDeployment(tmpfile.Name())
     assert.NotNil(t, err)
     // go-yaml/yaml prints the wrong line number for mapping values. It should be 3.
-    assert.Contains(t, err.Error(), "field name not found in struct parsers.DeploymentYAML: Line 1, its neighbour lines, or the lines on the same level")
+    assert.Contains(t, err.Error(), "field name not found in struct parsers.YAML: Line 1, its neighbour lines, or the lines on the same level")
 }
 
 func TestParseDeploymentYAML_Application(t *testing.T) {

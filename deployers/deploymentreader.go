@@ -25,7 +25,7 @@ import (
 
 type DeploymentReader struct {
 	serviceDeployer      *ServiceDeployer
-	DeploymentDescriptor *parsers.DeploymentYAML
+	DeploymentDescriptor *parsers.YAML
 }
 
 func NewDeploymentReader(serviceDeployer *ServiceDeployer) *DeploymentReader {

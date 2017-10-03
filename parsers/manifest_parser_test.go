@@ -42,16 +42,16 @@ package:
     helloNodejs:
       function: actions/hello.js
       runtime: nodejs:6`
-    // set the zero value of struct ManifestYAML
-    m := ManifestYAML{}
-    // Unmarshal reads/parses manifest data and sets the values of ManifestYAML
+    // set the zero value of struct YAML
+    m := YAML{}
+    // Unmarshal reads/parses manifest data and sets the values of YAML
     // And returns an error if parsing a manifest data fails
     err := NewYAMLParser().Unmarshal([]byte(data), &m)
     if err == nil {
-        // ManifestYAML.Filepath does not get set by Parsers.Unmarshal
+        // YAML.Filepath does not get set by Parsers.Unmarshal
         // as it takes manifest YAML data as a function parameter
         // instead of file name of a manifest file, therefore there is
-        // no way for Unmarshal function to set ManifestYAML.Filepath field
+        // no way for Unmarshal function to set YAML.Filepath field
         // (TODO) Ideally we should change this functionality so that
         // (TODO) filepath is set to the actual path of the manifest file
         expectedResult := ""
@@ -67,7 +67,7 @@ package:
         actualResult = string(len(m.Package.Actions))
         assert.Equal(t, expectedResult, actualResult, "Expected 1 but got " + actualResult)
         // get the action payload from the map of actions which is stored in
-        // ManifestYAML.Package.Actions with the type of map[string]Action
+        // YAML.Package.Actions with the type of map[string]Action
         actionName := "helloNodejs"
         if action, ok := m.Package.Actions[actionName]; ok {
             // location/function of an action should be "actions/hello.js"
@@ -95,7 +95,7 @@ package:
       function: actions/hello.jar
       runtime: java
       main: Hello`
-    m := ManifestYAML{}
+    m := YAML{}
     err := NewYAMLParser().Unmarshal([]byte(data), &m)
     // nothing to test if Unmarshal returns an err
     if err == nil {
@@ -127,7 +127,7 @@ package:
     helloPython:
       function: actions/hello.py
       runtime: python`
-    m := ManifestYAML{}
+    m := YAML{}
     err := NewYAMLParser().Unmarshal([]byte(data), &m)
     // nothing to test if Unmarshal returns an err
     if err == nil {
@@ -154,7 +154,7 @@ package:
     helloSwift:
       function: actions/hello.swift
       runtime: swift`
-    m := ManifestYAML{}
+    m := YAML{}
     err := NewYAMLParser().Unmarshal([]byte(data), &m)
     // nothing to test if Unmarshal returns an err
     if err == nil {
@@ -185,7 +185,7 @@ package:
        inputs:
          name: Amy
          place: Paris`
-    m := ManifestYAML{}
+    m := YAML{}
     err := NewYAMLParser().Unmarshal([]byte(data), &m)
     if err == nil {
         actionName := "helloWithParams"
@@ -212,9 +212,9 @@ func TestUnmarshalForMissingPackage(t *testing.T) {
       runtime: nodejs:6
     helloJava:
       function: actions/hello.java`
-    // set the zero value of struct ManifestYAML
-    m := ManifestYAML{}
-    // Unmarshal reads/parses manifest data and sets the values of ManifestYAML
+    // set the zero value of struct YAML
+    m := YAML{}
+    // Unmarshal reads/parses manifest data and sets the values of YAML
     // And returns an error if parsing a manifest data fails
     err := NewYAMLParser().Unmarshal([]byte(data), &m)
     assert.NotNil(t, err, "Expected some error from Unmarshal but got no error")
@@ -1295,7 +1295,7 @@ func TestMissingRootValueManifestYaml(t *testing.T) {
     p := NewYAMLParser()
     _, err = p.ParseManifest(tmpfile.Name())
     assert.NotNil(t, err)
-    assert.Contains(t, err.Error(), "field actions not found in struct parsers.ManifestYAML: Line 1, its neighbour lines, or the lines on the same level")
+    assert.Contains(t, err.Error(), "field actions not found in struct parsers.YAML: Line 1, its neighbour lines, or the lines on the same level")
 
 }
 
@@ -1314,9 +1314,9 @@ packages:
       helloPython:
         function: actions/hello.py
         runtime: python`
-    // set the zero value of struct ManifestYAML
-    m := ManifestYAML{}
-    // Unmarshal reads/parses manifest data and sets the values of ManifestYAML
+    // set the zero value of struct YAML
+    m := YAML{}
+    // Unmarshal reads/parses manifest data and sets the values of YAML
     // And returns an error if parsing a manifest data fails
     err := NewYAMLParser().Unmarshal([]byte(data), &m)
     if err == nil {
@@ -1333,7 +1333,7 @@ packages:
                 actualResult = string(len(v.Actions))
                 assert.Equal(t, expectedResult, actualResult, "Expected 1 but got " + actualResult)
                 // get the action payload from the map of actions which is stored in
-                // ManifestYAML.Package.Actions with the type of map[string]Action
+                // YAML.Package.Actions with the type of map[string]Action
                 actionName := "helloNodejs"
                 if action, ok := v.Actions[actionName]; ok {
                     // location/function of an action should be "actions/hello.js"
@@ -1353,7 +1353,7 @@ packages:
                 actualResult = string(len(v.Actions))
                 assert.Equal(t, expectedResult, actualResult, "Expected 1 but got " + actualResult)
                 // get the action payload from the map of actions which is stored in
-                // ManifestYAML.Package.Actions with the type of map[string]Action
+                // YAML.Package.Actions with the type of map[string]Action
                 actionName := "helloPython"
                 if action, ok := v.Actions[actionName]; ok {
                     // location/function of an action should be "actions/hello.js"
@@ -1372,13 +1372,13 @@ packages:
     }
 }
 
-func TestParseManifestYAML_trigger(t *testing.T) {
+func TestParseYAML_trigger(t *testing.T) {
 	data, err := ioutil.ReadFile("../tests/dat/manifest_validate_triggerfeed.yaml")
 	if err != nil {
 		panic(err)
 	}
 
-	var manifest ManifestYAML
+	var manifest YAML
 	err = NewYAMLParser().Unmarshal(data, &manifest)
 	if err != nil {
 		panic(err)
@@ -1399,13 +1399,13 @@ func TestParseManifestYAML_trigger(t *testing.T) {
 	}
 }
 
-func TestParseManifestYAML_rule(t *testing.T) {
+func TestParseYAML_rule(t *testing.T) {
 	data, err := ioutil.ReadFile("../tests/dat/manifest_validate_rule.yaml")
 	if err != nil {
 		panic(err)
 	}
 
-	var manifest ManifestYAML
+	var manifest YAML
 	err = NewYAMLParser().Unmarshal(data, &manifest)
 	if err != nil {
 		panic(err)
@@ -1427,13 +1427,13 @@ func TestParseManifestYAML_rule(t *testing.T) {
 	}
 }
 
-func TestParseManifestYAML_feed(t *testing.T) {
+func TestParseYAML_feed(t *testing.T) {
 	data, err := ioutil.ReadFile("../tests/dat/manifest_validate_feed.yaml")
 	if err != nil {
 		panic(err)
 	}
 
-	var manifest ManifestYAML
+	var manifest YAML
 	err = NewYAMLParser().Unmarshal(data, &manifest)
 	if err != nil {
 		panic(err)
@@ -1463,13 +1463,13 @@ func TestParseManifestYAML_feed(t *testing.T) {
 	}
 }
 
-func TestParseManifestYAML_param(t *testing.T) {
+func TestParseYAML_param(t *testing.T) {
 	data, err := ioutil.ReadFile("../tests/dat/manifest_validate_params.yaml")
 	if err != nil {
 		panic(err)
 	}
 
-	var manifest ManifestYAML
+	var manifest YAML
 	err = NewYAMLParser().Unmarshal(data, &manifest)
 	if err != nil {
 		panic(err)

@@ -27,7 +27,7 @@ import (
 
 var mr *ManifestReader
 var ps *parsers.YAMLParser
-var ms *parsers.ManifestYAML
+var ms *parsers.YAML
 
 func init() {
 
