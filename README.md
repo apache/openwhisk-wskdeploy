@@ -9,9 +9,9 @@ You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses t
 
 # Here are some quick links for:
 
-- [Building the project](#building-the-project) - download and build the GoLang source code
-- [Running wskdeploy](#running-wskdeploy) - run wskdeploy as a binary or Go program
 - [Downloading released binaries](#downloading-released-binaries) - for Linux, Mac OS and Windows
+- [Running wskdeploy](#running-wskdeploy) - run wskdeploy as a binary or Go program
+
 <!-- - ![](docs/images/green_arrow_32x32.png) [Writing Package Manifests](docs/programming_guide.md#wskdeploy-utility-by-example) - step-by-step guide on writing Package Manifest and Deployment files for ```wskdeploy``` -->
 
 <html>
@@ -36,6 +36,7 @@ You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses t
 </div>
 </html>
 
+- [Building the project](#building-the-project) - download and build the GoLang source code
 - [Contributing to the project](#contributing-to-the-project) - join us!
 - [Debugging wskdeploy](docs/wskdeploy_debugging.md) - helpful tips for debugging the code and your manifest files
 - [Troubleshooting](#troubleshooting) - known issues (e.g., Git)
