@@ -21,6 +21,7 @@ You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses t
 </tr>
 </table>
 </html>
+
 - [Contributing to the project](#contributing-to-the-project) - join us!
 - [Debugging wskdeploy](docs/wskdeploy_debugging.md) - helpful tips for debugging the code and your manifest files
 - [Troubleshooting](#troubleshooting) - known issues (e.g., Git)
