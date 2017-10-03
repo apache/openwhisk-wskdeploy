@@ -12,12 +12,12 @@ You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses t
 - [Building the project](#building-the-project) - download and build the GoLang source code
 - [Running wskdeploy](#running-wskdeploy) - run wskdeploy as a binary or Go program
 - [Downloading released binaries](#downloading-released-binaries) - for Linux, Mac OS and Windows
-- ![](docs/images/green_arrow_32x32.png) [Writing Package manifests](docs/programming_guide.md#wskdeploy-utility-by-example) - step-by-step guide on writing Package Manifest and Deployment files for ```wskdeploy```
+- ![](docs/images/green_arrow_32x32.png) [Writing Package Manifests](docs/programming_guide.md#wskdeploy-utility-by-example) - step-by-step guide on writing Package Manifest and Deployment files for ```wskdeploy```
 
 <html>
-<table>
+<table border="0">
 <tr>
-    <td><img src="docs/images/green_arrow_32x32.png"></td><td><a href="docs/programming_guide.md#wskdeploy-utility-by-example"></a>Writing Package Manifests</td>
+    <td><img src="docs/images/green_arrow_32x32.png"></td><td><a href="docs/programming_guide.md#wskdeploy-utility-by-example"></a>Writing Package Manifests</td><td>- step-by-step guide on writing Package Manifest and Deployment files for <em><i>wskdeploy</i></em></td>
 </tr>
 </table>
 </html>
