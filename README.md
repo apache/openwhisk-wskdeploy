@@ -15,7 +15,7 @@ You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses t
 <!-- - ![](docs/images/green_arrow_32x32.png) [Writing Package Manifests](docs/programming_guide.md#wskdeploy-utility-by-example) - step-by-step guide on writing Package Manifest and Deployment files for ```wskdeploy``` -->
 
 <html>
-<div text-align="middle" align="justify"><img src="docs/images/green_arrow_24x24.png"><a href="docs/programming_guide.md#wskdeploy-utility-by-example"> Writing Package Manifests</a> - step-by-step guide on writing Package Manifest and Deployment files for <code>wskdeploy</code></div>
+<div text-align="middle" align="middle"><img src="docs/images/green_arrow_24x24.png"><a href="docs/programming_guide.md#wskdeploy-utility-by-example"> Writing Package Manifests</a> - step-by-step guide on writing Package Manifest and Deployment files for <code>wskdeploy</code></div>
 </html>
 
 - [Building the project](#building-the-project) - download and build the GoLang source code
