@@ -14,9 +14,21 @@ This example:
 
 ```
 
+```javascript
+function main(params) {
+    var member = {name:"", place:"", occupation:"", height:0.0, joined:""};
+    name = params.name;
+    place = params.place;
+    occupation = params.job;
+    height = params.height;
+    join_date = Date.now();
+    return { joined: member };
+}
+```
+
 ### Deploying
 ```sh
-$ wskdeploy -m
+$ wskdeploy -m docs/examples/manifest_sequence_basic.yaml
 ```
 
 ### Invoking

@@ -1,0 +1,33 @@
+# Example: pre-processing data in a sequence
+package:
+  name: fellowship
+  version: 1.0
+  license: Apache-2.0
+  actions:
+    join_fellowship:
+      function: src/hello_plus.js
+      inputs:
+        name:
+          type: string
+          description: name of person
+          default: unknown
+        place:
+          type: string
+          description: location of person
+          default: unknown
+        occupation:
+          type: string
+          description: current occupation
+          default: 0
+        date_of_birth_year:
+          type: int
+          description: year person was born
+          default: 0
+        height:
+          type: float
+          description: height in meters
+          default: 0.0
+      outputs:
+        greeting:
+          type: json
+          description: member record
