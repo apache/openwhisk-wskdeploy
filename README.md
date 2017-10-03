@@ -23,9 +23,9 @@ You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses t
 </style>
 -->
 <div style="text-align: middle; border: 2px solid red;" markdown="1">
-<table border="0">
+<table border="0" markdown="1">
 <tr style="text-align: middle; border: 2px solid orange;">
-    <td >
+    <td vertical-align="middle">
         <img src="docs/images/green_arrow_32x32.png"></td><td><a href="docs/programming_guide.md#wskdeploy-utility-by-example">Writing Package Manifests</a><td> - step-by-step guide on writing Package Manifest and Deployment files for <code>wskdeploy</code></td>
     </td>
 </tr>
