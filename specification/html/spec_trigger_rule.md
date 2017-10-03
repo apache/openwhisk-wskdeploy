@@ -224,6 +224,7 @@ my_rule:
 <!--
  Bottom Navigation
 -->
+---
 <html>
 <div align="center">
 <table align="center">

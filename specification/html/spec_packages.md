@@ -170,6 +170,7 @@ my_whisk_package:
 <!--
  Bottom Navigation
 -->
+---
 <html>
 <div align="center">
 <table align="center">
