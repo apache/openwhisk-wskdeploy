@@ -15,7 +15,12 @@ You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses t
 - ![](docs/images/green_arrow_32x32.png) [Writing Package Manifests](docs/programming_guide.md#wskdeploy-utility-by-example) - step-by-step guide on writing Package Manifest and Deployment files for ```wskdeploy```
 
 <html>
-<table style="border:0">
+<style>
+table.noborder
+{border-right:1px solid black;
+border-bottom:1px solid black;}
+</style>
+<table class="table.noborder">
 <tr>
     <td><img src="docs/images/green_arrow_32x32.png"></td><td><a href="docs/programming_guide.md#wskdeploy-utility-by-example">Writing Package Manifests</a></td><td>- step-by-step guide on writing Package Manifest and Deployment files for <em><i>wskdeploy</i></em></td>
 </tr>
