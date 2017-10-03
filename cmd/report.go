@@ -27,6 +27,7 @@ import (
 	"github.com/spf13/cobra"
 	"path"
 	"sync"
+    "os"
 )
 
 var wskpropsPath string
@@ -60,7 +61,7 @@ located under current user home.`,
 
 func init() {
 	RootCmd.AddCommand(reportCmd)
-	reportCmd.Flags().StringVarP(&wskpropsPath, "wskproppath", "w", ".", "path to wsk property file, default is to ~/.wskprops")
+	reportCmd.Flags().StringVarP(&wskpropsPath, "wskproppath", "w", path.Join(os.Getenv("HOME"), ".wskprops"), "path to wsk property file, default is to ~/.wskprops")
 
 	// Here you will define your flags and configuration settings.
 
@@ -76,7 +77,7 @@ func init() {
 
 var boldString = color.New(color.Bold).SprintFunc()
 
-func printDeploymentInfo(*whisk.Client) error {
+func printDeploymentInfo(client *whisk.Client) error {
 	//We currently list packages, actions, triggers, rules.
 	wg.Add(4)
 
