@@ -59,9 +59,9 @@ $ wsk action invoke hello_world_package/hello_world_advanced_parms --blocking
 The invocation should return an 'ok' with a response that includes this result:
 ```json
 "result": {
-            "details": "You have 0 children and are 0 m. tall.",
-            "greeting": "Hello, unknown person from the Shire"
-        },
+    "details": "You have 0 children and are 0 m. tall.",
+    "greeting": "Hello, unknown person from the Shire"
+},
 ```
 
 ### Discussion
