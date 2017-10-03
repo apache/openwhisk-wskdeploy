@@ -15,7 +15,6 @@ You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses t
 <!-- - ![](docs/images/green_arrow_32x32.png) [Writing Package Manifests](docs/programming_guide.md#wskdeploy-utility-by-example) - step-by-step guide on writing Package Manifest and Deployment files for ```wskdeploy``` -->
 
 <html>
-<div style="border:0px;">
 <!--
 <style type="text/css">
   table {
@@ -28,6 +27,7 @@ You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses t
   }
 </style>
 -->
+<div style="border:0px;"
 <table class="table.noborder">
 <tr>
     <td><img src="docs/images/green_arrow_32x32.png"></td><td><a href="docs/programming_guide.md#wskdeploy-utility-by-example">Writing Package Manifests</a></td><td>- step-by-step guide on writing Package Manifest and Deployment files for <code>wskdeploy</code></td>
