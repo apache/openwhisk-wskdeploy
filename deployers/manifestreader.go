@@ -131,9 +131,7 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 }
 
 func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRecord) error {
-
 	for name, dep := range deps {
-
 		n := strings.Split(name, ":")
 		depName := n[1]
 		if (depName == "") {
