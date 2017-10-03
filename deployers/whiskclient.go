@@ -68,7 +68,7 @@ var CreateNewClient = func (config_input *whisk.Config) (*whisk.Client, error) {
 	var netClient = &http.Client{
 		Timeout: time.Second * utils.DEFAULT_HTTP_TIMEOUT,
 	}
-	return whisk.NewClient(netClient, clientConfig)
+	return whisk.NewClient(netClient, config_input)
 }
 
 // we are reading openwhisk credentials (apihost, namespace, and auth) in the following precedence order:
