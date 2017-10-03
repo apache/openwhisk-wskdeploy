@@ -5,7 +5,7 @@ Portions of the OpenWhisk Packaging Specification, for convenience, are made ava
 
 # Programming Guide
 If you want to learn how to write Packages and Applications using the specification and deploy them using the ```wskdeploy``` utility, please read the step-by-step guide:
-- "[wskdeploy utility by example](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/programming_guide.md#wskdeploy-utility-by-example)"
+- "[wskdeploy utility by example](../../docs/programming_guide.md#wskdeploy-utility-by-example)"
 
 ## Index
 - [Parameters](spec_parameters.md#parameters) - grammar, schema and examples for input and output parameters.
