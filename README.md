@@ -11,17 +11,15 @@ You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses t
 
 - [Downloading released binaries](#downloading-released-binaries) - for Linux, Mac OS and Windows
 - [Running wskdeploy](#running-wskdeploy) - run wskdeploy as a binary or Go program
-
-<!-- - ![](docs/images/green_arrow_32x32.png) [Writing Package Manifests](docs/programming_guide.md#wskdeploy-utility-by-example) - step-by-step guide on writing Package Manifest and Deployment files for ```wskdeploy``` -->
-
-<html>
-<div text-align="middle" align="middle"><img src="docs/images/green_arrow_24x24.png"><a href="docs/programming_guide.md#wskdeploy-utility-by-example"> Writing Package Manifests</a> - step-by-step guide on writing Package Manifest and Deployment files for <code>wskdeploy</code></div>
-</html>
-
+- ![](docs/images/green_arrow_24x24.png) [Writing Package Manifests](docs/programming_guide.md#wskdeploy-utility-by-example) - step-by-step guide on writing Package Manifest and Deployment files for ```wskdeploy```
 - [Building the project](#building-the-project) - download and build the GoLang source code
 - [Contributing to the project](#contributing-to-the-project) - join us!
 - [Debugging wskdeploy](docs/wskdeploy_debugging.md) - helpful tips for debugging the code and your manifest files
 - [Troubleshooting](#troubleshooting) - known issues (e.g., Git)
+
+<!-- <html>
+<div text-align="middle" align="middle"><img src="docs/images/green_arrow_24x24.png"><a href="docs/programming_guide.md#wskdeploy-utility-by-example"> Writing Package Manifests</a> - step-by-step guide on writing Package Manifest and Deployment files for <code>wskdeploy</code></div>
+</html> -->
 
 <!-- ----------------------------------------------------------------------------- -->
 ## Building the project
