@@ -511,8 +511,6 @@ func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) error {
 }
 
 func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedName string) error {
-	deployer.mt.Lock()
-	defer deployer.mt.Unlock()
 	output := wski18n.T("Deploying trigger feed {{.output}} ...",
 		map[string]interface{}{"output": trigger.Name})
 	whisk.Debug(whisk.DbgInfo, output)
