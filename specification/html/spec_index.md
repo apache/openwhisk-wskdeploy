@@ -14,5 +14,5 @@ If you want to learn how to write Packages and Applications using the specificat
 - [Packages](spec_packages.md#packages) - grammar, schema and examples for Packages.
 - [Actions](spec_actions.md#actions) - grammar, schema and examples for Actions.
 - [Triggers and Rules](spec_trigger_rule.md#triggers-and-rules) - grammar, schema and examples for Triggers and Rules.
-- [Sequences](spec_sequences.md#sequences) - shema to compose multiple Actions into a sequence.
+- [Sequences](spec_sequences.md#sequences) - schema to compose multiple Actions into a sequence.
 - [Normative & Non-normative References](spec_normative_refs.md)
