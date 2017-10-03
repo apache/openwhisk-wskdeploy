@@ -11,7 +11,7 @@ In general, the goal of this specification is to evolve a simple grammar to desc
 # Programming Guide
 
 If you want to learn how to write Packages and Applications by example using the specification and deploy them using the ```wskdeploy``` utility, please read the step-by-step guide:
-- "[wskdeploy utility by example](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/programming_guide.md#wskdeploy-utility-by-example)"
+- "[wskdeploy utility by example](../docs/programming_guide.md#wskdeploy-utility-by-example)"
 
 # OpenWhisk Package Specification (HTML)
 
@@ -19,14 +19,14 @@ Portions of the OpenWhisk Packaging Specification, for convenience, are made ava
 
 ## Index
 
-- [Parameters](spec_parameters.md#parameters) - grammar, schema and examples for input and output parameters.
-- [Parameter Types](spec_types.md#parameter-types) - supported YAML and OpenWhisk Types.
-- [Shared Entity Schema](spec_shared_entity_schema.md#shared-entity-schema) - fields that are common among entities in the programming model.
-- [Packages](spec_packages.md#packages) - grammar, schema and examples for Packages.
-- [Actions](spec_actions.md#actions) - grammar, schema and examples for Actions.
-- [Triggers and Rules](spec_trigger_rule.md#triggers-and-rules) - grammar, schema and examples for Triggers and Rules.
-- [Sequences](spec_sequences.md#sequences) - shema to compose multiple Actions into a sequence.
-- [Normative & Non-normative References](spec_normative_refs.md)
+- [Parameters](html/spec_parameters.md#parameters) - grammar, schema and examples for input and output parameters.
+- [Parameter Types](html/spec_types.md#parameter-types) - supported YAML and OpenWhisk Types.
+- [Shared Entity Schema](html/spec_shared_entity_schema.md#shared-entity-schema) - fields that are common among entities in the programming model.
+- [Packages](html/spec_packages.md#packages) - grammar, schema and examples for Packages.
+- [Actions](html/spec_actions.md#actions) - grammar, schema and examples for Actions.
+- [Triggers and Rules](html/spec_trigger_rule.md#triggers-and-rules) - grammar, schema and examples for Triggers and Rules.
+- [Sequences](html/spec_sequences.md#sequences) - shema to compose multiple Actions into a sequence.
+- [Normative & Non-normative References](html/spec_normative_refs.md)
 
 ---
 

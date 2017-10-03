@@ -71,7 +71,7 @@ $ wsk trigger fire meetPerson
 #### Result
 Find the activation ID for the “```hello_world_triggerrule```’ Action that firing the Trigger initiated and get the results from the activation record:
 
-```
+```sh
 $ wsk activation list
 
 3a7c92468b4e4170bc92468b4eb170f1 hello_world_triggerrule
@@ -79,7 +79,9 @@ afb2c02bb686484cb2c02bb686084cab meetPersonRule
 9dc9324c601a4ebf89324c601a1ebf4b meetPerson
 
 $ wsk activation get 3a7c92468b4e4170bc92468b4eb170f1
+```
 
+```json
 "result": {
   "details": "You have 3 children and are 1.88 m. tall.",
   "greeting": "Hello, Elrond from Rivendell"

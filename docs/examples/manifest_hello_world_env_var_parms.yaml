@@ -1,0 +1,14 @@
+# Example: “Hello world” with input values set from environment variables
+package:
+  name: hello_world_package
+  version: 1.0
+  license: Apache-2.0
+  actions:
+    hello_world_env_var_parms:
+      function: src/hello.js
+      inputs:
+        name: $FIRSTNAME
+        place:
+          value: ${TOWN}, ${COUNTRY}
+      outputs:
+        greeting: string

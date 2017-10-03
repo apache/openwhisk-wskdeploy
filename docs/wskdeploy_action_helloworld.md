@@ -45,7 +45,7 @@ $ wsk action invoke hello_world_package/hello_world --blocking
 ### Result
 The invocation should return an 'ok' with a response that includes this result:
 
-```sh
+```json
 "result": {
     "greeting": "Hello, undefined from undefined"
 },
@@ -82,7 +82,7 @@ For convenience, the Packages and Actions grammar can be found here:
   <tr>
     <td><a href="wskdeploy_package_minimal.md#packages">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <td><a href="wskdeploy_action_fixed_parms.md#actions">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_action_runtime.md#actions">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>

@@ -35,7 +35,7 @@ $ wsk action invoke hello_world_package/hello_world_fixed_parms --blocking
 
 ### Result
 The invocation should return an 'ok' with a response that includes this result:
-```sh
+```json
 "result": {
     "greeting": "Hello, Sam from the Shire"
 },
@@ -51,6 +51,7 @@ In this example:
 ### Source code
 The manifest file for this example can be found here:
 - [manifest_hello_world_fixed_parms.yaml](examples/manifest_hello_world_fixed_parms.yaml)
+- [hello.js](examples/src/hello.js)
 
 ### Specification
 For convenience, the Actions and Parameters grammar can be found here:
@@ -65,7 +66,7 @@ For convenience, the Actions and Parameters grammar can be found here:
 <div align="center">
 <table align="center">
   <tr>
-    <td><a href="wskdeploy_action_helloworld.md#actions">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="wskdeploy_action_runtime.md#actions">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
     <td><a href="wskdeploy_action_typed_parms.md#actions">next&nbsp;&gt;&gt;</a></td>
   </tr>
