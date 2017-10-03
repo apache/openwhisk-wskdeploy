@@ -57,6 +57,7 @@ sequences:
   newbot:
     actions: newbot-create, newbot-select-persona, newbot-greeting
 ```
+
 <!--
  Bottom Navigation
 -->
@@ -64,9 +65,9 @@ sequences:
 <div align="center">
 <table align="center">
   <tr>
-    <td><a href="">&lt;&lt;&nbsp;previous</a></td>
+    <!-- <td><a href="">&lt;&lt;&nbsp;previous</a></td> -->
     <td><a href="spec_index.md#openwhisk-package-specification-html">Specification Index</a></td>
-    <td><a href="">next&nbsp;&gt;&gt;</a></td>
+    <!-- <td><a href="">next&nbsp;&gt;&gt;</a></td> -->
   </tr>
 </table>
 </div>

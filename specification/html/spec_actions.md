@@ -347,3 +347,18 @@ Return values from the Action's function are used to construct the HTTP response
 - **headers**: a JSON object where the keys are header-names and the values are string values for those headers (default is no headers).
 - **code**: a valid HTTP status code (default is 200 OK).
 - **body**: a string which is either plain text or a base64 encoded string (for binary data).
+
+<!--
+ Bottom Navigation
+-->
+<html>
+<div align="center">
+<table align="center">
+  <tr>
+    <!-- <td><a href="">&lt;&lt;&nbsp;previous</a></td> -->
+    <td><a href="spec_index.md#openwhisk-package-specification-html">Specification Index</a></td>
+    <!-- <td><a href="">next&nbsp;&gt;&gt;</a></td> -->
+  </tr>
+</table>
+</div>
+</html>
