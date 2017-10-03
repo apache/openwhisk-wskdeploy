@@ -448,6 +448,8 @@ func (deployer *ServiceDeployer) DeployApis() error {
 }
 
 func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) error {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
 	output := wski18n.T("Deploying package binding {{.output}} ...",
 		map[string]interface{}{"output": packa.Name})
 	whisk.Debug(whisk.DbgInfo, output)
@@ -467,6 +469,8 @@ func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) erro
 }
 
 func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) error {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
 	output := wski18n.T("Deploying package {{.output}} ...",
 		map[string]interface{}{"output": packa.Name})
 	whisk.Debug(whisk.DbgInfo, output)
@@ -486,6 +490,8 @@ func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) error {
 }
 
 func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) error {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
 	output := wski18n.T("Deploying trigger {{.output}} ...",
 		map[string]interface{}{"output": trigger.Name})
 	whisk.Debug(whisk.DbgInfo, output)
@@ -576,6 +582,8 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 }
 
 func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
 	// The rule's trigger should include the namespace with pattern /namespace/trigger
 	rule.Trigger = deployer.getQualifiedName(rule.Trigger.(string), deployer.ClientConfig.Namespace)
 	// The rule's action should include the namespace and package
@@ -618,6 +626,8 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 
 // Utility function to call go-whisk framework to make action
 func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Action) error {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
 	// call ActionService through the Client
 	if deployer.DeployActionInPackage {
 		// the action will be created under package with pattern 'packagename/actionname'
@@ -644,6 +654,8 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 
 // create api (API Gateway functionality)
 func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
 	_, _, err := deployer.Client.Apis.Insert(api, nil, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
@@ -854,6 +866,8 @@ func (deployer *ServiceDeployer) UnDeployRules(deployment *DeploymentApplication
 }
 
 func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
 	output := wski18n.T("Removing package {{.package}} ...",
 		map[string]interface{}{"package": packa.Name})
 	whisk.Debug(whisk.DbgInfo, output)
@@ -871,6 +885,8 @@ func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
 }
 
 func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
 	output := wski18n.T("Removing trigger {{.trigger}} ...",
 		map[string]interface{}{"trigger": trigger.Name})
 	whisk.Debug(whisk.DbgInfo, output)
@@ -890,6 +906,8 @@ func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
 }
 
 func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedName string) error {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
 	params := make(whisk.KeyValueArr, 0)
 	params = append(params, whisk.KeyValue{Key: "authKey", Value: deployer.ClientConfig.AuthToken})
 	params = append(params, whisk.KeyValue{Key: "lifecycleEvent", Value: "DELETE"})
@@ -934,6 +952,8 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 }
 
 func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
 	output := wski18n.T("Removing rule {{.rule}} ...",
 		map[string]interface{}{"rule": rule.Name})
 	whisk.Debug(whisk.DbgInfo, output)
@@ -965,6 +985,8 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
 
 // Utility function to call go-whisk framework to make action
 func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Action) error {
+	deployer.mt.Lock()
+	defer deployer.mt.Unlock()
 	// call ActionService Thru Client
 	if deployer.DeployActionInPackage {
 		// the action will be deleted under package with pattern 'packagename/actionname'

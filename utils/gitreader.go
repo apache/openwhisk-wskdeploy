@@ -26,6 +26,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 type GitReader struct {
@@ -35,6 +36,7 @@ type GitReader struct {
 	//SubFolder   string	// subfolder of the package under BaseUrl
 	Version     string
 	ProjectPath string // The root folder of all dependency packages, e.g. src_project_path/Packages
+	mt sync.RWMutex
 }
 
 func NewGitReader(projectName string, record DependencyRecord) *GitReader {
@@ -50,6 +52,8 @@ func NewGitReader(projectName string, record DependencyRecord) *GitReader {
 }
 
 func (reader *GitReader) CloneDependency() error {
+	reader.mt.Lock()
+	defer reader.mt.Unlock()
 	zipFileName := reader.Name + "." + reader.Version + ".zip"
 	zipFilePath := reader.Url + "/zipball" + "/" + reader.Version
 
