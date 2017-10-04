@@ -1,11 +1,11 @@
 # Example: pre-processing data in a sequence
 package:
-  name: fellowship
+  name: fellowship_package
   version: 1.0
   license: Apache-2.0
   actions:
-    join_fellowship:
-      function: src/hello_plus.js
+    member_join:
+      function: src/member_join.js
       inputs:
         name:
           type: string
@@ -31,8 +31,10 @@ package:
         greeting:
           type: json
           description: member record
-    process_member:
-      function: src/process_member.js
+    member_process:
+      function: src/member_process.js
       inputs:
         org: string
-  sequence: join_fellowship, process_member
+  sequences:
+    fellowship_membership:
+      actions: member_join, member_process
