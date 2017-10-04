@@ -557,6 +557,18 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 		Publish:     &pub,
 	}
 
+	// triggers created using any of the feeds including cloudant, alarm, message hub etc
+	// does not honor UPDATE or overwrite=true with CREATE
+	// wskdeploy is designed such that, it updates trigger feeds if they exists
+	// or creates new in case they are missing
+	// To address trigger feed UPDATE issue, we are checking here if trigger feed
+	// exists, if so, delete it and recreate it
+	_, r, _ := deployer.Client.Triggers.Get(trigger.Name)
+	if r.StatusCode == 200 {
+		// trigger feed already exists so first lets delete it and then recreate it
+		deployer.deleteFeedAction(trigger, feedName)
+	}
+
 	_, _, err := deployer.Client.Triggers.Insert(t, true)
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
