@@ -42,7 +42,7 @@ func NewFileSystemReader(serviceDeployer *ServiceDeployer) *FileSystemReader {
 	return &reader
 }
 
-func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.ManifestYAML) ([]utils.ActionRecord, error) {
+func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]utils.ActionRecord, error) {
 
     utils.PrintOpenWhiskOutputln("Inspecting project directory for actions....")
 

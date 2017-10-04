@@ -24,7 +24,7 @@ import (
     "strings"
 )
 
-func (dm *YAMLParser) UnmarshalDeployment(input []byte, deploy *DeploymentYAML) error {
+func (dm *YAMLParser) UnmarshalDeployment(input []byte, deploy *YAML) error {
 	err := yaml.UnmarshalStrict(input, deploy)
 	if err != nil {
 		return err
@@ -32,7 +32,7 @@ func (dm *YAMLParser) UnmarshalDeployment(input []byte, deploy *DeploymentYAML) 
 	return nil
 }
 
-func (dm *YAMLParser) MarshalDeployment(deployment *DeploymentYAML) (output []byte, err error) {
+func (dm *YAMLParser) MarshalDeployment(deployment *YAML) (output []byte, err error) {
 	data, err := yaml.Marshal(deployment)
 	if err != nil {
 		fmt.Printf("err happened during marshal :%v", err)
@@ -41,8 +41,8 @@ func (dm *YAMLParser) MarshalDeployment(deployment *DeploymentYAML) (output []by
 	return data, nil
 }
 
-func (dm *YAMLParser) ParseDeployment(deploymentPath string) (*DeploymentYAML, error) {
-	dplyyaml := DeploymentYAML{}
+func (dm *YAMLParser) ParseDeployment(deploymentPath string) (*YAML, error) {
+	dplyyaml := YAML{}
 	content, err := new(utils.ContentReader).LocalReader.ReadLocal(deploymentPath)
     if err != nil {
         return &dplyyaml, utils.NewInputYamlFileError(err.Error())
