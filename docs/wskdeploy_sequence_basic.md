@@ -125,20 +125,20 @@ The invocation should return a 'success' response that includes this result:
 ```json
 "result": {
     "member": {
-        "date": "10/4/2017",
-        "item": "ring",
         "joined": 1507155846307,
         "name": "frodo",
         "occupation": "gentleman",
         "organization": "fellowship",
         "place": "Hobbiton",
         "region": "Eriador",
-        "time": "10:24:06 PM"
+        "date": "10/4/2017",
+        "time": "10:24:06 PM",
+        "item": "ring"
     }
 }
 ```
 
-and with three log entries (one for each Action in the sequence) which can be inspected for their input and outputs:
+and with three log entries (one for each Action in the sequence):
 ```json
 "logs": [
     "4fdb1f27c6c84ca09b1f27c6c83ca0c6",
@@ -147,7 +147,9 @@ and with three log entries (one for each Action in the sequence) which can be in
 ]
 ```
 
-for example, we can inspect the logs from the first Action "```member_join```" to view its input parameters "```params```" which where passed on the command line invocation:
+### Discussion
+
+we can inspect the logs from the first Action "```member_join```" to view its input parameters "```params```" which where passed on the command line invocation:
 ```sh
 $ wsk activation logs 4fdb1f27c6c84ca09b1f27c6c83ca0c6
 params: {
@@ -171,7 +173,12 @@ member: {
 
 ```
 
-the second Action in the sequence further processes and adds it to the "```member```" data:
+the second Action in the sequence further processes and adds to the "```member```" data:
+```sh
+$ wsk activation logs 038567b035b743018567b035b70301c9
+
+```
+
 ```json
 member: {
     "organization": "fellowship",
@@ -187,6 +194,11 @@ member: {
 ```
 
 Finally, the last Action in the sequence adds the "```item```" value to the "```member```" data to produce the completed record:
+```sh
+$ wsk activation logs aa730c99319f4b8bb30c99319f9b8b3b
+
+```
+
 ```json
 member: {
     "organization": "fellowship",
@@ -202,12 +214,12 @@ member: {
 
 ```
 
-### Discussion
--
-
 ### Source code
-The manifest file for this example can be found here:
--
+The source code for the manifest and JavaScript files can be found here:
+- [manifest_hello_world.yaml](examples/manifest_hello_world.yaml)
+- [member_join.js](examples/src/member_join.js)
+- [member_process.js](examples/src/member_process.js)
+- [member_equip.js](examples/src/member_equip.js)
 
 ### Specification
 For convenience, the Actions and Parameters grammar can be found here:
