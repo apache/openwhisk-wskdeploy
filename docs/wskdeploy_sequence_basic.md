@@ -11,18 +11,102 @@ This example:
 
 #### _Example: input and output parameters with explicit types and descriptions_
 ```yaml
-
+# Example: processing data in a sequence
+package:
+  name: fellowship_package
+  ...
+  actions:
+    member_join:
+      function: src/member_join.js
+      inputs:
+        name:
+          type: string
+          description: name of person
+          default: unknown
+        place:
+          type: string
+          description: location of person
+          default: unknown
+        job:
+          type: string
+          description: current occupation
+          default: 0
+      outputs:
+        member:
+          type: json
+          description: member record
+    member_process:
+      function: src/member_process.js
+      inputs:
+        member: {}
+    member_equip:
+      function: src/member_equip.js
+      inputs:
+        member: {}
+  sequences:
+    fellowship_membership:
+      actions: member_join, member_process, member_equip
 ```
 
+#### ```member_join.js``` code snippet:
 ```javascript
 function main(params) {
-    var member = {name:"", place:"", occupation:"", height:0.0, joined:""};
-    name = params.name;
-    place = params.place;
-    occupation = params.job;
-    height = params.height;
-    join_date = Date.now();
-    return { joined: member };
+
+    var member = {name:"", place:"", region:"", occupation:"", joined:"", organization:"", item:"" };
+
+    // The organization being joined is fixed
+    member.organization = "fellowship";
+
+    // Fill in a member record from parameters
+    member.name = params.name;
+    member.place = params.place;
+    member.occupation = params.job;
+
+    // Save the current timestamp when we created the member record
+    member.joined = Date.now();
+
+    return { member: member };
+}
+```
+
+#### ```member_process.js``` code snippet:
+```javascript
+const regionMap = new Map([
+    ['Hobbiton', 'Eriador'],
+    ['Rivendell', 'Eriador'],
+    ['Minas Tirith', 'Gondor'],
+    ['Lake Town', 'Rhovanion'],
+    ['Minas Morgul', 'Mordor'],
+]);
+
+function main(params) {
+
+    // Augment the member (record) created in the previous Action
+    member = params.member;
+    member.region = regionMap.get(member.place) || "unknown";
+    member.date = new Date(member.joined).toLocaleDateString();
+    member.time = new Date(member.joined).toLocaleTimeString();
+
+    return { member: member };
+}
+```
+
+#### ```member_equip.js``` code snippet:
+```javascript
+const equipmentMap = new Map([
+    ['gentleman', 'ring'],
+    ['wizard', 'staff'],
+    ['archer', 'bow'],
+    ['knight', 'sword'],
+]);
+
+function main(params) {
+
+    // Equip the member based upon their occupation
+    member = params.member;
+    member.item = equipmentMap.get(member.occupation) || "None";
+
+    return { member: member };
 }
 ```
 

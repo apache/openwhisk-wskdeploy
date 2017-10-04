@@ -1,4 +1,4 @@
-# Example: pre-processing and post-processing data in a sequence
+# Example: processing data in a sequence
 package:
   name: fellowship_package
   version: 1.0
