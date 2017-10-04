@@ -31,3 +31,8 @@ package:
         greeting:
           type: json
           description: member record
+    process_member:
+      function: src/process_member.js
+      inputs:
+        org: string
+  sequence: join_fellowship, process_member
