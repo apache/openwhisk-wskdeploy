@@ -23,10 +23,6 @@ package:
           type: integer
           description: year person was born
           default: 0
-        height:
-          type: float
-          description: height in meters
-          default: 0.0
       outputs:
         member:
           type: json

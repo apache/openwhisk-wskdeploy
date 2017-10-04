@@ -13,24 +13,19 @@
 // }
 
 function main(params) {
-
+  console.log("params: " + JSON.stringify(params, null, 4));
   let regionMap = new Map([
     ['Shire', 'Eriador'],
     ['the Shire', 'Eriador'],
     ['Hobbiton', 'Eriador']
   ]);
 
+  if(!params.member)
+    throw new Error("Missing parameter: 'member' (object).")
+
   member = params.member;
-  if(member)
-  {
-    if( member.city)
-    {
-     // the Western regions of M.E. contained the lands of Eriador, Gondor, the Misty Mountains,
-     // and the vales of the river Anduin
-     if( member.city === "Shire" || member.city === "the Shire")
-        member.region = "Eriador";
-    }
-  }
-  console.log(JSON.stringify(member, null, 4));
+  member.region = regionMap.get(member.place) || "unknown";
+
+  console.log("member: " + JSON.stringify(member, null, 4));
   return {member: member, region: member.region};
 }

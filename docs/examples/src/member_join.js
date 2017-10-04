@@ -5,22 +5,20 @@
  * Join the fellowship
  */
 function main(params) {
-    // var scripts = document.getElementsByTagName('script');
-    // var lastScript = scripts[scripts.length-1];
-    // var scriptName = lastScript.src;
-    var member = {name:"", city:"", region:"", occupation:"", joined:"", organization:"", item:"" };
+    console.log("params: " + JSON.stringify(params, null, 4));
+    var member = {name:"", place:"", region:"", occupation:"", joined:"", organization:"", item:"" };
 
     // Fill in a member record from parameters
     member.name = params.name;
-    member.city = params.place;
+    member.place = params.place;
     member.occupation = params.job;
 
     // Note the current timestamp when we created the member record
     member.joined = Date.now();
 
     // The organization being joined is fixed
-    member.organization = "fellowship"
+    member.organization = "fellowship";
 
-    console.log("member=" + member);
-    return { member: member };
+    console.log("member: " + JSON.stringify(member, null, 4));
+    return { members: member };
 }
