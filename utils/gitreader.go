@@ -58,7 +58,7 @@ func (reader *GitReader) CloneDependency() error {
 	zipFilePrefix := reader.Name + "." + reader.Version + ".zip."
 	zipFilePath := reader.Url + "/zipball" + "/" + reader.Version
 
-	projectPath := reader.ProjectPath + "/" + reader.packageName
+	projectPath := reader.ProjectPath
 	os.MkdirAll(projectPath, os.ModePerm)
 
 	zipFile, err := ioutil.TempFile(projectPath, zipFilePrefix)
