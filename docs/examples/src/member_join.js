@@ -20,5 +20,5 @@ function main(params) {
     member.organization = "fellowship";
 
     console.log("member: " + JSON.stringify(member, null, 4));
-    return { members: member };
+    return { member: member };
 }

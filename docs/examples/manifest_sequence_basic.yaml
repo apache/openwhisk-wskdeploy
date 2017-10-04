@@ -30,7 +30,7 @@ package:
     member_process:
       function: src/member_process.js
       inputs:
-        member: json
+        member: {}
   sequences:
     fellowship_membership:
       actions: member_join, member_process

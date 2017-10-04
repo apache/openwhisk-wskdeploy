@@ -17,15 +17,25 @@ function main(params) {
   let regionMap = new Map([
     ['Shire', 'Eriador'],
     ['the Shire', 'Eriador'],
-    ['Hobbiton', 'Eriador']
+    ['Hobbiton', 'Eriador'],
+    ['Bree', 'Eriador'],
+    ['Rivendell', 'Eriador'],
+    ['Minas Tirith', 'Gondor'],
+    ['Esgaroth', 'Rhovanion'],
+    ['Dale', 'Rhovanion'],
+    ['Lake Town', 'Rhovanion'],
+    ['Minas Morgul', 'Mordor'],
   ]);
 
-  if(!params.member)
-    throw new Error("Missing parameter: 'member' (object).")
+  console.log("typeof=" + typeof params.member )
 
-  member = params.member;
-  member.region = regionMap.get(member.place) || "unknown";
+  if(params.member && typeof params.member === "object"){
+    member = params.member;
+    member.region = regionMap.get(member.place) || "unknown";
+  }
+  else
+    throw new Error("Invalid parameter: 'member'. type="+typeof(member)+" (expected object).")
 
   console.log("member: " + JSON.stringify(member, null, 4));
-  return {member: member, region: member.region};
+  return { member: member };
 }
