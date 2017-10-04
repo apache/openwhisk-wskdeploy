@@ -7,7 +7,7 @@
 
 You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses the [OpenWhisk "Go" Client](https://github.com/apache/incubator-openwhisk-client-go) to create its HTTP REST calls for deploying and undeploying your packages.
 
-# Here are some quick links for:
+## Here are some quick links for:
 
 - [Downloading wskdeploy](#downloading-released-binaries) - released binaries for Linux, Mac OS and Windows
 - [Running wskdeploy](#running-wskdeploy) - run wskdeploy as a binary or Go program
