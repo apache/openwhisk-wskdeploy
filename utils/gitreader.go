@@ -26,15 +26,18 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+
+	"io/ioutil"
 )
 
 type GitReader struct {
-	Name        string	// the name of the dependency
-	Url         string	// pkg repo location, e.g. github.com/user/repo
+	Name string // the name of the dependency
+	Url  string // pkg repo location, e.g. github.com/user/repo
 	//BaseRepo    string	// base url of the git repo, e.g. github.com/user/repo
 	//SubFolder   string	// subfolder of the package under BaseUrl
 	Version     string
-	ProjectPath string	// The root folder of all dependency packages, e.g. src_project_path/Packages
+	ProjectPath string // The root folder of all dependency packages, e.g. src_project_path/Packages
+	packageName string
 }
 
 func NewGitReader(projectName string, record DependencyRecord) *GitReader {
@@ -44,37 +47,47 @@ func NewGitReader(projectName string, record DependencyRecord) *GitReader {
 	gitReader.Url = record.BaseRepo
 	gitReader.Version = record.Version
 	gitReader.ProjectPath = record.ProjectPath
+	gitReader.packageName = record.Packagename
 
 	return &gitReader
 
 }
 
 func (reader *GitReader) CloneDependency() error {
-	zipFileName := reader.Name + "." + reader.Version + ".zip"
+
+	zipFilePrefix := reader.Name + "." + reader.Version + ".zip."
 	zipFilePath := reader.Url + "/zipball" + "/" + reader.Version
 
-	os.MkdirAll(reader.ProjectPath, os.ModePerm)
-	output, err := os.Create(path.Join(reader.ProjectPath, zipFileName))
+	projectPath := reader.ProjectPath + "/" + reader.packageName
+	os.MkdirAll(projectPath, os.ModePerm)
+
+	zipFile, err := ioutil.TempFile(projectPath, zipFilePrefix)
 	if err != nil {
-        return err
-    }
-	defer output.Close()
+		return err
+	}
+	zipFileName := zipFile.Name()
+	defer os.Remove(zipFileName)
 
 	response, err := http.Get(zipFilePath)
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 	defer response.Body.Close()
 
-	_, err = io.Copy(output, response.Body)
-    if err != nil {
-        return err
-    }
+	data, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
 
-	zipReader, err := zip.OpenReader(path.Join(reader.ProjectPath, zipFileName))
-    if err != nil {
-        return err
-    }
+	_, err = zipFile.Write([]byte(data))
+	if err != nil {
+		return err
+	}
+
+	zipReader, err := zip.OpenReader(zipFileName)
+	if err != nil {
+		return err
+	}
 
 	u, err := url.Parse(reader.Url)
 	team, _ := path.Split(u.Path)
@@ -83,7 +96,7 @@ func (reader *GitReader) CloneDependency() error {
 	team = strings.TrimSuffix(team, "/")
 
 	for _, file := range zipReader.File {
-		path := filepath.Join(reader.ProjectPath, file.Name)
+		path := filepath.Join(projectPath, file.Name)
 
 		if file.FileInfo().IsDir() {
 			os.MkdirAll(path, file.Mode())
@@ -91,15 +104,15 @@ func (reader *GitReader) CloneDependency() error {
 		}
 
 		fileReader, err := file.Open()
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 		defer fileReader.Close()
 
 		targetFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 		defer targetFile.Close()
 
 		if _, err := io.Copy(targetFile, fileReader); err != nil {
@@ -107,14 +120,15 @@ func (reader *GitReader) CloneDependency() error {
 		}
 	}
 
-	rootDir := filepath.Join(reader.ProjectPath, zipReader.File[0].Name)
-	depPath := filepath.Join(reader.ProjectPath, reader.Name+"-"+reader.Version)
+	rootDir := filepath.Join(projectPath, zipReader.File[0].Name)
+	depPath := filepath.Join(projectPath, reader.Name+"-"+reader.Version)
+
 	//if the folder exists, remove it at first
 	if _, err := os.Stat(depPath); err == nil {
 		os.Remove(depPath)
 	}
+
 	os.Rename(rootDir, depPath)
-	os.Remove(filepath.Join(reader.ProjectPath, zipFileName))
 
 	return nil
 }
