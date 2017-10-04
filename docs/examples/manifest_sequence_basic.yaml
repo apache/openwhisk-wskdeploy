@@ -31,6 +31,10 @@ package:
       function: src/member_process.js
       inputs:
         member: {}
+    member_equip:
+      function: src/member_equip.js
+      inputs:
+        member: {}
   sequences:
     fellowship_membership:
-      actions: member_join, member_process
+      actions: member_join, member_process, member_equip
