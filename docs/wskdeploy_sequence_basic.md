@@ -216,7 +216,7 @@ member: {
 
 ### Source code
 The source code for the manifest and JavaScript files can be found here:
-- [manifest_hello_world.yaml](examples/manifest_hello_world.yaml)
+- [manifest_hello_world.yaml](examples/manifest_sequence_basic.yaml)
 - [member_join.js](examples/src/member_join.js)
 - [member_process.js](examples/src/member_process.js)
 - [member_equip.js](examples/src/member_equip.js)
