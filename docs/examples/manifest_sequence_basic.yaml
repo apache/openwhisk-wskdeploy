@@ -28,13 +28,13 @@ package:
           description: height in meters
           default: 0.0
       outputs:
-        greeting:
+        member:
           type: json
           description: member record
     member_process:
       function: src/member_process.js
       inputs:
-        org: string
+        member: json
   sequences:
     fellowship_membership:
       actions: member_join, member_process
