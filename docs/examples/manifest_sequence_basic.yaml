@@ -1,4 +1,4 @@
-# Example: pre-processing data in a sequence
+# Example: pre-processing and post-processing data in a sequence
 package:
   name: fellowship_package
   version: 1.0
@@ -20,7 +20,7 @@ package:
           description: current occupation
           default: 0
         date_of_birth_year:
-          type: int
+          type: integer
           description: year person was born
           default: 0
         height:
