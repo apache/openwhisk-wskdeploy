@@ -26,15 +26,17 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 type GitReader struct {
-	Name        string	// the name of the dependency
-	Url         string	// pkg repo location, e.g. github.com/user/repo
+	Name string // the name of the dependency
+	Url  string // pkg repo location, e.g. github.com/user/repo
 	//BaseRepo    string	// base url of the git repo, e.g. github.com/user/repo
 	//SubFolder   string	// subfolder of the package under BaseUrl
 	Version     string
-	ProjectPath string	// The root folder of all dependency packages, e.g. src_project_path/Packages
+	ProjectPath string // The root folder of all dependency packages, e.g. src_project_path/Packages
+	mt sync.RWMutex
 }
 
 func NewGitReader(projectName string, record DependencyRecord) *GitReader {
@@ -50,31 +52,33 @@ func NewGitReader(projectName string, record DependencyRecord) *GitReader {
 }
 
 func (reader *GitReader) CloneDependency() error {
+	reader.mt.Lock()
+	defer reader.mt.Unlock()
 	zipFileName := reader.Name + "." + reader.Version + ".zip"
 	zipFilePath := reader.Url + "/zipball" + "/" + reader.Version
 
 	os.MkdirAll(reader.ProjectPath, os.ModePerm)
 	output, err := os.Create(path.Join(reader.ProjectPath, zipFileName))
 	if err != nil {
-        return err
-    }
+		return err
+	}
 	defer output.Close()
 
 	response, err := http.Get(zipFilePath)
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 	defer response.Body.Close()
 
 	_, err = io.Copy(output, response.Body)
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
 	zipReader, err := zip.OpenReader(path.Join(reader.ProjectPath, zipFileName))
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
 	u, err := url.Parse(reader.Url)
 	team, _ := path.Split(u.Path)
@@ -91,15 +95,15 @@ func (reader *GitReader) CloneDependency() error {
 		}
 
 		fileReader, err := file.Open()
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 		defer fileReader.Close()
 
 		targetFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 		defer targetFile.Close()
 
 		if _, err := io.Copy(targetFile, fileReader); err != nil {
