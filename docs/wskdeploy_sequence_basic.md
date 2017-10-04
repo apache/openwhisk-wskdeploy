@@ -160,66 +160,45 @@ the input paramaters are augmented by the first Action in the sequence to produc
 
 ```json
 member: {
+    "organization": "fellowship",
     "name": "frodo",
     "place": "Hobbiton",
     "region": "",
     "occupation": "gentleman",
     "joined": 1507155846307,  // Date() in msec.
-    "organization": "fellowship",
     "item": ""
 }
 
 ```
 
-the second Action in the sequence further processes and adds to the "```member```" data
-
+the second Action in the sequence further processes and adds it to the "```member```" data:
 ```json
 member: {
-    "name": "frodo",
-    "place": "Hobbiton",
-    "region": "",
-    "occupation": "gentleman",
-    "joined": 1507155846307,  // Date() in msec.
     "organization": "fellowship",
+    "name": "frodo",
+    "region": "Eriador",
+    "place": "Hobbiton",
+    "occupation": "gentleman",
+    "joined": 1507155846307,
+    "date": "10/4/2017",
+    "time": "10:24:06 PM",
     "item": ""
 }
-2017-10-04T22:24:06.617641223Z stdout: member: {
-2017-10-04T22:24:06.617666075Z stdout: "organization": "fellowship",
-2017-10-04T22:24:06.61767289Z  stdout: "name": "frodo",
-2017-10-04T22:24:06.6176785Z   stdout: "region": "Eriador",
-2017-10-04T22:24:06.61768432Z  stdout: "place": "Hobbiton",
-2017-10-04T22:24:06.617689599Z stdout: "occupation": "gentleman",
-2017-10-04T22:24:06.617694978Z stdout: "joined": 1507155846307,
-2017-10-04T22:24:06.61770002Z  stdout: "item": "",
-2017-10-04T22:24:06.617726743Z stdout: "date": "10/4/2017",
-2017-10-04T22:24:06.617732544Z stdout: "time": "10:24:06 PM"
-2017-10-04T22:24:06.617737664Z stdout: }
-
 ```
 
-Finally, the last Action in the sequence further adds to the "```member```" data to produce the completed record:
-
+Finally, the last Action in the sequence adds the "```item```" value to the "```member```" data to produce the completed record:
 ```json
 member: {
-    "name": "frodo",
-    "place": "Hobbiton",
-    "region": "",
-    "occupation": "gentleman",
-    "joined": 1507155846307,  // Date() in msec.
     "organization": "fellowship",
-    "item": ""
+    "name": "frodo",
+    "region": "Eriador",
+    "place": "Hobbiton",
+    "occupation": "gentleman",
+    "joined": 1507155846307,
+    "date": "10/4/2017",
+    "time": "10:24:06 PM",
+    "item": "ring"
 }
-2017-10-04T22:24:06.683129101Z stdout: member: {
-2017-10-04T22:24:06.683134143Z stdout: "organization": "fellowship",
-2017-10-04T22:24:06.683139356Z stdout: "name": "frodo",
-2017-10-04T22:24:06.683148748Z stdout: "date": "10/4/2017",
-2017-10-04T22:24:06.683154969Z stdout: "region": "Eriador",
-2017-10-04T22:24:06.683160043Z stdout: "place": "Hobbiton",
-2017-10-04T22:24:06.68316495Z  stdout: "time": "10:24:06 PM",
-2017-10-04T22:24:06.683169957Z stdout: "occupation": "gentleman",
-2017-10-04T22:24:06.683175083Z stdout: "joined": 1507155846307,
-2017-10-04T22:24:06.683180218Z stdout: "item": "ring"
-2017-10-04T22:24:06.68318529Z  stdout: }
 
 ```
 
