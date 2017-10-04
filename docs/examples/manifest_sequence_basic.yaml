@@ -15,13 +15,9 @@ package:
           type: string
           description: location of person
           default: unknown
-        occupation:
+        job:
           type: string
           description: current occupation
-          default: 0
-        date_of_birth_year:
-          type: integer
-          description: year person was born
           default: 0
       outputs:
         member:
