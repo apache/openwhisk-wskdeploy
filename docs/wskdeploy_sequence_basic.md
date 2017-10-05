@@ -2,10 +2,8 @@
 
 ## Creating a basic Action sequence
 
-This example
-
 This example:
-- TBD
+- Shows how to use a sequence three compatible Actions together to process and augment raw data into a structured record.
 
 ### Manifest File
 
