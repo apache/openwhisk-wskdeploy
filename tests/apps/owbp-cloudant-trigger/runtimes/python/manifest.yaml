@@ -2,7 +2,7 @@
 # Installing openwhisk actions, triggers, and rules for OpenWhisk building block - Cloudant Trigger
 
 # Deployment using this manifest file creates following OpenWhisk components:
-#   Package:    openwhisk-cloudant
+#   Package:    python-openwhisk-cloudant
 #   Package:    python-cloudant-trigger
 #   Action:     python-cloudant-trigger/process-change.js
 #   Sequence:   python-cloudant-trigger/process-change-cloudant-sequence
@@ -17,8 +17,8 @@
 packages:
     python-cloudant-trigger:
         dependencies:
-            # binding cloudant package named openwhisk-cloudant
-            openwhisk-cloudant:
+            # binding cloudant package named python-openwhisk-cloudant
+            python-openwhisk-cloudant:
                 location: /whisk.system/cloudant
                 inputs:
                     username: $CLOUDANT_USERNAME
@@ -28,7 +28,7 @@ packages:
             # Trigger named "python-data-inserted-trigger"
             # Creating trigger to fire events when data is inserted into database
             python-data-inserted-trigger:
-                source: openwhisk-cloudant/changes
+                source: python-openwhisk-cloudant/changes
                 inputs:
                     dbname: $CLOUDANT_DATABASE
         actions:
@@ -41,7 +41,7 @@ packages:
             # Sequence named "process-change-cloudant-sequence"
             # Creating sequence to connect the cloudant "read" action with the "process-change" action
             process-change-cloudant-sequence:
-                actions: openwhisk-cloudant/read, process-change
+                actions: python-openwhisk-cloudant/read, process-change
         rules:
             # Rule named "python-log-change-rule"
             # Creating rule that maps database change trigger to sequence
