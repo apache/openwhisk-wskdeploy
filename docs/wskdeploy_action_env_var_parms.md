@@ -89,7 +89,7 @@ For convenience, the Actions and Parameters grammar can be found here:
   <tr>
     <td><a href="wskdeploy_action_advanced_parms.md#actions">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <td><a href="wskdeploy_triggerrule_basic.md#triggers-and-rules">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_sequence_basic.md#sequences">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>
