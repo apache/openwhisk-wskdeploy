@@ -31,6 +31,7 @@ const (
     MANIFEST_NOT_FOUND = INVALID_YAML_INPUT
     UNKNOWN = "Unknown"
     LINE = "line"
+    PARSING_ERR = "YAML: Parsing errors:"
 )
 
 type TestCaseError struct {
@@ -186,9 +187,9 @@ func (e *ParserErr) Error() string {
     for index, each := range e.msgs {
         var s string
         if e.lines[index] == UNKNOWN {
-            s = fmt.Sprintf("%s", each)
+            s = fmt.Sprintf("%s", PARSING_ERR)
         } else {
-            s = fmt.Sprintf("%s: Line %s, its neighbour lines, or the lines on the same level.", each, e.lines[index])
+            s = fmt.Sprintf("%s: Line %s, its neighbor lines, or the lines on the same level.", each, e.lines[index])
         }
         result[index] = s
     }
