@@ -232,9 +232,9 @@ For convenience, the Actions and Parameters grammar can be found here:
 <div align="center">
 <table align="center">
   <tr>
-    <td><a href="">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="wskdeploy_action_env_var_parms.md#actions">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <td><a href="">next&nbsp;&gt;&gt;</a></td>
+    <td><a href="wskdeploy_triggerrule_basic.md#triggers-and-rules">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>
