@@ -702,7 +702,8 @@ var validParameterNameMap = map[string]string{
 	"int64":   "integer",
 	"float32": "float",
 	"float64": "float",
-	"json":    "json",
+	"json":    "map",
+	"map":     "map",
 }
 
 var typeDefaultValueMap = map[string]interface{}{
@@ -710,7 +711,7 @@ var typeDefaultValueMap = map[string]interface{}{
 	"integer": 0,
 	"float":   0.0,
 	"boolean": false,
-	"map":     {},
+	"map":     map[string]string{},
 	// TODO() Support these types + their validation
 	// timestamp
 	// null
@@ -765,7 +766,7 @@ func ResolveParamTypeFromValue(value interface{}, filePath string) (string, erro
 
 		// TODO: The value may be supplied later, we need to support non-fatal warnings
 		// raise an error if param is nil
-		//err = utils.NewParserErr("",-1,"Paramter value is nil.")
+		//err = utils.NewParserErr("",-1,"Parameter value is nil.")
 	}
 	return paramType, err
 }
