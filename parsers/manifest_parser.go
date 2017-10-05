@@ -484,6 +484,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 		// only set the webaction when the annotations are not empty.
 		if action.Webexport == "true" {
+			// TODO() why is this commented out?  we should now support annotations...
 			//wskaction.Annotations = keyValArr
 			wskaction.Annotations, errorParser = utils.WebAction("yes", keyValArr, action.Name, false)
 			if errorParser != nil {
@@ -687,7 +688,7 @@ func (dm *YAMLParser) ComposeApiRecords(pkg Package) ([]*whisk.ApiCreateRequest,
 }
 
 // TODO(): Support other valid Package Manifest types
-// TODO(): i.e., json (valid), timestamp, version, string256, string64, string16
+// TODO(): i.e., timestamp, version, string256, string64, string16
 // TODO(): Support JSON schema validation for type: json
 // TODO(): Support OpenAPI schema validation
 
@@ -712,6 +713,7 @@ var typeDefaultValueMap = map[string]interface{}{
 	"float":   0.0,
 	"boolean": false,
 	"map":     map[string]string{},
+	// TODO() add json here
 	// TODO() Support these types + their validation
 	// timestamp
 	// null
@@ -740,8 +742,8 @@ func getTypeDefaultValue(typeName string) interface{} {
 	return nil
 }
 
-func ResolveParamTypeFromValue(value interface{}, filePath string) (string, error) {
-	// Note: string is the default type if not specified.
+func ResolveParamTypeFromValue(name string, value interface{}, filePath string) (string, error) {
+	// Note: 'string' is the default type if not specified and not resolvable.
 	var paramType string = "string"
 	var err error = nil
 
@@ -754,19 +756,11 @@ func ResolveParamTypeFromValue(value interface{}, filePath string) (string, erro
 			paramType = normalizedTypeName
 
 		} else {
-			// raise an error if param is not a known type
-			// TODO(): We have information to display to user on an error or warning here
-			// TODO(): specifically, we have the parameter name, its value to show on error/warning
-			// TODO(): perhaps this is a different Class of error?  e.g., ErrorParameterMismatchError
-			lines := []string{"Line Unknown"}
-			msgs := []string{"Parameter value is not a known type. [" + actualType + "]"}
-			err = utils.NewParserErr(filePath, lines, msgs)
+			// raise an error if parameter's value is not a known type
+			// TODO() - move string to i18n
+			msgs := []string{"Parameter [" + name + "] has a value that is not a known type. [" + actualType + "]"}
+			err = utils.NewParserErr(filePath, nil, msgs)
 		}
-	} else {
-
-		// TODO: The value may be supplied later, we need to support non-fatal warnings
-		// raise an error if param is nil
-		//err = utils.NewParserErr("",-1,"Parameter value is nil.")
 	}
 	return paramType, err
 }
@@ -787,7 +781,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	if !param.multiline {
 		// we have a single-line parameter declaration
 		// We need to identify parameter Type here for later validation
-		param.Type, errorParser = ResolveParamTypeFromValue(param.Value, filePath)
+		param.Type, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
 
 		// In single-line format, the param's <value> can be a "Type name" and NOT an actual value.
 		// if this is the case, we must detect it and set the value to the default for that type name.
@@ -813,13 +807,13 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 		// if we also have a type at this point, verify value (and/or default) matches type, if not error
 		// Note: if either the value or default is in conflict with the type then this is an error
-		tempType, errorParser = ResolveParamTypeFromValue(param.Value, filePath)
+		tempType, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
 
 		// if we do not have a value or default, but have a type, find its default and use it for the value
 		if param.Type != "" && !isValidParameterType(param.Type) {
-			lines := []string{"Line Unknown"}
-			msgs := []string{"Invalid Type for parameter. [" + param.Type + "]"}
-			return value, utils.NewParserErr(filePath, lines, msgs)
+			// TODO() - move string to i18n
+			msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
+			return value, utils.NewParserErr(filePath, nil, msgs)
 		} else if param.Type == "" {
 			param.Type = tempType
 		}
@@ -830,7 +824,6 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 	typ := param.Type
 
-	// TODO(Priti): need to validate type is one of the supported primitive types with unit testing
 	// TODO(): with the new logic, when would the following Unmarhsall() call be used?
 	// if value is of type 'string' and its not empty <OR> if type is not 'string'
 	if str, ok := value.(string); ok && (len(typ) == 0 || typ != "string") {

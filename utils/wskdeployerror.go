@@ -183,13 +183,15 @@ func NewParserErr(yamlFile string, lines []string, msgs []string) *ParserErr {
 
 func (e *ParserErr) Error() string {
     result := make([]string, len(e.msgs))
-    for index, each := range e.msgs {
+    for index, msg := range e.msgs {
         var s string
-        if e.lines[index] == UNKNOWN {
-            s = fmt.Sprintf("%s", each)
-        } else {
-            s = fmt.Sprintf("%s: Line %s, its neighbour lines, or the lines on the same level.", each, e.lines[index])
+        var n string = UNKNOWN
+
+        if (e.lines != nil && e.lines[index] != "") {
+            n = e.lines[index]
         }
+
+        s = fmt.Sprintf("%s: Line [%s].", msg, n)
         result[index] = s
     }
     return fmt.Sprintf("%s [%d]:\n Failed to parse the yaml file %s\n =====> %s\n", e.FileName, e.LineNum, e.YamlFile, strings.Join(result, "\n "))
