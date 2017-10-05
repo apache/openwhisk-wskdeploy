@@ -22,6 +22,7 @@ after_success:
 - DEPLOY_BUILD_READY=true
 after_script:
 - make clean
+- ./tools/travis/docker/publish.sh apache wskdeploy ${TRAVIS_TAG}
 before_deploy:
 - export build_file_name=wskdeploy
 - go get github.com/inconshreveable/mousetrap
