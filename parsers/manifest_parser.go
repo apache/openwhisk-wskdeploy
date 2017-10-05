@@ -702,6 +702,7 @@ var validParameterNameMap = map[string]string{
 	"int64":   "integer",
 	"float32": "float",
 	"float64": "float",
+	"json":    "json",
 }
 
 var typeDefaultValueMap = map[string]interface{}{
@@ -709,6 +710,7 @@ var typeDefaultValueMap = map[string]interface{}{
 	"integer": 0,
 	"float":   0.0,
 	"boolean": false,
+	"map"      {},
 	// TODO() Support these types + their validation
 	// timestamp
 	// null
@@ -716,7 +718,6 @@ var typeDefaultValueMap = map[string]interface{}{
 	// string256
 	// string64
 	// string16
-	// json
 	// scalar-unit
 	// schema
 	// object

@@ -1,0 +1,14 @@
+packages:
+  validate:
+    actions:
+      validate_json_params:
+        function: actions/dump_params.js
+        runtime: nodejs:6
+        inputs:
+          member1: { "name": "Sam", "place": "Shire" }
+          member2:
+            type: json
+            value: { "name": "Elrond", "place": "Rivendell" }
+        outputs:
+            fellowship:
+              type: json
