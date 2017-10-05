@@ -91,7 +91,7 @@ func TestMissingRootNodeDeploymentYaml(t *testing.T) {
     _, err = p.ParseDeployment(tmpfile.Name())
     assert.NotNil(t, err)
     // go-yaml/yaml prints the wrong line number for mapping values. It should be 3.
-    assert.Contains(t, err.Error(), "field name not found in struct parsers.DeploymentYAML: Line 1, its neighbour lines, or the lines on the same level")
+    assert.Contains(t, err.Error(), "field name not found in struct parsers.YAML: Line 1, its neighbour lines, or the lines on the same level")
 }
 
 func TestParseDeploymentYAML_Application(t *testing.T) {
@@ -106,7 +106,7 @@ func TestParseDeploymentYAML_Application(t *testing.T) {
 	assert.Equal(t, "172.17.0.1", deployment.Application.ApiHost, "Get application api host failed.")
 }
 
-func TestParseDeploymentYAML_Package(t *testing.T) {
+func TestParseDeploymentYAML_Application_Package(t *testing.T) {
 	//var deployment utils.DeploymentYAML
 	mm := NewYAMLParser()
 	deployment, _ := mm.ParseDeployment("../tests/dat/deployment_data_application_package.yaml")
@@ -124,6 +124,47 @@ func TestParseDeploymentYAML_Package(t *testing.T) {
 			assert.Equal(t, "param", param_name, "Get input param name failed.")
 		}
 	}
+}
+
+func TestParseDeploymentYAML_Packages(t *testing.T) {
+    //var deployment utils.DeploymentYAML
+    mm := NewYAMLParser()
+    deployment, _ := mm.ParseDeployment("../tests/dat/deployment_data_packages.yaml")
+
+    assert.Equal(t, 0, len(deployment.Application.Packages), "Packages under application are empty.")
+    assert.Equal(t, 0, len(deployment.Application.Package.Packagename), "Package name is empty.")
+    assert.Equal(t, 1, len(deployment.Packages), "Packages are available.")
+    for pkg_name := range deployment.Packages {
+        assert.Equal(t, "test_package", pkg_name, "Get package name failed.")
+        var pkg = deployment.Packages[pkg_name]
+        assert.Equal(t, "/wskdeploy/samples/test", pkg.Namespace, "Get package namespace failed.")
+        assert.Equal(t, "12345678ABCDEF", pkg.Credential, "Get package credential failed.")
+        assert.Equal(t, 1, len(pkg.Inputs), "Get package input list failed.")
+        //get and verify inputs
+        for param_name, param := range pkg.Inputs {
+            assert.Equal(t, "value", param.Value, "Get input value failed.")
+            assert.Equal(t, "param", param_name, "Get input param name failed.")
+        }
+    }
+}
+
+func TestParseDeploymentYAML_Package(t *testing.T) {
+    //var deployment utils.DeploymentYAML
+    mm := NewYAMLParser()
+    deployment, _ := mm.ParseDeployment("../tests/dat/deployment_data_package.yaml")
+
+    assert.Equal(t, 0, len(deployment.Application.Packages), "Get package list failed.")
+    assert.Equal(t, 0, len(deployment.Application.Package.Packagename), "Package name is empty.")
+    assert.Equal(t, 0, len(deployment.Packages), "Get package list failed.")
+    assert.Equal(t, "test_package", deployment.Package.Packagename, "Get package name failed.")
+    assert.Equal(t, "/wskdeploy/samples/test", deployment.Package.Namespace, "Get package namespace failed.")
+    assert.Equal(t, "12345678ABCDEF", deployment.Package.Credential, "Get package credential failed.")
+    assert.Equal(t, 1, len(deployment.Package.Inputs), "Get package input list failed.")
+    //get and verify inputs
+    for param_name, param := range deployment.Package.Inputs {
+        assert.Equal(t, "value", param.Value, "Get input value failed.")
+        assert.Equal(t, "param", param_name, "Get input param name failed.")
+    }
 }
 
 func TestParseDeploymentYAML_Action(t *testing.T) {

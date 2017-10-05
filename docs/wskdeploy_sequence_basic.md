@@ -9,7 +9,7 @@ This example:
 
 ### Manifest File
 
-#### _Example: input and output parameters with explicit types and descriptions_
+#### _Example: Composing 3 actions into a sequence._
 ```yaml
 # Example: processing data in a sequence
 package:
@@ -108,7 +108,7 @@ function main(params) {
 
     return { member: member };
 }
-```
+
 
 ### Deploying
 ```sh
@@ -211,7 +211,6 @@ member: {
     "time": "10:24:06 PM",
     "item": "ring"
 }
-
 ```
 
 ### Source code

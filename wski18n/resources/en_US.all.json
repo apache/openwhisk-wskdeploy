@@ -32,8 +32,8 @@
     "translation": "Manifest file not found at path {{.projectPath}}.\n"
   },
   {
-    "id": "Missing {{.yaml}}/{{.yml}} file. Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
-    "translation": "Missing {{.yaml}}/{{.yml}} file. Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n"
+    "id": "Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
+    "translation": "Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n"
   },
   {
     "id": "Manifest file is not found at the path [{{.filePath}}].\n",
@@ -330,5 +330,10 @@
   {
     "id": "path of the .cert file",
     "translation": "path of the .cert file"
+  },
+  {
+    "id": "The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
+    "translation": "The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}]."
   }
+
 ]

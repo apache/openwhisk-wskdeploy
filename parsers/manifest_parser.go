@@ -36,8 +36,8 @@ import (
 )
 
 // Read existing manifest file or create new if none exists
-func ReadOrCreateManifest() (*ManifestYAML, error) {
-	maniyaml := ManifestYAML{}
+func ReadOrCreateManifest() (*YAML, error) {
+	maniyaml := YAML{}
 
 	if _, err := os.Stat(utils.ManifestFileNameYaml); err == nil {
 		dat, _ := ioutil.ReadFile(utils.ManifestFileNameYaml)
@@ -50,7 +50,7 @@ func ReadOrCreateManifest() (*ManifestYAML, error) {
 }
 
 // Serialize manifest to local file
-func Write(manifest *ManifestYAML, filename string) error {
+func Write(manifest *YAML, filename string) error {
 	output, err := NewYAMLParser().Marshal(manifest)
 	if err != nil {
 		return utils.NewInputYamlFormatError(err.Error())
@@ -66,7 +66,7 @@ func Write(manifest *ManifestYAML, filename string) error {
 	return nil
 }
 
-func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
+func (dm *YAMLParser) Unmarshal(input []byte, manifest *YAML) error {
 	err := yaml.UnmarshalStrict(input, manifest)
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func (dm *YAMLParser) Unmarshal(input []byte, manifest *ManifestYAML) error {
 	return nil
 }
 
-func (dm *YAMLParser) Marshal(manifest *ManifestYAML) (output []byte, err error) {
+func (dm *YAMLParser) Marshal(manifest *YAML) (output []byte, err error) {
 	data, err := yaml.Marshal(manifest)
 	if err != nil {
 		fmt.Printf("err happened during marshal :%v", err)
@@ -83,9 +83,9 @@ func (dm *YAMLParser) Marshal(manifest *ManifestYAML) (output []byte, err error)
 	return data, nil
 }
 
-func (dm *YAMLParser) ParseManifest(manifestPath string) (*ManifestYAML, error) {
+func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
 	mm := NewYAMLParser()
-	maniyaml := ManifestYAML{}
+	maniyaml := YAML{}
 
 	content, err := utils.Read(manifestPath)
 	if err != nil {
@@ -101,22 +101,28 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*ManifestYAML, error) 
 	return &maniyaml, nil
 }
 
-func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *ManifestYAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {
 	dependencies := make(map[string]utils.DependencyRecord)
+    packages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeDependencies(manifest.Package, projectPath, filePath, manifest.Package.Packagename)
-	} else if manifest.Packages != nil {
-		for n, p := range manifest.Packages {
-			d, err := dm.ComposeDependencies(p, projectPath, filePath, n)
-			if err == nil {
-				for k, v := range d {
-					dependencies[k] = v
-				}
-			} else {
-				return nil, err
-			}
-		}
-	}
+	} else {
+        if manifest.Packages != nil {
+            packages = manifest.Packages
+        } else {
+            packages = manifest.Application.Packages
+        }
+    }
+    for n, p := range packages {
+        d, err := dm.ComposeDependencies(p, projectPath, filePath, n)
+        if err == nil {
+            for k, v := range d {
+                dependencies[k] = v
+            }
+        } else {
+            return nil, err
+        }
+    }
 	return dependencies, nil
 }
 
@@ -184,8 +190,9 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 	return depMap, nil
 }
 
-func (dm *YAMLParser) ComposeAllPackages(manifest *ManifestYAML, filePath string) (map[string]*whisk.Package, error) {
+func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string) (map[string]*whisk.Package, error) {
 	packages := map[string]*whisk.Package{}
+    manifestPackages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
 		fmt.Println("WARNING: using package inside of manifest file will soon be deprecated, please use packages instead.")
 		s, err := dm.ComposePackage(manifest.Package, manifest.Package.Packagename, filePath)
@@ -194,16 +201,23 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *ManifestYAML, filePath string
 		} else {
 			return nil, err
 		}
-	} else if manifest.Packages != nil {
-		for n, p := range manifest.Packages {
-			s, err := dm.ComposePackage(p, n, filePath)
-			if err == nil {
-				packages[n] = s
-			} else {
-				return nil, err
-			}
-		}
-	}
+	} else {
+        if manifest.Packages != nil {
+            manifestPackages = manifest.Packages
+        } else {
+            manifestPackages = manifest.Application.Packages
+        }
+    }
+
+    for n, p := range manifestPackages {
+        s, err := dm.ComposePackage(p, n, filePath)
+        if err == nil {
+            packages[n] = s
+        } else {
+            return nil, err
+        }
+    }
+
 	return packages, nil
 }
 
@@ -263,20 +277,26 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	return pag, nil
 }
 
-func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *ManifestYAML) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YAML) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
+    manifestPackages := make(map[string]Package)
 	if mani.Package.Packagename != "" {
 		return dm.ComposeSequences(namespace, mani.Package.Sequences, mani.Package.Packagename)
-	} else if mani.Packages != nil {
-		for n, p := range mani.Packages {
-			s, err := dm.ComposeSequences(namespace, p.Sequences, n)
-			if err == nil {
-				s1 = append(s1, s...)
-			} else {
-				return nil, err
-			}
-		}
-	}
+	} else {
+        if mani.Packages != nil {
+            manifestPackages = mani.Packages
+        } else {
+            manifestPackages = mani.Application.Packages
+        }
+    }
+    for n, p := range manifestPackages {
+        s, err := dm.ComposeSequences(namespace, p.Sequences, n)
+        if err == nil {
+            s1 = append(s1, s...)
+        } else {
+            return nil, err
+        }
+    }
 	return s1, nil
 }
 
@@ -322,20 +342,26 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 	return s1, nil
 }
 
-func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *ManifestYAML, filePath string) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath string) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
+    manifestPackages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeActions(filePath, manifest.Package.Actions, manifest.Package.Packagename)
-	} else if manifest.Packages != nil {
-		for n, p := range manifest.Packages {
-			a, err := dm.ComposeActions(filePath, p.Actions, n)
-			if err == nil {
-				s1 = append(s1, a...)
-			} else {
-				return nil, err
-			}
-		}
-	}
+	} else {
+        if manifest.Packages != nil {
+            manifestPackages = manifest.Packages
+        } else {
+            manifestPackages = manifest.Application.Packages
+        }
+    }
+    for n, p := range manifestPackages {
+        a, err := dm.ComposeActions(filePath, p.Actions, n)
+        if err == nil {
+            s1 = append(s1, a...)
+        } else {
+            return nil, err
+        }
+    }
 	return s1, nil
 }
 
@@ -509,20 +535,26 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 }
 
-func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *ManifestYAML, filePath string) ([]*whisk.Trigger, error) {
+func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath string) ([]*whisk.Trigger, error) {
 	var triggers []*whisk.Trigger = make([]*whisk.Trigger, 0)
+    manifestPackages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeTriggers(filePath, manifest.Package)
-	} else if manifest.Packages != nil {
-		for _, p := range manifest.Packages {
-			t, err := dm.ComposeTriggers(filePath, p)
-			if err == nil {
-				triggers = append(triggers, t...)
-			} else {
-				return nil, err
-			}
-		}
-	}
+	} else {
+        if manifest.Packages != nil {
+            manifestPackages = manifest.Packages
+        } else {
+            manifestPackages = manifest.Application.Packages
+        }
+    }
+    for _, p := range manifestPackages {
+        t, err := dm.ComposeTriggers(filePath, p)
+        if err == nil {
+            triggers = append(triggers, t...)
+        } else {
+            return nil, err
+        }
+    }
 	return triggers, nil
 }
 
@@ -582,20 +614,26 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package) ([]*whisk.Tr
 	return t1, nil
 }
 
-func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *ManifestYAML) ([]*whisk.Rule, error) {
+func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML) ([]*whisk.Rule, error) {
 	var rules []*whisk.Rule = make([]*whisk.Rule, 0)
+    manifestPackages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeRules(manifest.Package, manifest.Package.Packagename)
-	} else if manifest.Packages != nil {
-		for n, p := range manifest.Packages {
-			r, err := dm.ComposeRules(p, n)
-			if err == nil {
-				rules = append(rules, r...)
-			} else {
-				return nil, err
-			}
-		}
-	}
+	} else {
+        if manifest.Packages != nil {
+            manifestPackages = manifest.Packages
+        } else {
+            manifestPackages = manifest.Application.Packages
+        }
+    }
+    for n, p := range manifestPackages {
+        r, err := dm.ComposeRules(p, n)
+        if err == nil {
+            rules = append(rules, r...)
+        } else {
+            return nil, err
+        }
+    }
 	return rules, nil
 }
 
@@ -614,20 +652,26 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string) ([]*whisk.Ru
 	return r1, nil
 }
 
-func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *ManifestYAML) ([]*whisk.ApiCreateRequest, error) {
+func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *YAML) ([]*whisk.ApiCreateRequest, error) {
 	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
+    manifestPackages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeApiRecords(manifest.Package)
-	} else if manifest.Packages != nil {
-		for _, p := range manifest.Packages {
-			r, err := dm.ComposeApiRecords(p)
-			if err == nil {
-				requests = append(requests, r...)
-			} else {
-				return nil, err
-			}
-		}
-	}
+	} else {
+        if manifest.Packages != nil {
+            manifestPackages = manifest.Packages
+        } else {
+            manifestPackages = manifest.Application.Packages
+        }
+    }
+    for _, p := range manifestPackages {
+        r, err := dm.ComposeApiRecords(p)
+        if err == nil {
+            requests = append(requests, r...)
+        } else {
+            return nil, err
+        }
+    }
 	return requests, nil
 }
 

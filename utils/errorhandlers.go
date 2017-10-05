@@ -49,7 +49,7 @@ func Check(e error) {
 
 func PrintOpenWhiskError(err error) {
 	outputStream := colorable.NewColorableStderr()
-	fmt.Fprintf(outputStream, "%s%s\n", color.RedString(wski18n.T("Error: ")), err.Error())
+	fmt.Fprintf(outputStream, "%s%s", color.RedString(wski18n.T("Error: ")), err.Error())
 }
 
 func PrintOpenWhiskOutput(output string) {

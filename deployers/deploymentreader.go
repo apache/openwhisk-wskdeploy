@@ -25,7 +25,7 @@ import (
 
 type DeploymentReader struct {
 	serviceDeployer      *ServiceDeployer
-	DeploymentDescriptor *parsers.DeploymentYAML
+	DeploymentDescriptor *parsers.YAML
 }
 
 func NewDeploymentReader(serviceDeployer *ServiceDeployer) *DeploymentReader {
@@ -63,10 +63,21 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 
 	packMap := make(map[string]parsers.Package)
 
-	if reader.DeploymentDescriptor.Application.Packages == nil {
+    if reader.DeploymentDescriptor.Application.Packages == nil {
 		// a single package is specified in deployment YAML file with "package" key
-		packMap[reader.DeploymentDescriptor.Application.Package.Packagename] = reader.DeploymentDescriptor.Application.Package
-        utils.PrintOpenWhiskOutputln("WARNING: The package YAML key in deployment file will soon be deprecated. Please use packages instead as described in specifications.")
+        if len(reader.DeploymentDescriptor.Application.Package.Packagename) != 0 {
+            packMap[reader.DeploymentDescriptor.Application.Package.Packagename] = reader.DeploymentDescriptor.Application.Package
+            utils.PrintOpenWhiskOutputln("WARNING: The package YAML key in deployment file will soon be deprecated. Please use packages instead as described in specifications.")
+        } else {
+            if reader.DeploymentDescriptor.Packages != nil {
+                for packName, depPacks := range reader.DeploymentDescriptor.Packages {
+                    depPacks.Packagename = packName
+                    packMap[packName] = depPacks
+                }
+            } else {
+                packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
+            }
+        }
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.Application.Packages {
 			depPacks.Packagename = packName
@@ -134,7 +145,18 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 
 	if reader.DeploymentDescriptor.Application.Packages == nil {
 		// a single package is specified in deployment YAML file with "package" key
-		packMap[reader.DeploymentDescriptor.Application.Package.Packagename] = reader.DeploymentDescriptor.Application.Package
+        if len(reader.DeploymentDescriptor.Application.Package.Packagename) != 0 {
+            packMap[reader.DeploymentDescriptor.Application.Package.Packagename] = reader.DeploymentDescriptor.Application.Package
+        } else {
+            if reader.DeploymentDescriptor.Packages != nil {
+                for packName, depPacks := range reader.DeploymentDescriptor.Packages {
+                    depPacks.Packagename = packName
+                    packMap[packName] = depPacks
+                }
+            } else {
+                packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
+            }
+        }
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.Application.Packages {
 			depPacks.Packagename = packName
@@ -206,7 +228,18 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 	packMap := make(map[string]parsers.Package)
 
 	if reader.DeploymentDescriptor.Application.Packages == nil {
-		packMap[reader.DeploymentDescriptor.Application.Package.Packagename] = reader.DeploymentDescriptor.Application.Package
+        if len(reader.DeploymentDescriptor.Application.Package.Packagename) != 0 {
+            packMap[reader.DeploymentDescriptor.Application.Package.Packagename] = reader.DeploymentDescriptor.Application.Package
+        } else {
+            if reader.DeploymentDescriptor.Packages != nil {
+                for packName, depPacks := range reader.DeploymentDescriptor.Packages {
+                    depPacks.Packagename = packName
+                    packMap[packName] = depPacks
+                }
+            } else {
+                packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
+            }
+        }
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.Application.Packages {
 			depPacks.Packagename = packName
