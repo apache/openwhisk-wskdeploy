@@ -2,8 +2,10 @@
 
 ## Creating a basic Action sequence
 
+OpenWhisk supports creating a composite action from sequencung multiple, compatible Actions.
+
 This example:
-- Shows how to use a sequence three compatible Actions together to process and augment raw data into a structured record.
+- Shows how to use a Manifest to sequence three Actions together to process and augment raw data into a structured record.
 
 ### Manifest File
 
