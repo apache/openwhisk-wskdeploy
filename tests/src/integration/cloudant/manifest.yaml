@@ -3,8 +3,8 @@
 #   Package:    openwhisk-cloudant
 #   Action:     cloudant-sample/process-change
 #   Sequence:   cloudant-sample/process-change-cloudant-sequence
-#   Trigger:    data-inserted-trigger
-#   Rule:       log-change-rule
+#   Trigger:    sample-data-inserted-trigger
+#   Rule:       sample-log-change-rule
 
 # This manifest file reads following env. variables:
 #   CLOUDANT_USERNAME
@@ -22,9 +22,9 @@ packages:
                     password: $CLOUDANT_PASSWORD
                     host: ${CLOUDANT_USERNAME}.cloudant.com
         triggers:
-            # Trigger named "data-inserted-trigger"
+            # Trigger named "sample-data-inserted-trigger"
             # Creating trigger to fire events when data is inserted into database
-            data-inserted-trigger:
+            sample-data-inserted-trigger:
                 source: openwhisk-cloudant/changes
                 inputs:
                     dbname: $CLOUDANT_DATABASE
@@ -40,8 +40,8 @@ packages:
             process-change-cloudant-sequence:
                 actions: openwhisk-cloudant/read, process-change
         rules:
-            # Rule named "log-change-rule"
+            # Rule named "sample-log-change-rule"
             # Creating rule that maps database change trigger to sequence
-            log-change-rule:
-                trigger: data-inserted-trigger
+            sample-log-change-rule:
+                trigger: sample-data-inserted-trigger
                 action: process-change-cloudant-sequence
