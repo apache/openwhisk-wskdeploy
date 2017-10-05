@@ -710,7 +710,7 @@ var typeDefaultValueMap = map[string]interface{}{
 	"integer": 0,
 	"float":   0.0,
 	"boolean": false,
-	"map"      {},
+	"map":     {},
 	// TODO() Support these types + their validation
 	// timestamp
 	// null
