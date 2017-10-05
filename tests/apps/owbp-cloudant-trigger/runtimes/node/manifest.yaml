@@ -6,8 +6,8 @@
 #   Package:    cloudant-trigger
 #   Action:     cloudant-trigger/process-change.js
 #   Sequence:   cloudant-trigger/process-change-cloudant-sequence
-#   Trigger:    data-inserted-trigger
-#   Rule:       log-change-rule
+#   Trigger:    node-data-inserted-trigger
+#   Rule:       node-log-change-rule
 
 # This manifest file reads following env. variables:
 #   CLOUDANT_USERNAME
@@ -25,9 +25,9 @@ packages:
                     password: $CLOUDANT_PASSWORD
                     host: ${CLOUDANT_USERNAME}.cloudant.com
         triggers:
-            # Trigger named "data-inserted-trigger"
+            # Trigger named "node-data-inserted-trigger"
             # Creating trigger to fire events when data is inserted into database
-            data-inserted-trigger:
+            node-data-inserted-trigger:
                 source: openwhisk-cloudant/changes
                 inputs:
                     dbname: $CLOUDANT_DATABASE
@@ -43,8 +43,8 @@ packages:
             process-change-cloudant-sequence:
                 actions: openwhisk-cloudant/read, process-change
         rules:
-            # Rule named "log-change-rule"
+            # Rule named "node-log-change-rule"
             # Creating rule that maps database change trigger to sequence
-            log-change-rule:
-                trigger: data-inserted-trigger
+            node-log-change-rule:
+                trigger: node-data-inserted-trigger
                 action: process-change-cloudant-sequence
