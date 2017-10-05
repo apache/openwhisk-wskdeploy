@@ -1,11 +1,11 @@
-# Wskdeploy manifest for openwhisk-cloudant-trigger
+# Wskdeploy manifest for openwhisk-swift-cloudant-trigger
 # Installing openwhisk actions, triggers, and rules for OpenWhisk building block - Cloudant Trigger
 
 # Deployment using this manifest file creates following OpenWhisk components:
 #   Package:    openwhisk-cloudant
-#   Package:    cloudant-trigger
-#   Action:     cloudant-trigger/process-change.js
-#   Sequence:   cloudant-trigger/process-change-cloudant-sequence
+#   Package:    swift-cloudant-trigger
+#   Action:     swift-cloudant-trigger/process-change.js
+#   Sequence:   swift-cloudant-trigger/process-change-cloudant-sequence
 #   Trigger:    swift-data-inserted-trigger
 #   Rule:       swift-log-change-rule
 
@@ -15,7 +15,7 @@
 #   CLOUDANT_DATABASE
 
 packages:
-    cloudant-trigger:
+    swift-cloudant-trigger:
         dependencies:
             # binding cloudant package named openwhisk-cloudant
             openwhisk-cloudant:
