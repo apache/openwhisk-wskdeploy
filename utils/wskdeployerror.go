@@ -30,6 +30,7 @@ const (
     OPENWHISK_CLIENT_ERROR = "OpenWhisk Client Error"
     MANIFEST_NOT_FOUND = INVALID_YAML_INPUT
     UNKNOWN = "Unknown"
+    UNKNOWN_VALUE = "Unknown value"
     LINE = "line"
 )
 

@@ -1036,7 +1036,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 		for _, p := range pack.Package.Parameters {
 			jsonValue, err := utils.PrettyJSON(p.Value)
 			if err != nil {
-				fmt.Printf("        - %s : %s\n", p.Key, "Unknown value")
+				fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
 			} else {
 				fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
 			}
@@ -1058,7 +1058,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 			for _, p := range action.Action.Parameters {
 				jsonValue, err := utils.PrettyJSON(p.Value)
 				if err != nil {
-					fmt.Printf("        - %s : %s\n", p.Key, "Unknown value")
+					fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
 				} else {
 					fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
 				}
@@ -1086,7 +1086,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 		for _, p := range trigger.Parameters {
 			jsonValue, err := utils.PrettyJSON(p.Value)
 			if err != nil {
-				fmt.Printf("        - %s : %s\n", p.Key, "Unknown value")
+				fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
 			} else {
 				fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
 			}
