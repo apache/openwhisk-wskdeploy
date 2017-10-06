@@ -105,15 +105,15 @@ type Parameter struct {
 
 type Trigger struct {
 	//mapping to ????
-	Feed string `yaml:"feed"` //used in manifest.yaml
+	Feed	   string `yaml:"feed"` //used in manifest.yaml
 	//mapping to wsk.Trigger.Namespace
 	Namespace  string               `yaml:"namespace"`  //used in deployment.yaml
 	Credential string               `yaml:"credential"` //used in deployment.yaml
 	Inputs     map[string]Parameter `yaml:"inputs"`     //used in deployment.yaml
 	//mapping to wsk.Trigger.Name
-	Name        string
+	Name       string
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
-	Source      string                 `yaml:source` // deprecated, used in manifest.yaml
+	Source     string                 `yaml:source` // deprecated, used in manifest.yaml
 	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
 }
 

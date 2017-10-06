@@ -138,12 +138,12 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		return err
 	}
 
-    applicationName := ""
-    if len(manifest.Application.Packages) != 0 {
-        applicationName = manifest.Application.Name
-    }
+	applicationName := ""
+	if len(manifest.Application.Packages) != 0 {
+		applicationName = manifest.Application.Name
+	}
 
-	// process deploymet file
+	// process deployment file
 	if utils.FileExists(deployer.DeploymentPath) {
 		var deploymentReader = NewDeploymentReader(deployer)
 		err = deploymentReader.HandleYaml()
@@ -151,16 +151,16 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		if err != nil {
 			return err
 		}
-        // compare the name of the application
-        if len(deploymentReader.DeploymentDescriptor.Application.Packages) != 0 && len(applicationName) != 0 {
-            appNameDeploy := deploymentReader.DeploymentDescriptor.Application.Name
-            if appNameDeploy != applicationName {
-                errorString := wski18n.T("The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
-                    map[string]interface{}{"appNameDeploy": appNameDeploy, "deploymentFile": deployer.DeploymentPath,
-                        "appNameManifest": applicationName,  "manifestFile": deployer.ManifestPath })
-                return utils.NewInputYamlFormatError(errorString)
-            }
-        }
+		// compare the name of the application
+		if len(deploymentReader.DeploymentDescriptor.Application.Packages) != 0 && len(applicationName) != 0 {
+			appNameDeploy := deploymentReader.DeploymentDescriptor.Application.Name
+			if appNameDeploy != applicationName {
+				errorString := wski18n.T("The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
+				    map[string]interface{}{"appNameDeploy": appNameDeploy, "deploymentFile": deployer.DeploymentPath,
+					"appNameManifest": applicationName,  "manifestFile": deployer.ManifestPath })
+				return utils.NewInputYamlFormatError(errorString)
+			}
+		}
 
 		deploymentReader.BindAssets()
 	}

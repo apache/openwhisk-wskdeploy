@@ -344,24 +344,24 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 
 func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath string) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
-    manifestPackages := make(map[string]Package)
+	manifestPackages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeActions(filePath, manifest.Package.Actions, manifest.Package.Packagename)
 	} else {
-        if manifest.Packages != nil {
-            manifestPackages = manifest.Packages
-        } else {
-            manifestPackages = manifest.Application.Packages
-        }
-    }
-    for n, p := range manifestPackages {
-        a, err := dm.ComposeActions(filePath, p.Actions, n)
-        if err == nil {
-            s1 = append(s1, a...)
-        } else {
-            return nil, err
-        }
-    }
+		if manifest.Packages != nil {
+			manifestPackages = manifest.Packages
+		} else {
+			manifestPackages = manifest.Application.Packages
+		}
+    	}
+    	for n, p := range manifestPackages {
+		a, err := dm.ComposeActions(filePath, p.Actions, n)
+		if err == nil {
+			s1 = append(s1, a...)
+		} else {
+			return nil, err
+		}
+	}
 	return s1, nil
 }
 
@@ -372,6 +372,10 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 	for key, action := range actions {
 		splitFilePath := strings.Split(filePath, string(os.PathSeparator))
+
+		// set the name of the action (which is the key)
+		action.Name = key
+
 		//set action.Function to action.Location
 		//because Location is deprecated in Action entity
 		if action.Function == "" && action.Location != "" {
@@ -430,7 +434,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					code = base64.StdEncoding.EncodeToString([]byte(dat))
 				}
 				if ext == ".zip" && action.Runtime == "" {
-                    utils.PrintOpenWhiskOutputln("need explicit action Runtime value")
+					utils.PrintOpenWhiskOutputln("need explicit action Runtime value")
 				}
 				wskaction.Exec.Code = &code
 			}
@@ -442,12 +446,12 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				wskaction.Exec.Kind = action.Runtime
 
 			} else if utils.Flags.Strict {
-                wskaction.Exec.Kind = action.Runtime
-            } else {
-                errStr := wski18n.T("wskdeploy has chosen a particular runtime for the action.\n")
-			    whisk.Debug(whisk.DbgWarn, errStr)
-            }
-        }
+                		wskaction.Exec.Kind = action.Runtime
+            		} else {
+				errStr := wski18n.T("wskdeploy has chosen a particular runtime for the action.\n")
+				whisk.Debug(whisk.DbgWarn, errStr)
+			}
+                }
 
 		// we can specify the name of the action entry point using main
 		if action.Main != "" {
@@ -469,6 +473,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				keyValArr = append(keyValArr, keyVal)
 			}
 		}
+
 		if len(keyValArr) > 0 {
 			wskaction.Parameters = keyValArr
 		}
@@ -703,8 +708,8 @@ var validParameterNameMap = map[string]string{
 	"int64":   "integer",
 	"float32": "float",
 	"float64": "float",
-	"json":    "map",
-	"map":     "map",
+	"json":    "json",
+	"map":     "json",
 }
 
 var typeDefaultValueMap = map[string]interface{}{
@@ -712,7 +717,7 @@ var typeDefaultValueMap = map[string]interface{}{
 	"integer": 0,
 	"float":   0.0,
 	"boolean": false,
-	"map":     map[string]string{},
+	"json":    map[string]string{},
 	// TODO() add json here
 	// TODO() Support these types + their validation
 	// timestamp
