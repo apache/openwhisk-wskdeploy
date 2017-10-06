@@ -1043,15 +1043,15 @@ func convertInterfaceMap(mapIn map[interface{}]interface{}) map[string]interface
 }
 
 func cleanupMapValue(value interface{}) interface{} {
-	switch v := value.(type) {
+	switch typedVal := value.(type) {
 	case []interface{}:
-		return cleanupInterfaceArray(v)
+		return cleanupInterfaceArray(typedVal)
 	case map[interface{}]interface{}:
-		return convertInterfaceMap(v)
+		return convertInterfaceMap(typedVal)
 	case string:
-		return v
+		return typedVal
 	default:
-		return fmt.Sprintf("%v", v)
+		return fmt.Sprintf("%v", typedVal)
 	}
 }
 
@@ -1090,7 +1090,6 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 
 				if( reflect.TypeOf(p.Value).Kind() == reflect.Map ) {
 					var temp map[string]interface{} = convertInterfaceMap(p.Value.(map[interface{}]interface{}))
-					print(temp)
 					fmt.Printf("        - %s : %v\n", p.Key, temp)
 
 				} else {

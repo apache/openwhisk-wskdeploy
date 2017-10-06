@@ -9,6 +9,9 @@ packages:
           member2:
             type: json
             value: { "name": "Elrond", "place": "Rivendell" }
+          member3:
+            type: json
+            value: { "name": "Gimli", "place": "Gondor", "age": 139, "children": { "Junior": "Son" } }
         outputs:
             fellowship:
               type: json
