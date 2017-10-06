@@ -1026,10 +1026,10 @@ func (deployer *ServiceDeployer) getQualifiedName(name string, namespace string)
 }
 
 
-func cleanupInterfaceArray(in []interface{}) []interface{} {
+func convertInterfaceArray(in []interface{}) []interface{} {
 	res := make([]interface{}, len(in))
 	for i, v := range in {
-		res[i] = cleanupMapValue(v)
+		res[i] = convertMapValue(v)
 	}
 	return res
 }
@@ -1037,15 +1037,15 @@ func cleanupInterfaceArray(in []interface{}) []interface{} {
 func convertInterfaceMap(mapIn map[interface{}]interface{}) map[string]interface{} {
 	mapOut := make(map[string]interface{})
 	for k, v := range mapIn {
-		mapOut[fmt.Sprintf("%v", k)] = cleanupMapValue(v)
+		mapOut[fmt.Sprintf("%v", k)] = convertMapValue(v)
 	}
 	return mapOut
 }
 
-func cleanupMapValue(value interface{}) interface{} {
+func convertMapValue(value interface{}) interface{} {
 	switch typedVal := value.(type) {
 	case []interface{}:
-		return cleanupInterfaceArray(typedVal)
+		return convertInterfaceArray(typedVal)
 	case map[interface{}]interface{}:
 		return convertInterfaceMap(typedVal)
 	case string:
