@@ -30,6 +30,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"reflect"
 )
 
 type DeploymentApplication struct {
@@ -1024,6 +1025,36 @@ func (deployer *ServiceDeployer) getQualifiedName(name string, namespace string)
 	}
 }
 
+
+func cleanupInterfaceArray(in []interface{}) []interface{} {
+	res := make([]interface{}, len(in))
+	for i, v := range in {
+		res[i] = cleanupMapValue(v)
+	}
+	return res
+}
+
+func convertInterfaceMap(mapIn map[interface{}]interface{}) map[string]interface{} {
+	mapOut := make(map[string]interface{})
+	for k, v := range mapIn {
+		mapOut[fmt.Sprintf("%v", k)] = cleanupMapValue(v)
+	}
+	return mapOut
+}
+
+func cleanupMapValue(value interface{}) interface{} {
+	switch v := value.(type) {
+	case []interface{}:
+		return cleanupInterfaceArray(v)
+	case map[interface{}]interface{}:
+		return convertInterfaceMap(v)
+	case string:
+		return v
+	default:
+		return fmt.Sprintf("%v", v)
+	}
+}
+
 func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplication) {
 
 	// pretty ASCII OpenWhisk graphic
@@ -1056,12 +1087,21 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 			utils.PrintOpenWhiskOutputln("  * action: " + action.Action.Name)
 			utils.PrintOpenWhiskOutputln("    bindings: ")
 			for _, p := range action.Action.Parameters {
-				jsonValue, err := utils.PrettyJSON(p.Value)
-				if err != nil {
-					fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
+
+				if( reflect.TypeOf(p.Value).Kind() == reflect.Map ) {
+					var temp map[string]interface{} = convertInterfaceMap(p.Value.(map[interface{}]interface{}))
+					print(temp)
+					fmt.Printf("        - %s : %v\n", p.Key, temp)
+
 				} else {
-					fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+					jsonValue, err := utils.PrettyJSON(p.Value)
+					if err != nil {
+						fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
+					} else {
+						fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+					}
 				}
+
 			}
 			utils.PrintOpenWhiskOutputln("    annotations: ")
 			for _, p := range action.Action.Annotations {

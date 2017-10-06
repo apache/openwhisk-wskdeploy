@@ -100,8 +100,8 @@ func PrettyJSON(j interface{}) (string, error) {
 	formatter := prettyjson.NewFormatter()
 	bytes, err := formatter.Marshal(j)
 	if err != nil {
-        return "", err
-    }
+        	return "", err
+    	}
 	return string(bytes), nil
 }
 
