@@ -1089,9 +1089,10 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 			for _, p := range action.Action.Parameters {
 
 				if( reflect.TypeOf(p.Value).Kind() == reflect.Map ) {
-					var temp map[string]interface{} = convertInterfaceMap(p.Value.(map[interface{}]interface{}))
-					fmt.Printf("        - %s : %v\n", p.Key, temp)
-
+                                        if _, ok := p.Value.(map[interface{}]interface{}); ok {
+						var temp map[string]interface{} = convertInterfaceMap(p.Value.(map[interface{}]interface{}))
+						fmt.Printf("        - %s : %v\n", p.Key, temp)
+					}
 				} else {
 					jsonValue, err := utils.PrettyJSON(p.Value)
 					if err != nil {

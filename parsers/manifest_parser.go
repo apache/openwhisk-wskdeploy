@@ -830,8 +830,8 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	typ := param.Type
 
 	// TODO(): with the new logic, when would the following Unmarhsall() call be used?
-	// if value is of type 'string' and its not empty <OR> if type is not 'string'
-	if str, ok := value.(string); ok && (len(typ) == 0 || typ != "string") {
+	// if value is of type 'string' and its type not empty <OR> if type is not 'string'
+	if str, ok := value.(string); ok && typ == "json" {
 		var parsed interface{}
 		err := json.Unmarshal([]byte(str), &parsed)
 		if err == nil {
@@ -847,7 +847,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 	// Trace Parameter struct after resolution
 	//dumpParameter(paramName, param, "AFTER")
-	//fmt.Printf("EXIT: value=[%v]\n", value)
+	fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, value)
 
 	return value, errorParser
 }
