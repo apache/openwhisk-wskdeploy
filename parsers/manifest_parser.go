@@ -717,7 +717,7 @@ var typeDefaultValueMap = map[string]interface{}{
 	"integer": 0,
 	"float":   0.0,
 	"boolean": false,
-	"json":    map[string]string{},
+	"json":    make(map[string]interface{}),
 	// TODO() add json here
 	// TODO() Support these types + their validation
 	// timestamp
