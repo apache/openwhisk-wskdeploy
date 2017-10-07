@@ -949,6 +949,67 @@ func TestResolveParameterForMultiLineParams(t *testing.T) {
 
 }
 
+// Test 17: validate JSON parameters
+func TestParseManifestForJSONParams(t *testing.T) {
+    // manifest file is located under ../tests folder
+    manifestFile := "../tests/dat/manifest_validate_json_params.yaml"
+    // read and parse manifest.yaml file
+    m, _ := NewYAMLParser().ParseManifest(manifestFile)
+
+    // validate package name should be "validate"
+    packageName := "validate_json"
+    actionName := "validate_json_params"
+    expectedActionsCount := 1
+
+    assert.NotNil(t, m.Packages[packageName],
+        "Expected package named "+ packageName + " but got none")
+
+    // validate this package contains one action
+    actualActionsCount := len(m.Packages[packageName].Actions)
+    assert.Equal(t, expectedActionsCount, actualActionsCount,
+        "Expected " + string(expectedActionsCount) + " but got " + string(actualActionsCount))
+
+    if action, ok := m.Packages[packageName].Actions[actionName]; ok {
+        // validate location/function of an action to be "actions/dump_params.js"
+        expectedResult := "actions/dump_params.js"
+        actualResult := action.Function
+        assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
+
+        // validate runtime of an action to be "nodejs:6"
+        expectedResult = "nodejs:6"
+        actualResult = action.Runtime
+        assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+
+        // validate the number of inputs to this action
+        expectedResult = strconv.FormatInt(22, 10)
+        actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
+        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+        // validate inputs to this action
+        for input, param := range action.Inputs {
+            switch input {
+            case "param_simple_string":
+                expectedResult = "foo"
+                actualResult = param.Value.(string)
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+            }
+        }
+
+        // validate outputs
+        // output payload is of type string and has a description
+        //if payload, ok := action.Outputs["payload"]; ok {
+        //    p := payload.(map[interface{}]interface{})
+        //    expectedResult = "string"
+        //    actualResult = p["type"].(string)
+        //    assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        //    expectedResult = "parameter dump"
+        //    actualResult = p["description"].(string)
+        //    assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        //}
+    }
+}
+
 func _createTmpfile(data string, filename string) (f *os.File, err error) {
     dir, _ := os.Getwd()
     tmpfile, err := ioutil.TempFile(dir, filename)
