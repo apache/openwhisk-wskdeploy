@@ -670,16 +670,15 @@ func (urlReader *URLReader) ReadUrl(url string) (content []byte, err error) {
 type LocalReader struct {
 }
 
-func (localReader *LocalReader) ReadLocal(path string) (content []byte, err error) {
+func (localReader *LocalReader) ReadLocal(path string) ([]byte, error) {
 	cont, err := ioutil.ReadFile(path)
 	return cont, err
 }
 
-func Read(url string) (content []byte, err error) {
+func Read(url string) ([]byte, error) {
 	if strings.HasPrefix(url, "http") {
 		return new(ContentReader).URLReader.ReadUrl(url)
 	} else {
 		return new(ContentReader).LocalReader.ReadLocal(url)
 	}
 }
-

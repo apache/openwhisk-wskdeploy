@@ -1025,36 +1025,6 @@ func (deployer *ServiceDeployer) getQualifiedName(name string, namespace string)
 	}
 }
 
-
-func convertInterfaceArray(in []interface{}) []interface{} {
-	res := make([]interface{}, len(in))
-	for i, v := range in {
-		res[i] = convertMapValue(v)
-	}
-	return res
-}
-
-func convertInterfaceMap(mapIn map[interface{}]interface{}) map[string]interface{} {
-	mapOut := make(map[string]interface{})
-	for k, v := range mapIn {
-		mapOut[fmt.Sprintf("%v", k)] = convertMapValue(v)
-	}
-	return mapOut
-}
-
-func convertMapValue(value interface{}) interface{} {
-	switch typedVal := value.(type) {
-	case []interface{}:
-		return convertInterfaceArray(typedVal)
-	case map[interface{}]interface{}:
-		return convertInterfaceMap(typedVal)
-	case string:
-		return typedVal
-	default:
-		return fmt.Sprintf("%v", typedVal)
-	}
-}
-
 func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplication) {
 
 	// pretty ASCII OpenWhisk graphic
@@ -1090,8 +1060,16 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 
 				if( reflect.TypeOf(p.Value).Kind() == reflect.Map ) {
                                         if _, ok := p.Value.(map[interface{}]interface{}); ok {
-						var temp map[string]interface{} = convertInterfaceMap(p.Value.(map[interface{}]interface{}))
+						var temp map[string]interface{} =
+							utils.ConvertInterfaceMap(p.Value.(map[interface{}]interface{}))
 						fmt.Printf("        - %s : %v\n", p.Key, temp)
+					} else {
+						jsonValue,err := utils.PrettyJSON(p.Value)
+						if err != nil {
+							fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
+						} else {
+							fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+						}
 					}
 				} else {
 					jsonValue, err := utils.PrettyJSON(p.Value)

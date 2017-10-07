@@ -79,4 +79,3 @@ func LocationIsGithub(location string) bool {
 
 	return false
 }
-

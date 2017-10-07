@@ -5,11 +5,10 @@ packages:
         function: actions/dump_params.js
         runtime: nodejs:6
         inputs:
-#          member1: { "name": "Sam", "place": "Shire" }
-          # value.(type)='map[interface{}]interface{}', actualType='map' normalizedType='json'
-          member1a:
-            value: '{ "name": "Sam", "place": "Shire" }'
-            type: json
+          member1: { "name": "Sam", "place": "Shire" }
+#          member1a:
+#            value: '{ "name": "Sam", "place": "Shire" }'
+#            type: json
 #          member2:
 #            type: json
 #            value: { "name": "Elrond", "place": "Rivendell" }
@@ -26,9 +25,9 @@ packages:
 #                "Gimli": "Son"
 #              }
 #            }
-#          member5:
-#              type: json
-#              value: { "name": "Elrond", "place": "Undying Lands", "items": [ "Sting", "Mithril armor" ] }
+          member5:
+            type: json
+            value: { "name": "Elrond", "place": "Undying Lands", "items": [ "Sting", "Mithril armor" ] }
         outputs:
             fellowship:
               type: json

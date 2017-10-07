@@ -827,15 +827,27 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	// Make sure the parameter's value is a valid, non-empty string and startsWith '$" (dollar) sign
 	value = utils.GetEnvVar(param.Value)
 
-	typ := param.Type
+	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON
 
-	// TODO(): with the new logic, when would the following Unmarhsall() call be used?
-	// if value is of type 'string' and its type not empty <OR> if type is not 'string'
-	if str, ok := value.(string); ok && typ == "json" {
+	// Case 1: if user set parameter type to 'json' and the value's type is a 'string'
+	if str, ok := value.(string); ok && param.Type == "json" {
 		var parsed interface{}
 		err := json.Unmarshal([]byte(str), &parsed)
 		if err == nil {
+			fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, parsed)
 			return parsed, err
+		}
+	}
+
+	if( reflect.TypeOf(param.Value).Kind() == reflect.Map ) {
+
+		// Case 2: value contains a map of JSON
+		// We must make sure the map type is map[string]interface{}; otherwise we cannot
+		// marshall it later on to serialize in the body of an HTTP request.
+		if _, ok := param.Value.(map[interface{}]interface{}); ok {
+			var temp map[string]interface{} =
+				utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
+			return temp, errorParser
 		}
 	}
 
