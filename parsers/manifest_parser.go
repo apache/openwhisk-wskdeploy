@@ -780,7 +780,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	var value interface{} = ""
 
 	// Trace Parameter struct before any resolution
-	//dumpParameter(paramName, param, "BEFORE")
+	dumpParameter(paramName, param, "BEFORE")
 
 	// Parameters can be single OR multi-line declarations which must be processed/validated differently
 	if !param.multiline {
@@ -839,14 +839,14 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 		}
 	}
 
-	if( reflect.TypeOf(param.Value).Kind() == reflect.Map ) {
-
-		// Case 2: value contains a map of JSON
-		// We must make sure the map type is map[string]interface{}; otherwise we cannot
-		// marshall it later on to serialize in the body of an HTTP request.
+	// Case 2: value contains a map of JSON
+	// We must make sure the map type is map[string]interface{}; otherwise we cannot
+	// marshall it later on to serialize in the body of an HTTP request.
+	if( param.Value != nil && reflect.TypeOf(param.Value).Kind() == reflect.Map ) {
 		if _, ok := param.Value.(map[interface{}]interface{}); ok {
 			var temp map[string]interface{} =
 				utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
+			fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, temp)
 			return temp, errorParser
 		}
 	}
