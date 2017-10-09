@@ -47,3 +47,8 @@ func convertMapValue(value interface{}) interface{} {
 		return fmt.Sprintf("%v", typedVal)
 	}
 }
+
+func PrintTypeInfo(name string, value interface{})  {
+	info := fmt.Sprintf("Name=[%s], Value=[%v], Type=[%T]\n",name,value,value)
+	fmt.Print(info)
+}

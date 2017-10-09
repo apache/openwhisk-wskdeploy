@@ -981,18 +981,41 @@ func TestParseManifestForJSONParams(t *testing.T) {
         assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
 
         // validate the number of inputs to this action
-        expectedResult = strconv.FormatInt(22, 10)
+        expectedResult = strconv.FormatInt(6, 10)
         actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
         assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
+
+        //Name=[member1], Value=[{ "name": "Sam", "place": "Shire" }], Type=[string]
+        //Name=[member2], Value=[map[name:Sam place:Shire]], Type=[map[interface {}]interface {}]
+        //Name=[member3], Value=[map[name:Elrond place:Rivendell]], Type=[map[interface {}]interface {}]
+        //Name=[member4], Value=[map[children:map[<none>:<none>] name:Gimli place:Gondor age:139]], Type=[map[interface {}]interface {}]
+        //Name=[member5], Value=[map[name:Gloin place:Gondor age:139 children:map[Gimli:Son]]], Type=[map[interface {}]interface {}]
+        //Name=[member6], Value=[map[name:Elrond place:Undying Lands items:[Sting Mithril armor]]], Type=[map[interface {}]interface {}]
+
         // validate inputs to this action
         for input, param := range action.Inputs {
+            utils.PrintTypeInfo(input, param.Value)
             switch input {
-            case "param_simple_string":
-                expectedResult = "foo"
-                actualResult = param.Value.(string)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
-
+            case "member1":
+                actualResult1 := param.Value.(string)
+                expectedResult1 := "{ \"name\": \"Sam\", \"place\": \"Shire\" }"
+                assert.Equal(t, expectedResult1, actualResult1, "Expected " + expectedResult + " but got " + actualResult)
+            //case "member2":
+            //    actualResult2 := param.Value.(string)
+            //    expectedResult2 := "TBD"
+            //case "member3":
+            //    actualResult3 := param.Value.(string)
+            //    expectedResult3 := "TBD"
+            //case "member4":
+            //    actualResult4 := param.Value.(string)
+            //    expectedResult4 := "TBD"
+            //case "member5":
+            //    actualResult5 := param.Value.(string)
+            //    expectedResult5 := "TBD"
+            //case "member6":
+            //    actualResult6 := param.Value.(string)
+            //    expectedResult6 := "TBD"
             }
         }
 
