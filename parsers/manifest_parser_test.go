@@ -1001,12 +1001,14 @@ func TestParseManifestForJSONParams(t *testing.T) {
                 actualResult1 := param.Value.(string)
                 expectedResult1 := "{ \"name\": \"Sam\", \"place\": \"Shire\" }"
                 assert.Equal(t, expectedResult1, actualResult1, "Expected " + expectedResult + " but got " + actualResult)
-            //case "member2":
-            //    actualResult2 := param.Value.(string)
-            //    expectedResult2 := "TBD"
-            //case "member3":
-            //    actualResult3 := param.Value.(string)
-            //    expectedResult3 := "TBD"
+            case "member2":
+                actualResult2 := param.Value.(map[interface{}]interface{})
+                expectedResult2 := map[interface{}]interface{}{"name": "Sam", "place": "Shire"}
+                assert.Equal(t, expectedResult2, actualResult2, "Expected " + expectedResult + " but got " + actualResult)
+            case "member3":
+                actualResult3 := param.Value.(map[interface{}]interface{})
+                expectedResult3 := map[interface{}]interface{}{"name": "Elrond", "place": "Rivendell"}
+                assert.Equal(t, expectedResult3, actualResult3, "Expected " + expectedResult + " but got " + actualResult)
             //case "member4":
             //    actualResult4 := param.Value.(string)
             //    expectedResult4 := "TBD"
