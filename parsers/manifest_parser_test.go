@@ -984,15 +984,7 @@ func TestParseManifestForJSONParams(t *testing.T) {
         expectedResult = strconv.FormatInt(6, 10)
         actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
         assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
-
-
-        //Name=[member1], Value=[{ "name": "Sam", "place": "Shire" }], Type=[string]
-        //Name=[member2], Value=[map[name:Sam place:Shire]], Type=[map[interface {}]interface {}]
-        //Name=[member3], Value=[map[name:Elrond place:Rivendell]], Type=[map[interface {}]interface {}]
-        //Name=[member4], Value=[map[children:map[<none>:<none>] name:Gimli place:Gondor age:139]], Type=[map[interface {}]interface {}]
-        //Name=[member5], Value=[map[name:Gloin place:Gondor age:139 children:map[Gimli:Son]]], Type=[map[interface {}]interface {}]
-        //Name=[member6], Value=[map[name:Elrond place:Undying Lands items:[Sting Mithril armor]]], Type=[map[interface {}]interface {}]
-
+        
         // validate inputs to this action
         for input, param := range action.Inputs {
             // Trace to help debug complex values:
@@ -1015,27 +1007,21 @@ func TestParseManifestForJSONParams(t *testing.T) {
                 expectedResult4 := map[interface{}]interface{}{"name": "Gimli", "place": "Gondor", "age": 139, "children": map[interface{}]interface{}{ "<none>": "<none>" }}
                 assert.Equal(t, expectedResult4, actualResult4, "Expected " + expectedResult + " but got " + actualResult)
             case "member5":
-                utils.PrintTypeInfo(input, param.Value)
                 actualResult5 := param.Value.(map[interface{}]interface{})
                 expectedResult5 := map[interface{}]interface{}{"name": "Gloin", "place": "Gondor", "age": 235, "children": map[interface{}]interface{}{ "Gimli": "Son" }}
                 assert.Equal(t, expectedResult5, actualResult5, "Expected " + expectedResult + " but got " + actualResult)
             case "member6":
-                utils.PrintTypeInfo(input, param.Value)
-            //    actualResult6 := param.Value.(string)
-            //    expectedResult6 := "TBD"
+                actualResult6 := param.Value.(map[interface{}]interface{})
+                expectedResult6 := map[interface{}]interface{}{"name": "Frodo", "place": "Undying Lands", "items": []interface{}{"Sting", "Mithril mail"}}
+                assert.Equal(t, expectedResult6, actualResult6, "Expected " + expectedResult + " but got " + actualResult)
             }
         }
 
+        // TODO{} We do not yet support json outputs
         // validate outputs
         // output payload is of type string and has a description
-        //if payload, ok := action.Outputs["payload"]; ok {
+        //if payload, ok := action.Outputs["fellowship"]; ok {
         //    p := payload.(map[interface{}]interface{})
-        //    expectedResult = "string"
-        //    actualResult = p["type"].(string)
-        //    assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
-        //    expectedResult = "parameter dump"
-        //    actualResult = p["description"].(string)
-        //    assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
         //}
     }
 }

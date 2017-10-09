@@ -27,7 +27,7 @@ packages:
             }
           member6:
             type: json
-            value: { "name": "Elrond", "place": "Undying Lands", "items": [ "Sting", "Mithril armor" ] }
+            value: { "name": "Frodo", "place": "Undying Lands", "items": [ "Sting", "Mithril mail" ] }
         outputs:
             fellowship:
               type: json
