@@ -185,7 +185,7 @@ func NewParserErr(yamlFile string, lines []string, msgs []string) *ParserErr {
 
 func (e *ParserErr) Error() string {
     result := make([]string, len(e.msgs))
-    for index, msg := range e.msgs {
+    for index, each := range e.msgs {
         var s string
         if e.lines[index] == UNKNOWN {
             s = fmt.Sprintf("%s", PARSING_ERR)
