@@ -984,7 +984,7 @@ func TestParseManifestForJSONParams(t *testing.T) {
         expectedResult = strconv.FormatInt(6, 10)
         actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
         assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
-        
+
         // validate inputs to this action
         for input, param := range action.Inputs {
             // Trace to help debug complex values:
