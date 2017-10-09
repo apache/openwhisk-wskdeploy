@@ -995,7 +995,8 @@ func TestParseManifestForJSONParams(t *testing.T) {
 
         // validate inputs to this action
         for input, param := range action.Inputs {
-            utils.PrintTypeInfo(input, param.Value)
+            // Trace to help debug complex values:
+            // utils.PrintTypeInfo(input, param.Value)
             switch input {
             case "member1":
                 actualResult1 := param.Value.(string)
@@ -1009,13 +1010,17 @@ func TestParseManifestForJSONParams(t *testing.T) {
                 actualResult3 := param.Value.(map[interface{}]interface{})
                 expectedResult3 := map[interface{}]interface{}{"name": "Elrond", "place": "Rivendell"}
                 assert.Equal(t, expectedResult3, actualResult3, "Expected " + expectedResult + " but got " + actualResult)
-            //case "member4":
-            //    actualResult4 := param.Value.(string)
-            //    expectedResult4 := "TBD"
-            //case "member5":
-            //    actualResult5 := param.Value.(string)
-            //    expectedResult5 := "TBD"
-            //case "member6":
+            case "member4":
+                actualResult4 := param.Value.(map[interface{}]interface{})
+                expectedResult4 := map[interface{}]interface{}{"name": "Gimli", "place": "Gondor", "age": 139, "children": map[interface{}]interface{}{ "<none>": "<none>" }}
+                assert.Equal(t, expectedResult4, actualResult4, "Expected " + expectedResult + " but got " + actualResult)
+            case "member5":
+                utils.PrintTypeInfo(input, param.Value)
+                actualResult5 := param.Value.(map[interface{}]interface{})
+                expectedResult5 := map[interface{}]interface{}{"name": "Gloin", "place": "Gondor", "age": 235, "children": map[interface{}]interface{}{ "Gimli": "Son" }}
+                assert.Equal(t, expectedResult5, actualResult5, "Expected " + expectedResult + " but got " + actualResult)
+            case "member6":
+                utils.PrintTypeInfo(input, param.Value)
             //    actualResult6 := param.Value.(string)
             //    expectedResult6 := "TBD"
             }
