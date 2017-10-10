@@ -221,7 +221,7 @@ function fetchPrFromGithub(prDoc) {
                     response: response,
                     error: error,
                     body: body
-                });            
+                });
             } else {
                 if (response.statusCode == 200) {
                     resolve(body);
@@ -241,7 +241,7 @@ function prIsTooOld(prDoc) {
     // read lastUpdate from github
     var readyMoment = moment(prDoc.lastUpdate);
     // depeneding on the state of pull request, "READY" or "REVIEW"
-    // read the limit amount and days 
+    // read the limit amount and days
     var limit = limits[prDoc.state];
     // moment.diff() returns difference between today and
     // when pull request was last updated (in days as limit.unit is days)
