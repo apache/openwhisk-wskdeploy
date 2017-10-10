@@ -62,17 +62,17 @@ packages:
                     cron: "0 */12 * * *"
         actions:
             track-pull-requests:
-                function: openwhisk/actions/js/track-pull-requests.js
+                function: actions/track-pull-requests.js
                 inputs:
                     cloudant_package: TrackPRsInCloudant
             find-delayed-pull-requests:
-                function: openwhisk/actions/js/find-delayed-pull-requests.js
+                function: actions/find-delayed-pull-requests.js
                 inputs:
                     cloudant_package: TrackPRsInCloudant
                     github_username: $GITHUB_USERNAME
                     github_access_token: $GITHUB_ACCESSTOKEN
             post-to-slack:
-                function: openwhisk/actions/js/post-to-slack.js
+                function: actions/post-to-slack.js
                 inputs:
                     slack_package: PostPRToSlack
         sequences:
