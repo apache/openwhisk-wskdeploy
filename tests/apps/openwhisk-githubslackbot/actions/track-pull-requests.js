@@ -50,7 +50,7 @@
   *         It will be the output of this action.
   *
   */
-  
+
 // require the OpenWhisk npm package
 var openwhisk = require("openwhisk");
 
@@ -70,7 +70,7 @@ function main(params) {
     // validate cloudant package is set in params
     if (typeof cloudantPackage === 'undefined' || cloudantPackage === null) {
         return "Cloudant package is not specified. Please set \"cloudant_package\" bound parameter.";
-	}
+    }
 
     // access namespace as environment variables
     var namespace = process.env["__OW_NAMESPACE"];

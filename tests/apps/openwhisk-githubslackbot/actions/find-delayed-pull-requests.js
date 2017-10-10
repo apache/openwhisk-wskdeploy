@@ -18,16 +18,16 @@
 /**
   *
   * main() will be invoked when you Run This Action.
-  * 
+  *
   * @param Whisk actions accept a single parameter,
   *        which must be a JSON object.
   *
   * In this case, the params variable will look like:
-  *     { 
-  *			"cloudant_package": "xxxx",
-  *			"github_username": "xxxx",
-  *			"github_access_token": "xxxx",
-  *		}
+  *     {
+  *         "cloudant_package": "xxxx",
+  *         "github_username": "xxxx",
+  *         "github_access_token": "xxxx",
+  *     }
   *
   * @return which must be a JSON object.
   *         It will be the output of this action.
@@ -45,7 +45,7 @@ var githubUsername;
 var githubAccessToken;
 
 // predetermined threshold for pull requests duration
-// pull requests needs attention if they are older than this threshold   
+// pull requests needs attention if they are older than this threshold
 var limits = {
     "READY": {
         amount: 3,
@@ -58,34 +58,34 @@ var limits = {
 };
 
 function main(params) {
-	// instantiate the openwhisk instance before you can use it
-	wsk = openwhisk();
-	
-	// read Params
-	var cloudantPackage = params["cloudant_package"];
-	githubUsername = params["github_username"];
-	githubAccessToken = params["github_access_token"];
-	
-	// validate cloudant package is set in params
+    // instantiate the openwhisk instance before you can use it
+    wsk = openwhisk();
+
+    // read Params
+    var cloudantPackage = params["cloudant_package"];
+    githubUsername = params["github_username"];
+    githubAccessToken = params["github_access_token"];
+
+    // validate cloudant package is set in params
     if (typeof cloudantPackage === "undefined" || cloudantPackage === null) {
-    	return {
-    		"error": "Cloudant package is not specified. Please set \"cloudant_package\" bound parameter."
-    	};
-	}
+        return {
+            "error": "Cloudant package is not specified. Please set \"cloudant_package\" bound parameter."
+        };
+    }
 
-	// validate github username is set in params
+    // validate github username is set in params
     if (typeof githubUsername === "undefined" || githubUsername === null) {
-    	return {
-    		"error": "GitHub username is not specified. Please set \"github_username\" bound parameter."
-    	};
-	}
+        return {
+            "error": "GitHub username is not specified. Please set \"github_username\" bound parameter."
+        };
+    }
 
-	// validate github access token is set in params
+    // validate github access token is set in params
     if (typeof githubAccessToken === "undefined" || githubAccessToken === null) {
-    	return {
-    		"error": "GitHub access token is not specified. Please set \"github_access_token\" bound parameter."
-    	};
-	}
+        return {
+            "error": "GitHub access token is not specified. Please set \"github_access_token\" bound parameter."
+        };
+    }
 
     // access namespace as environment variables
     var namespace = process.env["__OW_NAMESPACE"];
@@ -93,38 +93,38 @@ function main(params) {
     // Cloudant package can be accessed using /namespace/package
     packageName = "/" + namespace + "/" + cloudantPackage;
 
-	// get list of pull requests from cloudant database
+    // get list of pull requests from cloudant database
     return wsk.actions.invoke({
-    	actionName: packageName + "/list-documents",
+        actionName: packageName + "/list-documents",
         params: { "include_docs": true },
         blocking: true
     })
     .then(activation => {
-    	console.log("Found " + activation.response.result.total_rows + " docs.");
-    	var listOfIDs = activation.response.result.rows.map(function (row) {
-    		return row.id;
-    	});
+        console.log("Found " + activation.response.result.total_rows + " docs.");
+        var listOfIDs = activation.response.result.rows.map(function (row) {
+            return row.id;
+        });
         return listOfIDs;
     })
     .then(function (listOfIds) {
-    	return Promise.all(listOfIds.map(getExistingDocument));
+        return Promise.all(listOfIds.map(getExistingDocument));
     })
     .then(function (trackedPrDocs) {
-    	// filter to only PRs that are "too old"
+        // filter to only PRs that are "too old"
         return trackedPrDocs.filter(prIsTooOld);
     })
     .then(function (oldPrDocs) {
-    	// filter to only PRs that are still open
+        // filter to only PRs that are still open
         // because of the undefined order we receive Github events, it is
         // possible that we are still tracking a PR that has since been closed.
         var stillOpenPromises = oldPrDocs.map(isStillOpen);
         return Promise.all(stillOpenPromises)
-        	.then(function (isPrOpenArray) {
-            	var delayedPRs = oldPrDocs.filter(function (prDoc, index) {
-                	return isPrOpenArray[index];
+            .then(function (isPrOpenArray) {
+                var delayedPRs = oldPrDocs.filter(function (prDoc, index) {
+                    return isPrOpenArray[index];
                 });
                 return {
-                	prs: delayedPRs
+                    prs: delayedPRs
                 };
             });
         });
@@ -223,14 +223,14 @@ function fetchPrFromGithub(prDoc) {
                     body: body
                 });            
             } else {
-            	if (response.statusCode == 200) {
-            		resolve(body);
-            	} else {
+                if (response.statusCode == 200) {
+                    resolve(body);
+                } else {
                     reject({
                         statusCode: response.statusCode,
                         response: body
                     });
-            	}
+                }
             }
         });
     });
@@ -240,11 +240,11 @@ function prIsTooOld(prDoc) {
     var moment = require("moment");
     // read lastUpdate from github
     var readyMoment = moment(prDoc.lastUpdate);
-	// depeneding on the state of pull request, "READY" or "REVIEW"
-	// read the limit amount and days 
+    // depeneding on the state of pull request, "READY" or "REVIEW"
+    // read the limit amount and days 
     var limit = limits[prDoc.state];
-	// moment.diff() returns difference between today and
-	// when pull request was last updated (in days as limit.unit is days)
-	// return true if the pull request was updated certain (limit.amount) days ago
+    // moment.diff() returns difference between today and
+    // when pull request was last updated (in days as limit.unit is days)
+    // return true if the pull request was updated certain (limit.amount) days ago
     return (moment().diff(readyMoment, limit.unit) >= limit.amount);
 }
