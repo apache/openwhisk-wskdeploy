@@ -911,7 +911,7 @@ func dumpParameter(paramName string, param *Parameter, separator string) {
 	fmt.Printf("%s:\n", separator)
 	fmt.Printf("\t%s: (%T)\n", paramName, param)
 	if param != nil {
-		fmt.Printf("\t\tParameter.Descrption: [%s]\n", param.Description)
+		fmt.Printf("\t\tParameter.Description: [%s]\n", param.Description)
 		fmt.Printf("\t\tParameter.Type: [%s]\n", param.Type)
 		fmt.Printf("\t\tParameter.Value: [%v]\n", param.Value)
 		fmt.Printf("\t\tParameter.Default: [%v]\n", param.Default)

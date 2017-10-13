@@ -5,29 +5,30 @@ packages:
         function: actions/dump_params.js
         runtime: nodejs:6
         inputs:
-          member1:
-            type: json
-            value: '{ "name": "Sam", "place": "Shire" }'
-          member2: { "name": "Sam", "place": "Shire" }
-          member3:
-            type: json
-            value: { "name": "Elrond", "place": "Rivendell" }
-          member4:
-            type: json
-            value: { "name": "Gimli", "place": "Gondor", "age": 139, "children": { "<none>": "<none>" } }
-          member5:
-            type: json
-            value: {
-              "name": "Gloin",
-              "place": "Gondor",
-              "age": 235,
-              "children": {
-                "Gimli": "Son"
-              }
-            }
-          member6:
-            type: json
-            value: { "name": "Frodo", "place": "Undying Lands", "items": [ "Sting", "Mithril mail" ] }
+#          member1:
+#            type: json
+#            value: '{ "name": "Sam", "place": "Shire" }'
+#          member2: { "name": "Sam", "place": "Shire" }
+#          member3:
+#            type: json
+#            value: { "name": "Elrond", "place": "Rivendell" }
+#          member4:
+#            type: json
+#            value: { "name": "Gimli", "place": "Gondor", "age": 139, "children": { "<none>": "<none>" } }
+#          member5:
+#            type: json
+#            value: {
+#              "name": "Gloin",
+#              "place": "Gondor",
+#              "age": 235,
+#              "children": {
+#                "Gimli": "Son"
+#              }
+#            }
+#          member6:
+#            type: json
+#            value: { "name": "Frodo", "place": "Undying Lands", "items": [ "Sting", "Mithril mail" ] }
+          member7: {1:2}
         outputs:
             fellowship:
               type: json
