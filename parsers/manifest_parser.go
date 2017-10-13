@@ -780,7 +780,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	var value interface{} = ""
 
 	// Trace Parameter struct before any resolution
-	dumpParameter(paramName, param, "BEFORE")
+	//dumpParameter(paramName, param, "BEFORE")
 
 	// Parameters can be single OR multi-line declarations which must be processed/validated differently
 	if !param.multiline {
@@ -859,7 +859,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 	// Trace Parameter struct after resolution
 	//dumpParameter(paramName, param, "AFTER")
-	fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, value)
+	//fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, value)
 
 	return value, errorParser
 }
