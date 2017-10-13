@@ -1,10 +1,10 @@
 packages:
     packageNodeJS:
-#        dependencies:
-#            hellowhisk:
-#                location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
-#            myhelloworlds:
-#                location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+        dependencies:
+            hellowhisk:
+                location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+            myhelloworlds:
+                location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
         actions:
             helloNodejs-1:
                 function: actions/hello.js
@@ -35,7 +35,7 @@ packages:
                         description: location of a person
         sequences:
             helloworldnodejs-series:
-                actions: helloNodejs-1, helloNodejs-2, helloNodejs-3 #, hellowhisk/greeting, hellowhisk/httpGet, myhelloworlds/hello-js
+                actions: helloNodejs-1, helloNodejs-2, helloNodejs-3, hellowhisk/greeting, hellowhisk/httpGet, myhelloworlds/hello-js
         triggers:
             triggerNodeJS1:
         rules:
@@ -43,11 +43,11 @@ packages:
                 trigger: triggerNodeJS1
                 action: helloworldnodejs-series
     packagePython:
-#        dependencies:
-#            hellowhisk:
-#                location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
-#            helloworlds:
-#                location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+        dependencies:
+            hellowhisk:
+                location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+            helloworlds:
+                location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
         actions:
             helloPython-1:
                 function: actions/hello.py
@@ -76,7 +76,7 @@ packages:
                 runtime: python
         sequences:
             helloworldpython-series:
-                actions: helloPython-1, helloPython-2, helloPython-3 #, hellowhisk/greeting, hellowhisk/httpGet, helloworlds/hello-js
+                actions: helloPython-1, helloPython-2, helloPython-3, hellowhisk/greeting, hellowhisk/httpGet, helloworlds/hello-js
         triggers:
             triggerPython:
         rules:
