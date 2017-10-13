@@ -197,5 +197,5 @@ func (e *ParserErr) Error() string {
         }
         result[index] = s
     }
-    return fmt.Sprintf("\n==> %s [%d]: Failed to parse the yaml file: %s: \n%s", fn, e.LineNum, e.YamlFile, strings.Join(result, "\n "))
+    return fmt.Sprintf("\n==> %s [%d]: Failed to parse the yaml file: %s: \n%s", fn, e.LineNum, e.YamlFile, strings.Join(result, "\n"))
 }

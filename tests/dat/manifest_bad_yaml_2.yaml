@@ -3,3 +3,7 @@ package:
   version: 1.0
   invalidKey: test
   license: Apache-2.0
+  invalidKey2: test
+  actions:
+    test:
+      function: a.js
