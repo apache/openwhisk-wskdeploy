@@ -1,0 +1,8 @@
+package:
+  name: helloWorldTriggerRule
+  version: 1.0
+  invalidKey: test
+  license: Apache-2.0
+  invalidKey2: test
+
+# go-yaml/yaml prints the wrong line number for mapping values. It should be 4.

@@ -30,6 +30,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"reflect"
 )
 
 type DeploymentApplication struct {
@@ -138,12 +139,12 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		return err
 	}
 
-    applicationName := ""
-    if len(manifest.Application.Packages) != 0 {
-        applicationName = manifest.Application.Name
-    }
+	applicationName := ""
+	if len(manifest.Application.Packages) != 0 {
+		applicationName = manifest.Application.Name
+	}
 
-	// process deploymet file
+	// process deployment file
 	if utils.FileExists(deployer.DeploymentPath) {
 		var deploymentReader = NewDeploymentReader(deployer)
 		err = deploymentReader.HandleYaml()
@@ -151,16 +152,16 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		if err != nil {
 			return err
 		}
-        // compare the name of the application
-        if len(deploymentReader.DeploymentDescriptor.Application.Packages) != 0 && len(applicationName) != 0 {
-            appNameDeploy := deploymentReader.DeploymentDescriptor.Application.Name
-            if appNameDeploy != applicationName {
-                errorString := wski18n.T("The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
-                    map[string]interface{}{"appNameDeploy": appNameDeploy, "deploymentFile": deployer.DeploymentPath,
-                        "appNameManifest": applicationName,  "manifestFile": deployer.ManifestPath })
-                return utils.NewInputYamlFormatError(errorString)
-            }
-        }
+		// compare the name of the application
+		if len(deploymentReader.DeploymentDescriptor.Application.Packages) != 0 && len(applicationName) != 0 {
+			appNameDeploy := deploymentReader.DeploymentDescriptor.Application.Name
+			if appNameDeploy != applicationName {
+				errorString := wski18n.T("The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
+				    map[string]interface{}{"appNameDeploy": appNameDeploy, "deploymentFile": deployer.DeploymentPath,
+					"appNameManifest": applicationName,  "manifestFile": deployer.ManifestPath })
+				return utils.NewInputYamlFormatError(errorString)
+			}
+		}
 
 		deploymentReader.BindAssets()
 	}
@@ -1048,7 +1049,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 		for _, p := range pack.Package.Parameters {
 			jsonValue, err := utils.PrettyJSON(p.Value)
 			if err != nil {
-				fmt.Printf("        - %s : %s\n", p.Key, "Unknown value")
+				fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
 			} else {
 				fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
 			}
@@ -1068,12 +1069,29 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 			utils.PrintOpenWhiskOutputln("  * action: " + action.Action.Name)
 			utils.PrintOpenWhiskOutputln("    bindings: ")
 			for _, p := range action.Action.Parameters {
-				jsonValue, err := utils.PrettyJSON(p.Value)
-				if err != nil {
-					fmt.Printf("        - %s : %s\n", p.Key, "Unknown value")
+
+				if( reflect.TypeOf(p.Value).Kind() == reflect.Map ) {
+                                        if _, ok := p.Value.(map[interface{}]interface{}); ok {
+						var temp map[string]interface{} =
+							utils.ConvertInterfaceMap(p.Value.(map[interface{}]interface{}))
+						fmt.Printf("        - %s : %v\n", p.Key, temp)
+					} else {
+						jsonValue,err := utils.PrettyJSON(p.Value)
+						if err != nil {
+							fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
+						} else {
+							fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+						}
+					}
 				} else {
-					fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+					jsonValue, err := utils.PrettyJSON(p.Value)
+					if err != nil {
+						fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
+					} else {
+						fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+					}
 				}
+
 			}
 			utils.PrintOpenWhiskOutputln("    annotations: ")
 			for _, p := range action.Action.Annotations {
@@ -1098,7 +1116,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 		for _, p := range trigger.Parameters {
 			jsonValue, err := utils.PrettyJSON(p.Value)
 			if err != nil {
-				fmt.Printf("        - %s : %s\n", p.Key, "Unknown value")
+				fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
 			} else {
 				fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
 			}

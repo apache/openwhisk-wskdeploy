@@ -314,9 +314,10 @@ func Undeploy() error {
 		setSupportedRuntimes(clientConfig.Host)
 
 		verifiedPlan, err := deployer.ConstructUnDeploymentPlan()
-        if err != nil {
-            return err
-        }
+		if err != nil {
+		    return err
+		}
+
 		err = deployer.UnDeploy(verifiedPlan)
 		if err != nil {
 			return err

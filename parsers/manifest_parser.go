@@ -344,24 +344,24 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 
 func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath string) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
-    manifestPackages := make(map[string]Package)
+	manifestPackages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeActions(filePath, manifest.Package.Actions, manifest.Package.Packagename)
 	} else {
-        if manifest.Packages != nil {
-            manifestPackages = manifest.Packages
-        } else {
-            manifestPackages = manifest.Application.Packages
-        }
-    }
-    for n, p := range manifestPackages {
-        a, err := dm.ComposeActions(filePath, p.Actions, n)
-        if err == nil {
-            s1 = append(s1, a...)
-        } else {
-            return nil, err
-        }
-    }
+		if manifest.Packages != nil {
+			manifestPackages = manifest.Packages
+		} else {
+			manifestPackages = manifest.Application.Packages
+		}
+    	}
+    	for n, p := range manifestPackages {
+		a, err := dm.ComposeActions(filePath, p.Actions, n)
+		if err == nil {
+			s1 = append(s1, a...)
+		} else {
+			return nil, err
+		}
+	}
 	return s1, nil
 }
 
@@ -372,6 +372,10 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 	for key, action := range actions {
 		splitFilePath := strings.Split(filePath, string(os.PathSeparator))
+
+		// set the name of the action (which is the key)
+		action.Name = key
+
 		//set action.Function to action.Location
 		//because Location is deprecated in Action entity
 		if action.Function == "" && action.Location != "" {
@@ -430,7 +434,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					code = base64.StdEncoding.EncodeToString([]byte(dat))
 				}
 				if ext == ".zip" && action.Runtime == "" {
-                    utils.PrintOpenWhiskOutputln("need explicit action Runtime value")
+					utils.PrintOpenWhiskOutputln("need explicit action Runtime value")
 				}
 				wskaction.Exec.Code = &code
 			}
@@ -442,12 +446,12 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				wskaction.Exec.Kind = action.Runtime
 
 			} else if utils.Flags.Strict {
-                wskaction.Exec.Kind = action.Runtime
-            } else {
-                errStr := wski18n.T("wskdeploy has chosen a particular runtime for the action.\n")
-			    whisk.Debug(whisk.DbgWarn, errStr)
-            }
-        }
+                		wskaction.Exec.Kind = action.Runtime
+            		} else {
+				errStr := wski18n.T("wskdeploy has chosen a particular runtime for the action.\n")
+				whisk.Debug(whisk.DbgWarn, errStr)
+			}
+                }
 
 		// we can specify the name of the action entry point using main
 		if action.Main != "" {
@@ -469,6 +473,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				keyValArr = append(keyValArr, keyVal)
 			}
 		}
+
 		if len(keyValArr) > 0 {
 			wskaction.Parameters = keyValArr
 		}
@@ -484,6 +489,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 		// only set the webaction when the annotations are not empty.
 		if action.Webexport == "true" {
+			// TODO() why is this commented out?  we should now support annotations...
 			//wskaction.Annotations = keyValArr
 			wskaction.Annotations, errorParser = utils.WebAction("yes", keyValArr, action.Name, false)
 			if errorParser != nil {
@@ -687,7 +693,7 @@ func (dm *YAMLParser) ComposeApiRecords(pkg Package) ([]*whisk.ApiCreateRequest,
 }
 
 // TODO(): Support other valid Package Manifest types
-// TODO(): i.e., json (valid), timestamp, version, string256, string64, string16
+// TODO(): i.e., timestamp, version, string256, string64, string16
 // TODO(): Support JSON schema validation for type: json
 // TODO(): Support OpenAPI schema validation
 
@@ -702,6 +708,8 @@ var validParameterNameMap = map[string]string{
 	"int64":   "integer",
 	"float32": "float",
 	"float64": "float",
+	"json":    "json",
+	"map":     "json",
 }
 
 var typeDefaultValueMap = map[string]interface{}{
@@ -709,6 +717,7 @@ var typeDefaultValueMap = map[string]interface{}{
 	"integer": 0,
 	"float":   0.0,
 	"boolean": false,
+	"json":    make(map[string]interface{}),
 	// TODO() Support these types + their validation
 	// timestamp
 	// null
@@ -716,7 +725,6 @@ var typeDefaultValueMap = map[string]interface{}{
 	// string256
 	// string64
 	// string16
-	// json
 	// scalar-unit
 	// schema
 	// object
@@ -738,8 +746,8 @@ func getTypeDefaultValue(typeName string) interface{} {
 	return nil
 }
 
-func ResolveParamTypeFromValue(value interface{}, filePath string) (string, error) {
-	// Note: string is the default type if not specified.
+func ResolveParamTypeFromValue(name string, value interface{}, filePath string) (string, error) {
+	// Note: 'string' is the default type if not specified and not resolvable.
 	var paramType string = "string"
 	var err error = nil
 
@@ -752,19 +760,11 @@ func ResolveParamTypeFromValue(value interface{}, filePath string) (string, erro
 			paramType = normalizedTypeName
 
 		} else {
-			// raise an error if param is not a known type
-			// TODO(): We have information to display to user on an error or warning here
-			// TODO(): specifically, we have the parameter name, its value to show on error/warning
-			// TODO(): perhaps this is a different Class of error?  e.g., ErrorParameterMismatchError
-			lines := []string{"Line Unknown"}
-			msgs := []string{"Parameter value is not a known type. [" + actualType + "]"}
-			err = utils.NewParserErr(filePath, lines, msgs)
+			// raise an error if parameter's value is not a known type
+			// TODO() - move string to i18n
+			msgs := []string{"Parameter [" + name + "] has a value that is not a known type. [" + actualType + "]"}
+			err = utils.NewParserErr(filePath, nil, msgs)
 		}
-	} else {
-
-		// TODO: The value may be supplied later, we need to support non-fatal warnings
-		// raise an error if param is nil
-		//err = utils.NewParserErr("",-1,"Paramter value is nil.")
 	}
 	return paramType, err
 }
@@ -785,7 +785,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	if !param.multiline {
 		// we have a single-line parameter declaration
 		// We need to identify parameter Type here for later validation
-		param.Type, errorParser = ResolveParamTypeFromValue(param.Value, filePath)
+		param.Type, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
 
 		// In single-line format, the param's <value> can be a "Type name" and NOT an actual value.
 		// if this is the case, we must detect it and set the value to the default for that type name.
@@ -811,13 +811,13 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 		// if we also have a type at this point, verify value (and/or default) matches type, if not error
 		// Note: if either the value or default is in conflict with the type then this is an error
-		tempType, errorParser = ResolveParamTypeFromValue(param.Value, filePath)
+		tempType, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
 
 		// if we do not have a value or default, but have a type, find its default and use it for the value
 		if param.Type != "" && !isValidParameterType(param.Type) {
-			lines := []string{"Line Unknown"}
-			msgs := []string{"Invalid Type for parameter. [" + param.Type + "]"}
-			return value, utils.NewParserErr(filePath, lines, msgs)
+			// TODO() - move string to i18n
+			msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
+			return value, utils.NewParserErr(filePath, nil, msgs)
 		} else if param.Type == "" {
 			param.Type = tempType
 		}
@@ -826,16 +826,27 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	// Make sure the parameter's value is a valid, non-empty string and startsWith '$" (dollar) sign
 	value = utils.GetEnvVar(param.Value)
 
-	typ := param.Type
+	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON
 
-	// TODO(Priti): need to validate type is one of the supported primitive types with unit testing
-	// TODO(): with the new logic, when would the following Unmarhsall() call be used?
-	// if value is of type 'string' and its not empty <OR> if type is not 'string'
-	if str, ok := value.(string); ok && (len(typ) == 0 || typ != "string") {
+	// Case 1: if user set parameter type to 'json' and the value's type is a 'string'
+	if str, ok := value.(string); ok && param.Type == "json" {
 		var parsed interface{}
 		err := json.Unmarshal([]byte(str), &parsed)
 		if err == nil {
+			fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, parsed)
 			return parsed, err
+		}
+	}
+
+	// Case 2: value contains a map of JSON
+	// We must make sure the map type is map[string]interface{}; otherwise we cannot
+	// marshall it later on to serialize in the body of an HTTP request.
+	if( param.Value != nil && reflect.TypeOf(param.Value).Kind() == reflect.Map ) {
+		if _, ok := param.Value.(map[interface{}]interface{}); ok {
+			var temp map[string]interface{} =
+				utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
+			fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, temp)
+			return temp, errorParser
 		}
 	}
 
@@ -847,7 +858,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 	// Trace Parameter struct after resolution
 	//dumpParameter(paramName, param, "AFTER")
-	//fmt.Printf("EXIT: value=[%v]\n", value)
+	//fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, value)
 
 	return value, errorParser
 }
@@ -899,7 +910,7 @@ func dumpParameter(paramName string, param *Parameter, separator string) {
 	fmt.Printf("%s:\n", separator)
 	fmt.Printf("\t%s: (%T)\n", paramName, param)
 	if param != nil {
-		fmt.Printf("\t\tParameter.Descrption: [%s]\n", param.Description)
+		fmt.Printf("\t\tParameter.Description: [%s]\n", param.Description)
 		fmt.Printf("\t\tParameter.Type: [%s]\n", param.Type)
 		fmt.Printf("\t\tParameter.Value: [%v]\n", param.Value)
 		fmt.Printf("\t\tParameter.Default: [%v]\n", param.Default)
