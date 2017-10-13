@@ -1,13 +1,13 @@
-# Wskdeploy manifest for openwhisk-cloudant-trigger
+# Wskdeploy manifest for openwhisk-php-cloudant-trigger
 # Installing openwhisk actions, triggers, and rules for OpenWhisk building block - Cloudant Trigger
 
 # Deployment using this manifest file creates following OpenWhisk components:
-#   Package:    openwhisk-cloudant
-#   Package:    cloudant-trigger
-#   Action:     cloudant-trigger/process-change.js
-#   Sequence:   cloudant-trigger/process-change-cloudant-sequence
-#   Trigger:    data-inserted-trigger
-#   Rule:       log-change-rule
+#   Package:    php-openwhisk-cloudant
+#   Package:    php-cloudant-trigger
+#   Action:     php-cloudant-trigger/process-change.js
+#   Sequence:   php-cloudant-trigger/process-change-cloudant-sequence
+#   Trigger:    php-data-inserted-trigger
+#   Rule:       php-log-change-rule
 
 # This manifest file reads following env. variables:
 #   CLOUDANT_USERNAME
@@ -15,20 +15,20 @@
 #   CLOUDANT_DATABASE
 
 packages:
-    cloudant-trigger:
+    php-cloudant-trigger:
         dependencies:
-            # binding cloudant package named openwhisk-cloudant
-            openwhisk-cloudant:
+            # binding cloudant package named php-openwhisk-cloudant
+            php-openwhisk-cloudant:
                 location: /whisk.system/cloudant
                 inputs:
                     username: $CLOUDANT_USERNAME
                     password: $CLOUDANT_PASSWORD
                     host: ${CLOUDANT_USERNAME}.cloudant.com
         triggers:
-            # Trigger named "data-inserted-trigger"
+            # Trigger named "php-data-inserted-trigger"
             # Creating trigger to fire events when data is inserted into database
-            data-inserted-trigger:
-                source: openwhisk-cloudant/changes
+            php-data-inserted-trigger:
+                source: php-openwhisk-cloudant/changes
                 inputs:
                     dbname: $CLOUDANT_DATABASE
         actions:
@@ -41,10 +41,10 @@ packages:
             # Sequence named "process-change-cloudant-sequence"
             # Creating sequence to connect the cloudant "read" action with the "process-change" action
             process-change-cloudant-sequence:
-                actions: openwhisk-cloudant/read, process-change
+                actions: php-openwhisk-cloudant/read, process-change
         rules:
-            # Rule named "log-change-rule"
+            # Rule named "php-log-change-rule"
             # Creating rule that maps database change trigger to sequence
-            log-change-rule:
-                trigger: data-inserted-trigger
+            php-log-change-rule:
+                trigger: php-data-inserted-trigger
                 action: process-change-cloudant-sequence

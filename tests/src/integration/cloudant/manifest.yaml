@@ -1,10 +1,10 @@
 # Deployment using this manifest file creates following OpenWhisk components:
 #   Package:    cloudant-sample
-#   Package:    openwhisk-cloudant
+#   Package:    sample-openwhisk-cloudant
 #   Action:     cloudant-sample/process-change
 #   Sequence:   cloudant-sample/process-change-cloudant-sequence
-#   Trigger:    data-inserted-trigger
-#   Rule:       log-change-rule
+#   Trigger:    sample-data-inserted-trigger
+#   Rule:       sample-log-change-rule
 
 # This manifest file reads following env. variables:
 #   CLOUDANT_USERNAME
@@ -14,18 +14,18 @@
 packages:
     cloudant-sample:
         dependencies:
-            # binding cloudant package named openwhisk-cloudant
-            openwhisk-cloudant:
+            # binding cloudant package named sample-openwhisk-cloudant
+            sample-openwhisk-cloudant:
                 location: /whisk.system/cloudant
                 inputs:
                     username: $CLOUDANT_USERNAME
                     password: $CLOUDANT_PASSWORD
                     host: ${CLOUDANT_USERNAME}.cloudant.com
         triggers:
-            # Trigger named "data-inserted-trigger"
+            # Trigger named "sample-data-inserted-trigger"
             # Creating trigger to fire events when data is inserted into database
-            data-inserted-trigger:
-                source: openwhisk-cloudant/changes
+            sample-data-inserted-trigger:
+                source: sample-openwhisk-cloudant/changes
                 inputs:
                     dbname: $CLOUDANT_DATABASE
         actions:
@@ -38,10 +38,10 @@ packages:
             # Sequence named "process-change-cloudant-sequence"
             # Creating sequence to connect the cloudant "read" action with the "process-change" action
             process-change-cloudant-sequence:
-                actions: openwhisk-cloudant/read, process-change
+                actions: sample-openwhisk-cloudant/read, process-change
         rules:
-            # Rule named "log-change-rule"
+            # Rule named "sample-log-change-rule"
             # Creating rule that maps database change trigger to sequence
-            log-change-rule:
-                trigger: data-inserted-trigger
+            sample-log-change-rule:
+                trigger: sample-data-inserted-trigger
                 action: process-change-cloudant-sequence
