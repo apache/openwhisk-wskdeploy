@@ -33,7 +33,6 @@ const (
     UNKNOWN = "Unknown"
     UNKNOWN_VALUE = "Unknown value"
     LINE = "line"
-    PARSING_ERR = "YAML: Parsing errors:"
 )
 
 type TestCaseError struct {
@@ -82,8 +81,8 @@ func NewErrorManifestFileNotFound(errMessage string) *ErrorManifestFileNotFound 
     var err = &ErrorManifestFileNotFound{
         errorType: wski18n.T(MANIFEST_NOT_FOUND),
     }
-    err.SetFileName(fn)
-    //err.SetFileName(filepath.Base(fn))
+    //err.SetFileName(fn)
+    err.SetFileName(filepath.Base(fn))
     err.SetLineNum(lineNum)
     err.SetMessage(errMessage)
     return err
