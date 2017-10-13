@@ -22,17 +22,16 @@ import (
     "runtime"
     "github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
     "strings"
-    "path/filepath"
 )
 
 const (
     INVALID_YAML_INPUT = "Invalid input of Yaml file"
     INVALID_YAML_FORMAT = "Invalid input of Yaml format"
     OPENWHISK_CLIENT_ERROR = "OpenWhisk Client Error"
-    MANIFEST_NOT_FOUND = INVALID_YAML_INPUT  // TODO{} This should be a unique message.
+    MANIFEST_NOT_FOUND = INVALID_YAML_INPUT
     UNKNOWN = "Unknown"
-    UNKNOWN_VALUE = "Unknown value"
     LINE = "line"
+    PARSING_ERR = "YAML: Parsing errors:"
 )
 
 type TestCaseError struct {
@@ -81,8 +80,7 @@ func NewErrorManifestFileNotFound(errMessage string) *ErrorManifestFileNotFound 
     var err = &ErrorManifestFileNotFound{
         errorType: wski18n.T(MANIFEST_NOT_FOUND),
     }
-    //err.SetFileName(fn)
-    err.SetFileName(filepath.Base(fn))
+    err.SetFileName(fn)
     err.SetLineNum(lineNum)
     err.SetMessage(errMessage)
     return err
@@ -102,7 +100,7 @@ func NewInputYamlFileError(errMessage string) *InputYamlFileError {
     var err = &InputYamlFileError{
         errorType: wski18n.T(INVALID_YAML_INPUT),
     }
-    err.SetFileName(filepath.Base(fn))
+    err.SetFileName(fn)
     err.SetLineNum(lineNum)
     err.SetMessage(errMessage)
     return err
@@ -113,7 +111,7 @@ func (e *InputYamlFileError) SetErrorType(errorType string) {
 }
 
 func (e *InputYamlFileError) Error() string {
-    return fmt.Sprintf("%s [%d]: %s %s\n", e.FileName, e.LineNum, e.errorType, e.Message)
+    return fmt.Sprintf("%s [%d]: %s =====> %s\n", e.FileName, e.LineNum, e.errorType, e.Message)
 }
 
 type InputYamlFormatError struct {
@@ -186,16 +184,14 @@ func NewParserErr(yamlFile string, lines []string, msgs []string) *ParserErr {
 
 func (e *ParserErr) Error() string {
     result := make([]string, len(e.msgs))
-    var fn = filepath.Base(e.FileName)
-
-    for index, msg := range e.msgs {
+    for index, each := range e.msgs {
         var s string
-        if e.lines == nil || e.lines[index] == UNKNOWN {
-            s = fmt.Sprintf("====> %s", msg)
-        } else{
-            s = fmt.Sprintf("====> Line [%v]: %s", e.lines[index], msg)
+        if e.lines[index] == UNKNOWN {
+            s = fmt.Sprintf("%s", PARSING_ERR)
+        } else {
+            s = fmt.Sprintf("%s: Line %s, its neighbor lines, or the lines on the same level.", each, e.lines[index])
         }
         result[index] = s
     }
-    return fmt.Sprintf("\n==> %s [%d]: Failed to parse the yaml file: %s: \n%s", fn, e.LineNum, e.YamlFile, strings.Join(result, "\n"))
+    return fmt.Sprintf("%s [%d]:\n Failed to parse the yaml file %s\n =====> %s\n", e.FileName, e.LineNum, e.YamlFile, strings.Join(result, "\n "))
 }

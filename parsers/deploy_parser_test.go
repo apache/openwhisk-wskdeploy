@@ -55,7 +55,7 @@ func TestInvalidKeyDeploymentYaml(t *testing.T) {
     _, err = p.ParseDeployment(tmpfile.Name())
     assert.NotNil(t, err)
     // go-yaml/yaml prints the wrong line number for mapping values. It should be 3.
-    assert.Contains(t, err.Error(), "line 2: field invalidKey not found in struct parsers.Application")
+    assert.Contains(t, err.Error(), "field invalidKey not found in struct parsers.Application: Line 2, its neighbor lines, or the lines on the same level")
 }
 
 func TestMappingValueDeploymentYaml(t *testing.T) {
@@ -74,7 +74,7 @@ func TestMappingValueDeploymentYaml(t *testing.T) {
     _, err = p.ParseDeployment(tmpfile.Name())
     assert.NotNil(t, err)
     // go-yaml/yaml prints the wrong line number for mapping values. It should be 3.
-    assert.Contains(t, err.Error(), "line 2: mapping values are not allowed in this context")
+    assert.Contains(t, err.Error(), "mapping values are not allowed in this context: Line 2, its neighbor lines, or the lines on the same level")
 }
 
 func TestMissingRootNodeDeploymentYaml(t *testing.T) {
@@ -91,7 +91,7 @@ func TestMissingRootNodeDeploymentYaml(t *testing.T) {
     _, err = p.ParseDeployment(tmpfile.Name())
     assert.NotNil(t, err)
     // go-yaml/yaml prints the wrong line number for mapping values. It should be 3.
-    assert.Contains(t, err.Error(), "line 1: field name not found in struct parsers.YAML")
+    assert.Contains(t, err.Error(), "field name not found in struct parsers.YAML: Line 1, its neighbor lines, or the lines on the same level")
 }
 
 func TestParseDeploymentYAML_Application(t *testing.T) {
