@@ -1,8 +1,0 @@
-packages:
-  helloWorldTriggerRule:
-    version: 1.0
-    license: Apache-2.0
-      actions: test
-
-# go-yaml/yaml prints the wrong line number for mapping values. It should be 5.
-

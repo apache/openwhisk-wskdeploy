@@ -949,83 +949,6 @@ func TestResolveParameterForMultiLineParams(t *testing.T) {
 
 }
 
-// Test 17: validate JSON parameters
-func TestParseManifestForJSONParams(t *testing.T) {
-    // manifest file is located under ../tests folder
-    manifestFile := "../tests/dat/manifest_validate_json_params.yaml"
-    // read and parse manifest.yaml file
-    m, _ := NewYAMLParser().ParseManifest(manifestFile)
-
-    // validate package name should be "validate"
-    packageName := "validate_json"
-    actionName := "validate_json_params"
-    expectedActionsCount := 1
-
-    assert.NotNil(t, m.Packages[packageName],
-        "Expected package named "+ packageName + " but got none")
-
-    // validate this package contains one action
-    actualActionsCount := len(m.Packages[packageName].Actions)
-    assert.Equal(t, expectedActionsCount, actualActionsCount,
-        "Expected " + string(expectedActionsCount) + " but got " + string(actualActionsCount))
-
-    if action, ok := m.Packages[packageName].Actions[actionName]; ok {
-        // validate location/function of an action to be "actions/dump_params.js"
-        expectedResult := "actions/dump_params.js"
-        actualResult := action.Function
-        assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
-
-        // validate runtime of an action to be "nodejs:6"
-        expectedResult = "nodejs:6"
-        actualResult = action.Runtime
-        assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
-
-        // validate the number of inputs to this action
-        expectedResult = strconv.FormatInt(6, 10)
-        actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
-        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
-
-        // validate inputs to this action
-        for input, param := range action.Inputs {
-            // Trace to help debug complex values:
-            // utils.PrintTypeInfo(input, param.Value)
-            switch input {
-            case "member1":
-                actualResult1 := param.Value.(string)
-                expectedResult1 := "{ \"name\": \"Sam\", \"place\": \"Shire\" }"
-                assert.Equal(t, expectedResult1, actualResult1, "Expected " + expectedResult + " but got " + actualResult)
-            case "member2":
-                actualResult2 := param.Value.(map[interface{}]interface{})
-                expectedResult2 := map[interface{}]interface{}{"name": "Sam", "place": "Shire"}
-                assert.Equal(t, expectedResult2, actualResult2, "Expected " + expectedResult + " but got " + actualResult)
-            case "member3":
-                actualResult3 := param.Value.(map[interface{}]interface{})
-                expectedResult3 := map[interface{}]interface{}{"name": "Elrond", "place": "Rivendell"}
-                assert.Equal(t, expectedResult3, actualResult3, "Expected " + expectedResult + " but got " + actualResult)
-            case "member4":
-                actualResult4 := param.Value.(map[interface{}]interface{})
-                expectedResult4 := map[interface{}]interface{}{"name": "Gimli", "place": "Gondor", "age": 139, "children": map[interface{}]interface{}{ "<none>": "<none>" }}
-                assert.Equal(t, expectedResult4, actualResult4, "Expected " + expectedResult + " but got " + actualResult)
-            case "member5":
-                actualResult5 := param.Value.(map[interface{}]interface{})
-                expectedResult5 := map[interface{}]interface{}{"name": "Gloin", "place": "Gondor", "age": 235, "children": map[interface{}]interface{}{ "Gimli": "Son" }}
-                assert.Equal(t, expectedResult5, actualResult5, "Expected " + expectedResult + " but got " + actualResult)
-            case "member6":
-                actualResult6 := param.Value.(map[interface{}]interface{})
-                expectedResult6 := map[interface{}]interface{}{"name": "Frodo", "place": "Undying Lands", "items": []interface{}{"Sting", "Mithril mail"}}
-                assert.Equal(t, expectedResult6, actualResult6, "Expected " + expectedResult + " but got " + actualResult)
-            }
-        }
-
-        // TODO{} We do not yet support json outputs
-        // validate outputs
-        // output payload is of type string and has a description
-        //if payload, ok := action.Outputs["fellowship"]; ok {
-        //    p := payload.(map[interface{}]interface{})
-        //}
-    }
-}
-
 func _createTmpfile(data string, filename string) (f *os.File, err error) {
     dir, _ := os.Getwd()
     tmpfile, err := ioutil.TempFile(dir, filename)
@@ -1333,7 +1256,7 @@ func TestInvalidKeyManifestYaml(t *testing.T) {
     _, err = p.ParseManifest(tmpfile.Name())
     assert.NotNil(t, err)
     // go-yaml/yaml prints the wrong line number for mapping values. It should be 4.
-    assert.Contains(t, err.Error(), "line 2: field invalidKey not found in struct parsers.Package")
+    assert.Contains(t, err.Error(), "field invalidKey not found in struct parsers.Package: Line 2, its neighbor lines, or the lines on the same level")
 }
 
 func TestMappingValueManifestYaml(t *testing.T) {
@@ -1354,7 +1277,7 @@ func TestMappingValueManifestYaml(t *testing.T) {
     _, err = p.ParseManifest(tmpfile.Name())
     assert.NotNil(t, err)
     // go-yaml/yaml prints the wrong line number for mapping values. It should be 5.
-    assert.Contains(t, err.Error(), "line 4: mapping values are not allowed in this context")
+    assert.Contains(t, err.Error(), "mapping values are not allowed in this context: Line 4, its neighbor lines, or the lines on the same level")
 }
 
 func TestMissingRootValueManifestYaml(t *testing.T) {
@@ -1372,7 +1295,7 @@ func TestMissingRootValueManifestYaml(t *testing.T) {
     p := NewYAMLParser()
     _, err = p.ParseManifest(tmpfile.Name())
     assert.NotNil(t, err)
-    assert.Contains(t, err.Error(), "line 1: field actions not found in struct parsers.YAML")
+    assert.Contains(t, err.Error(), "field actions not found in struct parsers.YAML: Line 1, its neighbor lines, or the lines on the same level")
 
 }
 

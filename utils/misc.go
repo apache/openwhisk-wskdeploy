@@ -100,8 +100,8 @@ func PrettyJSON(j interface{}) (string, error) {
 	formatter := prettyjson.NewFormatter()
 	bytes, err := formatter.Marshal(j)
 	if err != nil {
-        	return "", err
-    	}
+        return "", err
+    }
 	return string(bytes), nil
 }
 
@@ -670,15 +670,16 @@ func (urlReader *URLReader) ReadUrl(url string) (content []byte, err error) {
 type LocalReader struct {
 }
 
-func (localReader *LocalReader) ReadLocal(path string) ([]byte, error) {
+func (localReader *LocalReader) ReadLocal(path string) (content []byte, err error) {
 	cont, err := ioutil.ReadFile(path)
 	return cont, err
 }
 
-func Read(url string) ([]byte, error) {
+func Read(url string) (content []byte, err error) {
 	if strings.HasPrefix(url, "http") {
 		return new(ContentReader).URLReader.ReadUrl(url)
 	} else {
 		return new(ContentReader).LocalReader.ReadLocal(url)
 	}
 }
+
