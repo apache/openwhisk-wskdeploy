@@ -59,9 +59,14 @@ func (dm *YAMLParser) ParseDeployment(deploymentPath string) (*YAML, error) {
 func (dm *YAMLParser) convertErrorToLinesMsgs(errorString string) (lines []string, msgs []string) {
     strs := strings.Split(errorString, "\n")
     for i := 0; i < len(strs); i++ {
-        errMsg := strings.TrimSpace(strs[i])
+        var errorMsg string
+	if strings.Contains(strs[i], utils.LINE) {
+		errorMsg = strings.Replace(strs[i], utils.LINE, "(on or near) "+utils.LINE, 1)
+	} else {
+		errorMsg = strs[i]
+	}
         lines = append(lines, utils.UNKNOWN)
-        msgs = append(msgs, errMsg)
+        msgs = append(msgs, strings.TrimSpace(errorMsg))
     }
     return
 }

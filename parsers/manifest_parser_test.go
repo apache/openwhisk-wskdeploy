@@ -1354,7 +1354,7 @@ func TestMappingValueManifestYaml(t *testing.T) {
     _, err = p.ParseManifest(tmpfile.Name())
     assert.NotNil(t, err)
     // go-yaml/yaml prints the wrong line number for mapping values. It should be 5.
-    assert.Contains(t, err.Error(), "yaml: line 4: mapping values are not allowed in this context")
+    assert.Contains(t, err.Error(), "line 4: mapping values are not allowed in this context")
 }
 
 func TestMissingRootValueManifestYaml(t *testing.T) {

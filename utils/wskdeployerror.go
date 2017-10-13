@@ -83,6 +83,7 @@ func NewErrorManifestFileNotFound(errMessage string) *ErrorManifestFileNotFound 
         errorType: wski18n.T(MANIFEST_NOT_FOUND),
     }
     err.SetFileName(fn)
+    //err.SetFileName(filepath.Base(fn))
     err.SetLineNum(lineNum)
     err.SetMessage(errMessage)
     return err
