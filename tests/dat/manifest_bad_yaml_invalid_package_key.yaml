@@ -3,6 +3,5 @@ package:
   version: 1.0
   invalidKey: test
   license: Apache-2.0
-  invalidKey2: test
 
 # go-yaml/yaml "line 2: field invalidKey not found in struct parsers.Package".
