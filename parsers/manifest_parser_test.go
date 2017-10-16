@@ -530,6 +530,7 @@ func TestComposeActionsForInvalidRuntime(t *testing.T) {
             _, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
             // (TODO) uncomment the following test case after issue #307 is fixed
             // (TODO) its failing right now as we are lacking check on invalid runtime
+            // TODO() https://github.com/apache/incubator-openwhisk-wskdeploy/issues/608
             // assert.NotNil(t, err, "Invalid runtime, ComposeActions should report an error")
             // (TODO) remove this print statement after uncommenting above test case
             fmt.Println(err)
@@ -1529,7 +1530,7 @@ func TestParseYAML_param(t *testing.T) {
 		panic(err)
 	}
 
-        packageName := "manifest6"
+        packageName := "validateParams"
 
 	assert.Equal(t, 1, len(manifest.Packages[packageName].Actions), "Get action list failed.")
 	for action_name := range manifest.Packages[packageName].Actions {
