@@ -1344,6 +1344,15 @@ func TestBadYAMLMissingRootKeyInManifest(t *testing.T) {
     assert.Contains(t, err.Error(), "line 1: field actions not found in struct parsers.YAML")
 }
 
+func TestBadYAMLInvalidCommentInManifest(t *testing.T) {
+    // read and parse manifest.yaml file located under ../tests folder
+    p := NewYAMLParser()
+    _, err := p.ParseManifest("tests/dat/manifest_bad_yaml_invalid_comment.yaml")
+
+    assert.NotNil(t, err)
+    assert.Contains(t, err.Error(), "line 13: could not find expected ':'")
+}
+
 // validate manifest_parser:Unmarshal() method for package in manifest YAML
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForPackages(t *testing.T) {
