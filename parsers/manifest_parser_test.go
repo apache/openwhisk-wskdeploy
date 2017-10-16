@@ -1348,7 +1348,7 @@ func TestBadYAMLMissingRootKeyInManifest(t *testing.T) {
 func TestBadYAMLInvalidCommentInManifest(t *testing.T) {
     // read and parse manifest.yaml file located under ../tests folder
     p := NewYAMLParser()
-    _, err := p.ParseManifest("tests/dat/manifest_bad_yaml_invalid_comment.yaml")
+    _, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_invalid_comment.yaml")
 
     assert.NotNil(t, err)
     assert.Contains(t, err.Error(), "line 13: could not find expected ':'")
