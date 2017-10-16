@@ -1315,65 +1315,33 @@ func TestComposeDependencies(t *testing.T) {
     }
 }
 
-func TestInvalidKeyManifestYaml(t *testing.T) {
-    data := `package:
-  name: helloWorldTriggerRule
-  version: 1.0
-  invalidKey: test
-  license: Apache-2.0`
-    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-    if err != nil {
-        assert.Fail(t, "Failed to create temp file")
-    }
-    defer func() {
-        tmpfile.Close()
-        os.Remove(tmpfile.Name())
-    }()
+func TestBadYAMLInvalidPackageKeyInManifest(t *testing.T) {
+    // read and parse manifest.yaml file located under ../tests folder
     p := NewYAMLParser()
-    _, err = p.ParseManifest(tmpfile.Name())
+    _, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_invalid_package_key.yaml")
+
     assert.NotNil(t, err)
     // go-yaml/yaml prints the wrong line number for mapping values. It should be 4.
     assert.Contains(t, err.Error(), "line 2: field invalidKey not found in struct parsers.Package")
 }
 
-func TestMappingValueManifestYaml(t *testing.T) {
-    data := `package:
-  name: helloWorldTriggerRule
-  version: 1.0
-  license: Apache-2.0
-    actions: test`
-    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-    if err != nil {
-        assert.Fail(t, "Failed to create temp file")
-    }
-    defer func() {
-        tmpfile.Close()
-        os.Remove(tmpfile.Name())
-    }()
+func TestBadYAMLInvalidKeyMappingValueInManifest(t *testing.T) {
+    // read and parse manifest.yaml file located under ../tests folder
     p := NewYAMLParser()
-    _, err = p.ParseManifest(tmpfile.Name())
+    _, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_invalid_key_mapping_value.yaml")
+
     assert.NotNil(t, err)
     // go-yaml/yaml prints the wrong line number for mapping values. It should be 5.
     assert.Contains(t, err.Error(), "line 4: mapping values are not allowed in this context")
 }
 
-func TestMissingRootValueManifestYaml(t *testing.T) {
-    data := `actions:
-  helloNodejs:
-    function: actions/hello.js`
-    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-    if err != nil {
-        assert.Fail(t, "Failed to create temp file")
-    }
-    defer func() {
-        tmpfile.Close()
-        os.Remove(tmpfile.Name())
-    }()
+func TestBadYAMLMissingRootKeyInManifest(t *testing.T) {
+    // read and parse manifest.yaml file located under ../tests folder
     p := NewYAMLParser()
-    _, err = p.ParseManifest(tmpfile.Name())
+    _, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_missing_root_key.yaml")
+
     assert.NotNil(t, err)
     assert.Contains(t, err.Error(), "line 1: field actions not found in struct parsers.YAML")
-
 }
 
 // validate manifest_parser:Unmarshal() method for package in manifest YAML

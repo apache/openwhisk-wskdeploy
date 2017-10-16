@@ -1,6 +1,0 @@
-actions:
-  helloNodejs:
-    function: actions/hello.js
-
-# go-yaml/yaml prints the wrong line number for mapping values. It should be 5.
-
