@@ -504,7 +504,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			}
 		}
 
-		// TODO{} add outputs as annototations (work to discuss officially supporting for compositions)
+		// TODO{} add outputs as annotations (work to discuss officially supporting for compositions)
 		if len(keyValArr) > 0 {
 			//wskaction.Annotations  // TBD
 		}
