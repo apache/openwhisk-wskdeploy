@@ -387,7 +387,7 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
         actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
         assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-        // validate inputs to this action
+        // validate Inputs to this action
         for input, param := range action.Inputs {
             switch input {
             case "param_simple_string":
@@ -445,24 +445,16 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
             }
         }
 
-        // validate outputs
-        // output payload is of type string and has a description
-        //if payload, ok := action.Outputs["payload"]; ok {
-        //    p := payload.(map[interface{}]interface{})
-        //    expectedResult = "string"
-        //    actualResult = p["type"].(string)
-        //    assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
-        //    expectedResult = "parameter dump"
-        //    actualResult = p["description"].(string)
-        //    assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
-        //}
-
-        // validate inputs to this action
+        // validate Outputs from this action
         for output, param := range action.Outputs {
             switch output {
             case "payload":
                 expectedResult = "string"
                 actualResult = param.Type
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+                expectedResult = "parameter dump"
+                actualResult = param.Description
                 assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
             }
         }
@@ -1028,12 +1020,19 @@ func TestParseManifestForJSONParams(t *testing.T) {
             }
         }
 
-        // TODO{} We do not yet support json outputs
-        // validate outputs
-        // output payload is of type string and has a description
-        //if payload, ok := action.Outputs["fellowship"]; ok {
-        //    p := payload.(map[interface{}]interface{})
-        //}
+        // validate Outputs from this action
+        for output, param := range action.Outputs {
+            switch output {
+            case "fellowship":
+                expectedResultA := "json"
+                actualResultA := param.Type
+                assert.Equal(t, expectedResultA, actualResultA, "Expected " + expectedResultA + " but got " + actualResultA)
+
+                //expectedResultB := map[string]interface{}:
+                //actualResultB := param.Value.(type)
+                //assert.Equal(t, expectedResultB, actualResultB, "Expected " + expectedResultB + " but got " + actualResultB)
+            }
+        }
     }
 }
 
