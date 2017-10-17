@@ -468,7 +468,6 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		for name, param := range action.Inputs {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-
 			keyVal.Value, errorParser = ResolveParameter(name, &param, filePath)
 
 			if errorParser != nil {
@@ -492,7 +491,6 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		for name, param := range action.Outputs {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-
 			keyVal.Value, errorParser = ResolveParameter(name, &param, filePath)
 
 			if errorParser != nil {
@@ -501,6 +499,11 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 			if keyVal.Value != nil {
 				keyValArr = append(keyValArr, keyVal)
+
+				expectedResult := keyVal.Value
+				tof := reflect.TypeOf(expectedResult).String()
+				//actualType := reflect.TypeOf(expectedResult).Kind().String()
+				fmt.Printf("%s, %s",tof)
 			}
 		}
 
@@ -517,7 +520,6 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 			keyVal.Value = utils.GetEnvVar(value)
-
 			keyValArr = append(keyValArr, keyVal)
 		}
 
