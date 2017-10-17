@@ -500,10 +500,10 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			if keyVal.Value != nil {
 				keyValArr = append(keyValArr, keyVal)
 
-				expectedResult := keyVal.Value
-				tof := reflect.TypeOf(expectedResult).String()
+				//expectedResult := keyVal.Value
+				//tof := reflect.TypeOf(expectedResult).String()
 				//actualType := reflect.TypeOf(expectedResult).Kind().String()
-				fmt.Printf("%s, %s",tof)
+				//fmt.Printf("%s, %s",tof)
 			}
 		}
 
