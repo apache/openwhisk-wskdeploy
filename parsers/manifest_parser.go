@@ -419,7 +419,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					kind = "nodejs:6"
 					errStr := wski18n.T("Unsupported runtime type, set to nodejs")
 					whisk.Debug(whisk.DbgWarn, errStr)
-					//add the user input kind here
+					// TODO() add the user input kind here if interactive
 				}
 
 				wskaction.Exec.Kind = kind
@@ -441,6 +441,9 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 		}
 
+		/*
+ 		 *  Action.Runtime
+ 		 */
 		if action.Runtime != "" {
 			if utils.CheckExistRuntime(action.Runtime, utils.Rts) {
 				wskaction.Exec.Kind = action.Runtime
@@ -458,6 +461,9 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			wskaction.Exec.Main = action.Main
 		}
 
+		/*
+		 *  Action.Inputs
+		 */
 		keyValArr := make(whisk.KeyValueArr, 0)
 		for name, param := range action.Inputs {
 			var keyVal whisk.KeyValue
@@ -474,10 +480,38 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			}
 		}
 
+		// if we have successfully parser valid key/value parameters
 		if len(keyValArr) > 0 {
 			wskaction.Parameters = keyValArr
 		}
 
+		/*
+ 		 *  Action.Outputs
+		 */
+		keyValArr = make(whisk.KeyValueArr, 0)
+		for name, param := range action.Outputs {
+			var keyVal whisk.KeyValue
+			keyVal.Key = name
+
+			keyVal.Value, errorParser = ResolveParameter(name, &param, filePath)
+
+			if errorParser != nil {
+				return nil, errorParser
+			}
+
+			if keyVal.Value != nil {
+				keyValArr = append(keyValArr, keyVal)
+			}
+		}
+
+		// TODO{} add outputs as annototations (work to discuss officially supporting for compositions)
+		if len(keyValArr) > 0 {
+			//wskaction.Annotations  // TBD
+		}
+
+		/*
+ 		 *  Action.Annotations
+ 		 */
 		keyValArr = make(whisk.KeyValueArr, 0)
 		for name, value := range action.Annotations {
 			var keyVal whisk.KeyValue
@@ -497,7 +531,9 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			}
 		}
 
-		//set limitations
+		/*
+ 		 *  Action.Limits
+ 		 */
 		if action.Limits!=nil {
 			wsklimits :=  new(whisk.Limits)
 			if utils.LimitsTimeoutValidation(action.Limits.Timeout) {
@@ -831,10 +867,10 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	// Case 1: if user set parameter type to 'json' and the value's type is a 'string'
 	if str, ok := value.(string); ok && param.Type == "json" {
 		var parsed interface{}
-		err := json.Unmarshal([]byte(str), &parsed)
-		if err == nil {
-			fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, parsed)
-			return parsed, err
+		errParser := json.Unmarshal([]byte(str), &parsed)
+		if errParser == nil {
+			//fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, parsed)
+			return parsed, errParser
 		}
 	}
 
@@ -845,7 +881,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 		if _, ok := param.Value.(map[interface{}]interface{}); ok {
 			var temp map[string]interface{} =
 				utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
-			fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, temp)
+			//fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, temp)
 			return temp, errorParser
 		}
 	}
