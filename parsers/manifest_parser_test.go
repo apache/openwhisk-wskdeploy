@@ -1031,7 +1031,7 @@ func TestParseManifestForJSONParams(t *testing.T) {
                 expectedResultB := map[interface{}]interface{}{}
                 actualResultB := param.Value
                 //actualResultB := reflect.TypeOf(expectedResult).String()
-                fmt.Printf("exp=%s, act=%s", reflect.TypeOf(expectedResultB).String(),reflect.TypeOf(expectedResultB).String() )
+                fmt.Printf("exp=%s, act=%s", reflect.TypeOf(expectedResultB).String(),reflect.TypeOf(actualResultB).String() )
                 //assert.Equal(t, expectedResultB, actualResultB, "Expected " + expectedResultB + " but got " + actualResultB)
             }
         }
