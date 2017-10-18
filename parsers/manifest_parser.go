@@ -493,17 +493,13 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			keyVal.Key = name
 			keyVal.Value, errorParser = ResolveParameter(name, &param, filePath)
 
+			// short circuit on error
 			if errorParser != nil {
 				return nil, errorParser
 			}
 
 			if keyVal.Value != nil {
 				keyValArr = append(keyValArr, keyVal)
-
-				//expectedResult := keyVal.Value
-				//tof := reflect.TypeOf(expectedResult).String()
-				//actualType := reflect.TypeOf(expectedResult).Kind().String()
-				//fmt.Printf("%s, %s",tof)
 			}
 		}
 
@@ -812,7 +808,6 @@ func ResolveParamTypeFromValue(name string, value interface{}, filePath string) 
 func ResolveParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
 
 	var errorParser error
-	var tempType string
 	// default parameter value to empty string
 	var value interface{} = ""
 
@@ -833,36 +828,41 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 			if isValidParameterType(tempValue) {
 				// If the value is indeed the name of a Type, we must change BOTH its
 				// Type to be that type and its value to that Type's default value
-				// (which happens later by setting it to nil here
 				param.Type = param.Value.(string)
-				param.Value = nil
+				param.Value = getTypeDefaultValue(param.Type)
 			}
 		}
 
 	} else {
 		// we have a multi-line parameter declaration
+		var valueType string
 
 		// if we do not have a value, but have a default, use it for the value
 		if param.Value == nil && param.Default != nil {
 			param.Value = param.Default
 		}
 
-		// if we also have a type at this point, verify value (and/or default) matches type, if not error
+		// if we also have a type at this point, verify the parameter's value matches its type, if not error
 		// Note: if either the value or default is in conflict with the type then this is an error
-		tempType, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
+		valueType, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
 
-		// if we do not have a value or default, but have a type, find its default and use it for the value
+		// if we have a value for the parameter Type, assure that it is a known value
 		if param.Type != "" && !isValidParameterType(param.Type) {
 			// TODO() - move string to i18n
 			msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
 			return value, utils.NewParserErr(filePath, nil, msgs)
-		} else if param.Type == "" {
-			param.Type = tempType
+		}
+
+		// if we do not a value for the Parameter Type, use the Parameter Value's Type
+		if param.Type == "" {
+			param.Type = valueType
 		}
 	}
 
 	// Make sure the parameter's value is a valid, non-empty string and startsWith '$" (dollar) sign
-	value = utils.GetEnvVar(param.Value)
+	if( param.Value != nil && param.Type == "string"){
+		value = utils.GetEnvVar(param.Value)
+	}
 
 	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON
 
@@ -871,7 +871,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 		var parsed interface{}
 		errParser := json.Unmarshal([]byte(str), &parsed)
 		if errParser == nil {
-			//fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, parsed)
+			fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, parsed)
 			return parsed, errParser
 		}
 	}
@@ -883,12 +883,13 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 		if _, ok := param.Value.(map[interface{}]interface{}); ok {
 			var temp map[string]interface{} =
 				utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
-			//fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, temp)
+			fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, temp)
 			return temp, errorParser
 		}
 	}
 
-	// Default to an empty string, do NOT error/terminate as Value may be provided later bu a Deployment file.
+	// Default value to zero value for the Type
+	// Do NOT error/terminate as Value may be provided later by a Deployment file.
 	if value == nil {
 		value = getTypeDefaultValue(param.Type)
 		// @TODO(): Need warning message here to warn of default usage, support for warnings (non-fatal)
@@ -896,7 +897,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 	// Trace Parameter struct after resolution
 	//dumpParameter(paramName, param, "AFTER")
-	//fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, value)
+	fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, value)
 
 	return value, errorParser
 }

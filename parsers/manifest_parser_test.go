@@ -223,23 +223,8 @@ func TestUnmarshalForMissingPackage(t *testing.T) {
 
 /*
  Test 7: validate manifest_parser:ParseManifest() method for multiline parameters
- manifest_parser should be able to parse all different mutliline combinations of
- inputs section including:
-
- case 1: value only
- param:
-    value: <value>
- case 2: type only
- param:
-    type: <type>
- case 3: type and value only
- param:
-    type: <type>
-    value: <value>
- case 4: default value
- param:
-    type: <type>
-    default: <default value>
+ manifest_parser should be able to parse all different multiline combinations of
+ inputs section.
 */
 func TestParseManifestForMultiLineParams(t *testing.T) {
     // manifest file is located under ../tests folder
@@ -1024,15 +1009,9 @@ func TestParseManifestForJSONParams(t *testing.T) {
         for output, param := range action.Outputs {
             switch output {
             case "fellowship":
-                expectedResultA := "json"
-                actualResultA := param.Type
-                assert.Equal(t, expectedResultA, actualResultA, "Expected " + expectedResultA + " but got " + actualResultA)
-
-                expectedResultB := map[interface{}]interface{}{}
-                actualResultB := param.Value
-                //actualResultB := reflect.TypeOf(expectedResult).String()
-                fmt.Printf("exp=%s, act=%s", reflect.TypeOf(expectedResultB).String(),reflect.TypeOf(actualResultB).String() )
-                //assert.Equal(t, expectedResultB, actualResultB, "Expected " + expectedResultB + " but got " + actualResultB)
+                expectedType := "json"
+                actualType := param.Type
+                assert.Equal(t, expectedType, actualType, "Expected Type: " + expectedType + ", but got: " + actualType)
             }
         }
     }
