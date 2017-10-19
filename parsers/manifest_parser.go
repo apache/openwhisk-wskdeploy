@@ -804,6 +804,15 @@ func ResolveParamTypeFromValue(name string, value interface{}, filePath string) 
 }
 
 
+/*
+    resolveSingleLineParameter assures that a Parameter's Type is correctly identified and set from its Value.
+
+    Additionally, this function:
+
+    - detects if the parameter value contains the name of a valid OpenWhisk parameter types. if so, the
+      - param.Type is set to detected OpenWhisk parameter type.
+      - param.Value is set to the zero (default) value for that OpenWhisk parameter type.
+ */
 func resolveSingleLineParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
 	var errorParser error
 
@@ -833,9 +842,20 @@ func resolveSingleLineParameter(paramName string, param *Parameter, filePath str
 	return param.Value, errorParser
 }
 
+/*
+    ResolveParameter assures that the Parameter structure's values are correctly filled out for
+    further processing.  This includes special processing for
 
-// Resolve input parameter (i.e., type, value, default)
-// Note: parameter values may set later (overridden) by an (optional) Deployment file
+    - single-line format parameters
+      - deriving missing param.Type from param.Value
+      - resolving case where param.Value contains a valid Parameter type name
+    - multi-line format parameters:
+      - assures that param.Value is set while taking into account param.Default
+      - validating param.Type
+
+    Note: parameter values may set later (overridden) by an (optional) Deployment file
+
+ */
 func ResolveParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
 
 	var errorParser error
@@ -847,24 +867,8 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 	// Parameters can be single OR multi-line declarations which must be processed/validated differently
 	if !param.multiline {
-		// we have a single-line parameter declaration
-		// We need to identify parameter Type here for later validation
-		//param.Type, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
-		//
-		//// In single-line format, the param's <value> can be a "Type name" and NOT an actual value.
-		//// if this is the case, we must detect it and set the value to the default for that type name.
-		//if param.Value!=nil && param.Type == "string" {
-		//	// The value is a <string>; now we must test if is the name of a known Type
-		//	if isValidParameterType(param.Value.(string)) {
-		//		// If the value is indeed the name of a Type, we must change BOTH its
-		//		// Type to be that type and its value to that Type's default value
-		//		param.Type = param.Value.(string)
-		//		param.Value = getTypeDefaultValue(param.Type)
-		//		fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, param.Value)
-		//		return param.Value, errorParser
-		//	}
-		//}
 
+		// This function will assure that param.Value and param.Type are correctly set
 		value, errorParser = resolveSingleLineParameter(paramName, param, filePath)
 
 	} else {
@@ -892,14 +896,16 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 			// if we do not have a value for the Parameter Type, use the Parameter Value's Type
 			param.Type = valueType
 		}
+
+		value = param.Value
 	}
 
 	// See if we have any Environment Variable replacement within the parameter's value
 	// Make sure the parameter's value is a valid, non-empty string
-//	if( param.Value != nil && param.Type == "string"){
+	if( param.Value != nil && param.Type == "string"){
 		// perform $ notation replacement on string if any exist
 		value = utils.GetEnvVar(param.Value)
-//	}
+	}
 
 	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON
 
