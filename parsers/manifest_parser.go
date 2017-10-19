@@ -804,7 +804,7 @@ func ResolveParamTypeFromValue(name string, value interface{}, filePath string) 
 }
 
 // Resolve input parameter (i.e., type, value, default)
-// Note: parameter values may set later (overriddNen) by an (optional) Deployment file
+// Note: parameter values may set later (overridden) by an (optional) Deployment file
 func ResolveParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
 
 	var errorParser error
@@ -824,12 +824,12 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 		// if this is the case, we must detect it and set the value to the default for that type name.
 		if param.Value!=nil && param.Type == "string" {
 			// The value is a <string>; now we must test if is the name of a known Type
-			var tempValue = param.Value.(string)
-			if isValidParameterType(tempValue) {
+			if isValidParameterType(param.Value.(string)) {
 				// If the value is indeed the name of a Type, we must change BOTH its
 				// Type to be that type and its value to that Type's default value
 				param.Type = param.Value.(string)
 				param.Value = getTypeDefaultValue(param.Type)
+				return param.Value, errorParser
 			}
 		}
 
@@ -842,27 +842,30 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 			param.Value = param.Default
 		}
 
-		// if we also have a type at this point, verify the parameter's value matches its type, if not error
+		// TODO{} if we also have a type at this point, verify the parameter's value matches its type, if not error
 		// Note: if either the value or default is in conflict with the type then this is an error
 		valueType, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
 
-		// if we have a value for the parameter Type, assure that it is a known value
-		if param.Type != "" && !isValidParameterType(param.Type) {
-			// TODO() - move string to i18n
-			msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
-			return value, utils.NewParserErr(filePath, nil, msgs)
-		}
-
-		// if we do not a value for the Parameter Type, use the Parameter Value's Type
-		if param.Type == "" {
+		// if we have a declared parameter Type, assure that it is a known value
+		if param.Type != "" {
+			if !isValidParameterType(param.Type){
+				// TODO() - move string to i18n
+				msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
+				return value, utils.NewParserErr(filePath, nil, msgs)
+			}
+			fmt.Printf("INFO: Parameter.Type=[%v] valueType=[%v]\n", param.Type, valueType)
+		} else {
+			// if we do not have a value for the Parameter Type, use the Parameter Value's Type
 			param.Type = valueType
 		}
 	}
 
-	// Make sure the parameter's value is a valid, non-empty string and startsWith '$" (dollar) sign
-	if( param.Value != nil && param.Type == "string"){
+	// See if we have any Environment Variable replacement within the parameter's value
+	// Make sure the parameter's value is a valid, non-empty string
+//	if( param.Value != nil && param.Type == "string"){
+		// perform $ notation replacement on string if any exist
 		value = utils.GetEnvVar(param.Value)
-	}
+//	}
 
 	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON
 

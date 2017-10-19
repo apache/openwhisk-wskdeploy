@@ -4,7 +4,7 @@ packages:
       validate_json_params:
         function: actions/dump_params.js
         runtime: nodejs:6
-        inputs:
+6        inputs:
           member1:
             type: json
             value: '{ "name": "Sam", "place": "Shire" }'
