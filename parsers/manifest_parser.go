@@ -817,7 +817,6 @@ func resolveSingleLineParameter(paramName string, param *Parameter, filePath str
 	var errorParser error
 
 	if !param.multiline {
-		// we have a single-line parameter declaration
 		// We need to identify parameter Type here for later validation
 		param.Type, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
 
@@ -838,6 +837,49 @@ func resolveSingleLineParameter(paramName string, param *Parameter, filePath str
 		msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
 		return param.Value, utils.NewParserErr(filePath, nil, msgs)
 	}
+
+	return param.Value, errorParser
+}
+
+/*
+    resolveMultiLineParameter assures that the values for Parameter Type and Value are properly set and are valid.
+
+    Additionally, this function:
+    - uses param.Default as param.Value if param.Value is not provided
+    - uses the actual param.Value data type for param.type if param.Type is not provided
+
+ */
+func resolveMultiLineParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
+	var errorParser error
+
+	if param.multiline {
+		var valueType string
+
+		// if we do not have a value, but have a default, use it for the value
+		if param.Value == nil && param.Default != nil {
+			param.Value = param.Default
+		}
+
+		// Note: if either the value or default is in conflict with the type then this is an error
+		valueType, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
+
+		// if we have a declared parameter Type, assure that it is a known value
+		if param.Type != "" {
+			if !isValidParameterType(param.Type) {
+				// TODO() - move string to i18n
+				msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
+				return param.Value, utils.NewParserErr(filePath, nil, msgs)
+			}
+		} else {
+			// if we do not have a value for the Parameter Type, use the Parameter Value's Type
+			param.Type = valueType
+		}
+
+		// TODO{} if the declared and actual parameter type conflict, generate TypeMismatch error
+		//if param.Type != valueType{
+		//	errorParser = utils.NewParameterTypeMismatchError("", param.Type, valueType )
+		//}
+        }
 
 	return param.Value, errorParser
 }
@@ -872,32 +914,33 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 		value, errorParser = resolveSingleLineParameter(paramName, param, filePath)
 
 	} else {
-		// we have a multi-line parameter declaration
-		var valueType string
-
-		// if we do not have a value, but have a default, use it for the value
-		if param.Value == nil && param.Default != nil {
-			param.Value = param.Default
-		}
-
-		// TODO{} if we also have a type at this point, verify the parameter's value matches its type, if not error
-		// Note: if either the value or default is in conflict with the type then this is an error
-		valueType, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
-
-		// if we have a declared parameter Type, assure that it is a known value
-		if param.Type != "" {
-			if !isValidParameterType(param.Type){
-				// TODO() - move string to i18n
-				msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
-				return value, utils.NewParserErr(filePath, nil, msgs)
-			}
-			fmt.Printf("INFO: Parameter[%s] Type=[%v] valueType=[%v]\n", paramName, param.Type, valueType)
-		} else {
-			// if we do not have a value for the Parameter Type, use the Parameter Value's Type
-			param.Type = valueType
-		}
-
-		value = param.Value
+		//// we have a multi-line parameter declaration
+		//var valueType string
+		//
+		//// if we do not have a value, but have a default, use it for the value
+		//if param.Value == nil && param.Default != nil {
+		//	param.Value = param.Default
+		//}
+		//
+		//// TODO{} if we also have a type at this point, verify the parameter's value matches its type, if not error
+		//// Note: if either the value or default is in conflict with the type then this is an error
+		//valueType, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
+		//
+		//// if we have a declared parameter Type, assure that it is a known value
+		//if param.Type != "" {
+		//	if !isValidParameterType(param.Type){
+		//		// TODO() - move string to i18n
+		//		msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
+		//		return value, utils.NewParserErr(filePath, nil, msgs)
+		//	}
+		//	fmt.Printf("INFO: Parameter[%s] Type=[%v] valueType=[%v]\n", paramName, param.Type, valueType)
+		//} else {
+		//	// if we do not have a value for the Parameter Type, use the Parameter Value's Type
+		//	param.Type = valueType
+		//}
+		//
+		//value = param.Value
+		value, errorParser = resolveMultiLineParameter(paramName, param, filePath)
 	}
 
 	// See if we have any Environment Variable replacement within the parameter's value
