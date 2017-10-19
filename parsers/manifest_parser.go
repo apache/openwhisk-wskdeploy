@@ -803,6 +803,37 @@ func ResolveParamTypeFromValue(name string, value interface{}, filePath string) 
 	return paramType, err
 }
 
+
+func resolveSingleLineParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
+	var errorParser error
+
+	if !param.multiline {
+		// we have a single-line parameter declaration
+		// We need to identify parameter Type here for later validation
+		param.Type, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
+
+		// In single-line format, the param's <value> can be a "Type name" and NOT an actual value.
+		// if this is the case, we must detect it and set the value to the default for that type name.
+		if param.Value != nil && param.Type == "string" {
+			// The value is a <string>; now we must test if is the name of a known Type
+			if isValidParameterType(param.Value.(string)) {
+				// If the value is indeed the name of a Type, we must change BOTH its
+				// Type to be that type and its value to that Type's default value
+				param.Type = param.Value.(string)
+				param.Value = getTypeDefaultValue(param.Type)
+				fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, param.Value)
+			}
+		}
+
+	} else {
+		msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
+		return param.Value, utils.NewParserErr(filePath, nil, msgs)
+	}
+
+	return param.Value, errorParser
+}
+
+
 // Resolve input parameter (i.e., type, value, default)
 // Note: parameter values may set later (overridden) by an (optional) Deployment file
 func ResolveParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
@@ -818,20 +849,23 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	if !param.multiline {
 		// we have a single-line parameter declaration
 		// We need to identify parameter Type here for later validation
-		param.Type, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
+		//param.Type, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
+		//
+		//// In single-line format, the param's <value> can be a "Type name" and NOT an actual value.
+		//// if this is the case, we must detect it and set the value to the default for that type name.
+		//if param.Value!=nil && param.Type == "string" {
+		//	// The value is a <string>; now we must test if is the name of a known Type
+		//	if isValidParameterType(param.Value.(string)) {
+		//		// If the value is indeed the name of a Type, we must change BOTH its
+		//		// Type to be that type and its value to that Type's default value
+		//		param.Type = param.Value.(string)
+		//		param.Value = getTypeDefaultValue(param.Type)
+		//		fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, param.Value)
+		//		return param.Value, errorParser
+		//	}
+		//}
 
-		// In single-line format, the param's <value> can be a "Type name" and NOT an actual value.
-		// if this is the case, we must detect it and set the value to the default for that type name.
-		if param.Value!=nil && param.Type == "string" {
-			// The value is a <string>; now we must test if is the name of a known Type
-			if isValidParameterType(param.Value.(string)) {
-				// If the value is indeed the name of a Type, we must change BOTH its
-				// Type to be that type and its value to that Type's default value
-				param.Type = param.Value.(string)
-				param.Value = getTypeDefaultValue(param.Type)
-				return param.Value, errorParser
-			}
-		}
+		value, errorParser = resolveSingleLineParameter(paramName, param, filePath)
 
 	} else {
 		// we have a multi-line parameter declaration
@@ -853,7 +887,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 				msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
 				return value, utils.NewParserErr(filePath, nil, msgs)
 			}
-			fmt.Printf("INFO: Parameter.Type=[%v] valueType=[%v]\n", param.Type, valueType)
+			fmt.Printf("INFO: Parameter[%s] Type=[%v] valueType=[%v]\n", paramName, param.Type, valueType)
 		} else {
 			// if we do not have a value for the Parameter Type, use the Parameter Value's Type
 			param.Type = valueType
@@ -874,7 +908,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 		var parsed interface{}
 		errParser := json.Unmarshal([]byte(str), &parsed)
 		if errParser == nil {
-			fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, parsed)
+			fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, parsed)
 			return parsed, errParser
 		}
 	}
@@ -886,7 +920,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 		if _, ok := param.Value.(map[interface{}]interface{}); ok {
 			var temp map[string]interface{} =
 				utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
-			fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, temp)
+			fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, temp)
 			return temp, errorParser
 		}
 	}
@@ -900,7 +934,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 	// Trace Parameter struct after resolution
 	//dumpParameter(paramName, param, "AFTER")
-	fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, value)
+	fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, value)
 
 	return value, errorParser
 }
