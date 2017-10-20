@@ -53,7 +53,8 @@ func (dm *YAMLParser) ParseDeployment(deploymentPath string) (*YAML, error) {
         return &dplyyaml, utils.NewParserErr(deploymentPath, lines, msgs)
     }
 	dplyyaml.Filepath = deploymentPath
-	return &dplyyaml, nil
+    dplyyamlEnvVar := ReadEnvVariable(&dplyyaml)
+	return dplyyamlEnvVar, nil
 }
 
 func (dm *YAMLParser) convertErrorToLinesMsgs(errorString string) (lines []string, msgs []string) {
