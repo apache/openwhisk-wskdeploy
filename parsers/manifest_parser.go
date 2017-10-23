@@ -376,16 +376,20 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		// set the name of the action (which is the key)
 		action.Name = key
 
+		// Create action data object with CLI
+		wskaction := new(whisk.Action)
+		wskaction.Exec = new(whisk.Exec)
+
+		/*
+   		 *  Action.Function
+   		 */
 		//set action.Function to action.Location
 		//because Location is deprecated in Action entity
 		if action.Function == "" && action.Location != "" {
 			action.Function = action.Location
 		}
 
-		wskaction := new(whisk.Action)
 		//bind action, and exposed URL
-
-		wskaction.Exec = new(whisk.Exec)
 		if action.Function != "" {
 			filePath := strings.TrimRight(filePath, splitFilePath[len(splitFilePath)-1]) + action.Function
 
@@ -517,8 +521,13 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			keyVal.Key = name
 			keyVal.Value = utils.GetEnvVar(value)
 			keyValArr = append(keyValArr, keyVal)
+			// TODO{} Fix Annottions; they are not added to Action if web-export key is not present
+			// Need to assure annotations are added/set even if web-export is not set on the action.
 		}
 
+		/*
+  		 *  Web Export
+  		 */
 		// only set the webaction when the annotations are not empty.
 		if action.Webexport == "true" {
 			// TODO() why is this commented out?  we should now support annotations...
@@ -834,7 +843,7 @@ func resolveSingleLineParameter(paramName string, param *Parameter, filePath str
 		}
 
 	} else {
-		msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
+		msgs := []string{"Parameter [" + paramName + "] is not single-line format."}
 		return param.Value, utils.NewParserErr(filePath, nil, msgs)
 	}
 
@@ -879,7 +888,52 @@ func resolveMultiLineParameter(paramName string, param *Parameter, filePath stri
 		//if param.Type != valueType{
 		//	errorParser = utils.NewParameterTypeMismatchError("", param.Type, valueType )
 		//}
-        }
+        } else {
+		msgs := []string{"Parameter [" + paramName + "] is not multiline format."}
+		return param.Value, utils.NewParserErr(filePath, nil, msgs)
+	}
+
+
+return param.Value, errorParser
+}
+
+
+/*
+    resolveJSONParameter assure JSON data is converted to a map[string]{interface*} type.
+
+    This function handles the forms JSON data appears in:
+    1) a string containing JSON, which needs to be parsed into map[string]interface{}
+    2) is a map of JSON (but not a map[string]interface{}
+ */
+func resolveJSONParameter(paramName string, param *Parameter, value interface{}, filePath string) (interface{}, error) {
+	var errorParser error
+
+	if param.Type == "json" {
+		// Case 1: if user set parameter type to 'json' and the value's type is a 'string'
+		if str, ok := value.(string); ok {
+			var parsed interface{}
+			errParser := json.Unmarshal([]byte(str), &parsed)
+			if errParser == nil {
+				//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, parsed)
+				return parsed, errParser
+			}
+		}
+
+		// Case 2: value contains a map of JSON
+		// We must make sure the map type is map[string]interface{}; otherwise we cannot
+		// marshall it later on to serialize in the body of an HTTP request.
+		if( param.Value != nil && reflect.TypeOf(param.Value).Kind() == reflect.Map ) {
+			if _, ok := param.Value.(map[interface{}]interface{}); ok {
+				var temp map[string]interface{} =
+					utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
+				//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, temp)
+				return temp, errorParser
+			}
+		} // else TODO{}
+	} else {
+		msgs := []string{"Parameter [" + paramName + "] is not JSON format."}
+		return param.Value, utils.NewParserErr(filePath, nil, msgs)
+	}
 
 	return param.Value, errorParser
 }
@@ -914,32 +968,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 		value, errorParser = resolveSingleLineParameter(paramName, param, filePath)
 
 	} else {
-		//// we have a multi-line parameter declaration
-		//var valueType string
-		//
-		//// if we do not have a value, but have a default, use it for the value
-		//if param.Value == nil && param.Default != nil {
-		//	param.Value = param.Default
-		//}
-		//
-		//// TODO{} if we also have a type at this point, verify the parameter's value matches its type, if not error
-		//// Note: if either the value or default is in conflict with the type then this is an error
-		//valueType, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
-		//
-		//// if we have a declared parameter Type, assure that it is a known value
-		//if param.Type != "" {
-		//	if !isValidParameterType(param.Type){
-		//		// TODO() - move string to i18n
-		//		msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
-		//		return value, utils.NewParserErr(filePath, nil, msgs)
-		//	}
-		//	fmt.Printf("INFO: Parameter[%s] Type=[%v] valueType=[%v]\n", paramName, param.Type, valueType)
-		//} else {
-		//	// if we do not have a value for the Parameter Type, use the Parameter Value's Type
-		//	param.Type = valueType
-		//}
-		//
-		//value = param.Value
+
 		value, errorParser = resolveMultiLineParameter(paramName, param, filePath)
 	}
 
@@ -951,40 +980,20 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	}
 
 	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON
-
-	// Case 1: if user set parameter type to 'json' and the value's type is a 'string'
-	if str, ok := value.(string); ok && param.Type == "json" {
-		var parsed interface{}
-		errParser := json.Unmarshal([]byte(str), &parsed)
-		if errParser == nil {
-			fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, parsed)
-			return parsed, errParser
-		}
-	}
-
-	// Case 2: value contains a map of JSON
-	// We must make sure the map type is map[string]interface{}; otherwise we cannot
-	// marshall it later on to serialize in the body of an HTTP request.
-	if( param.Value != nil && reflect.TypeOf(param.Value).Kind() == reflect.Map ) {
-		if _, ok := param.Value.(map[interface{}]interface{}); ok {
-			var temp map[string]interface{} =
-				utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
-			fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, temp)
-			return temp, errorParser
-		}
-	}
+	value, errorParser = resolveJSONParameter(paramName, param, value, filePath)
 
 	// Default value to zero value for the Type
 	// Do NOT error/terminate as Value may be provided later by a Deployment file.
 	if value == nil {
 		value = getTypeDefaultValue(param.Type)
 		// @TODO(): Need warning message here to warn of default usage, support for warnings (non-fatal)
+		//msgs := []string{"Parameter [" + paramName + "] is not multiline format."}
+		//return param.Value, utils.NewParserErr(filePath, nil, msgs)
 	}
 
 	// Trace Parameter struct after resolution
 	//dumpParameter(paramName, param, "AFTER")
 	fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, value)
-
 	return value, errorParser
 }
 
