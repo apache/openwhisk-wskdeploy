@@ -322,17 +322,19 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
             }
         }
 
-        // validate outputs
-        // output payload is of type string and has a description
-        //if payload, ok := action.Outputs["payload"]; ok {
-        //    p := payload.(map[interface{}]interface{})
-        //    expectedResult = "string"
-        //    actualResult = p["type"].(string)
-        //    assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
-        //    expectedResult = "parameter dump"
-        //    actualResult = p["description"].(string)
-        //    assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
-        //}
+        // validate Outputs from this action
+        for output, param := range action.Outputs {
+            switch output {
+            case "payload":
+                expectedType := "string"
+                actualType := param.Type
+                assert.Equal(t, expectedType, actualType, "Expected Type: " + expectedType + ", but got: " + actualType)
+                expectedDesc := "parameter dump"
+                actualDesc := param.Description
+                assert.Equal(t, expectedDesc, actualDesc, "Expected " + expectedDesc + " but got " + actualDesc)
+
+            }
+        }
     }
 }
 

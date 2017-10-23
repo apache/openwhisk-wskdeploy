@@ -1050,6 +1050,7 @@ func dumpParameter(paramName string, param *Parameter, separator string) {
 	if param != nil {
 		fmt.Printf("\t\tParameter.Description: [%s]\n", param.Description)
 		fmt.Printf("\t\tParameter.Type: [%s]\n", param.Type)
+		fmt.Printf("\t\t--> Actual Type: [%T]\n", param.Value)
 		fmt.Printf("\t\tParameter.Value: [%v]\n", param.Value)
 		fmt.Printf("\t\tParameter.Default: [%v]\n", param.Default)
 	}
