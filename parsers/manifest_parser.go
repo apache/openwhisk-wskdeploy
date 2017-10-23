@@ -894,7 +894,7 @@ func resolveMultiLineParameter(paramName string, param *Parameter, filePath stri
 	}
 
 
-return param.Value, errorParser
+	return param.Value, errorParser
 }
 
 
