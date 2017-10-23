@@ -1,0 +1,6 @@
+actions:
+  testBadYAMLMissingRootKeyInManifest:
+    function: actions/hello.js
+
+# go-yaml/yaml "line 1: field actions not found in struct parsers.YAML".
+

@@ -200,7 +200,7 @@ func (wskdeploy *Wskdeploy) GetDeploymentObjects(manifestPath string, deployment
 		utils.Rts = utils.DefaultRts
 	}
 
-	//invokce ConstructDeploymentPlan to create the in memory objects for deployment
+	//invoke ConstructDeploymentPlan to create the in memory objects for deployment
 	err = deployer.ConstructDeploymentPlan()
 	if err != nil {
 		return nil,err

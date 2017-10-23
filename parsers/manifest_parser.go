@@ -376,16 +376,20 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		// set the name of the action (which is the key)
 		action.Name = key
 
+		// Create action data object with CLI
+		wskaction := new(whisk.Action)
+		wskaction.Exec = new(whisk.Exec)
+
+		/*
+   		 *  Action.Function
+   		 */
 		//set action.Function to action.Location
 		//because Location is deprecated in Action entity
 		if action.Function == "" && action.Location != "" {
 			action.Function = action.Location
 		}
 
-		wskaction := new(whisk.Action)
 		//bind action, and exposed URL
-
-		wskaction.Exec = new(whisk.Exec)
 		if action.Function != "" {
 			filePath := strings.TrimRight(filePath, splitFilePath[len(splitFilePath)-1]) + action.Function
 
@@ -419,7 +423,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					kind = "nodejs:6"
 					errStr := wski18n.T("Unsupported runtime type, set to nodejs")
 					whisk.Debug(whisk.DbgWarn, errStr)
-					//add the user input kind here
+					// TODO() add the user input kind here if interactive
 				}
 
 				wskaction.Exec.Kind = kind
@@ -441,6 +445,9 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 		}
 
+		/*
+ 		 *  Action.Runtime
+ 		 */
 		if action.Runtime != "" {
 			if utils.CheckExistRuntime(action.Runtime, utils.Rts) {
 				wskaction.Exec.Kind = action.Runtime
@@ -458,11 +465,13 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			wskaction.Exec.Main = action.Main
 		}
 
+		/*
+		 *  Action.Inputs
+		 */
 		keyValArr := make(whisk.KeyValueArr, 0)
 		for name, param := range action.Inputs {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-
 			keyVal.Value, errorParser = ResolveParameter(name, &param, filePath)
 
 			if errorParser != nil {
@@ -474,19 +483,51 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			}
 		}
 
+		// if we have successfully parser valid key/value parameters
 		if len(keyValArr) > 0 {
 			wskaction.Parameters = keyValArr
 		}
 
+		/*
+ 		 *  Action.Outputs
+		 */
+		keyValArr = make(whisk.KeyValueArr, 0)
+		for name, param := range action.Outputs {
+			var keyVal whisk.KeyValue
+			keyVal.Key = name
+			keyVal.Value, errorParser = ResolveParameter(name, &param, filePath)
+
+			// short circuit on error
+			if errorParser != nil {
+				return nil, errorParser
+			}
+
+			if keyVal.Value != nil {
+				keyValArr = append(keyValArr, keyVal)
+			}
+		}
+
+		// TODO{} add outputs as annotations (work to discuss officially supporting for compositions)
+		if len(keyValArr) > 0 {
+			//wskaction.Annotations  // TBD
+		}
+
+		/*
+ 		 *  Action.Annotations
+ 		 */
 		keyValArr = make(whisk.KeyValueArr, 0)
 		for name, value := range action.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 			keyVal.Value = utils.GetEnvVar(value)
-
 			keyValArr = append(keyValArr, keyVal)
+			// TODO{} Fix Annottions; they are not added to Action if web-export key is not present
+			// Need to assure annotations are added/set even if web-export is not set on the action.
 		}
 
+		/*
+  		 *  Web Export
+  		 */
 		// only set the webaction when the annotations are not empty.
 		if action.Webexport == "true" {
 			// TODO() why is this commented out?  we should now support annotations...
@@ -497,7 +538,9 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			}
 		}
 
-		//set limitations
+		/*
+ 		 *  Action.Limits
+ 		 */
 		if action.Limits!=nil {
 			wsklimits :=  new(whisk.Limits)
 			if utils.LimitsTimeoutValidation(action.Limits.Timeout) {
@@ -769,12 +812,149 @@ func ResolveParamTypeFromValue(name string, value interface{}, filePath string) 
 	return paramType, err
 }
 
-// Resolve input parameter (i.e., type, value, default)
-// Note: parameter values may set later (overriddNen) by an (optional) Deployment file
+
+/*
+    resolveSingleLineParameter assures that a Parameter's Type is correctly identified and set from its Value.
+
+    Additionally, this function:
+
+    - detects if the parameter value contains the name of a valid OpenWhisk parameter types. if so, the
+      - param.Type is set to detected OpenWhisk parameter type.
+      - param.Value is set to the zero (default) value for that OpenWhisk parameter type.
+ */
+func resolveSingleLineParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
+	var errorParser error
+
+	if !param.multiline {
+		// We need to identify parameter Type here for later validation
+		param.Type, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
+
+		// In single-line format, the param's <value> can be a "Type name" and NOT an actual value.
+		// if this is the case, we must detect it and set the value to the default for that type name.
+		if param.Value != nil && param.Type == "string" {
+			// The value is a <string>; now we must test if is the name of a known Type
+			if isValidParameterType(param.Value.(string)) {
+				// If the value is indeed the name of a Type, we must change BOTH its
+				// Type to be that type and its value to that Type's default value
+				param.Type = param.Value.(string)
+				param.Value = getTypeDefaultValue(param.Type)
+				fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, param.Value)
+			}
+		}
+
+	} else {
+		msgs := []string{"Parameter [" + paramName + "] is not single-line format."}
+		return param.Value, utils.NewParserErr(filePath, nil, msgs)
+	}
+
+	return param.Value, errorParser
+}
+
+/*
+    resolveMultiLineParameter assures that the values for Parameter Type and Value are properly set and are valid.
+
+    Additionally, this function:
+    - uses param.Default as param.Value if param.Value is not provided
+    - uses the actual param.Value data type for param.type if param.Type is not provided
+
+ */
+func resolveMultiLineParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
+	var errorParser error
+
+	if param.multiline {
+		var valueType string
+
+		// if we do not have a value, but have a default, use it for the value
+		if param.Value == nil && param.Default != nil {
+			param.Value = param.Default
+		}
+
+		// Note: if either the value or default is in conflict with the type then this is an error
+		valueType, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
+
+		// if we have a declared parameter Type, assure that it is a known value
+		if param.Type != "" {
+			if !isValidParameterType(param.Type) {
+				// TODO() - move string to i18n
+				msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
+				return param.Value, utils.NewParserErr(filePath, nil, msgs)
+			}
+		} else {
+			// if we do not have a value for the Parameter Type, use the Parameter Value's Type
+			param.Type = valueType
+		}
+
+		// TODO{} if the declared and actual parameter type conflict, generate TypeMismatch error
+		//if param.Type != valueType{
+		//	errorParser = utils.NewParameterTypeMismatchError("", param.Type, valueType )
+		//}
+        } else {
+		msgs := []string{"Parameter [" + paramName + "] is not multiline format."}
+		return param.Value, utils.NewParserErr(filePath, nil, msgs)
+	}
+
+
+	return param.Value, errorParser
+}
+
+
+/*
+    resolveJSONParameter assure JSON data is converted to a map[string]{interface*} type.
+
+    This function handles the forms JSON data appears in:
+    1) a string containing JSON, which needs to be parsed into map[string]interface{}
+    2) is a map of JSON (but not a map[string]interface{}
+ */
+func resolveJSONParameter(paramName string, param *Parameter, value interface{}, filePath string) (interface{}, error) {
+	var errorParser error
+
+	if param.Type == "json" {
+		// Case 1: if user set parameter type to 'json' and the value's type is a 'string'
+		if str, ok := value.(string); ok {
+			var parsed interface{}
+			errParser := json.Unmarshal([]byte(str), &parsed)
+			if errParser == nil {
+				//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, parsed)
+				return parsed, errParser
+			}
+		}
+
+		// Case 2: value contains a map of JSON
+		// We must make sure the map type is map[string]interface{}; otherwise we cannot
+		// marshall it later on to serialize in the body of an HTTP request.
+		if( param.Value != nil && reflect.TypeOf(param.Value).Kind() == reflect.Map ) {
+			if _, ok := param.Value.(map[interface{}]interface{}); ok {
+				var temp map[string]interface{} =
+					utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
+				//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, temp)
+				return temp, errorParser
+			}
+		} // else TODO{}
+	} else {
+		msgs := []string{"Parameter [" + paramName + "] is not JSON format."}
+		return param.Value, utils.NewParserErr(filePath, nil, msgs)
+	}
+
+	return param.Value, errorParser
+}
+
+/*
+    ResolveParameter assures that the Parameter structure's values are correctly filled out for
+    further processing.  This includes special processing for
+
+    - single-line format parameters
+      - deriving missing param.Type from param.Value
+      - resolving case where param.Value contains a valid Parameter type name
+    - multi-line format parameters:
+      - assures that param.Value is set while taking into account param.Default
+      - validating param.Type
+
+    Note: parameter values may set later (overridden) by an (optional) Deployment file
+
+ */
 func ResolveParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
 
 	var errorParser error
-	var tempType string
 	// default parameter value to empty string
 	var value interface{} = ""
 
@@ -783,83 +963,41 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 	// Parameters can be single OR multi-line declarations which must be processed/validated differently
 	if !param.multiline {
-		// we have a single-line parameter declaration
-		// We need to identify parameter Type here for later validation
-		param.Type, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
 
-		// In single-line format, the param's <value> can be a "Type name" and NOT an actual value.
-		// if this is the case, we must detect it and set the value to the default for that type name.
-		if param.Value!=nil && param.Type == "string" {
-			// The value is a <string>; now we must test if is the name of a known Type
-			var tempValue = param.Value.(string)
-			if isValidParameterType(tempValue) {
-				// If the value is indeed the name of a Type, we must change BOTH its
-				// Type to be that type and its value to that Type's default value
-				// (which happens later by setting it to nil here
-				param.Type = param.Value.(string)
-				param.Value = nil
-			}
-		}
+		// This function will assure that param.Value and param.Type are correctly set
+		value, errorParser = resolveSingleLineParameter(paramName, param, filePath)
 
 	} else {
-		// we have a multi-line parameter declaration
 
-		// if we do not have a value, but have a default, use it for the value
-		if param.Value == nil && param.Default != nil {
-			param.Value = param.Default
-		}
-
-		// if we also have a type at this point, verify value (and/or default) matches type, if not error
-		// Note: if either the value or default is in conflict with the type then this is an error
-		tempType, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
-
-		// if we do not have a value or default, but have a type, find its default and use it for the value
-		if param.Type != "" && !isValidParameterType(param.Type) {
-			// TODO() - move string to i18n
-			msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
-			return value, utils.NewParserErr(filePath, nil, msgs)
-		} else if param.Type == "" {
-			param.Type = tempType
-		}
+		value, errorParser = resolveMultiLineParameter(paramName, param, filePath)
 	}
 
-	// Make sure the parameter's value is a valid, non-empty string and startsWith '$" (dollar) sign
-	value = utils.GetEnvVar(param.Value)
+	// String value pre-processing (interpolation)
+	// See if we have any Environment Variable replacement within the parameter's value
+
+	// Make sure the parameter's value is a valid, non-empty string
+	if ( param.Value != nil && param.Type == "string") {
+		// perform $ notation replacement on string if any exist
+		value = utils.GetEnvVar(param.Value)
+	}
 
 	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON
+	if param.Type == "json" {
+		value, errorParser = resolveJSONParameter(paramName, param, value, filePath)
+        }
 
-	// Case 1: if user set parameter type to 'json' and the value's type is a 'string'
-	if str, ok := value.(string); ok && param.Type == "json" {
-		var parsed interface{}
-		err := json.Unmarshal([]byte(str), &parsed)
-		if err == nil {
-			fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, parsed)
-			return parsed, err
-		}
-	}
-
-	// Case 2: value contains a map of JSON
-	// We must make sure the map type is map[string]interface{}; otherwise we cannot
-	// marshall it later on to serialize in the body of an HTTP request.
-	if( param.Value != nil && reflect.TypeOf(param.Value).Kind() == reflect.Map ) {
-		if _, ok := param.Value.(map[interface{}]interface{}); ok {
-			var temp map[string]interface{} =
-				utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
-			fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, temp)
-			return temp, errorParser
-		}
-	}
-
-	// Default to an empty string, do NOT error/terminate as Value may be provided later bu a Deployment file.
+	// Default value to zero value for the Type
+	// Do NOT error/terminate as Value may be provided later by a Deployment file.
 	if value == nil {
 		value = getTypeDefaultValue(param.Type)
 		// @TODO(): Need warning message here to warn of default usage, support for warnings (non-fatal)
+		//msgs := []string{"Parameter [" + paramName + "] is not multiline format."}
+		//return param.Value, utils.NewParserErr(filePath, nil, msgs)
 	}
 
 	// Trace Parameter struct after resolution
 	//dumpParameter(paramName, param, "AFTER")
-	//fmt.Printf("EXIT: Parameter type=[%v] value=[%v]\n", param.Type, value)
-
+	//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, value)
 	return value, errorParser
 }
 
@@ -912,6 +1050,7 @@ func dumpParameter(paramName string, param *Parameter, separator string) {
 	if param != nil {
 		fmt.Printf("\t\tParameter.Description: [%s]\n", param.Description)
 		fmt.Printf("\t\tParameter.Type: [%s]\n", param.Type)
+		fmt.Printf("\t\t--> Actual Type: [%T]\n", param.Value)
 		fmt.Printf("\t\tParameter.Value: [%v]\n", param.Value)
 		fmt.Printf("\t\tParameter.Default: [%v]\n", param.Default)
 	}

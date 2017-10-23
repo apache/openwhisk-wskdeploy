@@ -1,0 +1,12 @@
+package:
+  name: trigger_compose
+  triggers:
+    trigger1:
+      inputs:
+        name: string
+        place: string
+    trigger2:
+      feed: myfeed
+      inputs:
+        name: myname
+        place: myplace

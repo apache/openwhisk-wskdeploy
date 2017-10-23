@@ -1,0 +1,8 @@
+packages:
+  testBadYAMLInvalidKeyMappingValueInManifest:
+    version: 1.0
+    license: Apache-2.0
+      actions: test
+
+# go-yaml/yaml "line 4: mapping values are not allowed in this context".
+

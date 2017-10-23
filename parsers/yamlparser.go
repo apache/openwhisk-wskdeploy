@@ -58,7 +58,7 @@ type Action struct {
 	Namespace  string                 `yaml:"namespace"`  //used in deployment.yaml
 	Credential string                 `yaml:"credential"` //used in deployment.yaml
 	Inputs     map[string]Parameter   `yaml:"inputs"`     //used in both manifest.yaml and deployment.yaml
-	Outputs    map[string]interface{} `yaml:"outputs"`    //used in manifest.yaml
+	Outputs    map[string]Parameter   `yaml:"outputs"`    //used in manifest.yaml
 	//mapping to wsk.Action.Name
 	Name        string
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`

@@ -1,5 +1,5 @@
 packages:
-  manifest6:
+  validateParams:
     actions:
       action1:
         inputs:

@@ -1,5 +1,5 @@
 packages:
-  BadYAML:
+  testBadYAMLInvalidCommentInManifest:
     actions:
       # helloworld action in NodeJS
       helloNodejs:

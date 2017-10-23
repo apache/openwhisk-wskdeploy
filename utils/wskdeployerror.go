@@ -29,6 +29,7 @@ const (
     INVALID_YAML_INPUT = "Invalid input of Yaml file"
     INVALID_YAML_FORMAT = "Invalid input of Yaml format"
     OPENWHISK_CLIENT_ERROR = "OpenWhisk Client Error"
+    PARAMETER_TYPE_MISMATCH = "Parameter type mismatch error"
     MANIFEST_NOT_FOUND = INVALID_YAML_INPUT  // TODO{} This should be a unique message.
     UNKNOWN = "Unknown"
     UNKNOWN_VALUE = "Unknown value"
@@ -89,7 +90,10 @@ func NewErrorManifestFileNotFound(errMessage string) *ErrorManifestFileNotFound 
 }
 
 func (e *ErrorManifestFileNotFound) Error() string {
-    return fmt.Sprintf("%s [%d]: %s =====> %s\n", e.FileName, e.LineNum, e.errorType, e.Message)
+    if e.errorType == "" {
+        return fmt.Sprintf("%s [%d]: %s\n", e.FileName, e.LineNum, e.Message)
+    }
+    return fmt.Sprintf("%s [%d]: %s ==> %s\n", e.FileName, e.LineNum, e.errorType, e.Message)
 }
 
 type InputYamlFileError struct {
@@ -113,6 +117,9 @@ func (e *InputYamlFileError) SetErrorType(errorType string) {
 }
 
 func (e *InputYamlFileError) Error() string {
+    if e.errorType == "" {
+        return fmt.Sprintf("%s [%d]: %s\n", e.FileName, e.LineNum, e.Message)
+    }
     return fmt.Sprintf("%s [%d]: %s %s\n", e.FileName, e.LineNum, e.errorType, e.Message)
 }
 
@@ -198,4 +205,34 @@ func (e *ParserErr) Error() string {
         result[index] = s
     }
     return fmt.Sprintf("\n==> %s [%d]: Failed to parse the yaml file: %s: \n%s", fn, e.LineNum, e.YamlFile, strings.Join(result, "\n"))
+}
+
+type ParameterTypeMismatchError struct {
+    BaseErr
+    errorType string
+    expectedType string
+    actualType string
+}
+
+func (e *ParameterTypeMismatchError) Error() string {
+    if e.errorType == "" {
+        return fmt.Sprintf("%s [%d]: %s\n", e.FileName, e.LineNum, e.Message)
+    }
+    return fmt.Sprintf("%s [%d]: %s ==> %s\n", e.FileName, e.LineNum, e.errorType, e.Message)
+}
+
+func NewParameterTypeMismatchError(errMessage string, expectedType string, actualType string) *ParameterTypeMismatchError {
+    _, fn, lineNum, _ := runtime.Caller(1)
+    var err = &ParameterTypeMismatchError{
+        // TODO{} add i18n
+        //errorType: wski18n.T(PARAMETER_TYPE_MISMATCH),
+        errorType: PARAMETER_TYPE_MISMATCH,
+        expectedType: expectedType,
+        actualType: actualType,
+    }
+
+    err.SetFileName(filepath.Base(fn))
+    err.SetLineNum(lineNum)
+    err.SetMessage(errMessage)
+    return err
 }

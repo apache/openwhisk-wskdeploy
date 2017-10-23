@@ -223,23 +223,8 @@ func TestUnmarshalForMissingPackage(t *testing.T) {
 
 /*
  Test 7: validate manifest_parser:ParseManifest() method for multiline parameters
- manifest_parser should be able to parse all different mutliline combinations of
- inputs section including:
-
- case 1: value only
- param:
-    value: <value>
- case 2: type only
- param:
-    type: <type>
- case 3: type and value only
- param:
-    type: <type>
-    value: <value>
- case 4: default value
- param:
-    type: <type>
-    default: <default value>
+ manifest_parser should be able to parse all different multiline combinations of
+ inputs section.
 */
 func TestParseManifestForMultiLineParams(t *testing.T) {
     // manifest file is located under ../tests folder
@@ -337,16 +322,18 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
             }
         }
 
-        // validate outputs
-        // output payload is of type string and has a description
-        if payload, ok := action.Outputs["payload"]; ok {
-            p := payload.(map[interface{}]interface{})
-            expectedResult = "string"
-            actualResult = p["type"].(string)
-            assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
-            expectedResult = "parameter dump"
-            actualResult = p["description"].(string)
-            assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        // validate Outputs from this action
+        for output, param := range action.Outputs {
+            switch output {
+            case "payload":
+                expectedType := "string"
+                actualType := param.Type
+                assert.Equal(t, expectedType, actualType, "Expected Type: " + expectedType + ", but got: " + actualType)
+                expectedDesc := "parameter dump"
+                actualDesc := param.Description
+                assert.Equal(t, expectedDesc, actualDesc, "Expected " + expectedDesc + " but got " + actualDesc)
+
+            }
         }
     }
 }
@@ -387,7 +374,7 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
         actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
         assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
 
-        // validate inputs to this action
+        // validate Inputs to this action
         for input, param := range action.Inputs {
             switch input {
             case "param_simple_string":
@@ -445,16 +432,18 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
             }
         }
 
-        // validate outputs
-        // output payload is of type string and has a description
-        if payload, ok := action.Outputs["payload"]; ok {
-            p := payload.(map[interface{}]interface{})
-            expectedResult = "string"
-            actualResult = p["type"].(string)
-            assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
-            expectedResult = "parameter dump"
-            actualResult = p["description"].(string)
-            assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        // validate Outputs from this action
+        for output, param := range action.Outputs {
+            switch output {
+            case "payload":
+                expectedResult = "string"
+                actualResult = param.Type
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+
+                expectedResult = "parameter dump"
+                actualResult = param.Description
+                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+            }
         }
     }
 }
@@ -530,6 +519,7 @@ func TestComposeActionsForInvalidRuntime(t *testing.T) {
             _, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
             // (TODO) uncomment the following test case after issue #307 is fixed
             // (TODO) its failing right now as we are lacking check on invalid runtime
+            // TODO() https://github.com/apache/incubator-openwhisk-wskdeploy/issues/608
             // assert.NotNil(t, err, "Invalid runtime, ComposeActions should report an error")
             // (TODO) remove this print statement after uncommenting above test case
             fmt.Println(err)
@@ -545,7 +535,12 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
     manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
     // read and parse manifest.yaml file
     p := NewYAMLParser()
-    m, _ := p.ParseManifest(manifestFile)
+    m, err := p.ParseManifest(manifestFile)
+
+    if err != nil {
+        assert.Fail(t, "Failed to parse manifest: " + manifestFile )
+    }
+
     actions, err := p.ComposeActionsFromAllPackages(m, manifestFile)
 
     if err == nil {
@@ -699,7 +694,12 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
     manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
     // read and parse manifest.yaml file
     p := NewYAMLParser()
-    m, _ := p.ParseManifest(manifestFile)
+    m, err := p.ParseManifest(manifestFile)
+
+    if err != nil {
+        assert.Fail(t, "Failed to parse manifest: " + manifestFile )
+    }
+
     actions, err := p.ComposeActionsFromAllPackages(m, manifestFile)
 
     if err == nil {
@@ -954,7 +954,11 @@ func TestParseManifestForJSONParams(t *testing.T) {
     // manifest file is located under ../tests folder
     manifestFile := "../tests/dat/manifest_validate_json_params.yaml"
     // read and parse manifest.yaml file
-    m, _ := NewYAMLParser().ParseManifest(manifestFile)
+    m, err := NewYAMLParser().ParseManifest(manifestFile)
+
+    if err != nil {
+        assert.Fail(t, "Failed to parse manifest: " + manifestFile )
+    }
 
     // validate package name should be "validate"
     packageName := "validate_json"
@@ -1017,12 +1021,15 @@ func TestParseManifestForJSONParams(t *testing.T) {
             }
         }
 
-        // TODO{} We do not yet support json outputs
-        // validate outputs
-        // output payload is of type string and has a description
-        //if payload, ok := action.Outputs["fellowship"]; ok {
-        //    p := payload.(map[interface{}]interface{})
-        //}
+        // validate Outputs from this action
+        for output, param := range action.Outputs {
+            switch output {
+            case "fellowship":
+                expectedType := "json"
+                actualType := param.Type
+                assert.Equal(t, expectedType, actualType, "Expected Type: " + expectedType + ", but got: " + actualType)
+            }
+        }
     }
 }
 
@@ -1108,30 +1115,15 @@ func TestComposeSequences(t *testing.T) {
 }
 
 func TestComposeTriggers(t *testing.T) {
-    data := `package:
-  name: helloworld
-  triggers:
-    trigger1:
-      inputs:
-        name: string
-        place: string
-    trigger2:
-      feed: myfeed
-      inputs:
-        name: myname
-        place: myplace`
-    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-    if err != nil {
-        assert.Fail(t, "Failed to create temp file")
-    }
-    defer func() {
-        tmpfile.Close()
-        os.Remove(tmpfile.Name())
-    }()
-    // read and parse manifest.yaml file
+    // read and parse manifest.yaml file located under ../tests folder
+    manifestFile := "../tests/dat/manifest_data_compose_triggers.yaml"
     p := NewYAMLParser()
-    m, _ := p.ParseManifest(tmpfile.Name())
-    triggerList, err := p.ComposeTriggersFromAllPackages(m, tmpfile.Name())
+    m, err := p.ParseManifest(manifestFile)
+    if err != nil {
+        assert.Fail(t, "Failed to parse manifest: " + manifestFile )
+    }
+
+    triggerList, err := p.ComposeTriggersFromAllPackages(m, manifestFile)
     if err != nil {
         assert.Fail(t, "Failed to compose trigger")
     }
@@ -1315,65 +1307,42 @@ func TestComposeDependencies(t *testing.T) {
     }
 }
 
-func TestInvalidKeyManifestYaml(t *testing.T) {
-    data := `package:
-  name: helloWorldTriggerRule
-  version: 1.0
-  invalidKey: test
-  license: Apache-2.0`
-    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-    if err != nil {
-        assert.Fail(t, "Failed to create temp file")
-    }
-    defer func() {
-        tmpfile.Close()
-        os.Remove(tmpfile.Name())
-    }()
+func TestBadYAMLInvalidPackageKeyInManifest(t *testing.T) {
+    // read and parse manifest.yaml file located under ../tests folder
     p := NewYAMLParser()
-    _, err = p.ParseManifest(tmpfile.Name())
+    _, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_invalid_package_key.yaml")
+
     assert.NotNil(t, err)
     // go-yaml/yaml prints the wrong line number for mapping values. It should be 4.
     assert.Contains(t, err.Error(), "line 2: field invalidKey not found in struct parsers.Package")
 }
 
-func TestMappingValueManifestYaml(t *testing.T) {
-    data := `package:
-  name: helloWorldTriggerRule
-  version: 1.0
-  license: Apache-2.0
-    actions: test`
-    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-    if err != nil {
-        assert.Fail(t, "Failed to create temp file")
-    }
-    defer func() {
-        tmpfile.Close()
-        os.Remove(tmpfile.Name())
-    }()
+func TestBadYAMLInvalidKeyMappingValueInManifest(t *testing.T) {
+    // read and parse manifest.yaml file located under ../tests folder
     p := NewYAMLParser()
-    _, err = p.ParseManifest(tmpfile.Name())
+    _, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_invalid_key_mapping_value.yaml")
+
     assert.NotNil(t, err)
     // go-yaml/yaml prints the wrong line number for mapping values. It should be 5.
     assert.Contains(t, err.Error(), "line 4: mapping values are not allowed in this context")
 }
 
-func TestMissingRootValueManifestYaml(t *testing.T) {
-    data := `actions:
-  helloNodejs:
-    function: actions/hello.js`
-    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-    if err != nil {
-        assert.Fail(t, "Failed to create temp file")
-    }
-    defer func() {
-        tmpfile.Close()
-        os.Remove(tmpfile.Name())
-    }()
+func TestBadYAMLMissingRootKeyInManifest(t *testing.T) {
+    // read and parse manifest.yaml file located under ../tests folder
     p := NewYAMLParser()
-    _, err = p.ParseManifest(tmpfile.Name())
+    _, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_missing_root_key.yaml")
+
     assert.NotNil(t, err)
     assert.Contains(t, err.Error(), "line 1: field actions not found in struct parsers.YAML")
+}
 
+func TestBadYAMLInvalidCommentInManifest(t *testing.T) {
+    // read and parse manifest.yaml file located under ../tests folder
+    p := NewYAMLParser()
+    _, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_invalid_comment.yaml")
+
+    assert.NotNil(t, err)
+    assert.Contains(t, err.Error(), "line 13: could not find expected ':'")
 }
 
 // validate manifest_parser:Unmarshal() method for package in manifest YAML
@@ -1552,7 +1521,7 @@ func TestParseYAML_param(t *testing.T) {
 		panic(err)
 	}
 
-        packageName := "manifest6"
+        packageName := "validateParams"
 
 	assert.Equal(t, 1, len(manifest.Packages[packageName].Actions), "Get action list failed.")
 	for action_name := range manifest.Packages[packageName].Actions {
