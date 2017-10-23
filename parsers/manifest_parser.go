@@ -972,7 +972,9 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 		value, errorParser = resolveMultiLineParameter(paramName, param, filePath)
 	}
 
+	// String value pre-processing (interpolation)
 	// See if we have any Environment Variable replacement within the parameter's value
+
 	// Make sure the parameter's value is a valid, non-empty string
 	if ( param.Value != nil && param.Type == "string") {
 		// perform $ notation replacement on string if any exist
