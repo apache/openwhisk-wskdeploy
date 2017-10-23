@@ -533,7 +533,12 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
     manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
     // read and parse manifest.yaml file
     p := NewYAMLParser()
-    m, _ := p.ParseManifest(manifestFile)
+    m, err := p.ParseManifest(manifestFile)
+
+    if err != nil {
+        assert.Fail(t, "Failed to parse manifest: " + manifestFile )
+    }
+
     actions, err := p.ComposeActionsFromAllPackages(m, manifestFile)
 
     if err == nil {
@@ -687,7 +692,12 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
     manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
     // read and parse manifest.yaml file
     p := NewYAMLParser()
-    m, _ := p.ParseManifest(manifestFile)
+    m, err := p.ParseManifest(manifestFile)
+
+    if err != nil {
+        assert.Fail(t, "Failed to parse manifest: " + manifestFile )
+    }
+
     actions, err := p.ComposeActionsFromAllPackages(m, manifestFile)
 
     if err == nil {
@@ -942,7 +952,11 @@ func TestParseManifestForJSONParams(t *testing.T) {
     // manifest file is located under ../tests folder
     manifestFile := "../tests/dat/manifest_validate_json_params.yaml"
     // read and parse manifest.yaml file
-    m, _ := NewYAMLParser().ParseManifest(manifestFile)
+    m, err := NewYAMLParser().ParseManifest(manifestFile)
+
+    if err != nil {
+        assert.Fail(t, "Failed to parse manifest: " + manifestFile )
+    }
 
     // validate package name should be "validate"
     packageName := "validate_json"
@@ -1099,30 +1113,15 @@ func TestComposeSequences(t *testing.T) {
 }
 
 func TestComposeTriggers(t *testing.T) {
-    data := `package:
-  name: helloworld
-  triggers:
-    trigger1:
-      inputs:
-        name: string
-        place: string
-    trigger2:
-      feed: myfeed
-      inputs:
-        name: myname
-        place: myplace`
-    tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-    if err != nil {
-        assert.Fail(t, "Failed to create temp file")
-    }
-    defer func() {
-        tmpfile.Close()
-        os.Remove(tmpfile.Name())
-    }()
-    // read and parse manifest.yaml file
+    // read and parse manifest.yaml file located under ../tests folder
+    manifestFile := "../tests/dat/manifest_data_compose_triggers.yaml"
     p := NewYAMLParser()
-    m, _ := p.ParseManifest(tmpfile.Name())
-    triggerList, err := p.ComposeTriggersFromAllPackages(m, tmpfile.Name())
+    m, err := p.ParseManifest(manifestFile)
+    if err != nil {
+        assert.Fail(t, "Failed to parse manifest: " + manifestFile )
+    }
+
+    triggerList, err := p.ComposeTriggersFromAllPackages(m, manifestFile)
     if err != nil {
         assert.Fail(t, "Failed to compose trigger")
     }
