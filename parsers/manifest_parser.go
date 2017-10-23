@@ -974,13 +974,15 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 	// See if we have any Environment Variable replacement within the parameter's value
 	// Make sure the parameter's value is a valid, non-empty string
-	if( param.Value != nil && param.Type == "string"){
+	if ( param.Value != nil && param.Type == "string") {
 		// perform $ notation replacement on string if any exist
 		value = utils.GetEnvVar(param.Value)
 	}
 
 	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON
-	value, errorParser = resolveJSONParameter(paramName, param, value, filePath)
+	if param.Type == "json" {
+		value, errorParser = resolveJSONParameter(paramName, param, value, filePath)
+        }
 
 	// Default value to zero value for the Type
 	// Do NOT error/terminate as Value may be provided later by a Deployment file.
