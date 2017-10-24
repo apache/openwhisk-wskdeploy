@@ -121,7 +121,7 @@ func (wskdeploy *Wskdeploy) RunCommand(s ...string) (string, error) {
 	var returnError error = nil
 	if err != nil {
 		if len(errb.String()) > 0 {
-			returnError = utils.NewTestCaseError(errb.String())
+			returnError = utils.NewCommandError(errb.String())
 		} else {
 			returnError = err
 		}

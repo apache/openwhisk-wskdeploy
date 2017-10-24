@@ -34,30 +34,26 @@ const (
     UNKNOWN = "Unknown"
     UNKNOWN_VALUE = "Unknown value"
     LINE = "line"
+
+    ERROR_COMMAND_FAILED = "ERROR_COMMAND_FAILED"
+    ERROR_MANIFEST_FILE_NOT_FOUND = "ERROR_MANIFEST_FILE_NOT_FOUND"
 )
 
-type TestCaseError struct {
-    errorMessage string
-}
-
-func NewTestCaseError(errorMessage string) *TestCaseError {
-    return &TestCaseError{
-        errorMessage: errorMessage,
-    }
-}
-
-func (e *TestCaseError) Error() string {
-    return e.errorMessage
-}
-
+/*
+ * BaseError
+ */
 type BaseErr struct {
-    FileName string
-    LineNum  int
-    Message  string
+    ErrorType   string
+    FileName    string
+    LineNum     int
+    Message     string
 }
 
 func (e *BaseErr) Error() string {
-    return fmt.Sprintf("%s [%d]: %s\n", e.FileName, e.LineNum, e.Message)
+    if e.ErrorType == "" {
+        return fmt.Sprintf("%s [%d]: %s\n", e.FileName, e.LineNum, e.Message)
+    }
+    return fmt.Sprintf("%s [%d]: [%s]: %s\n", e.FileName, e.LineNum, e.ErrorType, e.Message)
 }
 
 func (e *BaseErr) SetFileName(fileName string) {
@@ -72,6 +68,26 @@ func (e *BaseErr) SetMessage(message string) {
     e.Message = message
 }
 
+/*
+ * CommandError
+ */
+type CommandError struct {
+    BaseErr
+}
+
+func NewCommandError(errorMessage string) *CommandError {
+    return &CommandError{
+        BaseErr.Message: errorMessage,
+    }
+}
+
+func (e *CommandError) Error() string {
+    return e.Message
+}
+
+/*
+ * ManifestFileNotFoundError
+ */
 type ErrorManifestFileNotFound struct {
     BaseErr
     errorType string
@@ -82,7 +98,6 @@ func NewErrorManifestFileNotFound(errMessage string) *ErrorManifestFileNotFound 
     var err = &ErrorManifestFileNotFound{
         errorType: wski18n.T(MANIFEST_NOT_FOUND),
     }
-    //err.SetFileName(fn)
     err.SetFileName(filepath.Base(fn))
     err.SetLineNum(lineNum)
     err.SetMessage(errMessage)
