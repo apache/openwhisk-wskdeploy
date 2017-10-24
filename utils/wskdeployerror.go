@@ -20,7 +20,7 @@ package utils
 import (
     "fmt"
     "runtime"
-    "github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+    //"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
     "strings"
     "path/filepath"
 )
@@ -37,6 +37,8 @@ const (
 
     ERROR_COMMAND_FAILED = "ERROR_COMMAND_FAILED"
     ERROR_MANIFEST_FILE_NOT_FOUND = "ERROR_MANIFEST_FILE_NOT_FOUND"
+    ERROR_YAML_FILE_ERROR = "ERROR_YAML_FILE_ERROR"
+    ERROR_YAML_FORMAT_ERROR = "ERROR_YAML_FORMAT_ERROR"
 )
 
 /*
@@ -68,21 +70,37 @@ func (e *BaseErr) SetMessage(message string) {
     e.Message = message
 }
 
+func (e *BaseErr) SetErrorType(errorType string) {
+    e.ErrorType = errorType
+}
+
+// func Caller(skip int) (pc uintptr, file string, line int, ok bool)
+func (e *BaseErr) SetCallerByStackFrameSkip(skip int) {
+    _, fn, lineNum, _ := runtime.Caller(skip)
+    e.SetFileName(filepath.Base(fn))
+    e.SetLineNum(lineNum)
+}
+
 /*
  * CommandError
  */
 type CommandError struct {
     BaseErr
+    Command string
 }
 
-func NewCommandError(errorMessage string) *CommandError {
-    return &CommandError{
-        BaseErr.Message: errorMessage,
+func NewCommandError(cmd string, errorMessage string) *CommandError {
+    var err = &CommandError{
+        Command: cmd,
     }
+    err.SetCallerByStackFrameSkip(2)
+    err.SetErrorType(ERROR_COMMAND_FAILED)
+    err.SetMessage(cmd + ": " + errorMessage)
+    return err
 }
 
 func (e *CommandError) Error() string {
-    return e.Message
+    return e.BaseErr.Error()
 }
 
 /*
@@ -90,88 +108,82 @@ func (e *CommandError) Error() string {
  */
 type ErrorManifestFileNotFound struct {
     BaseErr
-    errorType string
+    YAMLFilename string
 }
 
 func NewErrorManifestFileNotFound(errMessage string) *ErrorManifestFileNotFound {
-    _, fn, lineNum, _ := runtime.Caller(1)
     var err = &ErrorManifestFileNotFound{
-        errorType: wski18n.T(MANIFEST_NOT_FOUND),
     }
-    err.SetFileName(filepath.Base(fn))
-    err.SetLineNum(lineNum)
+    err.SetErrorType(ERROR_MANIFEST_FILE_NOT_FOUND)
+    err.SetCallerByStackFrameSkip(2)
     err.SetMessage(errMessage)
     return err
 }
 
 func (e *ErrorManifestFileNotFound) Error() string {
-    if e.errorType == "" {
-        return fmt.Sprintf("%s [%d]: %s\n", e.FileName, e.LineNum, e.Message)
-    }
-    return fmt.Sprintf("%s [%d]: %s ==> %s\n", e.FileName, e.LineNum, e.errorType, e.Message)
+    return e.BaseErr.Error()
 }
 
+/*
+ * YAMLFileError
+ */
 type InputYamlFileError struct {
     BaseErr
-    errorType string
 }
 
 func NewInputYamlFileError(errMessage string) *InputYamlFileError {
-    _, fn, lineNum, _ := runtime.Caller(1)
     var err = &InputYamlFileError{
-        errorType: wski18n.T(INVALID_YAML_INPUT),
+        //errorType: wski18n.T(INVALID_YAML_INPUT),
     }
-    err.SetFileName(filepath.Base(fn))
-    err.SetLineNum(lineNum)
+    err.SetErrorType(ERROR_YAML_FILE_ERROR)
+    err.SetCallerByStackFrameSkip(2)
     err.SetMessage(errMessage)
     return err
 }
 
-func (e *InputYamlFileError) SetErrorType(errorType string) {
-    e.errorType = errorType
-}
-
 func (e *InputYamlFileError) Error() string {
-    if e.errorType == "" {
-        return fmt.Sprintf("%s [%d]: %s\n", e.FileName, e.LineNum, e.Message)
-    }
-    return fmt.Sprintf("%s [%d]: %s %s\n", e.FileName, e.LineNum, e.errorType, e.Message)
+    return e.BaseErr.Error()
 }
 
+/*
+ * YAMLFormatError
+ */
 type InputYamlFormatError struct {
     InputYamlFileError
 }
 
 func NewInputYamlFormatError(errMessage string) *InputYamlFormatError {
-    _, fn, lineNum, _ := runtime.Caller(1)
-    var err = &InputYamlFormatError{}
-    err.SetErrorType(wski18n.T(INVALID_YAML_FORMAT))
-    err.SetFileName(fn)
-    err.SetLineNum(lineNum)
+    var err = &InputYamlFormatError{
+        //err.SetErrorType(wski18n.T(INVALID_YAML_FORMAT))
+    }
+    err.SetErrorType(ERROR_YAML_FORMAT_ERROR)
+    err.SetCallerByStackFrameSkip(2)
     err.SetMessage(errMessage)
     return err
 }
 
+/*
+ * WhiskClientError
+ */
 type WhiskClientError struct {
     BaseErr
-    errorType string
-    errorCode int
+    ErrorCode int
 }
 
-func NewWhiskClientError(errMessage string, code int) *WhiskClientError {
-    _, fn, lineNum, _ := runtime.Caller(1)
+func NewWhiskClientError(errorMessage string, code int) *WhiskClientError {
     var err = &WhiskClientError{
-        errorType: wski18n.T(OPENWHISK_CLIENT_ERROR),
-        errorCode: code,
+        //errorType: wski18n.T(OPENWHISK_CLIENT_ERROR),
+        ErrorCode: code,
     }
-    err.SetFileName(fn)
-    err.SetLineNum(lineNum)
-    err.SetMessage(errMessage)
+    err.SetErrorType(ERROR_YAML_FORMAT_ERROR)
+    err.SetCallerByStackFrameSkip(2)
+    str := fmt.Sprintf("Code: %d: %s", code, errorMessage)
+    err.SetMessage(str)
     return err
 }
 
 func (e *WhiskClientError) Error() string {
-    return fmt.Sprintf("%s [%d]: %s =====> %s Error code: %d.\n", e.FileName, e.LineNum, e.errorType, e.Message, e.errorCode)
+    return e.BaseErr.Error()
 }
 
 type InvalidWskpropsError struct {

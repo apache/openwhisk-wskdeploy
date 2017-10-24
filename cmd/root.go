@@ -152,6 +152,8 @@ func setSupportedRuntimes(apiHost string) {
 
 func Deploy() error {
 
+	testErrors()
+
 	whisk.SetVerbose(utils.Flags.Verbose)
 	// Verbose mode is the only mode for wskdeploy to turn on all the debug messages, so the currenty Verbose mode
 	// also set debug mode to true.
@@ -331,4 +333,18 @@ func Undeploy() error {
 		whisk.Debug(whisk.DbgError, errString)
 		return utils.NewErrorManifestFileNotFound(errString)
 	}
+}
+
+func testErrors(){
+	err1 := utils.NewCommandError("Deploy", "Bad error")
+	str1 := err1.Error()
+	fmt.Printf(str1)
+
+	err2 := utils.NewErrorManifestFileNotFound("Not Found")
+	str2 := err2.Error()
+	fmt.Printf(str2)
+
+	err3 := utils.NewWhiskClientError("Some error message", 3201 )
+	str3 := err3.Error()
+	fmt.Printf(str3)
 }

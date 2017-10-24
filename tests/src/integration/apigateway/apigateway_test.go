@@ -26,8 +26,6 @@ import (
 	"os"
 )
 
-var wskprops = common.GetWskprops()
-
 // TODO: write the integration against openwhisk
 func TestTriggerRule(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
