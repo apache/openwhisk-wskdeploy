@@ -1,0 +1,7 @@
+packages:
+  $package_name:
+    namespace: /wskdeploy/samples/test
+    credential: 12345678ABCDEF
+    inputs:
+      param: value
+

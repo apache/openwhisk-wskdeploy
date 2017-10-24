@@ -1578,3 +1578,20 @@ func TestParseYAML_param(t *testing.T) {
 		}
 	}
 }
+
+func TestPackageName_Env_Var(t *testing.T) {
+    testPackage := "test_package"
+    os.Setenv("package_name", testPackage)
+    testPackageSec := "test_package_second"
+    os.Setenv("package_name_second", testPackageSec)
+    mm := NewYAMLParser()
+    manifestfile := "../tests/dat/manifest_validate_package_grammar_env_var.yaml"
+    manifest, _ := mm.ParseManifest(manifestfile)
+    assert.Equal(t, 4, len(manifest.Packages), "Get package list failed.")
+    expectedPackages := [4]string{testPackage, testPackageSec, testPackage + "suffix", testPackage+ "-" + testPackageSec}
+    for _, pkg_name := range expectedPackages {
+        var pkg = manifest.Packages[pkg_name]
+        assert.Equal(t, "1.0", pkg.Version, "Get the wrong package version.")
+        assert.Equal(t, "Apache-2.0", pkg.License, "Get the wrong license.")
+    }
+}

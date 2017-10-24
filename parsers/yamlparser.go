@@ -19,6 +19,7 @@ package parsers
 
 import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+    "github.com/apache/incubator-openwhisk-wskdeploy/utils"
 )
 
 // structs that denotes the sample manifest.yaml, wrapped yaml.v2
@@ -182,6 +183,41 @@ type YAML struct {
     Packages   map[string]Package `yaml:"packages"` //used in deployment.yaml
     Package    Package            `yaml:"package"`
     Filepath    string      //file path of the yaml file
+}
+
+func convertSinglePackageName(packageName string) string {
+    if len(packageName) != 0 {
+        packageNameEnv := utils.GetEnvVar(packageName)
+        if str, ok := packageNameEnv.(string); ok {
+            return str
+        } else {
+            return packageName
+        }
+    }
+    return packageName
+}
+
+func convertPackageName(packageMap map[string]Package) map[string]Package {
+    packages := make(map[string]Package)
+    for packName, depPacks := range packageMap {
+        name := packName
+        packageName := utils.GetEnvVar(packName)
+        if str, ok := packageName.(string); ok {
+            name = str
+        }
+        depPacks.Packagename = convertSinglePackageName(depPacks.Packagename)
+        packages[name] = depPacks
+    }
+    return packages
+}
+
+func ReadEnvVariable(yaml *YAML) *YAML {
+    yaml.Application.Package.Packagename = convertSinglePackageName(yaml.Application.Package.Packagename)
+    yaml.Package.Packagename = convertSinglePackageName(yaml.Package.Packagename)
+    yaml.Application.Packages = convertPackageName(yaml.Application.Packages)
+    yaml.Packages = convertPackageName(yaml.Packages)
+
+    return yaml
 }
 
 //********************Trigger functions*************************//

@@ -193,3 +193,108 @@ func TestParseDeploymentYAML_Action(t *testing.T) {
 		}
 	}
 }
+
+func TestParseDeploymentYAML_Packages_Env(t *testing.T) {
+    testPackage := "test_package"
+    os.Setenv("package_name", testPackage)
+    assert.Equal(t, testPackage, os.Getenv("package_name"))
+    //var deployment utils.DeploymentYAML
+    mm := NewYAMLParser()
+    deployment, _ := mm.ParseDeployment("../tests/dat/deployment_data_packages_env_var.yaml")
+
+    assert.Equal(t, 0, len(deployment.Application.Packages), "Packages under application are empty.")
+    assert.Equal(t, 0, len(deployment.Application.Package.Packagename), "Package name is empty.")
+    assert.Equal(t, 1, len(deployment.Packages), "Packages are available.")
+    for pkg_name := range deployment.Packages {
+        assert.Equal(t, testPackage, pkg_name, "Get package name failed.")
+        var pkg = deployment.Packages[pkg_name]
+        assert.Equal(t, "/wskdeploy/samples/test", pkg.Namespace, "Get package namespace failed.")
+        assert.Equal(t, "12345678ABCDEF", pkg.Credential, "Get package credential failed.")
+        assert.Equal(t, 1, len(pkg.Inputs), "Get package input list failed.")
+        //get and verify inputs
+        for param_name, param := range pkg.Inputs {
+            assert.Equal(t, "value", param.Value, "Get input value failed.")
+            assert.Equal(t, "param", param_name, "Get input param name failed.")
+        }
+    }
+}
+
+func TestParseDeploymentYAML_Package_Env(t *testing.T) {
+    testPackage := "test_package"
+    os.Setenv("package_name", testPackage)
+    assert.Equal(t, testPackage, os.Getenv("package_name"))
+    //var deployment utils.DeploymentYAML
+    mm := NewYAMLParser()
+    deployment, _ := mm.ParseDeployment("../tests/dat/deployment_data_package_env_var.yaml")
+
+    assert.Equal(t, 0, len(deployment.Application.Packages), "Get package list failed.")
+    assert.Equal(t, 0, len(deployment.Application.Package.Packagename), "Package name is empty.")
+    assert.Equal(t, 0, len(deployment.Packages), "Get package list failed.")
+    assert.Equal(t, testPackage, deployment.Package.Packagename, "Get package name failed.")
+    assert.Equal(t, "/wskdeploy/samples/test", deployment.Package.Namespace, "Get package namespace failed.")
+    assert.Equal(t, "12345678ABCDEF", deployment.Package.Credential, "Get package credential failed.")
+    assert.Equal(t, 1, len(deployment.Package.Inputs), "Get package input list failed.")
+    //get and verify inputs
+    for param_name, param := range deployment.Package.Inputs {
+        assert.Equal(t, "value", param.Value, "Get input value failed.")
+        assert.Equal(t, "param", param_name, "Get input param name failed.")
+    }
+}
+
+func TestParseDeploymentYAML_Application_Package_Env(t *testing.T) {
+    testPackage := "test_package"
+    os.Setenv("package_name", testPackage)
+    assert.Equal(t, testPackage, os.Getenv("package_name"))
+    mm := NewYAMLParser()
+    deployment, _ := mm.ParseDeployment("../tests/dat/deployment_data_application_package_env_var.yaml")
+    assert.Equal(t, testPackage, deployment.Application.Package.Packagename, "Get package name failed.")
+    assert.Equal(t, "/wskdeploy/samples/test", deployment.Application.Package.Namespace, "Get package namespace failed.")
+    assert.Equal(t, "12345678ABCDEF", deployment.Application.Package.Credential, "Get package credential failed.")
+    assert.Equal(t, 1, len(deployment.Application.Package.Inputs), "Get package input list failed.")
+
+    // Verify the case of using concatenation.
+    deployment, _ = mm.ParseDeployment("../tests/dat/deployment_data_application_package_env_var_con.yaml")
+    assert.Equal(t, "test_package-test_package", deployment.Application.Package.Packagename, "Get package name failed.")
+}
+
+func TestParseDeploymentYAML_Application_Packages_Env(t *testing.T) {
+    testPackage := "test_package"
+    os.Setenv("package_name", testPackage)
+    testPackageSec := "test_package_second"
+    os.Setenv("package_name_second", testPackageSec)
+    assert.Equal(t, testPackage, os.Getenv("package_name"))
+    mm := NewYAMLParser()
+    deployment, _ := mm.ParseDeployment("../tests/dat/deployment_data_application_packages_env_var.yaml")
+
+    expectedPackages := [2]string{testPackage, testPackageSec}
+    assert.Equal(t, 2, len(deployment.Application.Packages), "Get package list failed.")
+    for _, pkg_name := range expectedPackages {
+        var pkg = deployment.Application.Packages[pkg_name]
+        assert.Equal(t, pkg_name, pkg.Packagename, "Get package package name failed.")
+        assert.Equal(t, "/wskdeploy/samples/test", pkg.Namespace, "Get package namespace failed.")
+        assert.Equal(t, "12345678ABCDEF", pkg.Credential, "Get package credential failed.")
+        assert.Equal(t, 1, len(pkg.Inputs), "Get package input list failed.")
+        //get and verify inputs
+        for param_name, param := range pkg.Inputs {
+            assert.Equal(t, "value", param.Value, "Get input value failed.")
+            assert.Equal(t, "param", param_name, "Get input param name failed.")
+        }
+    }
+
+    // Verify the case of using concatenation.
+    expectedPackages = [2]string{testPackage + "suffix", testPackageSec + "suffix"}
+    deployment, _ = mm.ParseDeployment("../tests/dat/deployment_data_application_packages_env_var_con.yaml")
+    assert.Equal(t, 2, len(deployment.Application.Packages), "Get package list failed.")
+    for _, pkg_name := range expectedPackages {
+        var pkg = deployment.Application.Packages[pkg_name]
+        assert.Equal(t, pkg_name, pkg.Packagename, "Get package package name failed.")
+        assert.Equal(t, "/wskdeploy/samples/test", pkg.Namespace, "Get package namespace failed.")
+        assert.Equal(t, "12345678ABCDEF", pkg.Credential, "Get package credential failed.")
+        assert.Equal(t, 1, len(pkg.Inputs), "Get package input list failed.")
+        //get and verify inputs
+        for param_name, param := range pkg.Inputs {
+            assert.Equal(t, "value", param.Value, "Get input value failed.")
+            assert.Equal(t, "param", param_name, "Get input param name failed.")
+        }
+    }
+}

@@ -98,7 +98,9 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
 		return &maniyaml, utils.NewParserErr(manifestPath, lines, msgs)
 	}
 	maniyaml.Filepath = manifestPath
-	return &maniyaml, nil
+    manifest := ReadEnvVariable(&maniyaml)
+
+	return manifest, nil
 }
 
 func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {

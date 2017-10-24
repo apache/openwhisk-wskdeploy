@@ -1,0 +1,14 @@
+# This test file is used to test the basic Package grammar
+packages:
+  $package_name:
+    version: 1.0
+    license: Apache-2.0
+  $package_name_second:
+    version: 1.0
+    license: Apache-2.0
+  ${package_name}suffix:
+    version: 1.0
+    license: Apache-2.0
+  ${package_name}-${package_name_second}:
+    version: 1.0
+    license: Apache-2.0

@@ -1,0 +1,17 @@
+application:
+  name: wskdeploy-samples
+  namespace: /wskdeploy/samples/
+
+  packages:
+    $package_name:
+      name: $package_name
+      namespace: /wskdeploy/samples/test
+      credential: 12345678ABCDEF
+      inputs:
+        param: value
+    $package_name_second:
+      name: $package_name_second
+      namespace: /wskdeploy/samples/test
+      credential: 12345678ABCDEF
+      inputs:
+        param: value
