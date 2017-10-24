@@ -1,0 +1,90 @@
+# OpenWhisk Whisk Deploy manifest for incubator-openwhisk-githubslackbot
+# Installing openwhisk actions, triggers, and rules for OpenWhisk building block
+#   Cloudant Package
+#   GitHub Package
+#   Slack Package
+#   Alarm Trigger
+#   
+
+# Deployment using this manifest file creates following OpenWhisk components:
+#   Package:    TrackPRsInCloudant
+#   Package:    GitHubWebHook
+#   Pacakge:    PostPRToSlack
+#   Package:    githubslackbot
+#   Action:     githubslackbot/track-pull-requests
+#   Action:     githubslackbot/find-delayed-pull-requests
+#   Action:     githubslackbot/post-to-slack
+#   Sequence:   githubslackbot/SequenceToPostGitHubPRsToSlack
+#   Trigger:    GitHubWebHookTrigger, Every12Hours
+#   Rule:       RuleToTrackPullRequests, RuleToPostGitHubPRsToSlack
+
+# This manifest file reads following env. variables:
+#   CLOUDANT_USERNAME
+#   CLOUDANT_PASSWORD
+#   CLOUDANT_DATABASE
+#   GITHUB_USERNAME
+#   GITHUB_REPOSITORY
+#   GITHUB_ACCESSTOKEN
+#   SLACK_USERNAME
+#   SLACK_URL
+#   SLACK_CHANNEL
+
+packages:
+    githubslackbot:
+        dependencies:
+            TrackPRsInCloudant:
+                location: /whisk.system/cloudant
+                inputs:
+                    username: $CLOUDANT_USERNAME
+                    password: $CLOUDANT_PASSWORD
+                    host: ${CLOUDANT_USERNAME}.cloudant.com
+                    database: $CLOUDANT_DATABASE
+            GitHubWebHook:
+                location: /whisk.system/github
+                inputs:
+                    username: $GITHUB_USERNAME
+                    repository: $GITHUB_REPOSITORY
+                    accessToken: $GITHUB_ACCESSTOKEN
+            PostPRToSlack:
+                location: /whisk.system/slack
+                inputs:
+                    username: $SLACK_USERNAME
+                    url: $SLACK_URL
+                    channel: \#${SLACK_CHANNEL}
+        triggers:
+            GitHubWebHookTrigger:
+                feed: GitHubWebHook/webhook
+                inputs:
+                    events: pull-request
+            Every12Hours:
+                feed: /whisk.system/alarms/alarm
+                inputs:
+                    cron: "0 */12 * * *"
+        actions:
+            track-pull-requests:
+                function: actions/track-pull-requests.js
+                inputs:
+                    cloudant_package: TrackPRsInCloudant
+            find-delayed-pull-requests:
+                function: actions/find-delayed-pull-requests.js
+                inputs:
+                    cloudant_package: TrackPRsInCloudant
+                    github_username: $GITHUB_USERNAME
+                    github_access_token: $GITHUB_ACCESSTOKEN
+            post-to-slack:
+                function: actions/post-to-slack.js
+                inputs:
+                    slack_package: PostPRToSlack
+        sequences:
+            SequenceToPostGitHubPRsToSlack:
+                actions: find-delayed-pull-requests, post-to-slack
+        rules:
+            RuleToTrackPullRequests:
+                trigger: GitHubWebHookTrigger
+                action: track-pull-requests
+            RuleToPostGitHubPRsToSlack:
+                trigger: Every12Hours
+                action: SequenceToPostGitHubPRsToSlack
+
+                    
+
