@@ -28,24 +28,24 @@ var manifestfile_val_pkg = "../tests/dat/manifest_validate_package_grammar.yaml"
 var manifestfile_val_tar = "../tests/dat/manifest_validate_trigger_action_rule_grammar.yaml"
 var manifest_validate_triggerfeed = "../tests/dat/manifest_validate_triggerfeed.yaml"
 var manifest_validate_rule = "../tests/dat/manifest_validate_rule.yaml"
-var deploymentfile_data_app = "../tests/dat/deployment_data_application.yaml"
-var deploymentfile_data_app_pkg = "../tests/dat/deployment_data_application_package.yaml"
+var deploymentfile_data_app = "../tests/dat/deployment_data_project.yaml"
+var deploymentfile_data_app_pkg = "../tests/dat/deployment_data_project_package.yaml"
 var deployment_compose_trigger = "../tests/dat/deployment_compose_trigger.yaml"
-
 
 func TestComposeWskPackage(t *testing.T) {
 	mm := NewYAMLParser()
-    deployment, _ := mm.ParseDeployment(deploymentfile_data_app_pkg)
+	deployment, _ := mm.ParseDeployment(deploymentfile_data_app_pkg)
 	manifest, _ := mm.ParseManifest(manifestfile_val_pkg)
 
-	pkglist := deployment.Application.GetPackageList()
+	dep := deployment.GetProject()
+	pkglist := dep.GetPackageList()
 	for _, pkg := range pkglist {
 		wskpkg := pkg.ComposeWskPackage()
 		assert.Equal(t, "test_package", wskpkg.Name, "Get package name failed.")
 		assert.Equal(t, "/wskdeploy/samples/test", wskpkg.Namespace, "Get package namespace failed.")
 	}
 
-	for n, p := range manifest.Packages{
+	for n, p := range manifest.Packages {
 		wskpkg := p.ComposeWskPackage()
 		assert.Equal(t, "helloworld", n, "Get package name failed.")
 		assert.Equal(t, "1.0", wskpkg.Version, "Get package version failed.")
@@ -54,10 +54,11 @@ func TestComposeWskPackage(t *testing.T) {
 
 func TestComposeWskTrigger(t *testing.T) {
 	mm := NewYAMLParser()
-    deployment, _ := mm.ParseDeployment(deployment_compose_trigger)
+	deployment, _ := mm.ParseDeployment(deployment_compose_trigger)
 	manifest, _ := mm.ParseManifest(manifest_validate_triggerfeed)
 
-	pkg := deployment.Application.GetPackageList()[0]
+	dep := deployment.GetProject()
+	pkg := dep.GetPackageList()[0]
 	for _, trigger := range pkg.GetTriggerList() {
 		//temporarily add the nil to make test pass, as we plan refactor the parser as well as test codes.
 		wsktrigger := trigger.ComposeWskTrigger(nil)
@@ -100,7 +101,7 @@ func TestGetActionList(t *testing.T) {
 	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
 	pkg := manifest.Packages["manifest2"]
 	actions := pkg.GetActionList()
-	assert.Equal(t,3, len(actions), "Get action list failed.")
+	assert.Equal(t, 3, len(actions), "Get action list failed.")
 }
 
 func TestGetTriggerList(t *testing.T) {
@@ -108,7 +109,7 @@ func TestGetTriggerList(t *testing.T) {
 	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
 	pkg := manifest.Packages["manifest2"]
 	triggers := pkg.GetTriggerList()
-	assert.Equal(t,2, len(triggers), "Get trigger list failed.")
+	assert.Equal(t, 2, len(triggers), "Get trigger list failed.")
 }
 
 func TestGetRuleList(t *testing.T) {
@@ -116,7 +117,7 @@ func TestGetRuleList(t *testing.T) {
 	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
 	pkg := manifest.Packages["manifest2"]
 	rules := pkg.GetRuleList()
-	assert.Equal(t,3, len(rules), "Get trigger list failed.")
+	assert.Equal(t, 3, len(rules), "Get trigger list failed.")
 }
 
 func TestGetFeedList(t *testing.T) {
@@ -124,7 +125,7 @@ func TestGetFeedList(t *testing.T) {
 	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
 	pkg := manifest.Packages["manifest2"]
 	feeds := pkg.GetFeedList()
-	assert.Equal(t,4, len(feeds), "Get feed list failed.")
+	assert.Equal(t, 4, len(feeds), "Get feed list failed.")
 }
 
 func TestGetApisList(t *testing.T) {
@@ -132,5 +133,5 @@ func TestGetApisList(t *testing.T) {
 	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
 	pkg := manifest.Packages["manifest2"]
 	apis := pkg.GetApis()
-	assert.Equal(t,5, len(apis), "Get api list failed.")
+	assert.Equal(t, 5, len(apis), "Get api list failed.")
 }

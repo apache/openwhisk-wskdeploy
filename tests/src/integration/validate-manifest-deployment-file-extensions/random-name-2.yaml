@@ -1,4 +1,4 @@
-application:
+project:
   name: IntegrationTest
   packages:
     ValidateRandomFileNames:

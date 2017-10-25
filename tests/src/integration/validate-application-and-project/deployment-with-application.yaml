@@ -1,9 +1,9 @@
-project:
-  name: UnitTestDeployers
+application:
+  name: IntegrationTest
   packages:
-    ValidateDeploymentReader:
+    packageValidatingApplication:
       actions:
-        helloNodejs:
+        hello:
           inputs:
             name: Amy
             place: Paris

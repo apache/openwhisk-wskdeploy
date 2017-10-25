@@ -33,15 +33,15 @@ import (
 	"reflect"
 )
 
-type DeploymentApplication struct {
+type DeploymentProject struct {
 	Packages map[string]*DeploymentPackage
 	Triggers map[string]*whisk.Trigger
 	Rules    map[string]*whisk.Rule
 	Apis     map[string]*whisk.ApiCreateRequest
 }
 
-func NewDeploymentApplication() *DeploymentApplication {
-	var dep DeploymentApplication
+func NewDeploymentProject() *DeploymentProject {
+	var dep DeploymentProject
 	dep.Packages = make(map[string]*DeploymentPackage)
 	dep.Triggers = make(map[string]*whisk.Trigger)
 	dep.Rules = make(map[string]*whisk.Rule)
@@ -71,7 +71,7 @@ func NewDeploymentPackage() *DeploymentPackage {
 //   3. Collect information about the source code files in the working directory
 //   4. Create a deployment plan to create OpenWhisk service
 type ServiceDeployer struct {
-	Deployment      *DeploymentApplication
+	Deployment      *DeploymentProject
 	Client          *whisk.Client
 	mt              sync.RWMutex
 	RootPackageName string
@@ -90,7 +90,7 @@ type ServiceDeployer struct {
 // NewServiceDeployer is a Factory to create a new ServiceDeployer
 func NewServiceDeployer() *ServiceDeployer {
 	var dep ServiceDeployer
-	dep.Deployment = NewDeploymentApplication()
+	dep.Deployment = NewDeploymentProject()
 	dep.IsInteractive = true
 	dep.DeployActionInPackage = true
 	dep.DependencyMaster = make(map[string]utils.DependencyRecord)
@@ -139,9 +139,15 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		return err
 	}
 
-	applicationName := ""
-	if len(manifest.Application.Packages) != 0 {
-		applicationName = manifest.Application.Name
+	projectName := ""
+	if len(manifest.GetProject().Packages) != 0 {
+		projectName = manifest.GetProject().Name
+	}
+
+	// (TODO) delete this warning after deprecating application in manifest file
+	if manifest.Application.Name != "" {
+		warningString := wski18n.T("WARNING: application in manifest file will soon be deprecated, please use project instead.\n")
+		whisk.Debug(whisk.DbgWarn, warningString)
 	}
 
 	// process deployment file
@@ -152,24 +158,30 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		if err != nil {
 			return err
 		}
-		// compare the name of the application
-		if len(deploymentReader.DeploymentDescriptor.Application.Packages) != 0 && len(applicationName) != 0 {
-			appNameDeploy := deploymentReader.DeploymentDescriptor.Application.Name
-			if appNameDeploy != applicationName {
-				errorString := wski18n.T("The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
-				    map[string]interface{}{"appNameDeploy": appNameDeploy, "deploymentFile": deployer.DeploymentPath,
-					"appNameManifest": applicationName,  "manifestFile": deployer.ManifestPath })
+
+		// (TODO) delete this warning after deprecating application in deployment file
+		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
+			warningString := wski18n.T("WARNING: application in deployment file will soon be deprecated, please use project instead.\n")
+			whisk.Debug(whisk.DbgWarn, warningString)
+		}
+
+		// compare the name of the project/application
+		if len(deploymentReader.DeploymentDescriptor.GetProject().Packages) != 0 && len(projectName) != 0 {
+			projectNameDeploy := deploymentReader.DeploymentDescriptor.GetProject().Name
+			if projectNameDeploy != projectName {
+				errorString := wski18n.T("The name of the project/application {{.projectNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the project/application {{.projectNameManifest}}} in manifest file at [{{.manifestFile}}].",
+					map[string]interface{}{"projectNameDeploy": projectNameDeploy, "deploymentFile": deployer.DeploymentPath,
+						"projectNameManifest": projectName, "manifestFile": deployer.ManifestPath})
 				return utils.NewInputYamlFormatError(errorString)
 			}
 		}
-
 		deploymentReader.BindAssets()
 	}
 
 	return err
 }
 
-func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplication, error) {
+func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject, error) {
 
 	var manifestReader = NewManfiestReader(deployer)
 	manifestReader.IsUndeploy = true
@@ -203,10 +215,16 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
 		return deployer.Deployment, err
 	}
 
-    applicationName := ""
-    if len(manifest.Application.Packages) != 0 {
-        applicationName = manifest.Application.Name
-    }
+	projectName := ""
+	if len(manifest.GetProject().Packages) != 0 {
+		projectName = manifest.GetProject().Name
+	}
+
+	// (TODO) delete this warning after deprecating application in manifest file
+	if manifest.Application.Name != "" {
+		warningString := wski18n.T("WARNING: application in manifest file will soon be deprecated, please use project instead.\n")
+		whisk.Debug(whisk.DbgWarn, warningString)
+	}
 
 	// process deployment file
 	if utils.FileExists(deployer.DeploymentPath) {
@@ -215,16 +233,21 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
 		if err != nil {
 			return deployer.Deployment, err
 		}
-        // compare the name of the application
-        if len(deploymentReader.DeploymentDescriptor.Application.Packages) != 0 && len(applicationName) != 0 {
-            appNameDeploy := deploymentReader.DeploymentDescriptor.Application.Name
-            if appNameDeploy != applicationName {
-                errorString := wski18n.T("The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
-                    map[string]interface{}{"appNameDeploy": appNameDeploy, "deploymentFile": deployer.DeploymentPath,
-                        "appNameManifest": applicationName,  "manifestFile": deployer.ManifestPath })
-                return deployer.Deployment, utils.NewInputYamlFormatError(errorString)
-            }
-        }
+		// (TODO) delete this warning after deprecating application in deployment file
+		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
+			warningString := wski18n.T("WARNING: application in deployment file will soon be deprecated, please use project instead.\n")
+			whisk.Debug(whisk.DbgWarn, warningString)
+		}
+		// compare the name of the application
+		if len(deploymentReader.DeploymentDescriptor.GetProject().Packages) != 0 && len(projectName) != 0 {
+			projectNameDeploy := deploymentReader.DeploymentDescriptor.GetProject().Name
+			if projectNameDeploy != projectName {
+				errorString := wski18n.T("The name of the project/application {{.projectNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.projectNameManifest}}} in manifest file at [{{.manifestFile}}].",
+					map[string]interface{}{"projectNameDeploy": projectNameDeploy, "deploymentFile": deployer.DeploymentPath,
+						"projectNameManifest": projectName, "manifestFile": deployer.ManifestPath})
+				return deployer.Deployment, utils.NewInputYamlFormatError(errorString)
+			}
+		}
 		deploymentReader.BindAssets()
 	}
 
@@ -590,8 +613,8 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 		deployer.Client.Namespace = namespace
 
 		if err != nil {
-            // Remove the created trigger
-            deployer.Client.Triggers.Delete(trigger.Name)
+			// Remove the created trigger
+			deployer.Client.Triggers.Delete(trigger.Name)
 			wskErr := err.(*whisk.WskError)
 			errString := wski18n.T("Got error creating trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
 				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
@@ -685,7 +708,7 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 	return nil
 }
 
-func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentApplication) error {
+func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentProject) error {
 	if deployer.IsInteractive == true {
 		deployer.printDeploymentAssets(verifiedPlan)
 		reader := bufio.NewReader(os.Stdin)
@@ -729,7 +752,7 @@ func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentApplication) e
 
 }
 
-func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan *DeploymentApplication) error {
+func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan *DeploymentProject) error {
 
 	if err := deployer.UnDeployActions(verifiedPlan); err != nil {
 		return err
@@ -813,7 +836,7 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
 	return nil
 }
 
-func (deployer *ServiceDeployer) UnDeployPackages(deployment *DeploymentApplication) error {
+func (deployer *ServiceDeployer) UnDeployPackages(deployment *DeploymentProject) error {
 	for _, pack := range deployment.Packages {
 		err := deployer.deletePackage(pack.Package)
 		if err != nil {
@@ -823,7 +846,7 @@ func (deployer *ServiceDeployer) UnDeployPackages(deployment *DeploymentApplicat
 	return nil
 }
 
-func (deployer *ServiceDeployer) UnDeploySequences(deployment *DeploymentApplication) error {
+func (deployer *ServiceDeployer) UnDeploySequences(deployment *DeploymentProject) error {
 
 	for _, pack := range deployment.Packages {
 		for _, action := range pack.Sequences {
@@ -837,7 +860,7 @@ func (deployer *ServiceDeployer) UnDeploySequences(deployment *DeploymentApplica
 }
 
 // DeployActions into OpenWhisk
-func (deployer *ServiceDeployer) UnDeployActions(deployment *DeploymentApplication) error {
+func (deployer *ServiceDeployer) UnDeployActions(deployment *DeploymentProject) error {
 
 	for _, pack := range deployment.Packages {
 		for _, action := range pack.Actions {
@@ -851,7 +874,7 @@ func (deployer *ServiceDeployer) UnDeployActions(deployment *DeploymentApplicati
 }
 
 // Deploy Triggers into OpenWhisk
-func (deployer *ServiceDeployer) UnDeployTriggers(deployment *DeploymentApplication) error {
+func (deployer *ServiceDeployer) UnDeployTriggers(deployment *DeploymentProject) error {
 
 	for _, trigger := range deployment.Triggers {
 		if feedname, isFeed := utils.IsFeedAction(trigger); isFeed {
@@ -872,7 +895,7 @@ func (deployer *ServiceDeployer) UnDeployTriggers(deployment *DeploymentApplicat
 }
 
 // Deploy Rules into OpenWhisk
-func (deployer *ServiceDeployer) UnDeployRules(deployment *DeploymentApplication) error {
+func (deployer *ServiceDeployer) UnDeployRules(deployment *DeploymentProject) error {
 
 	for _, rule := range deployment.Rules {
 		err := deployer.deleteRule(rule)
@@ -926,40 +949,40 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 	params = append(params, whisk.KeyValue{Key: "lifecycleEvent", Value: "DELETE"})
 	params = append(params, whisk.KeyValue{Key: "triggerName", Value: "/" + deployer.Client.Namespace + "/" + trigger.Name})
 
-    parameters := make(map[string]interface{})
-    for _, keyVal := range params {
-        parameters[keyVal.Key] = keyVal.Value
-    }
+	parameters := make(map[string]interface{})
+	for _, keyVal := range params {
+		parameters[keyVal.Key] = keyVal.Value
+	}
 
-    qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
-    if err != nil {
-        return err
-    }
+	qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
+	if err != nil {
+		return err
+	}
 
-    namespace := deployer.Client.Namespace
-    deployer.Client.Namespace = qName.Namespace
-    _, _, err = deployer.Client.Actions.Invoke(qName.EntityName, parameters, true, true)
-    deployer.Client.Namespace = namespace
+	namespace := deployer.Client.Namespace
+	deployer.Client.Namespace = qName.Namespace
+	_, _, err = deployer.Client.Actions.Invoke(qName.EntityName, parameters, true, true)
+	deployer.Client.Namespace = namespace
 
-    if err != nil {
-        wskErr := err.(*whisk.WskError)
-        errString := wski18n.T("Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
-            map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-        whisk.Debug(whisk.DbgError, errString)
-        return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		errString := wski18n.T("Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
+			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
+		whisk.Debug(whisk.DbgError, errString)
+		return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
 
-    } else {
-        trigger.Parameters = nil
+	} else {
+		trigger.Parameters = nil
 
-        _, _, err := deployer.Client.Triggers.Delete(trigger.Name)
-        if err != nil {
-            wskErr := err.(*whisk.WskError)
-            errString := wski18n.T("Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
-                map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-            whisk.Debug(whisk.DbgError, errString)
-            return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
-        }
-    }
+		_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
+		if err != nil {
+			wskErr := err.(*whisk.WskError)
+			errString := wski18n.T("Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
+				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
+			whisk.Debug(whisk.DbgError, errString)
+			return utils.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+		}
+	}
 
 	return nil
 }
@@ -1037,7 +1060,7 @@ func (deployer *ServiceDeployer) getQualifiedName(name string, namespace string)
 	}
 }
 
-func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplication) {
+func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject) {
 
 	// pretty ASCII OpenWhisk graphic
 	utils.PrintOpenWhiskOutputln("         ____      ___                   _    _ _     _     _\n        /\\   \\    / _ \\ _ __   ___ _ __ | |  | | |__ (_)___| | __\n   /\\  /__\\   \\  | | | | '_ \\ / _ \\ '_ \\| |  | | '_ \\| / __| |/ /\n  /  \\____ \\  /  | |_| | |_) |  __/ | | | |/\\| | | | | \\__ \\   <\n  \\   \\  /  \\/    \\___/| .__/ \\___|_| |_|__/\\__|_| |_|_|___/_|\\_\\ \n   \\___\\/              |_|\n")
@@ -1070,13 +1093,12 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentApplica
 			utils.PrintOpenWhiskOutputln("    bindings: ")
 			for _, p := range action.Action.Parameters {
 
-				if( reflect.TypeOf(p.Value).Kind() == reflect.Map ) {
-                                        if _, ok := p.Value.(map[interface{}]interface{}); ok {
-						var temp map[string]interface{} =
-							utils.ConvertInterfaceMap(p.Value.(map[interface{}]interface{}))
+				if reflect.TypeOf(p.Value).Kind() == reflect.Map {
+					if _, ok := p.Value.(map[interface{}]interface{}); ok {
+						var temp map[string]interface{} = utils.ConvertInterfaceMap(p.Value.(map[interface{}]interface{}))
 						fmt.Printf("        - %s : %v\n", p.Key, temp)
 					} else {
-						jsonValue,err := utils.PrettyJSON(p.Value)
+						jsonValue, err := utils.PrettyJSON(p.Value)
 						if err != nil {
 							fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
 						} else {

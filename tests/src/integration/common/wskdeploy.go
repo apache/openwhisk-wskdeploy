@@ -172,7 +172,7 @@ func (wskdeploy *Wskdeploy) UndeployManifestPathOnly(manifestpath string) (strin
 // This method will mock a construction of deployment plan, creating all the memory objects
 // This method CANNOT be used for real deployment!
 // Param manifestPath & deploymentPath MUST be the absolute path.
-func (wskdeploy *Wskdeploy) GetDeploymentObjects(manifestPath string, deploymentPath string) (*deployers.DeploymentApplication, error) {
+func (wskdeploy *Wskdeploy) GetDeploymentObjects(manifestPath string, deploymentPath string) (*deployers.DeploymentProject, error) {
 	//create ServiceDeployer and set default values
 	deployer := deployers.NewServiceDeployer()
 	deployer.ProjectPath = filepath.Dir(manifestPath)

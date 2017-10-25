@@ -110,7 +110,7 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 		if manifest.Packages != nil {
 			packages = manifest.Packages
 		} else {
-			packages = manifest.Application.Packages
+			packages = manifest.GetProject().Packages
 		}
 	}
 
@@ -207,7 +207,7 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string) (map[s
 		if manifest.Packages != nil {
 			manifestPackages = manifest.Packages
 		} else {
-			manifestPackages = manifest.Application.Packages
+			manifestPackages = manifest.GetProject().Packages
 		}
 	}
 
@@ -291,7 +291,7 @@ func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YA
 		if mani.Packages != nil {
 			manifestPackages = mani.Packages
 		} else {
-			manifestPackages = mani.Application.Packages
+			manifestPackages = mani.GetProject().Packages
 		}
 	}
 
@@ -359,7 +359,7 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 		if manifest.Packages != nil {
 			manifestPackages = manifest.Packages
 		} else {
-			manifestPackages = manifest.Application.Packages
+			manifestPackages = manifest.GetProject().Packages
 		}
     	}
     	for n, p := range manifestPackages {
@@ -602,7 +602,7 @@ func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath st
 		if manifest.Packages != nil {
 			manifestPackages = manifest.Packages
 		} else {
-			manifestPackages = manifest.Application.Packages
+			manifestPackages = manifest.GetProject().Packages
 		}
 	}
 	for _, p := range manifestPackages {
@@ -683,7 +683,7 @@ func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML) ([]*whisk.Rule
 		if manifest.Packages != nil {
 			manifestPackages = manifest.Packages
 		} else {
-			manifestPackages = manifest.Application.Packages
+			manifestPackages = manifest.GetProject().Packages
 		}
 	}
 
@@ -724,7 +724,7 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *YAML) ([]*whisk
 		if manifest.Packages != nil {
 			manifestPackages = manifest.Packages
 		} else {
-			manifestPackages = manifest.Application.Packages
+			manifestPackages = manifest.GetProject().Packages
 		}
 	}
 
