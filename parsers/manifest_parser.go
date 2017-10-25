@@ -43,7 +43,7 @@ func ReadOrCreateManifest() (*YAML, error) {
 		dat, _ := ioutil.ReadFile(utils.ManifestFileNameYaml)
 		err := NewYAMLParser().Unmarshal(dat, &maniyaml)
 		if err != nil {
-			return &maniyaml, utils.NewInputYamlFileError(err.Error())
+			return &maniyaml, utils.NewYAMLFileReadError(err.Error())
 		}
 	}
 	return &maniyaml, nil
@@ -53,12 +53,12 @@ func ReadOrCreateManifest() (*YAML, error) {
 func Write(manifest *YAML, filename string) error {
 	output, err := NewYAMLParser().Marshal(manifest)
 	if err != nil {
-		return utils.NewInputYamlFormatError(err.Error())
+		return utils.NewYAMLFormatError(err.Error())
 	}
 
 	f, err := os.Create(filename)
 	if err != nil {
-		return utils.NewInputYamlFileError(err.Error())
+		return utils.NewYAMLFileReadError(err.Error())
 	}
 	defer f.Close()
 
@@ -89,42 +89,42 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
 
 	content, err := utils.Read(manifestPath)
 	if err != nil {
-		return &maniyaml, utils.NewInputYamlFileError(err.Error())
+		return &maniyaml, utils.NewYAMLFileReadError(err.Error())
 	}
 
 	err = mm.Unmarshal(content, &maniyaml)
 	if err != nil {
 		lines, msgs := dm.convertErrorToLinesMsgs(err.Error())
-		return &maniyaml, utils.NewParserErr(manifestPath, lines, msgs)
+		return &maniyaml, utils.NewYAMLParserErr(manifestPath, lines, msgs)
 	}
 	maniyaml.Filepath = manifestPath
-    manifest := ReadEnvVariable(&maniyaml)
+	manifest := ReadEnvVariable(&maniyaml)
 
 	return manifest, nil
 }
 
 func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {
 	dependencies := make(map[string]utils.DependencyRecord)
-    packages := make(map[string]Package)
+	packages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeDependencies(manifest.Package, projectPath, filePath, manifest.Package.Packagename)
 	} else {
-        if manifest.Packages != nil {
-            packages = manifest.Packages
-        } else {
-            packages = manifest.Application.Packages
-        }
-    }
-    for n, p := range packages {
-        d, err := dm.ComposeDependencies(p, projectPath, filePath, n)
-        if err == nil {
-            for k, v := range d {
-                dependencies[k] = v
-            }
-        } else {
-            return nil, err
-        }
-    }
+		if manifest.Packages != nil {
+			packages = manifest.Packages
+		} else {
+			packages = manifest.Application.Packages
+		}
+	}
+	for n, p := range packages {
+		d, err := dm.ComposeDependencies(p, projectPath, filePath, n)
+		if err == nil {
+			for k, v := range d {
+				dependencies[k] = v
+			}
+		} else {
+			return nil, err
+		}
+	}
 	return dependencies, nil
 }
 
@@ -194,7 +194,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 
 func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string) (map[string]*whisk.Package, error) {
 	packages := map[string]*whisk.Package{}
-    manifestPackages := make(map[string]Package)
+	manifestPackages := make(map[string]Package)
 	if manifest.Package.Packagename != "" {
 		fmt.Println("WARNING: using package inside of manifest file will soon be deprecated, please use packages instead.")
 		s, err := dm.ComposePackage(manifest.Package, manifest.Package.Packagename, filePath)
@@ -205,18 +205,18 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string) (map[s
 		}
 	} else {
         if manifest.Packages != nil {
-            manifestPackages = manifest.Packages
+		manifestPackages = manifest.Packages
         } else {
-            manifestPackages = manifest.Application.Packages
+		manifestPackages = manifest.Application.Packages
         }
     }
 
     for n, p := range manifestPackages {
         s, err := dm.ComposePackage(p, n, filePath)
         if err == nil {
-            packages[n] = s
+		packages[n] = s
         } else {
-            return nil, err
+		return nil, err
         }
     }
 
@@ -808,7 +808,7 @@ func ResolveParamTypeFromValue(name string, value interface{}, filePath string) 
 			// raise an error if parameter's value is not a known type
 			// TODO() - move string to i18n
 			msgs := []string{"Parameter [" + name + "] has a value that is not a known type. [" + actualType + "]"}
-			err = utils.NewParserErr(filePath, nil, msgs)
+			err = utils.NewYAMLParserErr(filePath, nil, msgs)
 		}
 	}
 	return paramType, err
@@ -846,7 +846,7 @@ func resolveSingleLineParameter(paramName string, param *Parameter, filePath str
 
 	} else {
 		msgs := []string{"Parameter [" + paramName + "] is not single-line format."}
-		return param.Value, utils.NewParserErr(filePath, nil, msgs)
+		return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
 	}
 
 	return param.Value, errorParser
@@ -879,7 +879,7 @@ func resolveMultiLineParameter(paramName string, param *Parameter, filePath stri
 			if !isValidParameterType(param.Type) {
 				// TODO() - move string to i18n
 				msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
-				return param.Value, utils.NewParserErr(filePath, nil, msgs)
+				return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
 			}
 		} else {
 			// if we do not have a value for the Parameter Type, use the Parameter Value's Type
@@ -892,7 +892,7 @@ func resolveMultiLineParameter(paramName string, param *Parameter, filePath stri
 		//}
         } else {
 		msgs := []string{"Parameter [" + paramName + "] is not multiline format."}
-		return param.Value, utils.NewParserErr(filePath, nil, msgs)
+		return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
 	}
 
 
@@ -934,7 +934,7 @@ func resolveJSONParameter(paramName string, param *Parameter, value interface{},
 		} // else TODO{}
 	} else {
 		msgs := []string{"Parameter [" + paramName + "] is not JSON format."}
-		return param.Value, utils.NewParserErr(filePath, nil, msgs)
+		return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
 	}
 
 	return param.Value, errorParser

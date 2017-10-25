@@ -344,7 +344,11 @@ func testErrors(){
 	str2 := err2.Error()
 	fmt.Printf(str2)
 
-	err3 := utils.NewWhiskClientError("Some error message", 3201 )
-	str3 := err3.Error()
-	fmt.Printf(str3)
+	//err3 := utils.NewWhiskClientError("Some error message", 3201 )
+	//str3 := err3.Error()
+	//fmt.Printf(str3)
+
+	err6 := utils.NewParameterTypeMismatchError("order_info", "json", "integer")
+	str6 := err6.Error()
+	fmt.Printf(str6)
 }

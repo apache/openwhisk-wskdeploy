@@ -933,11 +933,11 @@ func TestResolveParameterForMultiLineParams(t *testing.T) {
     assert.NotNil(t, err, "Expected error saying Invalid type for parameter")
     lines := []string{"Line Unknown"}
     msgs := []string{"Invalid Type for parameter. [invalid]"}
-    expectedErr := utils.NewParserErr("", lines, msgs)
+    expectedErr := utils.NewYAMLParserErr("", lines, msgs)
     switch errorType := err.(type) {
     default:
         assert.Fail(t, "Wrong error type received: We are expecting ParserErr.")
-    case *utils.ParserErr:
+    case *utils.YAMLParserErr:
         assert.Equal(t, expectedErr.Message, errorType.Message,
             "Expected error " + expectedErr.Message + " but found " + errorType.Message)
     }

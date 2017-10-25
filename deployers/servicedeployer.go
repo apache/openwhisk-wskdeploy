@@ -159,7 +159,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 				errorString := wski18n.T("The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
 				    map[string]interface{}{"appNameDeploy": appNameDeploy, "deploymentFile": deployer.DeploymentPath,
 					"appNameManifest": applicationName,  "manifestFile": deployer.ManifestPath })
-				return utils.NewInputYamlFormatError(errorString)
+				return utils.NewYAMLFormatError(errorString)
 			}
 		}
 
@@ -222,7 +222,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentApplica
                 errorString := wski18n.T("The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
                     map[string]interface{}{"appNameDeploy": appNameDeploy, "deploymentFile": deployer.DeploymentPath,
                         "appNameManifest": applicationName,  "manifestFile": deployer.ManifestPath })
-                return deployer.Deployment, utils.NewInputYamlFormatError(errorString)
+                return deployer.Deployment, utils.NewYAMLFormatError(errorString)
             }
         }
 		deploymentReader.BindAssets()

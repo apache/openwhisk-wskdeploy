@@ -26,19 +26,21 @@ import (
 )
 
 const (
-    INVALID_YAML_INPUT = "Invalid input of Yaml file"
-    INVALID_YAML_FORMAT = "Invalid input of Yaml format"
-    OPENWHISK_CLIENT_ERROR = "OpenWhisk Client Error"
-    PARAMETER_TYPE_MISMATCH = "Parameter type mismatch error"
-    MANIFEST_NOT_FOUND = INVALID_YAML_INPUT  // TODO{} This should be a unique message.
     UNKNOWN = "Unknown"
     UNKNOWN_VALUE = "Unknown value"
     LINE = "line"
+    PARAMETER = "Parameter"
+    TYPE = "Type"
+    EXPECTED = "expected"
+    ACTUAL = "actual"
 
     ERROR_COMMAND_FAILED = "ERROR_COMMAND_FAILED"
     ERROR_MANIFEST_FILE_NOT_FOUND = "ERROR_MANIFEST_FILE_NOT_FOUND"
-    ERROR_YAML_FILE_ERROR = "ERROR_YAML_FILE_ERROR"
+    ERROR_YAML_FILE_READ_ERROR = "ERROR_YAML_FILE_READ_ERROR"
     ERROR_YAML_FORMAT_ERROR = "ERROR_YAML_FORMAT_ERROR"
+    ERROR_WHISK_CLIENT_ERROR = "ERROR_WHISK_CLIENT_ERROR"
+    ERROR_WHISK_CLIENT_INVALID_CONFIG = "ERROR_WHISK_CLIENT_INVALID_CONFIG"
+    ERROR_YAML_PARAMETER_TYPE_MISMATCH = "ERROR_YAML_PARAMETER_TYPE_MISMATCH"
 )
 
 /*
@@ -125,40 +127,40 @@ func (e *ErrorManifestFileNotFound) Error() string {
 }
 
 /*
- * YAMLFileError
+ * YAMLFileReadError
  */
-type InputYamlFileError struct {
+type YAMLFileReadError struct {
     BaseErr
 }
 
-func NewInputYamlFileError(errMessage string) *InputYamlFileError {
-    var err = &InputYamlFileError{
+func NewYAMLFileReadError(errorMessage string) *YAMLFileReadError {
+    var err = &YAMLFileReadError{
         //errorType: wski18n.T(INVALID_YAML_INPUT),
     }
-    err.SetErrorType(ERROR_YAML_FILE_ERROR)
+    err.SetErrorType(ERROR_YAML_FILE_READ_ERROR)
     err.SetCallerByStackFrameSkip(2)
-    err.SetMessage(errMessage)
+    err.SetMessage(errorMessage)
     return err
 }
 
-func (e *InputYamlFileError) Error() string {
+func (e *YAMLFileReadError) Error() string {
     return e.BaseErr.Error()
 }
 
 /*
  * YAMLFormatError
  */
-type InputYamlFormatError struct {
-    InputYamlFileError
+type YAMLFormatError struct {
+    YAMLFileReadError
 }
 
-func NewInputYamlFormatError(errMessage string) *InputYamlFormatError {
-    var err = &InputYamlFormatError{
+func NewYAMLFormatError(errorMessage string) *YAMLFormatError {
+    var err = &YAMLFormatError{
         //err.SetErrorType(wski18n.T(INVALID_YAML_FORMAT))
     }
     err.SetErrorType(ERROR_YAML_FORMAT_ERROR)
     err.SetCallerByStackFrameSkip(2)
-    err.SetMessage(errMessage)
+    err.SetMessage(errorMessage)
     return err
 }
 
@@ -175,9 +177,9 @@ func NewWhiskClientError(errorMessage string, code int) *WhiskClientError {
         //errorType: wski18n.T(OPENWHISK_CLIENT_ERROR),
         ErrorCode: code,
     }
-    err.SetErrorType(ERROR_YAML_FORMAT_ERROR)
+    err.SetErrorType(ERROR_WHISK_CLIENT_ERROR)
     err.SetCallerByStackFrameSkip(2)
-    str := fmt.Sprintf("Code: %d: %s", code, errorMessage)
+    str := fmt.Sprintf("Error Code: %d: %s", code, errorMessage)
     err.SetMessage(str)
     return err
 }
@@ -186,41 +188,44 @@ func (e *WhiskClientError) Error() string {
     return e.BaseErr.Error()
 }
 
-type InvalidWskpropsError struct {
+/*
+ * WhiskClientInvalidConfigError
+ */
+type WhiskClientInvalidConfigError struct {
     BaseErr
 }
 
-func NewInvalidWskpropsError(errMessage string) *InvalidWskpropsError {
-    _, fn, lineNum, _ := runtime.Caller(1)
-    var err = &InvalidWskpropsError{}
-    err.SetFileName(fn)
-    err.SetLineNum(lineNum)
-    err.SetMessage(errMessage)
+func NewWhiskClientInvalidConfigError(errorMessage string) *WhiskClientInvalidConfigError {
+    var err = &WhiskClientInvalidConfigError{
+    }
+    err.SetErrorType(ERROR_WHISK_CLIENT_INVALID_CONFIG)
+    err.SetCallerByStackFrameSkip(2)
+    err.SetMessage(errorMessage)
     return err
 }
 
-type ParserErr struct {
+/*
+ * YAMLParserErr
+ */
+type YAMLParserErr struct {
     BaseErr
     YamlFile string
     lines []string
     msgs []string
 }
 
-func NewParserErr(yamlFile string, lines []string, msgs []string) *ParserErr {
-    _, fn, line, _ := runtime.Caller(1)
-    var err = &ParserErr{
+func NewYAMLParserErr(yamlFile string, lines []string, msgs []string) *YAMLParserErr {
+    var err = &YAMLParserErr{
         YamlFile: yamlFile,
         lines: lines,
         msgs: msgs,
     }
-    err.SetFileName(fn)
-    err.SetLineNum(line)
+    err.SetCallerByStackFrameSkip(2)
     return err
 }
 
-func (e *ParserErr) Error() string {
+func (e *YAMLParserErr) Error() string {
     result := make([]string, len(e.msgs))
-    var fn = filepath.Base(e.FileName)
 
     for index, msg := range e.msgs {
         var s string
@@ -231,35 +236,31 @@ func (e *ParserErr) Error() string {
         }
         result[index] = s
     }
-    return fmt.Sprintf("\n==> %s [%d]: Failed to parse the yaml file: %s: \n%s", fn, e.LineNum, e.YamlFile, strings.Join(result, "\n"))
+    return fmt.Sprintf("\n==> %s [%d]: Failed to parse the yaml file: %s: \n%s", e.FileName, e.LineNum, e.YamlFile, strings.Join(result, "\n"))
 }
 
+/*
+ * ParameterTypeMismatchError
+ */
 type ParameterTypeMismatchError struct {
     BaseErr
-    errorType string
-    expectedType string
-    actualType string
+    Parameter       string
+    ExpectedType    string
+    ActualType      string
+}
+
+func NewParameterTypeMismatchError(param string, expectedType string, actualType string) *ParameterTypeMismatchError {
+    var err = &ParameterTypeMismatchError{
+        ExpectedType: expectedType,
+        ActualType: actualType,
+    }
+    err.SetErrorType(ERROR_YAML_PARAMETER_TYPE_MISMATCH)
+    err.SetCallerByStackFrameSkip(2)
+    str := fmt.Sprintf( "%s [%s]: %s %s: [%s], %s: [%s]", PARAMETER, param, TYPE, EXPECTED, expectedType, ACTUAL, actualType)
+    err.SetMessage(str)
+    return err
 }
 
 func (e *ParameterTypeMismatchError) Error() string {
-    if e.errorType == "" {
-        return fmt.Sprintf("%s [%d]: %s\n", e.FileName, e.LineNum, e.Message)
-    }
-    return fmt.Sprintf("%s [%d]: %s ==> %s\n", e.FileName, e.LineNum, e.errorType, e.Message)
-}
-
-func NewParameterTypeMismatchError(errMessage string, expectedType string, actualType string) *ParameterTypeMismatchError {
-    _, fn, lineNum, _ := runtime.Caller(1)
-    var err = &ParameterTypeMismatchError{
-        // TODO{} add i18n
-        //errorType: wski18n.T(PARAMETER_TYPE_MISMATCH),
-        errorType: PARAMETER_TYPE_MISMATCH,
-        expectedType: expectedType,
-        actualType: actualType,
-    }
-
-    err.SetFileName(filepath.Base(fn))
-    err.SetLineNum(lineNum)
-    err.SetMessage(errMessage)
-    return err
+    return e.BaseErr.Error()
 }
