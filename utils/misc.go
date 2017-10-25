@@ -78,7 +78,7 @@ func GetHomeDirectory() string {
 	return usr.HomeDir
 }
 
-// Potentially complex structures(such as DeploymentApplication, DeploymentPackage)
+// Potentially complex structures(such as DeploymentProject, DeploymentPackage)
 // could implement those interface which is convenient for put, get subtract in
 // containers etc.
 type Comparable interface {

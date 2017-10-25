@@ -98,9 +98,9 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		if utils.FileExists(deploymentPath) {
 			mm := parsers.NewYAMLParser()
 			deployment, _ := mm.ParseDeployment(deploymentPath)
-			credential = GetPropertyValue(credential, deployment.Application.Credential, path.Base(deploymentPath))
-			namespace = GetPropertyValue(namespace, deployment.Application.Namespace, path.Base(deploymentPath))
-			apiHost = GetPropertyValue(apiHost, deployment.Application.ApiHost, path.Base(deploymentPath))
+			credential = GetPropertyValue(credential, deployment.GetProject().Credential, path.Base(deploymentPath))
+			namespace = GetPropertyValue(namespace, deployment.GetProject().Namespace, path.Base(deploymentPath))
+			apiHost = GetPropertyValue(apiHost, deployment.GetProject().ApiHost, path.Base(deploymentPath))
 		}
 	}
 

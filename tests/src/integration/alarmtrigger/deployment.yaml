@@ -1,4 +1,4 @@
-application:
+project:
     name: HelloWorldEvery12Hours
     packages:
       helloworld:

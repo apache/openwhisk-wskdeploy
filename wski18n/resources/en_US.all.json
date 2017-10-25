@@ -334,6 +334,14 @@
   {
     "id": "The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
     "translation": "The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}]."
+  },
+  {
+    "id": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n",
+    "translation": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n"
+  },
+  {
+    "id": "WARNING: application in manifest file will soon be deprecated, please use project instead.\n",
+    "translation": "WARNING: application in manifest file will soon be deprecated, please use project instead.\n"
   }
 
 ]

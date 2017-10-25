@@ -1,4 +1,4 @@
-application:
+project:
   name: wskdeploy-samples
   namespace: /wskdeploy/samples/
   credential: user-credential

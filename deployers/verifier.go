@@ -23,7 +23,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
-// The verifier will filter the deployer against the target DeploymentApplication
+// The verifier will filter the deployer against the target DeploymentProject
 // the deployer will query the OpenWhisk platform for already deployed entities.
 // We assume the deployer and the manifest are targeted for the same namespace.
 type Verifier struct {
@@ -31,16 +31,16 @@ type Verifier struct {
 
 type Filter interface {
 	// Perform some filter.
-	Filter(deployer *ServiceDeployer, target *DeploymentApplication) (filtered *DeploymentApplication, err error)
+	Filter(deployer *ServiceDeployer, target *DeploymentProject) (filtered *DeploymentProject, err error)
 	// Perform some queries.
-	Query(deployer *ServiceDeployer) (da *DeploymentApplication, err error)
+	Query(deployer *ServiceDeployer) (da *DeploymentProject, err error)
 }
 
-func (vf *Verifier) Query(deployer *ServiceDeployer) (da *DeploymentApplication, err error) {
+func (vf *Verifier) Query(deployer *ServiceDeployer) (da *DeploymentProject, err error) {
 	pkgoptions := &whisk.PackageListOptions{false, 0, 0, 0, false}
 	packages, _, err := deployer.Client.Packages.List(pkgoptions)
 
-	da = NewDeploymentApplication()
+	da = NewDeploymentProject()
 	for _, pa := range packages {
 		deppack := NewDeploymentPackage()
 		deppack.Package, _ = convert(&pa)
@@ -49,7 +49,7 @@ func (vf *Verifier) Query(deployer *ServiceDeployer) (da *DeploymentApplication,
 	return da, nil
 }
 
-func (vf *Verifier) Filter(deployer *ServiceDeployer, target *DeploymentApplication) (rs *DeploymentApplication, err error) {
+func (vf *Verifier) Filter(deployer *ServiceDeployer, target *DeploymentProject) (rs *DeploymentProject, err error) {
 	//substract
 	for _, pa := range target.Packages {
 		for _, dpa := range deployer.Deployment.Packages {
@@ -59,7 +59,7 @@ func (vf *Verifier) Filter(deployer *ServiceDeployer, target *DeploymentApplicat
 		}
 	}
 
-	depApp := NewDeploymentApplication()
+	depApp := NewDeploymentProject()
 	fmt.Printf("Target Packages are %#v\n", target.Packages)
 	depApp.Packages = target.Packages
 	return depApp, nil
