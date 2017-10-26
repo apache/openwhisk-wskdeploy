@@ -1,9 +1,10 @@
-application:
+project:
   name: wskdeploy-samples
   namespace: /wskdeploy/samples/
 
-  package:
-      name: ${package_name}-${package_name}
+  packages:
+    test_package:
+      name: test_package
       namespace: /wskdeploy/samples/test
       credential: 12345678ABCDEF
       inputs:

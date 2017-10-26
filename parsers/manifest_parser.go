@@ -22,11 +22,9 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	"reflect"
 	"strings"
 
 	"encoding/base64"
-	"encoding/json"
 
 	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
@@ -112,9 +110,10 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 		if manifest.Packages != nil {
 			packages = manifest.Packages
 		} else {
-			packages = manifest.Application.Packages
+			packages = manifest.GetProject().Packages
 		}
 	}
+
 	for n, p := range packages {
 		d, err := dm.ComposeDependencies(p, projectPath, filePath, n)
 		if err == nil {
@@ -195,6 +194,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string) (map[string]*whisk.Package, error) {
 	packages := map[string]*whisk.Package{}
 	manifestPackages := make(map[string]Package)
+
 	if manifest.Package.Packagename != "" {
 		fmt.Println("WARNING: using package inside of manifest file will soon be deprecated, please use packages instead.")
 		s, err := dm.ComposePackage(manifest.Package, manifest.Package.Packagename, filePath)
@@ -204,21 +204,22 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string) (map[s
 			return nil, err
 		}
 	} else {
-        if manifest.Packages != nil {
-		manifestPackages = manifest.Packages
-        } else {
-		manifestPackages = manifest.Application.Packages
-        }
-    }
+		if manifest.Packages != nil {
+			manifestPackages = manifest.Packages
+		} else {
+			manifestPackages = manifest.GetProject().Packages
+		}
+	}
 
-    for n, p := range manifestPackages {
-        s, err := dm.ComposePackage(p, n, filePath)
-        if err == nil {
-		packages[n] = s
-        } else {
-		return nil, err
-        }
-    }
+	for n, p := range manifestPackages {
+		s, err := dm.ComposePackage(p, n, filePath)
+
+		if err == nil {
+			packages[n] = s
+		} else {
+			return nil, err
+		}
+	}
 
 	return packages, nil
 }
@@ -281,29 +282,33 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 
 func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YAML) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
-    manifestPackages := make(map[string]Package)
+
+	manifestPackages := make(map[string]Package)
+
 	if mani.Package.Packagename != "" {
 		return dm.ComposeSequences(namespace, mani.Package.Sequences, mani.Package.Packagename)
 	} else {
-        if mani.Packages != nil {
-            manifestPackages = mani.Packages
-        } else {
-            manifestPackages = mani.Application.Packages
-        }
-    }
-    for n, p := range manifestPackages {
-        s, err := dm.ComposeSequences(namespace, p.Sequences, n)
-        if err == nil {
-            s1 = append(s1, s...)
-        } else {
-            return nil, err
-        }
-    }
+		if mani.Packages != nil {
+			manifestPackages = mani.Packages
+		} else {
+			manifestPackages = mani.GetProject().Packages
+		}
+	}
+
+	for n, p := range manifestPackages {
+		s, err := dm.ComposeSequences(namespace, p.Sequences, n)
+		if err == nil {
+			s1 = append(s1, s...)
+		} else {
+			return nil, err
+		}
+	}
 	return s1, nil
 }
 
 func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Sequence, packageName string) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
+
 	for key, sequence := range sequences {
 		wskaction := new(whisk.Action)
 		wskaction.Exec = new(whisk.Exec)
@@ -347,16 +352,17 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath string) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
 	manifestPackages := make(map[string]Package)
+
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeActions(filePath, manifest.Package.Actions, manifest.Package.Packagename)
 	} else {
 		if manifest.Packages != nil {
 			manifestPackages = manifest.Packages
 		} else {
-			manifestPackages = manifest.Application.Packages
+			manifestPackages = manifest.GetProject().Packages
 		}
-    	}
-    	for n, p := range manifestPackages {
+	}
+	for n, p := range manifestPackages {
 		a, err := dm.ComposeActions(filePath, p.Actions, n)
 		if err == nil {
 			s1 = append(s1, a...)
@@ -425,7 +431,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					kind = "nodejs:6"
 					errStr := wski18n.T("Unsupported runtime type, set to nodejs")
 					whisk.Debug(whisk.DbgWarn, errStr)
-					// TODO() add the user input kind here if interactive
+				// TODO() add the user input kind here if interactive
 				}
 
 				wskaction.Exec.Kind = kind
@@ -455,12 +461,12 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				wskaction.Exec.Kind = action.Runtime
 
 			} else if utils.Flags.Strict {
-                		wskaction.Exec.Kind = action.Runtime
-            		} else {
+				wskaction.Exec.Kind = action.Runtime
+			} else {
 				errStr := wski18n.T("wskdeploy has chosen a particular runtime for the action.\n")
 				whisk.Debug(whisk.DbgWarn, errStr)
 			}
-                }
+		}
 
 		// we can specify the name of the action entry point using main
 		if action.Main != "" {
@@ -588,30 +594,32 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath string) ([]*whisk.Trigger, error) {
 	var triggers []*whisk.Trigger = make([]*whisk.Trigger, 0)
-    manifestPackages := make(map[string]Package)
+	manifestPackages := make(map[string]Package)
+
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeTriggers(filePath, manifest.Package)
 	} else {
-        if manifest.Packages != nil {
-            manifestPackages = manifest.Packages
-        } else {
-            manifestPackages = manifest.Application.Packages
-        }
-    }
-    for _, p := range manifestPackages {
-        t, err := dm.ComposeTriggers(filePath, p)
-        if err == nil {
-            triggers = append(triggers, t...)
-        } else {
-            return nil, err
-        }
-    }
+		if manifest.Packages != nil {
+			manifestPackages = manifest.Packages
+		} else {
+			manifestPackages = manifest.GetProject().Packages
+		}
+	}
+	for _, p := range manifestPackages {
+		t, err := dm.ComposeTriggers(filePath, p)
+		if err == nil {
+			triggers = append(triggers, t...)
+		} else {
+			return nil, err
+		}
+	}
 	return triggers, nil
 }
 
 func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package) ([]*whisk.Trigger, error) {
 	var errorParser error
 	var t1 []*whisk.Trigger = make([]*whisk.Trigger, 0)
+
 	for _, trigger := range pkg.GetTriggerList() {
 		wsktrigger := new(whisk.Trigger)
 		wsktrigger.Name = trigger.Name
@@ -667,30 +675,33 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package) ([]*whisk.Tr
 
 func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML) ([]*whisk.Rule, error) {
 	var rules []*whisk.Rule = make([]*whisk.Rule, 0)
-    manifestPackages := make(map[string]Package)
+	manifestPackages := make(map[string]Package)
+
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeRules(manifest.Package, manifest.Package.Packagename)
 	} else {
-        if manifest.Packages != nil {
-            manifestPackages = manifest.Packages
-        } else {
-            manifestPackages = manifest.Application.Packages
-        }
-    }
-    for n, p := range manifestPackages {
-        r, err := dm.ComposeRules(p, n)
-        if err == nil {
-            rules = append(rules, r...)
-        } else {
-            return nil, err
-        }
-    }
+		if manifest.Packages != nil {
+			manifestPackages = manifest.Packages
+		} else {
+			manifestPackages = manifest.GetProject().Packages
+		}
+	}
+
+	for n, p := range manifestPackages {
+		r, err := dm.ComposeRules(p, n)
+		if err == nil {
+			rules = append(rules, r...)
+		} else {
+			return nil, err
+		}
+	}
 	return rules, nil
 }
 
 
 func (dm *YAMLParser) ComposeRules(pkg Package, packageName string) ([]*whisk.Rule, error) {
 	var r1 []*whisk.Rule = make([]*whisk.Rule, 0)
+
 	for _, rule := range pkg.GetRuleList() {
 		wskrule := rule.ComposeWskRule()
 		act := strings.TrimSpace(wskrule.Action.(string))
@@ -705,355 +716,37 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string) ([]*whisk.Ru
 
 func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *YAML) ([]*whisk.ApiCreateRequest, error) {
 	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
-    manifestPackages := make(map[string]Package)
+	manifestPackages := make(map[string]Package)
+
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeApiRecords(manifest.Package)
 	} else {
-        if manifest.Packages != nil {
-            manifestPackages = manifest.Packages
-        } else {
-            manifestPackages = manifest.Application.Packages
-        }
-    }
-    for _, p := range manifestPackages {
-        r, err := dm.ComposeApiRecords(p)
-        if err == nil {
-            requests = append(requests, r...)
-        } else {
-            return nil, err
-        }
-    }
+		if manifest.Packages != nil {
+			manifestPackages = manifest.Packages
+		} else {
+			manifestPackages = manifest.GetProject().Packages
+		}
+	}
+
+	for _, p := range manifestPackages {
+		r, err := dm.ComposeApiRecords(p)
+		if err == nil {
+			requests = append(requests, r...)
+		} else {
+			return nil, err
+		}
+	}
 	return requests, nil
 }
 
 func (dm *YAMLParser) ComposeApiRecords(pkg Package) ([]*whisk.ApiCreateRequest, error) {
 	var acq []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 	apis := pkg.GetApis()
+
 	for _, api := range apis {
 		acr := new(whisk.ApiCreateRequest)
 		acr.ApiDoc = api
 		acq = append(acq, acr)
 	}
 	return acq, nil
-}
-
-// TODO(): Support other valid Package Manifest types
-// TODO(): i.e., timestamp, version, string256, string64, string16
-// TODO(): Support JSON schema validation for type: json
-// TODO(): Support OpenAPI schema validation
-
-var validParameterNameMap = map[string]string{
-	"string":  "string",
-	"int":     "integer",
-	"float":   "float",
-	"bool":    "boolean",
-	"int8":    "integer",
-	"int16":   "integer",
-	"int32":   "integer",
-	"int64":   "integer",
-	"float32": "float",
-	"float64": "float",
-	"json":    "json",
-	"map":     "json",
-}
-
-var typeDefaultValueMap = map[string]interface{}{
-	"string":  "",
-	"integer": 0,
-	"float":   0.0,
-	"boolean": false,
-	"json":    make(map[string]interface{}),
-	// TODO() Support these types + their validation
-	// timestamp
-	// null
-	// version
-	// string256
-	// string64
-	// string16
-	// scalar-unit
-	// schema
-	// object
-}
-
-func isValidParameterType(typeName string) bool {
-	_, isValid := typeDefaultValueMap[typeName]
-	return isValid
-}
-
-// TODO(): throw errors
-func getTypeDefaultValue(typeName string) interface{} {
-
-	if val, ok := typeDefaultValueMap[typeName]; ok {
-		return val
-	} else {
-		// TODO() throw an error "type not found"
-	}
-	return nil
-}
-
-func ResolveParamTypeFromValue(name string, value interface{}, filePath string) (string, error) {
-	// Note: 'string' is the default type if not specified and not resolvable.
-	var paramType string = "string"
-	var err error = nil
-
-	if value != nil {
-		actualType := reflect.TypeOf(value).Kind().String()
-
-		// See if the actual type of the value is valid
-		if normalizedTypeName, found := validParameterNameMap[actualType]; found {
-			// use the full spec. name
-			paramType = normalizedTypeName
-
-		} else {
-			// raise an error if parameter's value is not a known type
-			// TODO() - move string to i18n
-			msgs := []string{"Parameter [" + name + "] has a value that is not a known type. [" + actualType + "]"}
-			err = utils.NewYAMLParserErr(filePath, nil, msgs)
-		}
-	}
-	return paramType, err
-}
-
-
-/*
-    resolveSingleLineParameter assures that a Parameter's Type is correctly identified and set from its Value.
-
-    Additionally, this function:
-
-    - detects if the parameter value contains the name of a valid OpenWhisk parameter types. if so, the
-      - param.Type is set to detected OpenWhisk parameter type.
-      - param.Value is set to the zero (default) value for that OpenWhisk parameter type.
- */
-func resolveSingleLineParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
-	var errorParser error
-
-	if !param.multiline {
-		// We need to identify parameter Type here for later validation
-		param.Type, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
-
-		// In single-line format, the param's <value> can be a "Type name" and NOT an actual value.
-		// if this is the case, we must detect it and set the value to the default for that type name.
-		if param.Value != nil && param.Type == "string" {
-			// The value is a <string>; now we must test if is the name of a known Type
-			if isValidParameterType(param.Value.(string)) {
-				// If the value is indeed the name of a Type, we must change BOTH its
-				// Type to be that type and its value to that Type's default value
-				param.Type = param.Value.(string)
-				param.Value = getTypeDefaultValue(param.Type)
-				fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, param.Value)
-			}
-		}
-
-	} else {
-		msgs := []string{"Parameter [" + paramName + "] is not single-line format."}
-		return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
-	}
-
-	return param.Value, errorParser
-}
-
-/*
-    resolveMultiLineParameter assures that the values for Parameter Type and Value are properly set and are valid.
-
-    Additionally, this function:
-    - uses param.Default as param.Value if param.Value is not provided
-    - uses the actual param.Value data type for param.type if param.Type is not provided
-
- */
-func resolveMultiLineParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
-	var errorParser error
-
-	if param.multiline {
-		var valueType string
-
-		// if we do not have a value, but have a default, use it for the value
-		if param.Value == nil && param.Default != nil {
-			param.Value = param.Default
-		}
-
-		// Note: if either the value or default is in conflict with the type then this is an error
-		valueType, errorParser = ResolveParamTypeFromValue(paramName, param.Value, filePath)
-
-		// if we have a declared parameter Type, assure that it is a known value
-		if param.Type != "" {
-			if !isValidParameterType(param.Type) {
-				// TODO() - move string to i18n
-				msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
-				return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
-			}
-		} else {
-			// if we do not have a value for the Parameter Type, use the Parameter Value's Type
-			param.Type = valueType
-		}
-
-		// TODO{} if the declared and actual parameter type conflict, generate TypeMismatch error
-		//if param.Type != valueType{
-		//	errorParser = utils.NewParameterTypeMismatchError("", param.Type, valueType )
-		//}
-        } else {
-		msgs := []string{"Parameter [" + paramName + "] is not multiline format."}
-		return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
-	}
-
-
-	return param.Value, errorParser
-}
-
-
-/*
-    resolveJSONParameter assure JSON data is converted to a map[string]{interface*} type.
-
-    This function handles the forms JSON data appears in:
-    1) a string containing JSON, which needs to be parsed into map[string]interface{}
-    2) is a map of JSON (but not a map[string]interface{}
- */
-func resolveJSONParameter(paramName string, param *Parameter, value interface{}, filePath string) (interface{}, error) {
-	var errorParser error
-
-	if param.Type == "json" {
-		// Case 1: if user set parameter type to 'json' and the value's type is a 'string'
-		if str, ok := value.(string); ok {
-			var parsed interface{}
-			errParser := json.Unmarshal([]byte(str), &parsed)
-			if errParser == nil {
-				//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, parsed)
-				return parsed, errParser
-			}
-		}
-
-		// Case 2: value contains a map of JSON
-		// We must make sure the map type is map[string]interface{}; otherwise we cannot
-		// marshall it later on to serialize in the body of an HTTP request.
-		if( param.Value != nil && reflect.TypeOf(param.Value).Kind() == reflect.Map ) {
-			if _, ok := param.Value.(map[interface{}]interface{}); ok {
-				var temp map[string]interface{} =
-					utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
-				//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, temp)
-				return temp, errorParser
-			}
-		} // else TODO{}
-	} else {
-		msgs := []string{"Parameter [" + paramName + "] is not JSON format."}
-		return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
-	}
-
-	return param.Value, errorParser
-}
-
-/*
-    ResolveParameter assures that the Parameter structure's values are correctly filled out for
-    further processing.  This includes special processing for
-
-    - single-line format parameters
-      - deriving missing param.Type from param.Value
-      - resolving case where param.Value contains a valid Parameter type name
-    - multi-line format parameters:
-      - assures that param.Value is set while taking into account param.Default
-      - validating param.Type
-
-    Note: parameter values may set later (overridden) by an (optional) Deployment file
-
- */
-func ResolveParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
-
-	var errorParser error
-	// default parameter value to empty string
-	var value interface{} = ""
-
-	// Trace Parameter struct before any resolution
-	//dumpParameter(paramName, param, "BEFORE")
-
-	// Parameters can be single OR multi-line declarations which must be processed/validated differently
-	if !param.multiline {
-
-		// This function will assure that param.Value and param.Type are correctly set
-		value, errorParser = resolveSingleLineParameter(paramName, param, filePath)
-
-	} else {
-
-		value, errorParser = resolveMultiLineParameter(paramName, param, filePath)
-	}
-
-	// String value pre-processing (interpolation)
-	// See if we have any Environment Variable replacement within the parameter's value
-
-	// Make sure the parameter's value is a valid, non-empty string
-	if ( param.Value != nil && param.Type == "string") {
-		// perform $ notation replacement on string if any exist
-		value = utils.GetEnvVar(param.Value)
-	}
-
-	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON
-	if param.Type == "json" {
-		value, errorParser = resolveJSONParameter(paramName, param, value, filePath)
-        }
-
-	// Default value to zero value for the Type
-	// Do NOT error/terminate as Value may be provided later by a Deployment file.
-	if value == nil {
-		value = getTypeDefaultValue(param.Type)
-		// @TODO(): Need warning message here to warn of default usage, support for warnings (non-fatal)
-		//msgs := []string{"Parameter [" + paramName + "] is not multiline format."}
-		//return param.Value, utils.NewParserErr(filePath, nil, msgs)
-	}
-
-	// Trace Parameter struct after resolution
-	//dumpParameter(paramName, param, "AFTER")
-	//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, value)
-	return value, errorParser
-}
-
-// Provide custom Parameter marshalling and unmarshalling
-
-type ParsedParameter Parameter
-
-func (n *Parameter) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var aux ParsedParameter
-
-	// Attempt to unmarshall the multi-line schema
-	if err := unmarshal(&aux); err == nil {
-		n.multiline = true
-		n.Type = aux.Type
-		n.Description = aux.Description
-		n.Value = aux.Value
-		n.Required = aux.Required
-		n.Default = aux.Default
-		n.Status = aux.Status
-		n.Schema = aux.Schema
-		return nil
-	}
-
-	// If we did not find the multi-line schema, assume in-line (or single-line) schema
-	var inline interface{}
-	if err := unmarshal(&inline); err != nil {
-		return err
-	}
-
-	n.Value = inline
-	n.multiline = false
-	return nil
-}
-
-func (n *Parameter) MarshalYAML() (interface{}, error) {
-	if _, ok := n.Value.(string); len(n.Type) == 0 && len(n.Description) == 0 && ok {
-		if !n.Required && len(n.Status) == 0 && n.Schema == nil {
-			return n.Value.(string), nil
-		}
-	}
-
-	return n, nil
-}
-
-// Provides debug/trace support for Parameter type
-func dumpParameter(paramName string, param *Parameter, separator string) {
-
-	fmt.Printf("%s:\n", separator)
-	fmt.Printf("\t%s: (%T)\n", paramName, param)
-	if param != nil {
-		fmt.Printf("\t\tParameter.Description: [%s]\n", param.Description)
-		fmt.Printf("\t\tParameter.Type: [%s]\n", param.Type)
-		fmt.Printf("\t\t--> Actual Type: [%T]\n", param.Value)
-		fmt.Printf("\t\tParameter.Value: [%v]\n", param.Value)
-		fmt.Printf("\t\tParameter.Default: [%v]\n", param.Default)
-	}
 }

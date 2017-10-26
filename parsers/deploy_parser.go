@@ -72,9 +72,9 @@ func (dm *YAMLParser) convertErrorToLinesMsgs(errorString string) (lines []strin
     return
 }
 
-//********************Application functions*************************//
+//********************Project functions*************************//
 //This is for parse the deployment yaml file.
-func (app *Application) GetPackageList() []Package {
+func (app *Project) GetPackageList() []Package {
 	var s1 []Package = make([]Package, 0)
 	for _, pkg := range app.Packages {
 		pkg.Packagename = pkg.Packagename

@@ -19,7 +19,7 @@ package parsers
 
 import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
-    "github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 )
 
 // structs that denotes the sample manifest.yaml, wrapped yaml.v2
@@ -51,34 +51,33 @@ type YAMLParser struct {
 
 type Action struct {
 	//mapping to wsk.Action.Version
-	Version  string `yaml:"version"`  //used in manifest.yaml
-	Location string `yaml:"location"` //deprecated, used in manifest.yaml
-	Function string `yaml:"function"` //used in manifest.yaml
-	Runtime  string `yaml:"runtime,omitempty"`  //used in manifest.yaml
+	Version  string `yaml:"version"`           //used in manifest.yaml
+	Location string `yaml:"location"`          //deprecated, used in manifest.yaml
+	Function string `yaml:"function"`          //used in manifest.yaml
+	Runtime  string `yaml:"runtime,omitempty"` //used in manifest.yaml
 	//mapping to wsk.Action.Namespace
-	Namespace  string                 `yaml:"namespace"`  //used in deployment.yaml
-	Credential string                 `yaml:"credential"` //used in deployment.yaml
-	Inputs     map[string]Parameter   `yaml:"inputs"`     //used in both manifest.yaml and deployment.yaml
-	Outputs    map[string]Parameter   `yaml:"outputs"`    //used in manifest.yaml
+	Namespace  string               `yaml:"namespace"`  //used in deployment.yaml
+	Credential string               `yaml:"credential"` //used in deployment.yaml
+	Inputs     map[string]Parameter `yaml:"inputs"`     //used in both manifest.yaml and deployment.yaml
+	Outputs    map[string]Parameter `yaml:"outputs"`    //used in manifest.yaml
 	//mapping to wsk.Action.Name
 	Name        string
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
-	ExposedUrl string `yaml:"exposedUrl"` // used in manifest.yaml
-	Webexport  string `yaml:"web-export"` // used in manifest.yaml
-	Main       string `yaml:"main"`       // used in manifest.yaml
-	Limits     *Limits `yaml:"limits"`       // used in manifest.yaml
+	ExposedUrl string  `yaml:"exposedUrl"` // used in manifest.yaml
+	Webexport  string  `yaml:"web-export"` // used in manifest.yaml
+	Main       string  `yaml:"main"`       // used in manifest.yaml
+	Limits     *Limits `yaml:"limits"`     // used in manifest.yaml
 }
 
-
 type Limits struct {
-	Timeout *int `yaml:"timeout,omitempty"` //in ms, [100 ms,300000ms]
-	Memory  *int `yaml:"memorySize,omitempty"`//in MB, [128 MB,512 MB]
-	Logsize *int `yaml:"logSize,omitempty"`//in MB, [0MB,10MB]
+	Timeout               *int `yaml:"timeout,omitempty"`               //in ms, [100 ms,300000ms]
+	Memory                *int `yaml:"memorySize,omitempty"`            //in MB, [128 MB,512 MB]
+	Logsize               *int `yaml:"logSize,omitempty"`               //in MB, [0MB,10MB]
 	ConcurrentActivations *int `yaml:"concurrentActivations,omitempty"` //not changeable via APIs
-	UserInvocationRate *int `yaml:"userInvocationRate,omitempty"` //not changeable via APIs
-	CodeSize *int `yaml:"codeSize,omitempty"` //not changeable via APIs
-	ParameterSize *int `yaml:"parameterSize,omitempty"` //not changeable via APIs
+	UserInvocationRate    *int `yaml:"userInvocationRate,omitempty"`    //not changeable via APIs
+	CodeSize              *int `yaml:"codeSize,omitempty"`              //not changeable via APIs
+	ParameterSize         *int `yaml:"parameterSize,omitempty"`         //not changeable via APIs
 }
 
 type Sequence struct {
@@ -106,15 +105,15 @@ type Parameter struct {
 
 type Trigger struct {
 	//mapping to ????
-	Feed	   string `yaml:"feed"` //used in manifest.yaml
+	Feed string `yaml:"feed"` //used in manifest.yaml
 	//mapping to wsk.Trigger.Namespace
 	Namespace  string               `yaml:"namespace"`  //used in deployment.yaml
 	Credential string               `yaml:"credential"` //used in deployment.yaml
 	Inputs     map[string]Parameter `yaml:"inputs"`     //used in deployment.yaml
 	//mapping to wsk.Trigger.Name
-	Name       string
+	Name        string
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
-	Source     string                 `yaml:source` // deprecated, used in manifest.yaml
+	Source      string                 `yaml:source` // deprecated, used in manifest.yaml
 	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
 }
 
@@ -168,7 +167,7 @@ type Package struct {
 	Apis map[string]map[string]map[string]map[string]string `yaml:"apis"` //used in manifest.yaml
 }
 
-type Application struct {
+type Project struct {
 	Name       string             `yaml:"name"`      //used in deployment.yaml
 	Namespace  string             `yaml:"namespace"` //used in deployment.yaml
 	Credential string             `yaml:"credential"`
@@ -179,45 +178,60 @@ type Application struct {
 }
 
 type YAML struct {
-    Application Application       `yaml:"application"` //used in deployment.yaml
-    Packages   map[string]Package `yaml:"packages"` //used in deployment.yaml
-    Package    Package            `yaml:"package"`
-    Filepath    string      //file path of the yaml file
+	Application Project            `yaml:"application"` //used in deployment.yaml (being deprecated)
+	Project     Project            `yaml:"project"`     //used in deployment.yaml
+	Packages    map[string]Package `yaml:"packages"`    //used in deployment.yaml
+	Package     Package            `yaml:"package"`
+	Filepath    string             //file path of the yaml file
+}
+
+// function to return Project or Application depending on what is specified in
+// manifest and deployment files
+func (yaml *YAML) GetProject() Project {
+	if yaml.Application.Name == "" {
+		return yaml.Project
+	}
+	return yaml.Application
 }
 
 func convertSinglePackageName(packageName string) string {
-    if len(packageName) != 0 {
-        packageNameEnv := utils.GetEnvVar(packageName)
-        if str, ok := packageNameEnv.(string); ok {
-            return str
-        } else {
-            return packageName
-        }
-    }
-    return packageName
+	if len(packageName) != 0 {
+		packageNameEnv := utils.GetEnvVar(packageName)
+		if str, ok := packageNameEnv.(string); ok {
+			return str
+		} else {
+			return packageName
+		}
+	}
+	return packageName
 }
 
 func convertPackageName(packageMap map[string]Package) map[string]Package {
-    packages := make(map[string]Package)
-    for packName, depPacks := range packageMap {
-        name := packName
-        packageName := utils.GetEnvVar(packName)
-        if str, ok := packageName.(string); ok {
-            name = str
-        }
-        depPacks.Packagename = convertSinglePackageName(depPacks.Packagename)
-        packages[name] = depPacks
-    }
-    return packages
+	packages := make(map[string]Package)
+	for packName, depPacks := range packageMap {
+		name := packName
+		packageName := utils.GetEnvVar(packName)
+		if str, ok := packageName.(string); ok {
+			name = str
+		}
+		depPacks.Packagename = convertSinglePackageName(depPacks.Packagename)
+		packages[name] = depPacks
+	}
+	return packages
 }
 
 func ReadEnvVariable(yaml *YAML) *YAML {
-    yaml.Application.Package.Packagename = convertSinglePackageName(yaml.Application.Package.Packagename)
-    yaml.Package.Packagename = convertSinglePackageName(yaml.Package.Packagename)
-    yaml.Application.Packages = convertPackageName(yaml.Application.Packages)
-    yaml.Packages = convertPackageName(yaml.Packages)
-
-    return yaml
+	if yaml.Application.Name != "" {
+		yaml.Application.Package.Packagename = convertSinglePackageName(yaml.Application.Package.Packagename)
+		yaml.Package.Packagename = convertSinglePackageName(yaml.Package.Packagename)
+		yaml.Application.Packages = convertPackageName(yaml.Application.Packages)
+	} else {
+		yaml.Project.Package.Packagename = convertSinglePackageName(yaml.Project.Package.Packagename)
+		yaml.Package.Packagename = convertSinglePackageName(yaml.Package.Packagename)
+		yaml.Project.Packages = convertPackageName(yaml.Project.Packages)
+	}
+	yaml.Packages = convertPackageName(yaml.Packages)
+	return yaml
 }
 
 //********************Trigger functions*************************//
