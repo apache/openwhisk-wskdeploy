@@ -1,4 +1,4 @@
-# How to generate the file of i18n_resources.go for internationalization
+# How to generate the file i18n_resources.go for internationalization
 
 As a contributor to wskdeploy, the file of i18n_resources.go needs to regenerated,
 when you add or change any localized message. In order to generate i18n_resources.go,
