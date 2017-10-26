@@ -153,6 +153,11 @@ $ ./gradlew distDocker -PcrossCompileWSKDEPLOY=true
 
 Then, you will find the binaries and their compressed packages generated under the folder ```bin/<os>/<arch>/``` for each supported Operating System and CPU Architecture pair.
 
+### Building for Internationalization
+
+Please follow this process for building any changes to translatable strings:
+[How to generate the file i18n_resources.go for internationalization](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/wski18n/README.md)
+
 <!-- ----------------------------------------------------------------------------- -->
 
 ## Troubleshooting
