@@ -296,7 +296,7 @@ type ParsedParameter Parameter
 func (n *Parameter) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var aux ParsedParameter
 
-	// Attempt to unmarshall the multi-line schema
+	// Attempt to unmarshal the multi-line schema
 	if err := unmarshal(&aux); err == nil {
 		n.multiline = true
 		n.Type = aux.Type
