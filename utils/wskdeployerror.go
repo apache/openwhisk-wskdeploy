@@ -20,7 +20,6 @@ package utils
 import (
     "fmt"
     "runtime"
-    //"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
     "strings"
     "path/filepath"
 )
