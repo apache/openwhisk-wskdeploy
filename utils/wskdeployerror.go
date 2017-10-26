@@ -33,6 +33,7 @@ const (
     TYPE = "Type"
     EXPECTED = "expected"
     ACTUAL = "actual"
+    YAML_FILE = "YAML file"
 
     ERROR_COMMAND_FAILED = "ERROR_COMMAND_FAILED"
     ERROR_MANIFEST_FILE_NOT_FOUND = "ERROR_MANIFEST_FILE_NOT_FOUND"
@@ -236,7 +237,7 @@ func (e *YAMLParserErr) Error() string {
         }
         result[index] = s
     }
-    return fmt.Sprintf("\n==> %s [%d]: Failed to parse the yaml file: %s: \n%s", e.FileName, e.LineNum, e.YamlFile, strings.Join(result, "\n"))
+    return fmt.Sprintf("\n==> %s [%d]: %s: %s: \n%s", e.FileName, e.LineNum, YAML_FILE, e.YamlFile, strings.Join(result, "\n"))
 }
 
 /*
