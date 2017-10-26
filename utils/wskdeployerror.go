@@ -264,21 +264,3 @@ func NewParameterTypeMismatchError(param string, expectedType string, actualType
 func (e *ParameterTypeMismatchError) Error() string {
     return e.BaseErr.Error()
 }
-
-//func TestCustomErrors(){
-//    err1 := NewCommandError("Deploy", "Bad error")
-//    str1 := err1.Error()
-//    fmt.Printf(str1)
-//
-//    err2 := NewErrorManifestFileNotFound("Not Found")
-//    str2 := err2.Error()
-//    fmt.Printf(str2)
-//
-//    //err3 := utils.NewWhiskClientError("Some error message", 3201 )
-//    //str3 := err3.Error()
-//    //fmt.Printf(str3)
-//
-//    err6 := NewParameterTypeMismatchError("order_info", "json", "integer")
-//    str6 := err6.Error()
-//    fmt.Printf(str6)
-//}
