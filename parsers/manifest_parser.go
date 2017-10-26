@@ -523,24 +523,22 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		/*
  		 *  Action.Annotations
  		 */
-		keyValArr = make(whisk.KeyValueArr, 0)
+		listOfAnnotations := make(whisk.KeyValueArr, 0)
 		for name, value := range action.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
 			keyVal.Value = utils.GetEnvVar(value)
-			keyValArr = append(keyValArr, keyVal)
-			// TODO{} Fix Annottions; they are not added to Action if web-export key is not present
-			// Need to assure annotations are added/set even if web-export is not set on the action.
+			listOfAnnotations = append(listOfAnnotations, keyVal)
+		}
+		if len(listOfAnnotations) > 0 {
+			wskaction.Annotations = append(wskaction.Annotations, listOfAnnotations...)
 		}
 
 		/*
   		 *  Web Export
   		 */
-		// only set the webaction when the annotations are not empty.
 		if action.Webexport == "true" {
-			// TODO() why is this commented out?  we should now support annotations...
-			//wskaction.Annotations = keyValArr
-			wskaction.Annotations, errorParser = utils.WebAction("yes", keyValArr, action.Name, false)
+			wskaction.Annotations, errorParser = utils.WebAction("yes", listOfAnnotations, false)
 			if errorParser != nil {
 				return s1, errorParser
 			}

@@ -215,7 +215,11 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 				}
 
 				if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
-					wskAction.Action.Annotations = keyValArr
+					// appending to already existing annotations
+					// two different set of annotations can be specified in manifest and deployment
+					// therefore do not overwrite annotations from manifest file
+					// merge annotations from both manifest and deployment files
+					wskAction.Action.Annotations = append(wskAction.Action.Annotations , keyValArr...)
 				}
 			}
 		}
