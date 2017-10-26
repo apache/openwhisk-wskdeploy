@@ -1611,9 +1611,20 @@ func TestComposeActionForAnnotations(t *testing.T) {
         "action_annotation_1": "this is annotation 1",
         "action_annotation_2": "this is annotation 2",
         "action_annotation_3": "this is annotation 3",
-        "action_annotation_4": "this is annotation 44",
+        "action_annotation_4": "this is annotation 4",
     }
     assert.Equal(t, len(actual_annotations), len(expected_annotations), "Could not find expected number of annotations specified in manifest file")
     eq := reflect.DeepEqual(actual_annotations, expected_annotations)
+    assert.True(t, eq, "Expected list of annotations does not match with actual list, expected annotations: %v actual annotations: %v", expected_annotations, actual_annotations)
+
+    pkg_name = "packageActionAnnotationsWithWebAction"
+    pkg = manifest.Packages[pkg_name]
+    assert.NotNil(t, pkg, "Could not find package with name " + pkg_name)
+    action = pkg.Actions[action_name]
+    assert.NotNil(t, action, "Could not find action with name " + action_name)
+    actual_annotations = action.Annotations
+    expected_annotations["web-export"] = true
+    assert.Equal(t, len(actual_annotations), len(expected_annotations), "Could not find expected number of annotations specified in manifest file")
+    eq = reflect.DeepEqual(actual_annotations, expected_annotations)
     assert.True(t, eq, "Expected list of annotations does not match with actual list, expected annotations: %v actual annotations: %v", expected_annotations, actual_annotations)
 }
