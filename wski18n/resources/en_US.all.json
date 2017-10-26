@@ -8,10 +8,6 @@
     "translation": "Missing 'cmd' input key"
   },
   {
-    "id": "missing manifest.yaml file",
-    "translation": "Missing manifest.yaml file"
-  },
-  {
     "id": "authorization `KEY`",
     "translation": "authorization `KEY`"
   },
@@ -106,14 +102,6 @@
   {
     "id": "Got error creating action with error message: {{.err}} and error code: {{.code}}.\n",
     "translation": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "OpenWhisk Client Error",
-    "translation": "OpenWhisk Client Error"
-  },
-  {
-    "id": "Invalid input of Yaml file",
-    "translation": "Invalid input of Yaml file"
   },
   {
     "id": "Got error creating api with error message: {{.err}} and error code: {{.code}}.\n",

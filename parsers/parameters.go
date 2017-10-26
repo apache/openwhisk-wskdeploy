@@ -95,7 +95,7 @@ func ResolveParamTypeFromValue(name string, value interface{}, filePath string) 
 			// raise an error if parameter's value is not a known type
 			// TODO() - move string to i18n
 			msgs := []string{"Parameter [" + name + "] has a value that is not a known type. [" + actualType + "]"}
-			err = utils.NewParserErr(filePath, nil, msgs)
+			err = utils.NewYAMLParserErr(filePath, nil, msgs)
 		}
 	}
 	return paramType, err
@@ -127,13 +127,13 @@ func resolveSingleLineParameter(paramName string, param *Parameter, filePath str
 				// Type to be that type and its value to that Type's default value
 				param.Type = param.Value.(string)
 				param.Value = getTypeDefaultValue(param.Type)
-				fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, param.Value)
+				//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, param.Value)
 			}
 		}
 
 	} else {
 		msgs := []string{"Parameter [" + paramName + "] is not single-line format."}
-		return param.Value, utils.NewParserErr(filePath, nil, msgs)
+		return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
 	}
 
 	return param.Value, errorParser
@@ -166,7 +166,7 @@ func resolveMultiLineParameter(paramName string, param *Parameter, filePath stri
 			if !isValidParameterType(param.Type) {
 				// TODO() - move string to i18n
 				msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
-				return param.Value, utils.NewParserErr(filePath, nil, msgs)
+				return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
 			}
 		} else {
 			// if we do not have a value for the Parameter Type, use the Parameter Value's Type
@@ -179,7 +179,7 @@ func resolveMultiLineParameter(paramName string, param *Parameter, filePath stri
 		//}
 	} else {
 		msgs := []string{"Parameter [" + paramName + "] is not multiline format."}
-		return param.Value, utils.NewParserErr(filePath, nil, msgs)
+		return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
 	}
 
 
@@ -221,7 +221,7 @@ func resolveJSONParameter(paramName string, param *Parameter, value interface{},
 		} // else TODO{}
 	} else {
 		msgs := []string{"Parameter [" + paramName + "] is not JSON format."}
-		return param.Value, utils.NewParserErr(filePath, nil, msgs)
+		return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
 	}
 
 	return param.Value, errorParser
@@ -296,7 +296,7 @@ type ParsedParameter Parameter
 func (n *Parameter) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var aux ParsedParameter
 
-	// Attempt to unmarshall the multi-line schema
+	// Attempt to unmarshal the multi-line schema
 	if err := unmarshal(&aux); err == nil {
 		n.multiline = true
 		n.Type = aux.Type

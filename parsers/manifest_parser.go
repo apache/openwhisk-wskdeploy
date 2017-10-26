@@ -41,7 +41,7 @@ func ReadOrCreateManifest() (*YAML, error) {
 		dat, _ := ioutil.ReadFile(utils.ManifestFileNameYaml)
 		err := NewYAMLParser().Unmarshal(dat, &maniyaml)
 		if err != nil {
-			return &maniyaml, utils.NewInputYamlFileError(err.Error())
+			return &maniyaml, utils.NewYAMLFileReadError(err.Error())
 		}
 	}
 	return &maniyaml, nil
@@ -51,12 +51,12 @@ func ReadOrCreateManifest() (*YAML, error) {
 func Write(manifest *YAML, filename string) error {
 	output, err := NewYAMLParser().Marshal(manifest)
 	if err != nil {
-		return utils.NewInputYamlFormatError(err.Error())
+		return utils.NewYAMLFormatError(err.Error())
 	}
 
 	f, err := os.Create(filename)
 	if err != nil {
-		return utils.NewInputYamlFileError(err.Error())
+		return utils.NewYAMLFileReadError(err.Error())
 	}
 	defer f.Close()
 
@@ -87,16 +87,16 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
 
 	content, err := utils.Read(manifestPath)
 	if err != nil {
-		return &maniyaml, utils.NewInputYamlFileError(err.Error())
+		return &maniyaml, utils.NewYAMLFileReadError(err.Error())
 	}
 
 	err = mm.Unmarshal(content, &maniyaml)
 	if err != nil {
 		lines, msgs := dm.convertErrorToLinesMsgs(err.Error())
-		return &maniyaml, utils.NewParserErr(manifestPath, lines, msgs)
+		return &maniyaml, utils.NewYAMLParserErr(manifestPath, lines, msgs)
 	}
 	maniyaml.Filepath = manifestPath
-    manifest := ReadEnvVariable(&maniyaml)
+	manifest := ReadEnvVariable(&maniyaml)
 
 	return manifest, nil
 }
@@ -361,8 +361,8 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 		} else {
 			manifestPackages = manifest.GetProject().Packages
 		}
-    	}
-    	for n, p := range manifestPackages {
+	}
+	for n, p := range manifestPackages {
 		a, err := dm.ComposeActions(filePath, p.Actions, n)
 		if err == nil {
 			s1 = append(s1, a...)
@@ -431,7 +431,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					kind = "nodejs:6"
 					errStr := wski18n.T("Unsupported runtime type, set to nodejs")
 					whisk.Debug(whisk.DbgWarn, errStr)
-					// TODO() add the user input kind here if interactive
+				// TODO() add the user input kind here if interactive
 				}
 
 				wskaction.Exec.Kind = kind
@@ -461,12 +461,12 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				wskaction.Exec.Kind = action.Runtime
 
 			} else if utils.Flags.Strict {
-                		wskaction.Exec.Kind = action.Runtime
-            		} else {
+				wskaction.Exec.Kind = action.Runtime
+			} else {
 				errStr := wski18n.T("wskdeploy has chosen a particular runtime for the action.\n")
 				whisk.Debug(whisk.DbgWarn, errStr)
 			}
-                }
+		}
 
 		// we can specify the name of the action entry point using main
 		if action.Main != "" {

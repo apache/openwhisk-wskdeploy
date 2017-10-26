@@ -172,7 +172,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 				errorString := wski18n.T("The name of the project/application {{.projectNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the project/application {{.projectNameManifest}}} in manifest file at [{{.manifestFile}}].",
 					map[string]interface{}{"projectNameDeploy": projectNameDeploy, "deploymentFile": deployer.DeploymentPath,
 						"projectNameManifest": projectName, "manifestFile": deployer.ManifestPath})
-				return utils.NewInputYamlFormatError(errorString)
+				return utils.NewYAMLFormatError(errorString)
 			}
 		}
 		deploymentReader.BindAssets()
@@ -233,6 +233,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 		if err != nil {
 			return deployer.Deployment, err
 		}
+
 		// (TODO) delete this warning after deprecating application in deployment file
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
 			warningString := wski18n.T("WARNING: application in deployment file will soon be deprecated, please use project instead.\n")
@@ -245,9 +246,10 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 				errorString := wski18n.T("The name of the project/application {{.projectNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.projectNameManifest}}} in manifest file at [{{.manifestFile}}].",
 					map[string]interface{}{"projectNameDeploy": projectNameDeploy, "deploymentFile": deployer.DeploymentPath,
 						"projectNameManifest": projectName, "manifestFile": deployer.ManifestPath})
-				return deployer.Deployment, utils.NewInputYamlFormatError(errorString)
+				return deployer.Deployment, utils.NewYAMLFormatError(errorString)
 			}
 		}
+
 		deploymentReader.BindAssets()
 	}
 

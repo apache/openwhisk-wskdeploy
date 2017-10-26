@@ -234,7 +234,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 		}
 		whisk.Debug(whisk.DbgError, errStr)
-		return clientConfig, utils.NewInvalidWskpropsError(errStr)
+		return clientConfig, utils.NewWhiskClientInvalidConfigError(errStr)
 	}
 
 	stdout := wski18n.T("The API host is {{.apihost}}, from {{.apisource}}.\n",
