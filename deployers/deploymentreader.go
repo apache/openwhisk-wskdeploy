@@ -21,6 +21,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"fmt"
 )
 
 type DeploymentReader struct {
@@ -202,25 +203,29 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 				}
 			}
 
-			keyValArr = make(whisk.KeyValueArr, 0)
+			listOfAnnotations := make(whisk.KeyValueArr, 0)
 
 			if len(action.Annotations) > 0 {
-				for name, input := range action.Annotations {
-					var keyVal whisk.KeyValue
-
-					keyVal.Key = name
-					keyVal.Value = input
-
-					keyValArr = append(keyValArr, keyVal)
-				}
-
 				if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
+					for name, input := range action.Annotations {
+						if wskAction.Action.Annotations[name] == nil {
+							fmt.Println("WARNING: The annotation key " + name + " does not exist in manifest file")
+							return nil
+						}
+						var keyVal whisk.KeyValue
+
+						keyVal.Key = name
+						keyVal.Value = input
+
+						listOfAnnotations = append(listOfAnnotations, keyVal)
+					}
 					// appending to already existing annotations
 					// two different set of annotations can be specified in manifest and deployment
 					// therefore do not overwrite annotations from manifest file
 					// merge annotations from both manifest and deployment files
-					wskAction.Action.Annotations = append(wskAction.Action.Annotations , keyValArr...)
+					wskAction.Action.Annotations = append(wskAction.Action.Annotations , listOfAnnotations...)
 				}
+
 			}
 		}
 
