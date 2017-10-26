@@ -1,13 +1,16 @@
 # How to generate the file i18n_resources.go for internationalization
 
-As a contributor to wskdeploy, the file of i18n_resources.go needs to regenerated,
-when you add or change any localized message. In order to generate i18n_resources.go,
-you need to install go-bindata first:
+As a contributor to wskdeploy, the file *i18n_resources.go* needs to regenerated,
+when you add or change any localized message.
+
+### Install go-bindata
+In order to generate i18n_resources.go, you need to install go-bindata first:
 
 ```
 $ go get -u github.com/jteeuwen/go-bindata/...
 ```
 
+### Generate i18n_resources.go
 Then, go the HOME directory of wskdeploy and run the following command:
 
 ```
