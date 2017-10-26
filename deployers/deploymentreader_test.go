@@ -20,9 +20,10 @@
 package deployers
 
 import (
-	"github.com/stretchr/testify/assert"
-	"testing"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/stretchr/testify/assert"
+	"reflect"
+	"testing"
 )
 
 var sd *ServiceDeployer
@@ -87,70 +88,107 @@ func TestDeploymentReader_bindTrigger(t *testing.T) {
 }
 
 func TestDeploymentReader_bindTrigger_packages(t *testing.T) {
-    //init variables
-    sDeployer := NewServiceDeployer()
-    sDeployer.DeploymentPath = "../tests/dat/deployment-deploymentreader-test-packages.yml"
-    sDeployer.Deployment.Triggers["locationUpdate"] = new(whisk.Trigger)
+	//init variables
+	sDeployer := NewServiceDeployer()
+	sDeployer.DeploymentPath = "../tests/dat/deployment-deploymentreader-test-packages.yml"
+	sDeployer.Deployment.Triggers["locationUpdate"] = new(whisk.Trigger)
 
-    //parse deployment and bind triggers input and annotation
-    dReader := NewDeploymentReader(sDeployer)
-    dReader.HandleYaml()
-    dReader.bindTriggerInputsAndAnnotations()
+	//parse deployment and bind triggers input and annotation
+	dReader := NewDeploymentReader(sDeployer)
+	dReader.HandleYaml()
+	dReader.bindTriggerInputsAndAnnotations()
 
-    trigger := sDeployer.Deployment.Triggers["locationUpdate"]
-    for _, param := range trigger.Parameters {
-        switch param.Key {
-        case "name":
-            assert.Equal(t, "Bernie", param.Value, "Failed to set inputs")
-        case "place":
-            assert.Equal(t, "DC", param.Value, "Failed to set inputs")
-        default:
-            assert.Fail(t, "Failed to get inputs key")
+	trigger := sDeployer.Deployment.Triggers["locationUpdate"]
+	for _, param := range trigger.Parameters {
+		switch param.Key {
+		case "name":
+			assert.Equal(t, "Bernie", param.Value, "Failed to set inputs")
+		case "place":
+			assert.Equal(t, "DC", param.Value, "Failed to set inputs")
+		default:
+			assert.Fail(t, "Failed to get inputs key")
 
-        }
-    }
-    for _, annos := range trigger.Annotations {
-        switch annos.Key {
-        case "bbb":
-            assert.Equal(t, "this is an annotation", annos.Value, "Failed to set annotations")
-        default:
-            assert.Fail(t, "Failed to get annotation key")
+		}
+	}
+	for _, annos := range trigger.Annotations {
+		switch annos.Key {
+		case "bbb":
+			assert.Equal(t, "this is an annotation", annos.Value, "Failed to set annotations")
+		default:
+			assert.Fail(t, "Failed to get annotation key")
 
-        }
-    }
+		}
+	}
 }
 
 func TestDeploymentReader_bindTrigger_package(t *testing.T) {
-    //init variables
-    sDeployer := NewServiceDeployer()
-    sDeployer.DeploymentPath = "../tests/dat/deployment-deploymentreader-test-package.yml"
-    sDeployer.Deployment.Triggers["locationUpdate"] = new(whisk.Trigger)
+	//init variables
+	sDeployer := NewServiceDeployer()
+	sDeployer.DeploymentPath = "../tests/dat/deployment-deploymentreader-test-package.yml"
+	sDeployer.Deployment.Triggers["locationUpdate"] = new(whisk.Trigger)
 
-    //parse deployment and bind triggers input and annotation
-    dReader := NewDeploymentReader(sDeployer)
-    dReader.HandleYaml()
-    dReader.bindTriggerInputsAndAnnotations()
+	//parse deployment and bind triggers input and annotation
+	dReader := NewDeploymentReader(sDeployer)
+	dReader.HandleYaml()
+	dReader.bindTriggerInputsAndAnnotations()
 
-    assert.Equal(t, "triggerrule", dReader.DeploymentDescriptor.Package.Packagename)
-    trigger := sDeployer.Deployment.Triggers["locationUpdate"]
-    for _, param := range trigger.Parameters {
-        switch param.Key {
-        case "name":
-            assert.Equal(t, "Bernie", param.Value, "Failed to set inputs")
-        case "place":
-            assert.Equal(t, "DC", param.Value, "Failed to set inputs")
-        default:
-            assert.Fail(t, "Failed to get inputs key")
+	assert.Equal(t, "triggerrule", dReader.DeploymentDescriptor.Package.Packagename)
+	trigger := sDeployer.Deployment.Triggers["locationUpdate"]
+	for _, param := range trigger.Parameters {
+		switch param.Key {
+		case "name":
+			assert.Equal(t, "Bernie", param.Value, "Failed to set inputs")
+		case "place":
+			assert.Equal(t, "DC", param.Value, "Failed to set inputs")
+		default:
+			assert.Fail(t, "Failed to get inputs key")
 
-        }
-    }
-    for _, annos := range trigger.Annotations {
-        switch annos.Key {
-        case "bbb":
-            assert.Equal(t, "this is an annotation", annos.Value, "Failed to set annotations")
-        default:
-            assert.Fail(t, "Failed to get annotation key")
+		}
+	}
+	for _, annos := range trigger.Annotations {
+		switch annos.Key {
+		case "bbb":
+			assert.Equal(t, "this is an annotation", annos.Value, "Failed to set annotations")
+		default:
+			assert.Fail(t, "Failed to get annotation key")
 
-        }
-    }
+		}
+	}
+}
+
+func TestDeploymentReader_BindAssets_ActionAnnotations(t *testing.T) {
+	sDeployer := NewServiceDeployer()
+	sDeployer.DeploymentPath = "../tests/dat/deployment_validate_action_annotations.yaml"
+	sDeployer.ManifestPath = "../tests/dat/manifest_validate_action_annotations.yaml"
+
+	//parse deployment and bind triggers input and annotation
+	dReader := NewDeploymentReader(sDeployer)
+	dReader.HandleYaml()
+	dReader.bindActionInputsAndAnnotations()
+
+	pkg_name := "packageActionAnnotations"
+	pkg := dReader.DeploymentDescriptor.Packages[pkg_name]
+	assert.NotNil(t, pkg, "Could not find package with name "+pkg_name)
+	action_name := "helloworld"
+	action := dReader.DeploymentDescriptor.GetProject().Packages[pkg_name].Actions[action_name]
+	assert.NotNil(t, action, "Could not find action with name "+action_name)
+	actual_annotations := action.Annotations
+	expected_annotations := map[string]interface{}{
+		"action_annotation_5": "this is annotation 5",
+		"action_annotation_6": "this is annotation 6",
+	}
+	assert.Equal(t, len(actual_annotations), len(expected_annotations), "Could not find expected number of annotations specified in manifest file")
+	eq := reflect.DeepEqual(actual_annotations, expected_annotations)
+	assert.True(t, eq, "Expected list of annotations does not match with actual list, expected annotations: %v actual annotations: %v", expected_annotations, actual_annotations)
+
+	pkg_name = "packageActionAnnotationsWithWebAction"
+	pkg = dReader.DeploymentDescriptor.Packages[pkg_name]
+	assert.NotNil(t, pkg, "Could not find package with name "+pkg_name)
+	action = dReader.DeploymentDescriptor.GetProject().Packages[pkg_name].Actions[action_name]
+	assert.NotNil(t, action, "Could not find action with name "+action_name)
+	actual_annotations = action.Annotations
+	expected_annotations["web-export"] = true
+	assert.Equal(t, len(actual_annotations), len(expected_annotations), "Could not find expected number of annotations specified in manifest file")
+	eq = reflect.DeepEqual(actual_annotations, expected_annotations)
+	assert.True(t, eq, "Expected list of annotations does not match with actual list, expected annotations: %v actual annotations: %v", expected_annotations, actual_annotations)
 }
