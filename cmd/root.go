@@ -152,8 +152,6 @@ func setSupportedRuntimes(apiHost string) {
 
 func Deploy() error {
 
-	utils.TestCustomErrors()
-
 	whisk.SetVerbose(utils.Flags.Verbose)
 	// Verbose mode is the only mode for wskdeploy to turn on all the debug messages, so the currenty Verbose mode
 	// also set debug mode to true.
