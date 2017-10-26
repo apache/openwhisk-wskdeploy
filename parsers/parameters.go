@@ -127,7 +127,7 @@ func resolveSingleLineParameter(paramName string, param *Parameter, filePath str
 				// Type to be that type and its value to that Type's default value
 				param.Type = param.Value.(string)
 				param.Value = getTypeDefaultValue(param.Type)
-				fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, param.Value)
+				//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, param.Value)
 			}
 		}
 

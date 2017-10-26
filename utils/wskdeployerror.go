@@ -232,7 +232,7 @@ func (e *YAMLParserErr) Error() string {
         if e.lines == nil || e.lines[index] == UNKNOWN {
             s = fmt.Sprintf("====> %s", msg)
         } else{
-            s = fmt.Sprintf("====> Line [%v]: %s", e.lines[index], msg)
+            s = fmt.Sprintf("====> %s [%v]: %s", LINE, e.lines[index], msg)
         }
         result[index] = s
     }
