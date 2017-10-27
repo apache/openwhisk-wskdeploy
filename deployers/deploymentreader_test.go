@@ -207,6 +207,5 @@ func TestDeploymentReader_BindAssets_ActionAnnotations(t *testing.T) {
 	assert.Equal(t, len(actual_annotations), len(expected_annotations), "Could not find expected number of annotations specified in manifest file")
 	eq = reflect.DeepEqual(actual_annotations, expected_annotations)
 	assert.True(t, eq, "Expected list of annotations does not match with actual list, expected annotations: %v actual annotations: %v", expected_annotations, actual_annotations)
-
-
 }
+
