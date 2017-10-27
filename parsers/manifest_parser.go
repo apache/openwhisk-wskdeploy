@@ -277,6 +277,19 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	if len(keyValArr) > 0 {
 		pag.Parameters = keyValArr
 	}
+
+	// set Package Annotations
+	listOfAnnotations := make(whisk.KeyValueArr, 0)
+	for name, value := range pkg.Annotations {
+		var keyVal whisk.KeyValue
+		keyVal.Key = name
+		keyVal.Value = utils.GetEnvVar(value)
+		listOfAnnotations = append(listOfAnnotations, keyVal)
+	}
+	if len(listOfAnnotations) > 0 {
+		pag.Annotations = append(pag.Annotations, listOfAnnotations...)
+	}
+
 	return pag, nil
 }
 
@@ -664,6 +677,17 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package) ([]*whisk.Tr
 
 		if len(keyValArr) > 0 {
 			wsktrigger.Parameters = keyValArr
+		}
+
+		listOfAnnotations := make(whisk.KeyValueArr, 0)
+		for name, value := range trigger.Annotations {
+			var keyVal whisk.KeyValue
+			keyVal.Key = name
+			keyVal.Value = utils.GetEnvVar(value)
+			listOfAnnotations = append(listOfAnnotations, keyVal)
+		}
+		if len(listOfAnnotations) > 0 {
+			wsktrigger.Annotations = append(wsktrigger.Annotations, listOfAnnotations...)
 		}
 
 		t1 = append(t1, wsktrigger)

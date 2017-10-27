@@ -1,5 +1,8 @@
 packages:
     packagebinding:
+        annotations:
+            package_annotation_1: this is a package annotation 1
+            package_annotation_2: this is a package annotation 2
         actions:
             helloworld:
                 function: actions/helloworld.js
@@ -15,6 +18,9 @@ packages:
                     payload:
                         type: string
                         description: a simple greeting message, Hello World!
+                annotations:
+                    action_annotation_1: this is a action annotation 1
+                    action_annotation_2: this is a action annotation 2
         triggers:
             dbtrigger:
                 inputs:
@@ -24,4 +30,23 @@ packages:
                     docid:
                         type: string
                         description: doc ID
+                annotations:
+                    trigger_annotation_1: this is a trigger annotation 1
+                    trigger_annotation_2: this is a trigger annotation 2
+    packageBindingFromDeployment:
+        annotations:
+            package_annotation_1: this is a package annotation 1
+            package_annotation_2: this is a package annotation 2
+        actions:
+            helloworld:
+                function: actions/helloworld.js
+                runtime: nodejs:6
+                annotations:
+                    action_annotation_1: this is a action annotation 1
+                    action_annotation_2: this is a action annotation 2
+        triggers:
+            dbtrigger1:
+                annotations:
+                    trigger_annotation_1: this is a trigger annotation 1
+                    trigger_annotation_2: this is a trigger annotation 2
 

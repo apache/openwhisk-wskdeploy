@@ -26,7 +26,13 @@ import (
 	"testing"
 )
 
+var PATH = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-binding-inputs-annotations/"
+
 func TestBindingInputsAnnotations(t *testing.T) {
+
+	manifestPath   := os.Getenv("GOPATH") + PATH + "manifest.yaml"
+	deploymentPath := os.Getenv("GOPATH") + PATH + "deployment.yaml"
+
 	wskdeploy := common.NewWskdeploy()
 	// verify the inputs & annotations are set
 	deploymentObjects, err := wskdeploy.GetDeploymentObjects(manifestPath, deploymentPath)
@@ -47,10 +53,10 @@ func TestBindingInputsAnnotations(t *testing.T) {
 	}
 	for _, annos := range wskpkg.Annotations {
 		switch annos.Key {
-		case "tag":
-			assert.Equal(t, "hello", annos.Value, "Failed to get package annotations")
-		case "aaa":
-			assert.Equal(t, "this is an annotation", annos.Value, "Failed to get package annotations")
+		case "package_annotation_1":
+			assert.Equal(t, "this is a package annotation 1", annos.Value, "Failed to get package annotations")
+		case "package_annotation_2":
+			assert.Equal(t, "this is a package annotation 2", annos.Value, "Failed to get package annotations")
 		default:
 			assert.Fail(t, "Failed to get package annotation key")
 		}
@@ -70,10 +76,10 @@ func TestBindingInputsAnnotations(t *testing.T) {
 	}
 	for _, annos := range wskaction.Annotations {
 		switch annos.Key {
-		case "tag":
-			assert.Equal(t, "hello", annos.Value, "Failed to get action annotations")
-		case "aaa":
-			assert.Equal(t, "this is an annotation", annos.Value, "Failed to get action annotations")
+		case "action_annotation_1":
+			assert.Equal(t, "this is a action annotation 1", annos.Value, "Failed to get action annotations")
+		case "action_annotation_2":
+			assert.Equal(t, "this is a action annotation 2", annos.Value, "Failed to get action annotations")
 		default:
 			assert.Fail(t, "Failed to get action annotation key")
 		}
@@ -93,14 +99,53 @@ func TestBindingInputsAnnotations(t *testing.T) {
 	}
 	for _, annos := range wsktrigger.Annotations {
 		switch annos.Key {
-		case "tag":
-			assert.Equal(t, "hello", annos.Value, "Failed to get trigger annotations")
-		case "aaa":
-			assert.Equal(t, "this is an annotation", annos.Value, "Failed to get trigger annotations")
+		case "trigger_annotation_1":
+			assert.Equal(t, "this is a trigger annotation 1", annos.Value, "Failed to get action annotations")
+		case "trigger_annotation_2":
+			assert.Equal(t, "this is a trigger annotation 2", annos.Value, "Failed to get action annotations")
 		default:
 			assert.Fail(t, "Failed to get annotation key")
 		}
 	}
+
+	// verify the annotations of a package
+	pkgobj = deploymentObjects.Packages["packageBindingFromDeployment"]
+	wskpkg = pkgobj.Package
+	for _, annos := range wskpkg.Annotations {
+		switch annos.Key {
+		case "package_annotation_1":
+			assert.Equal(t, "this is a package annotation 1 from deployment", annos.Value, "Failed to get package annotations")
+		case "package_annotation_2":
+			assert.Equal(t, "this is a package annotation 2", annos.Value, "Failed to get package annotations")
+		default:
+			assert.Fail(t, "Failed to get package annotation key")
+		}
+	}
+	// verify the annotations of action
+	wskaction = pkgobj.Actions["helloworld"].Action
+	for _, annos := range wskaction.Annotations {
+		switch annos.Key {
+		case "action_annotation_1":
+			assert.Equal(t, "this is a action annotation 1 from deployment", annos.Value, "Failed to get action annotations")
+		case "action_annotation_2":
+			assert.Equal(t, "this is a action annotation 2", annos.Value, "Failed to get action annotations")
+		default:
+			assert.Fail(t, "Failed to get action annotation key")
+		}
+	}
+	// verify the inputs & annotations of trigger
+	wsktrigger = deploymentObjects.Triggers["dbtrigger1"]
+	for _, annos := range wsktrigger.Annotations {
+		switch annos.Key {
+		case "trigger_annotation_1":
+			assert.Equal(t, "this is a trigger annotation 1 from deployment", annos.Value, "Failed to get action annotations")
+		case "trigger_annotation_2":
+			assert.Equal(t, "this is a trigger annotation 2", annos.Value, "Failed to get action annotations")
+		default:
+			assert.Fail(t, "Failed to get annotation key")
+		}
+	}
+
 
 	// testing deploy and undeploy
 	_, err = wskdeploy.Deploy(manifestPath, deploymentPath)
@@ -109,7 +154,3 @@ func TestBindingInputsAnnotations(t *testing.T) {
 	assert.NoError(t, err, "Failed to undeploy based on the manifest and deployment files.")
 }
 
-var (
-	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-binding-inputs-annotations/manifest.yaml"
-	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-binding-inputs-annotations/deployment.yaml"
-)
