@@ -52,7 +52,9 @@ func (reader *DeploymentReader) HandleYaml() error {
 func (reader *DeploymentReader) BindAssets() error {
 
 	reader.bindPackageInputsAndAnnotations()
-	reader.bindActionInputsAndAnnotations()
+	if err := reader.bindActionInputsAndAnnotations(); err != nil {
+		return err
+	}
 	reader.bindTriggerInputsAndAnnotations()
 
 	return nil
@@ -139,7 +141,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 	}
 }
 
-func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
+func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 
 	packMap := make(map[string]parsers.Package)
 
@@ -202,25 +204,30 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 				}
 			}
 
-			keyValArr = make(whisk.KeyValueArr, 0)
-
-			if len(action.Annotations) > 0 {
+			if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
+				// iterate over each annotation from deployment file
 				for name, input := range action.Annotations {
-					var keyVal whisk.KeyValue
-
-					keyVal.Key = name
-					keyVal.Value = input
-
-					keyValArr = append(keyValArr, keyVal)
-				}
-
-				if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
-					wskAction.Action.Annotations = keyValArr
+					// check if annotation key in deployment file exists in manifest file
+					// setting a bool flag to false assuming key does not exist in manifest
+					keyExistsInManifest := false
+					// iterate over each annotation from manifest file
+					for i, a := range wskAction.Action.Annotations {
+						if name == a.Key {
+							// annotation key is found in manifest
+							keyExistsInManifest = true
+							// overwrite annotation in manifest file with deployment file
+							wskAction.Action.Annotations[i].Value = input
+							break
+						}
+					}
+					if !keyExistsInManifest {
+						return utils.NewYAMLFormatError("Annotation key \""+name+"\" does not exist in manifest file but specified in deployment file.")
+					}
 				}
 			}
 		}
-
 	}
+	return nil
 }
 
 func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {

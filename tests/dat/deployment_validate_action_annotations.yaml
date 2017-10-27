@@ -1,0 +1,31 @@
+project:
+    name: TestActionAnnotations
+    packages:
+        packageActionAnnotations:
+            actions:
+                helloworld:
+                    inputs:
+                        name: Amy
+                        place: New York
+                    annotations:
+                        action_annotation_5: this is annotation 5
+                        action_annotation_6: this is annotation 6
+        packageActionAnnotationsFromDeployment:
+            actions:
+                helloworld:
+                    inputs:
+                        name: Amy
+                        place: New York
+                    annotations:
+                        action_annotation_1: this is annotation 1 from deployment
+                        action_annotation_2: this is annotation 2 from deployment
+        packageActionAnnotationsWithWebAction:
+            actions:
+                helloworld:
+                    inputs:
+                        name: Amy
+                        place: New York
+                    annotations:
+                        action_annotation_5: this is annotation 5
+                        action_annotation_6: this is annotation 6
+                        web-export: true
