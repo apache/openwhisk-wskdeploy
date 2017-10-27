@@ -8,8 +8,8 @@ project:
                         name: Amy
                         place: New York
                     annotations:
-                        action_annotation_5: this is annotation 5
-                        action_annotation_6: this is annotation 6
+                        action_annotation_1: this is annotation 1
+                        action_annotation_2: this is annotation 2
         packageActionAnnotationsFromDeployment:
             actions:
                 helloworld:
@@ -26,6 +26,6 @@ project:
                         name: Amy
                         place: New York
                     annotations:
-                        action_annotation_5: this is annotation 5
-                        action_annotation_6: this is annotation 6
+                        action_annotation_1: this is annotation 1
+                        action_annotation_2: this is annotation 2
                         web-export: true

@@ -164,7 +164,9 @@ func TestDeploymentReader_BindAssets_ActionAnnotations(t *testing.T) {
 	//parse deployment and bind triggers input and annotation
 	dReader := NewDeploymentReader(sDeployer)
 	dReader.HandleYaml()
-	dReader.bindActionInputsAndAnnotations()
+	err := dReader.bindActionInputsAndAnnotations()
+
+	assert.Nil(t, err, "Failed to bind action annotations")
 
 	pkg_name := "packageActionAnnotations"
 	pkg := dReader.DeploymentDescriptor.Packages[pkg_name]
@@ -174,8 +176,8 @@ func TestDeploymentReader_BindAssets_ActionAnnotations(t *testing.T) {
 	assert.NotNil(t, action, "Could not find action with name " + action_name)
 	actual_annotations := action.Annotations
 	expected_annotations := map[string]interface{}{
-		"action_annotation_5": "this is annotation 5",
-		"action_annotation_6": "this is annotation 6",
+		"action_annotation_1": "this is annotation 1",
+		"action_annotation_2": "this is annotation 2",
 	}
 	assert.Equal(t, len(actual_annotations), len(expected_annotations), "Could not find expected number of annotations specified in manifest file")
 	eq := reflect.DeepEqual(actual_annotations, expected_annotations)
