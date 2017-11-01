@@ -175,7 +175,9 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 				return utils.NewYAMLFormatError(errorString)
 			}
 		}
-		deploymentReader.BindAssets()
+		if err := deploymentReader.BindAssets(); err != nil {
+			return err
+		}
 	}
 
 	return err
@@ -250,7 +252,9 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 			}
 		}
 
-		deploymentReader.BindAssets()
+		if err := deploymentReader.BindAssets(); err != nil {
+			return deployer.Deployment, err
+		}
 	}
 
 	verifiedPlan := deployer.Deployment

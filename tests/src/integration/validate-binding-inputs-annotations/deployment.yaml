@@ -1,27 +1,28 @@
 project:
-  name: BindingTest
-  packages:
-    packagebinding:
-      inputs:
-        name: daisy
-        city: Beijing
-      annotations:
-        tag: hello
-        aaa: this is an annotation
-      actions:
-        helloworld:
-          inputs:
-            name: Amy
-            place: Paris
-          annotations:
-            tag: hello
-            aaa: this is an annotation
-      triggers:
-        dbtrigger:
-          inputs:
-            dbname: cats
-            docid: 1234567
-          annotations:
-            tag: hello
-            aaa: this is an annotation
-
+    name: BindingTest
+    packages:
+        packagebinding:
+            inputs:
+                name: daisy
+                city: Beijing
+            actions:
+                helloworld:
+                    inputs:
+                        name: Amy
+                        place: Paris
+            triggers:
+                dbtrigger:
+                    inputs:
+                        dbname: cats
+                        docid: 1234567
+        packageBindingFromDeployment:
+            annotations:
+                package_annotation_1: this is a package annotation 1 from deployment
+            actions:
+                helloworld:
+                    annotations:
+                        action_annotation_1: this is an action annotation 1 from deployment
+            triggers:
+                dbtrigger1:
+                    annotations:
+                        trigger_annotation_1: this is a trigger annotation 1 from deployment

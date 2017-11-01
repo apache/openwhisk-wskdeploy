@@ -21,6 +21,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 type DeploymentReader struct {
@@ -51,15 +52,20 @@ func (reader *DeploymentReader) HandleYaml() error {
 // Update entities with deployment settings
 func (reader *DeploymentReader) BindAssets() error {
 
-	reader.bindPackageInputsAndAnnotations()
-	reader.bindActionInputsAndAnnotations()
-	reader.bindTriggerInputsAndAnnotations()
+	if err := reader.bindPackageInputsAndAnnotations(); err != nil {
+		return err
+	}
+	if err := reader.bindActionInputsAndAnnotations(); err != nil {
+		return err
+	}
+	if err := reader.bindTriggerInputsAndAnnotations(); err != nil {
+		return err
+	}
 
 	return nil
-
 }
 
-func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
+func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 
 	packMap := make(map[string]parsers.Package)
 
@@ -121,25 +127,33 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() {
 			serviceDeployPack.Package.Parameters = keyValArr
 		}
 
-		keyValArr = make(whisk.KeyValueArr, 0)
-
 		if len(pack.Annotations) > 0 {
+			// iterate over each annotation from deployment file
 			for name, input := range pack.Annotations {
-				var keyVal whisk.KeyValue
-
-				keyVal.Key = name
-				keyVal.Value = utils.GetEnvVar(input)
-
-				keyValArr = append(keyValArr, keyVal)
+				// check if annotation key in deployment file exists in manifest file
+				// setting a bool flag to false assuming key does not exist in manifest
+				keyExistsInManifest := false
+				// iterate over each annotation from manifest file
+				for i, a := range serviceDeployPack.Package.Annotations {
+					if name == a.Key {
+						// annotation key is found in manifest
+						keyExistsInManifest = true
+						// overwrite annotation in manifest file with deployment file
+						serviceDeployPack.Package.Annotations[i].Value = input
+						break
+					}
+				}
+				if !keyExistsInManifest {
+					err := wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file.")
+					return utils.NewYAMLFormatError(err)
+				}
 			}
-
-			serviceDeployPack.Package.Annotations = keyValArr
 		}
-
 	}
+	return nil
 }
 
-func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
+func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 
 	packMap := make(map[string]parsers.Package)
 
@@ -202,28 +216,34 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() {
 				}
 			}
 
-			keyValArr = make(whisk.KeyValueArr, 0)
-
-			if len(action.Annotations) > 0 {
+			if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
+				// iterate over each annotation from deployment file
 				for name, input := range action.Annotations {
-					var keyVal whisk.KeyValue
-
-					keyVal.Key = name
-					keyVal.Value = input
-
-					keyValArr = append(keyValArr, keyVal)
-				}
-
-				if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
-					wskAction.Action.Annotations = keyValArr
+					// check if annotation key in deployment file exists in manifest file
+					// setting a bool flag to false assuming key does not exist in manifest
+					keyExistsInManifest := false
+					// iterate over each annotation from manifest file
+					for i, a := range wskAction.Action.Annotations {
+						if name == a.Key {
+							// annotation key is found in manifest
+							keyExistsInManifest = true
+							// overwrite annotation in manifest file with deployment file
+							wskAction.Action.Annotations[i].Value = input
+							break
+						}
+					}
+					if !keyExistsInManifest {
+						err := wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file.")
+						return utils.NewYAMLFormatError(err)
+					}
 				}
 			}
 		}
-
 	}
+	return nil
 }
 
-func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
+func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 
 	packMap := make(map[string]parsers.Package)
 
@@ -282,23 +302,31 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() {
 				}
 			}
 
-			keyValArr = make(whisk.KeyValueArr, 0)
-
-			if len(trigger.Annotations) > 0 {
+			if wskTrigger, exists := serviceDeployment.Triggers[triggerName]; exists {
+				// iterate over each annotation from deployment file
 				for name, input := range trigger.Annotations {
-					var keyVal whisk.KeyValue
-
-					keyVal.Key = name
-					keyVal.Value = input
-
-					keyValArr = append(keyValArr, keyVal)
-				}
-
-				if wskTrigger, exists := serviceDeployment.Triggers[triggerName]; exists {
-					wskTrigger.Annotations = keyValArr
+					// check if annotation key in deployment file exists in manifest file
+					// setting a bool flag to false assuming key does not exist in manifest
+					keyExistsInManifest := false
+					// iterate over each annotation from manifest file
+					for i, a := range wskTrigger.Annotations {
+						if name == a.Key {
+							// annotation key is found in manifest
+							keyExistsInManifest = true
+							// overwrite annotation in manifest file with deployment file
+							wskTrigger.Annotations[i].Value = input
+							break
+						}
+					}
+					if !keyExistsInManifest {
+						err := wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file.")
+						return utils.NewYAMLFormatError(err)
+					}
 				}
 			}
+
 		}
 
 	}
+	return nil
 }
