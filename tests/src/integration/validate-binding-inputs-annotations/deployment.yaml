@@ -21,7 +21,7 @@ project:
             actions:
                 helloworld:
                     annotations:
-                        action_annotation_1: this is a action annotation 1 from deployment
+                        action_annotation_1: this is an action annotation 1 from deployment
             triggers:
                 dbtrigger1:
                     annotations:

@@ -19,8 +19,8 @@ packages:
                         type: string
                         description: a simple greeting message, Hello World!
                 annotations:
-                    action_annotation_1: this is a action annotation 1
-                    action_annotation_2: this is a action annotation 2
+                    action_annotation_1: this is an action annotation 1
+                    action_annotation_2: this is an action annotation 2
         triggers:
             dbtrigger:
                 inputs:
@@ -42,8 +42,8 @@ packages:
                 function: actions/helloworld.js
                 runtime: nodejs:6
                 annotations:
-                    action_annotation_1: this is a action annotation 1
-                    action_annotation_2: this is a action annotation 2
+                    action_annotation_1: this is an action annotation 1
+                    action_annotation_2: this is an action annotation 2
         triggers:
             dbtrigger1:
                 annotations:

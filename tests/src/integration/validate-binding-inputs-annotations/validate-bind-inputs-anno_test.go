@@ -77,9 +77,9 @@ func TestBindingInputsAnnotations(t *testing.T) {
 	for _, annos := range wskaction.Annotations {
 		switch annos.Key {
 		case "action_annotation_1":
-			assert.Equal(t, "this is a action annotation 1", annos.Value, "Failed to get action annotations")
+			assert.Equal(t, "this is an action annotation 1", annos.Value, "Failed to get action annotations")
 		case "action_annotation_2":
-			assert.Equal(t, "this is a action annotation 2", annos.Value, "Failed to get action annotations")
+			assert.Equal(t, "this is an action annotation 2", annos.Value, "Failed to get action annotations")
 		default:
 			assert.Fail(t, "Failed to get action annotation key")
 		}
@@ -126,9 +126,9 @@ func TestBindingInputsAnnotations(t *testing.T) {
 	for _, annos := range wskaction.Annotations {
 		switch annos.Key {
 		case "action_annotation_1":
-			assert.Equal(t, "this is a action annotation 1 from deployment", annos.Value, "Failed to get action annotations")
+			assert.Equal(t, "this is an action annotation 1 from deployment", annos.Value, "Failed to get action annotations")
 		case "action_annotation_2":
-			assert.Equal(t, "this is a action annotation 2", annos.Value, "Failed to get action annotations")
+			assert.Equal(t, "this is an action annotation 2", annos.Value, "Failed to get action annotations")
 		default:
 			assert.Fail(t, "Failed to get action annotation key")
 		}

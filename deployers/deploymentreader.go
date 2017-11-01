@@ -21,6 +21,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 type DeploymentReader struct {
@@ -126,7 +127,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 			serviceDeployPack.Package.Parameters = keyValArr
 		}
 
-		if len(pack.Annotations) >0 {
+		if len(pack.Annotations) > 0 {
 			// iterate over each annotation from deployment file
 			for name, input := range pack.Annotations {
 				// check if annotation key in deployment file exists in manifest file
@@ -143,7 +144,8 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 					}
 				}
 				if !keyExistsInManifest {
-					return utils.NewYAMLFormatError("Annotation key \""+name+"\" does not exist in manifest file but specified in deployment file.")
+					err := wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file.")
+					return utils.NewYAMLFormatError(err)
 				}
 			}
 		}
@@ -231,7 +233,8 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 						}
 					}
 					if !keyExistsInManifest {
-						return utils.NewYAMLFormatError("Annotation key \""+name+"\" does not exist in manifest file but specified in deployment file.")
+						err := wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file.")
+						return utils.NewYAMLFormatError(err)
 					}
 				}
 			}
@@ -316,7 +319,8 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 						}
 					}
 					if !keyExistsInManifest {
-						return utils.NewYAMLFormatError("Annotation key \""+name+"\" does not exist in manifest file but specified in deployment file.")
+						err := wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file.")
+						return utils.NewYAMLFormatError(err)
 					}
 				}
 			}
