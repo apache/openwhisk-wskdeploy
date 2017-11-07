@@ -528,7 +528,7 @@ func TestComposeActionsForInvalidRuntime(t *testing.T) {
     }
 }
 
-// Test 11: validate manfiest_parser.ComposeActions() method for single line parameters
+// Test 11: validate manifest_parser.ComposeActions() method for single line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestComposeActionsForSingleLineParams(t *testing.T) {
     // manifest file is located under ../tests folder
@@ -687,7 +687,7 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
     }
 }
 
-// Test 12: validate manfiest_parser.ComposeActions() method for multi line parameters
+// Test 12: validate manifest_parser.ComposeActions() method for multi line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestComposeActionsForMultiLineParams(t *testing.T) {
     // manifest file is located under ../tests folder
@@ -761,7 +761,7 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
     }
 }
 
-// Test 13: validate manfiest_parser.ComposeActions() method
+// Test 13: validate manifest_parser.ComposeActions() method
 func TestComposeActionsForFunction(t *testing.T) {
     data :=
         `package:
@@ -802,7 +802,7 @@ func TestComposeActionsForFunction(t *testing.T) {
 
 }
 
-// Test 14: validate manfiest_parser.ComposeActions() method
+// Test 14: validate manifest_parser.ComposeActions() method
 func TestComposeActionsForLimits (t *testing.T) {
   data :=
 `package:
@@ -850,7 +850,7 @@ func TestComposeActionsForLimits (t *testing.T) {
   }
 }
 
-// Test 15: validate manfiest_parser.ComposeActions() method
+// Test 15: validate manifest_parser.ComposeActions() method
 func TestComposeActionsForWebActions(t *testing.T) {
     data :=
         `package:
@@ -1628,4 +1628,3 @@ func TestComposeActionForAnnotations(t *testing.T) {
     eq = reflect.DeepEqual(actual_annotations, expected_annotations)
     assert.True(t, eq, "Expected list of annotations does not match with actual list, expected annotations: %v actual annotations: %v", expected_annotations, actual_annotations)
 }
-

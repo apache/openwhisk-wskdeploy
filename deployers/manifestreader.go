@@ -34,7 +34,7 @@ type ManifestReader struct {
 	IsUndeploy      bool
 }
 
-func NewManfiestReader(serviceDeployer *ServiceDeployer) *ManifestReader {
+func NewManifestReader(serviceDeployer *ServiceDeployer) *ManifestReader {
 	var dep ManifestReader
 	dep.serviceDeployer = serviceDeployer
 
