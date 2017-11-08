@@ -33,7 +33,7 @@ func init() {
 
 	sd = NewServiceDeployer()
 	sd.ManifestPath = manifest_file
-	mr = NewManfiestReader(sd)
+	mr = NewManifestReader(sd)
 	ps = parsers.NewYAMLParser()
 	ms, _ = ps.ParseManifest(manifest_file)
 }

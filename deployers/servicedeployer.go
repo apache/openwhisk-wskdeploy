@@ -112,7 +112,7 @@ func (deployer *ServiceDeployer) Check() {
 
 func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
-	var manifestReader = NewManfiestReader(deployer)
+	var manifestReader = NewManifestReader(deployer)
 	manifestReader.IsUndeploy = false
 	var err error
 	manifest, manifestParser, err := manifestReader.ParseManifest()
@@ -185,7 +185,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject, error) {
 
-	var manifestReader = NewManfiestReader(deployer)
+	var manifestReader = NewManifestReader(deployer)
 	manifestReader.IsUndeploy = true
 	var err error
 	manifest, manifestParser, err := manifestReader.ParseManifest()
