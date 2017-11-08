@@ -49,7 +49,7 @@ func ReadOrCreateManifest() (*YAML, error) {
 
 // Serialize manifest to local file
 func Write(manifest *YAML, filename string) error {
-	output, err := NewYAMLParser().Marshal(manifest)
+	output, err := NewYAMLParser().marshal(manifest)
 	if err != nil {
 		return utils.NewYAMLFormatError(err.Error())
 	}
@@ -72,7 +72,7 @@ func (dm *YAMLParser) Unmarshal(input []byte, manifest *YAML) error {
 	return nil
 }
 
-func (dm *YAMLParser) Marshal(manifest *YAML) (output []byte, err error) {
+func (dm *YAMLParser) marshal(manifest *YAML) (output []byte, err error) {
 	data, err := yaml.Marshal(manifest)
 	if err != nil {
 		fmt.Printf("err happened during marshal :%v", err)
