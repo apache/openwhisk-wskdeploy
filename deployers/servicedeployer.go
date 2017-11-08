@@ -180,6 +180,8 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		}
 	}
 
+	fmt.Println(utils.GenerateManagedAnnotation(manifest.GetProject().Name, manifest.Filepath))
+
 	return err
 }
 
