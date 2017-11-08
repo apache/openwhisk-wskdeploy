@@ -372,17 +372,3 @@ func (reader *ManifestReader) SetApis(ar []*whisk.ApiCreateRequest) error {
 	}
 	return nil
 }
-
-// from whisk go client
-func (deployer *ManifestReader) getQualifiedName(name string, namespace string) string {
-	if strings.HasPrefix(name, "/") {
-		return name
-	} else if strings.HasPrefix(namespace, "/") {
-		return fmt.Sprintf("%s/%s", namespace, name)
-	} else {
-		if len(namespace) == 0 {
-			namespace = clientConfig.Namespace
-		}
-		return fmt.Sprintf("/%s/%s", namespace, name)
-	}
-}
