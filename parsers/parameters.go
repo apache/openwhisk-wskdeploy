@@ -293,43 +293,6 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 // Provide custom Parameter marshalling and unmarshalling
 type ParsedParameter Parameter
 
-func (n *Parameter) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var aux ParsedParameter
-
-	// Attempt to unmarshal the multi-line schema
-	if err := unmarshal(&aux); err == nil {
-		n.multiline = true
-		n.Type = aux.Type
-		n.Description = aux.Description
-		n.Value = aux.Value
-		n.Required = aux.Required
-		n.Default = aux.Default
-		n.Status = aux.Status
-		n.Schema = aux.Schema
-		return nil
-	}
-
-	// If we did not find the multi-line schema, assume in-line (or single-line) schema
-	var inline interface{}
-	if err := unmarshal(&inline); err != nil {
-		return err
-	}
-
-	n.Value = inline
-	n.multiline = false
-	return nil
-}
-
-func (n *Parameter) MarshalYAML() (interface{}, error) {
-	if _, ok := n.Value.(string); len(n.Type) == 0 && len(n.Description) == 0 && ok {
-		if !n.Required && len(n.Status) == 0 && n.Schema == nil {
-			return n.Value.(string), nil
-		}
-	}
-
-	return n, nil
-}
-
 // Provides debug/trace support for Parameter type
 func dumpParameter(paramName string, param *Parameter, separator string) {
 
