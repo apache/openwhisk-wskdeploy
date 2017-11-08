@@ -18,7 +18,6 @@
 package parsers
 
 import (
-	"fmt"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"gopkg.in/yaml.v2"
     "strings"
