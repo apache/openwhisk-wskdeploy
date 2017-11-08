@@ -290,9 +290,6 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	return value, errorParser
 }
 
-// Provide custom Parameter marshalling and unmarshalling
-type ParsedParameter Parameter
-
 // Provides debug/trace support for Parameter type
 func dumpParameter(paramName string, param *Parameter, separator string) {
 
