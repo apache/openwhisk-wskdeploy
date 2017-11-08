@@ -19,7 +19,6 @@ package deployers
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
