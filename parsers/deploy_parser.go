@@ -24,7 +24,7 @@ import (
     "strings"
 )
 
-func (dm *YAMLParser) UnmarshalDeployment(input []byte, deploy *YAML) error {
+func (dm *YAMLParser) unmarshalDeployment(input []byte, deploy *YAML) error {
 	err := yaml.UnmarshalStrict(input, deploy)
 	if err != nil {
 		return err
@@ -47,7 +47,7 @@ func (dm *YAMLParser) ParseDeployment(deploymentPath string) (*YAML, error) {
     if err != nil {
         return &dplyyaml, utils.NewYAMLFileReadError(err.Error())
     }
-	err = dm.UnmarshalDeployment(content, &dplyyaml)
+	err = dm.unmarshalDeployment(content, &dplyyaml)
     if err != nil {
         lines, msgs := dm.convertErrorToLinesMsgs(err.Error())
         return &dplyyaml, utils.NewYAMLParserErr(deploymentPath, lines, msgs)
