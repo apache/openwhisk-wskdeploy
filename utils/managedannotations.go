@@ -22,9 +22,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
+/*
+ * The whole purpose of this utility is to create a managed annotation for managed deployment.
+ * Every OpenWhisk entity in the manifest file will be annotated with:
+ * managed:
+ * 	__OW__PROJECT__NAME: MyProject
+ *	__OW__PROJECT_HASH: SHA1("OpenWhisk " + <size_of_manifest_file> + "\0" + <contents_of_manifest_file>)
+ *	__OW__FILE: Absolute path of manifest file on file system
+*/
+
 const (
+	MANAGED   = "managed"
 	OPENWHISK = "OpenWhisk"
 	NULL      = "golang\000"
 )
@@ -77,19 +88,21 @@ func generateProjectHash(filePath string) (string, error) {
 	return projectHash, nil
 }
 
-func GenerateManagedAnnotation(projectName string, filePath string) (string, error) {
+func GenerateManagedAnnotation(projectName string, filePath string) (whisk.KeyValue, error) {
 	projectHash, err := generateProjectHash(filePath)
+	managedAnnotation := whisk.KeyValue{}
 	if err != nil {
-		return "", err
+		return managedAnnotation, err
 	}
 	m := ManagedAnnotation{
 		ProjectName: projectName,
 		ProjectHash: projectHash,
 		File:        filePath,
 	}
-	managedAnnotation, err := json.Marshal(m)
+	ma, err := json.Marshal(m)
 	if err != nil {
-		return "", err
+		return managedAnnotation, err
 	}
-	return string(managedAnnotation), nil
+	managedAnnotation = whisk.KeyValue{Key:MANAGED, Value:string(ma)}
+	return managedAnnotation, nil
 }

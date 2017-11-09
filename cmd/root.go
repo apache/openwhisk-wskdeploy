@@ -121,7 +121,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&utils.Flags.ApiVersion, "apiversion", "", wski18n.T("whisk API `VERSION`"))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Key, "key", "k", "", wski18n.T("path of the .key file"))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Cert, "cert", "c", "", wski18n.T("path of the .cert file"))
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Strict, "managed", "", false, "mark project entities as managed")
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Managed, "managed", "", false, "mark project entities as managed")
 }
 
 // initConfig reads in config file and ENV variables if set.

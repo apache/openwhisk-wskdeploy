@@ -122,7 +122,16 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 	deployer.RootPackageName = manifest.Package.Packagename
 
-	manifestReader.InitRootPackage(manifestParser, manifest)
+	var ma whisk.KeyValue
+	// generate Managed Annotations if this is marked as a Managed Deployment
+	if utils.Flags.Managed {
+		ma, err = utils.GenerateManagedAnnotation(manifest.GetProject().Name, manifest.Filepath)
+		if err != nil {
+			return utils.NewYAMLFormatError(err.Error())
+		}
+	}
+
+	manifestReader.InitRootPackage(manifestParser, manifest, ma)
 
 	if deployer.IsDefault == true {
 		fileReader := NewFileSystemReader(deployer)
@@ -134,7 +143,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	}
 
 	// process manifest file
-	err = manifestReader.HandleYaml(deployer, manifestParser, manifest)
+	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, ma)
 	if err != nil {
 		return err
 	}
@@ -196,7 +205,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 	}
 
 	deployer.RootPackageName = manifest.Package.Packagename
-	manifestReader.InitRootPackage(manifestParser, manifest)
+	manifestReader.InitRootPackage(manifestParser, manifest, whisk.KeyValue{})
 
 	// process file system
 	if deployer.IsDefault == true {
@@ -214,7 +223,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 	}
 
 	// process manifest file
-	err = manifestReader.HandleYaml(deployer, manifestParser, manifest)
+	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
 	if err != nil {
 		return deployer.Deployment, err
 	}

@@ -35,6 +35,7 @@ var Flags struct {
 	Strict          bool   // strict flag to support user defined runtime version.
 	Key		string
 	Cert		string
+	Managed 	bool   // OpenWhisk Managed Deployments
 
 	//action flag definition
 	//from go cli
