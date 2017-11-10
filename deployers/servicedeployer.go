@@ -499,15 +499,17 @@ func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma ut
 			if err := dec.Decode(&aa); err != nil {
 				return err
 			}
+			spew.Dump("Action annotations are")
+			spew.Dump(aa)
 			if aa.ProjectName == ma.ProjectName && aa.ProjectHash != ma.ProjectHash {
 				spew.Dump("This action needs to be deleted")
-				_, err := deployer.Client.Actions.Delete(action.Name)
+				spew.Dump(action.Name)
+				actionName := strings.Join([]string{packageName, action.Name}, "/")
+				_, err := deployer.Client.Actions.Delete(actionName)
 				if err != nil {
 					return err
 				}
 			}
-			spew.Dump(aa)
-			spew.Dump(ma)
 		}
 	}
 	return nil
@@ -527,7 +529,7 @@ func (deployer *ServiceDeployer) RefreshManagedTriggers(ma utils.ManagedAnnotati
 				return err
 			}
 			if ta.ProjectName == ma.ProjectName && ta.ProjectHash != ma.ProjectHash {
-				_, err := deployer.Client.Actions.Delete(trigger.Name)
+				_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
 				if err != nil {
 					return err
 				}
@@ -558,16 +560,20 @@ func (deployer *ServiceDeployer) RefreshManagedPackages(ma utils.ManagedAnnotati
 			if err := dec.Decode(&pa); err != nil {
 				return err
 			}
+			spew.Dump("iterating over pkg to get the list of actions" + pkg.Name)
+			spew.Dump("Package annotations are ")
+			spew.Dump(pa)
+			spew.Dump("Master annotations are")
+			spew.Dump(ma)
+			if err := deployer.RefreshManagedActions(pkg.Name, ma); err != nil {
+				return err
+			}
 			if pa.ProjectName ==  ma.ProjectName && pa.ProjectHash != ma.ProjectHash {
-				if err := deployer.RefreshManagedActions(pkg.Name, ma); err != nil {
-					return err
-				}
 				_, err := deployer.Client.Packages.Delete(pkg.Name)
 				if err != nil {
 					return err
 				}
 			}
-			spew.Dump(pa)
 		}
 	}
 	return nil
