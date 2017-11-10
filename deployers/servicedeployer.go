@@ -512,7 +512,7 @@ func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma ut
 				actionName := strings.Join([]string{packageName, action.Name}, "/")
 				output := wski18n.T("Found the action {{.action}} which is deleted" +
 					" from the current project {{.project}} in manifest file which is being undeployed.\n",
-					map[string]interface{}{"trigger": actionName, "project": aa.ProjectName})
+					map[string]interface{}{"action": actionName, "project": aa.ProjectName})
 				whisk.Debug(whisk.DbgInfo, output)
 				_, err := deployer.Client.Actions.Delete(actionName)
 				if err != nil {
@@ -593,7 +593,7 @@ func (deployer *ServiceDeployer) RefreshManagedPackages(ma utils.ManagedAnnotati
 			if pa.ProjectName ==  ma.ProjectName && pa.ProjectHash != ma.ProjectHash {
 				output := wski18n.T("Found the package {{.package}} which is deleted" +
 					" from the current project {{.project}} in manifest file which is being undeployed.\n",
-					map[string]interface{}{"trigger": pkg.Name, "project": pa.ProjectName})
+					map[string]interface{}{"package": pkg.Name, "project": pa.ProjectName})
 				whisk.Debug(whisk.DbgInfo, output)
 				_, err := deployer.Client.Packages.Delete(pkg.Name)
 				if err != nil {
