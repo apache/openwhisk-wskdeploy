@@ -291,7 +291,9 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	}
 
 	// add Managed Annotations if this is Managed Deployment
-	pag.Annotations = append(pag.Annotations, ma)
+	if utils.Flags.Managed {
+		pag.Annotations = append(pag.Annotations, ma)
+	}
 
 	return pag, nil
 }
@@ -360,7 +362,9 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		}
 
 		// appending managed annotations if its a managed deployment
-		wskaction.Annotations = append(wskaction.Annotations, ma)
+		if utils.Flags.Managed {
+			wskaction.Annotations = append(wskaction.Annotations, ma)
+		}
 
 		record := utils.ActionRecord{Action: wskaction, Packagename: packageName, Filepath: key}
 		s1 = append(s1, record)
@@ -553,7 +557,9 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			wskaction.Annotations = append(wskaction.Annotations, listOfAnnotations...)
 		}
 		// add managed annotations if its marked as managed deployment
-		wskaction.Annotations = append(wskaction.Annotations, ma)
+		if utils.Flags.Managed {
+			wskaction.Annotations = append(wskaction.Annotations, ma)
+		}
 
 		/*
   		 *  Web Export
@@ -699,7 +705,9 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 		}
 
 		// add managed annotations if its a managed deployment
-		wsktrigger.Annotations = append(wsktrigger.Annotations, ma)
+		if utils.Flags.Managed {
+			wsktrigger.Annotations = append(wsktrigger.Annotations, ma)
+		}
 
 		t1 = append(t1, wsktrigger)
 	}
