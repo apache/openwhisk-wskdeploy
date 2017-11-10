@@ -88,6 +88,7 @@ type ServiceDeployer struct {
 	InteractiveChoice     bool
 	ClientConfig          *whisk.Config
 	DependencyMaster      map[string]utils.DependencyRecord
+	ManagedAnnotation whisk.KeyValue
 }
 
 // NewServiceDeployer is a Factory to create a new ServiceDeployer
@@ -125,10 +126,8 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 	deployer.RootPackageName = manifest.Package.Packagename
 	deployer.ProjectName = manifest.GetProject().Name
+	deployer.ProjectName = "MyFirstManagedProject"
 
-	deployer.ProjectName = "HelloWorldEvery12Hours"
-
-	var ma whisk.KeyValue
 	// Generate Managed Annotations if its marked as a Managed Deployment
 	// Managed deployments are the ones when OpenWhisk entities are deployed with command line flag --managed.
 	// Which results in a hidden annotation in every OpenWhisk entity in manifest file.
@@ -140,13 +139,13 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		}
 		// Every OpenWhisk entity in the manifest file will be annotated with:
 		//managed: '{"__OW__PROJECT__NAME": <name>, "__OW__PROJECT_HASH": <hash>, "__OW__FILE": <path>}'
-		ma, err = utils.GenerateManagedAnnotation(deployer.ProjectName, manifest.Filepath)
+		deployer.ManagedAnnotation, err = utils.GenerateManagedAnnotation(deployer.ProjectName, manifest.Filepath)
 		if err != nil {
 			return utils.NewYAMLFormatError(err.Error())
 		}
 	}
 
-	manifestReader.InitRootPackage(manifestParser, manifest, ma)
+	manifestReader.InitRootPackage(manifestParser, manifest, deployer.ManagedAnnotation)
 
 	if deployer.IsDefault == true {
 		fileReader := NewFileSystemReader(deployer)
@@ -158,7 +157,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	}
 
 	// process manifest file
-	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, ma)
+	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, deployer.ManagedAnnotation)
 	if err != nil {
 		return err
 	}
@@ -166,6 +165,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	projectName := ""
 	if len(manifest.GetProject().Packages) != 0 {
 		projectName = manifest.GetProject().Name
+		spew.Dump(projectName)
 	}
 
 	// (TODO) delete this warning after deprecating application in manifest file
@@ -204,13 +204,6 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		}
 	}
 
-	if utils.Flags.Managed {
-		if err := deployer.refreshManagedEntities(ma); err != nil {
-			errString := wski18n.T("Refreshing managed deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n")
-			whisk.Debug(whisk.DbgError, errString)
-			return err
-		}
-	}
 	return err
 }
 
@@ -369,6 +362,14 @@ func (deployer *ServiceDeployer) deployAssets() error {
 		return err
 	}
 
+	if utils.Flags.Managed {
+		if err := deployer.RefreshManagedEntities(deployer.ManagedAnnotation); err != nil {
+			errString := wski18n.T("Refreshing managed deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n")
+			whisk.Debug(whisk.DbgError, errString)
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -457,7 +458,7 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 	return nil
 }
 
-func (deployer *ServiceDeployer) refreshManagedEntities(maValue whisk.KeyValue) error {
+func (deployer *ServiceDeployer) RefreshManagedEntities(maValue whisk.KeyValue) error {
 
 	var ma utils.ManagedAnnotation
 	dec := json.NewDecoder(strings.NewReader(maValue.Value.(string)))
@@ -499,12 +500,14 @@ func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma ut
 				return err
 			}
 			if aa.ProjectName == ma.ProjectName && aa.ProjectHash != ma.ProjectHash {
+				spew.Dump("This action needs to be deleted")
 				_, err := deployer.Client.Actions.Delete(action.Name)
 				if err != nil {
 					return err
 				}
 			}
 			spew.Dump(aa)
+			spew.Dump(ma)
 		}
 	}
 	return nil
