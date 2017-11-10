@@ -1,11 +1,13 @@
+project:
+    name: HelloWorldEvery12Hours
     packages:
-      helloworld:
-        actions:
-            helloworld:
-                inputs:
-                    name: Amy
-                    place: Paris
-        triggers:
-            Every12Hours:
-                inputs:
-                    cron: "0 */12 * * *"
+        helloworld:
+            actions:
+                helloworld:
+                    inputs:
+                        name: Amy
+                        place: Paris
+            triggers:
+                Every12Hours:
+                    inputs:
+                        cron: "0 */12 * * *"

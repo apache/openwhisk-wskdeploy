@@ -31,7 +31,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"reflect"
-	"github.com/davecgh/go-spew/spew"
 	"encoding/json"
 )
 
@@ -165,7 +164,6 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	projectName := ""
 	if len(manifest.GetProject().Packages) != 0 {
 		projectName = manifest.GetProject().Name
-		spew.Dump(projectName)
 	}
 
 	// (TODO) delete this warning after deprecating application in manifest file
@@ -362,9 +360,13 @@ func (deployer *ServiceDeployer) deployAssets() error {
 		return err
 	}
 
+	// During managed deployments, after deploying list of entities in a project
+	// refresh previously deployed project entities, delete the assets which is no longer part of the project
+	// i.e. in a subsequent managed deployment of the same project minus few OpenWhisk entities
+	// from the manifest file must result in undeployment of those deleted entities
 	if utils.Flags.Managed {
 		if err := deployer.RefreshManagedEntities(deployer.ManagedAnnotation); err != nil {
-			errString := wski18n.T("Refreshing managed deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n")
+			errString := wski18n.T("Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n")
 			whisk.Debug(whisk.DbgError, errString)
 			return err
 		}
@@ -493,18 +495,25 @@ func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma ut
 	for _, action := range actions {
 		// an annotation with "managed" key indicates that an action was deployed as part of managed deployment
 		// if such annotation exists, check if it belongs to the current managed deployment
+		// this action has attached managed annotations
 		if a := action.Annotations.GetValue(utils.MANAGED); a != nil {
+			// decode the JSON blob and retrieve __OW_PROJECT_NAME and __OW_PROJECT_HASH
 			dec := json.NewDecoder(strings.NewReader(a.(string)))
 			var aa utils.ManagedAnnotation
 			if err := dec.Decode(&aa); err != nil {
 				return err
 			}
-			spew.Dump("Action annotations are")
-			spew.Dump(aa)
+			// we have found an action which was earlier part of the current project
+			// and this action was deployed as part of managed deployment and now
+			// must be undeployed as its not part of the project anymore
+			// The annotation with same project name but different project hash indicates
+			// that this action is deleted from the project in manifest file
 			if aa.ProjectName == ma.ProjectName && aa.ProjectHash != ma.ProjectHash {
-				spew.Dump("This action needs to be deleted")
-				spew.Dump(action.Name)
 				actionName := strings.Join([]string{packageName, action.Name}, "/")
+				output := wski18n.T("Found the action {{.action}} which is deleted" +
+					" from the current project {{.project}} in manifest file which is being undeployed.\n",
+					map[string]interface{}{"trigger": actionName, "project": aa.ProjectName})
+				whisk.Debug(whisk.DbgInfo, output)
 				_, err := deployer.Client.Actions.Delete(actionName)
 				if err != nil {
 					return err
@@ -517,24 +526,35 @@ func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma ut
 
 func (deployer *ServiceDeployer) RefreshManagedTriggers(ma utils.ManagedAnnotation) error {
 	options := whisk.TriggerListOptions{}
+	// Get list of triggers in your namespace
 	triggers, _, err := deployer.Client.Triggers.List(&options)
 	if err != nil {
 		return err
 	}
+	// iterate over the list of triggers to determine whether any of them was part of managed project
+	// and now deleted from manifest file we can determine that from the managed annotation
+	// If a trigger has attached managed annotation with the project name equals to the current project name
+	// but the project hash is different (project hash differs since the trigger is deleted from the manifest file)
 	for _, trigger := range triggers {
+		// trigger has attached managed annotation
 		if a := trigger.Annotations.GetValue(utils.MANAGED); a != nil {
+			// decode the JSON blob and retrieve __OW_PROJECT_NAME and __OW_PROJECT_HASH
 			dec := json.NewDecoder(strings.NewReader(a.(string)))
 			var ta utils.ManagedAnnotation
 			if err := dec.Decode(&ta); err != nil {
 				return err
 			}
+			// we have found a trigger which was earlier part of the current project
 			if ta.ProjectName == ma.ProjectName && ta.ProjectHash != ma.ProjectHash {
+				output := wski18n.T("Found the trigger {{.trigger}} which is deleted" +
+					" from the current project {{.project}} in manifest file which is being undeployed.\n",
+					map[string]interface{}{"trigger": trigger.Name, "project": ta.ProjectName})
+				whisk.Debug(whisk.DbgInfo, output)
 				_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
 				if err != nil {
 					return err
 				}
 			}
-			spew.Dump(ta)
 		}
 	}
 	return nil
@@ -553,22 +573,28 @@ func (deployer *ServiceDeployer) RefreshManagedPackages(ma utils.ManagedAnnotati
 	}
 	// iterate over each package to find managed annotations
 	// check if "managed" annotation is attached to a package
+	// when managed project name matches with the current project name and project
+	// hash differs, indicates that the package was part of the current project but
+	// now is deleted from the manifest file and should be undeployed.
 	for _, pkg := range packages {
 		if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
+			// decode the JSON blob and retrieve __OW_PROJECT_NAME and __OW_PROJECT_HASH
 			dec := json.NewDecoder(strings.NewReader(a.(string)))
 			var pa utils.ManagedAnnotation
 			if err := dec.Decode(&pa); err != nil {
 				return err
 			}
-			spew.Dump("iterating over pkg to get the list of actions" + pkg.Name)
-			spew.Dump("Package annotations are ")
-			spew.Dump(pa)
-			spew.Dump("Master annotations are")
-			spew.Dump(ma)
+			// perform the similar check on the list of actions from this package
+			// since package can not be deleted if its not empty (has any action or sequence)
 			if err := deployer.RefreshManagedActions(pkg.Name, ma); err != nil {
 				return err
 			}
+			// we have found a package which was earlier part of the current project
 			if pa.ProjectName ==  ma.ProjectName && pa.ProjectHash != ma.ProjectHash {
+				output := wski18n.T("Found the package {{.package}} which is deleted" +
+					" from the current project {{.project}} in manifest file which is being undeployed.\n",
+					map[string]interface{}{"trigger": pkg.Name, "project": pa.ProjectName})
+				whisk.Debug(whisk.DbgInfo, output)
 				_, err := deployer.Client.Packages.Delete(pkg.Name)
 				if err != nil {
 					return err
