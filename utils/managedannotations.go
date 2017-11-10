@@ -38,6 +38,9 @@ const (
 	MANAGED   = "managed"
 	OPENWHISK = "OpenWhisk"
 	NULL      = "golang\000"
+	OW_PROJECT_NAME = "__OW_PROJECT_NAME"
+	OW_PROJECT_HASH = "__OW_PROJECT_HASH"
+
 )
 
 type ManagedAnnotation struct {
@@ -103,6 +106,8 @@ func GenerateManagedAnnotation(projectName string, filePath string) (whisk.KeyVa
 	if err != nil {
 		return managedAnnotation, err
 	}
-	managedAnnotation = whisk.KeyValue{Key:MANAGED, Value:string(ma)}
+	var a interface{}
+	err = json.Unmarshal(ma, &a)
+	managedAnnotation = whisk.KeyValue{Key:MANAGED, Value:a.(map[string]interface{})}
 	return managedAnnotation, nil
 }
