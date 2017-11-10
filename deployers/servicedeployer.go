@@ -125,7 +125,6 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 	deployer.RootPackageName = manifest.Package.Packagename
 	deployer.ProjectName = manifest.GetProject().Name
-	deployer.ProjectName = "MyFirstManagedProject"
 
 	// Generate Managed Annotations if its marked as a Managed Deployment
 	// Managed deployments are the ones when OpenWhisk entities are deployed with command line flag --managed.

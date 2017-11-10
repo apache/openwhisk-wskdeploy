@@ -1,5 +1,5 @@
-#project:
-#    name: MyFirstManagedProject
+project:
+    name: MyFirstManagedProject
     packages:
         ManagedPackage-1:
             actions:
@@ -56,30 +56,30 @@
                 ManagedRule-1:
                     action: ManagedSequence-1
                     trigger: ManagedTrigger-1
-#        ManagedPackage-2:
-#            actions:
-#                HelloWorld-1:
-#                    function: actions/hello.js
-#                    runtime: nodejs:6
-#                    inputs:
-#                        name:
-#                            type: string
-#                            description: name of a person
-#                        place:
-#                            type: string
-#                            description: location of a person
-#                    outputs:
-#                        payload:
-#                            type: string
-#                            description: a simple greeting message, Hello World!
-#            sequences:
-#                ManagedSequence-1:
-#                    actions: HelloWorld-1
-#            triggers:
-#                ManagedTrigger-2:
-#            rules:
-#                ManagedRule-2:
-#                    action: ManagedSequence-1
-#                    trigger: ManagedTrigger-2
+        ManagedPackage-2:
+            actions:
+                HelloWorld-1:
+                    function: actions/hello.js
+                    runtime: nodejs:6
+                    inputs:
+                        name:
+                            type: string
+                            description: name of a person
+                        place:
+                            type: string
+                            description: location of a person
+                    outputs:
+                        payload:
+                            type: string
+                            description: a simple greeting message, Hello World!
+            sequences:
+                ManagedSequence-1:
+                    actions: HelloWorld-1
+            triggers:
+                ManagedTrigger-2:
+            rules:
+                ManagedRule-2:
+                    action: ManagedSequence-1
+                    trigger: ManagedTrigger-2
 
 

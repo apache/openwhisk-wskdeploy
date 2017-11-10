@@ -1,4 +1,4 @@
-#project:
-#    name: MyFirstManagedProject
+project:
+    name: MyFirstManagedProject
     packages:
 

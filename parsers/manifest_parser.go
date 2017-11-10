@@ -107,7 +107,7 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeDependencies(manifest.Package, projectPath, filePath, manifest.Package.Packagename)
 	} else {
-		if manifest.Packages != nil {
+		if len(manifest.Packages) != 0 {
 			packages = manifest.Packages
 		} else {
 			packages = manifest.GetProject().Packages
@@ -204,7 +204,7 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, ma whi
 			return nil, err
 		}
 	} else {
-		if manifest.Packages != nil {
+		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
@@ -304,7 +304,7 @@ func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YA
 	if mani.Package.Packagename != "" {
 		return dm.ComposeSequences(namespace, mani.Package.Sequences, mani.Package.Packagename, ma)
 	} else {
-		if mani.Packages != nil {
+		if len(mani.Packages) != 0 {
 			manifestPackages = mani.Packages
 		} else {
 			manifestPackages = mani.GetProject().Packages
@@ -375,7 +375,7 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeActions(filePath, manifest.Package.Actions, manifest.Package.Packagename, ma)
 	} else {
-		if manifest.Packages != nil {
+		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
@@ -618,7 +618,7 @@ func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath st
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeTriggers(filePath, manifest.Package, ma)
 	} else {
-		if manifest.Packages != nil {
+		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
@@ -713,7 +713,7 @@ func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML) ([]*whisk.Rule
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeRules(manifest.Package, manifest.Package.Packagename)
 	} else {
-		if manifest.Packages != nil {
+		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
@@ -754,7 +754,7 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *YAML) ([]*whisk
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeApiRecords(manifest.Package)
 	} else {
-		if manifest.Packages != nil {
+		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
