@@ -30,6 +30,7 @@ import (
     "reflect"
     "strconv"
     "strings"
+    "github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
 // Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
@@ -474,7 +475,7 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
             // read and parse manifest.yaml file
             p := NewYAMLParser()
             m, _ := p.ParseManifest(tmpfile.Name())
-            actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
+            actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
             var expectedResult string
             if err == nil {
                 for i := 0; i < len(actions); i++ {
@@ -516,7 +517,7 @@ func TestComposeActionsForInvalidRuntime(t *testing.T) {
             // read and parse manifest.yaml file
             p := NewYAMLParser()
             m, _ := p.ParseManifest(tmpfile.Name())
-            _, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
+            _, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
             // (TODO) uncomment the following test case after issue #307 is fixed
             // (TODO) its failing right now as we are lacking check on invalid runtime
             // TODO() https://github.com/apache/incubator-openwhisk-wskdeploy/issues/608
@@ -541,7 +542,7 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
         assert.Fail(t, "Failed to parse manifest: " + manifestFile )
     }
 
-    actions, err := p.ComposeActionsFromAllPackages(m, manifestFile)
+    actions, err := p.ComposeActionsFromAllPackages(m, manifestFile, whisk.KeyValue{})
 
     if err == nil {
         // assert that the actions variable has only one action
@@ -700,7 +701,7 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
         assert.Fail(t, "Failed to parse manifest: " + manifestFile )
     }
 
-    actions, err := p.ComposeActionsFromAllPackages(m, manifestFile)
+    actions, err := p.ComposeActionsFromAllPackages(m, manifestFile, whisk.KeyValue{})
 
     if err == nil {
         // assert that the actions variable has only one action
@@ -780,7 +781,7 @@ func TestComposeActionsForFunction(t *testing.T) {
             // read and parse manifest.yaml file
             p := NewYAMLParser()
             m, _ := p.ParseManifest(tmpfile.Name())
-            actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
+            actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
             var expectedResult, actualResult string
             if err == nil {
                 for i := 0; i < len(actions); i++ {
@@ -830,7 +831,7 @@ func TestComposeActionsForLimits (t *testing.T) {
           // read and parse manifest.yaml file
           p := NewYAMLParser()
           m, _ := p.ParseManifest(tmpfile.Name())
-          actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
+          actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
           //var expectedResult, actualResult string
           if err == nil {
               for i:=0; i<len(actions); i++ {
@@ -867,7 +868,7 @@ func TestComposeActionsForWebActions(t *testing.T) {
             // read and parse manifest.yaml file
             p := NewYAMLParser()
             m, _ := p.ParseManifest(tmpfile.Name())
-            actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name())
+            actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
             if err == nil {
                 for i := 0; i < len(actions); i++ {
                     if actions[i].Action.Name == "hello" {
@@ -1061,7 +1062,7 @@ func TestComposePackage(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(tmpfile.Name())
-    pkg, err := p.ComposeAllPackages(m, tmpfile.Name())
+    pkg, err := p.ComposeAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
     if err == nil {
         n := "helloworld"
         assert.NotNil(t, pkg[n], "Failed to get the whole package")
@@ -1091,7 +1092,7 @@ func TestComposeSequences(t *testing.T) {
     // read and parse manifest.yaml file
     p := NewYAMLParser()
     m, _ := p.ParseManifest(tmpfile.Name())
-    seqList, err := p.ComposeSequencesFromAllPackages("", m)
+    seqList, err := p.ComposeSequencesFromAllPackages("", m, whisk.KeyValue{})
     if err != nil {
         assert.Fail(t, "Failed to compose sequences")
     }
@@ -1123,7 +1124,7 @@ func TestComposeTriggers(t *testing.T) {
         assert.Fail(t, "Failed to parse manifest: " + manifestFile )
     }
 
-    triggerList, err := p.ComposeTriggersFromAllPackages(m, manifestFile)
+    triggerList, err := p.ComposeTriggersFromAllPackages(m, manifestFile, whisk.KeyValue{})
     if err != nil {
         assert.Fail(t, "Failed to compose trigger")
     }
