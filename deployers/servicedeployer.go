@@ -31,6 +31,8 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"reflect"
+	"github.com/davecgh/go-spew/spew"
+	"encoding/json"
 )
 
 type DeploymentProject struct {
@@ -71,6 +73,7 @@ func NewDeploymentPackage() *DeploymentPackage {
 //   3. Collect information about the source code files in the working directory
 //   4. Create a deployment plan to create OpenWhisk service
 type ServiceDeployer struct {
+	ProjectName 	string
 	Deployment      *DeploymentProject
 	Client          *whisk.Client
 	mt              sync.RWMutex
@@ -121,11 +124,23 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	}
 
 	deployer.RootPackageName = manifest.Package.Packagename
+	deployer.ProjectName = manifest.GetProject().Name
+
+	deployer.ProjectName = "HelloWorldEvery12Hours"
 
 	var ma whisk.KeyValue
-	// generate Managed Annotations if this is marked as a Managed Deployment
+	// Generate Managed Annotations if its marked as a Managed Deployment
+	// Managed deployments are the ones when OpenWhisk entities are deployed with command line flag --managed.
+	// Which results in a hidden annotation in every OpenWhisk entity in manifest file.
 	if utils.Flags.Managed {
-		ma, err = utils.GenerateManagedAnnotation(manifest.GetProject().Name, manifest.Filepath)
+		// OpenWhisk entities are annotated with Project Name and therefore
+		// Project Name in manifest/deployment file is mandatory for managed deployments
+		if deployer.ProjectName == "" {
+			return utils.NewYAMLFormatError("Project name in manifest file is mandatory for managed deployments")
+		}
+		// Every OpenWhisk entity in the manifest file will be annotated with:
+		//managed: '{"__OW__PROJECT__NAME": <name>, "__OW__PROJECT_HASH": <hash>, "__OW__FILE": <path>}'
+		ma, err = utils.GenerateManagedAnnotation(deployer.ProjectName, manifest.Filepath)
 		if err != nil {
 			return utils.NewYAMLFormatError(err.Error())
 		}
@@ -189,8 +204,13 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		}
 	}
 
-	fmt.Println(utils.GenerateManagedAnnotation(manifest.GetProject().Name, manifest.Filepath))
-
+	if utils.Flags.Managed {
+		if err := deployer.refreshManagedEntities(ma); err != nil {
+			errString := wski18n.T("Refreshing managed deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n")
+			whisk.Debug(whisk.DbgError, errString)
+			return err
+		}
+	}
 	return err
 }
 
@@ -434,6 +454,119 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 		}
 	}
 
+	return nil
+}
+
+func (deployer *ServiceDeployer) refreshManagedEntities(maValue whisk.KeyValue) error {
+
+	var ma utils.ManagedAnnotation
+	dec := json.NewDecoder(strings.NewReader(maValue.Value.(string)))
+	if err := dec.Decode(&ma); err != nil {
+		return err
+	}
+
+	if err := deployer.RefreshManagedTriggers(ma); err != nil {
+		return err
+	}
+
+	if err := deployer.RefreshManagedRules(ma); err != nil {
+		return err
+	}
+
+	if err := deployer.RefreshManagedPackages(ma); err != nil {
+		return err
+	}
+
+	return nil
+
+}
+func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma utils.ManagedAnnotation) error {
+	options := whisk.ActionListOptions{}
+	// get a list of actions in your namespace
+	actions, _, err := deployer.Client.Actions.List(packageName, &options)
+	if err != nil {
+		return err
+	}
+	// iterate over list of actions to find an action with managed annotations
+	// check if "managed" annotation is attached to an action
+	for _, action := range actions {
+		// an annotation with "managed" key indicates that an action was deployed as part of managed deployment
+		// if such annotation exists, check if it belongs to the current managed deployment
+		if a := action.Annotations.GetValue(utils.MANAGED); a != nil {
+			dec := json.NewDecoder(strings.NewReader(a.(string)))
+			var aa utils.ManagedAnnotation
+			if err := dec.Decode(&aa); err != nil {
+				return err
+			}
+			if aa.ProjectName == ma.ProjectName && aa.ProjectHash != ma.ProjectHash {
+				_, err := deployer.Client.Actions.Delete(action.Name)
+				if err != nil {
+					return err
+				}
+			}
+			spew.Dump(aa)
+		}
+	}
+	return nil
+}
+
+func (deployer *ServiceDeployer) RefreshManagedTriggers(ma utils.ManagedAnnotation) error {
+	options := whisk.TriggerListOptions{}
+	triggers, _, err := deployer.Client.Triggers.List(&options)
+	if err != nil {
+		return err
+	}
+	for _, trigger := range triggers {
+		if a := trigger.Annotations.GetValue(utils.MANAGED); a != nil {
+			dec := json.NewDecoder(strings.NewReader(a.(string)))
+			var ta utils.ManagedAnnotation
+			if err := dec.Decode(&ta); err != nil {
+				return err
+			}
+			if ta.ProjectName == ma.ProjectName && ta.ProjectHash != ma.ProjectHash {
+				_, err := deployer.Client.Actions.Delete(trigger.Name)
+				if err != nil {
+					return err
+				}
+			}
+			spew.Dump(ta)
+		}
+	}
+	return nil
+}
+
+func (deployer *ServiceDeployer) RefreshManagedRules(ma utils.ManagedAnnotation) error {
+	return nil
+}
+
+func (deployer *ServiceDeployer) RefreshManagedPackages(ma utils.ManagedAnnotation) error {
+	options := whisk.PackageListOptions{}
+	// Get the list of packages in your namespace
+	packages, _, err := deployer.Client.Packages.List(&options)
+	if err != nil {
+		return err
+	}
+	// iterate over each package to find managed annotations
+	// check if "managed" annotation is attached to a package
+	for _, pkg := range packages {
+		if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
+			dec := json.NewDecoder(strings.NewReader(a.(string)))
+			var pa utils.ManagedAnnotation
+			if err := dec.Decode(&pa); err != nil {
+				return err
+			}
+			if pa.ProjectName ==  ma.ProjectName && pa.ProjectHash != ma.ProjectHash {
+				if err := deployer.RefreshManagedActions(pkg.Name, ma); err != nil {
+					return err
+				}
+				_, err := deployer.Client.Packages.Delete(pkg.Name)
+				if err != nil {
+					return err
+				}
+			}
+			spew.Dump(pa)
+		}
+	}
 	return nil
 }
 
