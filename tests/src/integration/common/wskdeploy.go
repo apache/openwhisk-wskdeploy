@@ -169,6 +169,10 @@ func (wskdeploy *Wskdeploy) UndeployManifestPathOnly(manifestpath string) (strin
 	return wskdeploy.RunCommand("undeploy", "-m", manifestpath)
 }
 
+func (Wskdeploy *Wskdeploy) ManagedDeployment(manifestPath string, deploymentPath string) (string, error) {
+	return Wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath, "--managed")
+}
+
 // This method is only for testing
 // This method will mock a construction of deployment plan, creating all the memory objects
 // This method CANNOT be used for real deployment!
