@@ -23,6 +23,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
 var mr *ManifestReader
@@ -46,14 +47,14 @@ func TestManifestReader_ParseManifest(t *testing.T) {
 
 // Test could Init root package successfully.
 func TestManifestReader_InitRootPackage(t *testing.T) {
-	err := mr.InitRootPackage(ps, ms)
+	err := mr.InitRootPackage(ps, ms, whisk.KeyValue{})
 	assert.Equal(t, err, nil, "Init Root Package failed")
 }
 
 // Test Parameters
 func TestManifestReader_param(t *testing.T) {
 	ms, _ := ps.ParseManifest("../tests/dat/manifest6.yaml")
-	err := mr.InitRootPackage(ps, ms)
+	err := mr.InitRootPackage(ps, ms, whisk.KeyValue{})
 	assert.Equal(t, err, nil, "Init Root Package failed")
 
 	// TODO.

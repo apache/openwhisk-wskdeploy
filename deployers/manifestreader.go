@@ -51,8 +51,8 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 	return manifest, manifestParser, nil
 }
 
-func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser, manifest *parsers.YAML) error {
-	packages, err := manifestParser.ComposeAllPackages(manifest, reader.serviceDeployer.ManifestPath)
+func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, ma whisk.KeyValue) error {
+	packages, err := manifestParser.ComposeAllPackages(manifest, reader.serviceDeployer.ManifestPath, ma)
 	if err != nil {
 		return utils.NewYAMLFormatError(err.Error())
 	}
@@ -62,7 +62,7 @@ func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser
 }
 
 // Wrapper parser to handle yaml dir
-func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.YAML) error {
+func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.YAML, ma whisk.KeyValue) error {
 
 	var err error
 	deps, err := manifestParser.ComposeDependenciesFromAllPackages(manifest, deployer.serviceDeployer.ProjectPath, deployer.serviceDeployer.ManifestPath)
@@ -70,17 +70,17 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 		return utils.NewYAMLFormatError(err.Error())
 	}
 
-	actions, err := manifestParser.ComposeActionsFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath)
+	actions, err := manifestParser.ComposeActionsFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath, ma)
 	if err != nil {
 		return utils.NewYAMLFormatError(err.Error())
 	}
 
-	sequences, err := manifestParser.ComposeSequencesFromAllPackages(deployer.serviceDeployer.ClientConfig.Namespace, manifest)
+	sequences, err := manifestParser.ComposeSequencesFromAllPackages(deployer.serviceDeployer.ClientConfig.Namespace, manifest, ma)
 	if err != nil {
 		return utils.NewYAMLFormatError(err.Error())
 	}
 
-	triggers, err := manifestParser.ComposeTriggersFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath)
+	triggers, err := manifestParser.ComposeTriggersFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath, ma)
 	if err != nil {
 		return utils.NewYAMLFormatError(err.Error())
 	}

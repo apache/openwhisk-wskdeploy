@@ -107,7 +107,7 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeDependencies(manifest.Package, projectPath, filePath, manifest.Package.Packagename)
 	} else {
-		if manifest.Packages != nil {
+		if len(manifest.Packages) != 0 {
 			packages = manifest.Packages
 		} else {
 			packages = manifest.GetProject().Packages
@@ -191,20 +191,20 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 	return depMap, nil
 }
 
-func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string) (map[string]*whisk.Package, error) {
+func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, ma whisk.KeyValue) (map[string]*whisk.Package, error) {
 	packages := map[string]*whisk.Package{}
 	manifestPackages := make(map[string]Package)
 
 	if manifest.Package.Packagename != "" {
 		fmt.Println("WARNING: using package inside of manifest file will soon be deprecated, please use packages instead.")
-		s, err := dm.ComposePackage(manifest.Package, manifest.Package.Packagename, filePath)
+		s, err := dm.ComposePackage(manifest.Package, manifest.Package.Packagename, filePath, ma)
 		if err == nil {
 			packages[manifest.Package.Packagename] = s
 		} else {
 			return nil, err
 		}
 	} else {
-		if manifest.Packages != nil {
+		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
@@ -212,7 +212,7 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string) (map[s
 	}
 
 	for n, p := range manifestPackages {
-		s, err := dm.ComposePackage(p, n, filePath)
+		s, err := dm.ComposePackage(p, n, filePath, ma)
 
 		if err == nil {
 			packages[n] = s
@@ -224,7 +224,7 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string) (map[s
 	return packages, nil
 }
 
-func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath string) (*whisk.Package, error) {
+func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath string, ma whisk.KeyValue) (*whisk.Package, error) {
 	var errorParser error
 	pag := &whisk.Package{}
 	pag.Name = packageName
@@ -290,18 +290,23 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		pag.Annotations = append(pag.Annotations, listOfAnnotations...)
 	}
 
+	// add Managed Annotations if this is Managed Deployment
+	if utils.Flags.Managed {
+		pag.Annotations = append(pag.Annotations, ma)
+	}
+
 	return pag, nil
 }
 
-func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YAML) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YAML, ma whisk.KeyValue) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
 
 	manifestPackages := make(map[string]Package)
 
 	if mani.Package.Packagename != "" {
-		return dm.ComposeSequences(namespace, mani.Package.Sequences, mani.Package.Packagename)
+		return dm.ComposeSequences(namespace, mani.Package.Sequences, mani.Package.Packagename, ma)
 	} else {
-		if mani.Packages != nil {
+		if len(mani.Packages) != 0 {
 			manifestPackages = mani.Packages
 		} else {
 			manifestPackages = mani.GetProject().Packages
@@ -309,7 +314,7 @@ func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YA
 	}
 
 	for n, p := range manifestPackages {
-		s, err := dm.ComposeSequences(namespace, p.Sequences, n)
+		s, err := dm.ComposeSequences(namespace, p.Sequences, n, ma)
 		if err == nil {
 			s1 = append(s1, s...)
 		} else {
@@ -319,7 +324,7 @@ func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YA
 	return s1, nil
 }
 
-func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Sequence, packageName string) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Sequence, packageName string, ma whisk.KeyValue) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
 
 	for key, sequence := range sequences {
@@ -356,27 +361,32 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 			wskaction.Annotations = keyValArr
 		}
 
+		// appending managed annotations if its a managed deployment
+		if utils.Flags.Managed {
+			wskaction.Annotations = append(wskaction.Annotations, ma)
+		}
+
 		record := utils.ActionRecord{Action: wskaction, Packagename: packageName, Filepath: key}
 		s1 = append(s1, record)
 	}
 	return s1, nil
 }
 
-func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath string) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath string, ma whisk.KeyValue) ([]utils.ActionRecord, error) {
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
 	manifestPackages := make(map[string]Package)
 
 	if manifest.Package.Packagename != "" {
-		return dm.ComposeActions(filePath, manifest.Package.Actions, manifest.Package.Packagename)
+		return dm.ComposeActions(filePath, manifest.Package.Actions, manifest.Package.Packagename, ma)
 	} else {
-		if manifest.Packages != nil {
+		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
 		}
 	}
 	for n, p := range manifestPackages {
-		a, err := dm.ComposeActions(filePath, p.Actions, n)
+		a, err := dm.ComposeActions(filePath, p.Actions, n, ma)
 		if err == nil {
 			s1 = append(s1, a...)
 		} else {
@@ -386,7 +396,7 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 	return s1, nil
 }
 
-func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action, packageName string) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action, packageName string, ma whisk.KeyValue) ([]utils.ActionRecord, error) {
 
 	var errorParser error
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
@@ -546,6 +556,10 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		if len(listOfAnnotations) > 0 {
 			wskaction.Annotations = append(wskaction.Annotations, listOfAnnotations...)
 		}
+		// add managed annotations if its marked as managed deployment
+		if utils.Flags.Managed {
+			wskaction.Annotations = append(wskaction.Annotations, ma)
+		}
 
 		/*
   		 *  Web Export
@@ -603,21 +617,21 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 }
 
-func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath string) ([]*whisk.Trigger, error) {
+func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath string, ma whisk.KeyValue) ([]*whisk.Trigger, error) {
 	var triggers []*whisk.Trigger = make([]*whisk.Trigger, 0)
 	manifestPackages := make(map[string]Package)
 
 	if manifest.Package.Packagename != "" {
-		return dm.ComposeTriggers(filePath, manifest.Package)
+		return dm.ComposeTriggers(filePath, manifest.Package, ma)
 	} else {
-		if manifest.Packages != nil {
+		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
 		}
 	}
 	for _, p := range manifestPackages {
-		t, err := dm.ComposeTriggers(filePath, p)
+		t, err := dm.ComposeTriggers(filePath, p, ma)
 		if err == nil {
 			triggers = append(triggers, t...)
 		} else {
@@ -627,7 +641,7 @@ func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath st
 	return triggers, nil
 }
 
-func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package) ([]*whisk.Trigger, error) {
+func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.KeyValue) ([]*whisk.Trigger, error) {
 	var errorParser error
 	var t1 []*whisk.Trigger = make([]*whisk.Trigger, 0)
 
@@ -690,6 +704,11 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package) ([]*whisk.Tr
 			wsktrigger.Annotations = append(wsktrigger.Annotations, listOfAnnotations...)
 		}
 
+		// add managed annotations if its a managed deployment
+		if utils.Flags.Managed {
+			wsktrigger.Annotations = append(wsktrigger.Annotations, ma)
+		}
+
 		t1 = append(t1, wsktrigger)
 	}
 	return t1, nil
@@ -702,7 +721,7 @@ func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML) ([]*whisk.Rule
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeRules(manifest.Package, manifest.Package.Packagename)
 	} else {
-		if manifest.Packages != nil {
+		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
@@ -743,7 +762,7 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *YAML) ([]*whisk
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeApiRecords(manifest.Package)
 	} else {
-		if manifest.Packages != nil {
+		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
