@@ -33,7 +33,6 @@ const (
 	TYPE = "Type"
 	EXPECTED = "expected"
 	ACTUAL = "actual"
-	YAML_FILE = "YAML file"
 
 	ERROR_COMMAND_FAILED = "ERROR_COMMAND_FAILED"
 	ERROR_WHISK_CLIENT_ERROR = "ERROR_WHISK_CLIENT_ERROR"
@@ -216,6 +215,57 @@ func NewYAMLFileFormatError(fpath string, errorMessage string) *YAMLFileFormatEr
 }
 
 /*
+ * ParameterTypeMismatchError
+ */
+type ParameterTypeMismatchError struct {
+	FileError
+	Parameter    string
+	ExpectedType string
+	ActualType   string
+}
+
+func NewParameterTypeMismatchError(fpath string, param string, expectedType string, actualType string) *ParameterTypeMismatchError {
+	var err = &ParameterTypeMismatchError{
+		ExpectedType: expectedType,
+		ActualType: actualType,
+	}
+
+	err.SetErrorType(ERROR_YAML_PARAMETER_TYPE_MISMATCH)
+	err.SetCallerByStackFrameSkip(2)
+	err.SetErrorFilePath(fpath)
+	str := fmt.Sprintf("%s [%s]: %s %s: [%s], %s: [%s]",
+		PARAMETER, param,
+		TYPE,
+		EXPECTED, expectedType,
+		ACTUAL, actualType)
+	err.SetMessage(str)
+	return err
+}
+
+/*
+ * InvalidParameterType
+ */
+type InvalidParameterTypeError struct {
+	FileError
+	Parameter    string
+	ActualType   string
+}
+
+func NewInvalidParameterTypeError(fpath string, param string, actualType string) *ParameterTypeMismatchError {
+	var err = &ParameterTypeMismatchError{
+		ActualType: actualType,
+	}
+	err.SetErrorFilePath(fpath)
+	err.SetErrorType(ERROR_YAML_INVALID_PARAMETER_TYPE)
+	err.SetCallerByStackFrameSkip(2)
+	str := fmt.Sprintf("%s [%s]: %s [%s]",
+		PARAMETER, param,
+		TYPE, actualType)
+	err.SetMessage(str)
+	return err
+}
+
+/*
  * YAMLParserErr
  */
 type YAMLParserError struct {
@@ -248,60 +298,7 @@ func (e *YAMLParserError) Error() string {
 		}
 		result[index] = s
 	}
-	return fmt.Sprintf("\n==> %s [%d]: %s: %s: \n%s",
-		e.FileName,
-		e.LineNum,
-		YAML_FILE, e.FileName,
-		strings.Join(result, "\n"))
-}
 
-/*
- * ParameterTypeMismatchError
- */
-type ParameterTypeMismatchError struct {
-	YAMLParserError
-	Parameter    string
-	ExpectedType string
-	ActualType   string
-}
-
-func NewParameterTypeMismatchError(fpath string, param string, expectedType string, actualType string) *ParameterTypeMismatchError {
-	var err = &ParameterTypeMismatchError{
-		ExpectedType: expectedType,
-		ActualType: actualType,
-	}
-
-	err.SetErrorType(ERROR_YAML_PARAMETER_TYPE_MISMATCH)
-	err.SetCallerByStackFrameSkip(2)
-	err.SetErrorFilePath(fpath)
-	str := fmt.Sprintf("%s [%s]: %s %s: [%s], %s: [%s]",
-		PARAMETER, param,
-		TYPE,
-		EXPECTED, expectedType,
-		ACTUAL, actualType)
-	err.SetMessage(str)
-	return err
-}
-
-/*
- * InvalidParameterType
- */
-type InvalidParameterTypeError struct {
-	YAMLParserError
-	Parameter    string
-	ActualType   string
-}
-
-func NewInvalidParameterTypeError(fpath string, param string, actualType string) *ParameterTypeMismatchError {
-	var err = &ParameterTypeMismatchError{
-		ActualType: actualType,
-	}
-	err.SetErrorFilePath(fpath)
-	err.SetErrorType(ERROR_YAML_INVALID_PARAMETER_TYPE)
-	err.SetCallerByStackFrameSkip(2)
-	str := fmt.Sprintf("%s [%s]: %s [%s]",
-		PARAMETER, param,
-		TYPE, actualType)
-	err.SetMessage(str)
-	return err
+	e.SetMessage(strings.Join(result, "\n"))
+	return e.FileError.Error()
 }
