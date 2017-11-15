@@ -41,7 +41,7 @@ func ReadOrCreateManifest() (*YAML, error) {
 		dat, _ := ioutil.ReadFile(utils.ManifestFileNameYaml)
 		err := NewYAMLParser().Unmarshal(dat, &maniyaml)
 		if err != nil {
-			return &maniyaml, utils.NewYAMLFileReadError(utils.ManifestFileNameYaml, err.Error())
+			return &maniyaml, utils.NewFileReadError(utils.ManifestFileNameYaml, err.Error())
 		}
 	}
 	return &maniyaml, nil
@@ -56,7 +56,7 @@ func Write(manifest *YAML, filename string) error {
 
 	f, err := os.Create(filename)
 	if err != nil {
-		return utils.NewYAMLFileReadError(filename, err.Error())
+		return utils.NewFileReadError(filename, err.Error())
 	}
 	defer f.Close()
 
@@ -87,7 +87,7 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
 
 	content, err := utils.Read(manifestPath)
 	if err != nil {
-		return &maniyaml, utils.NewYAMLFileReadError(manifestPath, err.Error())
+		return &maniyaml, utils.NewFileReadError(manifestPath, err.Error())
 	}
 
 	err = mm.Unmarshal(content, &maniyaml)
