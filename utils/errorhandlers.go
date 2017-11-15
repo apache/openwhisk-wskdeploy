@@ -18,34 +18,11 @@
 package utils
 
 import (
-	//"errors"
 	"fmt"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/fatih/color"
 	"github.com/mattn/go-colorable"
-	//"os"
 )
-
-// Check is a util function to panic when there is an error.
-//func Check(e error) {
-//	defer func() {
-//		if err := recover(); err != nil {
-//			fmt.Printf("Runtime panic : %v", err)
-//		}
-//	}()
-//
-//	if e != nil {
-//		fmt.Printf("%v", e)
-//		erro := errors.New("Error happened during execution, please type 'wskdeploy -h' for help messages.")
-//		fmt.Printf("%v", erro)
-//		if Flags.WithinOpenWhisk {
-//			PrintOpenWhiskError(e)
-//		} else {
-//			os.Exit(1)
-//		}
-//
-//	}
-//}
 
 func PrintOpenWhiskError(err error) {
 	outputStream := colorable.NewColorableStderr()
