@@ -165,6 +165,7 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	/*
 	 * YAMLParserErr
 	 */
+	// TODO() test multiple lines and messages with and without UNKNOWN line number
 	err10 := NewYAMLParserErr(TEST_EXISTANT_MANIFEST_FILE, nil, nil)
 	actualResult =  strings.TrimSpace(err10.Error())
 	expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + FILE + ": [%s]:",
