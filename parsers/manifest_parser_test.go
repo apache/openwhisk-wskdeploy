@@ -938,7 +938,7 @@ func TestResolveParameterForMultiLineParams(t *testing.T) {
     switch errorType := err.(type) {
     default:
         assert.Fail(t, "Wrong error type received: We are expecting ParserErr.")
-    case *utils.YAMLParserErr:
+    case *utils.YAMLParserError:
         assert.Equal(t, expectedErr.Message, errorType.Message,
             "Expected error " + expectedErr.Message + " but found " + errorType.Message)
     }

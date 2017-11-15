@@ -46,7 +46,7 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 	manifest, err := manifestParser.ParseManifest(dep.ManifestPath)
 
 	if err != nil {
-		return manifest, manifestParser, utils.NewYAMLFileReadError(dep.ManifestPath, err.Error())
+		return manifest, manifestParser, utils.NewFileReadError(dep.ManifestPath, err.Error())
 	}
 	return manifest, manifestParser, nil
 }
