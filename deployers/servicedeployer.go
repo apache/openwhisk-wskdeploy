@@ -132,13 +132,16 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		// OpenWhisk entities are annotated with Project Name and therefore
 		// Project Name in manifest/deployment file is mandatory for managed deployments
 		if deployer.ProjectName == "" {
-			return utils.NewYAMLFormatError("Project name in manifest file is mandatory for managed deployments")
+			// TODO see if we can pass in the Deployment file path on first parameter
+			// TODO see if we can move string to translation file.
+			return utils.NewYAMLFileFormatError(utils.UNKNOWN, "Project name in manifest file is mandatory for managed deployments")
 		}
 		// Every OpenWhisk entity in the manifest file will be annotated with:
 		//managed: '{"__OW__PROJECT__NAME": <name>, "__OW__PROJECT_HASH": <hash>, "__OW__FILE": <path>}'
 		deployer.ManagedAnnotation, err = utils.GenerateManagedAnnotation(deployer.ProjectName, manifest.Filepath)
 		if err != nil {
-			return utils.NewYAMLFormatError(err.Error())
+			// TODO see if we can pass in the YAML file path on first parameter
+			return utils.NewYAMLFileFormatError(utils.UNKNOWN, err.Error())
 		}
 	}
 
@@ -192,7 +195,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 				errorString := wski18n.T("The name of the project/application {{.projectNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the project/application {{.projectNameManifest}}} in manifest file at [{{.manifestFile}}].",
 					map[string]interface{}{"projectNameDeploy": projectNameDeploy, "deploymentFile": deployer.DeploymentPath,
 						"projectNameManifest": projectName, "manifestFile": deployer.ManifestPath})
-				return utils.NewYAMLFormatError(errorString)
+				return utils.NewYAMLFileFormatError(manifest.Filepath, errorString)
 			}
 		}
 		if err := deploymentReader.BindAssets(); err != nil {
@@ -268,7 +271,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 				errorString := wski18n.T("The name of the project/application {{.projectNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.projectNameManifest}}} in manifest file at [{{.manifestFile}}].",
 					map[string]interface{}{"projectNameDeploy": projectNameDeploy, "deploymentFile": deployer.DeploymentPath,
 						"projectNameManifest": projectName, "manifestFile": deployer.ManifestPath})
-				return deployer.Deployment, utils.NewYAMLFormatError(errorString)
+				return deployer.Deployment, utils.NewYAMLFileFormatError(manifest.Filepath, errorString)
 			}
 		}
 

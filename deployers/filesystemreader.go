@@ -56,7 +56,7 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]
 		if fpath != reader.serviceDeployer.ProjectPath {
 			pathCount, err := reader.getFilePathCount(fpath)
             if err != nil {
-                return utils.NewYAMLFileReadError(err.Error())
+                return utils.NewYAMLFileReadError(fpath, err.Error())
             }
 
 			if !f.IsDir() {
@@ -76,7 +76,7 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]
 					if foundFile == true {
 						_, action, err := reader.CreateActionFromFile(reader.serviceDeployer.ManifestPath, fpath)
                         if err != nil {
-                            return utils.NewYAMLFileReadError(err.Error())
+                            return utils.NewYAMLFileReadError(fpath, err.Error())
                         }
 
 						var record utils.ActionRecord
@@ -127,7 +127,7 @@ func (reader *FileSystemReader) CreateActionFromFile(manipath, filePath string) 
 
 		dat, err := new(utils.ContentReader).LocalReader.ReadLocal(filePath)
         if err != nil {
-            return name, action, utils.NewYAMLFileReadError(err.Error())
+            return name, action, utils.NewYAMLFileReadError(filePath, err.Error())
         }
 
 		action.Exec = new(whisk.Exec)
