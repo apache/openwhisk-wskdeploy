@@ -33,64 +33,96 @@ import (
  */
 func TestCustomErrorOutputFormat(t *testing.T) {
 
-        var someErrorMessage string = "Some bad error"
 	_, fn, _, _ := runtime.Caller(0)
 	packageName := filepath.Base(fn)
+	const TEST_DEFAULT_ERROR_MESSAGE = "Some bad error"
 	const TEST_COMMAND string = "test"
+	const TEST_ERROR_CODE = 400  // Bad request
 	const TEST_MANIFEST_PATH = "tests/dat"
-	const TEST_NONEXISTANT_MANIFEST_FILE = "missing_manifest.yaml"
+	const TEST_NONEXISTANT_MANIFEST_FILE = "tests/dat/missing_manifest.yaml"
 	const TEST_INVALID_YAML_MANIFEST_FILE = "tests/dat/manifest_bad_yaml_invalid_comment.yaml"
 
 	/*
 	 * CommandError
 	 */
-	err1 := NewCommandError(TEST_COMMAND, someErrorMessage)
+	err1 := NewCommandError(TEST_COMMAND, TEST_DEFAULT_ERROR_MESSAGE)
 	actualResult :=  strings.TrimSpace(err1.Error())
 	expectedResult := fmt.Sprintf("%s [%d]: [%s]: %s: %s",
 		packageName,
 		err1.LineNum,
 		ERROR_COMMAND_FAILED,
 		TEST_COMMAND,
-		someErrorMessage )
+		TEST_DEFAULT_ERROR_MESSAGE )
+	//fmt.Println(actualResult)
+	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
+
+	/*
+	 * WhiskClientError
+	 */
+	err2 := NewWhiskClientError(TEST_DEFAULT_ERROR_MESSAGE, TEST_ERROR_CODE)
+	actualResult =  strings.TrimSpace(err2.Error())
+	expectedResult = fmt.Sprintf("%s [%d]: [%s]: Error Code: %d: %s",
+		packageName,
+		err2.LineNum,
+		ERROR_WHISK_CLIENT_ERROR,
+		TEST_ERROR_CODE,
+		TEST_DEFAULT_ERROR_MESSAGE )
+	//fmt.Println(actualResult)
+	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
+
+	/*
+	 * WhiskClientInvalidConfigError
+	 */
+	err3 := NewWhiskClientInvalidConfigError(TEST_DEFAULT_ERROR_MESSAGE)
+	actualResult =  strings.TrimSpace(err3.Error())
+	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s",
+		packageName,
+		err3.LineNum,
+		ERROR_WHISK_CLIENT_INVALID_CONFIG,
+		TEST_DEFAULT_ERROR_MESSAGE )
+	//fmt.Println(actualResult)
+	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
+
+	/*
+ 	 * FileReadError
+ 	 */
+	err4 := NewFileReadError(TEST_NONEXISTANT_MANIFEST_FILE, TEST_DEFAULT_ERROR_MESSAGE)
+	actualResult =  strings.TrimSpace(err4.Error())
+	expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + FILE + ": [%s]: %s",
+		packageName,
+		err4.LineNum,
+		ERROR_FILE_READ_ERROR,
+		filepath.Base(TEST_NONEXISTANT_MANIFEST_FILE),
+		TEST_DEFAULT_ERROR_MESSAGE )
+        //fmt.Println(actualResult)
 	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
 
 	/*
  	 * ManifestFileNotFoundError
  	 */
-	err2 := NewErrorManifestFileNotFound(TEST_MANIFEST_PATH, someErrorMessage)
-	actualResult =  strings.TrimSpace(err2.Error())
-	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s",
+	err5 := NewErrorManifestFileNotFound(TEST_NONEXISTANT_MANIFEST_FILE, TEST_DEFAULT_ERROR_MESSAGE)
+	actualResult =  strings.TrimSpace(err5.Error())
+	expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + FILE + ": [%s]: %s",
 		packageName,
-		err2.LineNum,
+		err5.LineNum,
 		ERROR_MANIFEST_FILE_NOT_FOUND,
-		someErrorMessage )
-
-	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
-
-	/*
-	 * YAMLFileReadError
-	 */
-	err3 := NewYAMLFileReadError(TEST_NONEXISTANT_MANIFEST_FILE, someErrorMessage)
-	actualResult =  strings.TrimSpace(err3.Error())
-	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s",
-		packageName,
-		err3.LineNum,
-		ERROR_YAML_FILE_READ_ERROR,
-		someErrorMessage )
-
+		filepath.Base(TEST_NONEXISTANT_MANIFEST_FILE),
+		TEST_DEFAULT_ERROR_MESSAGE )
+	//fmt.Println(actualResult)
 	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
 
 	/*
          * YAMLFileFormatError
          */
-	err4 := NewYAMLFileFormatError(TEST_INVALID_YAML_MANIFEST_FILE, someErrorMessage)
-	actualResult =  strings.TrimSpace(err4.Error())
-	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s",
+	err6 := NewYAMLFileFormatError(TEST_INVALID_YAML_MANIFEST_FILE, TEST_DEFAULT_ERROR_MESSAGE)
+	actualResult =  strings.TrimSpace(err6.Error())
+	expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + FILE + ": [%s]: %s",
 		packageName,
-		err4.LineNum,
+		err6.LineNum,
 		ERROR_YAML_FILE_FORMAT_ERROR,
-		someErrorMessage )
-
+		filepath.Base(TEST_INVALID_YAML_MANIFEST_FILE),
+		TEST_DEFAULT_ERROR_MESSAGE )
+	//fmt.Println(actualResult)
 	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
 
 }

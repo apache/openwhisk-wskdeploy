@@ -27,7 +27,8 @@ import (
 const (
 	UNKNOWN = "Unknown"
 	UNKNOWN_VALUE = "Unknown value"
-	LINE = "line"
+	FILE = "File"
+	LINE = "Line"
 	PARAMETER = "Parameter"
 	TYPE = "Type"
 	EXPECTED = "expected"
@@ -35,13 +36,12 @@ const (
 	YAML_FILE = "YAML file"
 
 	ERROR_COMMAND_FAILED = "ERROR_COMMAND_FAILED"
-	ERROR_FILE_READ_ERROR = "ERROR_FILE_READ_ERROR"
-	ERROR_MANIFEST_FILE_NOT_FOUND = "ERROR_MANIFEST_FILE_NOT_FOUND"
-	ERROR_YAML_PARSER_ERROR = "ERROR_YAML_PARSER_ERROR"
-	ERROR_YAML_FILE_READ_ERROR = "ERROR_YAML_FILE_READ_ERROR"
-	ERROR_YAML_FILE_FORMAT_ERROR = "ERROR_YAML_FILE_FORMAT_ERROR"
 	ERROR_WHISK_CLIENT_ERROR = "ERROR_WHISK_CLIENT_ERROR"
 	ERROR_WHISK_CLIENT_INVALID_CONFIG = "ERROR_WHISK_CLIENT_INVALID_CONFIG"
+	ERROR_FILE_READ_ERROR = "ERROR_FILE_READ_ERROR"
+	ERROR_MANIFEST_FILE_NOT_FOUND = "ERROR_MANIFEST_FILE_NOT_FOUND"
+	ERROR_YAML_FILE_FORMAT_ERROR = "ERROR_YAML_FILE_FORMAT_ERROR"
+	ERROR_YAML_PARSER_ERROR = "ERROR_YAML_PARSER_ERROR"
 	ERROR_YAML_PARAMETER_TYPE_MISMATCH = "ERROR_YAML_PARAMETER_TYPE_MISMATCH"
 	ERROR_YAML_INVALID_PARAMETER_TYPE = "ERROR_YAML_INVALID_PARAMETER_TYPE"
 )
@@ -57,9 +57,6 @@ type BaseErr struct {
 }
 
 func (e *BaseErr) Error() string {
-	if e.ErrorType == "" {
-		return fmt.Sprintf("%s [%d]: %s\n", e.FileName, e.LineNum, e.Message)
-	}
 	return fmt.Sprintf("%s [%d]: [%s]: %s\n", e.FileName, e.LineNum, e.ErrorType, e.Message)
 }
 
@@ -127,10 +124,6 @@ func NewWhiskClientError(errorMessage string, code int) *WhiskClientError {
 	return err
 }
 
-func (e *WhiskClientError) Error() string {
-	return e.BaseErr.Error()
-}
-
 /*
  * WhiskClientInvalidConfigError
  */
@@ -152,49 +145,47 @@ func NewWhiskClientInvalidConfigError(errorMessage string) *WhiskClientInvalidCo
  */
 type FileError struct {
 	BaseErr
-	FileName string
-	FilePath string
+	ErrorFileName string
+	ErrorFilePath string
 }
 
-func (e *FileError) SetFilePath(fpath string) {
-	e.FilePath = fpath
-	e.FileName = filepath.Base(fpath)
+func (e *FileError) SetErrorFilePath(fpath string) {
+	e.ErrorFilePath = fpath
+	e.ErrorFileName = filepath.Base(fpath)
 }
 
-func (e *FileError) SetFileName(fname string) {
-	e.FilePath = fname
+func (e *FileError) SetErrorFileName(fname string) {
+	e.ErrorFilePath = fname
 }
 
 func (e *FileError) Error() string {
-	return e.BaseErr.Error()
+	return fmt.Sprintf("%s [%d]: [%s]: " + FILE + ": [%s]: %s\n",
+		e.FileName,
+		e.LineNum,
+		e.ErrorType,
+		e.ErrorFileName,
+		e.Message)
 }
 
+/*
+ * FileReadError
+ */
 func NewFileReadError(fpath string, errMessage string) *FileError {
 	var err = &FileError{
 	}
 	err.SetErrorType(ERROR_FILE_READ_ERROR)
 	err.SetCallerByStackFrameSkip(2)
-	err.SetFilePath(fpath)
+	err.SetErrorFilePath(fpath)
 	err.SetMessage(errMessage)
 	return err
 }
 
-/*
- * YAML Base Error
- */
-type YAMLBaseError struct {
-	FileError
-}
-
-func (e *YAMLBaseError) Error() string {
-	return e.BaseErr.Error()
-}
 
 /*
  * ManifestFileNotFoundError
  */
 type ErrorManifestFileNotFound struct {
-	YAMLBaseError
+	FileError
 }
 
 func NewErrorManifestFileNotFound(fpath string, errMessage string) *ErrorManifestFileNotFound {
@@ -202,41 +193,16 @@ func NewErrorManifestFileNotFound(fpath string, errMessage string) *ErrorManifes
 	}
 	err.SetErrorType(ERROR_MANIFEST_FILE_NOT_FOUND)
 	err.SetCallerByStackFrameSkip(2)
-	err.SetFilePath(fpath)
+	err.SetErrorFilePath(fpath)
 	err.SetMessage(errMessage)
 	return err
-}
-
-func (e *ErrorManifestFileNotFound) Error() string {
-	return e.BaseErr.Error()
-}
-
-/*
- * YAMLFileReadError
- */
-type YAMLFileReadError struct {
-	YAMLBaseError
-}
-
-func NewYAMLFileReadError(fpath string, errorMessage string) *YAMLFileReadError {
-	var err = &YAMLFileReadError{
-	}
-	err.SetErrorType(ERROR_YAML_FILE_READ_ERROR)
-	err.SetCallerByStackFrameSkip(2)
-	err.SetFilePath(fpath)
-	err.SetMessage(errorMessage)
-	return err
-}
-
-func (e *YAMLFileReadError) Error() string {
-	return e.BaseErr.Error()
 }
 
 /*
  * YAMLFileFormatError
  */
 type YAMLFileFormatError struct {
-	YAMLFileReadError
+	FileError
 }
 
 func NewYAMLFileFormatError(fpath string, errorMessage string) *YAMLFileFormatError {
@@ -244,7 +210,7 @@ func NewYAMLFileFormatError(fpath string, errorMessage string) *YAMLFileFormatEr
 	}
 	err.SetErrorType(ERROR_YAML_FILE_FORMAT_ERROR)
 	err.SetCallerByStackFrameSkip(2)
-	err.SetFilePath(fpath)
+	err.SetErrorFilePath(fpath)
 	err.SetMessage(errorMessage)
 	return err
 }
@@ -252,25 +218,25 @@ func NewYAMLFileFormatError(fpath string, errorMessage string) *YAMLFileFormatEr
 /*
  * YAMLParserErr
  */
-type YAMLParserErr struct {
-	YAMLBaseError
+type YAMLParserError struct {
+	FileError
 	lines    []string
 	msgs     []string
 }
 
-func NewYAMLParserErr(fpath string, lines []string, msgs []string) *YAMLParserErr {
-	var err = &YAMLParserErr{
+func NewYAMLParserErr(fpath string, lines []string, msgs []string) *YAMLParserError {
+	var err = &YAMLParserError{
 		lines: lines,
 		msgs: msgs,
 	}
 	err.SetErrorType(ERROR_YAML_PARSER_ERROR)
-	err.SetFilePath(fpath)
+	err.SetErrorFilePath(fpath)
 	err.SetCallerByStackFrameSkip(2)
 	return err
 }
 
 
-func (e *YAMLParserErr) Error() string {
+func (e *YAMLParserError) Error() string {
 	result := make([]string, len(e.msgs))
 
 	for index, msg := range e.msgs {
@@ -282,14 +248,18 @@ func (e *YAMLParserErr) Error() string {
 		}
 		result[index] = s
 	}
-	return fmt.Sprintf("\n==> %s [%d]: %s: %s: \n%s", e.FileName, e.LineNum, YAML_FILE, e.FileName, strings.Join(result, "\n"))
+	return fmt.Sprintf("\n==> %s [%d]: %s: %s: \n%s",
+		e.FileName,
+		e.LineNum,
+		YAML_FILE, e.FileName,
+		strings.Join(result, "\n"))
 }
 
 /*
  * ParameterTypeMismatchError
  */
 type ParameterTypeMismatchError struct {
-	YAMLParserErr
+	YAMLParserError
 	Parameter    string
 	ExpectedType string
 	ActualType   string
@@ -303,21 +273,21 @@ func NewParameterTypeMismatchError(fpath string, param string, expectedType stri
 
 	err.SetErrorType(ERROR_YAML_PARAMETER_TYPE_MISMATCH)
 	err.SetCallerByStackFrameSkip(2)
-	err.SetFilePath(fpath)
-	str := fmt.Sprintf("%s [%s]: %s %s: [%s], %s: [%s]", PARAMETER, param, TYPE, EXPECTED, expectedType, ACTUAL, actualType)
+	err.SetErrorFilePath(fpath)
+	str := fmt.Sprintf("%s [%s]: %s %s: [%s], %s: [%s]",
+		PARAMETER, param,
+		TYPE,
+		EXPECTED, expectedType,
+		ACTUAL, actualType)
 	err.SetMessage(str)
 	return err
-}
-
-func (e *ParameterTypeMismatchError) Error() string {
-	return e.BaseErr.Error()
 }
 
 /*
  * InvalidParameterType
  */
 type InvalidParameterTypeError struct {
-	YAMLParserErr
+	YAMLParserError
 	Parameter    string
 	ActualType   string
 }
@@ -326,14 +296,12 @@ func NewInvalidParameterTypeError(fpath string, param string, actualType string)
 	var err = &ParameterTypeMismatchError{
 		ActualType: actualType,
 	}
-	err.SetFilePath(fpath)
+	err.SetErrorFilePath(fpath)
 	err.SetErrorType(ERROR_YAML_INVALID_PARAMETER_TYPE)
 	err.SetCallerByStackFrameSkip(2)
-	str := fmt.Sprintf("%s [%s]: %s [%s]", PARAMETER, param, TYPE, actualType)
+	str := fmt.Sprintf("%s [%s]: %s [%s]",
+		PARAMETER, param,
+		TYPE, actualType)
 	err.SetMessage(str)
 	return err
-}
-
-func (e *InvalidParameterTypeError) Error() string {
-	return e.BaseErr.Error()
 }
