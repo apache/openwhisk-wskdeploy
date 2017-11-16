@@ -33,6 +33,7 @@ const (
 	TYPE = "Type"
 	EXPECTED = "expected"
 	ACTUAL = "actual"
+	INDENT_LEVEL_1 = "==> "
 
 	ERROR_COMMAND_FAILED = "ERROR_COMMAND_FAILED"
 	ERROR_WHISK_CLIENT_ERROR = "ERROR_WHISK_CLIENT_ERROR"
@@ -292,13 +293,13 @@ func (e *YAMLParserError) Error() string {
 	for index, msg := range e.msgs {
 		var s string
 		if e.lines == nil || e.lines[index] == UNKNOWN {
-			s = fmt.Sprintf("====> %s", msg)
+			s = fmt.Sprintf("\n%s %s [%v]: %s", INDENT_LEVEL_1, LINE, UNKNOWN, msg)
 		} else {
-			s = fmt.Sprintf("====> %s [%v]: %s", LINE, e.lines[index], msg)
+			s = fmt.Sprintf("\n%s %s [%v]: %s", INDENT_LEVEL_1, LINE, e.lines[index], msg)
 		}
 		result[index] = s
 	}
 
-	e.SetMessage( "\n" + strings.Join(result, "\n"))
+	e.SetMessage(strings.Join(result, ""))
 	return e.FileError.Error()
 }

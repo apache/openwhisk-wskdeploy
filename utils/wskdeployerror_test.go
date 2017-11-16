@@ -26,6 +26,7 @@ import (
 	"fmt"
 	"runtime"
 	"path/filepath"
+	"github.com/openwhisk/wskdeploy/utils"
 )
 
 /*
@@ -165,13 +166,21 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	/*
 	 * YAMLParserErr
 	 */
-	// TODO() test multiple lines and messages with and without UNKNOWN line number
-	err10 := NewYAMLParserErr(TEST_EXISTANT_MANIFEST_FILE, nil, nil)
+	var TEST_LINES    = []string{"40", utils.UNKNOWN, "123"}
+	var TEST_MESSAGES = []string{"did not find expected key", "did not find expected ',' or ']'", "found duplicate %YAML directive"}
+
+	err10 := NewYAMLParserErr(TEST_EXISTANT_MANIFEST_FILE, TEST_LINES, TEST_MESSAGES)
 	actualResult =  strings.TrimSpace(err10.Error())
-	expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + FILE + ": [%s]:",
+
+	msgs := "\n==>  Line [40]: did not find expected key" +
+		"\n==>  Line [Unknown]: did not find expected ',' or ']'" +
+		"\n==>  Line [123]: found duplicate %YAML directive"
+
+	expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + FILE + ": [%s]: %s",
 		packageName,
 		err10.LineNum,
 		ERROR_YAML_PARSER_ERROR,
-		filepath.Base(TEST_EXISTANT_MANIFEST_FILE))
+		filepath.Base(TEST_EXISTANT_MANIFEST_FILE),
+		msgs)
 	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
 }
