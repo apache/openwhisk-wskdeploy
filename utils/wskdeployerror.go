@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	UNKNOWN = "Unknown"
+	LINE_UNKNOWN = "Unknown"
 	UNKNOWN_VALUE = "Unknown value"
 	FILE = "File"
 	LINE = "Line"
@@ -292,8 +292,8 @@ func (e *YAMLParserError) Error() string {
 
 	for index, msg := range e.msgs {
 		var s string
-		if e.lines == nil || e.lines[index] == UNKNOWN {
-			s = fmt.Sprintf("\n%s %s [%v]: %s", INDENT_LEVEL_1, LINE, UNKNOWN, msg)
+		if e.lines == nil || e.lines[index] == LINE_UNKNOWN {
+			s = fmt.Sprintf("\n%s %s [%v]: %s", INDENT_LEVEL_1, LINE, LINE_UNKNOWN, msg)
 		} else {
 			s = fmt.Sprintf("\n%s %s [%v]: %s", INDENT_LEVEL_1, LINE, e.lines[index], msg)
 		}

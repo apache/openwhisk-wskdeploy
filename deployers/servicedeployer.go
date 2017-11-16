@@ -134,14 +134,14 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		if deployer.ProjectName == "" {
 			// TODO see if we can pass in the Deployment file path on first parameter
 			// TODO see if we can move string to translation file.
-			return utils.NewYAMLFileFormatError(utils.UNKNOWN, "Project name in manifest file is mandatory for managed deployments")
+			return utils.NewYAMLFileFormatError(utils.LINE_UNKNOWN, "Project name in manifest file is mandatory for managed deployments")
 		}
 		// Every OpenWhisk entity in the manifest file will be annotated with:
 		//managed: '{"__OW__PROJECT__NAME": <name>, "__OW__PROJECT_HASH": <hash>, "__OW__FILE": <path>}'
 		deployer.ManagedAnnotation, err = utils.GenerateManagedAnnotation(deployer.ProjectName, manifest.Filepath)
 		if err != nil {
 			// TODO see if we can pass in the YAML file path on first parameter
-			return utils.NewYAMLFileFormatError(utils.UNKNOWN, err.Error())
+			return utils.NewYAMLFileFormatError(utils.LINE_UNKNOWN, err.Error())
 		}
 	}
 

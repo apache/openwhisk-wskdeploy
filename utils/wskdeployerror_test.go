@@ -38,7 +38,6 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	const TEST_DEFAULT_ERROR_MESSAGE = "Some bad error"
 	const TEST_COMMAND string = "test"
 	const TEST_ERROR_CODE = 400  // Bad request
-	//const TEST_MANIFEST_PATH = "tests/dat"
 	const TEST_EXISTANT_MANIFEST_FILE = "tests/dat/manifest_validate_multiline_params.yaml"
 	const TEST_NONEXISTANT_MANIFEST_FILE = "tests/dat/missing_manifest.yaml"
 	const TEST_INVALID_YAML_MANIFEST_FILE = "tests/dat/manifest_bad_yaml_invalid_comment.yaml"
@@ -165,7 +164,7 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	/*
 	 * YAMLParserErr
 	 */
-	var TEST_LINES    = []string{"40", "Unknown", "123"}
+	var TEST_LINES    = []string{"40", LINE_UNKNOWN, "123"}
 	var TEST_MESSAGES = []string{"did not find expected key", "did not find expected ',' or ']'", "found duplicate %YAML directive"}
 
 	err10 := NewYAMLParserErr(TEST_EXISTANT_MANIFEST_FILE, TEST_LINES, TEST_MESSAGES)
