@@ -35,7 +35,7 @@ func (dm *YAMLParser) ParseDeployment(deploymentPath string) (*YAML, error) {
 	dplyyaml := YAML{}
 	content, err := new(utils.ContentReader).LocalReader.ReadLocal(deploymentPath)
     if err != nil {
-        return &dplyyaml, utils.NewYAMLFileReadError(err.Error())
+        return &dplyyaml, utils.NewFileReadError(deploymentPath, err.Error())
     }
 	err = dm.unmarshalDeployment(content, &dplyyaml)
     if err != nil {
@@ -56,7 +56,7 @@ func (dm *YAMLParser) convertErrorToLinesMsgs(errorString string) (lines []strin
 	} else {
 		errorMsg = strs[i]
 	}
-        lines = append(lines, utils.UNKNOWN)
+        lines = append(lines, utils.LINE_UNKNOWN)
         msgs = append(msgs, strings.TrimSpace(errorMsg))
     }
     return

@@ -46,7 +46,7 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 	manifest, err := manifestParser.ParseManifest(dep.ManifestPath)
 
 	if err != nil {
-		return manifest, manifestParser, utils.NewYAMLFileReadError(err.Error())
+		return manifest, manifestParser, utils.NewFileReadError(dep.ManifestPath, err.Error())
 	}
 	return manifest, manifestParser, nil
 }
@@ -54,7 +54,7 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, ma whisk.KeyValue) error {
 	packages, err := manifestParser.ComposeAllPackages(manifest, reader.serviceDeployer.ManifestPath, ma)
 	if err != nil {
-		return utils.NewYAMLFormatError(err.Error())
+		return utils.NewYAMLFileFormatError(manifest.Filepath, err.Error())
 	}
 	reader.SetPackage(packages)
 
@@ -65,64 +65,66 @@ func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser
 func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.YAML, ma whisk.KeyValue) error {
 
 	var err error
+	var manifestName = manifest.Filepath
+
 	deps, err := manifestParser.ComposeDependenciesFromAllPackages(manifest, deployer.serviceDeployer.ProjectPath, deployer.serviceDeployer.ManifestPath)
 	if err != nil {
-		return utils.NewYAMLFormatError(err.Error())
+		return utils.NewYAMLFileFormatError(manifestName, err.Error())
 	}
 
 	actions, err := manifestParser.ComposeActionsFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath, ma)
 	if err != nil {
-		return utils.NewYAMLFormatError(err.Error())
+		return utils.NewYAMLFileFormatError(manifestName, err.Error())
 	}
 
 	sequences, err := manifestParser.ComposeSequencesFromAllPackages(deployer.serviceDeployer.ClientConfig.Namespace, manifest, ma)
 	if err != nil {
-		return utils.NewYAMLFormatError(err.Error())
+		return utils.NewYAMLFileFormatError(manifestName, err.Error())
 	}
 
 	triggers, err := manifestParser.ComposeTriggersFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath, ma)
 	if err != nil {
-		return utils.NewYAMLFormatError(err.Error())
+		return utils.NewYAMLFileFormatError(manifestName, err.Error())
 	}
 
 	rules, err := manifestParser.ComposeRulesFromAllPackages(manifest)
 	if err != nil {
-		return utils.NewYAMLFormatError(err.Error())
+		return utils.NewYAMLFileFormatError(manifestName, err.Error())
 	}
 
 	apis, err := manifestParser.ComposeApiRecordsFromAllPackages(manifest)
 	if err != nil {
-		return utils.NewYAMLFormatError(err.Error())
+		return utils.NewYAMLFileFormatError(manifestName, err.Error())
 	}
 
 	err = deployer.SetDependencies(deps)
 	if err != nil {
-		return utils.NewYAMLFormatError(err.Error())
+		return utils.NewYAMLFileFormatError(manifestName, err.Error())
 	}
 
 	err = deployer.SetActions(actions)
 	if err != nil {
-		return utils.NewYAMLFormatError(err.Error())
+		return utils.NewYAMLFileFormatError(manifestName, err.Error())
 	}
 
 	err = deployer.SetSequences(sequences)
 	if err != nil {
-		return utils.NewYAMLFormatError(err.Error())
+		return utils.NewYAMLFileFormatError(manifestName, err.Error())
 	}
 
 	err = deployer.SetTriggers(triggers)
 	if err != nil {
-		return utils.NewYAMLFormatError(err.Error())
+		return utils.NewYAMLFileFormatError(manifestName, err.Error())
 	}
 
 	err = deployer.SetRules(rules)
 	if err != nil {
-		return utils.NewYAMLFormatError(err.Error())
+		return utils.NewYAMLFileFormatError(manifestName, err.Error())
 	}
 
 	err = deployer.SetApis(apis)
 	if err != nil {
-		return utils.NewYAMLFormatError(err.Error())
+		return utils.NewYAMLFileFormatError(manifestName, err.Error())
 	}
 
 	return nil
@@ -142,7 +144,7 @@ func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRe
 				gitReader := utils.NewGitReader(depName, dep)
 				err := gitReader.CloneDependency()
 				if err != nil {
-					return utils.NewYAMLFormatError(err.Error())
+					return utils.NewYAMLFileFormatError(depName, err.Error())
 				}
 			} else {
 				// TODO: we should do a check to make sure this dependency is compatible with an already installed one.
@@ -225,7 +227,7 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 
 				err := reader.checkAction(existAction)
 				if err != nil {
-					return utils.NewYAMLFormatError(err.Error())
+					return utils.NewFileReadError(manifestAction.Filepath, err.Error())
 				}
 
 			} else {
@@ -236,7 +238,7 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 			// not a new action so update the action in the package
 			err := reader.checkAction(manifestAction)
 			if err != nil {
-				return utils.NewYAMLFormatError(err.Error())
+				return utils.NewFileReadError(manifestAction.Filepath, err.Error())
 			}
 			reader.serviceDeployer.Deployment.Packages[manifestAction.Packagename].Actions[manifestAction.Action.Name] = manifestAction
 		}
@@ -245,6 +247,7 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 	return nil
 }
 
+// TODO create named errors
 func (reader *ManifestReader) checkAction(action utils.ActionRecord) error {
 	if action.Filepath == "" {
 		return errors.New("Error: Action " + action.Action.Name + " has no source code location set.")
@@ -294,7 +297,8 @@ func (reader *ManifestReader) SetSequences(actions []utils.ActionRecord) error {
 			// not a new action so update the action in the package
 			err := reader.checkAction(seqAction)
 			if err != nil {
-				return utils.NewYAMLFormatError(err.Error())
+				// TODO() Need a better error type here
+				return utils.NewFileReadError(seqAction.Filepath, err.Error())
 			}
 			reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Sequences[seqAction.Action.Name] = seqAction
 		}

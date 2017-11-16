@@ -23,33 +23,41 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 )
 
-
 // TODO(): Support other valid Package Manifest types
 // TODO(): i.e., timestamp, version, string256, string64, string16
 // TODO(): Support JSON schema validation for type: json
 // TODO(): Support OpenAPI schema validation
+const (
+	STRING	string = "string"
+	INTEGER	string = "integer"
+	FLOAT	string = "float"
+	BOOLEAN	string = "boolean"
+	JSON	string = "json"
+)
 
 var validParameterNameMap = map[string]string{
-	"string":  "string",
-	"int":     "integer",
-	"float":   "float",
-	"bool":    "boolean",
-	"int8":    "integer",
-	"int16":   "integer",
-	"int32":   "integer",
-	"int64":   "integer",
-	"float32": "float",
-	"float64": "float",
-	"json":    "json",
-	"map":     "json",
+	STRING:    STRING,
+	FLOAT:     FLOAT,
+	BOOLEAN:   BOOLEAN,
+	INTEGER:   INTEGER,
+	"int":     INTEGER,
+	"bool":    BOOLEAN,
+	"int8":    INTEGER,
+	"int16":   INTEGER,
+	"int32":   INTEGER,
+	"int64":   INTEGER,
+	"float32": FLOAT,
+	"float64": FLOAT,
+	JSON:	   JSON,
+	"map":     JSON,
 }
 
 var typeDefaultValueMap = map[string]interface{}{
-	"string":  "",
-	"integer": 0,
-	"float":   0.0,
-	"boolean": false,
-	"json":    make(map[string]interface{}),
+	STRING:  "",
+	INTEGER: 0,
+	FLOAT:   0.0,
+	BOOLEAN: false,
+	JSON:    make(map[string]interface{}),
 	// TODO() Support these types + their validation
 	// timestamp
 	// null
@@ -73,12 +81,24 @@ func getTypeDefaultValue(typeName string) interface{} {
 	if val, ok := typeDefaultValueMap[typeName]; ok {
 		return val
 	} else {
-		// TODO() throw an error "type not found"
+		// TODO() throw an error "type not found" InvalidParameterType
 	}
 	return nil
 }
 
-func ResolveParamTypeFromValue(name string, value interface{}, filePath string) (string, error) {
+
+/*
+    ResolveParamTypeFromValue Resolves the Parameter's data type from its actual value.
+
+    Inputs:
+    - paramName: name of the parameter for error reporting
+    - filepath: the path, including name, of the YAML file which contained the parameter for error reporting
+    - value: the parameter value to resolve
+
+    Returns:
+    - (string) parameter type name as a string
+ */
+func ResolveParamTypeFromValue(paramName string, value interface{}, filePath string) (string, error) {
 	// Note: 'string' is the default type if not specified and not resolvable.
 	var paramType string = "string"
 	var err error = nil
@@ -93,9 +113,7 @@ func ResolveParamTypeFromValue(name string, value interface{}, filePath string) 
 
 		} else {
 			// raise an error if parameter's value is not a known type
-			// TODO() - move string to i18n
-			msgs := []string{"Parameter [" + name + "] has a value that is not a known type. [" + actualType + "]"}
-			err = utils.NewYAMLParserErr(filePath, nil, msgs)
+			err = utils.NewInvalidParameterTypeError(filePath, paramName, actualType)
 		}
 	}
 	return paramType, err
@@ -110,8 +128,16 @@ func ResolveParamTypeFromValue(name string, value interface{}, filePath string) 
     - detects if the parameter value contains the name of a valid OpenWhisk parameter types. if so, the
       - param.Type is set to detected OpenWhisk parameter type.
       - param.Value is set to the zero (default) value for that OpenWhisk parameter type.
+
+    Inputs:
+    - filePath: the path, including name, of the YAML file which contained the parameter for error reporting
+    - paramName: name of the parameter for error reporting
+    - param: pointer to Parameter structure being resolved
+
+    Returns:
+    - (interface{}) the parameter's resolved value
  */
-func resolveSingleLineParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
+func resolveSingleLineParameter(filePath string, paramName string, param *Parameter) (interface{}, error) {
 	var errorParser error
 
 	if !param.multiline {
@@ -146,8 +172,16 @@ func resolveSingleLineParameter(paramName string, param *Parameter, filePath str
     - uses param.Default as param.Value if param.Value is not provided
     - uses the actual param.Value data type for param.type if param.Type is not provided
 
+    Inputs:
+    - filepath: the path, including name, of the YAML file which contained the parameter for error reporting
+    - paramName: name of the parameter for error reporting
+    - param: pointer to Parameter structure being resolved
+
+    Returns:
+    - (interface{}) the parameter's resolved value
+
  */
-func resolveMultiLineParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
+func resolveMultiLineParameter(filePath string, paramName string, param *Parameter) (interface{}, error) {
 	var errorParser error
 
 	if param.multiline {
@@ -193,10 +227,20 @@ func resolveMultiLineParameter(paramName string, param *Parameter, filePath stri
     This function handles the forms JSON data appears in:
     1) a string containing JSON, which needs to be parsed into map[string]interface{}
     2) is a map of JSON (but not a map[string]interface{}
+
+    Inputs:
+    - paramName: name of the parameter for error reporting
+    - filePath: the path, including name, of the YAML file which contained the parameter for error reporting
+    - param: pointer to Parameter structure being resolved
+    - value: the current actual value of the parameter being resolved
+
+    Returns:
+    - (interface{}) the parameter's resolved value
  */
-func resolveJSONParameter(paramName string, param *Parameter, value interface{}, filePath string) (interface{}, error) {
+func resolveJSONParameter(filePath string, paramName string, param *Parameter, value interface{}) (interface{}, error) {
 	var errorParser error
 
+	// TODO() Is the "value" function parameter really needed with the current logic (use param.Value)?
 	if param.Type == "json" {
 		// Case 1: if user set parameter type to 'json' and the value's type is a 'string'
 		if str, ok := value.(string); ok {
@@ -218,10 +262,13 @@ func resolveJSONParameter(paramName string, param *Parameter, value interface{},
 				//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, temp)
 				return temp, errorParser
 			}
-		} // else TODO{}
+		} else{
+			errorParser = utils.NewParameterTypeMismatchError(filePath, paramName, JSON, param.Type)
+		}
+
 	} else {
 		msgs := []string{"Parameter [" + paramName + "] is not JSON format."}
-		return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
+		errorParser = utils.NewYAMLParserErr(filePath, nil, msgs)
 	}
 
 	return param.Value, errorParser
@@ -240,25 +287,30 @@ func resolveJSONParameter(paramName string, param *Parameter, value interface{},
 
     Note: parameter values may set later (overridden) by an (optional) Deployment file
 
+    Inputs:
+    - paramName: name of the parameter for error reporting
+    - filepath: the path, including name, of the YAML file which contained the parameter for error reporting
+    - param: pointer to Parameter structure being resolved
+
+    Returns:
+    - (interface{}) the parameter's resolved value
  */
 func ResolveParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
 
 	var errorParser error
-	// default parameter value to empty string
+	// default resolved parameter value to empty string
 	var value interface{} = ""
 
 	// Trace Parameter struct before any resolution
 	//dumpParameter(paramName, param, "BEFORE")
 
 	// Parameters can be single OR multi-line declarations which must be processed/validated differently
+	// Regardless, the following functions will assure that param.Value and param.Type are correctly set
 	if !param.multiline {
-
-		// This function will assure that param.Value and param.Type are correctly set
-		value, errorParser = resolveSingleLineParameter(paramName, param, filePath)
+		value, errorParser = resolveSingleLineParameter(filePath, paramName, param)
 
 	} else {
-
-		value, errorParser = resolveMultiLineParameter(paramName, param, filePath)
+		value, errorParser = resolveMultiLineParameter(filePath, paramName, param)
 	}
 
 	// String value pre-processing (interpolation)
@@ -272,7 +324,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 
 	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON
 	if param.Type == "json" {
-		value, errorParser = resolveJSONParameter(paramName, param, value, filePath)
+		value, errorParser = resolveJSONParameter(filePath, paramName, param, value)
 	}
 
 	// Default value to zero value for the Type
