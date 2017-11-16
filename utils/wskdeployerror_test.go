@@ -26,7 +26,6 @@ import (
 	"fmt"
 	"runtime"
 	"path/filepath"
-	"github.com/openwhisk/wskdeploy/utils"
 )
 
 /*
