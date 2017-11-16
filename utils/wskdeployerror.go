@@ -299,6 +299,6 @@ func (e *YAMLParserError) Error() string {
 		result[index] = s
 	}
 
-	e.SetMessage(strings.Join(result, "\n"))
+	e.SetMessage( "\n" + strings.Join(result, "\n"))
 	return e.FileError.Error()
 }
