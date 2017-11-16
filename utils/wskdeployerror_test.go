@@ -166,7 +166,7 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	/*
 	 * YAMLParserErr
 	 */
-	var TEST_LINES    = []string{"40", utils.UNKNOWN, "123"}
+	var TEST_LINES    = []string{"40", "Unknown", "123"}
 	var TEST_MESSAGES = []string{"did not find expected key", "did not find expected ',' or ']'", "found duplicate %YAML directive"}
 
 	err10 := NewYAMLParserErr(TEST_EXISTANT_MANIFEST_FILE, TEST_LINES, TEST_MESSAGES)
