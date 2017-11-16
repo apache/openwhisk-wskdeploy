@@ -170,9 +170,9 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	err10 := NewYAMLParserErr(TEST_EXISTANT_MANIFEST_FILE, TEST_LINES, TEST_MESSAGES)
 	actualResult =  strings.TrimSpace(err10.Error())
 
-	msgs := "\n==>  Line [40]: did not find expected key" +
-		"\n==>  Line [Unknown]: did not find expected ',' or ']'" +
-		"\n==>  Line [123]: found duplicate %YAML directive"
+	msgs := "\n==> Line [40]: did not find expected key" +
+		"\n==> Line [Unknown]: did not find expected ',' or ']'" +
+		"\n==> Line [123]: found duplicate %YAML directive"
 
 	expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + FILE + ": [%s]: %s",
 		packageName,
