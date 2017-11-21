@@ -36,6 +36,7 @@ const (
 	STR_TYPE = "Type"
 	STR_EXPECTED = "Expected"
 	STR_ACTUAL = "Actual"
+	STR_NEWLINE = "\n"
 
 	// Formatting
 	STR_INDENT_1 = "==>"
@@ -60,7 +61,6 @@ type WskDeployBaseErr struct {
 	FileName  string
 	LineNum   int
 	Message   string
-	Details	  []string
 }
 
 func (e *WskDeployBaseErr) Error() string {
@@ -75,6 +75,10 @@ func (e *WskDeployBaseErr) SetLineNum(lineNum int) {
 	e.LineNum = lineNum
 }
 
+func (e *WskDeployBaseErr) SetErrorType(errorType string) {
+	e.ErrorType = errorType
+}
+
 func (e *WskDeployBaseErr) SetMessage(message interface{}) {
 
 	if message != nil{
@@ -84,46 +88,31 @@ func (e *WskDeployBaseErr) SetMessage(message interface{}) {
 		case error:
 			err := message.(error)
 			e.appendErrorDetails(err)
-		default:
-		// no match; here v has the same type as i
 		}
 	}
+}
+
+func (e *WskDeployBaseErr) appendDetail(detail string){
+	fmt := fmt.Sprintf("\n%s %s", STR_INDENT_1, detail)
+	e.Message = e.Message + fmt
 }
 
 func (e *WskDeployBaseErr) appendErrorDetails(err error){
 	if err != nil {
 		errorMsg := err.Error()
 
-		if(strings.Contains(errorMsg,"\n")){
+		//if(strings.Contains(errorMsg, STR_NEWLINE)){
 			var detailMsg string
-			msgs := strings.Split(errorMsg, "\n")
+			msgs := strings.Split(errorMsg, STR_NEWLINE)
 			for i := 0; i < len(msgs); i++ {
-				if strings.Contains(msgs[i], strings.ToLower(STR_LINE)) {
-					detailMsg = strings.Replace(msgs[i], strings.ToLower(STR_LINE), "(on or near) " + STR_LINE, 1)
-				} else {
-					detailMsg = msgs[i]
-				}
-				e.AppendDetail(strings.TrimSpace(detailMsg))
+				detailMsg = msgs[i]
+				e.appendDetail(strings.TrimSpace(detailMsg))
 			}
-		} else {
-			e.Message = errorMsg
-		}
+		//} else {
+		//	e.a = errorMsg
+		//}
 
 	}
-}
-
-func (e *WskDeployBaseErr) SetErrorType(errorType string) {
-	e.ErrorType = errorType
-}
-
-func (e *WskDeployBaseErr) AppendDetail(detail string){
-	s := fmt.Sprintf("%s %s", STR_INDENT_1, detail)
-	e.Details = append(e.Details, s)
-}
-
-func (e *WskDeployBaseErr) AppendLineDetail(linenumber int, detail string){
-	s := fmt.Sprintf("%s [%v]: %s", STR_LINE, linenumber, detail)
-	e.AppendDetail(s)
 }
 
 // func Caller(skip int) (pc uintptr, file string, line int, ok bool)

@@ -10,5 +10,7 @@ packages:
             description: name of a person
           place:
             type: string
-            /// bad description
+            /// bad comment
             description: location of a person
+
+# go-yaml/yaml "yaml: line 13: could not find expected ':'"
