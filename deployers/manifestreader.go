@@ -67,82 +67,69 @@ func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser
 func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.YAML, ma whisk.KeyValue) error {
 
 	var err error
-	//var manifestName = manifest.Filepath
+	var manifestName = manifest.Filepath
 
 	deps, err := manifestParser.ComposeDependenciesFromAllPackages(manifest, deployer.serviceDeployer.ProjectPath, deployer.serviceDeployer.ManifestPath)
 	if err != nil {
-		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
-		return err
+		return utils.NewYAMLFileFormatError(manifestName, err)
 	}
 
 	actions, err := manifestParser.ComposeActionsFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath, ma)
 	if err != nil {
-		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
-		return err
+		return utils.NewYAMLFileFormatError(manifestName, err)
 	}
 
 	sequences, err := manifestParser.ComposeSequencesFromAllPackages(deployer.serviceDeployer.ClientConfig.Namespace, manifest, ma)
 	if err != nil {
-		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
-		return err
+		return utils.NewYAMLFileFormatError(manifestName, err)
 	}
 
 	triggers, err := manifestParser.ComposeTriggersFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath, ma)
 	if err != nil {
-		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
-		return err
+		return utils.NewYAMLFileFormatError(manifestName, err)
 	}
 
 	rules, err := manifestParser.ComposeRulesFromAllPackages(manifest)
 	if err != nil {
-		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
-		return err
+		return utils.NewYAMLFileFormatError(manifestName, err)
 	}
 
 	apis, err := manifestParser.ComposeApiRecordsFromAllPackages(manifest)
 	if err != nil {
-		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
-		return err
+		return utils.NewYAMLFileFormatError(manifestName, err)
 	}
 
 	err = deployer.SetDependencies(deps)
 	if err != nil {
-		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
-		return err
+		return utils.NewYAMLFileFormatError(manifestName, err)
 	}
 
 	err = deployer.SetActions(actions)
 	if err != nil {
-		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
-		return err
+		return utils.NewYAMLFileFormatError(manifestName, err)
 	}
 
 	err = deployer.SetSequences(sequences)
 	if err != nil {
-		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
-		return err
+		return utils.NewYAMLFileFormatError(manifestName, err)
 	}
 
 	err = deployer.SetTriggers(triggers)
 	if err != nil {
-		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
-		return err
+		return utils.NewYAMLFileFormatError(manifestName, err)
 	}
 
 	err = deployer.SetRules(rules)
 	if err != nil {
-		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
-		return err
+		return utils.NewYAMLFileFormatError(manifestName, err)
 	}
 
 	err = deployer.SetApis(apis)
 	if err != nil {
-		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
-		return err
+		return utils.NewYAMLFileFormatError(manifestName, err)
 	}
 
 	return nil
-
 }
 
 func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRecord) error {
@@ -158,7 +145,7 @@ func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRe
 				gitReader := utils.NewGitReader(depName, dep)
 				err := gitReader.CloneDependency()
 				if err != nil {
-					return utils.NewYAMLFileFormatError(depName, err.Error())
+					return utils.NewYAMLFileFormatError(depName, err)
 				}
 			} else {
 				// TODO: we should do a check to make sure this dependency is compatible with an already installed one.
@@ -196,7 +183,10 @@ func (reader *ManifestReader) SetPackage(packages map[string]*whisk.Package) err
 				dep.Deployment.Packages[pkg.Name].Package = existPkg
 				return nil
 			} else {
-				return errors.New("Package " + pkg.Name + "exists twice")
+				// TODO(): i18n of error message (or create a new named error)
+				// TODO(): Is there a better way to handle an existing dependency of same name?
+				err := errors.New("Package [" + pkg.Name + "] exists already.")
+				return utils.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
 			}
 		}
 		newPack := NewDeploymentPackage()
@@ -241,18 +231,22 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 
 				err := reader.checkAction(existAction)
 				if err != nil {
-					return utils.NewFileReadError(manifestAction.Filepath, err.Error())
+					return utils.NewFileReadError(manifestAction.Filepath, err)
 				}
 
 			} else {
 				// Action exists, but references two different sources
-				return errors.New("manifestReader. Error: Conflict detected for action named " + existAction.Action.Name + ". Found two locations for source file: " + existAction.Filepath + " and " + manifestAction.Filepath)
+				// TODO(): i18n of error message (or create a new named error)
+				err := errors.New("Conflict detected for action named [" +
+					existAction.Action.Name + "].\nFound two locations for source file: [" +
+					existAction.Filepath + "] and [" + manifestAction.Filepath + "]")
+				return utils.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
 			}
 		} else {
 			// not a new action so update the action in the package
 			err := reader.checkAction(manifestAction)
 			if err != nil {
-				return utils.NewFileReadError(manifestAction.Filepath, err.Error())
+				return utils.NewFileReadError(manifestAction.Filepath, err)
 			}
 			reader.serviceDeployer.Deployment.Packages[manifestAction.Packagename].Actions[manifestAction.Action.Name] = manifestAction
 		}
@@ -264,17 +258,23 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 // TODO create named errors
 func (reader *ManifestReader) checkAction(action utils.ActionRecord) error {
 	if action.Filepath == "" {
-		return errors.New("Error: Action " + action.Action.Name + " has no source code location set.")
+		// TODO(): i18n of error message (or create a new named error)
+		err := errors.New("Action [" + action.Action.Name + "] has no source code location set.")
+		return utils.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
 	}
 
 	if action.Action.Exec.Kind == "" {
-		return errors.New("Error: Action " + action.Action.Name + " has no kind set")
+		// TODO(): i18n of error message (or create a new named error)
+		err := errors.New("Action [" + action.Action.Name + "] has no kind set.")
+		return utils.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
 	}
 
 	if action.Action.Exec.Code != nil {
 		code := *action.Action.Exec.Code
 		if code == "" && action.Action.Exec.Kind != "sequence" {
-			return errors.New("Error: Action " + action.Action.Name + " has no source code")
+			// TODO(): i18n of error message (or create a new named error)
+			err := errors.New("Action [" + action.Action.Name + "] has no source code.")
+			return utils.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
 		}
 	}
 
@@ -292,9 +292,10 @@ func (reader *ManifestReader) SetSequences(actions []utils.ActionRecord) error {
 		// If the sequence action exists in actions, return error
 		_, exists := reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Actions[seqAction.Action.Name]
 		if exists == true {
-			return errors.New("manifestReader. Error: Conflict sequence action with an action. " +
-				"Found a sequence action with the same name of an action:" +
-				seqAction.Action.Name)
+			// TODO(): i18n of error message (or create a new named error)
+			err := errors.New("Sequence action's name [" +
+				seqAction.Action.Name + "] is already used by an action.")
+			return utils.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
 		}
 		existAction, exists := reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Sequences[seqAction.Action.Name]
 
@@ -312,7 +313,7 @@ func (reader *ManifestReader) SetSequences(actions []utils.ActionRecord) error {
 			err := reader.checkAction(seqAction)
 			if err != nil {
 				// TODO() Need a better error type here
-				return utils.NewFileReadError(seqAction.Filepath, err.Error())
+				return utils.NewFileReadError(seqAction.Filepath, err)
 			}
 			reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Sequences[seqAction.Action.Name] = seqAction
 		}

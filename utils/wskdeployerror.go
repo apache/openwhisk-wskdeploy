@@ -26,7 +26,6 @@ import (
 
 const (
 	// Error message compositional strings
-	//STR_UNKNOWN = "Unknown"
 	STR_UNKNOWN_VALUE = "Unknown value"
 	STR_COMMAND = "Command"
 	STR_ERROR_CODE = "Error code"
