@@ -100,18 +100,12 @@ func (e *WskDeployBaseErr) appendDetail(detail string){
 func (e *WskDeployBaseErr) appendErrorDetails(err error){
 	if err != nil {
 		errorMsg := err.Error()
-
-		//if(strings.Contains(errorMsg, STR_NEWLINE)){
-			var detailMsg string
-			msgs := strings.Split(errorMsg, STR_NEWLINE)
-			for i := 0; i < len(msgs); i++ {
-				detailMsg = msgs[i]
-				e.appendDetail(strings.TrimSpace(detailMsg))
-			}
-		//} else {
-		//	e.a = errorMsg
-		//}
-
+		var detailMsg string
+		msgs := strings.Split(errorMsg, STR_NEWLINE)
+		for i := 0; i < len(msgs); i++ {
+			detailMsg = msgs[i]
+			e.appendDetail(strings.TrimSpace(detailMsg))
+		}
 	}
 }
 
@@ -327,39 +321,7 @@ func NewYAMLParserErr(fpath string, msg interface{}) *YAMLParserError {
 	return err
 }
 
-//func (e *YAMLParserError) Error() string {
-//	result := make([]string, len(e.msgs))
-//
-//	for index, msg := range e.msgs {
-//		var s string
-//		if e.lines == nil || e.lines[index] == STR_UNKNOWN {
-//			s = fmt.Sprintf("\n%s %s [%v]: %s", STR_INDENT_1, STR_LINE, STR_UNKNOWN, msg)
-//		} else {
-//			s = fmt.Sprintf("\n%s %s [%v]: %s", STR_INDENT_1, STR_LINE, e.lines[index], msg)
-//		}
-//		result[index] = s
-//	}
-//
-//	e.SetMessage(strings.Join(result, ""))
-//	return e.FileError.Error()
-//}
-
-//func (dm *YAMLParserError) convertErrorToLinesMsgs(errorString string) (lines []string, msgs []string) {
-//	strs := strings.Split(errorString, "\n")
-//	for i := 0; i < len(strs); i++ {
-//		var errorMsg string
-//		if strings.Contains(strs[i], utils.LINE) {
-//			errorMsg = strings.Replace(strs[i], utils.LINE, "(on or near) "+utils.LINE, 1)
-//		} else {
-//			errorMsg = strs[i]
-//		}
-//		lines = append(lines, STR_UNKNOWN)
-//		msgs = append(msgs, strings.TrimSpace(errorMsg))
-//	}
-//	return
-//}
-
-func isCustomError( err error ) bool {
+func IsCustomError( err error ) bool {
 
 	switch err.(type) {
 
