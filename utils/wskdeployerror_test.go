@@ -51,26 +51,28 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	 */
 	err1 := NewCommandError(TEST_COMMAND, TEST_DEFAULT_ERROR_MESSAGE)
 	actualResult :=  strings.TrimSpace(err1.Error())
-	expectedResult := fmt.Sprintf("%s [%d]: [%s]: %s: %s",
+	expectedResult := fmt.Sprintf("%s [%d]: [%s]: %s: [%s]: %s",
 		packageName,
 		err1.LineNum,
 		ERROR_COMMAND_FAILED,
+		STR_COMMAND,
 		TEST_COMMAND,
 		TEST_DEFAULT_ERROR_MESSAGE )
-	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
+	assert.Equal(t, expectedResult, actualResult)
 
 	/*
 	 * WhiskClientError
 	 */
 	err2 := NewWhiskClientError(TEST_DEFAULT_ERROR_MESSAGE, TEST_ERROR_CODE)
 	actualResult =  strings.TrimSpace(err2.Error())
-	expectedResult = fmt.Sprintf("%s [%d]: [%s]: Error Code: %d: %s",
+	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s: %d: %s",
 		packageName,
 		err2.LineNum,
 		ERROR_WHISK_CLIENT_ERROR,
+		STR_ERROR_CODE,
 		TEST_ERROR_CODE,
 		TEST_DEFAULT_ERROR_MESSAGE )
-	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
+	assert.Equal(t, expectedResult, actualResult)
 
 	/*
 	 * WhiskClientInvalidConfigError
@@ -82,7 +84,7 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 		err3.LineNum,
 		ERROR_WHISK_CLIENT_INVALID_CONFIG,
 		TEST_DEFAULT_ERROR_MESSAGE )
-	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
+	assert.Equal(t, expectedResult, actualResult)
 
 	/*
  	 * FileReadError
@@ -95,33 +97,35 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 		ERROR_FILE_READ_ERROR,
 		filepath.Base(TEST_NONEXISTANT_MANIFEST_FILE),
 		TEST_DEFAULT_ERROR_MESSAGE )
-	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
+	assert.Equal(t, expectedResult, actualResult)
 
 	/*
  	 * ManifestFileNotFoundError
  	 */
 	err5 := NewErrorManifestFileNotFound(TEST_NONEXISTANT_MANIFEST_FILE, TEST_DEFAULT_ERROR_MESSAGE)
 	actualResult =  strings.TrimSpace(err5.Error())
-	expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + STR_FILE + ": [%s]: %s",
+	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s: [%s]: %s",
 		packageName,
 		err5.LineNum,
 		ERROR_MANIFEST_FILE_NOT_FOUND,
+		STR_FILE,
 		filepath.Base(TEST_NONEXISTANT_MANIFEST_FILE),
 		TEST_DEFAULT_ERROR_MESSAGE )
-	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
+	assert.Equal(t, expectedResult, actualResult)
 
 	/*
          * YAMLFileFormatError
          */
 	err6 := NewYAMLFileFormatError(TEST_INVALID_YAML_MANIFEST_FILE, TEST_DEFAULT_ERROR_MESSAGE)
 	actualResult =  strings.TrimSpace(err6.Error())
-	expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + STR_FILE + ": [%s]: %s",
+	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s: [%s]: %s",
 		packageName,
 		err6.LineNum,
 		ERROR_YAML_FILE_FORMAT_ERROR,
+		STR_FILE,
 		filepath.Base(TEST_INVALID_YAML_MANIFEST_FILE),
 		TEST_DEFAULT_ERROR_MESSAGE )
-	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
+	assert.Equal(t, expectedResult, actualResult)
 
 	/*
 	 * ParameterTypeMismatchError
@@ -137,13 +141,14 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 		STR_TYPE,
 		STR_EXPECTED, TEST_PARAM_TYPE_INT,
 		STR_ACTUAL, TEST_PARAM_TYPE_FLOAT)
-	expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + STR_FILE + ": [%s]: %s",
+	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s: [%s]: %s",
 		packageName,
 		err8.LineNum,
 		ERROR_YAML_PARAMETER_TYPE_MISMATCH,
+		STR_FILE,
 		filepath.Base(TEST_EXISTANT_MANIFEST_FILE),
 		msg8 )
-	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
+	assert.Equal(t, expectedResult, actualResult)
 
 	/*
 	 * InvalidParameterType
@@ -159,7 +164,7 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 		ERROR_YAML_INVALID_PARAMETER_TYPE,
 		filepath.Base(TEST_EXISTANT_MANIFEST_FILE),
 		msg9 )
-	assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
+	assert.Equal(t, expectedResult, actualResult)
 
 	/*
 	 * YAMLParserErr
@@ -181,5 +186,5 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	//	ERROR_YAML_PARSER_ERROR,
 	//	filepath.Base(TEST_EXISTANT_MANIFEST_FILE),
 	//	msgs)
-	//assert.Equal(t, expectedResult, actualResult, "Expected [" + expectedResult + "] but got [" + actualResult + "]")
+	//assert.Equal(t, expectedResult, actualResult)
 }
