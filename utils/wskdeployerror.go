@@ -204,7 +204,7 @@ type FileReadError struct {
 	FileError
 }
 
-func NewFileReadError(fpath string, errMessage string) *FileReadError {
+func NewFileReadError(fpath string, errMessage interface{}) *FileReadError {
 	var err = &FileReadError{
 	}
 	err.SetErrorType(ERROR_FILE_READ_ERROR)
@@ -222,7 +222,7 @@ type ErrorManifestFileNotFound struct {
 	FileError
 }
 
-func NewErrorManifestFileNotFound(fpath string, errMessage string) *ErrorManifestFileNotFound {
+func NewErrorManifestFileNotFound(fpath string, errMessage interface{}) *ErrorManifestFileNotFound {
 	var err = &ErrorManifestFileNotFound{
 	}
 	err.SetErrorType(ERROR_MANIFEST_FILE_NOT_FOUND)
@@ -239,7 +239,7 @@ type YAMLFileFormatError struct {
 	FileError
 }
 
-func NewYAMLFileFormatError(fpath string, errorMessage string) *YAMLFileFormatError {
+func NewYAMLFileFormatError(fpath string, errorMessage interface{}) *YAMLFileFormatError {
 	var err = &YAMLFileFormatError{
 	}
 	err.SetErrorType(ERROR_YAML_FILE_FORMAT_ERROR)
