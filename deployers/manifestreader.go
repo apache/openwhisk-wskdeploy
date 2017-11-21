@@ -46,7 +46,8 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 	manifest, err := manifestParser.ParseManifest(dep.ManifestPath)
 
 	if err != nil {
-		return manifest, manifestParser, utils.NewFileReadError(dep.ManifestPath, err.Error())
+		//return manifest, manifestParser, utils.NewFileReadError(dep.ManifestPath, err.Error())
+		return manifest, manifestParser, err
 	}
 	return manifest, manifestParser, nil
 }
@@ -54,7 +55,8 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, ma whisk.KeyValue) error {
 	packages, err := manifestParser.ComposeAllPackages(manifest, reader.serviceDeployer.ManifestPath, ma)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(manifest.Filepath, err.Error())
+		//return utils.NewYAMLFileFormatError(manifest.Filepath, err.Error())
+		return err
 	}
 	reader.SetPackage(packages)
 
@@ -65,66 +67,78 @@ func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser
 func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.YAML, ma whisk.KeyValue) error {
 
 	var err error
-	var manifestName = manifest.Filepath
+	//var manifestName = manifest.Filepath
 
 	deps, err := manifestParser.ComposeDependenciesFromAllPackages(manifest, deployer.serviceDeployer.ProjectPath, deployer.serviceDeployer.ManifestPath)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		return err
 	}
 
 	actions, err := manifestParser.ComposeActionsFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath, ma)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		return err
 	}
 
 	sequences, err := manifestParser.ComposeSequencesFromAllPackages(deployer.serviceDeployer.ClientConfig.Namespace, manifest, ma)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		return err
 	}
 
 	triggers, err := manifestParser.ComposeTriggersFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath, ma)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		return err
 	}
 
 	rules, err := manifestParser.ComposeRulesFromAllPackages(manifest)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		return err
 	}
 
 	apis, err := manifestParser.ComposeApiRecordsFromAllPackages(manifest)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		return err
 	}
 
 	err = deployer.SetDependencies(deps)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		return err
 	}
 
 	err = deployer.SetActions(actions)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		return err
 	}
 
 	err = deployer.SetSequences(sequences)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		return err
 	}
 
 	err = deployer.SetTriggers(triggers)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		return err
 	}
 
 	err = deployer.SetRules(rules)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		return err
 	}
 
 	err = deployer.SetApis(apis)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		//return utils.NewYAMLFileFormatError(manifestName, err.Error())
+		return err
 	}
 
 	return nil

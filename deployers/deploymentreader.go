@@ -144,9 +144,9 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 					}
 				}
 				if !keyExistsInManifest {
+					// TODO() i18n, need to use an ID
 					err := wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file.")
-					// TODO see if we can pass in the YAML file path on first parameter
-					return utils.NewYAMLFileFormatError(utils.LINE_UNKNOWN, err)
+					return utils.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
 				}
 			}
 		}
@@ -234,9 +234,9 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 						}
 					}
 					if !keyExistsInManifest {
+						// TODO() i18n, need to use an ID
 						err := wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file.")
-						// TODO see if we can pass in the YAML file path on first parameter
-						return utils.NewYAMLFileFormatError(utils.LINE_UNKNOWN, err)
+						return utils.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
 					}
 				}
 			}
@@ -321,9 +321,9 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 						}
 					}
 					if !keyExistsInManifest {
+						// TODO() i18n, need to use an ID
 						err := wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file.")
-						// TODO see if we can pass in the YAML file path on first parameter
-						return utils.NewYAMLFileFormatError(utils.LINE_UNKNOWN, err)
+						return utils.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
 					}
 				}
 			}

@@ -92,8 +92,7 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
 
 	err = mm.Unmarshal(content, &maniyaml)
 	if err != nil {
-		lines, msgs := dm.convertErrorToLinesMsgs(err.Error())
-		return &maniyaml, utils.NewYAMLParserErr(manifestPath, lines, msgs)
+		return &maniyaml, utils.NewYAMLParserErr(manifestPath, err)
 	}
 	maniyaml.Filepath = manifestPath
 	manifest := ReadEnvVariable(&maniyaml)

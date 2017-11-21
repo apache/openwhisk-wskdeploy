@@ -25,16 +25,22 @@ import (
 )
 
 const (
-	LINE_UNKNOWN = "Unknown"
-	UNKNOWN_VALUE = "Unknown value"
-	FILE = "File"
-	LINE = "Line"
-	PARAMETER = "Parameter"
-	TYPE = "Type"
-	EXPECTED = "expected"
-	ACTUAL = "actual"
-	INDENT_LEVEL_1 = "==>"
+	// Error message compositional strings
+	//STR_UNKNOWN = "Unknown"
+	STR_UNKNOWN_VALUE = "Unknown value"
+	STR_COMMAND = "Command"
+	STR_ERROR_CODE = "Error code"
+	STR_FILE = "File"
+	STR_LINE = "Line"
+	STR_PARAMETER = "Parameter"
+	STR_TYPE = "Type"
+	STR_EXPECTED = "Expected"
+	STR_ACTUAL = "Actual"
 
+	// Formatting
+	STR_INDENT_1 = "==>"
+
+	// Error Types
 	ERROR_COMMAND_FAILED = "ERROR_COMMAND_FAILED"
 	ERROR_WHISK_CLIENT_ERROR = "ERROR_WHISK_CLIENT_ERROR"
 	ERROR_WHISK_CLIENT_INVALID_CONFIG = "ERROR_WHISK_CLIENT_INVALID_CONFIG"
@@ -49,35 +55,79 @@ const (
 /*
  * BaseError
  */
-type BaseErr struct {
+type WskDeployBaseErr struct {
 	ErrorType string
 	FileName  string
 	LineNum   int
 	Message   string
+	Details	  []string
 }
 
-func (e *BaseErr) Error() string {
+func (e *WskDeployBaseErr) Error() string {
 	return fmt.Sprintf("%s [%d]: [%s]: %s\n", e.FileName, e.LineNum, e.ErrorType, e.Message)
 }
 
-func (e *BaseErr) SetFileName(fileName string) {
+func (e *WskDeployBaseErr) SetFileName(fileName string) {
 	e.FileName = filepath.Base(fileName)
 }
 
-func (e *BaseErr) SetLineNum(lineNum int) {
+func (e *WskDeployBaseErr) SetLineNum(lineNum int) {
 	e.LineNum = lineNum
 }
 
-func (e *BaseErr) SetMessage(message string) {
-	e.Message = message
+func (e *WskDeployBaseErr) SetMessage(message interface{}) {
+
+	if message != nil{
+		switch message.(type) {
+		case string:
+			e.Message = message.(string)
+		case error:
+			err := message.(error)
+			e.appendErrorDetails(err)
+		default:
+		// no match; here v has the same type as i
+		}
+	}
 }
 
-func (e *BaseErr) SetErrorType(errorType string) {
+func (e *WskDeployBaseErr) appendErrorDetails(err error){
+	if err != nil {
+		errorMsg := err.Error()
+
+		if(strings.Contains(errorMsg,"\n")){
+			var detailMsg string
+			msgs := strings.Split(errorMsg, "\n")
+			for i := 0; i < len(msgs); i++ {
+				if strings.Contains(msgs[i], strings.ToLower(STR_LINE)) {
+					detailMsg = strings.Replace(msgs[i], strings.ToLower(STR_LINE), "(on or near) " + STR_LINE, 1)
+				} else {
+					detailMsg = msgs[i]
+				}
+				e.AppendDetail(strings.TrimSpace(detailMsg))
+			}
+		} else {
+			e.Message = errorMsg
+		}
+
+	}
+}
+
+func (e *WskDeployBaseErr) SetErrorType(errorType string) {
 	e.ErrorType = errorType
 }
 
+func (e *WskDeployBaseErr) AppendDetail(detail string){
+	s := fmt.Sprintf("%s %s", STR_INDENT_1, detail)
+	e.Details = append(e.Details, s)
+}
+
+func (e *WskDeployBaseErr) AppendLineDetail(linenumber int, detail string){
+	s := fmt.Sprintf("%s [%v]: %s", STR_LINE, linenumber, detail)
+	e.AppendDetail(s)
+}
+
 // func Caller(skip int) (pc uintptr, file string, line int, ok bool)
-func (e *BaseErr) SetCallerByStackFrameSkip(skip int) {
+func (e *WskDeployBaseErr) SetCallerByStackFrameSkip(skip int) {
 	_, fname, lineNum, _ := runtime.Caller(skip)
 	e.SetFileName(fname)
 	e.SetLineNum(lineNum)
@@ -87,7 +137,7 @@ func (e *BaseErr) SetCallerByStackFrameSkip(skip int) {
  * CommandError
  */
 type CommandError struct {
-	BaseErr
+	WskDeployBaseErr
 	Command string
 }
 
@@ -97,19 +147,16 @@ func NewCommandError(cmd string, errorMessage string) *CommandError {
 	}
 	err.SetErrorType(ERROR_COMMAND_FAILED)
 	err.SetCallerByStackFrameSkip(2)
-	err.SetMessage(cmd + ": " + errorMessage)
+	str := fmt.Sprintf("%s: [%s]: %s", STR_COMMAND, cmd, errorMessage)
+	err.SetMessage(str)
 	return err
-}
-
-func (e *CommandError) Error() string {
-	return e.BaseErr.Error()
 }
 
 /*
  * WhiskClientError
  */
 type WhiskClientError struct {
-	BaseErr
+	WskDeployBaseErr
 	ErrorCode int
 }
 
@@ -119,7 +166,7 @@ func NewWhiskClientError(errorMessage string, code int) *WhiskClientError {
 	}
 	err.SetErrorType(ERROR_WHISK_CLIENT_ERROR)
 	err.SetCallerByStackFrameSkip(2)
-	str := fmt.Sprintf("Error Code: %d: %s", code, errorMessage)
+	str := fmt.Sprintf("%s: %d: %s", STR_ERROR_CODE, code, errorMessage)
 	err.SetMessage(str)
 	return err
 }
@@ -128,7 +175,7 @@ func NewWhiskClientError(errorMessage string, code int) *WhiskClientError {
  * WhiskClientInvalidConfigError
  */
 type WhiskClientInvalidConfigError struct {
-	BaseErr
+	WskDeployBaseErr
 }
 
 func NewWhiskClientInvalidConfigError(errorMessage string) *WhiskClientInvalidConfigError {
@@ -144,7 +191,7 @@ func NewWhiskClientInvalidConfigError(errorMessage string) *WhiskClientInvalidCo
  * FileError
  */
 type FileError struct {
-	BaseErr
+	WskDeployBaseErr
 	ErrorFileName string
 	ErrorFilePath string
 }
@@ -159,7 +206,7 @@ func (e *FileError) SetErrorFileName(fname string) {
 }
 
 func (e *FileError) Error() string {
-	return fmt.Sprintf("%s [%d]: [%s]: " + FILE + ": [%s]: %s\n",
+	return fmt.Sprintf("%s [%d]: [%s]: " + STR_FILE + ": [%s]: %s\n",
 		e.FileName,
 		e.LineNum,
 		e.ErrorType,
@@ -170,8 +217,13 @@ func (e *FileError) Error() string {
 /*
  * FileReadError
  */
-func NewFileReadError(fpath string, errMessage string) *FileError {
-	var err = &FileError{
+
+type FileReadError struct {
+	FileError
+}
+
+func NewFileReadError(fpath string, errMessage string) *FileReadError {
+	var err = &FileReadError{
 	}
 	err.SetErrorType(ERROR_FILE_READ_ERROR)
 	err.SetCallerByStackFrameSkip(2)
@@ -235,10 +287,10 @@ func NewParameterTypeMismatchError(fpath string, param string, expectedType stri
 	err.SetCallerByStackFrameSkip(2)
 	err.SetErrorFilePath(fpath)
 	str := fmt.Sprintf("%s [%s]: %s %s: [%s], %s: [%s]",
-		PARAMETER, param,
-		TYPE,
-		EXPECTED, expectedType,
-		ACTUAL, actualType)
+		STR_PARAMETER, param,
+		STR_TYPE,
+		STR_EXPECTED, expectedType,
+		STR_ACTUAL, actualType)
 	err.SetMessage(str)
 	return err
 }
@@ -260,8 +312,8 @@ func NewInvalidParameterTypeError(fpath string, param string, actualType string)
 	err.SetErrorType(ERROR_YAML_INVALID_PARAMETER_TYPE)
 	err.SetCallerByStackFrameSkip(2)
 	str := fmt.Sprintf("%s [%s]: %s [%s]",
-		PARAMETER, param,
-		TYPE, actualType)
+		STR_PARAMETER, param,
+		STR_TYPE, actualType)
 	err.SetMessage(str)
 	return err
 }
@@ -275,31 +327,64 @@ type YAMLParserError struct {
 	msgs     []string
 }
 
-func NewYAMLParserErr(fpath string, lines []string, msgs []string) *YAMLParserError {
+func NewYAMLParserErr(fpath string, msg interface{}) *YAMLParserError {
 	var err = &YAMLParserError{
-		lines: lines,
-		msgs: msgs,
+
 	}
 	err.SetErrorType(ERROR_YAML_PARSER_ERROR)
 	err.SetErrorFilePath(fpath)
 	err.SetCallerByStackFrameSkip(2)
+        err.SetMessage(msg)
 	return err
 }
 
+//func (e *YAMLParserError) Error() string {
+//	result := make([]string, len(e.msgs))
+//
+//	for index, msg := range e.msgs {
+//		var s string
+//		if e.lines == nil || e.lines[index] == STR_UNKNOWN {
+//			s = fmt.Sprintf("\n%s %s [%v]: %s", STR_INDENT_1, STR_LINE, STR_UNKNOWN, msg)
+//		} else {
+//			s = fmt.Sprintf("\n%s %s [%v]: %s", STR_INDENT_1, STR_LINE, e.lines[index], msg)
+//		}
+//		result[index] = s
+//	}
+//
+//	e.SetMessage(strings.Join(result, ""))
+//	return e.FileError.Error()
+//}
 
-func (e *YAMLParserError) Error() string {
-	result := make([]string, len(e.msgs))
+//func (dm *YAMLParserError) convertErrorToLinesMsgs(errorString string) (lines []string, msgs []string) {
+//	strs := strings.Split(errorString, "\n")
+//	for i := 0; i < len(strs); i++ {
+//		var errorMsg string
+//		if strings.Contains(strs[i], utils.LINE) {
+//			errorMsg = strings.Replace(strs[i], utils.LINE, "(on or near) "+utils.LINE, 1)
+//		} else {
+//			errorMsg = strs[i]
+//		}
+//		lines = append(lines, STR_UNKNOWN)
+//		msgs = append(msgs, strings.TrimSpace(errorMsg))
+//	}
+//	return
+//}
 
-	for index, msg := range e.msgs {
-		var s string
-		if e.lines == nil || e.lines[index] == LINE_UNKNOWN {
-			s = fmt.Sprintf("\n%s %s [%v]: %s", INDENT_LEVEL_1, LINE, LINE_UNKNOWN, msg)
-		} else {
-			s = fmt.Sprintf("\n%s %s [%v]: %s", INDENT_LEVEL_1, LINE, e.lines[index], msg)
-		}
-		result[index] = s
+func isCustomError( err error ) bool {
+
+	switch err.(type) {
+
+	case *CommandError:
+	case *WhiskClientError:
+	case *WhiskClientInvalidConfigError:
+	case *FileError:
+	case *FileReadError:
+	case *ErrorManifestFileNotFound:
+	case *YAMLFileFormatError:
+	case *ParameterTypeMismatchError:
+	case *InvalidParameterTypeError:
+	case *YAMLParserError:
+		return true
 	}
-
-	e.SetMessage(strings.Join(result, ""))
-	return e.FileError.Error()
+	return false
 }
