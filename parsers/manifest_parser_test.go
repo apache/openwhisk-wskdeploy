@@ -932,12 +932,11 @@ func TestResolveParameterForMultiLineParams(t *testing.T) {
     param5 := Parameter{Type: "invalid", multiline: true}
     _, err := ResolveParameter(p, &param5, "")
     assert.NotNil(t, err, "Expected error saying Invalid type for parameter")
-    expectedErr := utils.NewYAMLParserErr("", err)
     switch errorType := err.(type) {
     default:
         assert.Fail(t, "Wrong error type received: We are expecting ParserErr.")
     case *utils.YAMLParserError:
-        assert.Equal(t, expectedErr.Message, errorType.Message)
+        assert.Equal(t, "Parameter [name] has an invalid Type. [invalid]", errorType.Message)
     }
 
     // type none - param without type, without value, and without default value
