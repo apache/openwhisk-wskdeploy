@@ -170,7 +170,7 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	 * YAMLParserErr
 	 */
 
-	// TODO add a unti test once we re-factor error related modules into a new package
+	// TODO add a unit test once we re-factor error related modules into a new package
 	// to avoid cyclic deplendency errors in GoLang.
 	//manifestFile := "../tests/dat/manifest_bad_yaml_invalid_comment.yaml"
 	//// read and parse manifest.yaml file
