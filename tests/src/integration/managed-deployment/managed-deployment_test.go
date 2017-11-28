@@ -24,6 +24,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+	"time"
 )
 
 func TestManagedDeployment(t *testing.T) {
