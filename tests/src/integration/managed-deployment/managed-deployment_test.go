@@ -34,25 +34,35 @@ func TestManagedDeployment(t *testing.T) {
 	_, err := wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 
+	time.Sleep(time.Second * 2)
+
 	manifestPath = os.Getenv("GOPATH") + path + "00-manifest-minus-second-package.yaml"
 	wskdeploy = common.NewWskdeploy()
 	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
+
+	time.Sleep(time.Second * 2)
 
 	manifestPath = os.Getenv("GOPATH") + path + "01-manifest-minus-sequence-2.yaml"
 	wskdeploy = common.NewWskdeploy()
 	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 
+	time.Sleep(time.Second * 2)
+
 	manifestPath = os.Getenv("GOPATH") + path + "02-manifest-minus-action-3.yaml"
 	wskdeploy = common.NewWskdeploy()
 	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 
+	time.Sleep(time.Second * 2)
+
 	manifestPath = os.Getenv("GOPATH") + path + "03-manifest-minus-trigger.yaml"
 	wskdeploy = common.NewWskdeploy()
 	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
+
+	time.Sleep(time.Second * 2)
 
 	manifestPath = os.Getenv("GOPATH") + path + "04-manifest-minus-package.yaml"
 	wskdeploy = common.NewWskdeploy()

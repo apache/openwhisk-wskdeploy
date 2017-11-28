@@ -29,6 +29,7 @@ import (
 var projectPath = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-manifest-deployment-file-extensions/"
 
 func TestYAMLExtension(t *testing.T) {
+	t.Parallel()
 	manifestPath   := os.Getenv("GOPATH") + projectPath + "manifest.yaml"
 	deploymentPath := os.Getenv("GOPATH") + projectPath + "deployment.yaml"
 	wskdeploy := common.NewWskdeploy()

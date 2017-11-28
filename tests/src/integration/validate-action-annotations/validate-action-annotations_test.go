@@ -29,6 +29,7 @@ import (
 var path = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-action-annotations/"
 
 func TestActionAnnotations(t *testing.T) {
+	t.Parallel()
 	manifestPath   := os.Getenv("GOPATH") + path + "manifest.yaml"
 	deploymentPath := os.Getenv("GOPATH") + path + "deployment.yaml"
 	wskdeploy := common.NewWskdeploy()
