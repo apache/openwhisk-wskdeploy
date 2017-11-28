@@ -46,7 +46,6 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 	manifest, err := manifestParser.ParseManifest(dep.ManifestPath)
 
 	if err != nil {
-		//return manifest, manifestParser, utils.NewFileReadError(dep.ManifestPath, err.Error())
 		return manifest, manifestParser, err
 	}
 	return manifest, manifestParser, nil
@@ -55,7 +54,6 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, ma whisk.KeyValue) error {
 	packages, err := manifestParser.ComposeAllPackages(manifest, reader.serviceDeployer.ManifestPath, ma)
 	if err != nil {
-		//return utils.NewYAMLFileFormatError(manifest.Filepath, err.Error())
 		return err
 	}
 	reader.SetPackage(packages)
