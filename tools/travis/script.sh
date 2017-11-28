@@ -12,7 +12,9 @@ HOMEDIR="$(dirname "$TRAVIS_BUILD_DIR")"
 cd $HOMEDIR
 
 # OpenWhisk clone to fixed directory location
-git clone --depth 3 https://github.com/apache/incubator-openwhisk.git openwhisk
+git clone https://github.com/apache/incubator-openwhisk.git openwhisk
+cd openwhisk
+git reset --hard 21d37a1af329544e245d376ad613d1a603fc104c
 
 # Build script for Travis-CI.
 WHISKDIR="$HOMEDIR/openwhisk"
@@ -20,7 +22,8 @@ WHISKDIR="$HOMEDIR/openwhisk"
 cd $WHISKDIR
 ./tools/travis/setup.sh
 
-ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=openwhisk"
+ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=testing"
+TERM=dumb ./gradlew distDocker -PdockerImagePrefix=testing
 
 cd $WHISKDIR/ansible
 $ANSIBLE_CMD setup.yml
