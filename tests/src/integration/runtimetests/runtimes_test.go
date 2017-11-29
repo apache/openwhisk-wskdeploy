@@ -24,14 +24,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+	"time"
 )
 
 func TestExplicitRuntimes(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
-    projectPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/runtimetests"
-    _, err := wskdeploy.DeployProjectPathOnly(projectPath)
+	projectPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/runtimetests"
+	_, err := wskdeploy.DeployProjectPathOnly(projectPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the project path")
-    _, err = wskdeploy.UndeployProjectPathOnly(projectPath)
-    assert.Equal(t, nil, err, "Failed to undeploy based on the project path")
-}
 
+	time.Sleep(time.Second * 2)
+
+	_, err = wskdeploy.UndeployProjectPathOnly(projectPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the project path")
+}

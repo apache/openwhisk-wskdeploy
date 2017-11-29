@@ -24,6 +24,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
+	"time"
 )
 
 // TODO: write the integration against openwhisk
@@ -32,6 +33,9 @@ func TestTriggerRule(t *testing.T) {
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/apigateway/manifest.yml"
 	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
+
+	time.Sleep(time.Second * 5)
+
 	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest file.")
 }

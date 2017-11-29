@@ -24,6 +24,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+	"time"
 )
 
 var PATH = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-binding-inputs-annotations/"
@@ -150,6 +151,7 @@ func TestBindingInputsAnnotations(t *testing.T) {
 	// testing deploy and undeploy
 	_, err = wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.NoError(t, err, "Failed to deploy based on the manifest and deployment files.")
+	time.Sleep(time.Second * 2)
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.NoError(t, err, "Failed to undeploy based on the manifest and deployment files.")
 }

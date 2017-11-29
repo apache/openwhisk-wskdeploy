@@ -24,6 +24,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+	"time"
 )
 
 var wskprops = common.GetWskprops()
@@ -37,6 +38,9 @@ func TestSupportProjectPath(t *testing.T) {
 	projectPath := os.Getenv("GOPATH") + PATH
 	_, err := wskdeploy.DeployProjectPathOnly(projectPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the projectpath")
+
+	time.Sleep(time.Second * 2)
+
 	_, err = wskdeploy.UndeployProjectPathOnly(projectPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the projectpath")
 }
@@ -47,6 +51,9 @@ func TestSupportProjectPathTrailingSlash(t *testing.T) {
 	projectPath := os.Getenv("GOPATH") + PATH
 	_, err := wskdeploy.DeployProjectPathOnly(projectPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the projectpath")
+
+	time.Sleep(time.Second * 2)
+
 	_, err = wskdeploy.UndeployProjectPathOnly(projectPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the projectpath")
 }
@@ -57,6 +64,9 @@ func TestSupportManifestYamlPath(t *testing.T) {
 	manifestPath := os.Getenv("GOPATH") + PATH + "manifest.yaml"
 	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifestpath")
+
+	time.Sleep(time.Second * 2)
+
 	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifestpath")
 }
@@ -67,6 +77,9 @@ func TestSupportManifestYmlPath(t *testing.T) {
 	manifestPath := os.Getenv("GOPATH") + PATH + "manifest.yml"
 	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifestpath")
+
+	time.Sleep(time.Second * 2)
+
 	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifestpath")
 }
@@ -78,6 +91,9 @@ func TestSupportManifestYamlDeployment(t *testing.T) {
 	deploymentPath := os.Getenv("GOPATH") + PATH + "deployment.yml"
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifestpath and deploymentpath.")
+
+	time.Sleep(time.Second * 2)
+
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifestpath and deploymentpath.")
 }
@@ -89,6 +105,9 @@ func TestSupportManifestYmlDeployment(t *testing.T) {
 	deploymentPath := os.Getenv("GOPATH") + PATH + "deployment.yml"
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifestpath and deploymentpath.")
+
+	time.Sleep(time.Second * 2)
+
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifestpath and deploymentpath.")
 }
