@@ -32,7 +32,7 @@ func TestPackagesInManifest(t *testing.T) {
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Second * 5)
 
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files.")
