@@ -6,7 +6,7 @@ package:
         myhelloworlds:
             location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
     actions:
-        helloNodejs-1:
+        helloNodejs-11:
             function: actions/hello.js
             runtime: nodejs:6
             inputs:
@@ -20,10 +20,10 @@ package:
                 payload:
                     type: string
                     description: a simple greeting message, Hello World!
-        helloNodejs-2:
+        helloNodejs-22:
             function: actions/hello.js
             runtime: nodejs:6
-        helloNodejs-3:
+        helloNodejs-33:
             function: actions/hello.js
             runtime: nodejs:6
             inputs:
@@ -34,11 +34,11 @@ package:
                     type: string
                     description: location of a person
     sequences:
-        helloworldnodejs-series:
-            actions: helloNodejs-1, helloNodejs-2, helloNodejs-3, hellowhisk/greeting, hellowhisk/httpGet, myhelloworlds/hello-js
+        helloworldnodejs-series-1:
+            actions: helloNodejs-11, helloNodejs-22, helloNodejs-33, hellowhisk/greeting, hellowhisk/httpGet, myhelloworlds/hello-js
     triggers:
         triggerNodeJS:
     rules:
         ruleNodeJS:
             trigger: triggerNodeJS
-            action: helloworldnodejs-series
+            action: helloworldnodejs-series-1

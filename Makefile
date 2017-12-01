@@ -30,7 +30,7 @@ build: test
 # Run the integration test against OpenWhisk
 integration_test:
 	@echo "Launch the integration tests."
-	go test -v ./... -tags=integration
+	go test -p 1 -v ./... -tags=integration
 
 format:
 	@echo "Formatting"

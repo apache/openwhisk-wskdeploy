@@ -24,16 +24,19 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+	"time"
 )
 
 var projectPath = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-manifest-deployment-file-extensions/"
 
 func TestYAMLExtension(t *testing.T) {
+	t.Parallel()
 	manifestPath   := os.Getenv("GOPATH") + projectPath + "manifest.yaml"
 	deploymentPath := os.Getenv("GOPATH") + projectPath + "deployment.yaml"
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files with .yaml extension.")
+	time.Sleep(time.Second * 2)
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files with .yaml extension.")
 }
@@ -44,6 +47,7 @@ func TestYMLExtension(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files with .yml extension.")
+	time.Sleep(time.Second * 2)
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files with .yml extension.")
 }
@@ -54,6 +58,7 @@ func TestNonStandardFileNames(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files with non standard names.")
+	time.Sleep(time.Second * 2)
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files with non standard names.")
 }
@@ -64,6 +69,7 @@ func TestRandomFileNames(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files with random names.")
+	time.Sleep(time.Second * 2)
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files with random names.")
 }
@@ -74,6 +80,7 @@ func TestYAMLManifestWithYMLDeployment(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files with mix of .yaml and .yml extensions.")
+	time.Sleep(time.Second * 2)
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files with mix of .yaml and .yml extension.")
 }
@@ -84,6 +91,7 @@ func TestYMLManifestWithYAMLDeployment(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files with .yml manifest and .yaml deployment file.")
+	time.Sleep(time.Second * 2)
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files with .yml manifest and .yaml deployment file.")
 }
