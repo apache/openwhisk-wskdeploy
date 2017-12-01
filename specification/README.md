@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-Current version (link):  [openwhisk_v0.8.9.pdf](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/openwhisk_v0.8.9.pdf)
+Current version (link):  [openwhisk_v0.9.1.pdf](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/openwhisk_v0.9.1.pdf)
 
 ## Purpose
 
