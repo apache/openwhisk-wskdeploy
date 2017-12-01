@@ -20,15 +20,17 @@ package deployers
 import (
 	"bufio"
 	"fmt"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"net/http"
 	"os"
 	"path"
 	"strings"
 	"time"
+
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 )
 
 const (
@@ -234,7 +236,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 		}
 		whisk.Debug(whisk.DbgError, errStr)
-		return clientConfig, utils.NewWhiskClientInvalidConfigError(errStr)
+		return clientConfig, wskderrors.NewWhiskClientInvalidConfigError(errStr)
 	}
 
 	stdout := wski18n.T("The API host is {{.apihost}}, from {{.apisource}}.\n",

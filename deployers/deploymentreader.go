@@ -23,6 +23,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 )
 
 type DeploymentReader struct {
@@ -148,7 +149,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 					// TODO() i18n, need to use an ID
 					// TODO() fix grammar error; need command before "but"
 					err := errors.New(wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file."))
-					return utils.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
+					return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
 				}
 			}
 		}
@@ -238,7 +239,7 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 					if !keyExistsInManifest {
 						// TODO() i18n, need to use an ID
 						err := errors.New(wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file."))
-						return utils.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
+						return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
 					}
 				}
 			}
@@ -325,7 +326,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 					if !keyExistsInManifest {
 						// TODO() i18n, need to use an ID
 						err := errors.New(wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file."))
-						return utils.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
+						return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
 					}
 				}
 			}
