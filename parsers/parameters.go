@@ -158,8 +158,9 @@ func resolveSingleLineParameter(filePath string, paramName string, param *Parame
 		}
 
 	} else {
-		msgs := []string{"Parameter [" + paramName + "] is not single-line format."}
-		return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
+		// TODO() - move string to i18n
+		return param.Value, utils.NewYAMLParserErr(filePath,
+			"Parameter [" + paramName + "] is not single-line format.")
 	}
 
 	return param.Value, errorParser
@@ -199,8 +200,8 @@ func resolveMultiLineParameter(filePath string, paramName string, param *Paramet
 		if param.Type != "" {
 			if !isValidParameterType(param.Type) {
 				// TODO() - move string to i18n
-				msgs := []string{"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]"}
-				return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
+				return param.Value, utils.NewYAMLParserErr(filePath,
+					"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]")
 			}
 		} else {
 			// if we do not have a value for the Parameter Type, use the Parameter Value's Type
@@ -212,8 +213,9 @@ func resolveMultiLineParameter(filePath string, paramName string, param *Paramet
 		//	errorParser = utils.NewParameterTypeMismatchError("", param.Type, valueType )
 		//}
 	} else {
-		msgs := []string{"Parameter [" + paramName + "] is not multiline format."}
-		return param.Value, utils.NewYAMLParserErr(filePath, nil, msgs)
+		// TODO() - move string to i18n
+		return param.Value, utils.NewYAMLParserErr(filePath,
+			"Parameter [" + paramName + "] is not multiline format.")
 	}
 
 
@@ -267,8 +269,8 @@ func resolveJSONParameter(filePath string, paramName string, param *Parameter, v
 		}
 
 	} else {
-		msgs := []string{"Parameter [" + paramName + "] is not JSON format."}
-		errorParser = utils.NewYAMLParserErr(filePath, nil, msgs)
+		// TODO() - move string to i18n
+		errorParser = utils.NewYAMLParserErr(filePath, "Parameter [" + paramName + "] is not JSON format.")
 	}
 
 	return param.Value, errorParser

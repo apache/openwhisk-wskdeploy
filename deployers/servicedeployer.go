@@ -140,16 +140,15 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		// OpenWhisk entities are annotated with Project Name and therefore
 		// Project Name in manifest/deployment file is mandatory for managed deployments
 		if deployer.ProjectName == "" {
-			// TODO see if we can pass in the Deployment file path on first parameter
 			// TODO see if we can move string to translation file.
-			return utils.NewYAMLFileFormatError(utils.LINE_UNKNOWN, "Project name in manifest file is mandatory for managed deployments")
+			return utils.NewYAMLFileFormatError(manifest.Filepath, "Project name in manifest file is mandatory for managed deployments")
 		}
 		// Every OpenWhisk entity in the manifest file will be annotated with:
 		//managed: '{"__OW__PROJECT__NAME": <name>, "__OW__PROJECT_HASH": <hash>, "__OW__FILE": <path>}'
 		deployer.ManagedAnnotation, err = utils.GenerateManagedAnnotation(deployer.ProjectName, manifest.Filepath)
 		if err != nil {
 			// TODO see if we can pass in the YAML file path on first parameter
-			return utils.NewYAMLFileFormatError(utils.LINE_UNKNOWN, err.Error())
+			return utils.NewYAMLFileFormatError(manifest.Filepath, err.Error())
 		}
 	}
 
@@ -1345,7 +1344,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 		for _, p := range pack.Package.Parameters {
 			jsonValue, err := utils.PrettyJSON(p.Value)
 			if err != nil {
-				fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
+				fmt.Printf("        - %s : %s\n", p.Key, utils.STR_UNKNOWN_VALUE)
 			} else {
 				fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
 			}
@@ -1373,7 +1372,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 					} else {
 						jsonValue, err := utils.PrettyJSON(p.Value)
 						if err != nil {
-							fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
+							fmt.Printf("        - %s : %s\n", p.Key, utils.STR_UNKNOWN_VALUE)
 						} else {
 							fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
 						}
@@ -1381,7 +1380,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 				} else {
 					jsonValue, err := utils.PrettyJSON(p.Value)
 					if err != nil {
-						fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
+						fmt.Printf("        - %s : %s\n", p.Key, utils.STR_UNKNOWN_VALUE)
 					} else {
 						fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
 					}
@@ -1411,7 +1410,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 		for _, p := range trigger.Parameters {
 			jsonValue, err := utils.PrettyJSON(p.Value)
 			if err != nil {
-				fmt.Printf("        - %s : %s\n", p.Key, utils.UNKNOWN_VALUE)
+				fmt.Printf("        - %s : %s\n", p.Key, utils.STR_UNKNOWN_VALUE)
 			} else {
 				fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
 			}

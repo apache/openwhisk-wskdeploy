@@ -5,8 +5,11 @@ packages:
       license: Apache-2.0
       actions:
         first_action:
+          function: actions/dump_params.js
         second_action:
+          function: actions/dump_params.js
         third_action:
+          function: actions/dump_params.js
       triggers:
         trigger1:
         trigger2:

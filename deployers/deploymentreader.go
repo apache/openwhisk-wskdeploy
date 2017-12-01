@@ -18,6 +18,7 @@
 package deployers
 
 import (
+	"errors"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
@@ -144,9 +145,10 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 					}
 				}
 				if !keyExistsInManifest {
-					err := wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file.")
-					// TODO see if we can pass in the YAML file path on first parameter
-					return utils.NewYAMLFileFormatError(utils.LINE_UNKNOWN, err)
+					// TODO() i18n, need to use an ID
+					// TODO() fix grammar error; need command before "but"
+					err := errors.New(wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file."))
+					return utils.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
 				}
 			}
 		}
@@ -234,9 +236,9 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 						}
 					}
 					if !keyExistsInManifest {
-						err := wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file.")
-						// TODO see if we can pass in the YAML file path on first parameter
-						return utils.NewYAMLFileFormatError(utils.LINE_UNKNOWN, err)
+						// TODO() i18n, need to use an ID
+						err := errors.New(wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file."))
+						return utils.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
 					}
 				}
 			}
@@ -321,9 +323,9 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 						}
 					}
 					if !keyExistsInManifest {
-						err := wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file.")
-						// TODO see if we can pass in the YAML file path on first parameter
-						return utils.NewYAMLFileFormatError(utils.LINE_UNKNOWN, err)
+						// TODO() i18n, need to use an ID
+						err := errors.New(wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file."))
+						return utils.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
 					}
 				}
 			}

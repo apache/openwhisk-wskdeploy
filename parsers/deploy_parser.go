@@ -20,7 +20,6 @@ package parsers
 import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"gopkg.in/yaml.v2"
-    "strings"
 )
 
 func (dm *YAMLParser) unmarshalDeployment(input []byte, deploy *YAML) error {
@@ -39,28 +38,13 @@ func (dm *YAMLParser) ParseDeployment(deploymentPath string) (*YAML, error) {
     }
 	err = dm.unmarshalDeployment(content, &dplyyaml)
     if err != nil {
-        lines, msgs := dm.convertErrorToLinesMsgs(err.Error())
-        return &dplyyaml, utils.NewYAMLParserErr(deploymentPath, lines, msgs)
+        return &dplyyaml, utils.NewYAMLParserErr(deploymentPath, err)
     }
 	dplyyaml.Filepath = deploymentPath
     dplyyamlEnvVar := ReadEnvVariable(&dplyyaml)
 	return dplyyamlEnvVar, nil
 }
 
-func (dm *YAMLParser) convertErrorToLinesMsgs(errorString string) (lines []string, msgs []string) {
-    strs := strings.Split(errorString, "\n")
-    for i := 0; i < len(strs); i++ {
-        var errorMsg string
-	if strings.Contains(strs[i], utils.LINE) {
-		errorMsg = strings.Replace(strs[i], utils.LINE, "(on or near) "+utils.LINE, 1)
-	} else {
-		errorMsg = strs[i]
-	}
-        lines = append(lines, utils.LINE_UNKNOWN)
-        msgs = append(msgs, strings.TrimSpace(errorMsg))
-    }
-    return
-}
 
 //********************Project functions*************************//
 //This is for parse the deployment yaml file.
