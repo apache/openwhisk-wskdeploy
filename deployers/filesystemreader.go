@@ -26,6 +26,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 )
 
 // name of directory that can contain source code
@@ -56,7 +57,7 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]
 		if fpath != reader.serviceDeployer.ProjectPath {
 			pathCount, err := reader.getFilePathCount(fpath)
             if err != nil {
-                return utils.NewFileReadError(fpath, err.Error())
+                return wskderrors.NewFileReadError(fpath, err.Error())
             }
 
 			if !f.IsDir() {
@@ -76,7 +77,7 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]
 					if foundFile == true {
 						_, action, err := reader.CreateActionFromFile(reader.serviceDeployer.ManifestPath, fpath)
                         if err != nil {
-                            return utils.NewFileReadError(fpath, err.Error())
+                            return wskderrors.NewFileReadError(fpath, err.Error())
                         }
 
 						var record utils.ActionRecord
@@ -127,7 +128,7 @@ func (reader *FileSystemReader) CreateActionFromFile(manipath, filePath string) 
 
 		dat, err := new(utils.ContentReader).LocalReader.ReadLocal(filePath)
         if err != nil {
-            return name, action, utils.NewFileReadError(filePath, err.Error())
+            return name, action, wskderrors.NewFileReadError(filePath, err.Error())
         }
 
 		action.Exec = new(whisk.Exec)

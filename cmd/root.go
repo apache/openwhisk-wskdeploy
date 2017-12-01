@@ -31,6 +31,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 )
 
 var stderr = ""
@@ -180,7 +181,7 @@ func Deploy() error {
 			errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
 				map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml,
 					"projectPath": projectPath})
-			return utils.NewErrorManifestFileNotFound(projectPath, errString)
+			return wskderrors.NewErrorManifestFileNotFound(projectPath, errString)
 		}
 		whisk.Debug(whisk.DbgInfo, stdout)
 	}
@@ -239,7 +240,7 @@ func Deploy() error {
 		errString := wski18n.T("Manifest file is not found at the path [{{.filePath}}].\n",
 			map[string]interface{}{"filePath": utils.Flags.ManifestPath})
 		whisk.Debug(whisk.DbgError, errString)
-		return utils.NewErrorManifestFileNotFound(utils.Flags.ManifestPath, errString)
+		return wskderrors.NewErrorManifestFileNotFound(utils.Flags.ManifestPath, errString)
 	}
 
 }
@@ -273,7 +274,7 @@ func Undeploy() error {
 			errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
 				map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml,
 					"projectPath": projectPath})
-			return utils.NewErrorManifestFileNotFound(projectPath, errString)
+			return wskderrors.NewErrorManifestFileNotFound(projectPath, errString)
 		}
 		whisk.Debug(whisk.DbgInfo, stdout)
 	}
@@ -330,6 +331,6 @@ func Undeploy() error {
 		errString := wski18n.T("Manifest file is not found at the path [{{.filePath}}].\n",
 			map[string]interface{}{"filePath": utils.Flags.ManifestPath})
 		whisk.Debug(whisk.DbgError, errString)
-		return utils.NewErrorManifestFileNotFound(utils.Flags.ManifestPath, errString)
+		return wskderrors.NewErrorManifestFileNotFound(utils.Flags.ManifestPath, errString)
 	}
 }

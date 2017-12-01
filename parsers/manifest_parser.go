@@ -31,6 +31,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"gopkg.in/yaml.v2"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 )
 
 // Read existing manifest file or create new if none exists
@@ -41,7 +42,7 @@ func ReadOrCreateManifest() (*YAML, error) {
 		dat, _ := ioutil.ReadFile(utils.ManifestFileNameYaml)
 		err := NewYAMLParser().Unmarshal(dat, &maniyaml)
 		if err != nil {
-			return &maniyaml, utils.NewFileReadError(utils.ManifestFileNameYaml, err.Error())
+			return &maniyaml, wskderrors.NewFileReadError(utils.ManifestFileNameYaml, err.Error())
 		}
 	}
 	return &maniyaml, nil
@@ -51,12 +52,12 @@ func ReadOrCreateManifest() (*YAML, error) {
 func Write(manifest *YAML, filename string) error {
 	output, err := NewYAMLParser().marshal(manifest)
 	if err != nil {
-		return utils.NewYAMLFileFormatError(filename, err.Error())
+		return wskderrors.NewYAMLFileFormatError(filename, err.Error())
 	}
 
 	f, err := os.Create(filename)
 	if err != nil {
-		return utils.NewFileReadError(filename, err.Error())
+		return wskderrors.NewFileReadError(filename, err.Error())
 	}
 	defer f.Close()
 
@@ -87,12 +88,12 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
 
 	content, err := utils.Read(manifestPath)
 	if err != nil {
-		return &maniyaml, utils.NewFileReadError(manifestPath, err.Error())
+		return &maniyaml, wskderrors.NewFileReadError(manifestPath, err.Error())
 	}
 
 	err = mm.Unmarshal(content, &maniyaml)
 	if err != nil {
-		return &maniyaml, utils.NewYAMLParserErr(manifestPath, err)
+		return &maniyaml, wskderrors.NewYAMLParserErr(manifestPath, err)
 	}
 	maniyaml.Filepath = manifestPath
 	manifest := ReadEnvVariable(&maniyaml)

@@ -21,6 +21,7 @@ import (
 	"reflect"
 	"encoding/json"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 )
 
 // TODO(): Support other valid Package Manifest types
@@ -113,7 +114,7 @@ func ResolveParamTypeFromValue(paramName string, value interface{}, filePath str
 
 		} else {
 			// raise an error if parameter's value is not a known type
-			err = utils.NewInvalidParameterTypeError(filePath, paramName, actualType)
+			err = wskderrors.NewInvalidParameterTypeError(filePath, paramName, actualType)
 		}
 	}
 	return paramType, err
@@ -159,7 +160,7 @@ func resolveSingleLineParameter(filePath string, paramName string, param *Parame
 
 	} else {
 		// TODO() - move string to i18n
-		return param.Value, utils.NewYAMLParserErr(filePath,
+		return param.Value, wskderrors.NewYAMLParserErr(filePath,
 			"Parameter [" + paramName + "] is not single-line format.")
 	}
 
@@ -200,7 +201,7 @@ func resolveMultiLineParameter(filePath string, paramName string, param *Paramet
 		if param.Type != "" {
 			if !isValidParameterType(param.Type) {
 				// TODO() - move string to i18n
-				return param.Value, utils.NewYAMLParserErr(filePath,
+				return param.Value, wskderrors.NewYAMLParserErr(filePath,
 					"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]")
 			}
 		} else {
@@ -214,7 +215,7 @@ func resolveMultiLineParameter(filePath string, paramName string, param *Paramet
 		//}
 	} else {
 		// TODO() - move string to i18n
-		return param.Value, utils.NewYAMLParserErr(filePath,
+		return param.Value, wskderrors.NewYAMLParserErr(filePath,
 			"Parameter [" + paramName + "] is not multiline format.")
 	}
 
@@ -265,12 +266,12 @@ func resolveJSONParameter(filePath string, paramName string, param *Parameter, v
 				return temp, errorParser
 			}
 		} else{
-			errorParser = utils.NewParameterTypeMismatchError(filePath, paramName, JSON, param.Type)
+			errorParser = wskderrors.NewParameterTypeMismatchError(filePath, paramName, JSON, param.Type)
 		}
 
 	} else {
 		// TODO() - move string to i18n
-		errorParser = utils.NewYAMLParserErr(filePath, "Parameter [" + paramName + "] is not JSON format.")
+		errorParser = wskderrors.NewYAMLParserErr(filePath, "Parameter [" + paramName + "] is not JSON format.")
 	}
 
 	return param.Value, errorParser
