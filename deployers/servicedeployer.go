@@ -25,13 +25,13 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"reflect"
+	"time"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"reflect"
-    "time"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 )
 

@@ -26,7 +26,6 @@ import (
 	"fmt"
 	"runtime"
 	"path/filepath"
-	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 )
 
 /*
@@ -173,10 +172,9 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 
 	// TODO add a unit test once we re-factor error related modules into a new package
 	// to avoid cyclic dependency errors in GoLang.
-	manifestFile := "../tests/dat/manifest_bad_yaml_invalid_comment.yaml"
-	//// read and parse manifest.yaml file
-	m, err := parsers.NewYAMLParser().ParseManifest(manifestFile)
-	fmt.Println(err)
+	//manifestFile := "../tests/dat/manifest_bad_yaml_invalid_comment.yaml"
+	//m, err := parsers.NewYAMLParser().ParseManifest(manifestFile)
+	//fmt.Println(err)
 
 	// TODO - use actual YAML files to generate actual errors for comparison with expected error output
 	//var TEST_LINES    = []string{"40", STR_UNKNOWN, "123"}
