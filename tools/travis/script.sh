@@ -2,6 +2,9 @@
 
 set -e
 
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+ROOTDIR="$SCRIPTDIR/../.."
+
 cd $TRAVIS_BUILD_DIR
 ./tools/travis/scancode.sh
 make lint
@@ -20,7 +23,7 @@ WHISKDIR="$HOMEDIR/openwhisk"
 cd $WHISKDIR
 ./tools/travis/setup.sh
 
-ANSIBLE_CMD="ansible-playbook -i environments/local -e docker_image_prefix=openwhisk"
+ANSIBLE_CMD="ansible-playbook -i ${ROOTDIR}/ansible/environments/local -e docker_image_prefix=openwhisk"
 
 cd $WHISKDIR/ansible
 $ANSIBLE_CMD setup.yml
