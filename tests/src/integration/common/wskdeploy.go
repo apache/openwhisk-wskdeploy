@@ -121,12 +121,8 @@ func (wskdeploy *Wskdeploy) RunCommand(s ...string) (string, error) {
 
 	var returnError error = nil
 	if err != nil {
-		if len(errb.String()) > 0 {
-			// Note: (sub-command) is always at Args[0] which is guaranteed to be not empty
-			returnError = wskderrors.NewCommandError(command.Args[0], errb.String())
-		//} else {
-		//	returnError = err
-		}
+		// Note: (sub-command) is always at Args[0] which is guaranteed to be not empty
+		returnError = wskderrors.NewCommandError(command.Args[0], errb.String())
 	}
 	printOutput(outb.String())
 	if returnError != nil {
