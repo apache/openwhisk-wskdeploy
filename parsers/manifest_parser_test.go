@@ -20,7 +20,6 @@
 package parsers
 
 import (
-    "github.com/apache/incubator-openwhisk-wskdeploy/utils"
     "github.com/stretchr/testify/assert"
     "io/ioutil"
     "os"
@@ -31,6 +30,7 @@ import (
     "strconv"
     "strings"
     "github.com/apache/incubator-openwhisk-client-go/whisk"
+    "github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 )
 
 // Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
@@ -935,7 +935,7 @@ func TestResolveParameterForMultiLineParams(t *testing.T) {
     switch errorType := err.(type) {
     default:
         assert.Fail(t, "Wrong error type received: We are expecting ParserErr.")
-    case *utils.YAMLParserError:
+    case *wskderrors.YAMLParserError:
         assert.Equal(t, "Parameter [name] has an invalid Type. [invalid]", errorType.Message)
     }
 
