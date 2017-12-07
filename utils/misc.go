@@ -543,10 +543,10 @@ var runtimeInfo = []byte(`{
 var Rts map[string][]string
 
 var DefaultRts = map[string][]string{
-	"nodejs": {"nodejs:6", "nodejs:8"},
+	"nodejs": {"nodejs:6"},
 	"java":   {"java"},
 	"php":    {"php:7.1"},
-	"python": {"python", "python:2", "python:3"},
+	"python": {"python:2"},
 	"swift":  {"swift:3.1.1"},
 }
 
