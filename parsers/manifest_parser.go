@@ -439,7 +439,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 				switch ext {
 				case ".swift":
-					kind = "swift:3"
+					kind = "swift:3.1.1"
 				case ".js":
 					kind = "nodejs:6"
 				case ".py":

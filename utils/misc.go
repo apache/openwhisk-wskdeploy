@@ -441,105 +441,113 @@ func ConvertToMap(op OpenWhiskInfo) (rt map[string][]string) {
 }
 
 var runtimeInfo = []byte(`{
-  "support": {
-    "github": "https://github.com/apache/incubator-openwhisk/issues",
-    "slack": "http://slack.openwhisk.org"
-  },
-  "description": "OpenWhisk",
-  "api_paths": ["/api/v1"],
-  "runtimes": {
-    "nodejs": [{
-      "image": "openwhisk/nodejsaction:latest",
-      "deprecated": true,
-      "requireMain": false,
-      "default": false,
-      "attached": false,
-      "kind": "nodejs"
-    }, {
-      "image": "openwhisk/nodejs6action:latest",
-      "deprecated": false,
-      "requireMain": false,
-      "default": true,
-      "attached": false,
-      "kind": "nodejs:6"
-    }],
-    "java": [{
-      "image": "openwhisk/java8action:latest",
-      "deprecated": false,
-      "requireMain": true,
-      "default": true,
-      "attached": true,
-      "kind": "java"
-    }],
-    "php": [{
-      "image": "openwhisk/action-php-v7.1:latest",
-      "deprecated": false,
-      "requireMain": false,
-      "default": true,
-      "attached": false,
-      "kind": "php:7.1"
-    }],
-    "python": [{
-      "image": "openwhisk/python2action:latest",
-      "deprecated": false,
-      "requireMain": false,
-      "default": false,
-      "attached": false,
-      "kind": "python"
-    }, {
-      "image": "openwhisk/python2action:latest",
-      "deprecated": false,
-      "requireMain": false,
-      "default": true,
-      "attached": false,
-      "kind": "python:2"
-    }, {
-      "image": "openwhisk/python3action:latest",
-      "deprecated": false,
-      "requireMain": false,
-      "default": false,
-      "attached": false,
-      "kind": "python:3"
-    }],
-    "swift": [{
-      "image": "openwhisk/swiftaction:latest",
-      "deprecated": true,
-      "requireMain": false,
-      "default": false,
-      "attached": false,
-      "kind": "swift"
-    }, {
-      "image": "openwhisk/swift3action:latest",
-      "deprecated": false,
-      "requireMain": false,
-      "default": true,
-      "attached": false,
-      "kind": "swift:3"
-    }, {
-      "image": "openwhisk/action-swift-v3.1.1:latest",
-      "deprecated": false,
-      "requireMain": false,
-      "default": false,
-      "attached": false,
-      "kind": "swift:3.1.1"
-    }]
-  },
-  "limits": {
-    "actions_per_minute": 5000,
-    "triggers_per_minute": 5000,
-    "concurrent_actions": 1000
-  }
-  }
+	"support":{
+		"github":"https://github.com/apache/incubator-openwhisk/issues",
+		"slack":"http://slack.openwhisk.org"
+	},
+	"description":"OpenWhisk",
+	"api_paths":["/api/v1"],
+	"runtimes":{
+		"nodejs":[{
+			"image":"openwhisk/nodejsaction:latest",
+			"deprecated":true,
+			"requireMain":false,
+			"default":false,
+			"attached":false,
+			"kind":"nodejs"
+		},{
+			"image":"openwhisk/nodejs6action:latest",
+			"deprecated":false,
+			"requireMain":false,
+			"default":true,
+			"attached":false,
+			"kind":"nodejs:6"
+		},{
+			"image":"openwhisk/action-nodejs-v8:latest",
+			"deprecated":false,
+			"requireMain":false,
+			"default":false,
+			"attached":false,
+			"kind":"nodejs:8"
+		}],
+		"java":[{
+			"image":"openwhisk/java8action:latest",
+			"deprecated":false,
+			"requireMain":true,
+			"default":true,
+			"attached":true,
+			"kind":"java"
+		}],
+		"php":[{
+			"image":"openwhisk/action-php-v7.1:latest",
+			"deprecated":false,
+			"requireMain":false,
+			"default":true,
+			"attached":false,
+			"kind":"php:7.1"
+		}],
+		"python":[{
+			"image":"openwhisk/python2action:latest",
+			"deprecated":false,
+			"requireMain":false,
+			"default":false,
+			"attached":false,
+			"kind":"python"
+		},{
+			"image":"openwhisk/python2action:latest",
+			"deprecated":false,
+			"requireMain":false,
+			"default":true,
+			"attached":false,
+			"kind":"python:2"
+		},{
+			"image":"openwhisk/python3action:latest",
+			"deprecated":false,
+			"requireMain":false,
+			"default":false,
+			"attached":false,
+			"kind":"python:3"
+		}],
+		"swift":[{
+			"image":"openwhisk/swiftaction:latest",
+			"deprecated":true,
+			"requireMain":false,
+			"default":false,
+			"attached":false,
+			"kind":"swift"
+		},{
+			"image":"openwhisk/swift3action:latest",
+			"deprecated":true,
+			"requireMain":false,
+			"default":false,
+			"attached":false,
+			"kind":"swift:3"
+		},{
+			"image":"openwhisk/action-swift-v3.1.1:latest",
+			"deprecated":false,
+			"requireMain":false,
+			"default":true,
+			"attached":false,
+			"kind":"swift:3.1.1"
+		}]
+	},
+	"limits":{
+		"actions_per_minute":5000,
+		"triggers_per_minute":5000,
+		"concurrent_actions":1000
+	}
+	}
 `)
+
 
 var Rts map[string][]string
 
 var DefaultRts = map[string][]string{
-	"nodejs": {"nodejs", "nodejs:6"},
+	"nodejs": {"nodejs:6"},
 	"java":   {"java"},
 	"php":    {"php:7.1"},
-	"python": {"python", "python:2", "python:3"},
-	"swift":  {"swift", "swift:3", "swift:3.1.1"},
+	"python": {"python:2"},
+	"swift":  {"swift:3.1.1"},
 }
 
 func CheckExistRuntime(rtname string, rts map[string][]string) bool {
