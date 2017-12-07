@@ -476,13 +476,13 @@ func (deployer *ServiceDeployer) RefreshManagedEntities(maValue whisk.KeyValue) 
 		return err
 	}
 
-	//if err := deployer.RefreshManagedRules(ma); err != nil {
-	//	return err
-	//}
+	if err := deployer.RefreshManagedRules(ma); err != nil {
+		return err
+	}
 
-	//if err := deployer.RefreshManagedPackages(ma); err != nil {
-	//	return err
-	//}
+	if err := deployer.RefreshManagedPackages(ma); err != nil {
+		return err
+	}
 
 	return nil
 
