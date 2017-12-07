@@ -539,7 +539,7 @@ var DefaultRts = map[string][]string{
 	"java":   {"java"},
 	"php":    {"php:7.1"},
 	"python": {"python", "python:2", "python:3"},
-	"swift":  {"swift", "swift:3", "swift:3.1.1"},
+	"swift":  {"swift:3.1.1"},
 }
 
 func CheckExistRuntime(rtname string, rts map[string][]string) bool {

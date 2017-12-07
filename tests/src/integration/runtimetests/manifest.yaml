@@ -94,7 +94,7 @@ packages:
           web-export: true
           version: 1.0
           function: src/hello.swift
-          runtime: swift:3
+          runtime: swift:3.1.1
           inputs:
             name: string
             place: string
