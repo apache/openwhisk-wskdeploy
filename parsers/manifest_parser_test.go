@@ -486,7 +486,7 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
                     } else if actions[i].Action.Name == "helloPython" {
                         expectedResult = "python"
                     } else if actions[i].Action.Name == "helloSwift" {
-                        expectedResult = "swift:3"
+                        expectedResult = "swift:3.1.1"
                     }
                     actualResult := actions[i].Action.Exec.Kind
                     assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
