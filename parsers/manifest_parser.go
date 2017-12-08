@@ -399,6 +399,7 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action, packageName string, ma whisk.KeyValue) ([]utils.ActionRecord, error) {
 
 	var errorParser error
+	var ext string
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
 
 	for key, action := range actions {
@@ -434,27 +435,22 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				// To do: support docker and main entry as did by go cli?
 				wskaction.Exec, err = utils.GetExec(zipName, action.Runtime, false, "")
 			} else {
-				ext := path.Ext(filePath)
-				var kind string
+				ext = path.Ext(filePath)
+				// drop the "." from file extension
+				if len(ext) > 0 && ext[0] == '.' {
+					ext = ext[1:]
+				}
 
-				switch ext {
-				case ".swift":
-					kind = "swift:3.1.1"
-				case ".js":
-					kind = "nodejs:6"
-				case ".py":
-					kind = "python"
-				case ".java":
-					kind = "java"
-				case ".php":
-					kind = "php:7.1"
-				case ".jar":
-					kind = "java"
-				default:
-					kind = "nodejs:6"
-					errStr := wski18n.T("Unsupported runtime type, set to nodejs")
-					whisk.Debug(whisk.DbgWarn, errStr)
-				// TODO() add the user input kind here if interactive
+				// determine default runtime for the given file extension
+				var kind string
+				r := utils.FileExtensionRuntimeKindMap[ext]
+				kind = utils.DefaultRunTimes[r]
+
+				// produce an error when a runtime could not be derived from the action file extension
+				// and its not explicitly specified in the manifest YAML file
+				// and action source is not a zip file
+				if len(kind) == 0 && len(action.Runtime) == 0 && ext != utils.ZIP_FILE_EXTENSION {
+					return nil, wskderrors.NewInvalidRuntimeError(filePath, "Not Specified in Manifest YAML", utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				}
 
 				wskaction.Exec.Kind = kind
@@ -465,10 +461,10 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					return s1, err
 				}
 				code := string(dat)
-				if ext == ".zip" || ext == ".jar" {
+				if ext == utils.ZIP_FILE_EXTENSION || ext == utils.JAR_FILE_EXTENSION {
 					code = base64.StdEncoding.EncodeToString([]byte(dat))
 				}
-				if ext == ".zip" && action.Runtime == "" {
+				if ext == utils.ZIP_FILE_EXTENSION && action.Runtime == "" {
 					utils.PrintOpenWhiskOutputln("need explicit action Runtime value")
 				}
 				wskaction.Exec.Code = &code
@@ -478,16 +474,55 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 		/*
  		 *  Action.Runtime
+		 *  Perform few checks if action runtime is specified in manifest YAML file
+		 *  (1) Check if specified runtime is one of the supported runtimes by OpenWhisk server
+		 *  (2) Check if specified runtime is consistent with action source file extensions
+		 *  Set the action runtime to match with the source file extension, if wskdeploy is not invoked in strict mode
  		 */
 		if action.Runtime != "" {
-			if utils.CheckExistRuntime(action.Runtime, utils.Rts) {
-				wskaction.Exec.Kind = action.Runtime
-
-			} else if utils.Flags.Strict {
-				wskaction.Exec.Kind = action.Runtime
+			if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {
+				// for zip actions, rely on the runtimes from the manifest file as it can not be derived from the action source file extension
+				// pick runtime from manifest file if its supported by OpenWhisk server
+				if ext == utils.ZIP_FILE_EXTENSION {
+					wskaction.Exec.Kind = action.Runtime
+				} else {
+					if utils.CheckRuntimeConsistencyWithFileExtension(ext, action.Runtime) {
+						wskaction.Exec.Kind = action.Runtime
+					} else {
+						errStr := wski18n.T("WARNING: Runtime specified in manifest " +
+							"YAML {{.runtime}} does not match with action source " +
+							"file extension {{.ext}} for action {{.action}}.\n",
+							map[string]interface{}{"runtime": action.Runtime, "ext": ext, "action": action.Name})
+						whisk.Debug(whisk.DbgWarn, errStr)
+						// even if runtime is not consistent with file extension, deploy action with specified runtime in strict mode
+						if utils.Flags.Strict {
+							wskaction.Exec.Kind = action.Runtime
+						} else {
+							errStr := wski18n.T("WARNING: Whisk Deploy has chosen appropriate " +
+								"runtime {{.runtime}} based on the action source file " +
+								"extension for that action {{.action}}.\n",
+								map[string]interface{}{"runtime": wskaction.Exec.Kind, "action": wskaction.Name})
+							whisk.Debug(whisk.DbgWarn, errStr)
+						}
+					}
+				}
 			} else {
-				errStr := wski18n.T("wskdeploy has chosen a particular runtime for the action.\n")
+				errStr := wski18n.T("WARNING: Runtime specified in manifest " +
+					"YAML {{.runtime}} is not supported by OpenWhisk server " +
+					"for the action {{.action}}.\n",
+					map[string]interface{}{"runtime": action.Runtime, "action": action.Name})
 				whisk.Debug(whisk.DbgWarn, errStr)
+				if ext == utils.ZIP_FILE_EXTENSION {
+					// for zip action, error out if specified runtime is not supported by OpenWhisk server
+					return nil, wskderrors.NewInvalidRuntimeError(filePath, action.Runtime, utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+				} else {
+					errStr = wski18n.T("WARNING: Whisk Deploy has chosen appropriate " +
+						"runtime {{.runtime}} based on the action source file " +
+						"extension for that action {{.action}}.\n",
+						map[string]interface{}{"runtime": wskaction.Exec.Kind, "action": wskaction.Name})
+					whisk.Debug(whisk.DbgWarn, errStr)
+				}
+
 			}
 		}
 
