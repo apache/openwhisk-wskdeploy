@@ -33,54 +33,68 @@ import (
     "github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 )
 
+const (
+    // local test assert messages
+    TEST_MSG_PACKAGE_NAME_MISMATCH = "Package name mismatched."
+    TEST_MSG_ACTION_NUMBER_MISMATCH = "Number of Actions mismatched."
+    TEST_MSG_ACTION_NAME_MISSING = "Action named [%s] does not exist."
+    TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH = "Action function path mismatched."
+    TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH = "Action function runtime mismatched."
+    TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH = "Action function main name mismatch."
+    TEST_MSG_ACTION_PARAMTER_VALUE_MISMATCH = "Action parameter named [%s] had a value mismatch."
+
+    // local error messages
+    TEST_ERROR_MANIFEST_READ_FAILURE = "Failed to ReadFile() manifest [%s]."
+    TEST_ERROR_MANIFEST_DATA_UNMARSHALL = "Failed to Unmarshall manifest data for manifest [%s]."
+)
+
 // Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloNodeJS(t *testing.T) {
-    data := `
-package:
-  name: helloworld
-  actions:
-    helloNodejs:
-      function: actions/hello.js
-      runtime: nodejs:6`
-    // set the zero value of struct YAML
+    TEST_MANIFEST_PATH := "../tests/dat/manifest_hello_nodejs.yaml"
+    TEST_PACKAGE_NAME := "helloworld"
+    TEST_ACTION_NAME := "helloNodejs"
+    TEST_FUNCTION_PATH := "actions/hello.js"
+    TEST_RUNTIME := "nodejs:6"
+
+    // read raw bytes of manifest.yaml file
+    data, err := ioutil.ReadFile(TEST_MANIFEST_PATH)
+
+    if err != nil{
+        t.Error(fmt.Sprintf(TEST_ERROR_MANIFEST_READ_FAILURE, TEST_MANIFEST_PATH))
+        return
+    }
+
+    // Init YAML struct and attempt to Unmarshal YAML byte[] data
     m := YAML{}
-    // Unmarshal reads/parses manifest data and sets the values of YAML
-    // And returns an error if parsing a manifest data fails
-    err := NewYAMLParser().Unmarshal([]byte(data), &m)
-    if err == nil {
-        // YAML.Filepath does not get set by Parsers.Unmarshal
-        // as it takes manifest YAML data as a function parameter
-        // instead of file name of a manifest file, therefore there is
-        // no way for Unmarshal function to set YAML.Filepath field
-        // (TODO) Ideally we should change this functionality so that
-        // (TODO) filepath is set to the actual path of the manifest file
-        expectedResult := ""
-        actualResult := m.Filepath
-        assert.Equal(t, expectedResult, actualResult, "Expected filepath to be an empty" +
-            " string instead its set to " + actualResult + " which is invalid value")
-        // package name should be "helloworld"
-        expectedResult = "helloworld"
-        actualResult = m.Package.Packagename
-        assert.Equal(t, expectedResult, actualResult, "Expected package name " + expectedResult + " but got " + actualResult)
+    err = NewYAMLParser().Unmarshal([]byte(data), &m)
+
+    // nothing to test if Unmarshal returns an err
+    if err != nil {
+        assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, TEST_MANIFEST_PATH))
+    } else {
+        // test package name
+        expectedResult := TEST_PACKAGE_NAME
+        actualResult := m.Package.Packagename
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
         // manifest should contain only one action
         expectedResult = string(1)
         actualResult = string(len(m.Package.Actions))
-        assert.Equal(t, expectedResult, actualResult, "Expected 1 but got " + actualResult)
-        // get the action payload from the map of actions which is stored in
-        // YAML.Package.Actions with the type of map[string]Action
-        actionName := "helloNodejs"
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_NUMBER_MISMATCH)
+
+        // get an action from map of actions where key is action name and value is Action struct
+        actionName := TEST_ACTION_NAME
         if action, ok := m.Package.Actions[actionName]; ok {
-            // location/function of an action should be "actions/hello.js"
-            expectedResult = "actions/hello.js"
+            // test action's function path
+            expectedResult = TEST_FUNCTION_PATH
             actualResult = action.Function
-            assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
-            // runtime of an action should be "nodejs:6"
-            expectedResult = "nodejs:6"
+            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
+            // test action's runtime
+            expectedResult = TEST_RUNTIME
             actualResult = action.Runtime
-            assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
         } else {
-            t.Error("Action named " + actionName + " does not exist.")
+            t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, actionName))
         }
     }
 }
@@ -88,32 +102,55 @@ package:
 // Test 2: validate manifest_parser:Unmarshal() method with a sample manifest in Java
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloJava(t *testing.T) {
-    data := `
-package:
-  name: helloworld
-  actions:
-    helloJava:
-      function: actions/hello.jar
-      runtime: java
-      main: Hello`
+    TEST_MANIFEST_PATH := "../tests/dat/manifest_hello_java_jar.yaml"
+    TEST_PACKAGE_NAME := "helloworld"
+    TEST_ACTION_NAME := "helloJava"
+    TEST_FUNCTION_PATH := "actions/hello.jar"
+    TEST_RUNTIME := "java"
+    TEST_MAIN_FUNCTION := "Hello"
+
+    // read raw bytes of manifest.yaml file
+    data, err := ioutil.ReadFile(TEST_MANIFEST_PATH)
+
+    if err != nil{
+        t.Error(fmt.Sprintf(TEST_ERROR_MANIFEST_READ_FAILURE, TEST_MANIFEST_PATH))
+        return
+    }
+
+    // Init YAML struct and attempt to Unmarshal YAML byte[] data
     m := YAML{}
-    err := NewYAMLParser().Unmarshal([]byte(data), &m)
+    err = NewYAMLParser().Unmarshal([]byte(data), &m)
+
     // nothing to test if Unmarshal returns an err
-    if err == nil {
-        // get an action from map of actions where key is action name and
-        // value is Action struct
-        actionName := "helloJava"
+    if err != nil {
+        assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, TEST_MANIFEST_PATH))
+    } else {
+        // test package name
+        expectedResult := TEST_PACKAGE_NAME
+        actualResult := m.Package.Packagename
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
+        // manifest should contain only one action
+        expectedResult = string(1)
+        actualResult = string(len(m.Package.Actions))
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_NUMBER_MISMATCH)
+
+        // get an action from map of actions where key is action name and value is Action struct
+        actionName := TEST_ACTION_NAME
         if action, ok := m.Package.Actions[actionName]; ok {
-            // runtime of an action should be java
-            expectedResult := "java"
+            // test action's function path
+            expectedResult = TEST_FUNCTION_PATH
+            actualResult = action.Function
+            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
+            // test action's runtime
+            expectedResult := TEST_RUNTIME
             actualResult := action.Runtime
-            assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
-            // Main field should be set to "Hello"
-            expectedResult = action.Main
-            actualResult = "Hello"
-            assert.Equal(t, expectedResult, actualResult, "Expected action main function " + expectedResult + " but got " + actualResult)
+            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
+            // test action's "Main" function
+            expectedResult = TEST_MAIN_FUNCTION
+            actualResult = action.Main
+            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH)
         } else {
-            t.Error("Expected action named " + actionName + " but does not exist.")
+            t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, actionName))
         }
     }
 }
@@ -121,26 +158,50 @@ package:
 // Test 3: validate manifest_parser:Unmarshal() method with a sample manifest in Python
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloPython(t *testing.T) {
-    data := `
-package:
-  name: helloworld
-  actions:
-    helloPython:
-      function: actions/hello.py
-      runtime: python`
+    TEST_MANIFEST_PATH := "../tests/dat/manifest_hello_python.yaml"
+    TEST_PACKAGE_NAME := "helloworld"
+    TEST_ACTION_NAME := "helloPython"
+    TEST_FUNCTION_PATH := "actions/hello.py"
+    TEST_RUNTIME := "python"
+
+    // read raw bytes of manifest.yaml file
+    data, err := ioutil.ReadFile(TEST_MANIFEST_PATH)
+
+    if err != nil{
+        t.Error(fmt.Sprintf(TEST_ERROR_MANIFEST_READ_FAILURE, TEST_MANIFEST_PATH))
+        return
+    }
+
+    // Init YAML struct and attempt to Unmarshal YAML byte[] data
     m := YAML{}
-    err := NewYAMLParser().Unmarshal([]byte(data), &m)
+    err = NewYAMLParser().Unmarshal([]byte(data), &m)
+
     // nothing to test if Unmarshal returns an err
-    if err == nil {
-        // get an action from map of actions which is defined as map[string]Action{}
-        actionName := "helloPython"
+    if err != nil {
+        assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, TEST_MANIFEST_PATH))
+    } else {
+        // test package name
+        expectedResult := TEST_PACKAGE_NAME
+        actualResult := m.Package.Packagename
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
+        // manifest should contain only one action
+        expectedResult = string(1)
+        actualResult = string(len(m.Package.Actions))
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_NUMBER_MISMATCH)
+
+        // get an action from map of actions where key is action name and value is Action struct
+        actionName := TEST_ACTION_NAME
         if action, ok := m.Package.Actions[actionName]; ok {
-            // runtime of an action should be python
-            expectedResult := "python"
+            // test action's function path
+            expectedResult = TEST_FUNCTION_PATH
+            actualResult = action.Function
+            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
+            // test action's runtime
+            expectedResult := TEST_RUNTIME
             actualResult := action.Runtime
-            assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
         } else {
-            t.Error("Expected action named " + actionName + " but does not exist.")
+            t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, actionName))
         }
     }
 }
@@ -148,26 +209,50 @@ package:
 // Test 4: validate manifest_parser:Unmarshal() method with a sample manifest in Swift
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloSwift(t *testing.T) {
-    data := `
-package:
-  name: helloworld
-  actions:
-    helloSwift:
-      function: actions/hello.swift
-      runtime: swift`
+    TEST_MANIFEST_PATH := "../tests/dat/manifest_hello_swift.yaml"
+    TEST_PACKAGE_NAME := "helloworld"
+    TEST_ACTION_NAME := "helloSwift"
+    TEST_FUNCTION_PATH := "actions/hello.swift"
+    TEST_RUNTIME := "swift"
+
+    // read raw bytes of manifest.yaml file
+    data, err := ioutil.ReadFile(TEST_MANIFEST_PATH)
+
+    // Init YAML struct and attempt to Unmarshal YAML byte[] data
+    if err != nil{
+        t.Error(fmt.Sprintf(TEST_ERROR_MANIFEST_READ_FAILURE, TEST_MANIFEST_PATH))
+        return
+    }
+
     m := YAML{}
-    err := NewYAMLParser().Unmarshal([]byte(data), &m)
+    err = NewYAMLParser().Unmarshal([]byte(data), &m)
+
     // nothing to test if Unmarshal returns an err
-    if err == nil {
-        // get an action from map of actions which is defined as map[string]Action{}
-        actionName := "helloSwift"
+    if err != nil {
+        assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, TEST_MANIFEST_PATH))
+    } else {
+        // test package name
+        expectedResult := TEST_PACKAGE_NAME
+        actualResult := m.Package.Packagename
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
+        // manifest should contain only one action
+        expectedResult = string(1)
+        actualResult = string(len(m.Package.Actions))
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_NUMBER_MISMATCH)
+
+        // get an action from map of actions where key is action name and value is Action struct
+        actionName := TEST_ACTION_NAME
         if action, ok := m.Package.Actions[actionName]; ok {
-            // runtime of an action should be swift
-            expectedResult := "swift"
+            // test action's function path
+            expectedResult = TEST_FUNCTION_PATH
+            actualResult = action.Function
+            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
+            // test action's runtime
+            expectedResult := TEST_RUNTIME
             actualResult := action.Runtime
-            assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
         } else {
-            t.Error("Expected action named " + actionName + " but does not exist.")
+            t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, actionName))
         }
     }
 }
@@ -176,29 +261,51 @@ package:
 // validate that manifest_parser is able to read and parse the manifest data, specially
 // validate two input parameters and their values
 func TestUnmarshalForHelloWithParams(t *testing.T) {
-    var data = `
-package:
-   name: helloworld
-   actions:
-     helloWithParams:
-       function: actions/hello-with-params.js
-       runtime: nodejs:6
-       inputs:
-         name: Amy
-         place: Paris`
+    TEST_MANIFEST_PATH := "../tests/dat/manifest_hello_nodejs_with_params.yaml"
+    //TEST_PACKAGE_NAME := "helloworld"
+    TEST_ACTION_NAME := "helloWithParams"
+    TEST_FUNCTION_PATH := "actions/hello-with-params.js"
+    //TEST_RUNTIME := "nodejs:6"
+    TEST_PARAM_NAME_1 := "name"
+    TEST_PARAM_VALUE_1 := "Amy"
+    TEST_PARAM_NAME_2 := "place"
+    TEST_PARAM_VALUE_2 := "Paris"
+
+    // read raw bytes of manifest.yaml file
+    data, err := ioutil.ReadFile(TEST_MANIFEST_PATH)
+
+    // Init YAML struct and attempt to Unmarshal YAML byte[] data
+    if err != nil{
+        t.Error(fmt.Sprintf(TEST_ERROR_MANIFEST_READ_FAILURE, TEST_MANIFEST_PATH))
+        return
+    }
+
     m := YAML{}
-    err := NewYAMLParser().Unmarshal([]byte(data), &m)
-    if err == nil {
-        actionName := "helloWithParams"
+    err = NewYAMLParser().Unmarshal([]byte(data), &m)
+
+    if err != nil {
+        assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, TEST_MANIFEST_PATH))
+    } else {
+
+        // get an action from map of actions where key is action name and value is Action struct
+        actionName := TEST_ACTION_NAME
         if action, ok := m.Package.Actions[actionName]; ok {
-            expectedResult := "Amy"
-            actualResult := action.Inputs["name"].Value.(string)
+            // test action's function path
+            expectedResult := TEST_FUNCTION_PATH
+            actualResult := action.Function
+            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
+            // test action parameters
+            expectedResult = TEST_PARAM_VALUE_1
+            actualResult = action.Inputs[TEST_PARAM_NAME_1].Value.(string)
             assert.Equal(t, expectedResult, actualResult,
-                "Expected input parameter " + expectedResult + " but got " + actualResult + "for name")
-            expectedResult = "Paris"
-            actualResult = action.Inputs["place"].Value.(string)
+                fmt.Sprintf(TEST_MSG_ACTION_PARAMTER_VALUE_MISMATCH, TEST_PARAM_NAME_1))
+            expectedResult = TEST_PARAM_VALUE_2
+            actualResult = action.Inputs[TEST_PARAM_NAME_2].Value.(string)
             assert.Equal(t, expectedResult, actualResult,
-                "Expected input parameter " + expectedResult + " but got " + actualResult + "for place")
+                fmt.Sprintf(TEST_MSG_ACTION_PARAMTER_VALUE_MISMATCH, TEST_PARAM_NAME_2))
+
+        } else {
+            t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, actionName))
         }
     }
 }

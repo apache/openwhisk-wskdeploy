@@ -1,0 +1,6 @@
+package:
+  name: helloworld
+  actions:
+    helloSwift:
+      function: actions/hello.swift
+      runtime: swift
