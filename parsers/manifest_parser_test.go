@@ -43,22 +43,15 @@ const (
     TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH = "Action function main name mismatch."
     TEST_MSG_ACTION_PARAMETER_TYPE_MISMATCH = "Action parameter named [%s] had a type mismatch."
     TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH = "Action parameter named [%s] had a value mismatch."
+    TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED = "Manifest [%s]: Expected Unmarshal error."
 
     // local error messages
-    TEST_ERROR_MANIFEST_READ_FAILURE = "Failed to ReadFile() manifest [%s]."
-    TEST_ERROR_MANIFEST_DATA_UNMARSHALL = "Failed to Unmarshall manifest data for manifest [%s]."
+    TEST_ERROR_MANIFEST_READ_FAILURE = "Manifest [%s]: Failed to ReadFile()."
+    TEST_ERROR_MANIFEST_DATA_UNMARSHALL = "Manifest [%s]: Failed to Unmarshall manifest."
 )
 
 
-func testUnmarshalManifestAndActionBasic(t *testing.T,
-        pathManifest string,
-        namePackage string,
-        numActions int,
-        nameAction string,
-        pathFunction string,
-        nameRuntime string,
-        nameMain string) (YAML, error){
-
+func testReadAndUnmarshalManifest(t *testing.T, pathManifest string )(YAML, error){
     // Init YAML struct and attempt to Unmarshal YAML byte[] data
     m := YAML{}
 
@@ -71,6 +64,21 @@ func testUnmarshalManifestAndActionBasic(t *testing.T,
     }
 
     err = NewYAMLParser().Unmarshal([]byte(data), &m)
+    return m, err
+}
+
+
+func testUnmarshalManifestAndActionBasic(t *testing.T,
+        pathManifest string,
+        namePackage string,
+        numActions int,
+        nameAction string,
+        pathFunction string,
+        nameRuntime string,
+        nameMain string) (YAML, error){
+
+    // Test that we are able to read the manifest file and unmarshall into YAML struct
+    m, err := testReadAndUnmarshalManifest(t, pathManifest)
 
     // nothing to test if Unmarshal returns an err
     if err != nil {
@@ -173,7 +181,7 @@ func TestUnmarshalForHelloWithParams(t *testing.T) {
     m, err := testUnmarshalManifestAndActionBasic(t,
         "../tests/dat/manifest_hello_nodejs_with_params.yaml",  // Manifest path
         "helloworld",                   // Package name
-        1,                      // # of Actions
+        1,                              // # of Actions
         TEST_ACTION_NAME,               // Action name
         "actions/hello-with-params.js", // Function path
         "nodejs:6",                     // "Runtime
@@ -198,19 +206,10 @@ func TestUnmarshalForHelloWithParams(t *testing.T) {
 // Test 6: validate manifest_parser:Unmarshal() method for an invalid manifest
 // manifest_parser should report an error when a package section is missing
 func TestUnmarshalForMissingPackage(t *testing.T) {
-    data := `
-  actions:
-    helloNodejs:
-      function: actions/hello.js
-      runtime: nodejs:6
-    helloJava:
-      function: actions/hello.java`
-    // set the zero value of struct YAML
-    m := YAML{}
-    // Unmarshal reads/parses manifest data and sets the values of YAML
-    // And returns an error if parsing a manifest data fails
-    err := NewYAMLParser().Unmarshal([]byte(data), &m)
-    assert.NotNil(t, err, "Expected some error from Unmarshal but got no error")
+    TEST_MANIFEST := "../tests/dat/manifest_invalid_package_missing.yaml"
+
+    _, err := testReadAndUnmarshalManifest(t, TEST_MANIFEST)
+    assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED, TEST_MANIFEST))
 }
 
 /*
@@ -513,9 +512,9 @@ func TestComposeActionsForInvalidRuntime(t *testing.T) {
             // (TODO) uncomment the following test case after issue #307 is fixed
             // (TODO) its failing right now as we are lacking check on invalid runtime
             // TODO() https://github.com/apache/incubator-openwhisk-wskdeploy/issues/608
-            // assert.NotNil(t, err, "Invalid runtime, ComposeActions should report an error")
+            //assert.NotNil(t, err, "Invalid runtime, ComposeActions should report an error")
             // (TODO) remove this print statement after uncommenting above test case
-            fmt.Println(err)
+            fmt.Println(fmt.Sprintf("!!! TODO(): Fix this testcase: error=[%v]", err))
         }
         tmpfile.Close()
     }
