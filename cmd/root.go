@@ -146,9 +146,9 @@ func initConfig() {
 func setSupportedRuntimes(apiHost string) {
 	op, error := utils.ParseOpenWhisk(apiHost)
 	if error == nil {
-		utils.Rts = utils.ConvertToMap(op)
-	} else {
-		utils.Rts = utils.DefaultRts
+		utils.SupportedRunTimes = utils.ConvertToMap(op)
+		utils.DefaultRunTimes = utils.DefaultRuntimes(op)
+		utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
 	}
 }
 

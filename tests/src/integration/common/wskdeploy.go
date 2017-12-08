@@ -197,9 +197,9 @@ func (wskdeploy *Wskdeploy) GetDeploymentObjects(manifestPath string, deployment
 	//only for testing, mock values
 	op, err := utils.ParseOpenWhisk(clientConfig.Host)
 	if err == nil {
-		utils.Rts = utils.ConvertToMap(op)
-	} else {
-		utils.Rts = utils.DefaultRts
+		utils.SupportedRunTimes = utils.ConvertToMap(op)
+		utils.DefaultRunTimes = utils.DefaultRuntimes(op)
+		utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
 	}
 
 	//invoke ConstructDeploymentPlan to create the in memory objects for deployment
