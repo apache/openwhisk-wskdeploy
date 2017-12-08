@@ -41,6 +41,7 @@ const (
     TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH = "Action function path mismatched."
     TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH = "Action function runtime mismatched."
     TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH = "Action function main name mismatch."
+    TEST_MSG_ACTION_PARAMETER_TYPE_MISMATCH = "Action parameter named [%s] had a type mismatch."
     TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH = "Action parameter named [%s] had a value mismatch."
 
     // local error messages
@@ -52,6 +53,7 @@ const (
 func testUnmarshalManifestAndActionBasic(t *testing.T,
         pathManifest string,
         namePackage string,
+        numActions int,
         nameAction string,
         pathFunction string,
         nameRuntime string,
@@ -75,13 +77,14 @@ func testUnmarshalManifestAndActionBasic(t *testing.T,
         assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, pathManifest))
     } else {
         // test package name
-        expectedResult := namePackage
         actualResult := m.Package.Packagename
         assert.Equal(t, namePackage, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
-        // manifest should contain only one action
-        expectedResult = string(1)
-        actualResult = string(len(m.Package.Actions))
-        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_NUMBER_MISMATCH)
+
+        // test # of actions in manifest
+        if numActions >0 {
+            actualResult = string(len(m.Package.Actions))
+            assert.Equal(t, string(numActions), actualResult, TEST_MSG_ACTION_NUMBER_MISMATCH)
+        }
 
         // get an action from map of actions where key is action name and value is Action struct
         if action, ok := m.Package.Actions[nameAction]; ok {
@@ -110,6 +113,7 @@ func TestUnmarshalForHelloNodeJS(t *testing.T) {
     testUnmarshalManifestAndActionBasic(t,
         "../tests/dat/manifest_hello_nodejs.yaml",  // Manifest path
         "helloworld",           // Package name
+        1,                      // # of Actions
         "helloNodejs",          // Action name
         "actions/hello.js",     // Function path
         "nodejs:6",             // "Runtime
@@ -122,6 +126,7 @@ func TestUnmarshalForHelloJava(t *testing.T) {
     testUnmarshalManifestAndActionBasic(t,
         "../tests/dat/manifest_hello_java_jar.yaml",  // Manifest path
         "helloworld",           // Package name
+        1,                      // # of Actions
         "helloJava",            // Action name
         "actions/hello.jar",    // Function path
         "java",                 // "Runtime
@@ -134,6 +139,7 @@ func TestUnmarshalForHelloPython(t *testing.T) {
     testUnmarshalManifestAndActionBasic(t,
         "../tests/dat/manifest_hello_python.yaml",  // Manifest path
         "helloworld",           // Package name
+        1,                      // # of Actions
         "helloPython",          // Action name
         "actions/hello.py",     // Function path
         "python",               // "Runtime
@@ -146,6 +152,7 @@ func TestUnmarshalForHelloSwift(t *testing.T) {
     testUnmarshalManifestAndActionBasic(t,
         "../tests/dat/manifest_hello_swift.yaml",  // Manifest path
         "helloworld",           // Package name
+        1,                      // # of Actions
         "helloSwift",           // Action name
         "actions/hello.swift",  // Function path
         "swift",                // "Runtime
@@ -166,6 +173,7 @@ func TestUnmarshalForHelloWithParams(t *testing.T) {
     m, err := testUnmarshalManifestAndActionBasic(t,
         "../tests/dat/manifest_hello_nodejs_with_params.yaml",  // Manifest path
         "helloworld",                   // Package name
+        1,                      // # of Actions
         TEST_ACTION_NAME,               // Action name
         "actions/hello-with-params.js", // Function path
         "nodejs:6",                     // "Runtime
@@ -203,7 +211,6 @@ func TestUnmarshalForMissingPackage(t *testing.T) {
     // And returns an error if parsing a manifest data fails
     err := NewYAMLParser().Unmarshal([]byte(data), &m)
     assert.NotNil(t, err, "Expected some error from Unmarshal but got no error")
-
 }
 
 /*
@@ -233,6 +240,7 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
     // same name, will go unnoticed
     // also, the Action struct does not have name field set it to action name
     actionName := "validate_multiline_params"
+
     if action, ok := m.Packages[packageName].Actions[actionName]; ok {
         // validate location/function of an action to be "actions/dump_params.js"
         expectedResult := "actions/dump_params.js"
@@ -255,55 +263,55 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
             case "param_string_value_only":
                 expectedResult = "foo"
                 actualResult = param.Value.(string)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_int_value_only":
                 expectedResult = strconv.FormatInt(123, 10)
                 actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_float_value_only":
                 expectedResult = strconv.FormatFloat(3.14, 'f', -1, 64)
                 actualResult = strconv.FormatFloat(param.Value.(float64), 'f', -1, 64)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_string_type_and_value_only":
                 expectedResult = "foo"
                 actualResult = param.Value.(string)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
                 expectedResult = "string"
                 actualResult = param.Type
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_string_type_only":
                 expectedResult = "string"
                 actualResult = param.Type
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_integer_type_only":
                 expectedResult = "integer"
                 actualResult = param.Type
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_float_type_only":
                 expectedResult = "float"
                 actualResult = param.Type
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_string_with_default":
                 expectedResult = "string"
                 actualResult = param.Type
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
                 expectedResult = "bar"
                 actualResult = param.Default.(string)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_integer_with_default":
                 expectedResult = "integer"
                 actualResult = param.Type
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
                 expectedResult = strconv.FormatInt(-1, 10)
                 actualResult = strconv.FormatInt(int64(param.Default.(int)), 10)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_float_with_default":
                 expectedResult = "float"
                 actualResult = param.Type
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_TYPE_MISMATCH, param))
                 expectedResult = strconv.FormatFloat(2.9, 'f', -1, 64)
                 actualResult = strconv.FormatFloat(param.Default.(float64), 'f', -1, 64)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             }
         }
 
@@ -313,10 +321,10 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
             case "payload":
                 expectedType := "string"
                 actualType := param.Type
-                assert.Equal(t, expectedType, actualType, "Expected Type: " + expectedType + ", but got: " + actualType)
+                assert.Equal(t, expectedType, actualType, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_TYPE_MISMATCH, param))
                 expectedDesc := "parameter dump"
                 actualDesc := param.Description
-                assert.Equal(t, expectedDesc, actualDesc, "Expected " + expectedDesc + " but got " + actualDesc)
+                assert.Equal(t, expectedDesc, actualDesc, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
 
             }
         }
@@ -365,47 +373,47 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
             case "param_simple_string":
                 expectedResult = "foo"
                 actualResult = param.Value.(string)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_simple_integer_1":
                 expectedResult = strconv.FormatInt(1, 10)
                 actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_simple_integer_2":
                 expectedResult = strconv.FormatInt(0, 10)
                 actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_simple_integer_3":
                 expectedResult = strconv.FormatInt(-1, 10)
                 actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_simple_integer_4":
                 expectedResult = strconv.FormatInt(99999, 10)
                 actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_simple_integer_5":
                 expectedResult = strconv.FormatInt(-99999, 10)
                 actualResult = strconv.FormatInt(int64(param.Value.(int)), 10)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_simple_float_1":
                 expectedResult = strconv.FormatFloat(1.1, 'f', -1, 64)
                 actualResult = strconv.FormatFloat(param.Value.(float64), 'f', -1, 64)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_simple_float_2":
                 expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
                 actualResult = strconv.FormatFloat(param.Value.(float64), 'f', -1, 64)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_simple_float_3":
                 expectedResult = strconv.FormatFloat(-1.1, 'f', -1, 64)
                 actualResult = strconv.FormatFloat(param.Value.(float64), 'f', -1, 64)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_simple_env_var_1":
                 expectedResult = "$GOPATH"
                 actualResult = param.Value.(string)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_simple_invalid_env_var":
                 expectedResult = "$DollarSignNotInEnv"
                 actualResult = param.Value.(string)
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             case "param_simple_implied_empty":
                 assert.Nil(t, param.Value, "Expected nil")
             case "param_simple_explicit_empty_1":
@@ -423,11 +431,11 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
             case "payload":
                 expectedResult = "string"
                 actualResult = param.Type
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_TYPE_MISMATCH, param))
 
                 expectedResult = "parameter dump"
                 actualResult = param.Description
-                assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+                assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, param))
             }
         }
     }
