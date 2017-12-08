@@ -41,271 +41,148 @@ const (
     TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH = "Action function path mismatched."
     TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH = "Action function runtime mismatched."
     TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH = "Action function main name mismatch."
-    TEST_MSG_ACTION_PARAMTER_VALUE_MISMATCH = "Action parameter named [%s] had a value mismatch."
+    TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH = "Action parameter named [%s] had a value mismatch."
 
     // local error messages
     TEST_ERROR_MANIFEST_READ_FAILURE = "Failed to ReadFile() manifest [%s]."
     TEST_ERROR_MANIFEST_DATA_UNMARSHALL = "Failed to Unmarshall manifest data for manifest [%s]."
 )
 
-// Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
-// validate that manifest_parser is able to read and parse the manifest data
-func TestUnmarshalForHelloNodeJS(t *testing.T) {
-    TEST_MANIFEST_PATH := "../tests/dat/manifest_hello_nodejs.yaml"
-    TEST_PACKAGE_NAME := "helloworld"
-    TEST_ACTION_NAME := "helloNodejs"
-    TEST_FUNCTION_PATH := "actions/hello.js"
-    TEST_RUNTIME := "nodejs:6"
 
-    // read raw bytes of manifest.yaml file
-    data, err := ioutil.ReadFile(TEST_MANIFEST_PATH)
-
-    if err != nil{
-        t.Error(fmt.Sprintf(TEST_ERROR_MANIFEST_READ_FAILURE, TEST_MANIFEST_PATH))
-        return
-    }
+func testUnmarshalManifestAndActionBasic(t *testing.T,
+        pathManifest string,
+        namePackage string,
+        nameAction string,
+        pathFunction string,
+        nameRuntime string,
+        nameMain string) (YAML, error){
 
     // Init YAML struct and attempt to Unmarshal YAML byte[] data
     m := YAML{}
+
+    // read raw bytes of manifest.yaml file
+    data, err := ioutil.ReadFile(pathManifest)
+
+    if err != nil{
+        t.Error(fmt.Sprintf(TEST_ERROR_MANIFEST_READ_FAILURE, pathManifest))
+        return m, err
+    }
+
     err = NewYAMLParser().Unmarshal([]byte(data), &m)
 
     // nothing to test if Unmarshal returns an err
     if err != nil {
-        assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, TEST_MANIFEST_PATH))
+        assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, pathManifest))
     } else {
         // test package name
-        expectedResult := TEST_PACKAGE_NAME
+        expectedResult := namePackage
         actualResult := m.Package.Packagename
-        assert.Equal(t, expectedResult, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
+        assert.Equal(t, namePackage, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
         // manifest should contain only one action
         expectedResult = string(1)
         actualResult = string(len(m.Package.Actions))
         assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_NUMBER_MISMATCH)
 
         // get an action from map of actions where key is action name and value is Action struct
-        actionName := TEST_ACTION_NAME
-        if action, ok := m.Package.Actions[actionName]; ok {
+        if action, ok := m.Package.Actions[nameAction]; ok {
+
             // test action's function path
-            expectedResult = TEST_FUNCTION_PATH
-            actualResult = action.Function
-            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
+            assert.Equal(t, pathFunction, action.Function, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
+
             // test action's runtime
-            expectedResult = TEST_RUNTIME
-            actualResult = action.Runtime
-            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
+            assert.Equal(t, nameRuntime, action.Runtime, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
+
+            // test action's "Main" function
+            if nameMain != "" {
+                assert.Equal(t, nameMain, action.Main, TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH)
+            }
+
         } else {
-            t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, actionName))
+            t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, nameAction))
         }
     }
+    return m, nil
+}
+
+// Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
+// validate that manifest_parser is able to read and parse the manifest data
+func TestUnmarshalForHelloNodeJS(t *testing.T) {
+    testUnmarshalManifestAndActionBasic(t,
+        "../tests/dat/manifest_hello_nodejs.yaml",  // Manifest path
+        "helloworld",           // Package name
+        "helloNodejs",          // Action name
+        "actions/hello.js",     // Function path
+        "nodejs:6",             // "Runtime
+        "")                     // "Main" function name
 }
 
 // Test 2: validate manifest_parser:Unmarshal() method with a sample manifest in Java
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloJava(t *testing.T) {
-    TEST_MANIFEST_PATH := "../tests/dat/manifest_hello_java_jar.yaml"
-    TEST_PACKAGE_NAME := "helloworld"
-    TEST_ACTION_NAME := "helloJava"
-    TEST_FUNCTION_PATH := "actions/hello.jar"
-    TEST_RUNTIME := "java"
-    TEST_MAIN_FUNCTION := "Hello"
-
-    // read raw bytes of manifest.yaml file
-    data, err := ioutil.ReadFile(TEST_MANIFEST_PATH)
-
-    if err != nil{
-        t.Error(fmt.Sprintf(TEST_ERROR_MANIFEST_READ_FAILURE, TEST_MANIFEST_PATH))
-        return
-    }
-
-    // Init YAML struct and attempt to Unmarshal YAML byte[] data
-    m := YAML{}
-    err = NewYAMLParser().Unmarshal([]byte(data), &m)
-
-    // nothing to test if Unmarshal returns an err
-    if err != nil {
-        assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, TEST_MANIFEST_PATH))
-    } else {
-        // test package name
-        expectedResult := TEST_PACKAGE_NAME
-        actualResult := m.Package.Packagename
-        assert.Equal(t, expectedResult, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
-        // manifest should contain only one action
-        expectedResult = string(1)
-        actualResult = string(len(m.Package.Actions))
-        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_NUMBER_MISMATCH)
-
-        // get an action from map of actions where key is action name and value is Action struct
-        actionName := TEST_ACTION_NAME
-        if action, ok := m.Package.Actions[actionName]; ok {
-            // test action's function path
-            expectedResult = TEST_FUNCTION_PATH
-            actualResult = action.Function
-            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
-            // test action's runtime
-            expectedResult := TEST_RUNTIME
-            actualResult := action.Runtime
-            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
-            // test action's "Main" function
-            expectedResult = TEST_MAIN_FUNCTION
-            actualResult = action.Main
-            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH)
-        } else {
-            t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, actionName))
-        }
-    }
+    testUnmarshalManifestAndActionBasic(t,
+        "../tests/dat/manifest_hello_java_jar.yaml",  // Manifest path
+        "helloworld",           // Package name
+        "helloJava",            // Action name
+        "actions/hello.jar",    // Function path
+        "java",                 // "Runtime
+        "Hello")                // "Main" function name
 }
 
 // Test 3: validate manifest_parser:Unmarshal() method with a sample manifest in Python
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloPython(t *testing.T) {
-    TEST_MANIFEST_PATH := "../tests/dat/manifest_hello_python.yaml"
-    TEST_PACKAGE_NAME := "helloworld"
-    TEST_ACTION_NAME := "helloPython"
-    TEST_FUNCTION_PATH := "actions/hello.py"
-    TEST_RUNTIME := "python"
-
-    // read raw bytes of manifest.yaml file
-    data, err := ioutil.ReadFile(TEST_MANIFEST_PATH)
-
-    if err != nil{
-        t.Error(fmt.Sprintf(TEST_ERROR_MANIFEST_READ_FAILURE, TEST_MANIFEST_PATH))
-        return
-    }
-
-    // Init YAML struct and attempt to Unmarshal YAML byte[] data
-    m := YAML{}
-    err = NewYAMLParser().Unmarshal([]byte(data), &m)
-
-    // nothing to test if Unmarshal returns an err
-    if err != nil {
-        assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, TEST_MANIFEST_PATH))
-    } else {
-        // test package name
-        expectedResult := TEST_PACKAGE_NAME
-        actualResult := m.Package.Packagename
-        assert.Equal(t, expectedResult, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
-        // manifest should contain only one action
-        expectedResult = string(1)
-        actualResult = string(len(m.Package.Actions))
-        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_NUMBER_MISMATCH)
-
-        // get an action from map of actions where key is action name and value is Action struct
-        actionName := TEST_ACTION_NAME
-        if action, ok := m.Package.Actions[actionName]; ok {
-            // test action's function path
-            expectedResult = TEST_FUNCTION_PATH
-            actualResult = action.Function
-            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
-            // test action's runtime
-            expectedResult := TEST_RUNTIME
-            actualResult := action.Runtime
-            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
-        } else {
-            t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, actionName))
-        }
-    }
+    testUnmarshalManifestAndActionBasic(t,
+        "../tests/dat/manifest_hello_python.yaml",  // Manifest path
+        "helloworld",           // Package name
+        "helloPython",          // Action name
+        "actions/hello.py",     // Function path
+        "python",               // "Runtime
+        "")                     // "Main" function name
 }
 
 // Test 4: validate manifest_parser:Unmarshal() method with a sample manifest in Swift
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloSwift(t *testing.T) {
-    TEST_MANIFEST_PATH := "../tests/dat/manifest_hello_swift.yaml"
-    TEST_PACKAGE_NAME := "helloworld"
-    TEST_ACTION_NAME := "helloSwift"
-    TEST_FUNCTION_PATH := "actions/hello.swift"
-    TEST_RUNTIME := "swift"
-
-    // read raw bytes of manifest.yaml file
-    data, err := ioutil.ReadFile(TEST_MANIFEST_PATH)
-
-    // Init YAML struct and attempt to Unmarshal YAML byte[] data
-    if err != nil{
-        t.Error(fmt.Sprintf(TEST_ERROR_MANIFEST_READ_FAILURE, TEST_MANIFEST_PATH))
-        return
-    }
-
-    m := YAML{}
-    err = NewYAMLParser().Unmarshal([]byte(data), &m)
-
-    // nothing to test if Unmarshal returns an err
-    if err != nil {
-        assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, TEST_MANIFEST_PATH))
-    } else {
-        // test package name
-        expectedResult := TEST_PACKAGE_NAME
-        actualResult := m.Package.Packagename
-        assert.Equal(t, expectedResult, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
-        // manifest should contain only one action
-        expectedResult = string(1)
-        actualResult = string(len(m.Package.Actions))
-        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_NUMBER_MISMATCH)
-
-        // get an action from map of actions where key is action name and value is Action struct
-        actionName := TEST_ACTION_NAME
-        if action, ok := m.Package.Actions[actionName]; ok {
-            // test action's function path
-            expectedResult = TEST_FUNCTION_PATH
-            actualResult = action.Function
-            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
-            // test action's runtime
-            expectedResult := TEST_RUNTIME
-            actualResult := action.Runtime
-            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
-        } else {
-            t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, actionName))
-        }
-    }
+    testUnmarshalManifestAndActionBasic(t,
+        "../tests/dat/manifest_hello_swift.yaml",  // Manifest path
+        "helloworld",           // Package name
+        "helloSwift",           // Action name
+        "actions/hello.swift",  // Function path
+        "swift",                // "Runtime
+        "")                     // "Main" function name
 }
 
 // Test 5: validate manifest_parser:Unmarshal() method for an action with parameters
 // validate that manifest_parser is able to read and parse the manifest data, specially
 // validate two input parameters and their values
 func TestUnmarshalForHelloWithParams(t *testing.T) {
-    TEST_MANIFEST_PATH := "../tests/dat/manifest_hello_nodejs_with_params.yaml"
-    //TEST_PACKAGE_NAME := "helloworld"
+
     TEST_ACTION_NAME := "helloWithParams"
-    TEST_FUNCTION_PATH := "actions/hello-with-params.js"
-    //TEST_RUNTIME := "nodejs:6"
     TEST_PARAM_NAME_1 := "name"
     TEST_PARAM_VALUE_1 := "Amy"
     TEST_PARAM_NAME_2 := "place"
     TEST_PARAM_VALUE_2 := "Paris"
 
-    // read raw bytes of manifest.yaml file
-    data, err := ioutil.ReadFile(TEST_MANIFEST_PATH)
-
-    // Init YAML struct and attempt to Unmarshal YAML byte[] data
-    if err != nil{
-        t.Error(fmt.Sprintf(TEST_ERROR_MANIFEST_READ_FAILURE, TEST_MANIFEST_PATH))
-        return
-    }
-
-    m := YAML{}
-    err = NewYAMLParser().Unmarshal([]byte(data), &m)
+    m, err := testUnmarshalManifestAndActionBasic(t,
+        "../tests/dat/manifest_hello_nodejs_with_params.yaml",  // Manifest path
+        "helloworld",                   // Package name
+        TEST_ACTION_NAME,               // Action name
+        "actions/hello-with-params.js", // Function path
+        "nodejs:6",                     // "Runtime
+        "")                             // "Main" function name
 
     if err != nil {
-        assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, TEST_MANIFEST_PATH))
-    } else {
+        if action, ok := m.Package.Actions[TEST_ACTION_NAME]; ok {
 
-        // get an action from map of actions where key is action name and value is Action struct
-        actionName := TEST_ACTION_NAME
-        if action, ok := m.Package.Actions[actionName]; ok {
-            // test action's function path
-            expectedResult := TEST_FUNCTION_PATH
-            actualResult := action.Function
-            assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
             // test action parameters
-            expectedResult = TEST_PARAM_VALUE_1
-            actualResult = action.Inputs[TEST_PARAM_NAME_1].Value.(string)
-            assert.Equal(t, expectedResult, actualResult,
-                fmt.Sprintf(TEST_MSG_ACTION_PARAMTER_VALUE_MISMATCH, TEST_PARAM_NAME_1))
-            expectedResult = TEST_PARAM_VALUE_2
-            actualResult = action.Inputs[TEST_PARAM_NAME_2].Value.(string)
-            assert.Equal(t, expectedResult, actualResult,
-                fmt.Sprintf(TEST_MSG_ACTION_PARAMTER_VALUE_MISMATCH, TEST_PARAM_NAME_2))
+            actualResult := action.Inputs[TEST_PARAM_NAME_1].Value.(string)
+            assert.Equal(t, TEST_PARAM_VALUE_1, actualResult,
+                fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, TEST_PARAM_NAME_1))
 
-        } else {
-            t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, actionName))
+            actualResult = action.Inputs[TEST_PARAM_NAME_2].Value.(string)
+            assert.Equal(t, TEST_PARAM_VALUE_2, actualResult,
+                fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, TEST_PARAM_NAME_2))
+
         }
     }
 }
@@ -816,56 +693,54 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
 
         action := actions[0]
 
-        fmt.Println(action.Action.Parameters)
-
         // param_string_value_only should be "foo"
         expectedResult := "foo"
         actualResult := action.Action.Parameters.GetValue("param_string_value_only").(string)
-        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH)
 
         // param_int_value_only should be 123
         expectedResult = strconv.FormatInt(123, 10)
         actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_int_value_only").(int)), 10)
-        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH)
 
         // param_float_value_only should be 3.14
         expectedResult = strconv.FormatFloat(3.14, 'f', -1, 64)
         actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_float_value_only").(float64), 'f', -1, 64)
-        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH)
 
         // param_string_type_and_value_only should be foo
         expectedResult = "foo"
         actualResult = action.Action.Parameters.GetValue("param_string_type_and_value_only").(string)
-        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH)
 
         // param_string_type_only should be ""
         actualResult = action.Action.Parameters.GetValue("param_string_type_only").(string)
-        assert.Empty(t, actualResult, "Expected empty string but got " + actualResult)
+        assert.Empty(t, actualResult, TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH)
 
         // param_integer_type_only should be 0
         expectedResult = strconv.FormatInt(0, 10)
         actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_integer_type_only").(int)), 10)
-        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH)
 
         // param_float_type_only should be 0
         expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
         actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_float_type_only").(float64), 'f', -1, 64)
-        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH)
 
         // param_string_with_default should be "bar"
         expectedResult = "bar"
         actualResult = action.Action.Parameters.GetValue("param_string_with_default").(string)
-        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH)
 
         // param_integer_with_default should be -1
         expectedResult = strconv.FormatInt(-1, 10)
         actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue("param_integer_with_default").(int)), 10)
-        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH)
 
         // param_float_with_default should be 2.9
         expectedResult = strconv.FormatFloat(2.9, 'f', -1, 64)
         actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue("param_float_with_default").(float64), 'f', -1, 64)
-        assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+        assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH)
     }
 }
 

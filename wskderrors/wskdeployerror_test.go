@@ -171,11 +171,6 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	 */
 
 	// TODO add a unit test once we re-factor error related modules into a new package
-	// to avoid cyclic dependency errors in GoLang.
-	//manifestFile := "../tests/dat/manifest_bad_yaml_invalid_comment.yaml"
-	//m, err := parsers.NewYAMLParser().ParseManifest(manifestFile)
-	//fmt.Println(err)
-
 	// TODO - use actual YAML files to generate actual errors for comparison with expected error output
 	//var TEST_LINES    = []string{"40", STR_UNKNOWN, "123"}
 	//var TEST_MESSAGES = []string{"did not find expected key", "did not find expected ',' or ']'", "found duplicate %YAML directive"}
