@@ -155,8 +155,8 @@ func setSupportedRuntimes(apiHost string) {
 func Deploy() error {
 
 	whisk.SetVerbose(utils.Flags.Verbose)
-	// Verbose mode is the only mode for wskdeploy to turn on all the debug messages, so the currenty Verbose mode
-	// also set debug mode to true.
+	// Verbose mode is the only mode for wskdeploy to turn on all the debug messages,
+	// so set Verbose mode (and also debug mode) to true.
 	whisk.SetDebug(utils.Flags.Verbose)
 
 	project_Path := strings.TrimSpace(utils.Flags.ProjectPath)
@@ -181,6 +181,8 @@ func Deploy() error {
 			errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
 				map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml,
 					"projectPath": projectPath})
+
+			// TODO() print help on error
 			return wskderrors.NewErrorManifestFileNotFound(projectPath, errString)
 		}
 		whisk.Debug(whisk.DbgInfo, stdout)
@@ -230,6 +232,7 @@ func Deploy() error {
 		}
 
 		err = deployer.Deploy()
+
 		if err != nil {
 			return err
 		} else {

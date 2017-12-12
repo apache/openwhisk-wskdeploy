@@ -1,0 +1,6 @@
+package:
+  name: helloworld
+  actions:
+    helloNodejs:
+      function: actions/hello.js
+      runtime: nodejs:6

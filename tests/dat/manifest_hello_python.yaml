@@ -1,0 +1,6 @@
+package:
+  name: helloworld
+  actions:
+    helloPython:
+      function: actions/hello.py
+      runtime: python

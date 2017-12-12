@@ -27,22 +27,22 @@ func NewYAMLParser() *YAMLParser {
 	return &YAMLParser{}
 }
 
-type ParseYaml interface {
-	Unmarshal(input []byte, deploy *YAML) error
-	Marshal(manifest *YAML) (output []byte, err error)
-
-	//Compose Package entity according to yaml content
-	ComposePackages(manifestpath string) ([]*whisk.Package, error)
-
-	// Compose Action entities according to yaml content
-	ComposeActions(manifestpath string) ([]*whisk.Action, error)
-
-	// Compose Trigger entities according to deployment and manifest yaml content
-	ComposeTriggers(manifestpath string, deploymentpath string) ([]*whisk.Trigger, error)
-
-	// Compose Rule entities according to yaml content
-	ComposeRules(manifestpath string) ([]*whisk.Rule, error)
-}
+//type ParseYaml interface {
+//	Unmarshal(input []byte, deploy *YAML) error
+//	Marshal(manifest *YAML) (output []byte, err error)
+//
+//	//Compose Package entity according to yaml content
+//	ComposePackages(manifestpath string) ([]*whisk.Package, error)
+//
+//	// Compose Action entities according to yaml content
+//	ComposeActions(manifestpath string) ([]*whisk.Action, error)
+//
+//	// Compose Trigger entities according to deployment and manifest yaml content
+//	ComposeTriggers(manifestpath string, deploymentpath string) ([]*whisk.Trigger, error)
+//
+//	// Compose Rule entities according to yaml content
+//	ComposeRules(manifestpath string) ([]*whisk.Rule, error)
+//}
 
 type YAMLParser struct {
 	manifests []*YAML
