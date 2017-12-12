@@ -501,7 +501,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 							errStr := wski18n.T("WARNING: Whisk Deploy has chosen appropriate " +
 								"runtime {{.runtime}} based on the action source file " +
 								"extension for that action {{.action}}.\n",
-								map[string]interface{}{"runtime": wskaction.Exec.Kind, "action": wskaction.Name})
+								map[string]interface{}{"runtime": wskaction.Exec.Kind, "action": action.Name})
 							whisk.Debug(whisk.DbgWarn, errStr)
 						}
 					}
@@ -519,7 +519,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					errStr = wski18n.T("WARNING: Whisk Deploy has chosen appropriate " +
 						"runtime {{.runtime}} based on the action source file " +
 						"extension for that action {{.action}}.\n",
-						map[string]interface{}{"runtime": wskaction.Exec.Kind, "action": wskaction.Name})
+						map[string]interface{}{"runtime": wskaction.Exec.Kind, "action": action.Name})
 					whisk.Debug(whisk.DbgWarn, errStr)
 				}
 
