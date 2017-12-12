@@ -44,25 +44,26 @@ var actionCmd = &cobra.Command{
             return err
         }
 
-		reader := bufio.NewReader(os.Stdin)
-		action := parsers.Action{}
+	reader := bufio.NewReader(os.Stdin)
+	action := parsers.Action{}
 
-		for {
-			action.Name = utils.Ask(reader, "Name", "")
+	for {
+		action.Name = utils.Ask(reader, "Name", "")
 
-			// Check action name is unique
-			if _, ok := maniyaml.Package.Actions[action.Name]; !ok {
-				break
-			}
-			fmt.Print(action.Name + " is already used. Pick another action name\n")
+		// Check action name is unique
+		if _, ok := maniyaml.Package.Actions[action.Name]; !ok {
+			break
 		}
+		fmt.Print(action.Name + " is already used. Pick another action name\n")
+	}
 
-		action.Runtime = utils.Ask(reader, "Runtime", "nodejs:6")
-		maniyaml.Package.Actions[action.Name] = action
+	action.Runtime = utils.Ask(reader, "Runtime", "nodejs:6")
+	maniyaml.Package.Actions[action.Name] = action
 
-		// Create directory structure before update manifest, as a way
-		// to check the action name is a valid path name
-		err = os.MkdirAll("actions/"+action.Name, 0777)
+	// Create directory structure before update manifest, as a way
+	// to check the action name is a valid path name
+	err = os.MkdirAll("actions/"+action.Name, 0777)
+
         if err != nil {
             return err
         }

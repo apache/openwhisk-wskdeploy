@@ -172,8 +172,8 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 
 	// TODO add a unit test once we re-factor error related modules into a new package
 	// TODO - use actual YAML files to generate actual errors for comparison with expected error output
-	//var TEST_LINES    = []string{"40", STR_UNKNOWN, "123"}
-	//var TEST_MESSAGES = []string{"did not find expected key", "did not find expected ',' or ']'", "found duplicate %YAML directive"}
+	var TEST_LINES    = []string{"40", STR_UNKNOWN, "123"}
+	var TEST_MESSAGES = []string{"did not find expected key", "did not find expected ',' or ']'", "found duplicate %YAML directive"}
 	//
 	//err10 := NewYAMLParserErr(TEST_EXISTANT_MANIFEST_FILE, TEST_LINES, TEST_MESSAGES)
 	//actualResult =  strings.TrimSpace(err10.Error())
