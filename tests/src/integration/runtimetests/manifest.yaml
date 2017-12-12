@@ -13,6 +13,16 @@ packages:
             place: string
           outputs:
             payload: string
+        greetingnodejs8-with-explicit-runtime:
+          web-export: true
+          version: 1.0
+          function: src/greeting.js
+          runtime: nodejs:8
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
         greetingnodejs-without-explicit-runtime:
           web-export: true
           version: 1.0
@@ -51,15 +61,6 @@ packages:
             place: string
           outputs:
             payload: string
-        greetingpython-without-explicit-runtime:
-          web-export: true
-          version: 1.0
-          function: src/hello.py
-          inputs:
-            name: string
-            place: string
-          outputs:
-            payload: string
         greetingpython2-with-explicit-runtime:
           web-export: true
           version: 1.0
@@ -80,17 +81,16 @@ packages:
             place: string
           outputs:
             payload: string
-        greetingswift311-with-explicit-runtime:
+        greetingpython-without-explicit-runtime:
           web-export: true
           version: 1.0
-          function: src/hello.swift
-          runtime: swift:3.1.1
+          function: src/hello.py
           inputs:
             name: string
             place: string
           outputs:
             payload: string
-        greetingswift3-with-explicit-runtime:
+        greetingswift311-with-explicit-runtime:
           web-export: true
           version: 1.0
           function: src/hello.swift
@@ -116,10 +116,14 @@ packages:
         helloworldjava-without-explicit-runtime:
           function: src/hello.jar
           main: Hello
-      triggers:
-        locationUpdateRuntime:
-      rules:
-        myRuleRuntime:
-          trigger: locationUpdateRuntime
-          action:  greetingnodejs-with-explicit-runtime
+        greetingnodejs-with-explicit-invalid-runtime:
+          web-export: true
+          version: 1.0
+          function: src/greeting.js
+          runtime: java
+          inputs:
+            name: string
+            place: string
+          outputs:
+            payload: string
 

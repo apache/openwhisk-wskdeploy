@@ -48,11 +48,11 @@
     "translation": "the runtime is not supported by Openwhisk platform.\n"
   },
   {
-    "id": "WARNING: Runtime specified in manifest YAML {{.runtime}} does not match with action source file extension {{.ext}} for action {{.action}}..\n",
-    "translation": "WARNING: Runtime specified in manifest YAML {{.runtime}} does not match with action source file extension {{.ext}} for action {{.action}}..\n"
+    "id": "WARNING: Runtime specified in manifest YAML {{.runtime}} does not match with action source file extension {{.ext}} for action {{.action}}.\n",
+    "translation": "WARNING: Runtime specified in manifest YAML {{.runtime}} does not match with action source file extension {{.ext}} for action {{.action}}.\n"
   },
   {
-    "id": "WARNING: Whisk Deploy has chosen appropriate runtime {{.runtime}} based on the action source file extension for that action {{.action}} .\n",
+    "id": "WARNING: Whisk Deploy has chosen appropriate runtime {{.runtime}} based on the action source file extension for that action {{.action}}.\n",
     "translation": "WARNING: Whisk Deploy has chosen appropriate runtime {{.runtime}} based on the action source file extension for that action {{.action}}.\n"
   },
   {
