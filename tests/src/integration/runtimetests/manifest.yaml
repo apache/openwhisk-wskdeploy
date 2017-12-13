@@ -1,4 +1,5 @@
 packages:
+<<<<<<< HEAD
     TestExplicitRuntimes:
         version: 1.0
         license: Apache-1.0
@@ -216,4 +217,3 @@ packages:
                 function: src/hello.jar
                 main: Hello
                 runtime: random
-
