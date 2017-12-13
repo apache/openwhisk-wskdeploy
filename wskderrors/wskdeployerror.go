@@ -30,7 +30,6 @@ const (
 	STR_COMMAND = "Command"
 	STR_ERROR_CODE = "Error code"
 	STR_FILE = "File"
-	STR_LINE = "Line"
 	STR_PARAMETER = "Parameter"
 	STR_TYPE = "Type"
 	STR_EXPECTED = "Expected"
@@ -56,10 +55,21 @@ const (
  * BaseError
  */
 type WskDeployBaseErr struct {
-	ErrorType string
-	FileName  string
-	LineNum   int
-	Message   string
+	ErrorType 	string
+	FileName  	string
+	LineNum   	int
+	Message   	string
+	MessageFormat	string
+}
+
+func NewWskDeployBaseError(typ string, fn string, ln int, msg string) *WskDeployBaseErr {
+	var err = &WskDeployBaseErr{
+		ErrorType: typ,
+		FileName:  fn,
+		LineNum:   ln,
+	}
+	err.SetMessage(msg)
+	return err
 }
 
 func (e *WskDeployBaseErr) Error() string {
@@ -76,6 +86,18 @@ func (e *WskDeployBaseErr) SetLineNum(lineNum int) {
 
 func (e *WskDeployBaseErr) SetErrorType(errorType string) {
 	e.ErrorType = errorType
+}
+
+func (e *WskDeployBaseErr) SetMessageFormat(fmt string) {
+	e.MessageFormat = fmt
+}
+
+func (e *WskDeployBaseErr) GetMessage()(string) {
+	return e.Message
+}
+
+func (e *WskDeployBaseErr) GetMessageFormat()(string) {
+	return e.MessageFormat
 }
 
 func (e *WskDeployBaseErr) SetMessage(message interface{}) {
@@ -129,7 +151,8 @@ func NewCommandError(cmd string, errorMessage string) *CommandError {
 	}
 	err.SetErrorType(ERROR_COMMAND_FAILED)
 	err.SetCallerByStackFrameSkip(2)
-	str := fmt.Sprintf("%s: [%s]: %s", STR_COMMAND, cmd, errorMessage)
+	err.SetMessageFormat("%s: [%s]: %s")
+	str := fmt.Sprintf(err.MessageFormat, STR_COMMAND, cmd, errorMessage)
 	err.SetMessage(str)
 	return err
 }
@@ -148,7 +171,8 @@ func NewWhiskClientError(errorMessage string, code int) *WhiskClientError {
 	}
 	err.SetErrorType(ERROR_WHISK_CLIENT_ERROR)
 	err.SetCallerByStackFrameSkip(2)
-	str := fmt.Sprintf("%s: %d: %s", STR_ERROR_CODE, code, errorMessage)
+	err.SetMessageFormat("%s: %d: %s")
+	str := fmt.Sprintf(err.MessageFormat, STR_ERROR_CODE, code, errorMessage)
 	err.SetMessage(str)
 	return err
 }
@@ -268,7 +292,8 @@ func NewParameterTypeMismatchError(fpath string, param string, expectedType stri
 	err.SetErrorType(ERROR_YAML_PARAMETER_TYPE_MISMATCH)
 	err.SetCallerByStackFrameSkip(2)
 	err.SetErrorFilePath(fpath)
-	str := fmt.Sprintf("%s [%s]: %s %s: [%s], %s: [%s]",
+	err.SetMessageFormat("%s [%s]: %s %s: [%s], %s: [%s]")
+	str := fmt.Sprintf(err.MessageFormat,
 		STR_PARAMETER, param,
 		STR_TYPE,
 		STR_EXPECTED, expectedType,
@@ -293,7 +318,8 @@ func NewInvalidParameterTypeError(fpath string, param string, actualType string)
 	err.SetErrorFilePath(fpath)
 	err.SetErrorType(ERROR_YAML_INVALID_PARAMETER_TYPE)
 	err.SetCallerByStackFrameSkip(2)
-	str := fmt.Sprintf("%s [%s]: %s [%s]",
+	err.SetMessageFormat("%s [%s]: %s [%s]")
+	str := fmt.Sprintf(err.MessageFormat,
 		STR_PARAMETER, param,
 		STR_TYPE, actualType)
 	err.SetMessage(str)

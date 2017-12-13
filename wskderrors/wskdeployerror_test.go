@@ -20,6 +20,7 @@
 package wskderrors
 
 import (
+	"errors"
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"strings"
@@ -170,23 +171,20 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	 * YAMLParserErr
 	 */
 
-	// TODO add a unit test once we re-factor error related modules into a new package
-	// TODO - use actual YAML files to generate actual errors for comparison with expected error output
-	//var TEST_LINES    = []string{"40", STR_UNKNOWN, "123"}
-	//var TEST_MESSAGES = []string{"did not find expected key", "did not find expected ',' or ']'", "found duplicate %YAML directive"}
-	//
-	//err10 := NewYAMLParserErr(TEST_EXISTANT_MANIFEST_FILE, TEST_LINES, TEST_MESSAGES)
-	//actualResult =  strings.TrimSpace(err10.Error())
-	//
-	//msgs := "\n==> Line [40]: did not find expected key" +
-	//	"\n==> Line [Unknown]: did not find expected ',' or ']'" +
-	//	"\n==> Line [123]: found duplicate %YAML directive"
-	//
-	//expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + STR_FILE + ": [%s]: %s",
-	//	packageName,
-	//	err10.LineNum,
-	//	ERROR_YAML_PARSER_ERROR,
-	//	filepath.Base(TEST_EXISTANT_MANIFEST_FILE),
-	//	msgs)
-	//assert.Equal(t, expectedResult, actualResult)
+	// verify that nested (YAML) errors get correctly appended as indented details to the top-level error message
+	ERR_YAML_1 := "did not find expected key"
+	ERR_YAML_2 := "did not find expected ',' or ']'"
+	ERR_YAML_3 := "found duplicate %YAML directive"
+
+	yamlErrors := fmt.Sprintf("%s\n%s\n%s", ERR_YAML_1, ERR_YAML_2, ERR_YAML_3)
+	err10 := NewYAMLParserErr(TEST_EXISTANT_MANIFEST_FILE, errors.New(yamlErrors))
+
+	baseErr := NewWskDeployBaseError("type", "fx", 100, "")
+	baseErr.appendDetail(ERR_YAML_1)
+	baseErr.appendDetail(ERR_YAML_2)
+	baseErr.appendDetail(ERR_YAML_3)
+	msg := baseErr.GetMessage()
+
+	assert.Equal(t, msg, err10.GetMessage())
+
 }
