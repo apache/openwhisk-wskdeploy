@@ -100,10 +100,6 @@ func (e *WskDeployBaseErr) GetMessageFormat()(string) {
 	return e.MessageFormat
 }
 
-func (e *WskDeployBaseErr) GetDetailMessageFormat()(string) {
-	return "\n%s %s"
-}
-
 func (e *WskDeployBaseErr) SetMessage(message interface{}) {
 
 	if message != nil{
