@@ -1,0 +1,7 @@
+{
+  "name": "my-action",
+  "main": "index.js",
+  "dependencies" : {
+    "cat" : "0.2.0"
+  }
+}

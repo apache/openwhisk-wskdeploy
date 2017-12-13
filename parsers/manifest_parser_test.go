@@ -31,6 +31,7 @@ import (
     "strings"
     "github.com/apache/incubator-openwhisk-client-go/whisk"
     "github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+    "github.com/apache/incubator-openwhisk-wskdeploy/utils"
 )
 
 const (
@@ -46,6 +47,7 @@ const (
     TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH = "Action parameter [%s] had a value mismatch."
     TEST_MSG_PARAMETER_NUMBER_MISMATCH = "Number of Paramaters mismatched."
     TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED = "Manifest [%s]: Expected Unmarshal error."
+    TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED = "Manifest [%s]: Expected runtime error."
 
     // local error messages
     TEST_ERROR_MANIFEST_PARSE_FAILURE = "Manifest [%s]: Failed to parse."
@@ -53,6 +55,14 @@ const (
     TEST_ERROR_MANIFEST_DATA_UNMARSHALL = "Manifest [%s]: Failed to Unmarshall manifest."
 )
 
+func init() {
+    op, error := utils.ParseOpenWhisk("")
+    if error == nil {
+        utils.SupportedRunTimes = utils.ConvertToMap(op)
+        utils.DefaultRunTimes = utils.DefaultRuntimes(op)
+        utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
+    }
+}
 
 func testReadAndUnmarshalManifest(t *testing.T, pathManifest string)(YAML, error){
     // Init YAML struct and attempt to Unmarshal YAML byte[] data
@@ -510,17 +520,41 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
     }
 }
 
-// Test 10: validate manifest_parser.ComposeActions() method for invalid runtimes
+func testUnmarshalTemporaryFile (data []byte, filename string) (p *YAMLParser, m *YAML, t string) {
+    dir, _ := os.Getwd()
+    tmpfile, err := ioutil.TempFile(dir, filename)
+    if err == nil {
+        defer os.Remove(tmpfile.Name()) // clean up
+        if _, err := tmpfile.Write(data); err == nil {
+            // read and parse manifest.yaml file
+            p = NewYAMLParser()
+            m, _ = p.ParseManifest(tmpfile.Name())
+        }
+    }
+    t = tmpfile.Name()
+    tmpfile.Close()
+    return
+}
+
+// Test 10(1): validate manifest_parser.ComposeActions() method for invalid runtimes
 // when a runtime of an action is set to some garbage, manifest_parser should
 // report an error for that action
 func TestComposeActionsForInvalidRuntime(t *testing.T) {
+    data := `packages:
+    helloworld:
+        actions:
+            helloInvalidRuntime:
+                function: ../tests/src/integration/common/wskdeploy.go`
+    p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
+    _, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+    assert.NotNil(t, err, TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED)
+/*
     data :=
         `package:
    name: helloworld
    actions:
      helloInvalidRuntime:
-       function: ../tests/src/integration/helloworld/actions/hello.js
-       runtime: invalid`
+       function: ../tests/src/integration/common/wskdeploy.go`
     dir, _ := os.Getwd()
     tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtime_")
     if err == nil {
@@ -529,16 +563,18 @@ func TestComposeActionsForInvalidRuntime(t *testing.T) {
             // read and parse manifest.yaml file
             p := NewYAMLParser()
             m, _ := p.ParseManifest(tmpfile.Name())
+            op, error := utils.ParseOpenWhisk("")
+            if error == nil {
+                utils.SupportedRunTimes = utils.ConvertToMap(op)
+                utils.DefaultRunTimes = utils.DefaultRuntimes(op)
+                utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
+            }
             _, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
-            // (TODO) uncomment the following test case after issue #307 is fixed
-            // (TODO) its failing right now as we are lacking check on invalid runtime
-            // TODO() https://github.com/apache/incubator-openwhisk-wskdeploy/issues/608
-            //assert.NotNil(t, err, "Invalid runtime, ComposeActions should report an error")
-            // (TODO) remove this print statement after uncommenting above test case
-            fmt.Println(fmt.Sprintf("!!! TODO(): Fix this testcase: error=[%v]", err))
+            assert.NotNil(t, err, TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED)
         }
         tmpfile.Close()
     }
+    */
 }
 
 // Test 11: validate manifest_parser.ComposeActions() method for single line parameters

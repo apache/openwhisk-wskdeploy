@@ -56,6 +56,11 @@
     "translation": "WARNING: Whisk Deploy has chosen appropriate runtime {{.runtime}} based on the action source file extension for that action {{.action}}.\n"
   },
   {
+    "id": "WARNING: Runtime specified in manifest YAML {{.runtime}} is not supported by OpenWhisk server for the action {{.action}}.\n",
+    "translation": "WARNING: Runtime specified in manifest YAML {{.runtime}} is not supported by OpenWhisk server for the action {{.action}}.\n"
+
+  },
+  {
     "id": "Unsupported runtime type, set to nodejs",
     "translation": "Unsupported runtime type, set to nodejs"
   },
