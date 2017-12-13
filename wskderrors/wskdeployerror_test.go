@@ -172,7 +172,7 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	 * YAMLParserErr
 	 */
 
-	// verify that nested (YAML) errors get correctly appended as indented, details to the top-level error message
+	// verify that nested (YAML) errors get correctly appended as indented details to the top-level error message
 	ERR_YAML_1 := "did not find expected key"
 	ERR_YAML_2 := "did not find expected ',' or ']'"
 	ERR_YAML_3 := "found duplicate %YAML directive"
@@ -186,7 +186,6 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	baseErr.appendDetail(ERR_YAML_3)
 	msg := baseErr.GetMessage()
 
-	//println(msg)
 	assert.Equal(t, msg, err10.GetMessage())
 
 }
