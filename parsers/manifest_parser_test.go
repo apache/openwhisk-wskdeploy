@@ -143,6 +143,22 @@ func testUnmarshalManifestAndActionBasic(t *testing.T,
     return m, nil
 }
 
+func testUnmarshalTemporaryFile (data []byte, filename string) (p *YAMLParser, m *YAML, t string) {
+    dir, _ := os.Getwd()
+    tmpfile, err := ioutil.TempFile(dir, filename)
+    if err == nil {
+        defer os.Remove(tmpfile.Name()) // clean up
+        if _, err := tmpfile.Write(data); err == nil {
+            // read and parse manifest.yaml file
+            p = NewYAMLParser()
+            m, _ = p.ParseManifest(tmpfile.Name())
+        }
+    }
+    t = tmpfile.Name()
+    tmpfile.Close()
+    return
+}
+
 // Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloNodeJS(t *testing.T) {
@@ -520,26 +536,11 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
     }
 }
 
-func testUnmarshalTemporaryFile (data []byte, filename string) (p *YAMLParser, m *YAML, t string) {
-    dir, _ := os.Getwd()
-    tmpfile, err := ioutil.TempFile(dir, filename)
-    if err == nil {
-        defer os.Remove(tmpfile.Name()) // clean up
-        if _, err := tmpfile.Write(data); err == nil {
-            // read and parse manifest.yaml file
-            p = NewYAMLParser()
-            m, _ = p.ParseManifest(tmpfile.Name())
-        }
-    }
-    t = tmpfile.Name()
-    tmpfile.Close()
-    return
-}
 
 // Test 10(1): validate manifest_parser.ComposeActions() method for invalid runtimes
-// when a runtime of an action is set to some garbage, manifest_parser should
+// when the action has a source file written in unsupported runtimes, manifest_parser should
 // report an error for that action
-func TestComposeActionsForInvalidRuntime(t *testing.T) {
+func TestComposeActionsForInvalidRuntime_1(t *testing.T) {
     data := `packages:
     helloworld:
         actions:
@@ -547,34 +548,55 @@ func TestComposeActionsForInvalidRuntime(t *testing.T) {
                 function: ../tests/src/integration/common/wskdeploy.go`
     p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
     _, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
-    assert.NotNil(t, err, TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED)
-/*
-    data :=
-        `package:
-   name: helloworld
-   actions:
-     helloInvalidRuntime:
-       function: ../tests/src/integration/common/wskdeploy.go`
-    dir, _ := os.Getwd()
-    tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtime_")
-    if err == nil {
-        defer os.Remove(tmpfile.Name()) // clean up
-        if _, err := tmpfile.Write([]byte(data)); err == nil {
-            // read and parse manifest.yaml file
-            p := NewYAMLParser()
-            m, _ := p.ParseManifest(tmpfile.Name())
-            op, error := utils.ParseOpenWhisk("")
-            if error == nil {
-                utils.SupportedRunTimes = utils.ConvertToMap(op)
-                utils.DefaultRunTimes = utils.DefaultRuntimes(op)
-                utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
-            }
-            _, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
-            assert.NotNil(t, err, TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED)
+    assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED, tmpfile))
+}
+
+// Test 10(2): validate manifest_parser.ComposeActions() method for invalid runtimes
+// when a runtime of an action is set to some garbage, manifest_parser should
+// report an error for that action
+func TestComposeActionsForInvalidRuntime_2(t *testing.T) {
+    data := `packages:
+    helloworld:
+        actions:
+            helloInvalidRuntime:
+                function: ../tests/src/integration/runtimetests/src/helloworld/`
+    p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
+    _, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+    assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED, tmpfile))
+}
+
+// Test 10(3): validate manifest_parser.ComposeActions() method for invalid runtimes
+// when a runtime of an action is set to some garbage, manifest_parser should
+// report an error for that action
+func TestComposeActionsForInvalidRuntime_3(t *testing.T) {
+    data := `packages:
+    helloworld:
+        actions:
+            helloInvalidRuntime:
+                function: ../tests/src/integration/runtimetests/src/helloworld/helloworld.zip`
+    p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
+    _, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+    assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED, tmpfile))
+}
+
+// Test 10(3): validate manifest_parser.ComposeActions() method for invalid runtimes
+// when a runtime of an action is set to some garbage, manifest_parser should
+// report an error for that action
+func TestComposeActionsForInvalidRuntime_4(t *testing.T) {
+    data := `packages:
+    helloworld:
+        actions:
+            helloInvalidRuntime:
+                function: ../tests/src/integration/runtimetests/src/helloworld/helloworld.zip
+                runtime: nodejs:6`
+    p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
+    actions, _ := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+    for _, action := range actions {
+        if action.Action.Name == "helloInvalidRuntime" {
+            assert.Equal(t, action.Action.Exec.Kind, "nodejs:6", fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH, action))
         }
-        tmpfile.Close()
+
     }
-    */
 }
 
 // Test 11: validate manifest_parser.ComposeActions() method for single line parameters

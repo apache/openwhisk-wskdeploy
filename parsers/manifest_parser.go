@@ -434,6 +434,9 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				defer os.Remove(zipName)
 				// To do: support docker and main entry as did by go cli?
 				wskaction.Exec, err = utils.GetExec(zipName, action.Runtime, false, "")
+				if err != nil {
+					return nil, err
+				}
 			} else {
 				ext = path.Ext(filePath)
 				// drop the "." from file extension
@@ -464,8 +467,8 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				if ext == utils.ZIP_FILE_EXTENSION || ext == utils.JAR_FILE_EXTENSION {
 					code = base64.StdEncoding.EncodeToString([]byte(dat))
 				}
-				if ext == utils.ZIP_FILE_EXTENSION && action.Runtime == "" {
-					utils.PrintOpenWhiskOutputln("need explicit action Runtime value")
+				if ext == utils.ZIP_FILE_EXTENSION && len(action.Runtime) == 0 {
+					return nil, wskderrors.NewInvalidRuntimeError(filePath, "Not Specified in Manifest YAML", utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				}
 				wskaction.Exec.Code = &code
 			}

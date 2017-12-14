@@ -252,9 +252,14 @@ func GetExec(artifact string, kind string, isDocker bool, mainEntry string) (*wh
 	var exec *whisk.Exec
 
 	ext := filepath.Ext(artifact)
+	// drop the "." from file extension
+	if len(ext) > 0 && ext[0] == '.' {
+		ext = ext[1:]
+	}
+
 	exec = new(whisk.Exec)
 
-	if !isDocker || ext == ".zip" {
+	if !isDocker || ext == ZIP_FILE_EXTENSION {
 		content, err = new(ContentReader).ReadLocal(artifact)
 		if err != nil {
 			return nil, err
@@ -267,22 +272,22 @@ func GetExec(artifact string, kind string, isDocker bool, mainEntry string) (*wh
 		exec.Kind = kind
 	} else if isDocker {
 		exec.Kind = "blackbox"
-		if ext != ".zip" {
+		if ext != ZIP_FILE_EXTENSION {
 			exec.Image = artifact
 		} else {
 			exec.Image = "openwhisk/dockerskeleton"
 		}
-	} else if ext == ".swift" {
-		exec.Kind = "swift:default"
-	} else if ext == ".js" {
-		exec.Kind = "nodejs:default"
-	} else if ext == ".py" {
-		exec.Kind = "python:default"
-	} else if ext == ".jar" {
-		exec.Kind = "java:default"
-		exec.Code = nil
 	} else {
-		if ext == ".zip" {
+		r := FileExtensionRuntimeKindMap[ext]
+		exec.Kind = DefaultRunTimes[r]
+	}
+
+	if ext == JAR_FILE_EXTENSION {
+		exec.Code = nil
+	}
+
+	if len(exec.Kind) == 0 {
+		if ext == ZIP_FILE_EXTENSION {
 			return nil, zipKindError()
 		} else {
 			return nil, extensionError(ext)
@@ -299,7 +304,7 @@ func GetExec(artifact string, kind string, isDocker bool, mainEntry string) (*wh
 	}
 
 	// Base64 encode the zip file content
-	if ext == ".zip" {
+	if ext == ZIP_FILE_EXTENSION {
 		code = base64.StdEncoding.EncodeToString([]byte(code))
 		exec.Code = &code
 	}

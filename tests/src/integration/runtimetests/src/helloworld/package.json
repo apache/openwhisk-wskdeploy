@@ -1,0 +1,14 @@
+{
+	"name": "hello-world-sample",
+	"description": "",
+	"license": "Apache-2.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/apache/incubator-openwhisk-wskdeploy"
+	},
+	"version": "1.0.0",
+	"main": "index.js",
+	"dependencies": {
+		"string-format": "0.5.0"
+	}
+}
