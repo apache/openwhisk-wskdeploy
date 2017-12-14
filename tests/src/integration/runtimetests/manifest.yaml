@@ -1,5 +1,4 @@
 packages:
-<<<<<<< HEAD
     TestExplicitRuntimes:
         version: 1.0
         license: Apache-1.0
@@ -79,7 +78,7 @@ packages:
                 runtime: java
                 main: Hello
             zipaction-with-explicit-runtime:
-                function: src/cat
+                function: src/helloworld
                 runtime: nodejs:6
                 inputs:
                     name: string
