@@ -35,6 +35,7 @@ const (
 	STR_EXPECTED = "Expected"
 	STR_ACTUAL = "Actual"
 	STR_NEWLINE = "\n"
+	STR_ACTION = "Action"
 	STR_RUNTIME = "Runtime"
 	STR_SUPPORTED_RUNTIMES = "Supported Runtimes"
 
@@ -359,14 +360,16 @@ type InvalidRuntimeError struct {
 	SupportedRuntimes	[]string
 }
 
-func NewInvalidRuntimeError(fpath string, runtime string, supportedRuntimes []string) *InvalidRuntimeError {
+func NewInvalidRuntimeError(errMessage string, fpath string, action string, runtime string, supportedRuntimes []string) *InvalidRuntimeError {
 	var err = &InvalidRuntimeError{
 		SupportedRuntimes: supportedRuntimes,
 	}
 	err.SetErrorFilePath(fpath)
 	err.SetErrorType(ERROR_YAML_INVALID_RUNTIME)
 	err.SetCallerByStackFrameSkip(2)
-	str := fmt.Sprintf("%s [%s]: %s [%s]",
+	str := fmt.Sprintf("%s %s [%s]: %s [%s]: %s [%s]",
+		errMessage,
+		STR_ACTION, action,
 		STR_RUNTIME, runtime,
 		STR_SUPPORTED_RUNTIMES, strings.Join(supportedRuntimes, ", "))
 	err.SetMessage(str)

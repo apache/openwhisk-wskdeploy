@@ -398,13 +398,13 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 
 func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action, packageName string, ma whisk.KeyValue) ([]utils.ActionRecord, error) {
 
+	const RUNTIME_ERR_MESSAGE = "Please specify any of the supported runtime for zip actions in manifest YAML."
 	var errorParser error
 	var ext string
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
 
 	for key, action := range actions {
 		splitFilePath := strings.Split(filePath, string(os.PathSeparator))
-
 		// set the name of the action (which is the key)
 		action.Name = key
 
@@ -423,6 +423,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 		//bind action, and exposed URL
 		if action.Function != "" {
+
 			filePath := strings.TrimRight(filePath, splitFilePath[len(splitFilePath)-1]) + action.Function
 
 			if utils.IsDirectory(filePath) {
@@ -453,7 +454,8 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				// and its not explicitly specified in the manifest YAML file
 				// and action source is not a zip file
 				if len(kind) == 0 && len(action.Runtime) == 0 && ext != utils.ZIP_FILE_EXTENSION {
-					return nil, wskderrors.NewInvalidRuntimeError(filePath, "Not Specified in Manifest YAML", utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+					errMessage := "ERROR: Failed to discover runtime from the action source files. " + RUNTIME_ERR_MESSAGE
+					return nil, wskderrors.NewInvalidRuntimeError(errMessage, splitFilePath[len(splitFilePath)-1], action.Name, "Not Specified in Manifest YAML", utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				}
 
 				wskaction.Exec.Kind = kind
@@ -468,7 +470,8 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					code = base64.StdEncoding.EncodeToString([]byte(dat))
 				}
 				if ext == utils.ZIP_FILE_EXTENSION && len(action.Runtime) == 0 {
-					return nil, wskderrors.NewInvalidRuntimeError(filePath, "Not Specified in Manifest YAML", utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+					errMessage := "ERROR: Runtime is missing for zip action. " + RUNTIME_ERR_MESSAGE
+					return nil, wskderrors.NewInvalidRuntimeError(errMessage, splitFilePath[len(splitFilePath)-1], action.Name, "Not Specified in Manifest YAML", utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				}
 				wskaction.Exec.Code = &code
 			}
@@ -517,7 +520,8 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				whisk.Debug(whisk.DbgWarn, errStr)
 				if ext == utils.ZIP_FILE_EXTENSION {
 					// for zip action, error out if specified runtime is not supported by OpenWhisk server
-					return nil, wskderrors.NewInvalidRuntimeError(filePath, action.Runtime, utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+					errMessage := "ERROR: Given runtime for a zip action is not supported by OpenWhisk server. " + RUNTIME_ERR_MESSAGE
+					return nil, wskderrors.NewInvalidRuntimeError(errMessage, splitFilePath[len(splitFilePath)-1], action.Name, action.Runtime, utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				} else {
 					errStr = wski18n.T("WARNING: Whisk Deploy has chosen appropriate " +
 						"runtime {{.runtime}} based on the action source file " +
