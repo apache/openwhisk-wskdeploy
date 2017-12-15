@@ -31,6 +31,7 @@ import (
     "strings"
     "github.com/apache/incubator-openwhisk-client-go/whisk"
     "github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+    "github.com/apache/incubator-openwhisk-wskdeploy/utils"
 )
 
 const (
@@ -46,6 +47,7 @@ const (
     TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH = "Action parameter [%s] had a value mismatch."
     TEST_MSG_PARAMETER_NUMBER_MISMATCH = "Number of Paramaters mismatched."
     TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED = "Manifest [%s]: Expected Unmarshal error."
+    TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED = "Manifest [%s]: Expected runtime error."
 
     // local error messages
     TEST_ERROR_MANIFEST_PARSE_FAILURE = "Manifest [%s]: Failed to parse."
@@ -53,6 +55,14 @@ const (
     TEST_ERROR_MANIFEST_DATA_UNMARSHALL = "Manifest [%s]: Failed to Unmarshall manifest."
 )
 
+func init() {
+    op, error := utils.ParseOpenWhisk("")
+    if error == nil {
+        utils.SupportedRunTimes = utils.ConvertToMap(op)
+        utils.DefaultRunTimes = utils.DefaultRuntimes(op)
+        utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
+    }
+}
 
 func testReadAndUnmarshalManifest(t *testing.T, pathManifest string)(YAML, error){
     // Init YAML struct and attempt to Unmarshal YAML byte[] data
@@ -131,6 +141,22 @@ func testUnmarshalManifestAndActionBasic(t *testing.T,
         }
     }
     return m, nil
+}
+
+func testUnmarshalTemporaryFile (data []byte, filename string) (p *YAMLParser, m *YAML, t string) {
+    dir, _ := os.Getwd()
+    tmpfile, err := ioutil.TempFile(dir, filename)
+    if err == nil {
+        defer os.Remove(tmpfile.Name()) // clean up
+        if _, err := tmpfile.Write(data); err == nil {
+            // read and parse manifest.yaml file
+            p = NewYAMLParser()
+            m, _ = p.ParseManifest(tmpfile.Name())
+        }
+    }
+    t = tmpfile.Name()
+    tmpfile.Close()
+    return
 }
 
 // Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
@@ -478,66 +504,87 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
       function: ../tests/src/integration/helloworld/actions/hello.py
     helloSwift:
       function: ../tests/src/integration/helloworld/actions/hello.swift`
-
-    dir, _ := os.Getwd()
-    tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtimes_")
+    p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
+    actions, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+    var expectedResult string
     if err == nil {
-        defer os.Remove(tmpfile.Name()) // clean up
-        if _, err := tmpfile.Write([]byte(data)); err == nil {
-            // read and parse manifest.yaml file
-            p := NewYAMLParser()
-            m, _ := p.ParseManifest(tmpfile.Name())
-            actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
-            var expectedResult string
-            if err == nil {
-                for i := 0; i < len(actions); i++ {
-                    if actions[i].Action.Name == "helloNodejs" {
-                        expectedResult = "nodejs:6"
-                    } else if actions[i].Action.Name == "helloJava" {
-                        expectedResult = "java"
-                    } else if actions[i].Action.Name == "helloPython" {
-                        expectedResult = "python"
-                    } else if actions[i].Action.Name == "helloSwift" {
-                        expectedResult = "swift:3.1.1"
-                    }
-                    actualResult := actions[i].Action.Exec.Kind
-                    assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
-                }
-            }
-
-        }
-        tmpfile.Close()
+	for i := 0; i < len(actions); i++ {
+	    if actions[i].Action.Name == "helloNodejs" {
+		expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["js"]]
+	    } else if actions[i].Action.Name == "helloJava" {
+		expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["jar"]]
+	    } else if actions[i].Action.Name == "helloPython" {
+		expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["py"]]
+	    } else if actions[i].Action.Name == "helloSwift" {
+		expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["swift"]]
+	    }
+	    actualResult := actions[i].Action.Exec.Kind
+	    assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
+	}
     }
+
 }
 
-// Test 10: validate manifest_parser.ComposeActions() method for invalid runtimes
-// when a runtime of an action is set to some garbage, manifest_parser should
+
+// Test 10(1): validate manifest_parser.ComposeActions() method for invalid runtimes
+// when the action has a source file written in unsupported runtimes, manifest_parser should
 // report an error for that action
-func TestComposeActionsForInvalidRuntime(t *testing.T) {
-    data :=
-        `package:
-   name: helloworld
-   actions:
-     helloInvalidRuntime:
-       function: ../tests/src/integration/helloworld/actions/hello.js
-       runtime: invalid`
-    dir, _ := os.Getwd()
-    tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_runtime_")
-    if err == nil {
-        defer os.Remove(tmpfile.Name()) // clean up
-        if _, err := tmpfile.Write([]byte(data)); err == nil {
-            // read and parse manifest.yaml file
-            p := NewYAMLParser()
-            m, _ := p.ParseManifest(tmpfile.Name())
-            _, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
-            // (TODO) uncomment the following test case after issue #307 is fixed
-            // (TODO) its failing right now as we are lacking check on invalid runtime
-            // TODO() https://github.com/apache/incubator-openwhisk-wskdeploy/issues/608
-            //assert.NotNil(t, err, "Invalid runtime, ComposeActions should report an error")
-            // (TODO) remove this print statement after uncommenting above test case
-            fmt.Println(fmt.Sprintf("!!! TODO(): Fix this testcase: error=[%v]", err))
+func TestComposeActionsForInvalidRuntime_1(t *testing.T) {
+    data := `packages:
+    helloworld:
+        actions:
+            helloInvalidRuntime:
+                function: ../tests/src/integration/common/wskdeploy.go`
+    p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
+    _, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+    assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED, tmpfile))
+}
+
+// Test 10(2): validate manifest_parser.ComposeActions() method for invalid runtimes
+// when a runtime of an action is missing for zip action, manifest_parser should
+// report an error for that action
+func TestComposeActionsForInvalidRuntime_2(t *testing.T) {
+    data := `packages:
+    helloworld:
+        actions:
+            helloInvalidRuntime:
+                function: ../tests/src/integration/runtimetests/src/helloworld/`
+    p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
+    _, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+    assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED, tmpfile))
+}
+
+// Test 10(3): validate manifest_parser.ComposeActions() method for invalid runtimes
+// when a runtime of an action is missing for zip action, manifest_parser should
+// report an error for that action
+func TestComposeActionsForInvalidRuntime_3(t *testing.T) {
+    data := `packages:
+    helloworld:
+        actions:
+            helloInvalidRuntime:
+                function: ../tests/src/integration/runtimetests/src/helloworld/helloworld.zip`
+    p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
+    _, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+    assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED, tmpfile))
+}
+
+// Test 10(3): validate manifest_parser.ComposeActions() method for valid runtimes with zip action
+// when a runtime of a zip action is set to one of the supported runtimes, manifest_parser should
+// return a valid actionRecord with specified runtime
+func TestComposeActionsForValidRuntime_ZipAction(t *testing.T) {
+    data := `packages:
+    helloworld:
+        actions:
+            hello:
+                function: ../tests/src/integration/runtimetests/src/helloworld/helloworld.zip
+                runtime: nodejs:6`
+    p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
+    actions, _ := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+    for _, action := range actions {
+        if action.Action.Name == "hello" {
+            assert.Equal(t, action.Action.Exec.Kind, "nodejs:6", fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH, action))
         }
-        tmpfile.Close()
+
     }
 }
 

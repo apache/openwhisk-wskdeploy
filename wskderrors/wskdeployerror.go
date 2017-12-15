@@ -35,6 +35,9 @@ const (
 	STR_EXPECTED = "Expected"
 	STR_ACTUAL = "Actual"
 	STR_NEWLINE = "\n"
+	STR_ACTION = "Action"
+	STR_RUNTIME = "Runtime"
+	STR_SUPPORTED_RUNTIMES = "Supported Runtimes"
 
 	// Formatting
 	STR_INDENT_1 = "==>"
@@ -49,6 +52,7 @@ const (
 	ERROR_YAML_PARSER_ERROR = "ERROR_YAML_PARSER_ERROR"
 	ERROR_YAML_PARAMETER_TYPE_MISMATCH = "ERROR_YAML_PARAMETER_TYPE_MISMATCH"
 	ERROR_YAML_INVALID_PARAMETER_TYPE = "ERROR_YAML_INVALID_PARAMETER_TYPE"
+	ERROR_YAML_INVALID_RUNTIME = "ERROR_YAML_INVALID_RUNTIME"
 )
 
 /*
@@ -343,6 +347,32 @@ func NewYAMLParserErr(fpath string, msg interface{}) *YAMLParserError {
 	err.SetErrorFilePath(fpath)
 	err.SetCallerByStackFrameSkip(2)
         err.SetMessage(msg)
+	return err
+}
+
+
+/*
+ * InvalidRuntime
+ */
+type InvalidRuntimeError struct {
+	FileError
+	Runtime    		string
+	SupportedRuntimes	[]string
+}
+
+func NewInvalidRuntimeError(errMessage string, fpath string, action string, runtime string, supportedRuntimes []string) *InvalidRuntimeError {
+	var err = &InvalidRuntimeError{
+		SupportedRuntimes: supportedRuntimes,
+	}
+	err.SetErrorFilePath(fpath)
+	err.SetErrorType(ERROR_YAML_INVALID_RUNTIME)
+	err.SetCallerByStackFrameSkip(2)
+	str := fmt.Sprintf("%s %s [%s]: %s [%s]: %s [%s]",
+		errMessage,
+		STR_ACTION, action,
+		STR_RUNTIME, runtime,
+		STR_SUPPORTED_RUNTIMES, strings.Join(supportedRuntimes, ", "))
+	err.SetMessage(str)
 	return err
 }
 
