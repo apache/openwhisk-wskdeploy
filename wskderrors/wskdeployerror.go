@@ -179,9 +179,13 @@ func NewWhiskClientError(errorMessage string, code int, response *http.Response)
 	}
 	err.SetErrorType(ERROR_WHISK_CLIENT_ERROR)
 	err.SetCallerByStackFrameSkip(2)
-	err.SetMessageFormat("%s: %d: %s: %s: %s %s: %s")
-	responseData, _ := ioutil.ReadAll(response.Body)
-	str := fmt.Sprintf(err.MessageFormat, STR_ERROR_CODE, code, errorMessage, STR_HTTP_STATUS, response.Status, STR_HTTP_BODY, string(responseData))
+	err.SetMessageFormat("%s: %d: %s")
+	var str = fmt.Sprintf(err.MessageFormat, STR_ERROR_CODE, code, errorMessage)
+	if response != nil {
+		responseData, _ := ioutil.ReadAll(response.Body)
+		err.SetMessageFormat("%s: %d: %s: %s: %s %s: %s")
+		str = fmt.Sprintf(err.MessageFormat, STR_ERROR_CODE, code, errorMessage, STR_HTTP_STATUS, response.Status, STR_HTTP_BODY, string(responseData))
+	}
 	err.SetMessage(str)
 	return err
 }
