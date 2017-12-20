@@ -8,7 +8,7 @@ project:
                         messagehub_instance: wskdeployMessageHub
                         topic:  $DESTINATION_TOPIC
             triggers:
-                wskdeployMessageHubTrigger:
+                wskdeployIntegrationTestMessageHubTrigger:
                     inputs:
                         isJSONData: true
                         topic: $SOURCE_TOPIC
