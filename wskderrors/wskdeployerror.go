@@ -22,6 +22,8 @@ import (
 	"runtime"
 	"strings"
 	"path/filepath"
+	"net/http"
+	"io/ioutil"
 )
 
 const (
@@ -38,6 +40,8 @@ const (
 	STR_ACTION = "Action"
 	STR_RUNTIME = "Runtime"
 	STR_SUPPORTED_RUNTIMES = "Supported Runtimes"
+	STR_HTTP_STATUS = "HTTP Response Status"
+	STR_HTTP_BODY = "HTTP Response Body"
 
 	// Formatting
 	STR_INDENT_1 = "==>"
@@ -169,14 +173,19 @@ type WhiskClientError struct {
 	ErrorCode int
 }
 
-func NewWhiskClientError(errorMessage string, code int) *WhiskClientError {
+func NewWhiskClientError(errorMessage string, code int, response *http.Response) *WhiskClientError {
 	var err = &WhiskClientError{
 		ErrorCode: code,
 	}
 	err.SetErrorType(ERROR_WHISK_CLIENT_ERROR)
 	err.SetCallerByStackFrameSkip(2)
 	err.SetMessageFormat("%s: %d: %s")
-	str := fmt.Sprintf(err.MessageFormat, STR_ERROR_CODE, code, errorMessage)
+	var str = fmt.Sprintf(err.MessageFormat, STR_ERROR_CODE, code, errorMessage)
+	if response != nil {
+		responseData, _ := ioutil.ReadAll(response.Body)
+		err.SetMessageFormat("%s: %d: %s: %s: %s %s: %s")
+		str = fmt.Sprintf(err.MessageFormat, STR_ERROR_CODE, code, errorMessage, STR_HTTP_STATUS, response.Status, STR_HTTP_BODY, string(responseData))
+	}
 	err.SetMessage(str)
 	return err
 }

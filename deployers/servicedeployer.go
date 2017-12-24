@@ -22,24 +22,25 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
-	"reflect"
 	"time"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"net/http"
 )
 
 const (
-    CONFLICT_CODE = 153
-    CONFLICT_MESSAGE = "Concurrent modification to resource detected"
-    DEFAULT_ATTEMPTS = 3
-    DEFAULT_INTERVAL = 1 * time.Second
+	CONFLICT_CODE    = 153
+	CONFLICT_MESSAGE = "Concurrent modification to resource detected"
+	DEFAULT_ATTEMPTS = 3
+	DEFAULT_INTERVAL = 1 * time.Second
 )
 
 type DeploymentProject struct {
@@ -80,7 +81,7 @@ func NewDeploymentPackage() *DeploymentPackage {
 //   3. Collect information about the source code files in the working directory
 //   4. Create a deployment plan to create OpenWhisk service
 type ServiceDeployer struct {
-	ProjectName 	string
+	ProjectName     string
 	Deployment      *DeploymentProject
 	Client          *whisk.Client
 	mt              sync.RWMutex
@@ -95,7 +96,7 @@ type ServiceDeployer struct {
 	InteractiveChoice     bool
 	ClientConfig          *whisk.Config
 	DependencyMaster      map[string]utils.DependencyRecord
-	ManagedAnnotation whisk.KeyValue
+	ManagedAnnotation     whisk.KeyValue
 }
 
 // NewServiceDeployer is a Factory to create a new ServiceDeployer
@@ -510,15 +511,15 @@ func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma ma
 			// that this action is deleted from the project in manifest file
 			if aa[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] && aa[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
 				actionName := strings.Join([]string{packageName, action.Name}, "/")
-				output := wski18n.T("Found the action {{.action}} which is deleted" +
+				output := wski18n.T("Found the action {{.action}} which is deleted"+
 					" from the current project {{.project}} in manifest file which is being undeployed.\n",
 					map[string]interface{}{"action": actionName, "project": aa[utils.OW_PROJECT_NAME]})
 				whisk.Debug(whisk.DbgInfo, output)
-                var err error
-                err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-                    _, err := deployer.Client.Actions.Delete(actionName)
-                    return err
-                })
+				var err error
+				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+					_, err := deployer.Client.Actions.Delete(actionName)
+					return err
+				})
 
 				if err != nil {
 					return err
@@ -547,15 +548,15 @@ func (deployer *ServiceDeployer) RefreshManagedTriggers(ma map[string]interface{
 			ta := a.(map[string]interface{})
 			if ta[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] && ta[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
 				// we have found a trigger which was earlier part of the current project
-				output := wski18n.T("Found the trigger {{.trigger}} which is deleted" +
+				output := wski18n.T("Found the trigger {{.trigger}} which is deleted"+
 					" from the current project {{.project}} in manifest file which is being undeployed.\n",
 					map[string]interface{}{"trigger": trigger.Name, "project": ma[utils.OW_PROJECT_NAME]})
 				whisk.Debug(whisk.DbgInfo, output)
-                var err error
-                err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-                    _, _, err := deployer.Client.Triggers.Delete(trigger.Name)
-                    return err
-                })
+				var err error
+				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+					_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
+					return err
+				})
 
 				if err != nil {
 					return err
@@ -592,16 +593,16 @@ func (deployer *ServiceDeployer) RefreshManagedPackages(ma map[string]interface{
 				return err
 			}
 			// we have found a package which was earlier part of the current project
-			if pa[utils.OW_PROJECT_NAME] ==  ma[utils.OW_PROJECT_NAME] && pa[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
-				output := wski18n.T("Found the package {{.package}} which is deleted" +
+			if pa[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] && pa[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
+				output := wski18n.T("Found the package {{.package}} which is deleted"+
 					" from the current project {{.project}} in manifest file which is being undeployed.\n",
 					map[string]interface{}{"package": pkg.Name, "project": pa[utils.OW_PROJECT_NAME]})
 				whisk.Debug(whisk.DbgInfo, output)
-                var err error
-                err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-                    _, err := deployer.Client.Packages.Delete(pkg.Name)
-                    return err
-                })
+				var err error
+				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+					_, err := deployer.Client.Packages.Delete(pkg.Name)
+					return err
+				})
 
 				if err != nil {
 					return err
@@ -697,18 +698,20 @@ func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) erro
 	output := wski18n.T("Deploying package binding {{.output}} ...",
 		map[string]interface{}{"output": packa.Name})
 	whisk.Debug(whisk.DbgInfo, output)
-    var err error
-    err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-        _, _, err := deployer.Client.Packages.Insert(packa, true)
-        return err
-    })
+	var err error
+
+	var response *http.Response
+	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+		_, response, err = deployer.Client.Packages.Insert(packa, true)
+		return err
+	})
 
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		errString := wski18n.T("Got error creating package binding with error message: {{.err}} and error code: {{.code}}.\n",
 			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 	} else {
 		output := wski18n.T("Package binding {{.output}} has been successfully deployed.\n",
 			map[string]interface{}{"output": packa.Name})
@@ -721,17 +724,18 @@ func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) error {
 	output := wski18n.T("Deploying package {{.output}} ...",
 		map[string]interface{}{"output": packa.Name})
 	whisk.Debug(whisk.DbgInfo, output)
-    var err error
-    err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-        _, _, err := deployer.Client.Packages.Insert(packa, true)
-        return err
-    })
+	var err error
+	var response *http.Response
+	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+		_, response, err = deployer.Client.Packages.Insert(packa, true)
+		return err
+	})
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		errString := wski18n.T("Got error creating package with error message: {{.err}} and error code: {{.code}}.\n",
 			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 	} else {
 		output := wski18n.T("Package {{.output}} has been successfully deployed.\n",
 			map[string]interface{}{"output": packa.Name})
@@ -744,17 +748,18 @@ func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) error {
 	output := wski18n.T("Deploying trigger {{.output}} ...",
 		map[string]interface{}{"output": trigger.Name})
 	whisk.Debug(whisk.DbgInfo, output)
-    var err error
-    err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-        _, _, err := deployer.Client.Triggers.Insert(trigger, true)
-        return err
-    })
+	var err error
+	var response *http.Response
+	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+		_, response, err = deployer.Client.Triggers.Insert(trigger, true)
+		return err
+	})
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		errString := wski18n.T("Got error creating trigger with error message: {{.err}} and error code: {{.code}}.\n",
 			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 	} else {
 		output := wski18n.T("Trigger {{.output}} has been successfully deployed.\n",
 			map[string]interface{}{"output": trigger.Name})
@@ -798,17 +803,18 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 		deployer.deleteFeedAction(trigger, feedName)
 	}
 
-    var err error
-    err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-        _, _, err := deployer.Client.Triggers.Insert(t, true)
-        return err
-    })
+	var err error
+	var response *http.Response
+	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+		_, response, err = deployer.Client.Triggers.Insert(t, true)
+		return err
+	})
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		errString := wski18n.T("Got error creating trigger with error message: {{.err}} and error code: {{.code}}.\n",
 			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 	} else {
 
 		qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
@@ -818,26 +824,26 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 
 		namespace := deployer.Client.Namespace
 		deployer.Client.Namespace = qName.Namespace
-        err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-            _, _, err = deployer.Client.Actions.Invoke(qName.EntityName, params, true, false)
-            return err
-        })
+		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+			_, response, err = deployer.Client.Actions.Invoke(qName.EntityName, params, true, false)
+			return err
+		})
 		deployer.Client.Namespace = namespace
 
 		if err != nil {
 			// Remove the created trigger
 			deployer.Client.Triggers.Delete(trigger.Name)
 
-            retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-                _, _, err := deployer.Client.Triggers.Delete(trigger.Name)
-                return err
-            })
+			retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+				_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
+				return err
+			})
 
 			wskErr := err.(*whisk.WskError)
 			errString := wski18n.T("Got error creating trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
 				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 			whisk.Debug(whisk.DbgError, errString)
-			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 		}
 	}
 	output = wski18n.T("Trigger feed {{.output}} has been successfully deployed.\n",
@@ -864,18 +870,19 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 		map[string]interface{}{"output": rule.Name})
 	whisk.Debug(whisk.DbgInfo, output)
 
-    var err error
-    err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-        _, _, err := deployer.Client.Rules.Insert(rule, true)
-        return err
-    })
+	var err error
+	var response *http.Response
+	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+		_, response, err = deployer.Client.Rules.Insert(rule, true)
+		return err
+	})
 
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		errString := wski18n.T("Got error creating rule with error message: {{.err}} and error code: {{.code}}.\n",
 			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 	}
 
 	output = wski18n.T("Rule {{.output}} has been successfully deployed.\n",
@@ -895,18 +902,19 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 		map[string]interface{}{"output": action.Name})
 	whisk.Debug(whisk.DbgInfo, output)
 
-    var err error
-    err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-        _, _, err := deployer.Client.Actions.Insert(action, true)
-        return err
-    })
+	var err error
+	var response *http.Response
+	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+		_, response, err = deployer.Client.Actions.Insert(action, true)
+		return err
+	})
 
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		errString := wski18n.T("Got error creating action with error message: {{.err}} and error code: {{.code}}.\n",
 			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 	} else {
 		output := wski18n.T("Action {{.output}} has been successfully deployed.\n",
 			map[string]interface{}{"output": action.Name})
@@ -917,18 +925,19 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 
 // create api (API Gateway functionality)
 func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
-    var err error
-    err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-        _, _, err := deployer.Client.Apis.Insert(api, nil, true)
-        return err
-    })
+	var err error
+	var response *http.Response
+	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+		_, response, err = deployer.Client.Apis.Insert(api, nil, true)
+		return err
+	})
 
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		errString := wski18n.T("Got error creating api with error message: {{.err}} and error code: {{.code}}.\n",
 			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 	}
 	return nil
 }
@@ -979,21 +988,21 @@ func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentProject) error
 
 func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan *DeploymentProject) error {
 
-    if err := deployer.UnDeployRules(verifiedPlan); err != nil {
-        return err
-    }
+	if err := deployer.UnDeployRules(verifiedPlan); err != nil {
+		return err
+	}
 
-    if err := deployer.UnDeployTriggers(verifiedPlan); err != nil {
-        return err
-    }
+	if err := deployer.UnDeployTriggers(verifiedPlan); err != nil {
+		return err
+	}
 
 	if err := deployer.UnDeploySequences(verifiedPlan); err != nil {
 		return err
 	}
 
-    if err := deployer.UnDeployActions(verifiedPlan); err != nil {
-        return err
-    }
+	if err := deployer.UnDeployActions(verifiedPlan); err != nil {
+		return err
+	}
 
 	if err := deployer.UnDeployPackages(verifiedPlan); err != nil {
 		return err
@@ -1015,11 +1024,11 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
 			whisk.Debug(whisk.DbgInfo, output)
 
 			if depRecord.IsBinding {
-                var err error
-                err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-                    _, err := deployer.Client.Packages.Delete(depName)
-                    return err
-                })
+				var err error
+				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+					_, err := deployer.Client.Packages.Delete(depName)
+					return err
+				})
 				if err != nil {
 					return err
 				}
@@ -1038,17 +1047,18 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
 				// delete binding pkg if the origin package name is different
 				if depServiceDeployer.RootPackageName != depName {
 					if _, _, ok := deployer.Client.Packages.Get(depName); ok == nil {
-                        var err error
-                        err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-                            _, err := deployer.Client.Packages.Delete(depName)
-                            return err
-                        })
+						var err error
+						var response *http.Response
+						err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+							response, err = deployer.Client.Packages.Delete(depName)
+							return err
+						})
 						if err != nil {
 							wskErr := err.(*whisk.WskError)
 							errString := wski18n.T("Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n",
 								map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 							whisk.Debug(whisk.DbgError, errString)
-							return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+							return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 						}
 					}
 				}
@@ -1144,18 +1154,19 @@ func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
 		map[string]interface{}{"package": packa.Name})
 	whisk.Debug(whisk.DbgInfo, output)
 	if _, _, ok := deployer.Client.Packages.Get(packa.Name); ok == nil {
-        var err error
-        err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-            _, err := deployer.Client.Packages.Delete(packa.Name)
-            return err
-        })
+		var err error
+		var response *http.Response
+		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+			response, err = deployer.Client.Packages.Delete(packa.Name)
+			return err
+		})
 
 		if err != nil {
 			wskErr := err.(*whisk.WskError)
 			errString := wski18n.T("Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n",
 				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 			whisk.Debug(whisk.DbgError, errString)
-			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 		}
 	}
 	return nil
@@ -1166,18 +1177,19 @@ func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
 		map[string]interface{}{"trigger": trigger.Name})
 	whisk.Debug(whisk.DbgInfo, output)
 
-    var err error
-    err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-        _, _, err := deployer.Client.Triggers.Delete(trigger.Name)
-        return err
-    })
+	var err error
+	var response *http.Response
+	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+		_, response, err = deployer.Client.Triggers.Delete(trigger.Name)
+		return err
+	})
 
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
 		errString := wski18n.T("Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
 			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 	} else {
 		output := wski18n.T("Trigger {{.trigger}} has been removed.\n",
 			map[string]interface{}{"trigger": trigger.Name})
@@ -1205,10 +1217,11 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 
 	namespace := deployer.Client.Namespace
 	deployer.Client.Namespace = qName.Namespace
-    err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-        _, _, err := deployer.Client.Actions.Invoke(qName.EntityName, parameters, true, true)
-        return err
-    })
+	var response *http.Response
+	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+		_, response, err = deployer.Client.Actions.Invoke(qName.EntityName, parameters, true, false)
+		return err
+	})
 
 	deployer.Client.Namespace = namespace
 
@@ -1217,22 +1230,22 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 		errString := wski18n.T("Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
 			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 
 	} else {
 		trigger.Parameters = nil
-        var err error
-        err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-            _, _, err := deployer.Client.Triggers.Delete(trigger.Name)
-            return err
-        })
+		var err error
+		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+			_, response, err = deployer.Client.Triggers.Delete(trigger.Name)
+			return err
+		})
 
 		if err != nil {
 			wskErr := err.(*whisk.WskError)
 			errString := wski18n.T("Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
 				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 			whisk.Debug(whisk.DbgError, errString)
-			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 		}
 	}
 
@@ -1244,19 +1257,20 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
 		map[string]interface{}{"rule": rule.Name})
 	whisk.Debug(whisk.DbgInfo, output)
 
-    var err error
-    err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-        _, err := deployer.Client.Rules.Delete(rule.Name)
-        return err
-    })
+	var err error
+	var response *http.Response
+	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+		response, err = deployer.Client.Rules.Delete(rule.Name)
+		return err
+	})
 
-    if err != nil {
-        wskErr := err.(*whisk.WskError)
-        errString := wski18n.T("Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n",
-            map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-        whisk.Debug(whisk.DbgError, errString)
-        return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
-    }
+	if err != nil {
+		wskErr := err.(*whisk.WskError)
+		errString := wski18n.T("Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n",
+			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
+		whisk.Debug(whisk.DbgError, errString)
+		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
+	}
 	output = wski18n.T("Rule {{.rule}} has been removed.\n",
 		map[string]interface{}{"rule": rule.Name})
 	whisk.Debug(whisk.DbgInfo, output)
@@ -1276,18 +1290,19 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
 	whisk.Debug(whisk.DbgInfo, output)
 
 	if _, _, ok := deployer.Client.Actions.Get(action.Name); ok == nil {
-        var err error
-        err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-            _, err := deployer.Client.Actions.Delete(action.Name)
-            return err
-        })
+		var err error
+		var response *http.Response
+		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+			response, err = deployer.Client.Actions.Delete(action.Name)
+			return err
+		})
 
 		if err != nil {
 			wskErr := err.(*whisk.WskError)
 			errString := wski18n.T("Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n",
 				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 			whisk.Debug(whisk.DbgError, errString)
-			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode)
+			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 
 		}
 		output = wski18n.T("Action {{.action}} has been removed.\n",
@@ -1298,25 +1313,25 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
 }
 
 func retry(attempts int, sleep time.Duration, callback func() error) error {
-    var err error
-    for i := 0; ; i++ {
-        err = callback()
-        if i >= (attempts - 1) {
-            break
-        }
-        if err != nil {
-            wskErr := err.(*whisk.WskError)
-            if wskErr.ExitCode == CONFLICT_CODE && strings.Contains(wskErr.Error(), CONFLICT_MESSAGE) {
-                time.Sleep(sleep)
-                whisk.Debug(whisk.DbgError, "Retrying [%s] after error: %s\n", strconv.Itoa(i + 1), err)
-            } else {
-                return err
-            }
-        } else {
-            return err
-        }
-    }
-    return err
+	var err error
+	for i := 0; ; i++ {
+		err = callback()
+		if i >= (attempts - 1) {
+			break
+		}
+		if err != nil {
+			wskErr := err.(*whisk.WskError)
+			if wskErr.ExitCode == CONFLICT_CODE && strings.Contains(wskErr.Error(), CONFLICT_MESSAGE) {
+				time.Sleep(sleep)
+				whisk.Debug(whisk.DbgError, "Retrying [%s] after error: %s\n", strconv.Itoa(i+1), err)
+			} else {
+				return err
+			}
+		} else {
+			return err
+		}
+	}
+	return err
 }
 
 // from whisk go client

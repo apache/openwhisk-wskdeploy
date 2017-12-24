@@ -64,7 +64,7 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	/*
 	 * WhiskClientError
 	 */
-	err2 := NewWhiskClientError(TEST_DEFAULT_ERROR_MESSAGE, TEST_ERROR_CODE)
+	err2 := NewWhiskClientError(TEST_DEFAULT_ERROR_MESSAGE, TEST_ERROR_CODE, nil)
 	actualResult =  strings.TrimSpace(err2.Error())
 	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s: %d: %s",
 		packageName,

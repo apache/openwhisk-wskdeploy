@@ -20,11 +20,11 @@ packages:
             data-processing-sequence:
                 actions: receive-messages-from-messagehub, process-messages-received-from-messagehub
         triggers:
-            wskdeployMessageHubTrigger:
+            wskdeployIntegrationTestMessageHubTrigger:
                 feed: wskdeployMessageHub/messageHubFeed
         rules:
             data-processing-rule:
-                trigger: wskdeployMessageHubTrigger
+                trigger: wskdeployIntegrationTestMessageHubTrigger
                 action: data-processing-sequence
 
 
