@@ -34,6 +34,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"net/http"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 const (
@@ -318,12 +319,12 @@ func (deployer *ServiceDeployer) Deploy() error {
 				return err
 			}
 
-			utils.PrintOpenWhiskOutput(wski18n.T("Deployment completed successfully.\n"))
+			wskprint.PrintOpenWhiskOutput(wski18n.T("Deployment completed successfully.\n"))
 			return nil
 
 		} else {
 			deployer.InteractiveChoice = false
-			utils.PrintOpenWhiskOutput(wski18n.T("OK. Cancelling deployment.\n"))
+			wskprint.PrintOpenWhiskOutput(wski18n.T("OK. Cancelling deployment.\n"))
 			return nil
 		}
 	}
@@ -335,7 +336,7 @@ func (deployer *ServiceDeployer) Deploy() error {
 		return err
 	}
 
-	utils.PrintOpenWhiskOutput(wski18n.T("Deployment completed successfully.\n"))
+	wskprint.PrintOpenWhiskOutput(wski18n.T("Deployment completed successfully.\n"))
 	return nil
 
 }
@@ -431,7 +432,7 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 				if err := depServiceDeployer.deployAssets(); err != nil {
 					errString := wski18n.T("Deployment of dependency {{.depName}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n",
 						map[string]interface{}{"depName": depName})
-					utils.PrintOpenWhiskErrorMessage(errString)
+					wskprint.PrintOpenWhiskErrorMessage(errString)
 					return err
 				}
 
@@ -960,16 +961,16 @@ func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentProject) error
 			deployer.InteractiveChoice = true
 
 			if err := deployer.unDeployAssets(verifiedPlan); err != nil {
-				utils.PrintOpenWhiskErrorMessage(wski18n.T("Undeployment did not complete sucessfully.\n"))
+				wskprint.PrintOpenWhiskErrorMessage(wski18n.T("Undeployment did not complete sucessfully.\n"))
 				return err
 			}
 
-			utils.PrintOpenWhiskOutput(wski18n.T("Deployment removed successfully.\n"))
+			wskprint.PrintOpenWhiskOutput(wski18n.T("Deployment removed successfully.\n"))
 			return nil
 
 		} else {
 			deployer.InteractiveChoice = false
-			utils.PrintOpenWhiskOutput(wski18n.T("OK. Canceling undeployment.\n"))
+			wskprint.PrintOpenWhiskOutput(wski18n.T("OK. Canceling undeployment.\n"))
 			return nil
 		}
 	}
@@ -981,7 +982,7 @@ func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentProject) error
 		return err
 	}
 
-	utils.PrintOpenWhiskOutput(wski18n.T("Deployment removed successfully.\n"))
+	wskprint.PrintOpenWhiskOutput(wski18n.T("Deployment removed successfully.\n"))
 	return nil
 
 }
@@ -1351,12 +1352,12 @@ func (deployer *ServiceDeployer) getQualifiedName(name string, namespace string)
 func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject) {
 
 	// pretty ASCII OpenWhisk graphic
-	utils.PrintOpenWhiskOutputln("         ____      ___                   _    _ _     _     _\n        /\\   \\    / _ \\ _ __   ___ _ __ | |  | | |__ (_)___| | __\n   /\\  /__\\   \\  | | | | '_ \\ / _ \\ '_ \\| |  | | '_ \\| / __| |/ /\n  /  \\____ \\  /  | |_| | |_) |  __/ | | | |/\\| | | | | \\__ \\   <\n  \\   \\  /  \\/    \\___/| .__/ \\___|_| |_|__/\\__|_| |_|_|___/_|\\_\\ \n   \\___\\/              |_|\n")
+	wskprint.PrintOpenWhiskOutputln("         ____      ___                   _    _ _     _     _\n        /\\   \\    / _ \\ _ __   ___ _ __ | |  | | |__ (_)___| | __\n   /\\  /__\\   \\  | | | | '_ \\ / _ \\ '_ \\| |  | | '_ \\| / __| |/ /\n  /  \\____ \\  /  | |_| | |_) |  __/ | | | |/\\| | | | | \\__ \\   <\n  \\   \\  /  \\/    \\___/| .__/ \\___|_| |_|__/\\__|_| |_|_|___/_|\\_\\ \n   \\___\\/              |_|\n")
 
-	utils.PrintOpenWhiskOutputln("Packages:")
+	wskprint.PrintOpenWhiskOutputln("Packages:")
 	for _, pack := range assets.Packages {
-		utils.PrintOpenWhiskOutputln("Name: " + pack.Package.Name)
-		utils.PrintOpenWhiskOutputln("    bindings: ")
+		wskprint.PrintOpenWhiskOutputln("Name: " + pack.Package.Name)
+		wskprint.PrintOpenWhiskOutputln("    bindings: ")
 		for _, p := range pack.Package.Parameters {
 			jsonValue, err := utils.PrettyJSON(p.Value)
 			if err != nil {
@@ -1367,18 +1368,18 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 		}
 
 		for key, dep := range pack.Dependencies {
-			utils.PrintOpenWhiskOutputln("  * dependency: " + key)
-			utils.PrintOpenWhiskOutputln("    location: " + dep.Location)
+			wskprint.PrintOpenWhiskOutputln("  * dependency: " + key)
+			wskprint.PrintOpenWhiskOutputln("    location: " + dep.Location)
 			if !dep.IsBinding {
-				utils.PrintOpenWhiskOutputln("    local path: " + dep.ProjectPath)
+				wskprint.PrintOpenWhiskOutputln("    local path: " + dep.ProjectPath)
 			}
 		}
 
-		utils.PrintOpenWhiskOutputln("")
+		wskprint.PrintOpenWhiskOutputln("")
 
 		for _, action := range pack.Actions {
-			utils.PrintOpenWhiskOutputln("  * action: " + action.Action.Name)
-			utils.PrintOpenWhiskOutputln("    bindings: ")
+			wskprint.PrintOpenWhiskOutputln("  * action: " + action.Action.Name)
+			wskprint.PrintOpenWhiskOutputln("    bindings: ")
 			for _, p := range action.Action.Parameters {
 
 				if reflect.TypeOf(p.Value).Kind() == reflect.Map {
@@ -1403,25 +1404,25 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 				}
 
 			}
-			utils.PrintOpenWhiskOutputln("    annotations: ")
+			wskprint.PrintOpenWhiskOutputln("    annotations: ")
 			for _, p := range action.Action.Annotations {
 				fmt.Printf("        - %s : %v\n", p.Key, p.Value)
 
 			}
 		}
 
-		utils.PrintOpenWhiskOutputln("")
+		wskprint.PrintOpenWhiskOutputln("")
 		for _, action := range pack.Sequences {
-			utils.PrintOpenWhiskOutputln("  * sequence: " + action.Action.Name)
+			wskprint.PrintOpenWhiskOutputln("  * sequence: " + action.Action.Name)
 		}
 
-		utils.PrintOpenWhiskOutputln("")
+		wskprint.PrintOpenWhiskOutputln("")
 	}
 
-	utils.PrintOpenWhiskOutputln("Triggers:")
+	wskprint.PrintOpenWhiskOutputln("Triggers:")
 	for _, trigger := range assets.Triggers {
-		utils.PrintOpenWhiskOutputln("* trigger: " + trigger.Name)
-		utils.PrintOpenWhiskOutputln("    bindings: ")
+		wskprint.PrintOpenWhiskOutputln("* trigger: " + trigger.Name)
+		wskprint.PrintOpenWhiskOutputln("    bindings: ")
 
 		for _, p := range trigger.Parameters {
 			jsonValue, err := utils.PrettyJSON(p.Value)
@@ -1432,24 +1433,24 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 			}
 		}
 
-		utils.PrintOpenWhiskOutputln("    annotations: ")
+		wskprint.PrintOpenWhiskOutputln("    annotations: ")
 		for _, p := range trigger.Annotations {
 
 			value := "?"
 			if str, ok := p.Value.(string); ok {
 				value = str
 			}
-			utils.PrintOpenWhiskOutputln("        - name: " + p.Key + " value: " + value)
+			wskprint.PrintOpenWhiskOutputln("        - name: " + p.Key + " value: " + value)
 		}
 	}
 
-	utils.PrintOpenWhiskOutputln("\n Rules")
+	wskprint.PrintOpenWhiskOutputln("\n Rules")
 	for _, rule := range assets.Rules {
-		utils.PrintOpenWhiskOutputln("* rule: " + rule.Name)
-		utils.PrintOpenWhiskOutputln("    - trigger: " + rule.Trigger.(string) + "\n    - action: " + rule.Action.(string))
+		wskprint.PrintOpenWhiskOutputln("* rule: " + rule.Name)
+		wskprint.PrintOpenWhiskOutputln("    - trigger: " + rule.Trigger.(string) + "\n    - action: " + rule.Action.(string))
 	}
 
-	utils.PrintOpenWhiskOutputln("")
+	wskprint.PrintOpenWhiskOutputln("")
 
 }
 

@@ -24,6 +24,8 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 )
 
 type DeploymentReader struct {
@@ -75,7 +77,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 		// a single package is specified in deployment YAML file with "package" key
 		if len(reader.DeploymentDescriptor.GetProject().Package.Packagename) != 0 {
 			packMap[reader.DeploymentDescriptor.GetProject().Package.Packagename] = reader.DeploymentDescriptor.GetProject().Package
-			utils.PrintOpenWhiskOutputln("WARNING: The package YAML key in deployment file will soon be deprecated. Please use packages instead as described in specifications.")
+			wskprint.PrintOpenWhiskOutputln("WARNING: The package YAML key in deployment file will soon be deprecated. Please use packages instead as described in specifications.")
 		} else {
 			if reader.DeploymentDescriptor.Packages != nil {
 				for packName, depPacks := range reader.DeploymentDescriptor.Packages {
@@ -98,7 +100,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 		serviceDeployPack := reader.serviceDeployer.Deployment.Packages[packName]
 
 		if serviceDeployPack == nil {
-			utils.PrintOpenWhiskOutputln("WARNING: Package name in deployment file " + packName + " does not match with manifest file.")
+			wskprint.PrintOpenWhiskOutputln("WARNING: Package name in deployment file " + packName + " does not match with manifest file.")
 			break
 		}
 
@@ -110,7 +112,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 
 				keyVal.Key = name
 
-				keyVal.Value = utils.GetEnvVar(input.Value)
+				keyVal.Value = wskenv.GetEnvVar(input.Value)
 
 				keyValArr = append(keyValArr, keyVal)
 			}
@@ -200,7 +202,7 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 
 					keyVal.Key = name
 
-					keyVal.Value = utils.GetEnvVar(input.Value)
+					keyVal.Value = wskenv.GetEnvVar(input.Value)
 
 					keyValArr = append(keyValArr, keyVal)
 				}
@@ -285,7 +287,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 					var keyVal whisk.KeyValue
 
 					keyVal.Key = name
-					keyVal.Value = utils.GetEnvVar(input.Value)
+					keyVal.Value = wskenv.GetEnvVar(input.Value)
 
 					keyValArr = append(keyValArr, keyVal)
 				}
@@ -298,7 +300,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 					}
 
 					for _, keyVal := range wskTrigger.Parameters {
-						utils.PrintOpenWhiskOutputln("Checking key " + keyVal.Key)
+						wskprint.PrintOpenWhiskOutputln("Checking key " + keyVal.Key)
 						if _, exists := depParams[keyVal.Key]; !exists {
 							keyValArr = append(keyValArr, keyVal)
 						}

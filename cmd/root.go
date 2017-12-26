@@ -32,6 +32,7 @@ import (
 	"regexp"
 	"strings"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 var stderr = ""
@@ -61,13 +62,13 @@ func Execute() {
 	if utils.Flags.WithinOpenWhisk {
 		err := substCmdArgs()
 		if err != nil {
-			utils.PrintOpenWhiskError(err)
+			wskprint.PrintOpenWhiskError(err)
 			return
 		}
 	}
 
 	if err := RootCmd.Execute(); err != nil {
-		utils.PrintOpenWhiskError(err)
+		wskprint.PrintOpenWhiskError(err)
 		os.Exit(-1)
 	} else {
 		if utils.Flags.WithinOpenWhisk {
@@ -135,7 +136,7 @@ func initConfig() {
 		_, err := whisk.ReadProps(utils.Flags.CfgFile)
 		if err != nil {
 			utils.Flags.CfgFile = defaultPath
-			utils.PrintOpenWhiskOutputln("Invalid config file detected, so by bdefault it is set to " + utils.Flags.CfgFile)
+			wskprint.PrintOpenWhiskOutputln("Invalid config file detected, so by bdefault it is set to " + utils.Flags.CfgFile)
 		}
 
 	} else {

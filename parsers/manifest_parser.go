@@ -32,6 +32,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"gopkg.in/yaml.v2"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 )
 
 // Read existing manifest file or create new if none exists
@@ -178,7 +179,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 		for name, value := range dependency.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = utils.GetEnvVar(value)
+			keyVal.Value = wskenv.GetEnvVar(value)
 
 			keyValArrAnot = append(keyValArrAnot, keyVal)
 		}
@@ -283,7 +284,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	for name, value := range pkg.Annotations {
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
-		keyVal.Value = utils.GetEnvVar(value)
+		keyVal.Value = wskenv.GetEnvVar(value)
 		listOfAnnotations = append(listOfAnnotations, keyVal)
 	}
 	if len(listOfAnnotations) > 0 {
@@ -352,7 +353,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		for name, value := range sequence.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = utils.GetEnvVar(value)
+			keyVal.Value = wskenv.GetEnvVar(value)
 
 			keyValArr = append(keyValArr, keyVal)
 		}
@@ -592,7 +593,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		for name, value := range action.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = utils.GetEnvVar(value)
+			keyVal.Value = wskenv.GetEnvVar(value)
 			listOfAnnotations = append(listOfAnnotations, keyVal)
 		}
 		if len(listOfAnnotations) > 0 {
@@ -739,7 +740,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 		for name, value := range trigger.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = utils.GetEnvVar(value)
+			keyVal.Value = wskenv.GetEnvVar(value)
 			listOfAnnotations = append(listOfAnnotations, keyVal)
 		}
 		if len(listOfAnnotations) > 0 {

@@ -27,6 +27,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 // name of directory that can contain source code
@@ -45,7 +46,7 @@ func NewFileSystemReader(serviceDeployer *ServiceDeployer) *FileSystemReader {
 
 func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]utils.ActionRecord, error) {
 
-    utils.PrintOpenWhiskOutputln("Inspecting project directory for actions....")
+	wskprint.PrintOpenWhiskOutputln("Inspecting project directory for actions....")
 
 	projectPathCount, err := reader.getFilePathCount(reader.serviceDeployer.ProjectPath)
 	actions := make([]utils.ActionRecord, 0)
@@ -89,7 +90,7 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]
 					}
 				}
 			} else if strings.HasPrefix(fpath, reader.serviceDeployer.ProjectPath+"/"+FileSystemSourceDirectoryName) {
-                utils.PrintOpenWhiskOutputln("Searching directory " + filepath.Base(fpath) + " for action source code.")
+				wskprint.PrintOpenWhiskOutputln("Searching directory " + filepath.Base(fpath) + " for action source code.")
 			} else {
 				return filepath.SkipDir
 			}

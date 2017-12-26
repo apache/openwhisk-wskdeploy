@@ -31,6 +31,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 const (
@@ -145,17 +146,17 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	whiskproperty, _ := GetWskPropFromWhiskProperty(pi)
 	credential = GetPropertyValue(credential, whiskproperty.AuthKey, WHISKPROPERTY)
 	if credential.Source == WHISKPROPERTY {
-        utils.PrintOpenWhiskOutputln("WARNING: The authentication key was retrieved from whisk.properties " +
+		wskprint.PrintOpenWhiskOutputln("WARNING: The authentication key was retrieved from whisk.properties " +
 			"which will soon be deprecated please do not use it outside of Travis builds.")
 	}
 	namespace = GetPropertyValue(namespace, whiskproperty.Namespace, WHISKPROPERTY)
 	if namespace.Source == WHISKPROPERTY {
-        utils.PrintOpenWhiskOutputln("WARNING: The namespace was retrieved from whisk.properties " +
+		wskprint.PrintOpenWhiskOutputln("WARNING: The namespace was retrieved from whisk.properties " +
 			"which will soon be deprecated please do not use it outside of Travis builds.")
 	}
 	apiHost = GetPropertyValue(apiHost, whiskproperty.APIHost, WHISKPROPERTY)
 	if apiHost.Source == WHISKPROPERTY {
-        utils.PrintOpenWhiskOutputln("WARNING: The API host was retrieved from whisk.properties " +
+		wskprint.PrintOpenWhiskOutputln("WARNING: The API host was retrieved from whisk.properties " +
 			"which will soon be deprecated please do not use it outside of Travis builds.")
 	}
 
