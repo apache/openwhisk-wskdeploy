@@ -21,11 +21,8 @@ package utils
 
 import (
 	"testing"
-
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"os"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 )
 
 var contentReader = new(ContentReader)
