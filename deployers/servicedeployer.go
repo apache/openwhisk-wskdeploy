@@ -1352,6 +1352,7 @@ func (deployer *ServiceDeployer) getQualifiedName(name string, namespace string)
 func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject) {
 
 	// pretty ASCII OpenWhisk graphic
+	// TODO() move to separate function and suppress using some flag
 	wskprint.PrintlnOpenWhiskOutput("         ____      ___                   _    _ _     _     _\n        /\\   \\    / _ \\ _ __   ___ _ __ | |  | | |__ (_)___| | __\n   /\\  /__\\   \\  | | | | '_ \\ / _ \\ '_ \\| |  | | '_ \\| / __| |/ /\n  /  \\____ \\  /  | |_| | |_) |  __/ | | | |/\\| | | | | \\__ \\   <\n  \\   \\  /  \\/    \\___/| .__/ \\___|_| |_|__/\\__|_| |_|_|___/_|\\_\\ \n   \\___\\/              |_|\n")
 
 	wskprint.PrintlnOpenWhiskOutput("Packages:")

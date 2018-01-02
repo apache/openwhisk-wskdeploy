@@ -82,7 +82,8 @@ func printDeploymentInfo(client *whisk.Client) error {
 	//We currently list packages, actions, triggers, rules.
 	wg.Add(4)
 
-	wskprint.PrintlnOpenWhiskOutput("----==== OpenWhisk Deployment Status ====----")
+	// TODO() i18n
+	wskprint.PrintlnOpenWhiskStatus("----==== OpenWhisk Deployment Status ====----")
 	// we set the default package list options
 	pkgoptions := &whisk.PackageListOptions{false, 0, 0, 0, false}
 	packages, _, err := client.Packages.List(pkgoptions)

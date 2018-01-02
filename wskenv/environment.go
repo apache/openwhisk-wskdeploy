@@ -66,14 +66,16 @@ func GetEnvVar(key interface{}) interface{} {
 				if strings.Contains(keystr, "$"+substr) {
 					thisValue = os.Getenv(substr)
 					if thisValue == "" {
-						wskprint.PrintlnOpenWhiskOutput("WARNING: Missing Environment Variable " + substr + ".")
+						// TODO() i18n
+						wskprint.PrintlnOpenWhiskWarning("Missing Environment Variable " + substr + ".")
 					}
 					keystr = strings.Replace(keystr, "$"+substr, thisValue, -1)
 					//if the substr is a ${ENV_VAR}
 				} else if strings.Contains(keystr, "${"+substr+"}") {
 					thisValue = os.Getenv(substr)
 					if thisValue == "" {
-						wskprint.PrintlnOpenWhiskOutput("WARNING: Missing Environment Variable " + substr + ".")
+						// TODO() i18n
+						wskprint.PrintlnOpenWhiskWarning("Missing Environment Variable " + substr + ".")
 					}
 					keystr = strings.Replace(keystr, "${"+substr+"}", thisValue, -1)
 				}

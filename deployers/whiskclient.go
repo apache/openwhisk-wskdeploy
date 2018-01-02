@@ -146,17 +146,20 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	whiskproperty, _ := GetWskPropFromWhiskProperty(pi)
 	credential = GetPropertyValue(credential, whiskproperty.AuthKey, WHISKPROPERTY)
 	if credential.Source == WHISKPROPERTY {
-		wskprint.PrintlnOpenWhiskOutput("WARNING: The authentication key was retrieved from whisk.properties " +
+		// TODO() i18n
+		wskprint.PrintlnOpenWhiskWarning("The authentication key was retrieved from whisk.properties " +
 			"which will soon be deprecated please do not use it outside of Travis builds.")
 	}
 	namespace = GetPropertyValue(namespace, whiskproperty.Namespace, WHISKPROPERTY)
 	if namespace.Source == WHISKPROPERTY {
-		wskprint.PrintlnOpenWhiskOutput("WARNING: The namespace was retrieved from whisk.properties " +
+		// TODO() i18n
+		wskprint.PrintlnOpenWhiskWarning("The namespace was retrieved from whisk.properties " +
 			"which will soon be deprecated please do not use it outside of Travis builds.")
 	}
 	apiHost = GetPropertyValue(apiHost, whiskproperty.APIHost, WHISKPROPERTY)
 	if apiHost.Source == WHISKPROPERTY {
-		wskprint.PrintlnOpenWhiskOutput("WARNING: The API host was retrieved from whisk.properties " +
+		// TODO() i18n
+		wskprint.PrintlnOpenWhiskWarning("The API host was retrieved from whisk.properties " +
 			"which will soon be deprecated please do not use it outside of Travis builds.")
 	}
 
@@ -170,8 +173,10 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	// If so, we prompt users for the input.
 	// The namespace is set to a default value at this point if not provided.
 	if len(apiHost.Value) == 0 && isInteractive == true {
+		// TODO() i18n
 		host := promptForValue("\nPlease provide the hostname for OpenWhisk [default value is openwhisk.ng.bluemix.net]: ")
 		if host == "" {
+			// TODO() tell caller that we are using this default, look to make a const at top of file
 			host = "openwhisk.ng.bluemix.net"
 		}
 		apiHost.Value = host
@@ -179,12 +184,14 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	}
 
 	if len(credential.Value) == 0 && isInteractive == true {
+		// TODO() i18n
 		cred := promptForValue("\nPlease provide an authentication token: ")
 		credential.Value = cred
 		credential.Source = INTERINPUT
 
 		// The namespace is always associated with the credential. Both of them should be picked up from the same source.
 		if len(namespace.Value) == 0 || namespace.Value == whisk.DEFAULT_NAMESPACE {
+			// TODO() i18n
 			ns := promptForValue("\nPlease provide a namespace [default value is guest]: ")
 			source := INTERINPUT
 
@@ -262,5 +269,4 @@ var promptForValue = func(msg string) (string) {
 	text = strings.TrimSpace(text)
 
 	return text
-
 }

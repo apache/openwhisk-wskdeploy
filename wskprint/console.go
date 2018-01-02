@@ -27,6 +27,7 @@ import (
 const(
 	STR_PREFIXED_MESSAGE = "%s: %s"
 
+	// IDs match those used to look up i18n strings from en_US.all.json
 	ID_I18B_PREFIX_ERROR 	= "msg_prefix_error"
 	ID_I18B_PREFIX_WARNING	= "msg_prefix_warning"
 	ID_I18B_PREFIX_SUCCESS	= "msg_prefix_success"
