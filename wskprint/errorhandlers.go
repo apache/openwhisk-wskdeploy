@@ -77,6 +77,6 @@ func PrintlnOpenWhiskStatus(message string) {
 	PrintOpenWhiskStatus(message + "\n")
 }
 
-func PrintlnOpenWhiskOutput(output string) {
-    fmt.Println(output)
+func PrintlnOpenWhiskOutput(message string) {
+   	fmt.Println(message)
 }
