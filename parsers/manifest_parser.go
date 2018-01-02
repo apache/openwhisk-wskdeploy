@@ -433,8 +433,9 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				if err != nil {
 					return nil, err
 				}
+				// TODO() do not use defer in a loop, resource leaks possible
 				defer os.Remove(zipName)
-				// To do: support docker and main entry as did by go cli?
+				// TODO(): support docker and main entry as did by go cli?
 				wskaction.Exec, err = utils.GetExec(zipName, action.Runtime, false, "")
 				if err != nil {
 					return nil, err
