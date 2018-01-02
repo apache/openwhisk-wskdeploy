@@ -55,7 +55,7 @@ func TestInvalidKeyDeploymentYaml(t *testing.T) {
 	_, err = p.ParseDeployment(tmpfile.Name())
 	assert.NotNil(t, err)
 	// NOTE: go-yaml/yaml gets the line # wrong; testing only for the invalid key message
-	assert.Contains(t, err.Error(), "line 3: field invalidKey not found in struct parsers.Project")
+	assert.Contains(t, err.Error(), "field invalidKey not found in struct parsers.Project")
 }
 
 func TestMappingValueDeploymentYaml(t *testing.T) {
