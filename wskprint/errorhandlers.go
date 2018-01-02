@@ -39,6 +39,10 @@ func PrintOpenWhiskError(message string) {
 	fmt.Fprintf(outputStream, color.RedString(fmsg))
 }
 
+func PrintlnOpenWhiskError(message string) {
+	PrintOpenWhiskError(message + "\n")
+}
+
 func PrintOpenWhiskFromError(err error) {
 	PrintOpenWhiskError(err.Error())
 }
@@ -49,10 +53,28 @@ func PrintOpenWhiskWarning(message string) {
 	fmt.Fprintf(outputStream, color.YellowString(fmsg))
 }
 
+func PrintlnOpenWhiskWarning(message string) {
+	PrintOpenWhiskWarning(message + "\n")
+}
+
 func PrintOpenWhiskSuccess(message string) {
 	outputStream := colorable.NewColorableStdout()
 	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(ID_I18B_PREFIX_SUCCESS), message)
 	fmt.Fprintf(outputStream, color.GreenString(fmsg))
+}
+
+func PrintlnOpenWhiskSuccess(message string) {
+	PrintOpenWhiskSuccess(message + "\n")
+}
+
+func PrintOpenWhiskStatus(message string) {
+	outputStream := colorable.NewColorableStdout()
+	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(ID_I18B_PREFIX_INFO), message)
+	fmt.Fprintf(outputStream, color.CyanString(fmsg))
+}
+
+func PrintlnOpenWhiskStatus(message string) {
+	PrintOpenWhiskStatus(message + "\n")
 }
 
 func PrintlnOpenWhiskOutput(output string) {
