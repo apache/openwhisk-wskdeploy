@@ -1400,8 +1400,8 @@ func TestBadYAMLInvalidPackageKeyInManifest(t *testing.T) {
     _, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_invalid_package_key.yaml")
 
     assert.NotNil(t, err)
-    // go-yaml/yaml prints the wrong line number for mapping values. It should be 4.
-    assert.Contains(t, err.Error(), "line 2: field invalidKey not found in struct parsers.Package")
+    // NOTE: go-yaml/yaml gets the line # wrong; testing only for the invalid key message
+    assert.Contains(t, err.Error(), "field invalidKey not found in struct parsers.Package")
 }
 
 func TestBadYAMLInvalidKeyMappingValueInManifest(t *testing.T) {
