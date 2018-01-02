@@ -689,7 +689,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 
 	for _, trigger := range pkg.GetTriggerList() {
 		wsktrigger := new(whisk.Trigger)
-		wsktrigger.Name = trigger.Name
+		wsktrigger.Name = convertSingleName(trigger.Name)
 		wsktrigger.Namespace = trigger.Namespace
 		pub := false
 		wsktrigger.Publish = &pub

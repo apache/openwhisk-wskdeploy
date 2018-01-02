@@ -177,16 +177,16 @@ func (yaml *YAML) GetProject() Project {
 	return yaml.Application
 }
 
-func convertSinglePackageName(packageName string) string {
-	if len(packageName) != 0 {
-		packageNameEnv := utils.GetEnvVar(packageName)
-		if str, ok := packageNameEnv.(string); ok {
+func convertSingleName(theName string) string {
+	if len(theName) != 0 {
+		theNameEnv := utils.GetEnvVar(theName)
+		if str, ok := theNameEnv.(string); ok {
 			return str
 		} else {
-			return packageName
+			return theName
 		}
 	}
-	return packageName
+	return theName
 }
 
 func convertPackageName(packageMap map[string]Package) map[string]Package {
@@ -197,7 +197,7 @@ func convertPackageName(packageMap map[string]Package) map[string]Package {
 		if str, ok := packageName.(string); ok {
 			name = str
 		}
-		depPacks.Packagename = convertSinglePackageName(depPacks.Packagename)
+		depPacks.Packagename = convertSingleName(depPacks.Packagename)
 		packages[name] = depPacks
 	}
 	return packages
@@ -205,12 +205,12 @@ func convertPackageName(packageMap map[string]Package) map[string]Package {
 
 func ReadEnvVariable(yaml *YAML) *YAML {
 	if yaml.Application.Name != "" {
-		yaml.Application.Package.Packagename = convertSinglePackageName(yaml.Application.Package.Packagename)
-		yaml.Package.Packagename = convertSinglePackageName(yaml.Package.Packagename)
+		yaml.Application.Package.Packagename = convertSingleName(yaml.Application.Package.Packagename)
+		yaml.Package.Packagename = convertSingleName(yaml.Package.Packagename)
 		yaml.Application.Packages = convertPackageName(yaml.Application.Packages)
 	} else {
-		yaml.Project.Package.Packagename = convertSinglePackageName(yaml.Project.Package.Packagename)
-		yaml.Package.Packagename = convertSinglePackageName(yaml.Package.Packagename)
+		yaml.Project.Package.Packagename = convertSingleName(yaml.Project.Package.Packagename)
+		yaml.Package.Packagename = convertSingleName(yaml.Package.Packagename)
 		yaml.Project.Packages = convertPackageName(yaml.Project.Packages)
 	}
 	yaml.Packages = convertPackageName(yaml.Packages)
@@ -232,13 +232,12 @@ func (trigger *Trigger) ComposeWskTrigger(kvarr []whisk.KeyValue) *whisk.Trigger
 //********************Rule functions*************************//
 func (rule *Rule) ComposeWskRule() *whisk.Rule {
 	wskrule := new(whisk.Rule)
-	wskrule.Name = rule.Name
+	wskrule.Name = convertSingleName(rule.Name)
 	//wskrule.Namespace = rule.Namespace
 	pub := false
 	wskrule.Publish = &pub
-	wskrule.Trigger = rule.Trigger
-
-	wskrule.Action = rule.Action
+	wskrule.Trigger = convertSingleName(rule.Trigger)
+	wskrule.Action = convertSingleName(rule.Action)
 	return wskrule
 }
 
