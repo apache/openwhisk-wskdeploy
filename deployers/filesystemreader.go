@@ -46,7 +46,7 @@ func NewFileSystemReader(serviceDeployer *ServiceDeployer) *FileSystemReader {
 
 func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]utils.ActionRecord, error) {
 
-	wskprint.PrintOpenWhiskOutputln("Inspecting project directory for actions....")
+	wskprint.PrintlnOpenWhiskOutput("Inspecting project directory for actions....")
 
 	projectPathCount, err := reader.getFilePathCount(reader.serviceDeployer.ProjectPath)
 	actions := make([]utils.ActionRecord, 0)
@@ -90,7 +90,7 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]
 					}
 				}
 			} else if strings.HasPrefix(fpath, reader.serviceDeployer.ProjectPath+"/"+FileSystemSourceDirectoryName) {
-				wskprint.PrintOpenWhiskOutputln("Searching directory " + filepath.Base(fpath) + " for action source code.")
+				wskprint.PrintlnOpenWhiskOutput("Searching directory " + filepath.Base(fpath) + " for action source code.")
 			} else {
 				return filepath.SkipDir
 			}

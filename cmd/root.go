@@ -62,13 +62,13 @@ func Execute() {
 	if utils.Flags.WithinOpenWhisk {
 		err := substCmdArgs()
 		if err != nil {
-			wskprint.PrintOpenWhiskError(err)
+			wskprint.PrintOpenWhiskFromError(err)
 			return
 		}
 	}
 
 	if err := RootCmd.Execute(); err != nil {
-		wskprint.PrintOpenWhiskError(err)
+		wskprint.PrintOpenWhiskFromError(err)
 		os.Exit(-1)
 	} else {
 		if utils.Flags.WithinOpenWhisk {
@@ -136,7 +136,7 @@ func initConfig() {
 		_, err := whisk.ReadProps(utils.Flags.CfgFile)
 		if err != nil {
 			utils.Flags.CfgFile = defaultPath
-			wskprint.PrintOpenWhiskOutputln("Invalid config file detected, so by bdefault it is set to " + utils.Flags.CfgFile)
+			wskprint.PrintOpenWhiskWarning("Invalid config file detected, so by default it is set to " + utils.Flags.CfgFile + "\n")
 		}
 
 	} else {

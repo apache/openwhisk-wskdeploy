@@ -76,7 +76,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 		// a single package is specified in deployment YAML file with "package" key
 		if len(reader.DeploymentDescriptor.GetProject().Package.Packagename) != 0 {
 			packMap[reader.DeploymentDescriptor.GetProject().Package.Packagename] = reader.DeploymentDescriptor.GetProject().Package
-			wskprint.PrintOpenWhiskOutputln("WARNING: The package YAML key in deployment file will soon be deprecated. Please use packages instead as described in specifications.")
+			wskprint.PrintlnOpenWhiskOutput("WARNING: The package YAML key in deployment file will soon be deprecated. Please use packages instead as described in specifications.")
 		} else {
 			if reader.DeploymentDescriptor.Packages != nil {
 				for packName, depPacks := range reader.DeploymentDescriptor.Packages {
@@ -99,7 +99,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 		serviceDeployPack := reader.serviceDeployer.Deployment.Packages[packName]
 
 		if serviceDeployPack == nil {
-			wskprint.PrintOpenWhiskOutputln("WARNING: Package name in deployment file " + packName + " does not match with manifest file.")
+			wskprint.PrintlnOpenWhiskOutput("WARNING: Package name in deployment file " + packName + " does not match with manifest file.")
 			break
 		}
 
@@ -299,7 +299,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 					}
 
 					for _, keyVal := range wskTrigger.Parameters {
-						wskprint.PrintOpenWhiskOutputln("Checking key " + keyVal.Key)
+						wskprint.PrintlnOpenWhiskOutput("Checking key " + keyVal.Key)
 						if _, exists := depParams[keyVal.Key]; !exists {
 							keyValArr = append(keyValArr, keyVal)
 						}

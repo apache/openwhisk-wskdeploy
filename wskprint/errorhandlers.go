@@ -24,21 +24,37 @@ import (
 	"github.com/mattn/go-colorable"
 )
 
-func PrintOpenWhiskError(err error) {
+const(
+	STR_PREFIXED_MESSAGE = "%s: %s"
+
+	ID_I18B_PREFIX_ERROR 	= "msg_prefix_error"
+	ID_I18B_PREFIX_WARNING	= "msg_prefix_warning"
+	ID_I18B_PREFIX_SUCCESS	= "msg_prefix_success"
+	ID_I18B_PREFIX_INFO	= "msg_prefix_info"
+)
+
+func PrintOpenWhiskError(message string) {
 	outputStream := colorable.NewColorableStderr()
-	fmt.Fprintf(outputStream, "%s%s", color.RedString(wski18n.T("Error: ")), err.Error())
+	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(ID_I18B_PREFIX_ERROR), message)
+	fmt.Fprintf(outputStream, color.RedString(fmsg))
 }
 
-func PrintOpenWhiskOutput(output string) {
-    outputStream := colorable.NewColorableStdout()
-    fmt.Fprintf(outputStream, "%s", color.GreenString(output))
+func PrintOpenWhiskFromError(err error) {
+	PrintOpenWhiskError(err.Error())
 }
 
-func PrintOpenWhiskOutputln(output string) {
+func PrintOpenWhiskWarning(message string) {
+	outputStream := colorable.NewColorableStdout()
+	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(ID_I18B_PREFIX_WARNING), message)
+	fmt.Fprintf(outputStream, color.YellowString(fmsg))
+}
+
+func PrintOpenWhiskSuccess(message string) {
+	outputStream := colorable.NewColorableStdout()
+	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(ID_I18B_PREFIX_SUCCESS), message)
+	fmt.Fprintf(outputStream, color.GreenString(fmsg))
+}
+
+func PrintlnOpenWhiskOutput(output string) {
     fmt.Println(output)
-}
-
-func PrintOpenWhiskErrorMessage(err string) {
-    outputStream := colorable.NewColorableStderr()
-    fmt.Fprintf(outputStream, "%s", color.RedString(err))
 }
