@@ -51,81 +51,81 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	 * CommandError
 	 */
 	err1 := NewCommandError(TEST_COMMAND, TEST_DEFAULT_ERROR_MESSAGE)
-	actualResult :=  strings.TrimSpace(err1.Error())
+	actualResult := strings.TrimSpace(err1.Error())
 	expectedResult := fmt.Sprintf("%s [%d]: [%s]: %s: [%s]: %s",
 		packageName,
 		err1.LineNum,
 		ERROR_COMMAND_FAILED,
 		STR_COMMAND,
 		TEST_COMMAND,
-		TEST_DEFAULT_ERROR_MESSAGE )
+		TEST_DEFAULT_ERROR_MESSAGE)
 	assert.Equal(t, expectedResult, actualResult)
 
 	/*
 	 * WhiskClientError
 	 */
 	err2 := NewWhiskClientError(TEST_DEFAULT_ERROR_MESSAGE, TEST_ERROR_CODE, nil)
-	actualResult =  strings.TrimSpace(err2.Error())
+	actualResult = strings.TrimSpace(err2.Error())
 	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s: %d: %s",
 		packageName,
 		err2.LineNum,
 		ERROR_WHISK_CLIENT_ERROR,
 		STR_ERROR_CODE,
 		TEST_ERROR_CODE,
-		TEST_DEFAULT_ERROR_MESSAGE )
+		TEST_DEFAULT_ERROR_MESSAGE)
 	assert.Equal(t, expectedResult, actualResult)
 
 	/*
 	 * WhiskClientInvalidConfigError
 	 */
 	err3 := NewWhiskClientInvalidConfigError(TEST_DEFAULT_ERROR_MESSAGE)
-	actualResult =  strings.TrimSpace(err3.Error())
+	actualResult = strings.TrimSpace(err3.Error())
 	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s",
 		packageName,
 		err3.LineNum,
 		ERROR_WHISK_CLIENT_INVALID_CONFIG,
-		TEST_DEFAULT_ERROR_MESSAGE )
+		TEST_DEFAULT_ERROR_MESSAGE)
 	assert.Equal(t, expectedResult, actualResult)
 
 	/*
  	 * FileReadError
  	 */
 	err4 := NewFileReadError(TEST_NONEXISTANT_MANIFEST_FILE, TEST_DEFAULT_ERROR_MESSAGE)
-	actualResult =  strings.TrimSpace(err4.Error())
+	actualResult = strings.TrimSpace(err4.Error())
 	expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + STR_FILE + ": [%s]: %s",
 		packageName,
 		err4.LineNum,
 		ERROR_FILE_READ_ERROR,
 		filepath.Base(TEST_NONEXISTANT_MANIFEST_FILE),
-		TEST_DEFAULT_ERROR_MESSAGE )
+		TEST_DEFAULT_ERROR_MESSAGE)
 	assert.Equal(t, expectedResult, actualResult)
 
 	/*
  	 * ManifestFileNotFoundError
  	 */
 	err5 := NewErrorManifestFileNotFound(TEST_NONEXISTANT_MANIFEST_FILE, TEST_DEFAULT_ERROR_MESSAGE)
-	actualResult =  strings.TrimSpace(err5.Error())
+	actualResult = strings.TrimSpace(err5.Error())
 	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s: [%s]: %s",
 		packageName,
 		err5.LineNum,
 		ERROR_MANIFEST_FILE_NOT_FOUND,
 		STR_FILE,
 		filepath.Base(TEST_NONEXISTANT_MANIFEST_FILE),
-		TEST_DEFAULT_ERROR_MESSAGE )
+		TEST_DEFAULT_ERROR_MESSAGE)
 	assert.Equal(t, expectedResult, actualResult)
 
 	/*
          * YAMLFileFormatError
          */
 	err6 := NewYAMLFileFormatError(TEST_INVALID_YAML_MANIFEST_FILE, TEST_DEFAULT_ERROR_MESSAGE)
-	actualResult =  strings.TrimSpace(err6.Error())
+	actualResult = strings.TrimSpace(err6.Error())
 	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s: [%s]: %s",
 		packageName,
 		err6.LineNum,
 		ERROR_YAML_FILE_FORMAT_ERROR,
 		STR_FILE,
 		filepath.Base(TEST_INVALID_YAML_MANIFEST_FILE),
-		TEST_DEFAULT_ERROR_MESSAGE )
+		TEST_DEFAULT_ERROR_MESSAGE)
 	assert.Equal(t, expectedResult, actualResult)
 
 	/*
@@ -136,7 +136,7 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 		TEST_PARAM_NAME,
 		TEST_PARAM_TYPE_INT,
 		TEST_PARAM_TYPE_FLOAT)
-	actualResult =  strings.TrimSpace(err8.Error())
+	actualResult = strings.TrimSpace(err8.Error())
 	msg8 := fmt.Sprintf("%s [%s]: %s %s: [%s], %s: [%s]",
 		STR_PARAMETER, TEST_PARAM_NAME,
 		STR_TYPE,
@@ -148,14 +148,14 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 		ERROR_YAML_PARAMETER_TYPE_MISMATCH,
 		STR_FILE,
 		filepath.Base(TEST_EXISTANT_MANIFEST_FILE),
-		msg8 )
+		msg8)
 	assert.Equal(t, expectedResult, actualResult)
 
 	/*
 	 * InvalidParameterType
 	 */
 	err9 := NewInvalidParameterTypeError(TEST_EXISTANT_MANIFEST_FILE, TEST_PARAM_NAME, TEST_PARAM_TYPE_FOO)
-	actualResult =  strings.TrimSpace(err9.Error())
+	actualResult = strings.TrimSpace(err9.Error())
 	msg9 := fmt.Sprintf("%s [%s]: %s [%s]",
 		STR_PARAMETER, TEST_PARAM_NAME,
 		STR_TYPE, TEST_PARAM_TYPE_FOO)
@@ -164,7 +164,7 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 		err9.LineNum,
 		ERROR_YAML_INVALID_PARAMETER_TYPE,
 		filepath.Base(TEST_EXISTANT_MANIFEST_FILE),
-		msg9 )
+		msg9)
 	assert.Equal(t, expectedResult, actualResult)
 
 	/*

@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 )
 
 // TODO(): Support other valid Package Manifest types
@@ -322,7 +323,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	// Make sure the parameter's value is a valid, non-empty string
 	if ( param.Value != nil && param.Type == "string") {
 		// perform $ notation replacement on string if any exist
-		value = utils.GetEnvVar(param.Value)
+		value = wskenv.GetEnvVar(param.Value)
 	}
 
 	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON
