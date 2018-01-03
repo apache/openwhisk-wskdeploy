@@ -1,7 +1,19 @@
 [
   {
-    "id": "Hello",
-    "translation": "An API host must be provided."
+    "id": "msg_prefix_error",
+    "translation": "Error"
+  },
+  {
+    "id": "msg_prefix_warning",
+    "translation": "Warning"
+  },
+  {
+    "id": "msg_prefix_success",
+    "translation": "Success"
+  },
+  {
+    "id": "msg_prefix_info",
+    "translation": "Info"
   },
   {
     "id": "Missing cmd key",

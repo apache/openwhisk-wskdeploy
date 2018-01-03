@@ -19,7 +19,7 @@ package parsers
 
 import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 )
 
 // structs that denotes the sample manifest.yaml, wrapped yaml.v2
@@ -179,7 +179,7 @@ func (yaml *YAML) GetProject() Project {
 
 func convertSinglePackageName(packageName string) string {
 	if len(packageName) != 0 {
-		packageNameEnv := utils.GetEnvVar(packageName)
+		packageNameEnv := wskenv.GetEnvVar(packageName)
 		if str, ok := packageNameEnv.(string); ok {
 			return str
 		} else {
@@ -193,7 +193,7 @@ func convertPackageName(packageMap map[string]Package) map[string]Package {
 	packages := make(map[string]Package)
 	for packName, depPacks := range packageMap {
 		name := packName
-		packageName := utils.GetEnvVar(packName)
+		packageName := wskenv.GetEnvVar(packName)
 		if str, ok := packageName.(string); ok {
 			name = str
 		}
