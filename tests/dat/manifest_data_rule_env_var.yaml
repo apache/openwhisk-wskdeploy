@@ -1,0 +1,14 @@
+# This test file is used to test the basic Trigger-Action-Rule grammar
+packages:
+  manifest1:
+      version: 1.0
+      license: Apache-2.0
+      actions:
+        first_action:
+          function: actions/hello.js
+      triggers:
+        $trigger_name:
+      rules:
+        $rule_name:
+          trigger: $trigger_name
+          action: $action_name
