@@ -177,19 +177,6 @@ func (yaml *YAML) GetProject() Project {
 	return yaml.Application
 }
 
-
-func convertSingleName(theName string) string {
-	if len(theName) != 0 {
-		theNameEnv := wskenv.GetEnvVar(theName)
-		if str, ok := theNameEnv.(string); ok {
-			return str
-		} else {
-			return theName
-		}
-	}
-	return theName
-}
-
 func convertPackageName(packageMap map[string]Package) map[string]Package {
 	packages := make(map[string]Package)
 	for packName, depPacks := range packageMap {
@@ -198,7 +185,7 @@ func convertPackageName(packageMap map[string]Package) map[string]Package {
 		if str, ok := packageName.(string); ok {
 			name = str
 		}
-		depPacks.Packagename = convertSingleName(depPacks.Packagename)
+		depPacks.Packagename = wskenv.ConvertSingleName(depPacks.Packagename)
 		packages[name] = depPacks
 	}
 	return packages
@@ -206,12 +193,12 @@ func convertPackageName(packageMap map[string]Package) map[string]Package {
 
 func ReadEnvVariable(yaml *YAML) *YAML {
 	if yaml.Application.Name != "" {
-		yaml.Application.Package.Packagename = convertSingleName(yaml.Application.Package.Packagename)
-		yaml.Package.Packagename = convertSingleName(yaml.Package.Packagename)
+		yaml.Application.Package.Packagename = wskenv.ConvertSingleName(yaml.Application.Package.Packagename)
+		yaml.Package.Packagename = wskenv.ConvertSingleName(yaml.Package.Packagename)
 		yaml.Application.Packages = convertPackageName(yaml.Application.Packages)
 	} else {
-		yaml.Project.Package.Packagename = convertSingleName(yaml.Project.Package.Packagename)
-		yaml.Package.Packagename = convertSingleName(yaml.Package.Packagename)
+		yaml.Project.Package.Packagename = wskenv.ConvertSingleName(yaml.Project.Package.Packagename)
+		yaml.Package.Packagename = wskenv.ConvertSingleName(yaml.Package.Packagename)
 		yaml.Project.Packages = convertPackageName(yaml.Project.Packages)
 	}
 	yaml.Packages = convertPackageName(yaml.Packages)
@@ -233,12 +220,12 @@ func (trigger *Trigger) ComposeWskTrigger(kvarr []whisk.KeyValue) *whisk.Trigger
 //********************Rule functions*************************//
 func (rule *Rule) ComposeWskRule() *whisk.Rule {
 	wskrule := new(whisk.Rule)
-	wskrule.Name = convertSingleName(rule.Name)
+	wskrule.Name = wskenv.ConvertSingleName(rule.Name)
 	//wskrule.Namespace = rule.Namespace
 	pub := false
 	wskrule.Publish = &pub
-	wskrule.Trigger = convertSingleName(rule.Trigger)
-	wskrule.Action = convertSingleName(rule.Action)
+	wskrule.Trigger = wskenv.ConvertSingleName(rule.Trigger)
+	wskrule.Action = wskenv.ConvertSingleName(rule.Action)
 	return wskrule
 }
 

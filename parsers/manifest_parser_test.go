@@ -1700,7 +1700,7 @@ func TestRuleName_Env_Var(t *testing.T) {
     }
     packageName := "manifest1"
 
-    assert.Equal(t, 1, len(manifest.Packages[packageName].Rules), "Get trigger list failed.")
+    assert.Equal(t, 1, len(manifest.Packages[packageName].Rules), "Get rule list failed.")
     for _, rule := range rules {
       fmt.Print("ruleName:  ")
       fmt.Print(rule)

@@ -88,3 +88,17 @@ func GetEnvVar(key interface{}) interface{} {
 	}
 	return key
 }
+
+// Convert a string name with environment variables into
+// the new string with env variables replaced
+func ConvertSingleName(theName string) string {
+	if len(theName) != 0 {
+		theNameEnv := GetEnvVar(theName)
+		if str, ok := theNameEnv.(string); ok {
+			return str
+		} else {
+			return theName
+		}
+	}
+	return theName
+}
