@@ -1683,6 +1683,39 @@ func TestPackageName_Env_Var(t *testing.T) {
     }
 }
 
+func TestRuleName_Env_Var(t *testing.T) {
+    // read and parse manifest file with env var for rule name, and rule trigger and action
+    testRule := "test_rule"
+    os.Setenv("rule_name", testRule)
+    testTrigger := "test_trigger"
+    os.Setenv("trigger_name", testTrigger)
+    testAction := "test_actions"
+    os.Setenv("action_name", testAction);
+    mm := NewYAMLParser()
+    manifestfile := "../tests/dat/manifest_data_rule_env_var.yaml"
+    manifest, _ := mm.ParseManifest(manifestfile)
+    rules, err := mm.ComposeRulesFromAllPackages(manifest)
+    if err != nil {
+        assert.Fail(t, "Failed to compose rules")
+    }
+    packageName := "manifest1"
+
+    assert.Equal(t, 1, len(manifest.Packages[packageName].Rules), "Get rule list failed.")
+    for _, rule := range rules {
+      fmt.Print("ruleName:  ")
+      fmt.Print(rule)
+      //var rule = manifest.Packages[packageName].Rules[rule_name]
+      switch rule.Name {
+      case testRule:
+        assert.Equal(t, "test_trigger", rule.Trigger, "Get trigger name failed.")
+        assert.Equal(t, packageName + "/" + testAction, rule.Action, "Get action name failed.")
+        //assert.Equal(t, "true", rule.Rule, "Get rule expression failed.")
+      default:
+        t.Error("Get rule name failed")
+      }
+    }
+}
+
 func TestComposeActionForAnnotations(t *testing.T) {
     manifestFile := "../tests/dat/manifest_validate_action_annotations.yaml"
     mm := NewYAMLParser()
