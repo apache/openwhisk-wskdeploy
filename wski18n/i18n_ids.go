@@ -19,34 +19,31 @@ package wski18n
 
 const(
 	// Debug / trace message prefixes
-	ID_MSG_PREFIX_ERROR	= "msg_prefix_error"	// "translation": "Error"
-	ID_MSG_PREFIX_SUCCESS	= "msg_prefix_success"	// "translation": "Success"
-	ID_MSG_PREFIX_WARNING	= "msg_prefix_warning"	// "translation": "Warning"
-	ID_MSG_PREFIX_INFO	= "msg_prefix_info"	// "translation": "Info"
+	ID_MSG_PREFIX_ERROR	= "msg_prefix_error"	// "Error"
+	ID_MSG_PREFIX_SUCCESS	= "msg_prefix_success"	// "Success"
+	ID_MSG_PREFIX_WARNING	= "msg_prefix_warning"	// "Warning"
+	ID_MSG_PREFIX_INFO	= "msg_prefix_info"	// "Info"
 
 	// wskdeploy Command messages
-	ID_MSG_MISSING_KEY_CMD	= "Missing cmd key"	// "translation": "Missing 'cmd' input key"
+	ID_MSG_MISSING_KEY_CMD	= "Missing cmd key"	// "Missing 'cmd' input key"
 
 	// ???
-	ID_CMD_FLAG_AUTH_KEY	= "authorization `KEY`"	// "translation": "authorization `KEY`"
-	ID_CMD_FLAG_NAMESPACE	= "namespace"		// "translation": "namespace"
-	ID_CMD_FLAG_API_HOST	= "whisk API `HOST`"	// "translation": "whisk API `HOST`"
-	ID_CMD_FLAG_API_VERSION	= "whisk API `VERSION`"	// "translation": "whisk API `VERSION`"
-	ID_CMD_FLAG_KEY_FILE	= "path of the .key file"	// "translation": "path of the .key file"
-	ID_CMD_FLAG_CERT_FILE	= "path of the .cert file"	// "translation": "path of the .cert file"
+	ID_CMD_FLAG_AUTH_KEY	= "authorization `KEY`"	// "authorization `KEY`"
+	ID_CMD_FLAG_NAMESPACE	= "namespace"		// "namespace"
+	ID_CMD_FLAG_API_HOST	= "whisk API `HOST`"	// "whisk API `HOST`"
+	ID_CMD_FLAG_API_VERSION	= "whisk API `VERSION`"	// "whisk API `VERSION`"
+	ID_CMD_FLAG_KEY_FILE	= "path of the .key file"	// "path of the .key file"
+	ID_CMD_FLAG_CERT_FILE	= "path of the .cert file"	// "path of the .cert file"
 
 	// etc.
 	ID_MANIFEST_FILE_NOT_FOUND_X_path_X = "manifest_not_found_at_path"
+
+	// Informational
+	ID_MSG_MANIFEST_DEPLOY		= "msg_using_manifest_deploy"	// "Using {{.path}} for deployment.\n"
+	ID_MSG_MANIFEST_UNDEPLOY	= "msg_using_manifest_undeploy"	// "Using {{.path}} for undeployment.\n"
+
 )
 
-//{
-//"id": "Using {{.manifestPath}} for deployment.\n",
-//"translation": "Using {{.manifestPath}} for deployment.\n"
-//},
-//{
-//"id": "Using {{.manifestPath}} for undeployment.\n",
-//"translation": "Using {{.manifestPath}} for undeployment.\n"
-//},
 //{
 //"id": "the runtime is not supported by Openwhisk platform.\n",
 //"translation": "the runtime is not supported by Openwhisk platform.\n"

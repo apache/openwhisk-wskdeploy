@@ -177,12 +177,12 @@ func Deploy() error {
 	if utils.Flags.ManifestPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
-			stdout = wski18n.T("Using {{.manifestPath}} for deployment.\n",
-				map[string]interface{}{"manifestPath": utils.Flags.ManifestPath})
+			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY,
+				map[string]interface{}{"path": utils.Flags.ManifestPath})
 		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
-			stdout = wski18n.T("Using {{.manifestPath}} for deployment.\n",
-				map[string]interface{}{"manifestPath": utils.Flags.ManifestPath})
+			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY,
+				map[string]interface{}{"path": utils.Flags.ManifestPath})
 		} else {
 			stderr = wski18n.T(wski18n.ID_MANIFEST_FILE_NOT_FOUND_X_path_X,
 				map[string]interface{}{"path": projectPath})
@@ -268,15 +268,15 @@ func Undeploy() error {
 	if utils.Flags.ManifestPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
-			stdout = wski18n.T("Using {{.manifestPath}} for undeployment.\n",
-				map[string]interface{}{"manifestPath": utils.Flags.ManifestPath})
+			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_UNDEPLOY,
+				map[string]interface{}{"path": utils.Flags.ManifestPath})
 		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
-			stdout = wski18n.T("Using {{.manifestPath}} for undeployment.\n",
-				map[string]interface{}{"manifestPath": utils.Flags.ManifestPath})
+			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_UNDEPLOY,
+				map[string]interface{}{"path": utils.Flags.ManifestPath})
 		} else {
-			stderr = wski18n.T("Manifest file not found at path {{.projectPath}}.\n",
-				map[string]interface{}{"projectPath": projectPath})
+			stderr = wski18n.T(wski18n.ID_MANIFEST_FILE_NOT_FOUND_X_path_X,
+				map[string]interface{}{"path": projectPath})
 			whisk.Debug(whisk.DbgError, stderr)
 			return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
 		}

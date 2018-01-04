@@ -40,24 +40,16 @@
     "translation": "Manifest file not found at path [{{.path}}].\n"
   },
   {
-    "id": "Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
-    "translation": "Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n"
+    "id": "msg_using_manifest_deploy",
+    "translation": "Using [{{.path}}] for deployment.\n"
   },
   {
-    "id": "Manifest file is not found at the path [{{.filePath}}].\n",
-    "translation": "Manifest file is not found at the path [{{.filePath}}].\n"
+    "id": "msg_using_manifest_undeploy",
+    "translation": "Using [{{.path}}] for undeployment.\n"
   },
   {
-    "id": "Using {{.manifestPath}} for deployment.\n",
-    "translation": "Using {{.manifestPath}} for deployment.\n"
-  },
-  {
-    "id": "Using {{.manifestPath}} for undeployment.\n",
-    "translation": "Using {{.manifestPath}} for undeployment.\n"
-  },
-  {
-    "id": "the runtime is not supported by Openwhisk platform.\n",
-    "translation": "the runtime is not supported by Openwhisk platform.\n"
+    "id": "the runtime is not supported by OpenWhisk platform.\n",
+    "translation": "the runtime is not supported by OpenWhisk platform.\n"
   },
   {
     "id": "WARNING: Runtime specified in manifest YAML {{.runtime}} does not match with action source file extension {{.ext}} for action {{.action}}.\n",
