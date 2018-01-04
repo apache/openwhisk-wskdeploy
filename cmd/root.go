@@ -37,6 +37,8 @@ import (
 
 var stderr = ""
 var stdout = ""
+
+// TODO() i18n
 var RootCmd = &cobra.Command{
 	Use:           "wskdeploy",
 	SilenceErrors: true,
@@ -72,11 +74,14 @@ func Execute() {
 		os.Exit(-1)
 	} else {
 		if utils.Flags.WithinOpenWhisk {
+			// TODO() i18n
 			fmt.Print(`{"deploy":"success"}`) // maybe return report of what has been deployed.
 		}
 	}
 }
 
+// This function is only used when wskdeploy is being called as an Action and its input
+// (i.e., command and arguments) is JSON data (map).
 func substCmdArgs() error {
 	// Extract arguments from input JSON string
 
@@ -93,7 +98,7 @@ func substCmdArgs() error {
 		regex, _ := regexp.Compile("[ ]+")
 		os.Args = regex.Split("wskdeploy "+strings.TrimSpace(v), -1)
 	} else {
-		return errors.New(wski18n.T("Missing cmd key"))
+		return errors.New(wski18n.T(wski18n.ID_MSG_MISSING_KEY_CMD))
 	}
 	return nil
 }
@@ -106,6 +111,8 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports Persistent Flags, which, if defined here,
 	// will be global for your application.
+
+	// TODO() i18n
 	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", "config file (default is $HOME/.wskprops)")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -117,12 +124,12 @@ func init() {
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseInteractive, "allow-interactive", "i", false, "allow interactive prompts")
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseDefaults, "allow-defaults", "a", false, "allow defaults")
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Verbose, "verbose", "v", false, "verbose output")
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ApiHost, "apihost", "", "", wski18n.T("whisk API HOST"))
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Namespace, "namespace", "n", "", wski18n.T("namespace"))
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Auth, "auth", "u", "", wski18n.T("authorization `KEY`"))
-	RootCmd.PersistentFlags().StringVar(&utils.Flags.ApiVersion, "apiversion", "", wski18n.T("whisk API `VERSION`"))
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Key, "key", "k", "", wski18n.T("path of the .key file"))
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Cert, "cert", "c", "", wski18n.T("path of the .cert file"))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ApiHost, "apihost", "", "", wski18n.T(wski18n.ID_CMD_FLAG_API_HOST))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Namespace, "namespace", "n", "", wski18n.T(wski18n.ID_CMD_FLAG_NAMESPACE))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Auth, "auth", "u", "", wski18n.T(wski18n.ID_CMD_FLAG_AUTH_KEY))
+	RootCmd.PersistentFlags().StringVar(&utils.Flags.ApiVersion, "apiversion", "", wski18n.T(wski18n.ID_CMD_FLAG_API_VERSION))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Key, "key", "k", "", wski18n.T(wski18n.ID_CMD_FLAG_KEY_FILE))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Cert, "cert", "c", "", wski18n.T(wski18n.ID_CMD_FLAG_CERT_FILE))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Managed, "managed", "", false, "mark project entities as managed")
 }
 
@@ -136,6 +143,7 @@ func initConfig() {
 		_, err := whisk.ReadProps(utils.Flags.CfgFile)
 		if err != nil {
 			utils.Flags.CfgFile = defaultPath
+			// TODO() i18n
 			wskprint.PrintOpenWhiskWarning("Invalid config file detected, so by default it is set to " + utils.Flags.CfgFile + "\n")
 		}
 
@@ -176,15 +184,10 @@ func Deploy() error {
 			stdout = wski18n.T("Using {{.manifestPath}} for deployment.\n",
 				map[string]interface{}{"manifestPath": utils.Flags.ManifestPath})
 		} else {
-			stderr = wski18n.T("Manifest file not found at path {{.projectPath}}.\n",
-				map[string]interface{}{"projectPath": projectPath})
+			stderr = wski18n.T(wski18n.ID_MANIFEST_FILE_NOT_FOUND_X_path_X,
+				map[string]interface{}{"path": projectPath})
 			whisk.Debug(whisk.DbgError, stderr)
-			errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
-				map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml,
-					"projectPath": projectPath})
-
-			// TODO() print help on error
-			return wskderrors.NewErrorManifestFileNotFound(projectPath, errString)
+			return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
 		}
 		whisk.Debug(whisk.DbgInfo, stdout)
 	}
@@ -241,8 +244,8 @@ func Deploy() error {
 		}
 
 	} else {
-		errString := wski18n.T("Manifest file is not found at the path [{{.filePath}}].\n",
-			map[string]interface{}{"filePath": utils.Flags.ManifestPath})
+		errString := wski18n.T(wski18n.ID_MANIFEST_FILE_NOT_FOUND_X_path_X,
+			map[string]interface{}{"path": utils.Flags.ManifestPath})
 		whisk.Debug(whisk.DbgError, errString)
 		return wskderrors.NewErrorManifestFileNotFound(utils.Flags.ManifestPath, errString)
 	}
@@ -275,10 +278,7 @@ func Undeploy() error {
 			stderr = wski18n.T("Manifest file not found at path {{.projectPath}}.\n",
 				map[string]interface{}{"projectPath": projectPath})
 			whisk.Debug(whisk.DbgError, stderr)
-			errString := wski18n.T("Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
-				map[string]interface{}{"yaml": utils.ManifestFileNameYaml, "yml": utils.ManifestFileNameYml,
-					"projectPath": projectPath})
-			return wskderrors.NewErrorManifestFileNotFound(projectPath, errString)
+			return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
 		}
 		whisk.Debug(whisk.DbgInfo, stdout)
 	}
@@ -332,8 +332,8 @@ func Undeploy() error {
 		}
 
 	} else {
-		errString := wski18n.T("Manifest file is not found at the path [{{.filePath}}].\n",
-			map[string]interface{}{"filePath": utils.Flags.ManifestPath})
+		errString := wski18n.T(wski18n.ID_MANIFEST_FILE_NOT_FOUND_X_path_X,
+			map[string]interface{}{"path": utils.Flags.ManifestPath})
 		whisk.Debug(whisk.DbgError, errString)
 		return wskderrors.NewErrorManifestFileNotFound(utils.Flags.ManifestPath, errString)
 	}

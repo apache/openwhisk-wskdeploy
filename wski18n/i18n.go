@@ -43,10 +43,12 @@ var SUPPORTED_LOCALES = []string{
 
 var resourcePath = filepath.Join("wski18n", "resources")
 
+// TODO() when are these used?
 func GetResourcePath() string {
     return resourcePath
 }
 
+// TODO() when are these used?
 func SetResourcePath(path string) {
     resourcePath = path
 }
@@ -58,10 +60,12 @@ func init() {
     curLocale = Init(new(JibberJabberDetector))
 }
 
+// TODO() when are these used?
 func CurLocale() string {
     return curLocale
 }
 
+// TODO() when are these used?
 func Locale(detector Detector) string {
 
     // Use default locale until strings are translated
@@ -103,6 +107,7 @@ func loadFromAsset(locale string) (err error) {
     return
 }
 
+// TODO() when are these used?
 func normalize(locale string) string {
     locale = strings.ToLower(strings.Replace(locale, "-", "_", 1))
     for _, l := range SUPPORTED_LOCALES {
@@ -119,6 +124,7 @@ func normalize(locale string) string {
     return locale
 }
 
+// TODO() when are these used?
 func isSupported(locale string) bool {
     for _, l := range SUPPORTED_LOCALES {
         if strings.EqualFold(locale, l) {
@@ -128,6 +134,7 @@ func isSupported(locale string) bool {
     return false
 }
 
+// TODO() when are these used?
 func defaultLocaleForLang(lang string) string {
     if lang != "" {
         lang = strings.ToLower(lang)

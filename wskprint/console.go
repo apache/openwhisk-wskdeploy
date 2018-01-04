@@ -26,17 +26,11 @@ import (
 
 const(
 	STR_PREFIXED_MESSAGE = "%s: %s"
-
-	// IDs match those used to look up i18n strings from en_US.all.json
-	ID_I18B_PREFIX_ERROR 	= "msg_prefix_error"
-	ID_I18B_PREFIX_WARNING	= "msg_prefix_warning"
-	ID_I18B_PREFIX_SUCCESS	= "msg_prefix_success"
-	ID_I18B_PREFIX_INFO	= "msg_prefix_info"
 )
 
 func PrintOpenWhiskError(message string) {
 	outputStream := colorable.NewColorableStderr()
-	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(ID_I18B_PREFIX_ERROR), message)
+	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(wski18n.ID_MSG_PREFIX_ERROR), message)
 	fmt.Fprintf(outputStream, color.RedString(fmsg))
 }
 
@@ -50,7 +44,7 @@ func PrintOpenWhiskFromError(err error) {
 
 func PrintOpenWhiskWarning(message string) {
 	outputStream := colorable.NewColorableStdout()
-	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(ID_I18B_PREFIX_WARNING), message)
+	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(wski18n.ID_MSG_PREFIX_WARNING), message)
 	fmt.Fprintf(outputStream, color.YellowString(fmsg))
 }
 
@@ -60,7 +54,7 @@ func PrintlnOpenWhiskWarning(message string) {
 
 func PrintOpenWhiskSuccess(message string) {
 	outputStream := colorable.NewColorableStdout()
-	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(ID_I18B_PREFIX_SUCCESS), message)
+	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(wski18n.ID_MSG_PREFIX_SUCCESS), message)
 	fmt.Fprintf(outputStream, color.GreenString(fmsg))
 }
 
@@ -70,7 +64,7 @@ func PrintlnOpenWhiskSuccess(message string) {
 
 func PrintOpenWhiskStatus(message string) {
 	outputStream := colorable.NewColorableStdout()
-	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(ID_I18B_PREFIX_INFO), message)
+	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(wski18n.ID_MSG_PREFIX_INFO), message)
 	fmt.Fprintf(outputStream, color.CyanString(fmsg))
 }
 

@@ -36,8 +36,8 @@
     "translation": "whisk API `VERSION`"
   },
   {
-    "id": "Manifest file not found at path {{.projectPath}}.\n",
-    "translation": "Manifest file not found at path {{.projectPath}}.\n"
+    "id": "manifest_not_found_at_path",
+    "translation": "Manifest file not found at path [{{.path}}].\n"
   },
   {
     "id": "Missing {{.yaml}}/{{.yml}} file. Manifest file not found at path {{.projectPath}}.\n",
