@@ -84,19 +84,19 @@
     "translation": "The namespace is not configured.\n"
   },
   {
+    "id": "msg_config_apihost_info",
+    "translation": "The API host is [{{.host}}], from [{{.source}}].\n"
+  },
+  {
+    "id": "msg_config_authkey_info",
+    "translation": "The auth key is set, from [{{.source}}].\n"
+  },
+  {
+    "id": "msg_config_namespace_info",
+    "translation": "The namespace is [{{.namespace}}], from [{{.source}}].\n"
+  },
+  {
     "-": "=============================================================="
-  },
-  {
-    "id": "The API host is {{.apihost}}, from {{.apisource}}.\n",
-    "translation": "The API host is {{.apihost}}, from {{.apisource}}.\n"
-  },
-  {
-    "id": "The auth key is set, from {{.authsource}}.\n",
-    "translation": "The auth key is set, from {{.authsource}}.\n"
-  },
-  {
-    "id": "The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
-    "translation": "The namespace is {{.namespace}}, from {{.namespacesource}}.\n"
   },
   {
     "id": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n",

@@ -40,6 +40,10 @@ const(
 	ID_MSG_CONFIG_MISSING_APIHOST	= "msg_config_missing_apihost"
 	ID_MSG_CONFIG_MISSING_NAMESPACE	= "msg_config_missing_namespace"
 
+	ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X		= "msg_config_apihost_info"
+	ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X			= "msg_config_authkey_info"
+	ID_MSG_CONFIG_INFO_APIHOST_X_namespace_X_source_X	= "msg_config_namespace_info"
+
 	// Informational
 	ID_MSG_MANIFEST_DEPLOY_X_path_X				= "msg_using_manifest_deploy"	// "Using {{.path}} for deployment.\n"
 	ID_MSG_MANIFEST_UNDEPLOY_X_path_X			= "msg_using_manifest_undeploy"	// "Using {{.path}} for undeployment.\n"
@@ -66,6 +70,8 @@ const(
 //"id": "The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
 //"translation": "The namespace is {{.namespace}}, from {{.namespacesource}}.\n"
 //},
+
+
 //{
 //"id": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n",
 //"translation": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n"
