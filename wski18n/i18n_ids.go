@@ -35,6 +35,11 @@ const(
 	ID_CMD_FLAG_KEY_FILE	= "msg_cmd_flag_key_file"	// "path of the .key file"
 	ID_CMD_FLAG_CERT_FILE	= "msg_cmd_flag_cert_file"	// "path of the .cert file"
 
+	// Configuration messages
+	ID_MSG_CONFIG_MISSING_AUTHKEY	= "msg_config_missing_authkey"
+	ID_MSG_CONFIG_MISSING_APIHOST	= "msg_config_missing_apihost"
+	ID_MSG_CONFIG_MISSING_NAMESPACE	= "msg_config_missing_namespace"
+
 	// Informational
 	ID_MSG_MANIFEST_DEPLOY_X_path_X				= "msg_using_manifest_deploy"	// "Using {{.path}} for deployment.\n"
 	ID_MSG_MANIFEST_UNDEPLOY_X_path_X			= "msg_using_manifest_undeploy"	// "Using {{.path}} for undeployment.\n"
@@ -48,34 +53,7 @@ const(
 
 )
 
-//"id": "WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n",
-//"translation": "WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n"
-//},
-//{
-//"id": "WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n",
-//"translation": "WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n"
-//},
-//{
-//"id": "WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n",
-//"translation": "WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n"
-//},
 
-//{
-//"id": "Unsupported runtime type, set to nodejs",
-//"translation": "Unsupported runtime type, set to nodejs"
-//},
-//{
-//"id": "The authentication key is not configured.\n",
-//"translation": "The authentication key is not configured.\n"
-//},
-//{
-//"id": "The API host is not configured.\n",
-//"translation": "The API host is not configured.\n"
-//},
-//{
-//"id": "The namespace is not configured.\n",
-//"translation": "The namespace is not configured.\n"
-//},
 //{
 //"id": "The API host is {{.apihost}}, from {{.apisource}}.\n",
 //"translation": "The API host is {{.apihost}}, from {{.apisource}}.\n"

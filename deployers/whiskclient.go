@@ -35,11 +35,11 @@ import (
 )
 
 const (
-	COMMANDLINE  = "wskdeploy command line"
+	COMMANDLINE = "wskdeploy command line"
 	DEFAULTVALUE = "default value"
-	WSKPROPS     = ".wskprops"
+	WSKPROPS = ".wskprops"
 	WHISKPROPERTY = "whisk.properties"
-	INTERINPUT   = "interactve input"
+	INTERINPUT = "interactve input"
 )
 
 type PropertyValue struct {
@@ -67,7 +67,7 @@ var GetCommandLineFlags = func() (string, string, string, string, string) {
 	return utils.Flags.ApiHost, utils.Flags.Auth, utils.Flags.Namespace, utils.Flags.Key, utils.Flags.Cert
 }
 
-var CreateNewClient = func (config_input *whisk.Config) (*whisk.Client, error) {
+var CreateNewClient = func(config_input *whisk.Config) (*whisk.Client, error) {
 	var netClient = &http.Client{
 		Timeout: time.Second * utils.DEFAULT_HTTP_TIMEOUT,
 	}
@@ -85,16 +85,16 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	credential := PropertyValue{}
 	namespace := PropertyValue{}
 	apiHost := PropertyValue{}
-    key := PropertyValue{}
-    cert := PropertyValue{}
+	key := PropertyValue{}
+	cert := PropertyValue{}
 
 	// read credentials from command line
 	apihost, auth, ns, keyfile, certfile := GetCommandLineFlags()
 	credential = GetPropertyValue(credential, auth, COMMANDLINE)
 	namespace = GetPropertyValue(namespace, ns, COMMANDLINE)
 	apiHost = GetPropertyValue(apiHost, apihost, COMMANDLINE)
-    key = GetPropertyValue(key, keyfile, COMMANDLINE)
-    cert = GetPropertyValue(cert, certfile, COMMANDLINE)
+	key = GetPropertyValue(key, keyfile, COMMANDLINE)
+	cert = GetPropertyValue(cert, certfile, COMMANDLINE)
 
 	// now, read them from deployment file if not found on command line
 	if len(credential.Value) == 0 || len(namespace.Value) == 0 || len(apiHost.Value) == 0 {
@@ -138,8 +138,8 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	credential = GetPropertyValue(credential, wskprops.AuthKey, WSKPROPS)
 	namespace = GetPropertyValue(namespace, wskprops.Namespace, WSKPROPS)
 	apiHost = GetPropertyValue(apiHost, wskprops.APIHost, WSKPROPS)
-    key = GetPropertyValue(key, wskprops.Key, WSKPROPS)
-    cert = GetPropertyValue(cert, wskprops.Cert, WSKPROPS)
+	key = GetPropertyValue(key, wskprops.Key, WSKPROPS)
+	cert = GetPropertyValue(cert, wskprops.Cert, WSKPROPS)
 
 	// now, read credentials from whisk.properties but this is only acceptable within Travis
 	// whisk.properties will soon be deprecated and should not be used for any production deployment
@@ -205,39 +205,39 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		}
 	}
 
-    mode := true
-    if (len(cert.Value) != 0 && len(key.Value) != 0) {
-        mode = false
-    }
+	mode := true
+	if (len(cert.Value) != 0 && len(key.Value) != 0) {
+		mode = false
+	}
 
-	clientConfig = &whisk.Config {
+	clientConfig = &whisk.Config{
 		AuthToken: credential.Value, //Authtoken
-		Namespace: namespace.Value,  //Namespace
+		Namespace: namespace.Value, //Namespace
 		Host:      apiHost.Value,
 		Version:   "v1",
-        Cert:      cert.Value,
-        Key:       key.Value,
+		Cert:      cert.Value,
+		Key:       key.Value,
 		Insecure:  mode, // true if you want to ignore certificate signing
 	}
 
 	if len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0 {
 		var errStr string
 		if len(credential.Value) == 0 {
-			errStr += wski18n.T("The authentication key is not configured.\n")
+			errStr += wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY)
 		} else {
 			errStr += wski18n.T("The authenitcation key is set from {{.authsource}}.\n",
 				map[string]interface{}{"authsource": credential.Source})
 		}
 
 		if len(apiHost.Value) == 0 {
-			errStr += wski18n.T("The API host is not configured.\n")
+			errStr += wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST)
 		} else {
 			errStr += wski18n.T("The API host is {{.apihost}}, from {{.apisource}}.\n",
 				map[string]interface{}{"apihost": apiHost.Value, "apisource": apiHost.Source})
 		}
 
 		if len(namespace.Value) == 0 {
-			errStr += wski18n.T("The namespace is not configured.\n")
+			errStr += wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE)
 		} else {
 			errStr += wski18n.T("The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
 				map[string]interface{}{"namespace": namespace.Value, "namespacesource": namespace.Source})

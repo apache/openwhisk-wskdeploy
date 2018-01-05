@@ -72,16 +72,19 @@
     "translation": "Invalid action limit [{{.limit}}] in manifest is ignored.\n"
   },
   {
-    "id": "The authentication key is not configured.\n",
+    "id": "msg_config_missing_authkey",
     "translation": "The authentication key is not configured.\n"
   },
   {
-    "id": "The API host is not configured.\n",
+    "id": "msg_config_missing_apihost",
     "translation": "The API host is not configured.\n"
   },
   {
-    "id": "The namespace is not configured.\n",
+    "id": "msg_config_missing_namespace",
     "translation": "The namespace is not configured.\n"
+  },
+  {
+    "-": "=============================================================="
   },
   {
     "id": "The API host is {{.apihost}}, from {{.apisource}}.\n",
