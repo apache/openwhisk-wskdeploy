@@ -33,6 +33,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 // Read existing manifest file or create new if none exists
@@ -156,6 +157,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 
 			isBinding = false
 		} else {
+			// TODO() i18n
 			return nil, errors.New("Dependency type is unknown.  wskdeploy only supports /whisk.system bindings or github.com packages.")
 		}
 
@@ -197,6 +199,7 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, ma whi
 	manifestPackages := make(map[string]Package)
 
 	if manifest.Package.Packagename != "" {
+		// TODO() i18n
 		fmt.Println("WARNING: using package inside of manifest file will soon be deprecated, please use packages instead.")
 		s, err := dm.ComposePackage(manifest.Package, manifest.Package.Packagename, filePath, ma)
 		if err == nil {
@@ -497,37 +500,31 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					if utils.CheckRuntimeConsistencyWithFileExtension(ext, action.Runtime) {
 						wskaction.Exec.Kind = action.Runtime
 					} else {
-						errStr := wski18n.T("WARNING: Runtime specified in manifest " +
-							"YAML {{.runtime}} does not match with action source " +
-							"file extension {{.ext}} for action {{.action}}.\n",
+						errStr := wski18n.T(wski18n.ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
 							map[string]interface{}{"runtime": action.Runtime, "ext": ext, "action": action.Name})
-						whisk.Debug(whisk.DbgWarn, errStr)
+						wskprint.PrintOpenWhiskWarning(errStr)
+
 						// even if runtime is not consistent with file extension, deploy action with specified runtime in strict mode
 						if utils.Flags.Strict {
 							wskaction.Exec.Kind = action.Runtime
 						} else {
-							errStr := wski18n.T("WARNING: Whisk Deploy has chosen appropriate " +
-								"runtime {{.runtime}} based on the action source file " +
-								"extension for that action {{.action}}.\n",
+							errStr := wski18n.T(wski18n.ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X,
 								map[string]interface{}{"runtime": wskaction.Exec.Kind, "action": action.Name})
-							whisk.Debug(whisk.DbgWarn, errStr)
+							wskprint.PrintOpenWhiskWarning(errStr)
 						}
 					}
 				}
 			} else {
-				errStr := wski18n.T("WARNING: Runtime specified in manifest " +
-					"YAML {{.runtime}} is not supported by OpenWhisk server " +
-					"for the action {{.action}}.\n",
+				errStr := wski18n.T(wski18n.ID_MSG_RUNTIME_UNSUPPORTED_X_runtime_X_action_X,
 					map[string]interface{}{"runtime": action.Runtime, "action": action.Name})
 				whisk.Debug(whisk.DbgWarn, errStr)
 				if ext == utils.ZIP_FILE_EXTENSION {
+					// TODO() i18n
 					// for zip action, error out if specified runtime is not supported by OpenWhisk server
 					errMessage := "ERROR: Given runtime for a zip action is not supported by OpenWhisk server. " + RUNTIME_ERR_MESSAGE
 					return nil, wskderrors.NewInvalidRuntimeError(errMessage, splitFilePath[len(splitFilePath)-1], action.Name, action.Runtime, utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				} else {
-					errStr = wski18n.T("WARNING: Whisk Deploy has chosen appropriate " +
-						"runtime {{.runtime}} based on the action source file " +
-						"extension for that action {{.action}}.\n",
+					errStr = wski18n.T(wski18n.ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X,
 						map[string]interface{}{"runtime": wskaction.Exec.Kind, "action": action.Name})
 					whisk.Debug(whisk.DbgWarn, errStr)
 				}
@@ -623,20 +620,23 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			if utils.LimitsTimeoutValidation(action.Limits.Timeout) {
 				wsklimits.Timeout = action.Limits.Timeout
 			} else {
-				warningString := wski18n.T("WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n")
-				whisk.Debug(whisk.DbgWarn, warningString)
+				warningString := wski18n.T(wski18n.ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
+					map[string]interface{}{"limit": "timeout"})
+				wskprint.PrintOpenWhiskWarning(warningString)
 			}
 			if utils.LimitsMemoryValidation(action.Limits.Memory) {
 				wsklimits.Memory = action.Limits.Memory
 			} else {
-				warningString := wski18n.T("WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n")
-				whisk.Debug(whisk.DbgWarn, warningString)
+				warningString := wski18n.T(wski18n.ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
+					map[string]interface{}{"limit": "memorySize"})
+				wskprint.PrintOpenWhiskWarning(warningString)
 			}
 			if utils.LimitsLogsizeValidation(action.Limits.Logsize) {
 				wsklimits.Logsize = action.Limits.Logsize
 			} else {
-				warningString := wski18n.T("WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n")
-				whisk.Debug(whisk.DbgWarn, warningString)
+				warningString := wski18n.T(wski18n.ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
+					map[string]interface{}{"limit": "logSize"})
+				wskprint.PrintOpenWhiskWarning(warningString)
 			}
 			if wsklimits.Timeout!=nil || wsklimits.Memory!=nil || wsklimits.Logsize!=nil {
 				wskaction.Limits = wsklimits

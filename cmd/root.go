@@ -38,7 +38,7 @@ import (
 var stderr = ""
 var stdout = ""
 
-// TODO() i18n
+// TODO(#683) short and long desc. should be translated for i18n
 var RootCmd = &cobra.Command{
 	Use:           "wskdeploy",
 	SilenceErrors: true,
@@ -98,7 +98,7 @@ func substCmdArgs() error {
 		regex, _ := regexp.Compile("[ ]+")
 		os.Args = regex.Split("wskdeploy "+strings.TrimSpace(v), -1)
 	} else {
-		return errors.New(wski18n.T(wski18n.ID_MSG_MISSING_KEY_CMD))
+		return errors.New(wski18n.T(wski18n.ID_JSON_MISSING_KEY_CMD))
 	}
 	return nil
 }
@@ -112,7 +112,7 @@ func init() {
 	// Cobra supports Persistent Flags, which, if defined here,
 	// will be global for your application.
 
-	// TODO() i18n
+	// TODO(#682) add in-line descriptions to i18n resource file
 	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", "config file (default is $HOME/.wskprops)")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -177,16 +177,15 @@ func Deploy() error {
 	if utils.Flags.ManifestPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
-			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY,
+			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY_X_path_X,
 				map[string]interface{}{"path": utils.Flags.ManifestPath})
 		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
-			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY,
+			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY_X_path_X,
 				map[string]interface{}{"path": utils.Flags.ManifestPath})
 		} else {
-			stderr = wski18n.T(wski18n.ID_MANIFEST_FILE_NOT_FOUND_X_path_X,
+			stderr = wski18n.T(wski18n.ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X,
 				map[string]interface{}{"path": projectPath})
-			whisk.Debug(whisk.DbgError, stderr)
 			return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
 		}
 		whisk.Debug(whisk.DbgInfo, stdout)
@@ -244,7 +243,7 @@ func Deploy() error {
 		}
 
 	} else {
-		errString := wski18n.T(wski18n.ID_MANIFEST_FILE_NOT_FOUND_X_path_X,
+		errString := wski18n.T(wski18n.ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X,
 			map[string]interface{}{"path": utils.Flags.ManifestPath})
 		whisk.Debug(whisk.DbgError, errString)
 		return wskderrors.NewErrorManifestFileNotFound(utils.Flags.ManifestPath, errString)
@@ -268,16 +267,15 @@ func Undeploy() error {
 	if utils.Flags.ManifestPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
-			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_UNDEPLOY,
+			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_UNDEPLOY_X_path_X,
 				map[string]interface{}{"path": utils.Flags.ManifestPath})
 		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
-			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_UNDEPLOY,
+			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_UNDEPLOY_X_path_X,
 				map[string]interface{}{"path": utils.Flags.ManifestPath})
 		} else {
-			stderr = wski18n.T(wski18n.ID_MANIFEST_FILE_NOT_FOUND_X_path_X,
+			stderr = wski18n.T(wski18n.ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X,
 				map[string]interface{}{"path": projectPath})
-			whisk.Debug(whisk.DbgError, stderr)
 			return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
 		}
 		whisk.Debug(whisk.DbgInfo, stdout)
@@ -332,9 +330,8 @@ func Undeploy() error {
 		}
 
 	} else {
-		errString := wski18n.T(wski18n.ID_MANIFEST_FILE_NOT_FOUND_X_path_X,
+		errString := wski18n.T(wski18n.ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X,
 			map[string]interface{}{"path": utils.Flags.ManifestPath})
-		whisk.Debug(whisk.DbgError, errString)
 		return wskderrors.NewErrorManifestFileNotFound(utils.Flags.ManifestPath, errString)
 	}
 }

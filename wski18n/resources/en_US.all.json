@@ -16,27 +16,35 @@
     "translation": "Info"
   },
   {
-    "id": "Missing cmd key",
-    "translation": "Missing 'cmd' input key"
+    "id": "msg_json_missing_cmd_key",
+    "translation": "JSON input data Missing 'cmd' key"
   },
   {
-    "id": "authorization `KEY`",
-    "translation": "authorization `KEY`"
-  },
-  {
-    "id": "whisk API `HOST`",
-    "translation": "whisk API `HOST`"
-  },
-  {
-    "id": "namespace",
+    "id": "msg_cmd_flag_namespace",
     "translation": "namespace"
   },
   {
-    "id": "whisk API `VERSION`",
+    "id": "msg_cmd_flag_auth_key",
+    "translation": "authorization `KEY`"
+  },
+  {
+    "id": "msg_cmd_flag_api_host",
+    "translation": "whisk API `HOST`"
+  },
+  {
+    "id": "msg_cmd_flag_api_version",
     "translation": "whisk API `VERSION`"
   },
   {
-    "id": "manifest_not_found_at_path",
+    "id": "msg_cmd_flag_key_file",
+    "translation": "path of the .key file"
+  },
+  {
+    "id": "msg_cmd_flag_cert_file",
+    "translation": "path of the .cert file"
+  },
+  {
+    "id": "msg_manifest_not_found",
     "translation": "Manifest file not found at path [{{.path}}].\n"
   },
   {
@@ -48,24 +56,20 @@
     "translation": "Using [{{.path}}] for undeployment.\n"
   },
   {
-    "id": "the runtime is not supported by OpenWhisk platform.\n",
-    "translation": "the runtime is not supported by OpenWhisk platform.\n"
+    "id": "msg_runtime_mismatch",
+    "translation": "Runtime [{{.runtime}}] specified in manifest does not match with action source file extension [{{.ext}}] for action [{{.action}}].\n"
   },
   {
-    "id": "WARNING: Runtime specified in manifest YAML {{.runtime}} does not match with action source file extension {{.ext}} for action {{.action}}.\n",
-    "translation": "WARNING: Runtime specified in manifest YAML {{.runtime}} does not match with action source file extension {{.ext}} for action {{.action}}.\n"
+    "id": "msg_runtime_changed",
+    "translation": "Runtime changed to [{{.runtime}}] based on the action source file extension for action [{{.action}}].\n"
   },
   {
-    "id": "WARNING: Whisk Deploy has chosen appropriate runtime {{.runtime}} based on the action source file extension for that action {{.action}}.\n",
-    "translation": "WARNING: Whisk Deploy has chosen appropriate runtime {{.runtime}} based on the action source file extension for that action {{.action}}.\n"
+    "id": "msg_runtime_unsupported",
+    "translation": "Runtime [{{.runtime}}] specified in manifest is not supported for the action [{{.action}}].\n"
   },
   {
-    "id": "WARNING: Runtime specified in manifest YAML {{.runtime}} is not supported by OpenWhisk server for the action {{.action}}.\n",
-    "translation": "WARNING: Runtime specified in manifest YAML {{.runtime}} is not supported by OpenWhisk server for the action {{.action}}.\n"
-  },
-  {
-    "id": "Unsupported runtime type, set to nodejs",
-    "translation": "Unsupported runtime type, set to nodejs"
+    "id": "msg_action_limit_ignored",
+    "translation": "Invalid action limit [{{.limit}}] in manifest is ignored.\n"
   },
   {
     "id": "The authentication key is not configured.\n",
@@ -308,28 +312,8 @@
     "translation": "logSize of limits in manifest should be an integer between 0 and 10.\n"
   },
   {
-    "id": "WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n",
-    "translation": "WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n"
-  },
-  {
-    "id": "WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n",
-    "translation": "WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n"
-  },
-  {
-    "id": "WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n",
-    "translation": "WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n"
-  },
-  {
     "id": "WARNING: Limits  {{.limitname}}  is not changable as to now, which will be ignored.\n",
     "translation": "WARNING: Limits  {{.limitname}}  is not changable as to now, which will be ignored.\n"
-  },
-  {
-    "id": "path of the .key file",
-    "translation": "path of the .key file"
-  },
-  {
-    "id": "path of the .cert file",
-    "translation": "path of the .cert file"
   },
   {
     "id": "The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",

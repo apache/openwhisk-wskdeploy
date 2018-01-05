@@ -24,45 +24,42 @@ const(
 	ID_MSG_PREFIX_WARNING	= "msg_prefix_warning"	// "Warning"
 	ID_MSG_PREFIX_INFO	= "msg_prefix_info"	// "Info"
 
+	// wskdeploy (as an Action) JSON messages
+	ID_JSON_MISSING_KEY_CMD	= "msg_json_missing_cmd_key"	// "Missing 'cmd' input key"
+
 	// wskdeploy Command messages
-	ID_MSG_MISSING_KEY_CMD	= "Missing cmd key"	// "Missing 'cmd' input key"
-
-	// ???
-	ID_CMD_FLAG_AUTH_KEY	= "authorization `KEY`"	// "authorization `KEY`"
-	ID_CMD_FLAG_NAMESPACE	= "namespace"		// "namespace"
-	ID_CMD_FLAG_API_HOST	= "whisk API `HOST`"	// "whisk API `HOST`"
-	ID_CMD_FLAG_API_VERSION	= "whisk API `VERSION`"	// "whisk API `VERSION`"
-	ID_CMD_FLAG_KEY_FILE	= "path of the .key file"	// "path of the .key file"
-	ID_CMD_FLAG_CERT_FILE	= "path of the .cert file"	// "path of the .cert file"
-
-	// etc.
-	ID_MANIFEST_FILE_NOT_FOUND_X_path_X = "manifest_not_found_at_path"
+	ID_CMD_FLAG_AUTH_KEY	= "msg_cmd_flag_auth_key"	// "authorization `KEY`"
+	ID_CMD_FLAG_NAMESPACE	= "msg_cmd_flag_namespace"	// "namespace"
+	ID_CMD_FLAG_API_HOST	= "msg_cmd_flag_api_host"	// "whisk API `HOST`"
+	ID_CMD_FLAG_API_VERSION	= "msg_cmd_flag_api_version"	// "whisk API `VERSION`"
+	ID_CMD_FLAG_KEY_FILE	= "msg_cmd_flag_key_file"	// "path of the .key file"
+	ID_CMD_FLAG_CERT_FILE	= "msg_cmd_flag_cert_file"	// "path of the .cert file"
 
 	// Informational
-	ID_MSG_MANIFEST_DEPLOY		= "msg_using_manifest_deploy"	// "Using {{.path}} for deployment.\n"
-	ID_MSG_MANIFEST_UNDEPLOY	= "msg_using_manifest_undeploy"	// "Using {{.path}} for undeployment.\n"
+	ID_MSG_MANIFEST_DEPLOY_X_path_X				= "msg_using_manifest_deploy"	// "Using {{.path}} for deployment.\n"
+	ID_MSG_MANIFEST_UNDEPLOY_X_path_X			= "msg_using_manifest_undeploy"	// "Using {{.path}} for undeployment.\n"
+	ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X			= "msg_manifest_not_found"
+	ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X	= "msg_runtime_mismatch"
+	ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X		= "msg_runtime_changed"
+	ID_MSG_RUNTIME_UNSUPPORTED_X_runtime_X_action_X		= "msg_runtime_unsupported"
+
+	// Action Limits
+	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X			= "msg_action_limit_ignored"	// for timeout, memorySize, logSize
 
 )
 
-//{
-//"id": "the runtime is not supported by Openwhisk platform.\n",
-//"translation": "the runtime is not supported by Openwhisk platform.\n"
+//"id": "WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n",
+//"translation": "WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n"
 //},
 //{
+//"id": "WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n",
+//"translation": "WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n"
+//},
+//{
+//"id": "WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n",
+//"translation": "WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n"
+//},
 
-//var ID_WARNING_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X = "go.yaml"
-
-//"id": "WARNING: Runtime specified in manifest YAML {{.runtime}} does not match with action source file extension {{.ext}} for action {{.action}}.\n",
-//"translation": "WARNING: Runtime specified in manifest YAML {{.runtime}} does not match with action source file extension {{.ext}} for action {{.action}}.\n"
-//},
-//{
-//"id": "WARNING: Whisk Deploy has chosen appropriate runtime {{.runtime}} based on the action source file extension for that action {{.action}}.\n",
-//"translation": "WARNING: Whisk Deploy has chosen appropriate runtime {{.runtime}} based on the action source file extension for that action {{.action}}.\n"
-//},
-//{
-//"id": "WARNING: Runtime specified in manifest YAML {{.runtime}} is not supported by OpenWhisk server for the action {{.action}}.\n",
-//"translation": "WARNING: Runtime specified in manifest YAML {{.runtime}} is not supported by OpenWhisk server for the action {{.action}}.\n"
-//},
 //{
 //"id": "Unsupported runtime type, set to nodejs",
 //"translation": "Unsupported runtime type, set to nodejs"
@@ -308,17 +305,7 @@ const(
 //"translation": "logSize of limits in manifest should be an integer between 0 and 10.\n"
 //},
 //{
-//"id": "WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n",
-//"translation": "WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n"
-//},
-//{
-//"id": "WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n",
-//"translation": "WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n"
-//},
-//{
-//"id": "WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n",
-//"translation": "WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n"
-//},
+
 //{
 //"id": "WARNING: Limits  {{.limitname}}  is not changable as to now, which will be ignored.\n",
 //"translation": "WARNING: Limits  {{.limitname}}  is not changable as to now, which will be ignored.\n"

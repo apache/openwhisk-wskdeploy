@@ -60,6 +60,7 @@ func (vf *Verifier) Filter(deployer *ServiceDeployer, target *DeploymentProject)
 	}
 
 	depApp := NewDeploymentProject()
+	// TODO() i18n
 	fmt.Printf("Target Packages are %#v\n", target.Packages)
 	depApp.Packages = target.Packages
 	return depApp, nil
