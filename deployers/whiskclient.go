@@ -247,16 +247,16 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		return clientConfig, wskderrors.NewWhiskClientInvalidConfigError(errStr)
 	}
 
-	stdout := wski18n.T("The API host is {{.apihost}}, from {{.apisource}}.\n",
-		map[string]interface{}{"apihost": apiHost.Value, "apisource": apiHost.Source})
+	stdout := wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
+		map[string]interface{}{"host": apiHost.Value, "source": apiHost.Source})
 	whisk.Debug(whisk.DbgInfo, stdout)
 
-	stdout = wski18n.T("The auth key is set, from {{.authsource}}.\n",
-		map[string]interface{}{"authsource": credential.Source})
+	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
+		map[string]interface{}{"source": credential.Source})
 	whisk.Debug(whisk.DbgInfo, stdout)
 
-	stdout = wski18n.T("The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
-		map[string]interface{}{"namespace": namespace.Value, "namespacesource": namespace.Source})
+	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
+		map[string]interface{}{"namespace": namespace.Value, "source": namespace.Source})
 	whisk.Debug(whisk.DbgInfo, stdout)
 	return clientConfig, nil
 }
