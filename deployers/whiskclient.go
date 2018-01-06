@@ -30,7 +30,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
