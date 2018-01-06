@@ -96,9 +96,6 @@
     "translation": "The namespace is [{{.namespace}}], from [{{.source}}].\n"
   },
   {
-    "-": "=============================================================="
-  },
-  {
     "id": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n",
     "translation": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n"
   },
