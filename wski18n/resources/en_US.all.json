@@ -45,31 +45,31 @@
   },
   {
     "id": "msg_manifest_not_found",
-    "translation": "Manifest file not found at path [{{.path}}].\n"
+    "translation": "Manifest file not found at path {{.path}}.\n"
   },
   {
     "id": "msg_using_manifest_deploy",
-    "translation": "Using [{{.path}}] for deployment.\n"
+    "translation": "Using {{.path}} for deployment.\n"
   },
   {
     "id": "msg_using_manifest_undeploy",
-    "translation": "Using [{{.path}}] for undeployment.\n"
+    "translation": "Using {{.path}} for undeployment.\n"
   },
   {
     "id": "msg_runtime_mismatch",
-    "translation": "Runtime [{{.runtime}}] specified in manifest does not match with action source file extension [{{.ext}}] for action [{{.action}}].\n"
+    "translation": "Runtime {{.runtime}} specified in manifest does not match with action source file extension {{.ext}} for action {{.action}}.\n"
   },
   {
     "id": "msg_runtime_changed",
-    "translation": "Runtime changed to [{{.runtime}}] based on the action source file extension for action [{{.action}}].\n"
+    "translation": "Runtime changed to {{.runtime}} based on the action source file extension for action {{.action}}.\n"
   },
   {
     "id": "msg_runtime_unsupported",
-    "translation": "Runtime [{{.runtime}}] specified in manifest is not supported for the action [{{.action}}].\n"
+    "translation": "Runtime {{.runtime}} specified in manifest is not supported for the action {{.action}}.\n"
   },
   {
     "id": "msg_action_limit_ignored",
-    "translation": "Invalid action limit [{{.limit}}] in manifest is ignored.\n"
+    "translation": "Invalid action limit {{.limit}} in manifest is ignored.\n"
   },
   {
     "id": "msg_config_missing_authkey",
@@ -85,15 +85,15 @@
   },
   {
     "id": "msg_config_apihost_info",
-    "translation": "The API host is [{{.host}}], from [{{.source}}].\n"
+    "translation": "The API host is {{.host}}, from {{.source}}.\n"
   },
   {
     "id": "msg_config_authkey_info",
-    "translation": "The auth key is set, from [{{.source}}].\n"
+    "translation": "The auth key is set, from {{.source}}.\n"
   },
   {
     "id": "msg_config_namespace_info",
-    "translation": "The namespace is [{{.namespace}}], from [{{.source}}].\n"
+    "translation": "The namespace is {{.namespace}}, from {{.source}}.\n"
   },
   {
     "id": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n",
