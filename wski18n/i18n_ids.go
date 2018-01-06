@@ -36,9 +36,9 @@ const(
 	ID_CMD_FLAG_CERT_FILE	= "msg_cmd_flag_cert_file"	// "path of the .cert file"
 
 	// Configuration messages
-	ID_MSG_CONFIG_MISSING_AUTHKEY	= "msg_config_missing_authkey"
-	ID_MSG_CONFIG_MISSING_APIHOST	= "msg_config_missing_apihost"
-	ID_MSG_CONFIG_MISSING_NAMESPACE	= "msg_config_missing_namespace"
+	ID_MSG_CONFIG_MISSING_AUTHKEY				= "msg_config_missing_authkey"
+	ID_MSG_CONFIG_MISSING_APIHOST				= "msg_config_missing_apihost"
+	ID_MSG_CONFIG_MISSING_NAMESPACE				= "msg_config_missing_namespace"
 
 	ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X		= "msg_config_apihost_info"
 	ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X			= "msg_config_authkey_info"
@@ -53,23 +53,9 @@ const(
 	ID_MSG_RUNTIME_UNSUPPORTED_X_runtime_X_action_X		= "msg_runtime_unsupported"
 
 	// Action Limits
-	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X			= "msg_action_limit_ignored"	// for timeout, memorySize, logSize
+	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X			= "msg_action_limit_ignored"	// timeout, memorySize, logSize
 
 )
-
-
-//{
-//"id": "The API host is {{.apihost}}, from {{.apisource}}.\n",
-//"translation": "The API host is {{.apihost}}, from {{.apisource}}.\n"
-//},
-//{
-//"id": "The auth key is set, from {{.authsource}}.\n",
-//"translation": "The auth key is set, from {{.authsource}}.\n"
-//},
-//{
-//"id": "The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
-//"translation": "The namespace is {{.namespace}}, from {{.namespacesource}}.\n"
-//},
 
 
 //{

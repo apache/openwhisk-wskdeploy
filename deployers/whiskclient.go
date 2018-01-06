@@ -220,31 +220,36 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		Insecure:  mode, // true if you want to ignore certificate signing
 	}
 
-	if len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0 {
-		var errStr string
-		if len(credential.Value) == 0 {
-			errStr += wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY)
-		} else {
-			errStr += wski18n.T("The authenitcation key is set from {{.authsource}}.\n",
-				map[string]interface{}{"authsource": credential.Source})
-		}
+	//if len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0 {
+	//	var errStr string
+	//	if len(credential.Value) == 0 {
+	//		errStr += wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY)
+	//	} else {
+	//		errStr += wski18n.T(wski18n.ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
+	//			map[string]interface{}{"source": credential.Source})
+	//	}
+	//
+	//	if len(apiHost.Value) == 0 {
+	//		errStr += wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST)
+	//	} else {
+	//		errStr += wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
+	//			map[string]interface{}{"host": apiHost.Value, "source": apiHost.Source})
+	//	}
+	//
+	//	if len(namespace.Value) == 0 {
+	//		errStr += wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE)
+	//	} else {
+	//		errStr += wski18n.T(wski18n.ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
+	//			map[string]interface{}{"namespace": namespace.Value, "source": namespace.Source})
+	//
+	//	}
+	//	whisk.Debug(whisk.DbgError, errStr)
+	//	return clientConfig, wskderrors.NewWhiskClientInvalidConfigError(errStr)
+	//}
 
-		if len(apiHost.Value) == 0 {
-			errStr += wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST)
-		} else {
-			errStr += wski18n.T("The API host is {{.apihost}}, from {{.apisource}}.\n",
-				map[string]interface{}{"apihost": apiHost.Value, "apisource": apiHost.Source})
-		}
-
-		if len(namespace.Value) == 0 {
-			errStr += wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE)
-		} else {
-			errStr += wski18n.T("The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
-				map[string]interface{}{"namespace": namespace.Value, "namespacesource": namespace.Source})
-
-		}
-		whisk.Debug(whisk.DbgError, errStr)
-		return clientConfig, wskderrors.NewWhiskClientInvalidConfigError(errStr)
+	err := validateClientConfig(credential, apiHost, namespace)
+	if err != nil{
+		return clientConfig, err
 	}
 
 	stdout := wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
@@ -259,6 +264,40 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		map[string]interface{}{"namespace": namespace.Value, "source": namespace.Source})
 	whisk.Debug(whisk.DbgInfo, stdout)
 	return clientConfig, nil
+}
+
+func validateClientConfig(credential PropertyValue, apiHost PropertyValue, namespace PropertyValue)(error){
+
+	if len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0 {
+		err := wskderrors.NewWhiskClientInvalidConfigError("")
+		var errStr string
+
+		if len(credential.Value) == 0 {
+			err.AppendDetail(wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY))
+		} else {
+			err.AppendDetail(wski18n.T(wski18n.ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
+				map[string]interface{}{"source": credential.Source}))
+		}
+
+		if len(apiHost.Value) == 0 {
+			err.AppendDetail(wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST))
+		} else {
+			err.AppendDetail(wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
+				map[string]interface{}{"host": apiHost.Value, "source": apiHost.Source}))
+		}
+
+		if len(namespace.Value) == 0 {
+			err.AppendDetail(wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE))
+		} else {
+			err.AppendDetail(wski18n.T(wski18n.ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
+				map[string]interface{}{"namespace": namespace.Value, "source": namespace.Source}))
+
+		}
+		whisk.Debug(whisk.DbgError, errStr)
+		return err
+	}
+
+	return nil
 }
 
 var promptForValue = func(msg string) (string) {
