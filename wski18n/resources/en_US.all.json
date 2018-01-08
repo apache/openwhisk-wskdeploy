@@ -109,8 +109,20 @@
     "translation": "Unmarshal OpenWhisk info from internet.\n"
   },
   {
-    "id": "msg_deployment_success",
+    "id": "msg_deployment_prompt",
+    "translation": "Do you really want to deploy this? (y/N): "
+  },
+  {
+    "id": "msg_deployment_succeeded",
     "translation": "Deployment completed successfully.\n"
+  },
+  {
+    "id": "msg_deployment_failed",
+    "translation": "Deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
+  },
+  {
+    "id": "msg_deployment_cancelled",
+    "translation": "OK. Cancelling deployment.\n"
   },
   {
     "id": "foo",
@@ -175,10 +187,6 @@
   {
     "id": "Deploying dependency {{.output}} ...",
     "translation": "Deploying dependency {{.output}} ..."
-  },
-  {
-    "id": "OK. Cancelling deployment.\n",
-    "translation": "OK. Cancelling deployment.\n"
   },
   {
     "id": "OK. Canceling undeployment.\n",

@@ -302,7 +302,8 @@ func (deployer *ServiceDeployer) Deploy() error {
 	if deployer.IsInteractive == true {
 		deployer.printDeploymentAssets(deployer.Deployment)
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Do you really want to deploy this? (y/N): ")
+		prompt := wski18n.T(wski18n.ID_MSG_DEPLOYMENT_PROMPT)
+		fmt.Print(prompt)
 
 		text, _ := reader.ReadString('\n')
 		text = strings.TrimSpace(text)
@@ -311,32 +312,34 @@ func (deployer *ServiceDeployer) Deploy() error {
 			text = "n"
 		}
 
+		// TODO() make possible responses constants (enum?) and creaete "No" corallary
 		if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
 			deployer.InteractiveChoice = true
 			if err := deployer.deployAssets(); err != nil {
-				errString := wski18n.T("Deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n")
-				whisk.Debug(whisk.DbgError, errString)
+				wskprint.PrintOpenWhiskError(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_FAILED))
 				return err
 			}
 
-			wskprint.PrintOpenWhiskSuccess(wski18n.T("Deployment completed successfully.\n"))
+			wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_SUCCEEDED))
 			return nil
 
 		} else {
+			// TODO() Should acknowledge if user typed (No/N/n) and if not still exit, but
+			// indicate we took the response to mean "No", typically by displaying interpolated
+			// response in parenthesis
 			deployer.InteractiveChoice = false
-			wskprint.PrintOpenWhiskSuccess(wski18n.T("OK. Cancelling deployment.\n"))
+			wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_CANCELLED))
 			return nil
 		}
 	}
 
 	// non-interactive
 	if err := deployer.deployAssets(); err != nil {
-		errString := wski18n.T("Deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n")
-		whisk.Debug(whisk.DbgError, errString)
+		wskprint.PrintOpenWhiskError(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_FAILED))
 		return err
 	}
 
-	wskprint.PrintOpenWhiskSuccess(wski18n.T("Deployment completed successfully.\n"))
+	wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_SUCCEEDED)))
 	return nil
 
 }

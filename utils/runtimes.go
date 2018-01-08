@@ -26,7 +26,6 @@ import (
 	"net/http"
 	"strings"
 	"time"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 const NODEJS_FILE_EXTENSION = "js"
@@ -75,6 +74,7 @@ var DefaultRunTimes map[string]string
 // `curl -k https://openwhisk.ng.bluemix.net`
 // hard coding it here in case of network unavailable or failure.
 func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
+	// TODO() create HTTP header constants and use them
 	ct := "application/json; charset=UTF-8"
 	req, _ := http.NewRequest("GET", "https://"+apiHost, nil)
 	req.Header.Set("Content-Type", ct)
@@ -104,6 +104,7 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	}
 
 	// Local openwhisk deployment sometimes only returns "application/json" as the content type
+	// TODO() create HTTP header constants and use them
 	if err != nil || !strings.Contains(ct, res.Header.Get("Content-Type")) {
 		stdout := wski18n.T(wski18n.ID_MSG_UNMARSHAL_LOCAL)
 		whisk.Debug(whisk.DbgInfo, stdout)

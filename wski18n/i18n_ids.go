@@ -51,7 +51,10 @@ const(
 	ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X	= "msg_runtime_mismatch"
 	ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X		= "msg_runtime_changed"
 	ID_MSG_RUNTIME_UNSUPPORTED_X_runtime_X_action_X		= "msg_runtime_unsupported"
-	ID_MSG_DEPLOYMENT_SUCCESS				= "msg_deployment_success"
+	ID_MSG_DEPLOYMENT_PROMPT				= "msg_deployment_prompt"
+	ID_MSG_DEPLOYMENT_SUCCEEDED				= "msg_deployment_succeeded"
+	ID_MSG_DEPLOYMENT_FAILED				= "msg_deployment_failed"
+	ID_MSG_DEPLOYMENT_CANCELLED				= "msg_deployment_cancelled"
 	ID_MSG_UNMARSHAL_LOCAL					= "msg_unmarshall_local"
 	ID_MSG_UNMARSHAL_NETWORK				= "msg_unmarshall_network"
 
