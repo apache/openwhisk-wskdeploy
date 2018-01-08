@@ -179,8 +179,8 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 	// (TODO) delete this warning after deprecating application in manifest file
 	if manifest.Application.Name != "" {
-		warningString := wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_APPLICATION)
-		wskprint.PrintOpenWhiskWarning(warningString)
+		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
+			map[string]interface{}{"oldkey": "application", "newkey": "project", "filetype": "manifest"}))
 	}
 
 	// process deployment file
@@ -194,8 +194,8 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 		// (TODO) delete this warning after deprecating application in deployment file
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
-			warningString := wski18n.T("WARNING: application in deployment file will soon be deprecated, please use project instead.\n")
-			whisk.Debug(whisk.DbgWarn, warningString)
+			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
+				map[string]interface{}{"oldkey": "application", "newkey": "project", "filetype": "deployment"}))
 		}
 
 		// compare the name of the project/application
