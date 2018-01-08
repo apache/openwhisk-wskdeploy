@@ -101,16 +101,20 @@
   },
 
   {
-    "id": "Start to unmarshal Openwhisk info from local values.\n",
-    "translation": "Start to unmarshal Openwhisk info from local values.\n"
+    "id": "msg_unmarshall_local",
+    "translation": "Unmarshal OpenWhisk info from local values.\n"
   },
   {
-    "id": "Unmarshal Openwhisk info from internet.\n",
-    "translation": "Unmarshal Openwhisk info from internet.\n"
+    "id": "msg_unmarshall_network",
+    "translation": "Unmarshal OpenWhisk info from internet.\n"
   },
   {
-    "id": "Deployment completed successfully.\n",
+    "id": "msg_deployment_success",
     "translation": "Deployment completed successfully.\n"
+  },
+  {
+    "id": "foo",
+    "translation": "==============================================================="
   },
   {
     "id": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n",

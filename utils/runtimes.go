@@ -26,6 +26,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 const NODEJS_FILE_EXTENSION = "js"
@@ -104,13 +105,13 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 
 	// Local openwhisk deployment sometimes only returns "application/json" as the content type
 	if err != nil || !strings.Contains(ct, res.Header.Get("Content-Type")) {
-		stdout := wski18n.T("Start to unmarshal Openwhisk info from local values.\n")
+		stdout := wski18n.T(wski18n.ID_MSG_UNMARSHAL_LOCAL)
 		whisk.Debug(whisk.DbgInfo, stdout)
 		err = json.Unmarshal(RUNTIME_DETAILS, &op)
 	} else {
 		b, _ := ioutil.ReadAll(res.Body)
 		if b != nil && len(b) > 0 {
-			stdout := wski18n.T("Unmarshal Openwhisk info from internet.\n")
+			stdout := wski18n.T(wski18n.ID_MSG_UNMARSHAL_NETWORK)
 			whisk.Debug(whisk.DbgInfo, stdout)
 			err = json.Unmarshal(b, &op)
 		}

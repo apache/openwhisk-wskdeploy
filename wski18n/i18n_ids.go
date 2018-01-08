@@ -51,6 +51,9 @@ const(
 	ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X	= "msg_runtime_mismatch"
 	ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X		= "msg_runtime_changed"
 	ID_MSG_RUNTIME_UNSUPPORTED_X_runtime_X_action_X		= "msg_runtime_unsupported"
+	ID_MSG_DEPLOYMENT_SUCCESS				= "msg_deployment_success"
+	ID_MSG_UNMARSHAL_LOCAL					= "msg_unmarshall_local"
+	ID_MSG_UNMARSHAL_NETWORK				= "msg_unmarshall_network"
 
 	// Action Limits
 	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X			= "msg_action_limit_ignored"	// timeout, memorySize, logSize
@@ -60,18 +63,6 @@ const(
 
 )
 
-//{
-//"id": "Start to unmarshal Openwhisk info from local values.\n",
-//"translation": "Start to unmarshal Openwhisk info from local values.\n"
-//},
-//{
-//"id": "Unmarshal Openwhisk info from internet.\n",
-//"translation": "Unmarshal Openwhisk info from internet.\n"
-//},
-//{
-//"id": "Deployment completed successfully.\n",
-//"translation": "Deployment completed successfully.\n"
-//},
 //{
 //"id": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n",
 //"translation": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n"
