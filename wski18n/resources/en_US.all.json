@@ -96,9 +96,10 @@
     "translation": "The namespace is {{.namespace}}, from {{.source}}.\n"
   },
   {
-    "id": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n",
+    "id": "msg_err_get_runtimes",
     "translation": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n"
   },
+
   {
     "id": "Start to unmarshal Openwhisk info from local values.\n",
     "translation": "Start to unmarshal Openwhisk info from local values.\n"

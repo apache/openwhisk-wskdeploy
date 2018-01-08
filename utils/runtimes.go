@@ -92,7 +92,8 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 
 	res, err := netClient.Do(req)
 	if err != nil {
-		errString := wski18n.T("Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n",
+		// TODD() create an error
+		errString := wski18n.T(wski18n.ID_ERR_GET_RUNTIMES_X_err_X,
 			map[string]interface{}{"err": err.Error()})
 		whisk.Debug(whisk.DbgWarn, errString)
 	}

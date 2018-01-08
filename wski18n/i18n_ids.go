@@ -55,13 +55,11 @@ const(
 	// Action Limits
 	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X			= "msg_action_limit_ignored"	// timeout, memorySize, logSize
 
+	// Errors
+	ID_ERR_GET_RUNTIMES_X_err_X 				= "msg_err_get_runtimes"
+
 )
 
-
-//{
-//"id": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n",
-//"translation": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n"
-//},
 //{
 //"id": "Start to unmarshal Openwhisk info from local values.\n",
 //"translation": "Start to unmarshal Openwhisk info from local values.\n"
