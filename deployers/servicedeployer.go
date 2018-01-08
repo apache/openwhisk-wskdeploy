@@ -143,7 +143,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		// OpenWhisk entities are annotated with Project Name and therefore
 		// Project Name in manifest/deployment file is mandatory for managed deployments
 		if deployer.ProjectName == "" {
-			// TODO see if we can move string to translation file.
+			// TODO i18n - move string to translation file.
 			return wskderrors.NewYAMLFileFormatError(manifest.Filepath, "Project name in manifest file is mandatory for managed deployments")
 		}
 		// Every OpenWhisk entity in the manifest file will be annotated with:
@@ -179,8 +179,8 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 	// (TODO) delete this warning after deprecating application in manifest file
 	if manifest.Application.Name != "" {
-		warningString := wski18n.T("WARNING: application in manifest file will soon be deprecated, please use project instead.\n")
-		whisk.Debug(whisk.DbgWarn, warningString)
+		warningString := wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_APPLICATION)
+		wskprint.PrintOpenWhiskWarning(warningString)
 	}
 
 	// process deployment file
@@ -312,7 +312,7 @@ func (deployer *ServiceDeployer) Deploy() error {
 			text = "n"
 		}
 
-		// TODO() make possible responses constants (enum?) and creaete "No" corallary
+		// TODO() make possible responses constants (enum?) and create "No" corallary
 		if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
 			deployer.InteractiveChoice = true
 			if err := deployer.deployAssets(); err != nil {

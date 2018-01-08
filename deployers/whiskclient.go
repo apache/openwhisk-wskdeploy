@@ -220,38 +220,13 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		Insecure:  mode, // true if you want to ignore certificate signing
 	}
 
-	//if len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0 {
-	//	var errStr string
-	//	if len(credential.Value) == 0 {
-	//		errStr += wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY)
-	//	} else {
-	//		errStr += wski18n.T(wski18n.ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
-	//			map[string]interface{}{"source": credential.Source})
-	//	}
-	//
-	//	if len(apiHost.Value) == 0 {
-	//		errStr += wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST)
-	//	} else {
-	//		errStr += wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
-	//			map[string]interface{}{"host": apiHost.Value, "source": apiHost.Source})
-	//	}
-	//
-	//	if len(namespace.Value) == 0 {
-	//		errStr += wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE)
-	//	} else {
-	//		errStr += wski18n.T(wski18n.ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
-	//			map[string]interface{}{"namespace": namespace.Value, "source": namespace.Source})
-	//
-	//	}
-	//	whisk.Debug(whisk.DbgError, errStr)
-	//	return clientConfig, wskderrors.NewWhiskClientInvalidConfigError(errStr)
-	//}
-
+	// validate we have credential, apihost and namespace
 	err := validateClientConfig(credential, apiHost, namespace)
 	if err != nil{
 		return clientConfig, err
 	}
 
+	// Show caller what final values we used for credential, apihost and namespaces
 	stdout := wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
 		map[string]interface{}{"host": apiHost.Value, "source": apiHost.Source})
 	whisk.Debug(whisk.DbgInfo, stdout)

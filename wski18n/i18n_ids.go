@@ -61,10 +61,18 @@ const(
 	// Action Limits
 	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X			= "msg_action_limit_ignored"	// timeout, memorySize, logSize
 
+	// warnings
+	ID_WARN_DEPRECATED_KEY_APPLICATION			= "msg_warn_key_deprecated"
+
 	// Errors
 	ID_ERR_GET_RUNTIMES_X_err_X 				= "msg_err_get_runtimes"
 
 )
+
+//{
+//"id": "WARNING: application in manifest file will soon be deprecated, please use project instead.\n",
+//"translation": "WARNING: application in manifest file will soon be deprecated, please use project instead.\n"
+//},
 
 //{
 //"id": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n",
@@ -280,10 +288,6 @@ const(
 //{
 //"id": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n",
 //"translation": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n"
-//},
-//{
-//"id": "WARNING: application in manifest file will soon be deprecated, please use project instead.\n",
-//"translation": "WARNING: application in manifest file will soon be deprecated, please use project instead.\n"
 //},
 //{
 //"id": "Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n",

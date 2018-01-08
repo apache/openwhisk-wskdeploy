@@ -45,31 +45,31 @@
   },
   {
     "id": "msg_manifest_not_found",
-    "translation": "Manifest file not found at path {{.path}}.\n"
+    "translation": "Manifest file not found at path [{{.path}}].\n"
   },
   {
     "id": "msg_using_manifest_deploy",
-    "translation": "Using {{.path}} for deployment.\n"
+    "translation": "Using [{{.path}}] for deployment.\n"
   },
   {
     "id": "msg_using_manifest_undeploy",
-    "translation": "Using {{.path}} for undeployment.\n"
+    "translation": "Using [{{.path}}] for undeployment.\n"
   },
   {
     "id": "msg_runtime_mismatch",
-    "translation": "Runtime {{.runtime}} specified in manifest does not match with action source file extension {{.ext}} for action {{.action}}.\n"
+    "translation": "Runtime [{{.runtime}}] specified in manifest does not match with action source file extension [{{.ext}}] for action [{{.action}}].\n"
   },
   {
     "id": "msg_runtime_changed",
-    "translation": "Runtime changed to {{.runtime}} based on the action source file extension for action {{.action}}.\n"
+    "translation": "Runtime changed to [{{.runtime}}] based on the action source file extension for action [{{.action}}].\n"
   },
   {
     "id": "msg_runtime_unsupported",
-    "translation": "Runtime {{.runtime}} specified in manifest is not supported for the action {{.action}}.\n"
+    "translation": "Runtime [{{.runtime}}] specified in manifest is not supported for the action [{{.action}}].\n"
   },
   {
     "id": "msg_action_limit_ignored",
-    "translation": "Invalid action limit {{.limit}} in manifest is ignored.\n"
+    "translation": "Invalid action limit [{{.limit}}] in manifest is ignored.\n"
   },
   {
     "id": "msg_config_missing_authkey",
@@ -125,8 +125,12 @@
     "translation": "OK. Cancelling deployment.\n"
   },
   {
-    "id": "foo",
-    "translation": "==============================================================="
+    "id": "msg_warn_key_deprecated",
+    "translation": "The [{{.oldkey}}] key in the manifest file will soon be deprecated, please use the [{{.newkey}}] key instead.\n"
+  },
+  {
+    "id": "SEPARATOR",
+    "translation": "====================== Entries below this line aer not verified ==================================="
   },
   {
     "id": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n",
@@ -335,10 +339,6 @@
   {
     "id": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n",
     "translation": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n"
-  },
-  {
-    "id": "WARNING: application in manifest file will soon be deprecated, please use project instead.\n",
-    "translation": "WARNING: application in manifest file will soon be deprecated, please use project instead.\n"
   },
   {
     "id": "Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n",
