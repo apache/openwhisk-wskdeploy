@@ -228,24 +228,25 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 func validateClientConfig(credential PropertyValue, apiHost PropertyValue, namespace PropertyValue)(error){
 
+	// Display error message based upon which config value was missing
 	if len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0 {
+		var errmsg string
 		if len(credential.Value) == 0 {
-			return wskderrors.NewWhiskClientInvalidConfigError(
-				wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY))
+			errmsg = wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY)
 		}
 
 		if len(apiHost.Value) == 0 {
-			return wskderrors.NewWhiskClientInvalidConfigError(
-				wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST))
+			errmsg = wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST)
 		}
 
 		if len(namespace.Value) == 0 {
-			return wskderrors.NewWhiskClientInvalidConfigError(
-				wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE))
+			errmsg = wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE)
 		}
+
+		return wskderrors.NewWhiskClientInvalidConfigError(errmsg)
 	}
 
-	// Show caller what final values we used for credential, apihost and namespaces
+	// Show caller what final values we used for credential, apihost and namespace
 	stdout := wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
 		map[string]interface{}{"host": apiHost.Value, "source": apiHost.Source})
 	wskprint.PrintOpenWhiskStatus(stdout)
