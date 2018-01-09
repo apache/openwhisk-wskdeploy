@@ -140,6 +140,14 @@
     "translation": "The {{.key}} named {{.dname}} in deployment file [{{.dpath}}] does not match the name {{.mname}}} in manifest file [{{.mpath}}]."
   },
   {
+    "id": "msg_deploying_dependency",
+    "translation": "Deploying dependency [{{.name}}]..."
+  },
+  {
+    "id": "msg_undeploying_dependency",
+    "translation": "Undeploying dependency [{{.name}}]..."
+  },
+  {
     "id": "SEPARATOR",
     "translation": "====================== Entries below this line aer not verified ==================================="
   },
@@ -200,10 +208,6 @@
     "translation": "Deploying package binding {{.output}} ..."
   },
   {
-    "id": "Deploying dependency {{.output}} ...",
-    "translation": "Deploying dependency {{.output}} ..."
-  },
-  {
     "id": "OK. Canceling undeployment.\n",
     "translation": "OK. Canceling undeployment.\n"
   },
@@ -218,10 +222,6 @@
   {
     "id": "Undeployment did not complete sucessfully.\n",
     "translation": "Undeployment did not complete sucessfully.\n"
-  },
-  {
-    "id": "Undeploying dependency {{.depName}} ...",
-    "translation": "Undeploying dependency {{.depName}} ..."
   },
   {
     "id": "Undeployment of dependency {{.depName}} did not complete sucessfully.\n",

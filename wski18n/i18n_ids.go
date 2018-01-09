@@ -61,6 +61,9 @@ const(
 	ID_MSG_UNMARSHAL_LOCAL					= "msg_unmarshall_local"
 	ID_MSG_UNMARSHAL_NETWORK				= "msg_unmarshall_network"
 
+	ID_MSG_DEPLOYING_DEPENDENCY_X_name_X			= "msg_deploying_dependency"
+	ID_MSG_UNDEPLOYING_DEPENDENCY_X_name_X			= "msg_undeploying_dependency"
+
 	// Action Limits
 	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X			= "msg_action_limit_ignored"	// timeout, memorySize, logSize
 
@@ -130,10 +133,6 @@ const(
 //"translation": "Deploying package binding {{.output}} ..."
 //},
 //{
-//"id": "Deploying dependency {{.output}} ...",
-//"translation": "Deploying dependency {{.output}} ..."
-//},
-//{
 //"id": "OK. Cancelling deployment.\n",
 //"translation": "OK. Cancelling deployment.\n"
 //},
@@ -152,10 +151,6 @@ const(
 //{
 //"id": "Undeployment did not complete sucessfully.\n",
 //"translation": "Undeployment did not complete sucessfully.\n"
-//},
-//{
-//"id": "Undeploying dependency {{.depName}} ...",
-//"translation": "Undeploying dependency {{.depName}} ..."
 //},
 //{
 //"id": "Undeployment of dependency {{.depName}} did not complete sucessfully.\n",

@@ -402,8 +402,8 @@ func (deployer *ServiceDeployer) deployAssets() error {
 func (deployer *ServiceDeployer) DeployDependencies() error {
 	for _, pack := range deployer.Deployment.Packages {
 		for depName, depRecord := range pack.Dependencies {
-			output := wski18n.T("Deploying dependency {{.output}} ...",
-				map[string]interface{}{"output": depName})
+			output := wski18n.T(wski18n.ID_MSG_DEPLOYING_DEPENDENCY_X_name_X,
+				map[string]interface{}{"name": depName})
 			whisk.Debug(whisk.DbgInfo, output)
 
 			if depRecord.IsBinding {
@@ -1033,8 +1033,8 @@ func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan *DeploymentProject)
 func (deployer *ServiceDeployer) UnDeployDependencies() error {
 	for _, pack := range deployer.Deployment.Packages {
 		for depName, depRecord := range pack.Dependencies {
-			output := wski18n.T("Undeploying dependency {{.depName}} ...",
-				map[string]interface{}{"depName": depName})
+			output := wski18n.T(wski18n.ID_MSG_UNDEPLOYING_DEPENDENCY_X_name_X,
+				map[string]interface{}{"name": depName})
 			whisk.Debug(whisk.DbgInfo, output)
 
 			if depRecord.IsBinding {
