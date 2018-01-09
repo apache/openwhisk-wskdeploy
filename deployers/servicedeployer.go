@@ -314,8 +314,7 @@ func (deployer *ServiceDeployer) Deploy() error {
 		reader := bufio.NewReader(os.Stdin)
 
 		// TODO() See if we can use the promptForValue() function
-		prompt := wski18n.T(wski18n.ID_MSG_PROMPT_DEPLOY)
-		fmt.Print(prompt)
+		fmt.Print(wski18n.T(wski18n.ID_MSG_PROMPT_DEPLOY))
 
 		text, _ := reader.ReadString('\n')
 		text = strings.TrimSpace(text)

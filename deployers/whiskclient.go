@@ -189,22 +189,21 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	}
 
 	if len(credential.Value) == 0 && isInteractive == true {
-		// TODO() i18n
 		cred := promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_AUTHKEY))
 		credential.Value = cred
 		credential.Source = INTERINPUT
 
 		// The namespace is always associated with the credential. Both of them should be picked up from the same source.
 		if len(namespace.Value) == 0 || namespace.Value == whisk.DEFAULT_NAMESPACE {
-			ns = promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_NAMESPACE))
+			tempNamespace := promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_NAMESPACE))
 			source := INTERINPUT
 
-			if ns == "" {
-				ns = whisk.DEFAULT_NAMESPACE
+			if tempNamespace == "" {
+				tempNamespace = whisk.DEFAULT_NAMESPACE
 				source = DEFAULTVALUE
 			}
 
-			namespace.Value = ns
+			namespace.Value = tempNamespace
 			namespace.Source = source
 		}
 	}
