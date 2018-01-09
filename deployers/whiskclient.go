@@ -222,55 +222,41 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 	// validate we have credential, apihost and namespace
 	err := validateClientConfig(credential, apiHost, namespace)
-	if err != nil{
-		return clientConfig, err
-	}
 
-	// Show caller what final values we used for credential, apihost and namespaces
-	stdout := wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
-		map[string]interface{}{"host": apiHost.Value, "source": apiHost.Source})
-	whisk.Debug(whisk.DbgInfo, stdout)
-
-	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
-		map[string]interface{}{"source": credential.Source})
-	whisk.Debug(whisk.DbgInfo, stdout)
-
-	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
-		map[string]interface{}{"namespace": namespace.Value, "source": namespace.Source})
-	whisk.Debug(whisk.DbgInfo, stdout)
-	return clientConfig, nil
+	return clientConfig, err
 }
 
 func validateClientConfig(credential PropertyValue, apiHost PropertyValue, namespace PropertyValue)(error){
 
 	if len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0 {
-		err := wskderrors.NewWhiskClientInvalidConfigError("")
-		var errStr string
-
 		if len(credential.Value) == 0 {
-			err.AppendDetail(wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY))
-		} else {
-			err.AppendDetail(wski18n.T(wski18n.ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
-				map[string]interface{}{"source": credential.Source}))
+			return wskderrors.NewWhiskClientInvalidConfigError(
+				wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY))
 		}
 
 		if len(apiHost.Value) == 0 {
-			err.AppendDetail(wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST))
-		} else {
-			err.AppendDetail(wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
-				map[string]interface{}{"host": apiHost.Value, "source": apiHost.Source}))
+			return wskderrors.NewWhiskClientInvalidConfigError(
+				wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST))
 		}
 
 		if len(namespace.Value) == 0 {
-			err.AppendDetail(wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE))
-		} else {
-			err.AppendDetail(wski18n.T(wski18n.ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
-				map[string]interface{}{"namespace": namespace.Value, "source": namespace.Source}))
-
+			return wskderrors.NewWhiskClientInvalidConfigError(
+				wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE))
 		}
-		whisk.Debug(whisk.DbgError, errStr)
-		return err
 	}
+
+	// Show caller what final values we used for credential, apihost and namespaces
+	stdout := wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
+		map[string]interface{}{"host": apiHost.Value, "source": apiHost.Source})
+	wskprint.PrintOpenWhiskStatus(stdout)
+
+	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
+		map[string]interface{}{"source": credential.Source})
+	wskprint.PrintOpenWhiskStatus(stdout)
+
+	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
+		map[string]interface{}{"namespace": namespace.Value, "source": namespace.Source})
+	wskprint.PrintOpenWhiskStatus(stdout)
 
 	return nil
 }

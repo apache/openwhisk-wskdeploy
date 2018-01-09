@@ -402,7 +402,7 @@ func (deployer *ServiceDeployer) deployAssets() error {
 func (deployer *ServiceDeployer) DeployDependencies() error {
 	for _, pack := range deployer.Deployment.Packages {
 		for depName, depRecord := range pack.Dependencies {
-			output := wski18n.T(wski18n.ID_MSG_DEPLOYING_DEPENDENCY_X_name_X,
+			output := wski18n.T(wski18n.ID_MSG_DEPENDENCY_DEPLOYING_X_name_X,
 				map[string]interface{}{"name": depName})
 			whisk.Debug(whisk.DbgInfo, output)
 
@@ -426,8 +426,8 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 				if error != nil {
 					return error
 				} else {
-					output := wski18n.T("Dependency {{.output}} has been successfully deployed.\n",
-						map[string]interface{}{"output": depName})
+					output := wski18n.T(wski18n.ID_MSG_DEPENDENCY_DEPLOYMENT_SUCCESS_X_name_X,
+						map[string]interface{}{"name": depName})
 					whisk.Debug(whisk.DbgInfo, output)
 				}
 
@@ -443,8 +443,8 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 				}
 
 				if err := depServiceDeployer.deployAssets(); err != nil {
-					errString := wski18n.T("Deployment of dependency {{.depName}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n",
-						map[string]interface{}{"depName": depName})
+					errString := wski18n.T(wski18n.ID_MSG_DEPENDENCY_DEPLOYMENT_FAILURE_X_name_X,
+						map[string]interface{}{"name": depName})
 					wskprint.PrintOpenWhiskError(errString)
 					return err
 				}
@@ -472,8 +472,8 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 					if err != nil {
 						return err
 					} else {
-						output := wski18n.T("Dependency {{.output}} has been successfully deployed.\n",
-							map[string]interface{}{"output": depName})
+						output := wski18n.T(wski18n.ID_MSG_DEPENDENCY_DEPLOYMENT_SUCCESS_X_name_X,
+							map[string]interface{}{"name": depName})
 						whisk.Debug(whisk.DbgInfo, output)
 					}
 				}
@@ -1033,7 +1033,7 @@ func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan *DeploymentProject)
 func (deployer *ServiceDeployer) UnDeployDependencies() error {
 	for _, pack := range deployer.Deployment.Packages {
 		for depName, depRecord := range pack.Dependencies {
-			output := wski18n.T(wski18n.ID_MSG_UNDEPLOYING_DEPENDENCY_X_name_X,
+			output := wski18n.T(wski18n.ID_MSG_DEPENDENCY_UNDEPLOYING_X_name_X,
 				map[string]interface{}{"name": depName})
 			whisk.Debug(whisk.DbgInfo, output)
 
@@ -1078,14 +1078,14 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
 				}
 
 				if err := depServiceDeployer.unDeployAssets(plan); err != nil {
-					errString := wski18n.T("Undeployment of dependency {{.depName}} did not complete sucessfully.\n",
-						map[string]interface{}{"depName": depName})
+					errString := wski18n.T(wski18n.ID_MSG_DEPENDENCY_UNDEPLOYMENT_FAILURE_X_name_X,
+						map[string]interface{}{"name": depName})
 					whisk.Debug(whisk.DbgError, errString)
 					return err
 				}
 			}
-			output = wski18n.T("Dependency {{.depName}} has been successfully undeployed.\n",
-				map[string]interface{}{"depName": depName})
+			output = wski18n.T(wski18n.ID_MSG_DEPENDENCY_UNDEPLOYMENT_SUCCESS_X_name_X,
+				map[string]interface{}{"name": depName})
 			whisk.Debug(whisk.DbgInfo, output)
 		}
 	}

@@ -148,6 +148,22 @@
     "translation": "Undeploying dependency [{{.name}}]..."
   },
   {
+    "id": "msg_dependency_deployment_success",
+    "translation": "Dependency {{.name}} has been successfully deployed.\n"
+  },
+  {
+    "id": "msg_dependency_deployment_failure",
+    "translation": "Deployment of dependency {{.name}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
+  },
+  {
+    "id": "msg_dependency_undeployment_success",
+    "translation": "Dependency {{.name}} has been successfully undeployed.\n"
+  },
+  {
+    "id": "msg_dependency_undeployment_failure",
+    "translation": "Undeployment of dependency {{.name}} did not complete sucessfully.\n"
+  },
+  {
     "id": "SEPARATOR",
     "translation": "====================== Entries below this line aer not verified ==================================="
   },
@@ -182,10 +198,6 @@
   {
     "id": "Got error creating package binding with error message: {{.err}} and error code: {{.code}}.\n",
     "translation": "Got error creating package binding with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Deployment of dependency {{.depName}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n",
-    "translation": "Deployment of dependency {{.depName}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
   },
   {
     "id": "Deploying action {{.output}} ...",
@@ -224,10 +236,6 @@
     "translation": "Undeployment did not complete sucessfully.\n"
   },
   {
-    "id": "Undeployment of dependency {{.depName}} did not complete sucessfully.\n",
-    "translation": "Undeployment of dependency {{.depName}} did not complete sucessfully.\n"
-  },
-  {
     "id": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n",
     "translation": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n"
   },
@@ -260,10 +268,6 @@
     "translation": "Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n"
   },
   {
-    "id": "Dependency {{.output}} has been successfully deployed.\n",
-    "translation": "Dependency {{.output}} has been successfully deployed.\n"
-  },
-  {
     "id": "Package binding {{.output}} has been successfully deployed.\n",
     "translation": "Package binding {{.output}} has been successfully deployed.\n"
   },
@@ -286,10 +290,6 @@
   {
     "id": "Action {{.output}} has been successfully deployed.\n",
     "translation": "Action {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Dependency {{.depName}} has been successfully undeployed.\n",
-    "translation": "Dependency {{.depName}} has been successfully undeployed.\n"
   },
   {
     "id": "Trigger {{.trigger}} has been removed.\n",
