@@ -143,14 +143,15 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		// OpenWhisk entities are annotated with Project Name and therefore
 		// Project Name in manifest/deployment file is mandatory for managed deployments
 		if deployer.ProjectName == "" {
-			// TODO i18n - move string to translation file.
-			return wskderrors.NewYAMLFileFormatError(manifest.Filepath, "Project name in manifest file is mandatory for managed deployments")
+			errmsg := wski18n.T(wski18n.ID_ERR_MISSING_MANDATORY_KEY_X_key_X,
+				map[string]interface{}{"key": "project name"})
+
+			return wskderrors.NewYAMLFileFormatError(manifest.Filepath, errmsg)
 		}
 		// Every OpenWhisk entity in the manifest file will be annotated with:
 		//managed: '{"__OW__PROJECT__NAME": <name>, "__OW__PROJECT_HASH": <hash>, "__OW__FILE": <path>}'
 		deployer.ManagedAnnotation, err = utils.GenerateManagedAnnotation(deployer.ProjectName, manifest.Filepath)
 		if err != nil {
-			// TODO see if we can pass in the YAML file path on first parameter
 			return wskderrors.NewYAMLFileFormatError(manifest.Filepath, err.Error())
 		}
 	}
@@ -198,13 +199,17 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 				map[string]interface{}{"oldkey": "application", "newkey": "project", "filetype": "deployment"}))
 		}
 
-		// compare the name of the project/application
+		// compare the name of the project
 		if len(deploymentReader.DeploymentDescriptor.GetProject().Packages) != 0 && len(projectName) != 0 {
 			projectNameDeploy := deploymentReader.DeploymentDescriptor.GetProject().Name
 			if projectNameDeploy != projectName {
-				errorString := wski18n.T("The name of the project/application {{.projectNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the project/application {{.projectNameManifest}}} in manifest file at [{{.manifestFile}}].",
-					map[string]interface{}{"projectNameDeploy": projectNameDeploy, "deploymentFile": deployer.DeploymentPath,
-						"projectNameManifest": projectName, "manifestFile": deployer.ManifestPath})
+				errorString := wski18n.T(wski18n.ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X,
+					map[string]interface{}{
+						"key": "project",
+						"dname": projectNameDeploy,
+						"dpath": deployer.DeploymentPath,
+						"mname": projectName,
+						"mpath": deployer.ManifestPath})
 				return wskderrors.NewYAMLFileFormatError(manifest.Filepath, errorString)
 			}
 		}
@@ -257,8 +262,8 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 
 	// (TODO) delete this warning after deprecating application in manifest file
 	if manifest.Application.Name != "" {
-		warningString := wski18n.T("WARNING: application in manifest file will soon be deprecated, please use project instead.\n")
-		whisk.Debug(whisk.DbgWarn, warningString)
+		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
+			map[string]interface{}{"oldkey": "application", "newkey": "project", "filetype": "manifest"}))
 	}
 
 	// process deployment file
@@ -271,16 +276,21 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 
 		// (TODO) delete this warning after deprecating application in deployment file
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
-			warningString := wski18n.T("WARNING: application in deployment file will soon be deprecated, please use project instead.\n")
-			whisk.Debug(whisk.DbgWarn, warningString)
+			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
+				map[string]interface{}{"oldkey": "application", "newkey": "project", "filetype": "deployment"}))
 		}
+
 		// compare the name of the application
 		if len(deploymentReader.DeploymentDescriptor.GetProject().Packages) != 0 && len(projectName) != 0 {
 			projectNameDeploy := deploymentReader.DeploymentDescriptor.GetProject().Name
 			if projectNameDeploy != projectName {
-				errorString := wski18n.T("The name of the project/application {{.projectNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.projectNameManifest}}} in manifest file at [{{.manifestFile}}].",
-					map[string]interface{}{"projectNameDeploy": projectNameDeploy, "deploymentFile": deployer.DeploymentPath,
-						"projectNameManifest": projectName, "manifestFile": deployer.ManifestPath})
+				errorString := wski18n.T(wski18n.ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X,
+					map[string]interface{}{
+						"key": "project",
+						"dname": projectNameDeploy,
+						"dpath": deployer.DeploymentPath,
+						"mname": projectName,
+						"mpath": deployer.ManifestPath})
 				return deployer.Deployment, wskderrors.NewYAMLFileFormatError(manifest.Filepath, errorString)
 			}
 		}
@@ -380,7 +390,7 @@ func (deployer *ServiceDeployer) deployAssets() error {
 	// from the manifest file must result in undeployment of those deleted entities
 	if utils.Flags.Managed {
 		if err := deployer.RefreshManagedEntities(deployer.ManagedAnnotation); err != nil {
-			errString := wski18n.T("Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n")
+			errString := wski18n.T(wski18n.ID_MSG_UNDEPLOYMENT_MANAGED_FAILED)
 			whisk.Debug(whisk.DbgError, errString)
 			return err
 		}

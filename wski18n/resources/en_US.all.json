@@ -125,8 +125,19 @@
     "translation": "OK. Cancelling deployment.\n"
   },
   {
+    "id": "msg_undeployment_managed_failed",
+    "translation": "Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
+  },
+  {
     "id": "msg_warn_key_deprecated_replaced",
     "translation": "The [{{.oldkey}}] key in the {{.filetype}} file will soon be deprecated, please use the [{{.newkey}}] key instead.\n"
+  },
+  { "id": "msg_err_missing_mandatory_key",
+    "translation": "The mandatory key [{{.key}}] is missing."
+  },
+  {
+    "id": "msg_err_mismatch_name_project",
+    "translation": "The {{.key}} named {{.dname}} in deployment file [{{.dpath}}] does not match the name {{.mname}}} in manifest file [{{.mpath}}]."
   },
   {
     "id": "SEPARATOR",
@@ -333,16 +344,8 @@
     "translation": "WARNING: Limits  {{.limitname}}  is not changable as to now, which will be ignored.\n"
   },
   {
-    "id": "The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
-    "translation": "The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}]."
-  },
-  {
     "id": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n",
     "translation": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n"
-  },
-  {
-    "id": "Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n",
-    "translation": "Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
   },
   {
     "id": "Found the action {{.action}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n",

@@ -51,10 +51,13 @@ const(
 	ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X	= "msg_runtime_mismatch"
 	ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X		= "msg_runtime_changed"
 	ID_MSG_RUNTIME_UNSUPPORTED_X_runtime_X_action_X		= "msg_runtime_unsupported"
+
 	ID_MSG_DEPLOYMENT_PROMPT				= "msg_deployment_prompt"
 	ID_MSG_DEPLOYMENT_SUCCEEDED				= "msg_deployment_succeeded"
 	ID_MSG_DEPLOYMENT_FAILED				= "msg_deployment_failed"
 	ID_MSG_DEPLOYMENT_CANCELLED				= "msg_deployment_cancelled"
+	ID_MSG_UNDEPLOYMENT_MANAGED_FAILED			= "msg_undeployment_managed_failed"
+
 	ID_MSG_UNMARSHAL_LOCAL					= "msg_unmarshall_local"
 	ID_MSG_UNMARSHAL_NETWORK				= "msg_unmarshall_network"
 
@@ -66,7 +69,8 @@ const(
 
 	// Errors
 	ID_ERR_GET_RUNTIMES_X_err_X 				= "msg_err_get_runtimes"
-
+	ID_ERR_MISSING_MANDATORY_KEY_X_key_X = "msg_err_missing_mandatory_key"
+        ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X = "msg_err_mismatch_name_project"
 )
 
 //{
@@ -283,10 +287,6 @@ const(
 //{
 //"id": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n",
 //"translation": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n"
-//},
-//{
-//"id": "Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n",
-//"translation": "Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
 //},
 //{
 //"id": "Found the action {{.action}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n",
