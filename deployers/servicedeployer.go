@@ -312,7 +312,9 @@ func (deployer *ServiceDeployer) Deploy() error {
 	if deployer.IsInteractive == true {
 		deployer.printDeploymentAssets(deployer.Deployment)
 		reader := bufio.NewReader(os.Stdin)
-		prompt := wski18n.T(wski18n.ID_MSG_DEPLOYMENT_PROMPT)
+
+		// TODO() See if we can use the promptForValue() function
+		prompt := wski18n.T(wski18n.ID_MSG_PROMPT_DEPLOY)
 		fmt.Print(prompt)
 
 		text, _ := reader.ReadString('\n')

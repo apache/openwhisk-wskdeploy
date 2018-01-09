@@ -141,26 +141,30 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	key = GetPropertyValue(key, wskprops.Key, WSKPROPS)
 	cert = GetPropertyValue(cert, wskprops.Cert, WSKPROPS)
 
+	// TODO() see if we can split the following whisk prop logic into a separate function
 	// now, read credentials from whisk.properties but this is only acceptable within Travis
 	// whisk.properties will soon be deprecated and should not be used for any production deployment
 	whiskproperty, _ := GetWskPropFromWhiskProperty(pi)
+
+	var warnmsg string
+
 	credential = GetPropertyValue(credential, whiskproperty.AuthKey, WHISKPROPERTY)
 	if credential.Source == WHISKPROPERTY {
-		// TODO() i18n
-		wskprint.PrintlnOpenWhiskWarning("The authentication key was retrieved from whisk.properties " +
-			"which will soon be deprecated please do not use it outside of Travis builds.")
+		warnmsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
+			map[string]interface{}{"key": "authenticaton key"})
+		wskprint.PrintlnOpenWhiskWarning(warnmsg)
 	}
 	namespace = GetPropertyValue(namespace, whiskproperty.Namespace, WHISKPROPERTY)
 	if namespace.Source == WHISKPROPERTY {
-		// TODO() i18n
-		wskprint.PrintlnOpenWhiskWarning("The namespace was retrieved from whisk.properties " +
-			"which will soon be deprecated please do not use it outside of Travis builds.")
+		warnmsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
+			map[string]interface{}{"key": "namespace"})
+		wskprint.PrintlnOpenWhiskWarning(warnmsg)
 	}
 	apiHost = GetPropertyValue(apiHost, whiskproperty.APIHost, WHISKPROPERTY)
 	if apiHost.Source == WHISKPROPERTY {
-		// TODO() i18n
-		wskprint.PrintlnOpenWhiskWarning("The API host was retrieved from whisk.properties " +
-			"which will soon be deprecated please do not use it outside of Travis builds.")
+		warnmsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
+			map[string]interface{}{"key": "API host"})
+		wskprint.PrintlnOpenWhiskWarning(warnmsg)
 	}
 
 	// set namespace to default namespace if not yet found
@@ -169,14 +173,15 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		namespace.Source = DEFAULTVALUE
 	}
 
+	// TODO() See if we can split off the interactive logic into a separate function
 	// If we still can not find the values we need, check if it is interactive mode.
 	// If so, we prompt users for the input.
 	// The namespace is set to a default value at this point if not provided.
 	if len(apiHost.Value) == 0 && isInteractive == true {
-		// TODO() i18n
-		host := promptForValue("\nPlease provide the hostname for OpenWhisk [default value is openwhisk.ng.bluemix.net]: ")
+		host := promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_APIHOST))
 		if host == "" {
-			// TODO() tell caller that we are using this default, look to make a const at top of file
+			// TODO() programmatically tell caller that we are using this default
+			// TODO() make this configurable or remove
 			host = "openwhisk.ng.bluemix.net"
 		}
 		apiHost.Value = host
@@ -185,14 +190,13 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 	if len(credential.Value) == 0 && isInteractive == true {
 		// TODO() i18n
-		cred := promptForValue("\nPlease provide an authentication token: ")
+		cred := promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_AUTHKEY))
 		credential.Value = cred
 		credential.Source = INTERINPUT
 
 		// The namespace is always associated with the credential. Both of them should be picked up from the same source.
 		if len(namespace.Value) == 0 || namespace.Value == whisk.DEFAULT_NAMESPACE {
-			// TODO() i18n
-			ns := promptForValue("\nPlease provide a namespace [default value is guest]: ")
+			promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_NAMESPACE))
 			source := INTERINPUT
 
 			if ns == "" {
@@ -226,7 +230,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	return clientConfig, err
 }
 
-func validateClientConfig(credential PropertyValue, apiHost PropertyValue, namespace PropertyValue)(error){
+func validateClientConfig(credential PropertyValue, apiHost PropertyValue, namespace PropertyValue) (error) {
 
 	// Display error message based upon which config value was missing
 	if len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0 {

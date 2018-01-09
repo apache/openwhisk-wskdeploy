@@ -53,7 +53,6 @@ const(
 	ID_MSG_MANIFEST_DEPLOY_X_path_X				= "msg_using_manifest_deploy"	// "Using {{.path}} for deployment.\n"
 	ID_MSG_MANIFEST_UNDEPLOY_X_path_X			= "msg_using_manifest_undeploy"	// "Using {{.path}} for undeployment.\n"
 
-	ID_MSG_DEPLOYMENT_PROMPT				= "msg_deployment_prompt"
 	ID_MSG_DEPLOYMENT_SUCCEEDED				= "msg_deployment_succeeded"
 	ID_MSG_DEPLOYMENT_FAILED				= "msg_deployment_failed"
 	ID_MSG_DEPLOYMENT_CANCELLED				= "msg_deployment_cancelled"
@@ -70,11 +69,18 @@ const(
 	ID_MSG_UNMARSHAL_LOCAL					= "msg_unmarshall_local"
 	ID_MSG_UNMARSHAL_NETWORK				= "msg_unmarshall_network"
 
+	// Interactive (prompts)
+	ID_MSG_PROMPT_DEPLOY					= "msg_prompt_deploy"
+	ID_MSG_PROMPT_AUTHKEY					= "msg_prompt_authkey"
+	ID_MSG_PROMPT_APIHOST					= "msg_prompt_apihost"
+	ID_MSG_PROMPT_NAMESPACE					= "msg_prompt_namespace"
+
 	// Action Limits
 	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X			= "msg_action_limit_ignored"	// timeout, memorySize, logSize
 
 	// warnings
 	ID_WARN_DEPRECATED_KEY_REPLACED				= "msg_warn_key_deprecated_replaced"
+	ID_WARN_WHISK_PROPS_DEPRECATED				= "msg_warn_whisk_properties"
 
 	// Errors
 	ID_ERR_GET_RUNTIMES_X_err_X 				= "msg_err_get_runtimes"
