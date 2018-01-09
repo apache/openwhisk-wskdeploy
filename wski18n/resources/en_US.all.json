@@ -48,6 +48,10 @@
     "translation": "Do you really want to deploy this? (y/N): "
   },
   {
+    "id": "msg_prompt_undeploy",
+    "translation": "Do you really want to undeploy this? (y/N): "
+  },
+  {
     "id": "msg_prompt_authkey",
     "translation": "\nPlease provide an authentication token: "
   },
@@ -115,7 +119,6 @@
     "id": "msg_err_get_runtimes",
     "translation": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n"
   },
-
   {
     "id": "msg_unmarshall_local",
     "translation": "Unmarshal OpenWhisk info from local values.\n"
@@ -135,6 +138,18 @@
   {
     "id": "msg_deployment_cancelled",
     "translation": "OK. Cancelling deployment.\n"
+  },
+  {
+    "id": "msg_undeployment_succeeded",
+    "translation": "Undeployment completed successfully.\n"
+  },
+  {
+    "id": "msg_undeployment_failed",
+    "translation": "Undeployment did not complete sucessfully.\n"
+  },
+  {
+    "id": "msg_undeployment_cancelled",
+    "translation": "OK. Cancelling undeployment.\n"
   },
   {
     "id": "msg_undeployment_managed_failed",
@@ -184,40 +199,43 @@
     "translation": "Deleting {{.key}} [{{.name}}] which was removed from the current managed project [{{.project}}] as part of undeployment.\n"
   },
   {
+    "id": "msg_err_create_entity",
+    "translation": "Error creating {{.key}} with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "msg_err_delete_entity",
+    "translation": "Error deleting {{.key}} with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+
+//  {
+//    "id": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n",
+//    "translation": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n"
+//  },
+
+//  {
+//    "id": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n",
+//    "translation": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n"
+//  },
+//  {
+//    "id": "Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n",
+//    "translation": "Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n"
+//  },
+//  {
+//    "id": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n",
+//    "translation": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n"
+//  },
+//  {
+//    "id": "Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
+//    "translation": "Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
+//  },
+//  {
+//    "id": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n",
+//    "translation": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n"
+//  },
+
+  {
     "id": "SEPARATOR",
     "translation": "====================== Entries below this line aer not verified ==================================="
-  },
-  {
-    "id": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error creating action with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error creating api with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating api with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error creating rule with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating rule with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error creating trigger with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating trigger with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error creating trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error creating package binding with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating package binding with error message: {{.err}} and error code: {{.code}}.\n"
   },
   {
     "id": "Deploying action {{.output}} ...",
@@ -242,42 +260,6 @@
   {
     "id": "OK. Canceling undeployment.\n",
     "translation": "OK. Canceling undeployment.\n"
-  },
-  {
-    "id": "Undeployment did not complete sucessfully.\n",
-    "translation": "Undeployment did not complete sucessfully.\n"
-  },
-  {
-    "id": "Deployment removed successfully.\n",
-    "translation": "Deployment removed successfully.\n"
-  },
-  {
-    "id": "Undeployment did not complete sucessfully.\n",
-    "translation": "Undeployment did not complete sucessfully.\n"
-  },
-  {
-    "id": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n"
   },
   {
     "id": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n",

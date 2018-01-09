@@ -61,6 +61,10 @@ const(
 	ID_MSG_DEPLOYMENT_FAILED				= "msg_deployment_failed"
 	ID_MSG_DEPLOYMENT_CANCELLED				= "msg_deployment_cancelled"
 
+	ID_MSG_UNDEPLOYMENT_SUCCEEDED				= "msg_undeployment_succeeded"
+	ID_MSG_UNDEPLOYMENT_FAILED				= "msg_undeployment_failed"
+	ID_MSG_UNDEPLOYMENT_CANCELLED				= "msg_undeployment_cancelled"
+
 	ID_MSG_DEPENDENCY_DEPLOYING_X_name_X			= "msg_deploying_dependency"
 	ID_MSG_DEPENDENCY_UNDEPLOYING_X_name_X			= "msg_undeploying_dependency"
 	ID_MSG_DEPENDENCY_DEPLOYMENT_SUCCESS_X_name_X		= "msg_dependency_deployment_success"
@@ -74,6 +78,7 @@ const(
 
 	// Interactive (prompts)
 	ID_MSG_PROMPT_DEPLOY					= "msg_prompt_deploy"
+	ID_MSG_PROMPT_UNDEPLOY					= "msg_prompt_undeploy"
 	ID_MSG_PROMPT_AUTHKEY					= "msg_prompt_authkey"
 	ID_MSG_PROMPT_APIHOST					= "msg_prompt_apihost"
 	ID_MSG_PROMPT_NAMESPACE					= "msg_prompt_namespace"
@@ -89,5 +94,7 @@ const(
 	ID_ERR_GET_RUNTIMES_X_err_X 				= "msg_err_get_runtimes"
 	ID_ERR_MISSING_MANDATORY_KEY_X_key_X			= "msg_err_missing_mandatory_key"
         ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X = "msg_err_mismatch_name_project"
+	ID_ERR_CREATE_ENTITY_X_key_X_err_X_code_X		= "msg_err_create_entity"
+	ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X		= "msg_err_delete_entity"
 
 )

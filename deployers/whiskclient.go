@@ -265,6 +265,7 @@ func validateClientConfig(credential PropertyValue, apiHost PropertyValue, names
 	return nil
 }
 
+// TODO() move into its own package "wskread" and add support for passing in default value
 var promptForValue = func(msg string) (string) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(msg)
