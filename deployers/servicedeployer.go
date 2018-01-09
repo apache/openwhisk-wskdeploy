@@ -27,13 +27,12 @@ import (
 	"strings"
 	"sync"
 	"time"
-
+	"net/http"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"net/http"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
@@ -311,9 +310,9 @@ func (deployer *ServiceDeployer) Deploy() error {
 
 	if deployer.IsInteractive == true {
 		deployer.printDeploymentAssets(deployer.Deployment)
-		reader := bufio.NewReader(os.Stdin)
 
-		// TODO() See if we can use the promptForValue() function
+		// TODO() See if we can use the promptForValue() function in whiskclient.go
+		reader := bufio.NewReader(os.Stdin)
 		fmt.Print(wski18n.T(wski18n.ID_MSG_PROMPT_DEPLOY))
 
 		text, _ := reader.ReadString('\n')
@@ -391,7 +390,7 @@ func (deployer *ServiceDeployer) deployAssets() error {
 	// from the manifest file must result in undeployment of those deleted entities
 	if utils.Flags.Managed {
 		if err := deployer.RefreshManagedEntities(deployer.ManagedAnnotation); err != nil {
-			errString := wski18n.T(wski18n.ID_MSG_UNDEPLOYMENT_MANAGED_FAILED)
+			errString := wski18n.T(wski18n.ID_MSG_MANAGED_UNDEPLOYMENT_FAILED)
 			whisk.Debug(whisk.DbgError, errString)
 			return err
 		}
@@ -526,10 +525,14 @@ func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma ma
 			// that this action is deleted from the project in manifest file
 			if aa[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] && aa[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
 				actionName := strings.Join([]string{packageName, action.Name}, "/")
-				output := wski18n.T("Found the action {{.action}} which is deleted"+
-					" from the current project {{.project}} in manifest file which is being undeployed.\n",
-					map[string]interface{}{"action": actionName, "project": aa[utils.OW_PROJECT_NAME]})
-				whisk.Debug(whisk.DbgInfo, output)
+
+				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
+					map[string]interface{}{
+						"key": "action",
+						"name": actionName,
+						"project": aa[utils.OW_PROJECT_NAME]})
+				wskprint.PrintOpenWhiskWarning(output)
+
 				var err error
 				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 					_, err := deployer.Client.Actions.Delete(actionName)
@@ -563,10 +566,13 @@ func (deployer *ServiceDeployer) RefreshManagedTriggers(ma map[string]interface{
 			ta := a.(map[string]interface{})
 			if ta[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] && ta[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
 				// we have found a trigger which was earlier part of the current project
-				output := wski18n.T("Found the trigger {{.trigger}} which is deleted"+
-					" from the current project {{.project}} in manifest file which is being undeployed.\n",
-					map[string]interface{}{"trigger": trigger.Name, "project": ma[utils.OW_PROJECT_NAME]})
-				whisk.Debug(whisk.DbgInfo, output)
+				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
+					map[string]interface{}{
+						"key": "trigger",
+						"name": trigger.Name,
+						"project": ta[utils.OW_PROJECT_NAME]})
+				wskprint.PrintOpenWhiskWarning(output)
+
 				var err error
 				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 					_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
@@ -609,10 +615,13 @@ func (deployer *ServiceDeployer) RefreshManagedPackages(ma map[string]interface{
 			}
 			// we have found a package which was earlier part of the current project
 			if pa[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] && pa[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
-				output := wski18n.T("Found the package {{.package}} which is deleted"+
-					" from the current project {{.project}} in manifest file which is being undeployed.\n",
-					map[string]interface{}{"package": pkg.Name, "project": pa[utils.OW_PROJECT_NAME]})
-				whisk.Debug(whisk.DbgInfo, output)
+				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
+					map[string]interface{}{
+						"key": "package",
+						"name": pkg.Name,
+						"project": pa[utils.OW_PROJECT_NAME]})
+				wskprint.PrintOpenWhiskWarning(output)
+
 				var err error
 				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 					_, err := deployer.Client.Packages.Delete(pkg.Name)

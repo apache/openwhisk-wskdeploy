@@ -180,6 +180,10 @@
     "translation": "Undeployment of dependency {{.name}} did not complete sucessfully.\n"
   },
   {
+    "id": "msg_managed_found_deleted_entity",
+    "translation": "Deleting {{.key}} [{{.name}}] which was removed from the current managed project [{{.project}}] as part of undeployment.\n"
+  },
+  {
     "id": "SEPARATOR",
     "translation": "====================== Entries below this line aer not verified ==================================="
   },
@@ -362,17 +366,5 @@
   {
     "id": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n",
     "translation": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n"
-  },
-  {
-    "id": "Found the action {{.action}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n",
-    "translation": "Found the action {{.action}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n"
-  },
-  {
-    "id": "Found the trigger {{.trigger}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n",
-    "translation": "Found the trigger {{.trigger}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n"
-  },
-  {
-    "id": "Found the package {{.package}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n",
-    "translation": "Found the package {{.package}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n"
   }
 ]

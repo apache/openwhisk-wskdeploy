@@ -44,6 +44,10 @@ const(
 	ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X			= "msg_config_authkey_info"
 	ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X	= "msg_config_namespace_info"
 
+	// YAML marshall / unmarshall
+	ID_MSG_UNMARSHAL_LOCAL					= "msg_unmarshall_local"
+	ID_MSG_UNMARSHAL_NETWORK				= "msg_unmarshall_network"
+
 	// Informational
 	ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X			= "msg_manifest_not_found"
 	ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X	= "msg_runtime_mismatch"
@@ -64,10 +68,9 @@ const(
 	ID_MSG_DEPENDENCY_UNDEPLOYMENT_SUCCESS_X_name_X		= "msg_dependency_undeployment_success"
 	ID_MSG_DEPENDENCY_UNDEPLOYMENT_FAILURE_X_name_X		= "msg_dependency_undeployment_failure"
 
-	ID_MSG_UNDEPLOYMENT_MANAGED_FAILED			= "msg_undeployment_managed_failed"
-
-	ID_MSG_UNMARSHAL_LOCAL					= "msg_unmarshall_local"
-	ID_MSG_UNMARSHAL_NETWORK				= "msg_unmarshall_network"
+	// Managed deployments
+	ID_MSG_MANAGED_UNDEPLOYMENT_FAILED 			= "msg_undeployment_managed_failed"
+	ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X	= "msg_managed_found_deleted_entity"
 
 	// Interactive (prompts)
 	ID_MSG_PROMPT_DEPLOY					= "msg_prompt_deploy"
