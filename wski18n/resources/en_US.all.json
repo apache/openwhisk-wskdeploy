@@ -206,33 +206,6 @@
     "id": "msg_err_delete_entity",
     "translation": "Error deleting {{.key}} with error message: {{.err}} and error code: {{.code}}.\n"
   },
-
-//  {
-//    "id": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n",
-//    "translation": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n"
-//  },
-
-//  {
-//    "id": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n",
-//    "translation": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n"
-//  },
-//  {
-//    "id": "Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n",
-//    "translation": "Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n"
-//  },
-//  {
-//    "id": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n",
-//    "translation": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n"
-//  },
-//  {
-//    "id": "Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
-//    "translation": "Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
-//  },
-//  {
-//    "id": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n",
-//    "translation": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n"
-//  },
-
   {
     "id": "SEPARATOR",
     "translation": "====================== Entries below this line aer not verified ==================================="
@@ -258,16 +231,8 @@
     "translation": "Deploying package binding {{.output}} ..."
   },
   {
-    "id": "OK. Canceling undeployment.\n",
-    "translation": "OK. Canceling undeployment.\n"
-  },
-  {
     "id": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n",
     "translation": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n"
-  },
-  {
-    "id": "Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n"
   },
   {
     "id": "Package binding {{.output}} has been successfully deployed.\n",

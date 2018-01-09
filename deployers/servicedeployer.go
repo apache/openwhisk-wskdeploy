@@ -1109,9 +1109,14 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
 						})
 						if err != nil {
 							wskErr := err.(*whisk.WskError)
-							errString := wski18n.T("Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n",
-								map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
+							errString := wski18n.T(wski18n.ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X,
+								map[string]interface{}{
+									"key": "package binding",
+									"err": wskErr.Error(),
+									"code": strconv.Itoa(wskErr.ExitCode)})
+
 							whisk.Debug(whisk.DbgError, errString)
+							// TODO() xxx
 							return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 						}
 					}
@@ -1217,9 +1222,13 @@ func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
 
 		if err != nil {
 			wskErr := err.(*whisk.WskError)
-			errString := wski18n.T("Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n",
-				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
+			errString := wski18n.T(wski18n.ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X,
+				map[string]interface{}{
+					"key": "package",
+					"err": wskErr.Error(),
+					"code": strconv.Itoa(wskErr.ExitCode)})
 			whisk.Debug(whisk.DbgError, errString)
+			// TODO() xxx
 			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 		}
 	}
@@ -1240,9 +1249,13 @@ func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
 
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		errString := wski18n.T("Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
-			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
+		errString := wski18n.T(wski18n.ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X,
+			map[string]interface{}{
+				"key": "trigger",
+				"err": wskErr.Error(),
+				"code": strconv.Itoa(wskErr.ExitCode)})
 		whisk.Debug(whisk.DbgError, errString)
+		// TODO() xxx
 		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 	} else {
 		output := wski18n.T("Trigger {{.trigger}} has been removed.\n",
@@ -1296,9 +1309,13 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 
 		if err != nil {
 			wskErr := err.(*whisk.WskError)
-			errString := wski18n.T("Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
-				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
+			errString := wski18n.T(wski18n.ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X,
+				map[string]interface{}{
+					"key": "trigger",
+					"err": wskErr.Error(),
+					"code": strconv.Itoa(wskErr.ExitCode)})
 			whisk.Debug(whisk.DbgError, errString)
+			// TODO() xxx
 			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 		}
 	}
@@ -1320,9 +1337,13 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
 
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		errString := wski18n.T("Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n",
-			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
+		errString := wski18n.T(wski18n.ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X,
+			map[string]interface{}{
+				"key": "rule",
+				"err": wskErr.Error(),
+				"code": strconv.Itoa(wskErr.ExitCode)})
 		whisk.Debug(whisk.DbgError, errString)
+		// TODO() xxx
 		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 	}
 	output = wski18n.T("Rule {{.rule}} has been removed.\n",
@@ -1353,8 +1374,11 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
 
 		if err != nil {
 			wskErr := err.(*whisk.WskError)
-			errString := wski18n.T("Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n",
-				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
+			errString := wski18n.T(wski18n.ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X,
+				map[string]interface{}{
+					"key": "action",
+					"err": wskErr.Error(),
+					"code": strconv.Itoa(wskErr.ExitCode)})
 			whisk.Debug(whisk.DbgError, errString)
 			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 
