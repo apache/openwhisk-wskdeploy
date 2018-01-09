@@ -196,7 +196,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 		// The namespace is always associated with the credential. Both of them should be picked up from the same source.
 		if len(namespace.Value) == 0 || namespace.Value == whisk.DEFAULT_NAMESPACE {
-			promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_NAMESPACE))
+			ns = promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_NAMESPACE))
 			source := INTERINPUT
 
 			if ns == "" {
