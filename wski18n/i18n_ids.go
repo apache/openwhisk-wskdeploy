@@ -61,8 +61,10 @@ const(
 	ID_MSG_DEPLOYMENT_FAILED				= "msg_deployment_failed"
 	ID_MSG_DEPLOYMENT_CANCELLED				= "msg_deployment_cancelled"
 
-	ID_MSG_DEPLOYING_ENTITY_X_key_X_name_X			= "msg_deploying_entity"
-	ID_MSG_UNDEPLOYING_ENTITY_X_key_X_name_X		= "msg_undeploying_entity"
+	ID_MSG_ENTITY_DEPLOYING_X_key_X_name_X 			= "msg_entity_deploying"
+	ID_MSG_ENTITY_UNDEPLOYING_X_key_X_name_X		= "msg_entity_undeploying"
+	ID_MSG_ENTITY_DEPLOYED_SUCCESS_X_key_X_name_X		= "msg_entity_deployed_success"
+	ID_MSG_ENTITY_UNDEPLOYED_SUCCESS_X_key_X_name_X		= "msg_entity_undeployed_success"
 
 	ID_MSG_UNDEPLOYMENT_SUCCEEDED				= "msg_undeployment_succeeded"
 	ID_MSG_UNDEPLOYMENT_FAILED				= "msg_undeployment_failed"

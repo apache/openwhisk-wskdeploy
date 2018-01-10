@@ -207,12 +207,20 @@
     "translation": "Error deleting {{.key}} with error message: {{.err}} and error code: {{.code}}.\n"
   },
   {
-    "id": "msg_deploying_entity",
+    "id": "msg_entity_deploying",
     "translation": "Deploying {{.key}} [{{.name}}] ..."
   },
   {
-    "id": "msg_undeploying_entity",
+    "id": "msg_entity_undeploying",
     "translation": "Undeploying {{.key}} [{{.name}}] ..."
+  },
+  {
+    "id": "msg_entity_deployed_success",
+    "translation": "{{.key}} [{{.name}}] has been successfully deployed.\n"
+  },
+  {
+    "id": "msg_entity_undeployed_success",
+    "translation": "{{.key}} [{{.name}}] has been successfully undeployed.\n"
   },
   {
     "id": "SEPARATOR",
@@ -221,42 +229,6 @@
   {
     "id": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n",
     "translation": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n"
-  },
-  {
-    "id": "Package binding {{.output}} has been successfully deployed.\n",
-    "translation": "Package binding {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Package {{.output}} has been successfully deployed.\n",
-    "translation": "Package {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Trigger {{.output}} has been successfully deployed.\n",
-    "translation": "Trigger {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Trigger feed {{.output}} has been successfully deployed.\n",
-    "translation": "Trigger feed {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Rule {{.output}} has been successfully deployed.\n",
-    "translation": "Rule {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Action {{.output}} has been successfully deployed.\n",
-    "translation": "Action {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Trigger {{.trigger}} has been removed.\n",
-    "translation": "Trigger {{.trigger}} has been removed.\n"
-  },
-  {
-    "id": "Rule {{.rule}} has been removed.\n",
-    "translation": "Rule {{.rule}} has been removed.\n"
-  },
-  {
-    "id": "Action {{.action}} has been removed.\n",
-    "translation": "Action {{.action}} has been removed.\n"
   },
   {
     "id": "Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",

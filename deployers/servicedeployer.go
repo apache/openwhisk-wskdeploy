@@ -483,6 +483,7 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 	return nil
 }
 
+// TODO() display "update" | "synced" messages pre/post
 func (deployer *ServiceDeployer) RefreshManagedEntities(maValue whisk.KeyValue) error {
 
 	ma := maValue.Value.(map[string]interface{})
@@ -501,6 +502,8 @@ func (deployer *ServiceDeployer) RefreshManagedEntities(maValue whisk.KeyValue) 
 	return nil
 
 }
+
+// TODO() display "update" | "synced" messages pre/post
 func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma map[string]interface{}) error {
 	options := whisk.ActionListOptions{}
 	// get a list of actions in your namespace
@@ -547,6 +550,7 @@ func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma ma
 	return nil
 }
 
+// TODO() display "update" | "synced" messages pre/post
 func (deployer *ServiceDeployer) RefreshManagedTriggers(ma map[string]interface{}) error {
 	options := whisk.TriggerListOptions{}
 	// Get list of triggers in your namespace
@@ -587,10 +591,13 @@ func (deployer *ServiceDeployer) RefreshManagedTriggers(ma map[string]interface{
 	return nil
 }
 
+// TODO() engage community to allow metadata (annotations) on Rules
+// TODO() display "update" | "synced" messages pre/post
 func (deployer *ServiceDeployer) RefreshManagedRules(ma map[string]interface{}) error {
 	return nil
 }
 
+// TODO() display "update" | "synced" messages pre/post
 func (deployer *ServiceDeployer) RefreshManagedPackages(ma map[string]interface{}) error {
 	options := whisk.PackageListOptions{}
 	// Get the list of packages in your namespace
@@ -679,14 +686,14 @@ func (deployer *ServiceDeployer) DeployTriggers() error {
 	for _, trigger := range deployer.Deployment.Triggers {
 
 		if feedname, isFeed := utils.IsFeedAction(trigger); isFeed {
-			error := deployer.createFeedAction(trigger, feedname)
-			if error != nil {
-				return error
+			err := deployer.createFeedAction(trigger, feedname)
+			if err != nil {
+				return err
 			}
 		} else {
-			error := deployer.createTrigger(trigger)
-			if error != nil {
-				return error
+			err := deployer.createTrigger(trigger)
+			if err != nil {
+				return err
 			}
 		}
 
@@ -698,9 +705,9 @@ func (deployer *ServiceDeployer) DeployTriggers() error {
 // Deploy Rules into OpenWhisk
 func (deployer *ServiceDeployer) DeployRules() error {
 	for _, rule := range deployer.Deployment.Rules {
-		error := deployer.createRule(rule)
-		if error != nil {
-			return error
+		err := deployer.createRule(rule)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -709,9 +716,9 @@ func (deployer *ServiceDeployer) DeployRules() error {
 // Deploy Apis into OpenWhisk
 func (deployer *ServiceDeployer) DeployApis() error {
 	for _, api := range deployer.Deployment.Apis {
-		error := deployer.createApi(api)
-		if error != nil {
-			return error
+		err := deployer.createApi(api)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -730,11 +737,9 @@ func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) erro
 
 	if err != nil {
 		return createWhiskClientError(err.(*whisk.WskError), response, "package binding", true)
-	} else {
-		output := wski18n.T("Package binding {{.output}} has been successfully deployed.\n",
-			map[string]interface{}{"output": packa.Name})
-		whisk.Debug(whisk.DbgInfo, output)
 	}
+
+	displayPostprocessingInfo("package binding", packa.Name, true)
 	return nil
 }
 
@@ -750,11 +755,9 @@ func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) error {
 	})
 	if err != nil {
 		return createWhiskClientError(err.(*whisk.WskError), response, "package", true)
-	} else {
-		output := wski18n.T("Package {{.output}} has been successfully deployed.\n",
-			map[string]interface{}{"output": packa.Name})
-		whisk.Debug(whisk.DbgInfo, output)
 	}
+
+	displayPostprocessingInfo("package", packa.Name, true)
 	return nil
 }
 
@@ -770,11 +773,9 @@ func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) error {
 	})
 	if err != nil {
 		return createWhiskClientError(err.(*whisk.WskError), response, "trigger", true)
-	} else {
-		output := wski18n.T("Trigger {{.output}} has been successfully deployed.\n",
-			map[string]interface{}{"output": trigger.Name})
-		whisk.Debug(whisk.DbgInfo, output)
 	}
+
+	displayPostprocessingInfo("trigger", trigger.Name, true)
 	return nil
 }
 
@@ -848,9 +849,8 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 			return createWhiskClientError(err.(*whisk.WskError), response, "trigger feed", false)
 		}
 	}
-	output := wski18n.T("Trigger feed {{.output}} has been successfully deployed.\n",
-		map[string]interface{}{"output": trigger.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPostprocessingInfo("trigger feed", trigger.Name, true)
 	return nil
 }
 
@@ -882,9 +882,7 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 		return createWhiskClientError(err.(*whisk.WskError), response, "rule", true)
 	}
 
-	output := wski18n.T("Rule {{.output}} has been successfully deployed.\n",
-		map[string]interface{}{"output": rule.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+	displayPostprocessingInfo("rule", rule.Name, true)
 	return nil
 }
 
@@ -907,11 +905,9 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 
 	if err != nil {
 		return createWhiskClientError(err.(*whisk.WskError), response, "action", true)
-	} else {
-		output := wski18n.T("Action {{.output}} has been successfully deployed.\n",
-			map[string]interface{}{"output": action.Name})
-		whisk.Debug(whisk.DbgInfo, output)
 	}
+
+	displayPostprocessingInfo("action", action.Name, true)
 	return nil
 }
 
@@ -933,7 +929,7 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 		return createWhiskClientError(err.(*whisk.WskError), response, "api", true)
 	}
 
-	// TODO() Error() display success feedback
+	displayPostprocessingInfo("api", api.ApiDoc.ApiName, true)
 	return nil
 }
 
@@ -1154,8 +1150,7 @@ func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
 			return createWhiskClientError(err.(*whisk.WskError), response, "package", false)
 		}
 	}
-
-	// TODO() ERROR() display success message
+	displayPostprocessingInfo("package", packa.Name, false)
 	return nil
 }
 
@@ -1172,11 +1167,9 @@ func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
 
 	if err != nil {
 		return createWhiskClientError(err.(*whisk.WskError), response, "trigger", false)
-	} else {
-		output := wski18n.T("Trigger {{.trigger}} has been removed.\n",
-			map[string]interface{}{"trigger": trigger.Name})
-		whisk.Debug(whisk.DbgInfo, output)
 	}
+
+	displayPostprocessingInfo("trigger", trigger.Name, false)
 	return nil
 }
 
@@ -1244,15 +1237,13 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
 	if err != nil {
 		return createWhiskClientError(err.(*whisk.WskError), response, "rule", false)
 	}
-	output := wski18n.T("Rule {{.rule}} has been removed.\n",
-		map[string]interface{}{"rule": rule.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+	displayPostprocessingInfo("rule", rule.Name, false)
 	return nil
 }
 
 // Utility function to call go-whisk framework to make action
 func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Action) error {
-	// call ActionService Thru Client
+	// call ActionService through Client
 	if deployer.DeployActionInPackage {
 		// the action will be deleted under package with pattern 'packagename/actionname'
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
@@ -1272,10 +1263,8 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
 			return createWhiskClientError(err.(*whisk.WskError), response, "action", false)
 
 		}
-		output := wski18n.T("Action {{.action}} has been removed.\n",
-			map[string]interface{}{"action": action.Name})
-		whisk.Debug(whisk.DbgInfo, output)
 	}
+	displayPostprocessingInfo("action", action.Name, false)
 	return nil
 }
 
@@ -1450,15 +1439,30 @@ func displayPreprocessingInfo(entity string, name string, onDeploy bool){
 
 	var msgKey string
 	if onDeploy{
-		msgKey = wski18n.ID_MSG_DEPLOYING_ENTITY_X_key_X_name_X
+		msgKey = wski18n.ID_MSG_ENTITY_DEPLOYING_X_key_X_name_X
 	} else {
-		msgKey = wski18n.ID_MSG_UNDEPLOYING_ENTITY_X_key_X_name_X
+		msgKey = wski18n.ID_MSG_ENTITY_UNDEPLOYING_X_key_X_name_X
 	}
 	msg := wski18n.T(msgKey,
 		map[string]interface{}{
 			"key": entity,
 			"name": name})
 	whisk.Debug(whisk.DbgInfo, msg)
+}
+
+func displayPostprocessingInfo(entity string, name string, onDeploy bool){
+
+	var msgKey string
+	if onDeploy{
+		msgKey = wski18n.ID_MSG_ENTITY_DEPLOYED_SUCCESS_X_key_X_name_X
+	} else {
+		msgKey = wski18n.ID_MSG_ENTITY_UNDEPLOYED_SUCCESS_X_key_X_name_X
+	}
+	errString := wski18n.T(msgKey,
+		map[string]interface{}{
+			"key": entity,
+			"name": name})
+	whisk.Debug(whisk.DbgInfo, errString)
 }
 
 func createWhiskClientError(err *whisk.WskError, response *http.Response, entity string, onCreate bool)(*wskderrors.WhiskClientError){
