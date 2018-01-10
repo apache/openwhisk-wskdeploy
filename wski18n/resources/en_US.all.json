@@ -168,7 +168,7 @@
   },
   {
     "id": "msg_err_mismatch_name_project",
-    "translation": "The {{.key}} named {{.dname}} in deployment file [{{.dpath}}] does not match the name {{.mname}}} in manifest file [{{.mpath}}]."
+    "translation": "The {{.key}} named [{{.dname}}] in deployment file [{{.dpath}}] does not match the name [{{.mname}}] in manifest file [{{.mpath}}]."
   },
   {
     "id": "msg_deploying_dependency",
@@ -180,19 +180,19 @@
   },
   {
     "id": "msg_dependency_deployment_success",
-    "translation": "Dependency {{.name}} has been successfully deployed.\n"
+    "translation": "Dependency [{{.name}}] has been successfully deployed.\n"
   },
   {
     "id": "msg_dependency_deployment_failure",
-    "translation": "Deployment of dependency {{.name}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
+    "translation": "Deployment of dependency [{{.name}}] did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
   },
   {
     "id": "msg_dependency_undeployment_success",
-    "translation": "Dependency {{.name}} has been successfully undeployed.\n"
+    "translation": "Dependency [{{.name}}] has been successfully undeployed.\n"
   },
   {
     "id": "msg_dependency_undeployment_failure",
-    "translation": "Undeployment of dependency {{.name}} did not complete sucessfully.\n"
+    "translation": "Undeployment of dependency [{{.name}}] did not complete sucessfully.\n"
   },
   {
     "id": "msg_managed_found_deleted_entity",
@@ -207,28 +207,16 @@
     "translation": "Error deleting {{.key}} with error message: {{.err}} and error code: {{.code}}.\n"
   },
   {
+    "id": "msg_deploying_entity",
+    "translation": "Deploying {{.key}} [{{.name}}] ..."
+  },
+  {
+    "id": "msg_undeploying_entity",
+    "translation": "Undeploying {{.key}} [{{.name}}] ..."
+  },
+  {
     "id": "SEPARATOR",
-    "translation": "====================== Entries below this line aer not verified ==================================="
-  },
-  {
-    "id": "Deploying action {{.output}} ...",
-    "translation": "Deploying action {{.output}} ..."
-  },
-  {
-    "id": "Deploying rule {{.output}} ...",
-    "translation": "Deploying rule {{.output}} ..."
-  },
-  {
-    "id": "Deploying trigger feed {{.output}} ...",
-    "translation": "Deploying trigger feed {{.output}} ..."
-  },
-  {
-    "id": "Deploying package {{.output}} ...",
-    "translation": "Deploying package {{.output}} ..."
-  },
-  {
-    "id": "Deploying package binding {{.output}} ...",
-    "translation": "Deploying package binding {{.output}} ..."
+    "translation": "====================== Entries below this line are not verified ==================================="
   },
   {
     "id": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n",

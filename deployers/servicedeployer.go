@@ -718,11 +718,10 @@ func (deployer *ServiceDeployer) DeployApis() error {
 }
 
 func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) error {
-	output := wski18n.T("Deploying package binding {{.output}} ...",
-		map[string]interface{}{"output": packa.Name})
-	whisk.Debug(whisk.DbgInfo, output)
-	var err error
 
+	displayPreprocessingInfo("package binding", packa.Name, true)
+
+	var err error
 	var response *http.Response
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 		_, response, err = deployer.Client.Packages.Insert(packa, true)
@@ -740,9 +739,9 @@ func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) erro
 }
 
 func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) error {
-	output := wski18n.T("Deploying package {{.output}} ...",
-		map[string]interface{}{"output": packa.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("package", packa.Name, true)
+
 	var err error
 	var response *http.Response
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
@@ -760,9 +759,9 @@ func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) error {
 }
 
 func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) error {
-	output := wski18n.T("Deploying trigger {{.output}} ...",
-		map[string]interface{}{"output": trigger.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("trigger", trigger.Name, true)
+
 	var err error
 	var response *http.Response
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
@@ -780,9 +779,9 @@ func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) error {
 }
 
 func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedName string) error {
-	output := wski18n.T("Deploying trigger feed {{.output}} ...",
-		map[string]interface{}{"output": trigger.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("trigger feed", trigger.Name, true)
+
 	// to hold and modify trigger parameters, not passed by ref?
 	params := make(map[string]interface{})
 
@@ -821,7 +820,7 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 		return err
 	})
 	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, "trigger", true)
+		return createWhiskClientError(err.(*whisk.WskError), response, "trigger feed", true)
 	} else {
 
 		qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
@@ -846,16 +845,18 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 				return err
 			})
 
-			return createWhiskClientError(err.(*whisk.WskError), response, "trigger", false)
+			return createWhiskClientError(err.(*whisk.WskError), response, "trigger feed", false)
 		}
 	}
-	output = wski18n.T("Trigger feed {{.output}} has been successfully deployed.\n",
+	output := wski18n.T("Trigger feed {{.output}} has been successfully deployed.\n",
 		map[string]interface{}{"output": trigger.Name})
 	whisk.Debug(whisk.DbgInfo, output)
 	return nil
 }
 
 func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
+	displayPreprocessingInfo("rule", rule.Name, true)
+
 	// The rule's trigger should include the namespace with pattern /namespace/trigger
 	rule.Trigger = deployer.getQualifiedName(rule.Trigger.(string), deployer.ClientConfig.Namespace)
 	// The rule's action should include the namespace and package
@@ -869,9 +870,6 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 		// if not, we assume the action is inside the root package
 		rule.Action = deployer.getQualifiedName(strings.Join([]string{deployer.RootPackageName, rule.Action.(string)}, "/"), deployer.ClientConfig.Namespace)
 	}
-	output := wski18n.T("Deploying rule {{.output}} ...",
-		map[string]interface{}{"output": rule.Name})
-	whisk.Debug(whisk.DbgInfo, output)
 
 	var err error
 	var response *http.Response
@@ -884,7 +882,7 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 		return createWhiskClientError(err.(*whisk.WskError), response, "rule", true)
 	}
 
-	output = wski18n.T("Rule {{.output}} has been successfully deployed.\n",
+	output := wski18n.T("Rule {{.output}} has been successfully deployed.\n",
 		map[string]interface{}{"output": rule.Name})
 	whisk.Debug(whisk.DbgInfo, output)
 	return nil
@@ -897,9 +895,8 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 		// the action will be created under package with pattern 'packagename/actionname'
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
 	}
-	output := wski18n.T("Deploying action {{.output}} ...",
-		map[string]interface{}{"output": action.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("action", action.Name, true)
 
 	var err error
 	var response *http.Response
@@ -920,8 +917,12 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 
 // create api (API Gateway functionality)
 func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
+
+	displayPreprocessingInfo("api", api.ApiDoc.ApiName, true)
+
 	var err error
 	var response *http.Response
+
 	// TODO() Is there an api delete function? could not find it
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 		_, response, err = deployer.Client.Apis.Insert(api, nil, true)
@@ -931,6 +932,8 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 	if err != nil {
 		return createWhiskClientError(err.(*whisk.WskError), response, "api", true)
 	}
+
+	// TODO() Error() display success feedback
 	return nil
 }
 
@@ -1136,9 +1139,9 @@ func (deployer *ServiceDeployer) UnDeployRules(deployment *DeploymentProject) er
 }
 
 func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
-	output := wski18n.T("Removing package {{.package}} ...",
-		map[string]interface{}{"package": packa.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("package", packa.Name, false)
+
 	if _, _, ok := deployer.Client.Packages.Get(packa.Name); ok == nil {
 		var err error
 		var response *http.Response
@@ -1151,13 +1154,14 @@ func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
 			return createWhiskClientError(err.(*whisk.WskError), response, "package", false)
 		}
 	}
+
+	// TODO() ERROR() display success message
 	return nil
 }
 
 func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
-	output := wski18n.T("Removing trigger {{.trigger}} ...",
-		map[string]interface{}{"trigger": trigger.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("trigger", trigger.Name, false)
 
 	var err error
 	var response *http.Response
@@ -1227,9 +1231,8 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 }
 
 func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
-	output := wski18n.T("Removing rule {{.rule}} ...",
-		map[string]interface{}{"rule": rule.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("rule", rule.Name, false)
 
 	var err error
 	var response *http.Response
@@ -1241,7 +1244,7 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
 	if err != nil {
 		return createWhiskClientError(err.(*whisk.WskError), response, "rule", false)
 	}
-	output = wski18n.T("Rule {{.rule}} has been removed.\n",
+	output := wski18n.T("Rule {{.rule}} has been removed.\n",
 		map[string]interface{}{"rule": rule.Name})
 	whisk.Debug(whisk.DbgInfo, output)
 	return nil
@@ -1255,9 +1258,7 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
 	}
 
-	output := wski18n.T("Removing action {{.action}} ...",
-		map[string]interface{}{"action": action.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+	displayPreprocessingInfo("action", action.Name, false)
 
 	if _, _, ok := deployer.Client.Actions.Get(action.Name); ok == nil {
 		var err error
@@ -1271,7 +1272,7 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
 			return createWhiskClientError(err.(*whisk.WskError), response, "action", false)
 
 		}
-		output = wski18n.T("Action {{.action}} has been removed.\n",
+		output := wski18n.T("Action {{.action}} has been removed.\n",
 			map[string]interface{}{"action": action.Name})
 		whisk.Debug(whisk.DbgInfo, output)
 	}
@@ -1445,15 +1446,30 @@ func (deployer *ServiceDeployer) getDependentDeployer(depName string, depRecord 
 	return depServiceDeployer, nil
 }
 
+func displayPreprocessingInfo(entity string, name string, onDeploy bool){
+
+	var msgKey string
+	if onDeploy{
+		msgKey = wski18n.ID_MSG_DEPLOYING_ENTITY_X_key_X_name_X
+	} else {
+		msgKey = wski18n.ID_MSG_UNDEPLOYING_ENTITY_X_key_X_name_X
+	}
+	msg := wski18n.T(msgKey,
+		map[string]interface{}{
+			"key": entity,
+			"name": name})
+	whisk.Debug(whisk.DbgInfo, msg)
+}
+
 func createWhiskClientError(err *whisk.WskError, response *http.Response, entity string, onCreate bool)(*wskderrors.WhiskClientError){
 
-	var mskKey string
+	var msgKey string
 	if onCreate{
-		mskKey = wski18n.ID_ERR_CREATE_ENTITY_X_key_X_err_X_code_X
+		msgKey = wski18n.ID_ERR_CREATE_ENTITY_X_key_X_err_X_code_X
 	} else {
-		mskKey = wski18n.ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X
+		msgKey = wski18n.ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X
 	}
-	errString := wski18n.T(mskKey,
+	errString := wski18n.T(msgKey,
 		map[string]interface{}{
 			"key": entity,
 			"err": err.Error(),
