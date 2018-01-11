@@ -658,9 +658,9 @@ func (deployer *ServiceDeployer) DeploySequences() error {
 
 	for _, pack := range deployer.Deployment.Packages {
 		for _, action := range pack.Sequences {
-			error := deployer.createAction(pack.Package.Name, action.Action)
-			if error != nil {
-				return error
+			err := deployer.createAction(pack.Package.Name, action.Action)
+			if err != nil {
+				return err
 			}
 		}
 	}
