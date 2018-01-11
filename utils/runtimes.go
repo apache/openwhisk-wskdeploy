@@ -74,6 +74,7 @@ var DefaultRunTimes map[string]string
 // `curl -k https://openwhisk.ng.bluemix.net`
 // hard coding it here in case of network unavailable or failure.
 func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
+	// TODO() create HTTP header constants and use them
 	ct := "application/json; charset=UTF-8"
 	req, _ := http.NewRequest("GET", "https://"+apiHost, nil)
 	req.Header.Set("Content-Type", ct)
@@ -92,7 +93,8 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 
 	res, err := netClient.Do(req)
 	if err != nil {
-		errString := wski18n.T("Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n",
+		// TODO() create an error
+		errString := wski18n.T(wski18n.ID_ERR_GET_RUNTIMES_X_err_X,
 			map[string]interface{}{"err": err.Error()})
 		whisk.Debug(whisk.DbgWarn, errString)
 	}
@@ -102,14 +104,15 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	}
 
 	// Local openwhisk deployment sometimes only returns "application/json" as the content type
+	// TODO() create HTTP header constants and use them
 	if err != nil || !strings.Contains(ct, res.Header.Get("Content-Type")) {
-		stdout := wski18n.T("Start to unmarshal Openwhisk info from local values.\n")
+		stdout := wski18n.T(wski18n.ID_MSG_UNMARSHAL_LOCAL)
 		whisk.Debug(whisk.DbgInfo, stdout)
 		err = json.Unmarshal(RUNTIME_DETAILS, &op)
 	} else {
 		b, _ := ioutil.ReadAll(res.Body)
 		if b != nil && len(b) > 0 {
-			stdout := wski18n.T("Unmarshal Openwhisk info from internet.\n")
+			stdout := wski18n.T(wski18n.ID_MSG_UNMARSHAL_NETWORK)
 			whisk.Debug(whisk.DbgInfo, stdout)
 			err = json.Unmarshal(b, &op)
 		}

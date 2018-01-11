@@ -121,6 +121,10 @@ func (e *WskDeployBaseErr) SetMessage(message interface{}) {
 	}
 }
 
+func (e *WskDeployBaseErr) AppendDetail(detail string){
+	e.appendDetail(detail)
+}
+
 func (e *WskDeployBaseErr) appendDetail(detail string){
 	fmt := fmt.Sprintf("\n%s %s", STR_INDENT_1, detail)
 	e.Message = e.Message + fmt

@@ -35,307 +35,130 @@ const(
 	ID_CMD_FLAG_KEY_FILE	= "msg_cmd_flag_key_file"	// "path of the .key file"
 	ID_CMD_FLAG_CERT_FILE	= "msg_cmd_flag_cert_file"	// "path of the .cert file"
 
+	// Configuration messages
+	ID_MSG_CONFIG_MISSING_AUTHKEY				= "msg_config_missing_authkey"
+	ID_MSG_CONFIG_MISSING_APIHOST				= "msg_config_missing_apihost"
+	ID_MSG_CONFIG_MISSING_NAMESPACE				= "msg_config_missing_namespace"
+
+	ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X		= "msg_config_apihost_info"
+	ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X			= "msg_config_authkey_info"
+	ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X	= "msg_config_namespace_info"
+
+	// YAML marshall / unmarshall
+	ID_MSG_UNMARSHAL_LOCAL					= "msg_unmarshall_local"
+	ID_MSG_UNMARSHAL_NETWORK				= "msg_unmarshall_network"
+
 	// Informational
-	ID_MSG_MANIFEST_DEPLOY_X_path_X				= "msg_using_manifest_deploy"	// "Using {{.path}} for deployment.\n"
-	ID_MSG_MANIFEST_UNDEPLOY_X_path_X			= "msg_using_manifest_undeploy"	// "Using {{.path}} for undeployment.\n"
 	ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X			= "msg_manifest_not_found"
 	ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X	= "msg_runtime_mismatch"
 	ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X		= "msg_runtime_changed"
 	ID_MSG_RUNTIME_UNSUPPORTED_X_runtime_X_action_X		= "msg_runtime_unsupported"
 
+	ID_MSG_MANIFEST_DEPLOY_X_path_X				= "msg_using_manifest_deploy"	// "Using {{.path}} for deployment.\n"
+	ID_MSG_MANIFEST_UNDEPLOY_X_path_X			= "msg_using_manifest_undeploy"	// "Using {{.path}} for undeployment.\n"
+
+	ID_MSG_DEPLOYMENT_SUCCEEDED				= "msg_deployment_succeeded"
+	ID_MSG_DEPLOYMENT_FAILED				= "msg_deployment_failed"
+	ID_MSG_DEPLOYMENT_CANCELLED				= "msg_deployment_cancelled"
+
+	ID_MSG_ENTITY_DEPLOYING_X_key_X_name_X 			= "msg_entity_deploying"
+	ID_MSG_ENTITY_UNDEPLOYING_X_key_X_name_X		= "msg_entity_undeploying"
+	ID_MSG_ENTITY_DEPLOYED_SUCCESS_X_key_X_name_X		= "msg_entity_deployed_success"
+	ID_MSG_ENTITY_UNDEPLOYED_SUCCESS_X_key_X_name_X		= "msg_entity_undeployed_success"
+
+	ID_MSG_UNDEPLOYMENT_SUCCEEDED				= "msg_undeployment_succeeded"
+	ID_MSG_UNDEPLOYMENT_FAILED				= "msg_undeployment_failed"
+	ID_MSG_UNDEPLOYMENT_CANCELLED				= "msg_undeployment_cancelled"
+
+	ID_MSG_DEPENDENCY_DEPLOYING_X_name_X			= "msg_deploying_dependency"
+	ID_MSG_DEPENDENCY_UNDEPLOYING_X_name_X			= "msg_undeploying_dependency"
+	ID_MSG_DEPENDENCY_DEPLOYMENT_SUCCESS_X_name_X		= "msg_dependency_deployment_success"
+	ID_MSG_DEPENDENCY_DEPLOYMENT_FAILURE_X_name_X		= "msg_dependency_deployment_failure"
+	ID_MSG_DEPENDENCY_UNDEPLOYMENT_SUCCESS_X_name_X		= "msg_dependency_undeployment_success"
+	ID_MSG_DEPENDENCY_UNDEPLOYMENT_FAILURE_X_name_X		= "msg_dependency_undeployment_failure"
+
+	// Managed deployments
+	ID_MSG_MANAGED_UNDEPLOYMENT_FAILED 			= "msg_undeployment_managed_failed"
+	ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X	= "msg_managed_found_deleted_entity"
+
+	// Interactive (prompts)
+	ID_MSG_PROMPT_DEPLOY					= "msg_prompt_deploy"
+	ID_MSG_PROMPT_UNDEPLOY					= "msg_prompt_undeploy"
+	ID_MSG_PROMPT_AUTHKEY					= "msg_prompt_authkey"
+	ID_MSG_PROMPT_APIHOST					= "msg_prompt_apihost"
+	ID_MSG_PROMPT_NAMESPACE					= "msg_prompt_namespace"
+
 	// Action Limits
-	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X			= "msg_action_limit_ignored"	// for timeout, memorySize, logSize
+	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X			= "msg_action_limit_ignored"	// timeout, memorySize, logSize
+
+	// warnings
+	ID_WARN_DEPRECATED_KEY_REPLACED				= "msg_warn_key_deprecated_replaced"
+	ID_WARN_WHISK_PROPS_DEPRECATED				= "msg_warn_whisk_properties"
+
+	// Errors
+	ID_ERR_GET_RUNTIMES_X_err_X 				= "msg_err_get_runtimes"
+	ID_ERR_MISSING_MANDATORY_KEY_X_key_X			= "msg_err_missing_mandatory_key"
+        ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X = "msg_err_mismatch_name_project"
+	ID_ERR_CREATE_ENTITY_X_key_X_err_X_code_X		= "msg_err_create_entity"
+	ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X		= "msg_err_delete_entity"
 
 )
 
-//"id": "WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n",
-//"translation": "WARNING: Invalid limitation 'timeout' of action in manifest is ignored. Please check errors.\n"
-//},
-//{
-//"id": "WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n",
-//"translation": "WARNING: Invalid limitation 'memorySize' of action in manifest is ignored. Please check errors.\n"
-//},
-//{
-//"id": "WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n",
-//"translation": "WARNING: Invalid limitation 'logSize' of action in manifest is ignored. Please check errors.\n"
-//},
-
-//{
-//"id": "Unsupported runtime type, set to nodejs",
-//"translation": "Unsupported runtime type, set to nodejs"
-//},
-//{
-//"id": "The authentication key is not configured.\n",
-//"translation": "The authentication key is not configured.\n"
-//},
-//{
-//"id": "The API host is not configured.\n",
-//"translation": "The API host is not configured.\n"
-//},
-//{
-//"id": "The namespace is not configured.\n",
-//"translation": "The namespace is not configured.\n"
-//},
-//{
-//"id": "The API host is {{.apihost}}, from {{.apisource}}.\n",
-//"translation": "The API host is {{.apihost}}, from {{.apisource}}.\n"
-//},
-//{
-//"id": "The auth key is set, from {{.authsource}}.\n",
-//"translation": "The auth key is set, from {{.authsource}}.\n"
-//},
-//{
-//"id": "The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
-//"translation": "The namespace is {{.namespace}}, from {{.namespacesource}}.\n"
-//},
-//{
-//"id": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n",
-//"translation": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n"
-//},
-//{
-//"id": "Start to unmarshal Openwhisk info from local values.\n",
-//"translation": "Start to unmarshal Openwhisk info from local values.\n"
-//},
-//{
-//"id": "Unmarshal Openwhisk info from internet.\n",
-//"translation": "Unmarshal Openwhisk info from internet.\n"
-//},
-//{
-//"id": "Deployment completed successfully.\n",
-//"translation": "Deployment completed successfully.\n"
-//},
-//{
-//"id": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Got error creating action with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Got error creating api with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error creating api with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Got error creating rule with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error creating rule with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Got error creating trigger with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error creating trigger with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Got error creating trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error creating trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Got error creating package binding with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error creating package binding with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Deployment of dependency {{.depName}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n",
-//"translation": "Deployment of dependency {{.depName}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
-//},
-//{
-//"id": "Deploying action {{.output}} ...",
-//"translation": "Deploying action {{.output}} ..."
-//},
-//{
-//"id": "Deploying rule {{.output}} ...",
-//"translation": "Deploying rule {{.output}} ..."
-//},
-//{
-//"id": "Deploying trigger feed {{.output}} ...",
-//"translation": "Deploying trigger feed {{.output}} ..."
-//},
-//{
-//"id": "Deploying package {{.output}} ...",
-//"translation": "Deploying package {{.output}} ..."
-//},
-//{
-//"id": "Deploying package binding {{.output}} ...",
-//"translation": "Deploying package binding {{.output}} ..."
-//},
-//{
-//"id": "Deploying dependency {{.output}} ...",
-//"translation": "Deploying dependency {{.output}} ..."
-//},
-//{
-//"id": "OK. Cancelling deployment.\n",
-//"translation": "OK. Cancelling deployment.\n"
-//},
-//{
-//"id": "OK. Canceling undeployment.\n",
-//"translation": "OK. Canceling undeployment.\n"
-//},
-//{
-//"id": "Undeployment did not complete sucessfully.\n",
-//"translation": "Undeployment did not complete sucessfully.\n"
-//},
-//{
-//"id": "Deployment removed successfully.\n",
-//"translation": "Deployment removed successfully.\n"
-//},
-//{
-//"id": "Undeployment did not complete sucessfully.\n",
-//"translation": "Undeployment did not complete sucessfully.\n"
-//},
-//{
-//"id": "Undeploying dependency {{.depName}} ...",
-//"translation": "Undeploying dependency {{.depName}} ..."
-//},
-//{
-//"id": "Undeployment of dependency {{.depName}} did not complete sucessfully.\n",
-//"translation": "Undeployment of dependency {{.depName}} did not complete sucessfully.\n"
-//},
-//{
-//"id": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n",
-//"translation": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n"
-//},
-//{
-//"id": "Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "Dependency {{.output}} has been successfully deployed.\n",
-//"translation": "Dependency {{.output}} has been successfully deployed.\n"
-//},
-//{
-//"id": "Package binding {{.output}} has been successfully deployed.\n",
-//"translation": "Package binding {{.output}} has been successfully deployed.\n"
-//},
-//{
-//"id": "Package {{.output}} has been successfully deployed.\n",
-//"translation": "Package {{.output}} has been successfully deployed.\n"
-//},
-//{
-//"id": "Trigger {{.output}} has been successfully deployed.\n",
-//"translation": "Trigger {{.output}} has been successfully deployed.\n"
-//},
-//{
-//"id": "Trigger feed {{.output}} has been successfully deployed.\n",
-//"translation": "Trigger feed {{.output}} has been successfully deployed.\n"
-//},
-//{
-//"id": "Rule {{.output}} has been successfully deployed.\n",
-//"translation": "Rule {{.output}} has been successfully deployed.\n"
-//},
-//{
-//"id": "Action {{.output}} has been successfully deployed.\n",
-//"translation": "Action {{.output}} has been successfully deployed.\n"
-//},
-//{
-//"id": "Dependency {{.depName}} has been successfully undeployed.\n",
-//"translation": "Dependency {{.depName}} has been successfully undeployed.\n"
-//},
-//{
-//"id": "Trigger {{.trigger}} has been removed.\n",
-//"translation": "Trigger {{.trigger}} has been removed.\n"
-//},
-//{
-//"id": "Rule {{.rule}} has been removed.\n",
-//"translation": "Rule {{.rule}} has been removed.\n"
-//},
-//{
-//"id": "Action {{.action}} has been removed.\n",
-//"translation": "Action {{.action}} has been removed.\n"
-//},
-//{
-//"id": "Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
-//"translation": "Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
-//},
-//{
-//"id": "WARNING: Mandatory field Package Version must be set.\n",
-//"translation": "WARNING: Mandatory field Package Version must be set.\n"
-//},
-//{
-//"id": "WARNING: Package Version is not saved in the current wskdeploy version.\n",
-//"translation": "WARNING: Package Version is not saved in the current wskdeploy version.\n"
-//},
-//{
-//"id": "WARNING: Mandatory field Package License must be set.\n",
-//"translation": "WARNING: Mandatory field Package License must be set.\n"
-//},
-//{
-//"id": "WARNING: Package License is not saved in the current wskdeploy version.\n",
-//"translation": "WARNING: Package License is not saved in the current wskdeploy version.\n"
-//},
-//{
-//"id": "WARNING: License {{.licenseID}} is not a valid one.\n",
-//"translation": "WARNING: License {{.licenseID}} is not a valid one.\n"
-//},
-//{
-//"id": "memorySize of limits in manifest should be an integer between 128 and 512.\n",
-//"translation": "memorySize of limits in manifest should be an integer between 128 and 512.\n"
-//},
-//{
-//"id": "timeout of limits in manifest should be an integer between 100 and 300000.\n",
-//"translation": "timeout of limits in manifest should be an integer between 100 and 300000.\n"
-//},
-//{
-//"id": "logSize of limits in manifest should be an integer between 0 and 10.\n",
-//"translation": "logSize of limits in manifest should be an integer between 0 and 10.\n"
-//},
-//{
-
-//{
-//"id": "WARNING: Limits  {{.limitname}}  is not changable as to now, which will be ignored.\n",
-//"translation": "WARNING: Limits  {{.limitname}}  is not changable as to now, which will be ignored.\n"
-//},
-
-//{
-//"id": "The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
-//"translation": "The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}]."
-//},
-//{
-//"id": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n",
-//"translation": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n"
-//},
-//{
-//"id": "WARNING: application in manifest file will soon be deprecated, please use project instead.\n",
-//"translation": "WARNING: application in manifest file will soon be deprecated, please use project instead.\n"
-//},
-//{
-//"id": "Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n",
-//"translation": "Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
-//},
-//{
-//"id": "Found the action {{.action}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n",
-//"translation": "Found the action {{.action}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n"
-//},
-//{
-//"id": "Found the trigger {{.trigger}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n",
-//"translation": "Found the trigger {{.trigger}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n"
-//},
-//{
-//"id": "Found the package {{.package}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n",
-//"translation": "Found the package {{.package}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n"
-//}
+var I18N_ID_SET = [](string){
+	ID_MSG_PREFIX_ERROR,
+	ID_MSG_PREFIX_SUCCESS,
+	ID_MSG_PREFIX_WARNING,
+	ID_MSG_PREFIX_INFO,
+	ID_JSON_MISSING_KEY_CMD,
+	ID_CMD_FLAG_AUTH_KEY,
+	ID_CMD_FLAG_NAMESPACE,
+	ID_CMD_FLAG_API_HOST,
+	ID_CMD_FLAG_API_VERSION,
+	ID_CMD_FLAG_KEY_FILE,
+	ID_CMD_FLAG_CERT_FILE,
+	ID_MSG_CONFIG_MISSING_AUTHKEY,
+	ID_MSG_CONFIG_MISSING_APIHOST,
+	ID_MSG_CONFIG_MISSING_NAMESPACE,
+	ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
+	ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
+	ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
+	ID_MSG_UNMARSHAL_LOCAL,
+	ID_MSG_UNMARSHAL_NETWORK,
+	ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X,
+	ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
+	ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X,
+	ID_MSG_RUNTIME_UNSUPPORTED_X_runtime_X_action_X,
+	ID_MSG_MANIFEST_DEPLOY_X_path_X,
+	ID_MSG_MANIFEST_UNDEPLOY_X_path_X,
+	ID_MSG_DEPLOYMENT_SUCCEEDED,
+	ID_MSG_DEPLOYMENT_FAILED,
+	ID_MSG_DEPLOYMENT_CANCELLED,
+	ID_MSG_ENTITY_DEPLOYING_X_key_X_name_X,
+	ID_MSG_ENTITY_UNDEPLOYING_X_key_X_name_X,
+	ID_MSG_ENTITY_DEPLOYED_SUCCESS_X_key_X_name_X,
+	ID_MSG_ENTITY_UNDEPLOYED_SUCCESS_X_key_X_name_X,
+	ID_MSG_UNDEPLOYMENT_SUCCEEDED,
+	ID_MSG_UNDEPLOYMENT_FAILED,
+	ID_MSG_UNDEPLOYMENT_CANCELLED,
+	ID_MSG_DEPENDENCY_DEPLOYING_X_name_X,
+	ID_MSG_DEPENDENCY_UNDEPLOYING_X_name_X,
+	ID_MSG_DEPENDENCY_DEPLOYMENT_SUCCESS_X_name_X,
+	ID_MSG_DEPENDENCY_DEPLOYMENT_FAILURE_X_name_X,
+	ID_MSG_DEPENDENCY_UNDEPLOYMENT_SUCCESS_X_name_X,
+	ID_MSG_DEPENDENCY_UNDEPLOYMENT_FAILURE_X_name_X,
+	ID_MSG_MANAGED_UNDEPLOYMENT_FAILED,
+	ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
+	ID_MSG_PROMPT_DEPLOY,
+	ID_MSG_PROMPT_UNDEPLOY,
+	ID_MSG_PROMPT_AUTHKEY,
+	ID_MSG_PROMPT_APIHOST,
+	ID_MSG_PROMPT_NAMESPACE,
+	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
+	ID_WARN_DEPRECATED_KEY_REPLACED,
+	ID_WARN_WHISK_PROPS_DEPRECATED,
+	ID_ERR_GET_RUNTIMES_X_err_X,
+	ID_ERR_MISSING_MANDATORY_KEY_X_key_X,
+	ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X,
+	ID_ERR_CREATE_ENTITY_X_key_X_err_X_code_X,
+	ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X,
+}

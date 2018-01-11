@@ -44,6 +44,26 @@
     "translation": "path of the .cert file"
   },
   {
+    "id": "msg_prompt_deploy",
+    "translation": "Do you really want to deploy this? (y/N): "
+  },
+  {
+    "id": "msg_prompt_undeploy",
+    "translation": "Do you really want to undeploy this? (y/N): "
+  },
+  {
+    "id": "msg_prompt_authkey",
+    "translation": "\nPlease provide an authentication token: "
+  },
+  {
+    "id": "msg_prompt_apihost",
+    "translation": "\nPlease provide the hostname for OpenWhisk: "
+  },
+  {
+    "id": "msg_prompt_namespace",
+    "translation": "\nPlease provide a namespace [default value is guest]: "
+  },
+  {
     "id": "msg_manifest_not_found",
     "translation": "Manifest file not found at path [{{.path}}].\n"
   },
@@ -72,208 +92,143 @@
     "translation": "Invalid action limit [{{.limit}}] in manifest is ignored.\n"
   },
   {
-    "id": "The authentication key is not configured.\n",
+    "id": "msg_config_missing_authkey",
     "translation": "The authentication key is not configured.\n"
   },
   {
-    "id": "The API host is not configured.\n",
+    "id": "msg_config_missing_apihost",
     "translation": "The API host is not configured.\n"
   },
   {
-    "id": "The namespace is not configured.\n",
+    "id": "msg_config_missing_namespace",
     "translation": "The namespace is not configured.\n"
   },
   {
-    "id": "The API host is {{.apihost}}, from {{.apisource}}.\n",
-    "translation": "The API host is {{.apihost}}, from {{.apisource}}.\n"
+    "id": "msg_config_apihost_info",
+    "translation": "The API host is {{.host}}, from {{.source}}.\n"
   },
   {
-    "id": "The auth key is set, from {{.authsource}}.\n",
-    "translation": "The auth key is set, from {{.authsource}}.\n"
+    "id": "msg_config_authkey_info",
+    "translation": "The auth key is set, from {{.source}}.\n"
   },
   {
-    "id": "The namespace is {{.namespace}}, from {{.namespacesource}}.\n",
-    "translation": "The namespace is {{.namespace}}, from {{.namespacesource}}.\n"
+    "id": "msg_config_namespace_info",
+    "translation": "The namespace is {{.namespace}}, from {{.source}}.\n"
   },
   {
-    "id": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n",
+    "id": "msg_err_get_runtimes",
     "translation": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n"
   },
   {
-    "id": "Start to unmarshal Openwhisk info from local values.\n",
-    "translation": "Start to unmarshal Openwhisk info from local values.\n"
+    "id": "msg_unmarshall_local",
+    "translation": "Unmarshal OpenWhisk info from local values.\n"
   },
   {
-    "id": "Unmarshal Openwhisk info from internet.\n",
-    "translation": "Unmarshal Openwhisk info from internet.\n"
+    "id": "msg_unmarshall_network",
+    "translation": "Unmarshal OpenWhisk info from internet.\n"
   },
   {
-    "id": "Deployment completed successfully.\n",
+    "id": "msg_deployment_succeeded",
     "translation": "Deployment completed successfully.\n"
   },
   {
-    "id": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n"
+    "id": "msg_deployment_failed",
+    "translation": "Deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
   },
   {
-    "id": "Got error creating action with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating package with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error creating api with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating api with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error creating rule with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating rule with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error creating trigger with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating trigger with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error creating trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Got error creating package binding with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error creating package binding with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Deployment of dependency {{.depName}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n",
-    "translation": "Deployment of dependency {{.depName}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
-  },
-  {
-    "id": "Deploying action {{.output}} ...",
-    "translation": "Deploying action {{.output}} ..."
-  },
-  {
-    "id": "Deploying rule {{.output}} ...",
-    "translation": "Deploying rule {{.output}} ..."
-  },
-  {
-    "id": "Deploying trigger feed {{.output}} ...",
-    "translation": "Deploying trigger feed {{.output}} ..."
-  },
-  {
-    "id": "Deploying package {{.output}} ...",
-    "translation": "Deploying package {{.output}} ..."
-  },
-  {
-    "id": "Deploying package binding {{.output}} ...",
-    "translation": "Deploying package binding {{.output}} ..."
-  },
-  {
-    "id": "Deploying dependency {{.output}} ...",
-    "translation": "Deploying dependency {{.output}} ..."
-  },
-  {
-    "id": "OK. Cancelling deployment.\n",
+    "id": "msg_deployment_cancelled",
     "translation": "OK. Cancelling deployment.\n"
   },
   {
-    "id": "OK. Canceling undeployment.\n",
-    "translation": "OK. Canceling undeployment.\n"
+    "id": "msg_undeployment_succeeded",
+    "translation": "Undeployment completed successfully.\n"
   },
   {
-    "id": "Undeployment did not complete sucessfully.\n",
+    "id": "msg_undeployment_failed",
     "translation": "Undeployment did not complete sucessfully.\n"
   },
   {
-    "id": "Deployment removed successfully.\n",
-    "translation": "Deployment removed successfully.\n"
+    "id": "msg_undeployment_cancelled",
+    "translation": "OK. Cancelling undeployment.\n"
   },
   {
-    "id": "Undeployment did not complete sucessfully.\n",
-    "translation": "Undeployment did not complete sucessfully.\n"
+    "id": "msg_undeployment_managed_failed",
+    "translation": "Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
   },
   {
-    "id": "Undeploying dependency {{.depName}} ...",
-    "translation": "Undeploying dependency {{.depName}} ..."
+    "id": "msg_warn_whisk_properties",
+    "translation": "The [{{.key}}] key was retrieved from whisk.properties which will soon be deprecated please do not use it outside of Travis builds.\n"
   },
   {
-    "id": "Undeployment of dependency {{.depName}} did not complete sucessfully.\n",
-    "translation": "Undeployment of dependency {{.depName}} did not complete sucessfully.\n"
+    "id": "msg_warn_key_deprecated_replaced",
+    "translation": "The [{{.oldkey}}] key in the {{.filetype}} file will soon be deprecated, please use the [{{.newkey}}] key instead.\n"
+  },
+  { "id": "msg_err_missing_mandatory_key",
+    "translation": "The mandatory key [{{.key}}] is missing."
   },
   {
-    "id": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n"
+    "id": "msg_err_mismatch_name_project",
+    "translation": "The {{.key}} named [{{.dname}}] in deployment file [{{.dpath}}] does not match the name [{{.mname}}] in manifest file [{{.mpath}}]."
   },
   {
-    "id": "Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n"
+    "id": "msg_deploying_dependency",
+    "translation": "Deploying dependency [{{.name}}]..."
   },
   {
-    "id": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error setting the status of rule with error message: {{.err}} and error code: {{.code}}.\n"
+    "id": "msg_undeploying_dependency",
+    "translation": "Undeploying dependency [{{.name}}]..."
   },
   {
-    "id": "Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n"
+    "id": "msg_dependency_deployment_success",
+    "translation": "Dependency [{{.name}}] has been successfully deployed.\n"
   },
   {
-    "id": "Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
+    "id": "msg_dependency_deployment_failure",
+    "translation": "Deployment of dependency [{{.name}}] did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
   },
   {
-    "id": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n"
+    "id": "msg_dependency_undeployment_success",
+    "translation": "Dependency [{{.name}}] has been successfully undeployed.\n"
+  },
+  {
+    "id": "msg_dependency_undeployment_failure",
+    "translation": "Undeployment of dependency [{{.name}}] did not complete sucessfully.\n"
+  },
+  {
+    "id": "msg_managed_found_deleted_entity",
+    "translation": "Deleting {{.key}} [{{.name}}] which was removed from the current managed project [{{.project}}] as part of undeployment.\n"
+  },
+  {
+    "id": "msg_err_create_entity",
+    "translation": "Error creating {{.key}} with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "msg_err_delete_entity",
+    "translation": "Error deleting {{.key}} with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
+    "id": "msg_entity_deploying",
+    "translation": "Deploying {{.key}} [{{.name}}] ..."
+  },
+  {
+    "id": "msg_entity_undeploying",
+    "translation": "Undeploying {{.key}} [{{.name}}] ..."
+  },
+  {
+    "id": "msg_entity_deployed_success",
+    "translation": "{{.key}} [{{.name}}] has been successfully deployed.\n"
+  },
+  {
+    "id": "msg_entity_undeployed_success",
+    "translation": "{{.key}} [{{.name}}] has been successfully undeployed.\n"
+  },
+  {
+    "id": "SEPARATOR",
+    "translation": "====================== Entries below this line are not verified ==================================="
   },
   {
     "id": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n",
     "translation": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n"
-  },
-  {
-    "id": "Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n"
-  },
-  {
-    "id": "Dependency {{.output}} has been successfully deployed.\n",
-    "translation": "Dependency {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Package binding {{.output}} has been successfully deployed.\n",
-    "translation": "Package binding {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Package {{.output}} has been successfully deployed.\n",
-    "translation": "Package {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Trigger {{.output}} has been successfully deployed.\n",
-    "translation": "Trigger {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Trigger feed {{.output}} has been successfully deployed.\n",
-    "translation": "Trigger feed {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Rule {{.output}} has been successfully deployed.\n",
-    "translation": "Rule {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Action {{.output}} has been successfully deployed.\n",
-    "translation": "Action {{.output}} has been successfully deployed.\n"
-  },
-  {
-    "id": "Dependency {{.depName}} has been successfully undeployed.\n",
-    "translation": "Dependency {{.depName}} has been successfully undeployed.\n"
-  },
-  {
-    "id": "Trigger {{.trigger}} has been removed.\n",
-    "translation": "Trigger {{.trigger}} has been removed.\n"
-  },
-  {
-    "id": "Rule {{.rule}} has been removed.\n",
-    "translation": "Rule {{.rule}} has been removed.\n"
-  },
-  {
-    "id": "Action {{.action}} has been removed.\n",
-    "translation": "Action {{.action}} has been removed.\n"
   },
   {
     "id": "Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
@@ -316,32 +271,7 @@
     "translation": "WARNING: Limits  {{.limitname}}  is not changable as to now, which will be ignored.\n"
   },
   {
-    "id": "The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}].",
-    "translation": "The name of the application {{.appNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.appNameManifest}}} in manifest file at [{{.manifestFile}}]."
-  },
-  {
     "id": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n",
     "translation": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n"
-  },
-  {
-    "id": "WARNING: application in manifest file will soon be deprecated, please use project instead.\n",
-    "translation": "WARNING: application in manifest file will soon be deprecated, please use project instead.\n"
-  },
-  {
-    "id": "Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n",
-    "translation": "Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
-  },
-  {
-    "id": "Found the action {{.action}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n",
-    "translation": "Found the action {{.action}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n"
-  },
-  {
-    "id": "Found the trigger {{.trigger}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n",
-    "translation": "Found the trigger {{.trigger}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n"
-  },
-  {
-    "id": "Found the package {{.package}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n",
-    "translation": "Found the package {{.package}} which is deleted from the current project {{.project}} in manifest file which is being undeployed.\n"
   }
-
 ]

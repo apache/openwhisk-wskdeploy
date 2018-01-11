@@ -27,13 +27,12 @@ import (
 	"strings"
 	"sync"
 	"time"
-
+	"net/http"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"net/http"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
@@ -143,14 +142,15 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		// OpenWhisk entities are annotated with Project Name and therefore
 		// Project Name in manifest/deployment file is mandatory for managed deployments
 		if deployer.ProjectName == "" {
-			// TODO see if we can move string to translation file.
-			return wskderrors.NewYAMLFileFormatError(manifest.Filepath, "Project name in manifest file is mandatory for managed deployments")
+			errmsg := wski18n.T(wski18n.ID_ERR_MISSING_MANDATORY_KEY_X_key_X,
+				map[string]interface{}{"key": "project name"})
+
+			return wskderrors.NewYAMLFileFormatError(manifest.Filepath, errmsg)
 		}
 		// Every OpenWhisk entity in the manifest file will be annotated with:
 		//managed: '{"__OW__PROJECT__NAME": <name>, "__OW__PROJECT_HASH": <hash>, "__OW__FILE": <path>}'
 		deployer.ManagedAnnotation, err = utils.GenerateManagedAnnotation(deployer.ProjectName, manifest.Filepath)
 		if err != nil {
-			// TODO see if we can pass in the YAML file path on first parameter
 			return wskderrors.NewYAMLFileFormatError(manifest.Filepath, err.Error())
 		}
 	}
@@ -179,8 +179,8 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 	// (TODO) delete this warning after deprecating application in manifest file
 	if manifest.Application.Name != "" {
-		warningString := wski18n.T("WARNING: application in manifest file will soon be deprecated, please use project instead.\n")
-		whisk.Debug(whisk.DbgWarn, warningString)
+		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
+			map[string]interface{}{"oldkey": "application", "newkey": "project", "filetype": "manifest"}))
 	}
 
 	// process deployment file
@@ -194,17 +194,21 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 		// (TODO) delete this warning after deprecating application in deployment file
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
-			warningString := wski18n.T("WARNING: application in deployment file will soon be deprecated, please use project instead.\n")
-			whisk.Debug(whisk.DbgWarn, warningString)
+			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
+				map[string]interface{}{"oldkey": "application", "newkey": "project", "filetype": "deployment"}))
 		}
 
-		// compare the name of the project/application
+		// compare the name of the project
 		if len(deploymentReader.DeploymentDescriptor.GetProject().Packages) != 0 && len(projectName) != 0 {
 			projectNameDeploy := deploymentReader.DeploymentDescriptor.GetProject().Name
 			if projectNameDeploy != projectName {
-				errorString := wski18n.T("The name of the project/application {{.projectNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the project/application {{.projectNameManifest}}} in manifest file at [{{.manifestFile}}].",
-					map[string]interface{}{"projectNameDeploy": projectNameDeploy, "deploymentFile": deployer.DeploymentPath,
-						"projectNameManifest": projectName, "manifestFile": deployer.ManifestPath})
+				errorString := wski18n.T(wski18n.ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X,
+					map[string]interface{}{
+						"key": "project",
+						"dname": projectNameDeploy,
+						"dpath": deployer.DeploymentPath,
+						"mname": projectName,
+						"mpath": deployer.ManifestPath})
 				return wskderrors.NewYAMLFileFormatError(manifest.Filepath, errorString)
 			}
 		}
@@ -257,8 +261,8 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 
 	// (TODO) delete this warning after deprecating application in manifest file
 	if manifest.Application.Name != "" {
-		warningString := wski18n.T("WARNING: application in manifest file will soon be deprecated, please use project instead.\n")
-		whisk.Debug(whisk.DbgWarn, warningString)
+		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
+			map[string]interface{}{"oldkey": "application", "newkey": "project", "filetype": "manifest"}))
 	}
 
 	// process deployment file
@@ -271,16 +275,21 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 
 		// (TODO) delete this warning after deprecating application in deployment file
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
-			warningString := wski18n.T("WARNING: application in deployment file will soon be deprecated, please use project instead.\n")
-			whisk.Debug(whisk.DbgWarn, warningString)
+			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
+				map[string]interface{}{"oldkey": "application", "newkey": "project", "filetype": "deployment"}))
 		}
+
 		// compare the name of the application
 		if len(deploymentReader.DeploymentDescriptor.GetProject().Packages) != 0 && len(projectName) != 0 {
 			projectNameDeploy := deploymentReader.DeploymentDescriptor.GetProject().Name
 			if projectNameDeploy != projectName {
-				errorString := wski18n.T("The name of the project/application {{.projectNameDeploy}} in deployment file at [{{.deploymentFile}}] does not match the name of the application {{.projectNameManifest}}} in manifest file at [{{.manifestFile}}].",
-					map[string]interface{}{"projectNameDeploy": projectNameDeploy, "deploymentFile": deployer.DeploymentPath,
-						"projectNameManifest": projectName, "manifestFile": deployer.ManifestPath})
+				errorString := wski18n.T(wski18n.ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X,
+					map[string]interface{}{
+						"key": "project",
+						"dname": projectNameDeploy,
+						"dpath": deployer.DeploymentPath,
+						"mname": projectName,
+						"mpath": deployer.ManifestPath})
 				return deployer.Deployment, wskderrors.NewYAMLFileFormatError(manifest.Filepath, errorString)
 			}
 		}
@@ -301,9 +310,10 @@ func (deployer *ServiceDeployer) Deploy() error {
 
 	if deployer.IsInteractive == true {
 		deployer.printDeploymentAssets(deployer.Deployment)
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Do you really want to deploy this? (y/N): ")
 
+		// TODO() See if we can use the promptForValue() function in whiskclient.go
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print(wski18n.T(wski18n.ID_MSG_PROMPT_DEPLOY))
 		text, _ := reader.ReadString('\n')
 		text = strings.TrimSpace(text)
 
@@ -311,32 +321,34 @@ func (deployer *ServiceDeployer) Deploy() error {
 			text = "n"
 		}
 
+		// TODO() make possible responses constants (enum?) and create "No" corallary
 		if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
 			deployer.InteractiveChoice = true
 			if err := deployer.deployAssets(); err != nil {
-				errString := wski18n.T("Deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n")
-				whisk.Debug(whisk.DbgError, errString)
+				wskprint.PrintOpenWhiskError(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_FAILED))
 				return err
 			}
 
-			wskprint.PrintOpenWhiskSuccess(wski18n.T("Deployment completed successfully.\n"))
+			wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_SUCCEEDED))
 			return nil
 
 		} else {
+			// TODO() Should acknowledge if user typed (No/N/n) and if not still exit, but
+			// indicate we took the response to mean "No", typically by displaying interpolated
+			// response in parenthesis
 			deployer.InteractiveChoice = false
-			wskprint.PrintOpenWhiskSuccess(wski18n.T("OK. Cancelling deployment.\n"))
+			wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_CANCELLED))
 			return nil
 		}
 	}
 
 	// non-interactive
 	if err := deployer.deployAssets(); err != nil {
-		errString := wski18n.T("Deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n")
-		whisk.Debug(whisk.DbgError, errString)
+		wskprint.PrintOpenWhiskError(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_FAILED))
 		return err
 	}
 
-	wskprint.PrintOpenWhiskSuccess(wski18n.T("Deployment completed successfully.\n"))
+	wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_SUCCEEDED)))
 	return nil
 
 }
@@ -377,7 +389,7 @@ func (deployer *ServiceDeployer) deployAssets() error {
 	// from the manifest file must result in undeployment of those deleted entities
 	if utils.Flags.Managed {
 		if err := deployer.RefreshManagedEntities(deployer.ManagedAnnotation); err != nil {
-			errString := wski18n.T("Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n")
+			errString := wski18n.T(wski18n.ID_MSG_MANAGED_UNDEPLOYMENT_FAILED)
 			whisk.Debug(whisk.DbgError, errString)
 			return err
 		}
@@ -389,8 +401,8 @@ func (deployer *ServiceDeployer) deployAssets() error {
 func (deployer *ServiceDeployer) DeployDependencies() error {
 	for _, pack := range deployer.Deployment.Packages {
 		for depName, depRecord := range pack.Dependencies {
-			output := wski18n.T("Deploying dependency {{.output}} ...",
-				map[string]interface{}{"output": depName})
+			output := wski18n.T(wski18n.ID_MSG_DEPENDENCY_DEPLOYING_X_name_X,
+				map[string]interface{}{"name": depName})
 			whisk.Debug(whisk.DbgInfo, output)
 
 			if depRecord.IsBinding {
@@ -413,8 +425,8 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 				if error != nil {
 					return error
 				} else {
-					output := wski18n.T("Dependency {{.output}} has been successfully deployed.\n",
-						map[string]interface{}{"output": depName})
+					output := wski18n.T(wski18n.ID_MSG_DEPENDENCY_DEPLOYMENT_SUCCESS_X_name_X,
+						map[string]interface{}{"name": depName})
 					whisk.Debug(whisk.DbgInfo, output)
 				}
 
@@ -430,8 +442,8 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 				}
 
 				if err := depServiceDeployer.deployAssets(); err != nil {
-					errString := wski18n.T("Deployment of dependency {{.depName}} did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n",
-						map[string]interface{}{"depName": depName})
+					errString := wski18n.T(wski18n.ID_MSG_DEPENDENCY_DEPLOYMENT_FAILURE_X_name_X,
+						map[string]interface{}{"name": depName})
 					wskprint.PrintOpenWhiskError(errString)
 					return err
 				}
@@ -459,8 +471,8 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 					if err != nil {
 						return err
 					} else {
-						output := wski18n.T("Dependency {{.output}} has been successfully deployed.\n",
-							map[string]interface{}{"output": depName})
+						output := wski18n.T(wski18n.ID_MSG_DEPENDENCY_DEPLOYMENT_SUCCESS_X_name_X,
+							map[string]interface{}{"name": depName})
 						whisk.Debug(whisk.DbgInfo, output)
 					}
 				}
@@ -471,6 +483,7 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 	return nil
 }
 
+// TODO() display "update" | "synced" messages pre/post
 func (deployer *ServiceDeployer) RefreshManagedEntities(maValue whisk.KeyValue) error {
 
 	ma := maValue.Value.(map[string]interface{})
@@ -489,6 +502,8 @@ func (deployer *ServiceDeployer) RefreshManagedEntities(maValue whisk.KeyValue) 
 	return nil
 
 }
+
+// TODO() display "update" | "synced" messages pre/post
 func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma map[string]interface{}) error {
 	options := whisk.ActionListOptions{}
 	// get a list of actions in your namespace
@@ -512,10 +527,14 @@ func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma ma
 			// that this action is deleted from the project in manifest file
 			if aa[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] && aa[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
 				actionName := strings.Join([]string{packageName, action.Name}, "/")
-				output := wski18n.T("Found the action {{.action}} which is deleted"+
-					" from the current project {{.project}} in manifest file which is being undeployed.\n",
-					map[string]interface{}{"action": actionName, "project": aa[utils.OW_PROJECT_NAME]})
-				whisk.Debug(whisk.DbgInfo, output)
+
+				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
+					map[string]interface{}{
+						"key": "action",
+						"name": actionName,
+						"project": aa[utils.OW_PROJECT_NAME]})
+				wskprint.PrintOpenWhiskWarning(output)
+
 				var err error
 				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 					_, err := deployer.Client.Actions.Delete(actionName)
@@ -531,6 +550,7 @@ func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma ma
 	return nil
 }
 
+// TODO() display "update" | "synced" messages pre/post
 func (deployer *ServiceDeployer) RefreshManagedTriggers(ma map[string]interface{}) error {
 	options := whisk.TriggerListOptions{}
 	// Get list of triggers in your namespace
@@ -549,10 +569,13 @@ func (deployer *ServiceDeployer) RefreshManagedTriggers(ma map[string]interface{
 			ta := a.(map[string]interface{})
 			if ta[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] && ta[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
 				// we have found a trigger which was earlier part of the current project
-				output := wski18n.T("Found the trigger {{.trigger}} which is deleted"+
-					" from the current project {{.project}} in manifest file which is being undeployed.\n",
-					map[string]interface{}{"trigger": trigger.Name, "project": ma[utils.OW_PROJECT_NAME]})
-				whisk.Debug(whisk.DbgInfo, output)
+				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
+					map[string]interface{}{
+						"key": "trigger",
+						"name": trigger.Name,
+						"project": ma[utils.OW_PROJECT_NAME]})
+				wskprint.PrintOpenWhiskWarning(output)
+
 				var err error
 				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 					_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
@@ -568,10 +591,13 @@ func (deployer *ServiceDeployer) RefreshManagedTriggers(ma map[string]interface{
 	return nil
 }
 
+// TODO() engage community to allow metadata (annotations) on Rules
+// TODO() display "update" | "synced" messages pre/post
 func (deployer *ServiceDeployer) RefreshManagedRules(ma map[string]interface{}) error {
 	return nil
 }
 
+// TODO() display "update" | "synced" messages pre/post
 func (deployer *ServiceDeployer) RefreshManagedPackages(ma map[string]interface{}) error {
 	options := whisk.PackageListOptions{}
 	// Get the list of packages in your namespace
@@ -595,10 +621,13 @@ func (deployer *ServiceDeployer) RefreshManagedPackages(ma map[string]interface{
 			}
 			// we have found a package which was earlier part of the current project
 			if pa[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] && pa[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
-				output := wski18n.T("Found the package {{.package}} which is deleted"+
-					" from the current project {{.project}} in manifest file which is being undeployed.\n",
-					map[string]interface{}{"package": pkg.Name, "project": pa[utils.OW_PROJECT_NAME]})
-				whisk.Debug(whisk.DbgInfo, output)
+				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
+					map[string]interface{}{
+						"key": "package",
+						"name": pkg.Name,
+						"project": pa[utils.OW_PROJECT_NAME]})
+				wskprint.PrintOpenWhiskWarning(output)
+
 				var err error
 				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 					_, err := deployer.Client.Packages.Delete(pkg.Name)
@@ -629,9 +658,9 @@ func (deployer *ServiceDeployer) DeploySequences() error {
 
 	for _, pack := range deployer.Deployment.Packages {
 		for _, action := range pack.Sequences {
-			error := deployer.createAction(pack.Package.Name, action.Action)
-			if error != nil {
-				return error
+			err := deployer.createAction(pack.Package.Name, action.Action)
+			if err != nil {
+				return err
 			}
 		}
 	}
@@ -657,14 +686,14 @@ func (deployer *ServiceDeployer) DeployTriggers() error {
 	for _, trigger := range deployer.Deployment.Triggers {
 
 		if feedname, isFeed := utils.IsFeedAction(trigger); isFeed {
-			error := deployer.createFeedAction(trigger, feedname)
-			if error != nil {
-				return error
+			err := deployer.createFeedAction(trigger, feedname)
+			if err != nil {
+				return err
 			}
 		} else {
-			error := deployer.createTrigger(trigger)
-			if error != nil {
-				return error
+			err := deployer.createTrigger(trigger)
+			if err != nil {
+				return err
 			}
 		}
 
@@ -676,9 +705,9 @@ func (deployer *ServiceDeployer) DeployTriggers() error {
 // Deploy Rules into OpenWhisk
 func (deployer *ServiceDeployer) DeployRules() error {
 	for _, rule := range deployer.Deployment.Rules {
-		error := deployer.createRule(rule)
-		if error != nil {
-			return error
+		err := deployer.createRule(rule)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -687,20 +716,19 @@ func (deployer *ServiceDeployer) DeployRules() error {
 // Deploy Apis into OpenWhisk
 func (deployer *ServiceDeployer) DeployApis() error {
 	for _, api := range deployer.Deployment.Apis {
-		error := deployer.createApi(api)
-		if error != nil {
-			return error
+		err := deployer.createApi(api)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
 func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) error {
-	output := wski18n.T("Deploying package binding {{.output}} ...",
-		map[string]interface{}{"output": packa.Name})
-	whisk.Debug(whisk.DbgInfo, output)
-	var err error
 
+	displayPreprocessingInfo("package binding", packa.Name, true)
+
+	var err error
 	var response *http.Response
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 		_, response, err = deployer.Client.Packages.Insert(packa, true)
@@ -708,23 +736,17 @@ func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) erro
 	})
 
 	if err != nil {
-		wskErr := err.(*whisk.WskError)
-		errString := wski18n.T("Got error creating package binding with error message: {{.err}} and error code: {{.code}}.\n",
-			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
-	} else {
-		output := wski18n.T("Package binding {{.output}} has been successfully deployed.\n",
-			map[string]interface{}{"output": packa.Name})
-		whisk.Debug(whisk.DbgInfo, output)
+		return createWhiskClientError(err.(*whisk.WskError), response, "package binding", true)
 	}
+
+	displayPostprocessingInfo("package binding", packa.Name, true)
 	return nil
 }
 
 func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) error {
-	output := wski18n.T("Deploying package {{.output}} ...",
-		map[string]interface{}{"output": packa.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("package", packa.Name, true)
+
 	var err error
 	var response *http.Response
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
@@ -732,23 +754,17 @@ func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) error {
 		return err
 	})
 	if err != nil {
-		wskErr := err.(*whisk.WskError)
-		errString := wski18n.T("Got error creating package with error message: {{.err}} and error code: {{.code}}.\n",
-			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
-	} else {
-		output := wski18n.T("Package {{.output}} has been successfully deployed.\n",
-			map[string]interface{}{"output": packa.Name})
-		whisk.Debug(whisk.DbgInfo, output)
+		return createWhiskClientError(err.(*whisk.WskError), response, "package", true)
 	}
+
+	displayPostprocessingInfo("package", packa.Name, true)
 	return nil
 }
 
 func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) error {
-	output := wski18n.T("Deploying trigger {{.output}} ...",
-		map[string]interface{}{"output": trigger.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("trigger", trigger.Name, true)
+
 	var err error
 	var response *http.Response
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
@@ -756,23 +772,17 @@ func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) error {
 		return err
 	})
 	if err != nil {
-		wskErr := err.(*whisk.WskError)
-		errString := wski18n.T("Got error creating trigger with error message: {{.err}} and error code: {{.code}}.\n",
-			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
-	} else {
-		output := wski18n.T("Trigger {{.output}} has been successfully deployed.\n",
-			map[string]interface{}{"output": trigger.Name})
-		whisk.Debug(whisk.DbgInfo, output)
+		return createWhiskClientError(err.(*whisk.WskError), response, "trigger", true)
 	}
+
+	displayPostprocessingInfo("trigger", trigger.Name, true)
 	return nil
 }
 
 func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedName string) error {
-	output := wski18n.T("Deploying trigger feed {{.output}} ...",
-		map[string]interface{}{"output": trigger.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("trigger feed", trigger.Name, true)
+
 	// to hold and modify trigger parameters, not passed by ref?
 	params := make(map[string]interface{})
 
@@ -811,11 +821,7 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 		return err
 	})
 	if err != nil {
-		wskErr := err.(*whisk.WskError)
-		errString := wski18n.T("Got error creating trigger with error message: {{.err}} and error code: {{.code}}.\n",
-			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
+		return createWhiskClientError(err.(*whisk.WskError), response, "trigger feed", true)
 	} else {
 
 		qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
@@ -840,20 +846,17 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 				return err
 			})
 
-			wskErr := err.(*whisk.WskError)
-			errString := wski18n.T("Got error creating trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
-				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-			whisk.Debug(whisk.DbgError, errString)
-			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
+			return createWhiskClientError(err.(*whisk.WskError), response, "trigger feed", false)
 		}
 	}
-	output = wski18n.T("Trigger feed {{.output}} has been successfully deployed.\n",
-		map[string]interface{}{"output": trigger.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPostprocessingInfo("trigger feed", trigger.Name, true)
 	return nil
 }
 
 func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
+	displayPreprocessingInfo("rule", rule.Name, true)
+
 	// The rule's trigger should include the namespace with pattern /namespace/trigger
 	rule.Trigger = deployer.getQualifiedName(rule.Trigger.(string), deployer.ClientConfig.Namespace)
 	// The rule's action should include the namespace and package
@@ -867,9 +870,6 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 		// if not, we assume the action is inside the root package
 		rule.Action = deployer.getQualifiedName(strings.Join([]string{deployer.RootPackageName, rule.Action.(string)}, "/"), deployer.ClientConfig.Namespace)
 	}
-	output := wski18n.T("Deploying rule {{.output}} ...",
-		map[string]interface{}{"output": rule.Name})
-	whisk.Debug(whisk.DbgInfo, output)
 
 	var err error
 	var response *http.Response
@@ -879,16 +879,10 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 	})
 
 	if err != nil {
-		wskErr := err.(*whisk.WskError)
-		errString := wski18n.T("Got error creating rule with error message: {{.err}} and error code: {{.code}}.\n",
-			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
+		return createWhiskClientError(err.(*whisk.WskError), response, "rule", true)
 	}
 
-	output = wski18n.T("Rule {{.output}} has been successfully deployed.\n",
-		map[string]interface{}{"output": rule.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+	displayPostprocessingInfo("rule", rule.Name, true)
 	return nil
 }
 
@@ -899,9 +893,8 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 		// the action will be created under package with pattern 'packagename/actionname'
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
 	}
-	output := wski18n.T("Deploying action {{.output}} ...",
-		map[string]interface{}{"output": action.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("action", action.Name, true)
 
 	var err error
 	var response *http.Response
@@ -911,45 +904,42 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 	})
 
 	if err != nil {
-		wskErr := err.(*whisk.WskError)
-		errString := wski18n.T("Got error creating action with error message: {{.err}} and error code: {{.code}}.\n",
-			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
-	} else {
-		output := wski18n.T("Action {{.output}} has been successfully deployed.\n",
-			map[string]interface{}{"output": action.Name})
-		whisk.Debug(whisk.DbgInfo, output)
+		return createWhiskClientError(err.(*whisk.WskError), response, "action", true)
 	}
+
+	displayPostprocessingInfo("action", action.Name, true)
 	return nil
 }
 
 // create api (API Gateway functionality)
 func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
+
+	displayPreprocessingInfo("api", api.ApiDoc.ApiName, true)
+
 	var err error
 	var response *http.Response
+
+	// TODO() Is there an api delete function? could not find it
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 		_, response, err = deployer.Client.Apis.Insert(api, nil, true)
 		return err
 	})
 
 	if err != nil {
-		wskErr := err.(*whisk.WskError)
-		errString := wski18n.T("Got error creating api with error message: {{.err}} and error code: {{.code}}.\n",
-			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
+		return createWhiskClientError(err.(*whisk.WskError), response, "api", true)
 	}
+
+	displayPostprocessingInfo("api", api.ApiDoc.ApiName, true)
 	return nil
 }
 
 func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentProject) error {
 	if deployer.IsInteractive == true {
 		deployer.printDeploymentAssets(verifiedPlan)
+
+		// TODO() See if we can use the promptForValue() function in whiskclient.go
 		reader := bufio.NewReader(os.Stdin)
-
-		fmt.Print("Do you really want to undeploy this? (y/N): ")
-
+		fmt.Print(wski18n.T(wski18n.ID_MSG_PROMPT_UNDEPLOY))
 		text, _ := reader.ReadString('\n')
 		text = strings.TrimSpace(text)
 
@@ -957,34 +947,33 @@ func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentProject) error
 			text = "n"
 		}
 
+		// TODO() Use constants for possible return values y/N/yes/No etc.
 		if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
 			deployer.InteractiveChoice = true
 
 			if err := deployer.unDeployAssets(verifiedPlan); err != nil {
-				wskprint.PrintOpenWhiskError(wski18n.T("Undeployment did not complete sucessfully.\n"))
+				wskprint.PrintOpenWhiskError(wski18n.T(wski18n.T(wski18n.ID_MSG_UNDEPLOYMENT_FAILED)))
 				return err
 			}
 
-			wskprint.PrintOpenWhiskSuccess(wski18n.T("Deployment removed successfully.\n"))
+			wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.T(wski18n.ID_MSG_UNDEPLOYMENT_SUCCEEDED)))
 			return nil
 
 		} else {
 			deployer.InteractiveChoice = false
-			wskprint.PrintOpenWhiskSuccess(wski18n.T("OK. Canceling undeployment.\n"))
+			wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.T(wski18n.ID_MSG_UNDEPLOYMENT_CANCELLED)))
 			return nil
 		}
 	}
 
 	// non-interactive
 	if err := deployer.unDeployAssets(verifiedPlan); err != nil {
-		errString := wski18n.T("Undeployment did not complete sucessfully.\n")
-		whisk.Debug(whisk.DbgError, errString)
+		wskprint.PrintOpenWhiskError(wski18n.T(wski18n.T(wski18n.ID_MSG_UNDEPLOYMENT_FAILED)))
 		return err
 	}
 
-	wskprint.PrintOpenWhiskSuccess(wski18n.T("Deployment removed successfully.\n"))
+	wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.T(wski18n.ID_MSG_UNDEPLOYMENT_SUCCEEDED)))
 	return nil
-
 }
 
 func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan *DeploymentProject) error {
@@ -1014,14 +1003,13 @@ func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan *DeploymentProject)
 	}
 
 	return nil
-
 }
 
 func (deployer *ServiceDeployer) UnDeployDependencies() error {
 	for _, pack := range deployer.Deployment.Packages {
 		for depName, depRecord := range pack.Dependencies {
-			output := wski18n.T("Undeploying dependency {{.depName}} ...",
-				map[string]interface{}{"depName": depName})
+			output := wski18n.T(wski18n.ID_MSG_DEPENDENCY_UNDEPLOYING_X_name_X,
+				map[string]interface{}{"name": depName})
 			whisk.Debug(whisk.DbgInfo, output)
 
 			if depRecord.IsBinding {
@@ -1055,24 +1043,20 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
 							return err
 						})
 						if err != nil {
-							wskErr := err.(*whisk.WskError)
-							errString := wski18n.T("Got error deleting binding package with error message: {{.err}} and error code: {{.code}}.\n",
-								map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-							whisk.Debug(whisk.DbgError, errString)
-							return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
+							return createWhiskClientError(err.(*whisk.WskError), response, "package binding", false)
 						}
 					}
 				}
 
 				if err := depServiceDeployer.unDeployAssets(plan); err != nil {
-					errString := wski18n.T("Undeployment of dependency {{.depName}} did not complete sucessfully.\n",
-						map[string]interface{}{"depName": depName})
+					errString := wski18n.T(wski18n.ID_MSG_DEPENDENCY_UNDEPLOYMENT_FAILURE_X_name_X,
+						map[string]interface{}{"name": depName})
 					whisk.Debug(whisk.DbgError, errString)
 					return err
 				}
 			}
-			output = wski18n.T("Dependency {{.depName}} has been successfully undeployed.\n",
-				map[string]interface{}{"depName": depName})
+			output = wski18n.T(wski18n.ID_MSG_DEPENDENCY_UNDEPLOYMENT_SUCCESS_X_name_X,
+				map[string]interface{}{"name": depName})
 			whisk.Debug(whisk.DbgInfo, output)
 		}
 	}
@@ -1151,9 +1135,9 @@ func (deployer *ServiceDeployer) UnDeployRules(deployment *DeploymentProject) er
 }
 
 func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
-	output := wski18n.T("Removing package {{.package}} ...",
-		map[string]interface{}{"package": packa.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("package", packa.Name, false)
+
 	if _, _, ok := deployer.Client.Packages.Get(packa.Name); ok == nil {
 		var err error
 		var response *http.Response
@@ -1163,20 +1147,16 @@ func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
 		})
 
 		if err != nil {
-			wskErr := err.(*whisk.WskError)
-			errString := wski18n.T("Got error deleting package with error message: {{.err}} and error code: {{.code}}.\n",
-				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-			whisk.Debug(whisk.DbgError, errString)
-			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
+			return createWhiskClientError(err.(*whisk.WskError), response, "package", false)
 		}
 	}
+	displayPostprocessingInfo("package", packa.Name, false)
 	return nil
 }
 
 func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
-	output := wski18n.T("Removing trigger {{.trigger}} ...",
-		map[string]interface{}{"trigger": trigger.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("trigger", trigger.Name, false)
 
 	var err error
 	var response *http.Response
@@ -1186,16 +1166,10 @@ func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
 	})
 
 	if err != nil {
-		wskErr := err.(*whisk.WskError)
-		errString := wski18n.T("Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
-			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
-	} else {
-		output := wski18n.T("Trigger {{.trigger}} has been removed.\n",
-			map[string]interface{}{"trigger": trigger.Name})
-		whisk.Debug(whisk.DbgInfo, output)
+		return createWhiskClientError(err.(*whisk.WskError), response, "trigger", false)
 	}
+
+	displayPostprocessingInfo("trigger", trigger.Name, false)
 	return nil
 }
 
@@ -1242,11 +1216,7 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 		})
 
 		if err != nil {
-			wskErr := err.(*whisk.WskError)
-			errString := wski18n.T("Got error deleting trigger with error message: {{.err}} and error code: {{.code}}.\n",
-				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-			whisk.Debug(whisk.DbgError, errString)
-			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
+			return createWhiskClientError(err.(*whisk.WskError), response, "trigger", false)
 		}
 	}
 
@@ -1254,9 +1224,8 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 }
 
 func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
-	output := wski18n.T("Removing rule {{.rule}} ...",
-		map[string]interface{}{"rule": rule.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+
+	displayPreprocessingInfo("rule", rule.Name, false)
 
 	var err error
 	var response *http.Response
@@ -1266,29 +1235,21 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
 	})
 
 	if err != nil {
-		wskErr := err.(*whisk.WskError)
-		errString := wski18n.T("Got error deleting rule with error message: {{.err}} and error code: {{.code}}.\n",
-			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-		whisk.Debug(whisk.DbgError, errString)
-		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
+		return createWhiskClientError(err.(*whisk.WskError), response, "rule", false)
 	}
-	output = wski18n.T("Rule {{.rule}} has been removed.\n",
-		map[string]interface{}{"rule": rule.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+	displayPostprocessingInfo("rule", rule.Name, false)
 	return nil
 }
 
 // Utility function to call go-whisk framework to make action
 func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Action) error {
-	// call ActionService Thru Client
+	// call ActionService through Client
 	if deployer.DeployActionInPackage {
 		// the action will be deleted under package with pattern 'packagename/actionname'
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
 	}
 
-	output := wski18n.T("Removing action {{.action}} ...",
-		map[string]interface{}{"action": action.Name})
-	whisk.Debug(whisk.DbgInfo, output)
+	displayPreprocessingInfo("action", action.Name, false)
 
 	if _, _, ok := deployer.Client.Actions.Get(action.Name); ok == nil {
 		var err error
@@ -1299,17 +1260,11 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
 		})
 
 		if err != nil {
-			wskErr := err.(*whisk.WskError)
-			errString := wski18n.T("Got error deleting action with error message: {{.err}} and error code: {{.code}}.\n",
-				map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
-			whisk.Debug(whisk.DbgError, errString)
-			return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
+			return createWhiskClientError(err.(*whisk.WskError), response, "action", false)
 
 		}
-		output = wski18n.T("Action {{.action}} has been removed.\n",
-			map[string]interface{}{"action": action.Name})
-		whisk.Debug(whisk.DbgInfo, output)
 	}
+	displayPostprocessingInfo("action", action.Name, false)
 	return nil
 }
 
@@ -1324,6 +1279,7 @@ func retry(attempts int, sleep time.Duration, callback func() error) error {
 			wskErr := err.(*whisk.WskError)
 			if wskErr.ExitCode == CONFLICT_CODE && strings.Contains(wskErr.Error(), CONFLICT_MESSAGE) {
 				time.Sleep(sleep)
+				// TODO() i18n
 				whisk.Debug(whisk.DbgError, "Retrying [%s] after error: %s\n", strconv.Itoa(i+1), err)
 			} else {
 				return err
@@ -1477,4 +1433,53 @@ func (deployer *ServiceDeployer) getDependentDeployer(depName string, depRecord 
 	depServiceDeployer.DependencyMaster = deployer.DependencyMaster
 
 	return depServiceDeployer, nil
+}
+
+func displayPreprocessingInfo(entity string, name string, onDeploy bool){
+
+	var msgKey string
+	if onDeploy{
+		msgKey = wski18n.ID_MSG_ENTITY_DEPLOYING_X_key_X_name_X
+	} else {
+		msgKey = wski18n.ID_MSG_ENTITY_UNDEPLOYING_X_key_X_name_X
+	}
+	msg := wski18n.T(msgKey,
+		map[string]interface{}{
+			"key": entity,
+			"name": name})
+	whisk.Debug(whisk.DbgInfo, msg)
+}
+
+func displayPostprocessingInfo(entity string, name string, onDeploy bool){
+
+	var msgKey string
+	if onDeploy{
+		msgKey = wski18n.ID_MSG_ENTITY_DEPLOYED_SUCCESS_X_key_X_name_X
+	} else {
+		msgKey = wski18n.ID_MSG_ENTITY_UNDEPLOYED_SUCCESS_X_key_X_name_X
+	}
+	errString := wski18n.T(msgKey,
+		map[string]interface{}{
+			"key": entity,
+			"name": name})
+	whisk.Debug(whisk.DbgInfo, errString)
+}
+
+func createWhiskClientError(err *whisk.WskError, response *http.Response, entity string, onCreate bool)(*wskderrors.WhiskClientError){
+
+	var msgKey string
+	if onCreate{
+		msgKey = wski18n.ID_ERR_CREATE_ENTITY_X_key_X_err_X_code_X
+	} else {
+		msgKey = wski18n.ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X
+	}
+	errString := wski18n.T(msgKey,
+		map[string]interface{}{
+			"key": entity,
+			"err": err.Error(),
+			"code": strconv.Itoa(err.ExitCode)})
+	whisk.Debug(whisk.DbgError, errString)
+
+	// TODO() add errString as an AppendDetail() to WhiskClientError
+	return wskderrors.NewWhiskClientError(err.Error(), err.ExitCode, response)
 }
