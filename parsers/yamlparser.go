@@ -22,7 +22,24 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 )
 
-// structs that denotes the sample manifest.yaml, wrapped yaml.v2
+// key names
+const(
+	PROJECT		= "project"
+	APPLICATION	= "application"	// deprecated
+	PACKAGE		= "package"
+	ACTION		= "action"
+	TRIGGER		= "trigger"
+	RULE		= "rule"
+	API		= "api"
+)
+
+// descriptive names
+const (
+	PACKAGE_BINDING = "package binding"
+	TRIGGER_FEED	= "trigger feed"
+)
+
+// structs that denote the sample manifest.yaml, wrapped yaml.v2
 func NewYAMLParser() *YAMLParser {
 	return &YAMLParser{}
 }

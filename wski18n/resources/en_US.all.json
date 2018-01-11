@@ -223,16 +223,16 @@
     "translation": "{{.key}} [{{.name}}] has been successfully undeployed.\n"
   },
   {
+    "id": "msg_err_feed_invoke",
+    "translation": "Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
+  },
+  {
     "id": "SEPARATOR",
     "translation": "====================== Entries below this line are not verified ==================================="
   },
   {
     "id": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n",
     "translation": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n"
-  },
-  {
-    "id": "Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
-    "translation": "Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
   },
   {
     "id": "WARNING: Mandatory field Package Version must be set.\n",

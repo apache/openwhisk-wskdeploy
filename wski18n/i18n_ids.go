@@ -101,7 +101,29 @@ const(
         ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X = "msg_err_mismatch_name_project"
 	ID_ERR_CREATE_ENTITY_X_key_X_err_X_code_X		= "msg_err_create_entity"
 	ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X		= "msg_err_delete_entity"
+	ID_ERR_FEED_INVOKE_X_err_X_code_X			= "msg_err_feed_invoke"
 
+)
+
+// Known keys used for text replacement in i18n translated strings
+const(
+	KEY		= "key"
+	NAME		= "name"
+	CODE		= "code"
+	ERR		= "err"
+	PROJECT		= "project"
+	ACTION		= "action"
+	LIMIT		= "limit"
+	HOST		= "host"
+	SOURCE		= "source"
+	NAMESPACE	= "namespace"
+	PATH		= "path"
+	EXTENTION	= "ext"
+	RUNTIME		= "runtime"
+	DEPLOYMENT_NAME	= "dname"
+	DEPLOYMENT_PATH	= "dpath"
+	MANIFEST_NAME	= "mname"
+	MANIFEST_PATH	= "mpath"
 )
 
 var I18N_ID_SET = [](string){
