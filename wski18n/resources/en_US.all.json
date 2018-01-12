@@ -164,7 +164,10 @@
     "translation": "The [{{.oldkey}}] key in the {{.filetype}} file will soon be deprecated, please use the [{{.newkey}}] key instead.\n"
   },
   { "id": "msg_err_missing_mandatory_key",
-    "translation": "The mandatory key [{{.key}}] is missing."
+    "translation": "The mandatory key [{{.key}}] is missing.\n"
+  },
+  { "id": "msg_warn_missing_mandatory_key",
+    "translation": "The mandatory key [{{.key}}] should be set. Using default value [{{.value}}]...\n"
   },
   {
     "id": "msg_err_mismatch_name_project",
@@ -227,28 +230,16 @@
     "translation": "Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n"
   },
   {
+    "id": "msg_warn_key_value_not_saved",
+    "translation": "The value for key [{{.key}}] is not saved in the current version of wskdeploy.\n"
+  },
+  {
+    "id": "msg_warn_invalid_key_value",
+    "translation": "The value for key [{{.key}}] is not valid.\n"
+  },
+  {
     "id": "SEPARATOR",
     "translation": "====================== Entries below this line are not verified ==================================="
-  },
-  {
-    "id": "WARNING: Mandatory field Package Version must be set.\n",
-    "translation": "WARNING: Mandatory field Package Version must be set.\n"
-  },
-  {
-    "id": "WARNING: Package Version is not saved in the current wskdeploy version.\n",
-    "translation": "WARNING: Package Version is not saved in the current wskdeploy version.\n"
-  },
-  {
-    "id": "WARNING: Mandatory field Package License must be set.\n",
-    "translation": "WARNING: Mandatory field Package License must be set.\n"
-  },
-  {
-    "id": "WARNING: Package License is not saved in the current wskdeploy version.\n",
-    "translation": "WARNING: Package License is not saved in the current wskdeploy version.\n"
-  },
-  {
-    "id": "WARNING: License {{.licenseID}} is not a valid one.\n",
-    "translation": "WARNING: License {{.licenseID}} is not a valid one.\n"
   },
   {
     "id": "memorySize of limits in manifest should be an integer between 128 and 512.\n",

@@ -19,10 +19,11 @@
 package utils
 
 import (
+	"strings"
 	"encoding/json"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"strings"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 var LocalLicenseRecords = map[string][]string{
@@ -61,10 +62,13 @@ var license_json = LicenseJSON{}
 //Check local data record at first
 //Then check remote json data
 func CheckLicense(license string) bool {
+	// TODO(#673) Strict flag should cause an error to be generatd
 	if !LicenseLocalValidation(license) && !LicenseRemoteValidation(license) {
-		warningString := wski18n.T("WARNING: License {{.licenseID}} is not a valid one.\n",
-			map[string]interface{}{"licenseID": license})
-		whisk.Debug(whisk.DbgWarn, warningString)
+		warningString := wski18n.T(
+			wski18n.ID_WARN_KEYVALUE_INVALID,
+			map[string]interface{}{
+				wski18n.KEY_KEY: license})
+		wskprint.PrintlnOpenWhiskWarning(warningString)
 		return false
 	}
 	return true

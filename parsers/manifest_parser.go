@@ -23,14 +23,13 @@ import (
 	"os"
 	"path"
 	"strings"
-
 	"encoding/base64"
-
 	"fmt"
+	"gopkg.in/yaml.v2"
+
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"gopkg.in/yaml.v2"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
@@ -78,6 +77,7 @@ func (dm *YAMLParser) Unmarshal(input []byte, manifest *YAML) error {
 func (dm *YAMLParser) marshal(manifest *YAML) (output []byte, err error) {
 	data, err := yaml.Marshal(manifest)
 	if err != nil {
+		// TODO() i18n
 		fmt.Printf("err happened during marshal :%v", err)
 		return nil, err
 	}
@@ -136,6 +136,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 	for key, dependency := range pkg.Dependencies {
 		version := dependency.Version
 		if version == "" {
+			// TODO() interactive ask for branch, AND consider YAML specification to allow key for branch
 			version = "master"
 		}
 
@@ -151,6 +152,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 			isBinding = true
 		} else if utils.LocationIsGithub(location) {
 
+			// TODO() define const for the protocol prefix, etc.
 			if !strings.HasPrefix(location, "https://") && !strings.HasPrefix(location, "http://") {
 				location = "https://" + dependency.Location
 			}
@@ -240,23 +242,42 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	//Version is a mandatory value
 	//If it is an empty string, it will be set to default value
 	//And print an warning message
+	// TODO(#673) implement STRICT flag
 	if pkg.Version == "" {
-		warningString := wski18n.T("WARNING: Mandatory field Package Version must be set.\n")
-		whisk.Debug(whisk.DbgWarn, warningString)
-		warningString = wski18n.T("WARNING: Package Version is not saved in the current wskdeploy version.\n")
-		whisk.Debug(whisk.DbgWarn, warningString)
-		pkg.Version = "0.0.1"
+		warningString := wski18n.T(
+			wski18n.ID_WARN_MISSING_MANDATORY_KEY_X_key_X_value_X,
+			map[string]interface{}{
+				wski18n.KEY_KEY: PACKAGE_VERSION,
+				wski18n.KEY_VALUE: DEFAULT_PACKAGE_VERSION})
+		wskprint.PrintOpenWhiskWarning(warningString)
+
+		warningString = wski18n.T(
+			wski18n.ID_WARN_KEYVALUE_NOT_SAVED_X_key_X,
+			map[string]interface{}{wski18n.KEY_KEY: PACKAGE_VERSION})
+
+		wskprint.PrintOpenWhiskWarning(warningString)
+		pkg.Version = DEFAULT_PACKAGE_VERSION
 	}
 
 	//License is a mandatory value
 	//set license to unknown if it is an empty string
 	//And print an warning message
+	// TODO(#673) implement STRICT flag
 	if pkg.License == "" {
-		warningString := wski18n.T("WARNING: Mandatory field Package License must be set.\n")
-		whisk.Debug(whisk.DbgWarn, warningString)
-		warningString = wski18n.T("WARNING: Package License is not saved in the current wskdeploy version.\n")
-		whisk.Debug(whisk.DbgWarn, warningString)
-		pkg.License = "unlicensed"
+		warningString := wski18n.T(
+			wski18n.ID_WARN_MISSING_MANDATORY_KEY_X_key_X_value_X,
+			map[string]interface{}{
+				wski18n.KEY_KEY: PACKAGE_LICENSE,
+				wski18n.KEY_VALUE: DEFAULT_PACKAGE_LICENSE})
+		wskprint.PrintOpenWhiskWarning(warningString)
+
+		warningString = wski18n.T(
+			wski18n.ID_WARN_KEYVALUE_NOT_SAVED_X_key_X,
+			map[string]interface{}{wski18n.KEY_KEY: PACKAGE_VERSION})
+
+		wskprint.PrintOpenWhiskWarning(warningString)
+
+		pkg.License = DEFAULT_PACKAGE_LICENSE
 	} else {
 		utils.CheckLicense(pkg.License)
 	}
@@ -334,7 +355,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 	for key, sequence := range sequences {
 		wskaction := new(whisk.Action)
 		wskaction.Exec = new(whisk.Exec)
-		wskaction.Exec.Kind = "sequence"
+		wskaction.Exec.Kind = SEQUENCE
 		actionList := strings.Split(sequence.Actions, ",")
 
 		var components []string
@@ -402,6 +423,7 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 
 func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action, packageName string, ma whisk.KeyValue) ([]utils.ActionRecord, error) {
 
+	// TODO() i18n
 	const RUNTIME_ERR_MESSAGE = "Please specify any of the supported runtime for zip actions in manifest YAML."
 	var errorParser error
 	var ext string
@@ -431,6 +453,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			filePath := strings.TrimRight(filePath, splitFilePath[len(splitFilePath)-1]) + action.Function
 
 			if utils.IsDirectory(filePath) {
+				// TODO() define ext as const
 				zipName := filePath + ".zip"
 				err := utils.NewZipWritter(filePath, zipName).Zip()
 				if err != nil {
@@ -459,6 +482,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				// and its not explicitly specified in the manifest YAML file
 				// and action source is not a zip file
 				if len(kind) == 0 && len(action.Runtime) == 0 && ext != utils.ZIP_FILE_EXTENSION {
+					// TODO() i18n
 					errMessage := "ERROR: Failed to discover runtime from the action source files. " + RUNTIME_ERR_MESSAGE
 					return nil, wskderrors.NewInvalidRuntimeError(errMessage, splitFilePath[len(splitFilePath)-1], action.Name, "Not Specified in Manifest YAML", utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				}
@@ -475,6 +499,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					code = base64.StdEncoding.EncodeToString([]byte(dat))
 				}
 				if ext == utils.ZIP_FILE_EXTENSION && len(action.Runtime) == 0 {
+					// TODO() i18n
 					errMessage := "ERROR: Runtime is missing for zip action. " + RUNTIME_ERR_MESSAGE
 					return nil, wskderrors.NewInvalidRuntimeError(errMessage, splitFilePath[len(splitFilePath)-1], action.Name, "Not Specified in Manifest YAML", utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				}
@@ -581,6 +606,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 		// TODO{} add outputs as annotations (work to discuss officially supporting for compositions)
 		if len(keyValArr) > 0 {
+			// TODO() ?
 			//wskaction.Annotations  // TBD
 		}
 
@@ -605,6 +631,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		/*
   		 *  Web Export
   		 */
+		// TODO() add boolean value const
 		if action.Webexport == "true" {
 			wskaction.Annotations, errorParser = utils.WebAction("yes", listOfAnnotations, false)
 			if errorParser != nil {
@@ -620,6 +647,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			if utils.LimitsTimeoutValidation(action.Limits.Timeout) {
 				wsklimits.Timeout = action.Limits.Timeout
 			} else {
+				// TODO() const for limit values and keys
 				warningString := wski18n.T(wski18n.ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
 					map[string]interface{}{"limit": "timeout"})
 				wskprint.PrintOpenWhiskWarning(warningString)
@@ -642,7 +670,8 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				wskaction.Limits = wsklimits
 			}
 
-			//emit warning errors if these limits are not nil
+			// TODO() i18n
+			// emit warning errors if these limits are not nil
 			utils.NotSupportLimits(action.Limits.ConcurrentActivations,"concurrentActivations")
 			utils.NotSupportLimits(action.Limits.UserInvocationRate,"userInvocationRate")
 			utils.NotSupportLimits(action.Limits.CodeSize,"codeSize")
@@ -698,6 +727,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 
 		// print warning information when .Source key's value is not empty
 		if trigger.Source != "" {
+			// TODO() i18n use const for keys and values on string
 			warningString := wski18n.T(
 				wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{

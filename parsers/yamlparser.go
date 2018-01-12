@@ -32,12 +32,22 @@ const(
 	RULE		= "rule"
 	FEED		= "feed"
 	API		= "api"
+	SEQUENCE	= "sequence"
 )
 
-// descriptive names
+// descriptive key names
 const (
+	PROJECT_NAME	= "project name"
 	PACKAGE_BINDING = "package binding"
+	PACKAGE_VERSION = "package version"
+	PACKAGE_LICENSE = "package license"
 	TRIGGER_FEED	= "trigger feed"
+)
+
+// default values
+const(
+	DEFAULT_PACKAGE_LICENSE	= "unlicensed"
+	DEFAULT_PACKAGE_VERSION	= "0.0.1"
 )
 
 // structs that denote the sample manifest.yaml, wrapped yaml.v2

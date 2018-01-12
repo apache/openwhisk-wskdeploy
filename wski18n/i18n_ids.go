@@ -94,6 +94,9 @@ const(
 	// warnings
 	ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X = "msg_warn_key_deprecated_replaced"
 	ID_WARN_WHISK_PROPS_DEPRECATED				= "msg_warn_whisk_properties"
+	ID_WARN_MISSING_MANDATORY_KEY_X_key_X_value_X		= "msg_warn_missing_mandatory_key"
+	ID_WARN_KEYVALUE_NOT_SAVED_X_key_X			= "msg_warn_key_value_not_saved"
+	ID_WARN_KEYVALUE_INVALID				= "msg_warn_invalid_key_value"
 
 	// Errors
 	ID_ERR_GET_RUNTIMES_X_err_X 				= "msg_err_get_runtimes"
@@ -107,23 +110,24 @@ const(
 
 // Known keys used for text replacement in i18n translated strings
 const(
-	KEY		= "key"
-	NAME		= "name"
-	CODE		= "code"
-	ERR		= "err"
-	PROJECT		= "project"
-	ACTION		= "action"
-	LIMIT		= "limit"
-	HOST		= "host"
-	SOURCE		= "source"
-	NAMESPACE	= "namespace"
-	PATH		= "path"
-	EXTENTION	= "ext"
-	RUNTIME		= "runtime"
-	DEPLOYMENT_NAME	= "dname"
-	DEPLOYMENT_PATH	= "dpath"
-	MANIFEST_NAME	= "mname"
-	MANIFEST_PATH	= "mpath"
+	KEY_KEY			= "key"
+	KEY_VALUE		= "value"
+	KEY_NAME		= "name"
+	KEY_CODE		= "code"
+	KEY_ERR			= "err"
+	KEY_PROJECT		= "project"
+	KEY_ACTION		= "action"
+	KEY_LIMIT		= "limit"
+	KEY_HOST		= "host"
+	KEY_SOURCE		= "source"
+	KEY_NAMESPACE		= "namespace"
+	KEY_PATH		= "path"
+	KEY_EXTENTION		= "ext"
+	KEY_RUNTIME		= "runtime"
+	KEY_DEPLOYMENT_NAME	= "dname"
+	KEY_DEPLOYMENT_PATH	= "dpath"
+	KEY_MANIFEST_NAME	= "mname"
+	KEY_MANIFEST_PATH	= "mpath"
 )
 
 var I18N_ID_SET = [](string){
@@ -178,6 +182,9 @@ var I18N_ID_SET = [](string){
 	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
 	ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
 	ID_WARN_WHISK_PROPS_DEPRECATED,
+	ID_WARN_MISSING_MANDATORY_KEY_X_key_X_value_X,
+	ID_WARN_KEYVALUE_NOT_SAVED_X_key_X,
+	ID_WARN_KEYVALUE_INVALID,
 	ID_ERR_GET_RUNTIMES_X_err_X,
 	ID_ERR_MISSING_MANDATORY_KEY_X_key_X,
 	ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X,
