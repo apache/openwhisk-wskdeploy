@@ -143,7 +143,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		// Project Name in manifest/deployment file is mandatory for managed deployments
 		if deployer.ProjectName == "" {
 			errmsg := wski18n.T(wski18n.ID_ERR_MISSING_MANDATORY_KEY_X_key_X,
-				map[string]interface{}{"key": "project name"})
+				map[string]interface{}{"key": parsers.PROJECT_NAME})
 
 			return wskderrors.NewYAMLFileFormatError(manifest.Filepath, errmsg)
 		}
@@ -179,8 +179,11 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 	// (TODO) delete this warning after deprecating application in manifest file
 	if manifest.Application.Name != "" {
-		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
-			map[string]interface{}{"oldkey": "application", "newkey": "project", "filetype": "manifest"}))
+		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
+			map[string]interface{}{
+				"oldkey": parsers.YAML_KEY_APPLICATION,
+				"newkey": parsers.YAML_KEY_PROJECT,
+				"filetype": "manifest"}))
 	}
 
 	// process deployment file
@@ -194,8 +197,11 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 		// (TODO) delete this warning after deprecating application in deployment file
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
-			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
-				map[string]interface{}{"oldkey": "application", "newkey": "project", "filetype": "deployment"}))
+			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
+				map[string]interface{}{
+					"oldkey": parsers.YAML_KEY_APPLICATION,
+					"newkey": parsers.YAML_KEY_PROJECT,
+					"filetype": "deployment"}))
 		}
 
 		// compare the name of the project
@@ -204,7 +210,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 			if projectNameDeploy != projectName {
 				errorString := wski18n.T(wski18n.ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X,
 					map[string]interface{}{
-						"key": "project",
+						"key": parsers.YAML_KEY_PROJECT,
 						"dname": projectNameDeploy,
 						"dpath": deployer.DeploymentPath,
 						"mname": projectName,
@@ -261,8 +267,11 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 
 	// (TODO) delete this warning after deprecating application in manifest file
 	if manifest.Application.Name != "" {
-		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
-			map[string]interface{}{"oldkey": "application", "newkey": "project", "filetype": "manifest"}))
+		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
+			map[string]interface{}{
+				"oldkey": parsers.YAML_KEY_APPLICATION,
+				"newkey": parsers.YAML_KEY_PROJECT,
+				"filetype": "manifest"}))
 	}
 
 	// process deployment file
@@ -275,8 +284,11 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 
 		// (TODO) delete this warning after deprecating application in deployment file
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
-			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
-				map[string]interface{}{"oldkey": "application", "newkey": "project", "filetype": "deployment"}))
+			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
+				map[string]interface{}{
+					"oldkey": parsers.YAML_KEY_APPLICATION,
+					"newkey": parsers.YAML_KEY_PROJECT,
+					"filetype": "deployment"}))
 		}
 
 		// compare the name of the application
@@ -285,7 +297,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 			if projectNameDeploy != projectName {
 				errorString := wski18n.T(wski18n.ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X,
 					map[string]interface{}{
-						"key": "project",
+						"key": parsers.YAML_KEY_PROJECT,
 						"dname": projectNameDeploy,
 						"dpath": deployer.DeploymentPath,
 						"mname": projectName,
@@ -530,9 +542,9 @@ func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma ma
 
 				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
 					map[string]interface{}{
-						"key": "action",
-						"name": actionName,
-						"project": aa[utils.OW_PROJECT_NAME]})
+						wski18n.KEY_KEY: parsers.YAML_KEY_ACTION,
+						wski18n.KEY_NAME: actionName,
+						wski18n.KEY_PROJECT: aa[utils.OW_PROJECT_NAME]})
 				wskprint.PrintOpenWhiskWarning(output)
 
 				var err error
@@ -571,7 +583,7 @@ func (deployer *ServiceDeployer) RefreshManagedTriggers(ma map[string]interface{
 				// we have found a trigger which was earlier part of the current project
 				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
 					map[string]interface{}{
-						"key": "trigger",
+						"key": parsers.YAML_KEY_TRIGGER,
 						"name": trigger.Name,
 						"project": ma[utils.OW_PROJECT_NAME]})
 				wskprint.PrintOpenWhiskWarning(output)
@@ -623,7 +635,7 @@ func (deployer *ServiceDeployer) RefreshManagedPackages(ma map[string]interface{
 			if pa[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] && pa[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
 				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
 					map[string]interface{}{
-						"key": "package",
+						"key": parsers.YAML_KEY_PACKAGE,
 						"name": pkg.Name,
 						"project": pa[utils.OW_PROJECT_NAME]})
 				wskprint.PrintOpenWhiskWarning(output)
@@ -739,13 +751,13 @@ func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) erro
 		return createWhiskClientError(err.(*whisk.WskError), response, "package binding", true)
 	}
 
-	displayPostprocessingInfo("package binding", packa.Name, true)
+	displayPostprocessingInfo(parsers.PACKAGE_BINDING, packa.Name, true)
 	return nil
 }
 
 func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) error {
 
-	displayPreprocessingInfo("package", packa.Name, true)
+	displayPreprocessingInfo(parsers.YAML_KEY_PACKAGE, packa.Name, true)
 
 	var err error
 	var response *http.Response
@@ -754,16 +766,16 @@ func (deployer *ServiceDeployer) createPackage(packa *whisk.Package) error {
 		return err
 	})
 	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, "package", true)
+		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_PACKAGE, true)
 	}
 
-	displayPostprocessingInfo("package", packa.Name, true)
+	displayPostprocessingInfo(parsers.YAML_KEY_PACKAGE, packa.Name, true)
 	return nil
 }
 
 func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) error {
 
-	displayPreprocessingInfo("trigger", trigger.Name, true)
+	displayPreprocessingInfo(parsers.YAML_KEY_TRIGGER, trigger.Name, true)
 
 	var err error
 	var response *http.Response
@@ -772,16 +784,16 @@ func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) error {
 		return err
 	})
 	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, "trigger", true)
+		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, true)
 	}
 
-	displayPostprocessingInfo("trigger", trigger.Name, true)
+	displayPostprocessingInfo(parsers.YAML_KEY_TRIGGER, trigger.Name, true)
 	return nil
 }
 
 func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedName string) error {
 
-	displayPreprocessingInfo("trigger feed", trigger.Name, true)
+	displayPreprocessingInfo(parsers.TRIGGER_FEED, trigger.Name, true)
 
 	// to hold and modify trigger parameters, not passed by ref?
 	params := make(map[string]interface{})
@@ -791,6 +803,7 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 		params[keyVal.Key] = keyVal.Value
 	}
 
+	// TODO() defone keys and lifecylce operation names as const
 	params["authKey"] = deployer.ClientConfig.AuthToken
 	params["lifecycleEvent"] = "CREATE"
 	params["triggerName"] = "/" + deployer.Client.Namespace + "/" + trigger.Name
@@ -821,7 +834,7 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 		return err
 	})
 	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, "trigger feed", true)
+		return createWhiskClientError(err.(*whisk.WskError), response, parsers.TRIGGER_FEED, true)
 	} else {
 
 		qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
@@ -846,16 +859,16 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 				return err
 			})
 
-			return createWhiskClientError(err.(*whisk.WskError), response, "trigger feed", false)
+			return createWhiskClientError(err.(*whisk.WskError), response, parsers.TRIGGER_FEED, false)
 		}
 	}
 
-	displayPostprocessingInfo("trigger feed", trigger.Name, true)
+	displayPostprocessingInfo(parsers.TRIGGER_FEED, trigger.Name, true)
 	return nil
 }
 
 func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
-	displayPreprocessingInfo("rule", rule.Name, true)
+	displayPreprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, true)
 
 	// The rule's trigger should include the namespace with pattern /namespace/trigger
 	rule.Trigger = deployer.getQualifiedName(rule.Trigger.(string), deployer.ClientConfig.Namespace)
@@ -879,10 +892,10 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 	})
 
 	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, "rule", true)
+		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, true)
 	}
 
-	displayPostprocessingInfo("rule", rule.Name, true)
+	displayPostprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, true)
 	return nil
 }
 
@@ -894,7 +907,7 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
 	}
 
-	displayPreprocessingInfo("action", action.Name, true)
+	displayPreprocessingInfo(parsers.YAML_KEY_ACTION, action.Name, true)
 
 	var err error
 	var response *http.Response
@@ -904,17 +917,17 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 	})
 
 	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, "action", true)
+		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_ACTION, true)
 	}
 
-	displayPostprocessingInfo("action", action.Name, true)
+	displayPostprocessingInfo(parsers.YAML_KEY_ACTION, action.Name, true)
 	return nil
 }
 
 // create api (API Gateway functionality)
 func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 
-	displayPreprocessingInfo("api", api.ApiDoc.ApiName, true)
+	displayPreprocessingInfo(parsers.YAML_KEY_API, api.ApiDoc.ApiName, true)
 
 	var err error
 	var response *http.Response
@@ -926,10 +939,10 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 	})
 
 	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, "api", true)
+		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_API, true)
 	}
 
-	displayPostprocessingInfo("api", api.ApiDoc.ApiName, true)
+	displayPostprocessingInfo(parsers.YAML_KEY_API, api.ApiDoc.ApiName, true)
 	return nil
 }
 
@@ -1043,7 +1056,7 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
 							return err
 						})
 						if err != nil {
-							return createWhiskClientError(err.(*whisk.WskError), response, "package binding", false)
+							return createWhiskClientError(err.(*whisk.WskError), response, parsers.PACKAGE_BINDING, false)
 						}
 					}
 				}
@@ -1136,7 +1149,7 @@ func (deployer *ServiceDeployer) UnDeployRules(deployment *DeploymentProject) er
 
 func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
 
-	displayPreprocessingInfo("package", packa.Name, false)
+	displayPreprocessingInfo(parsers.YAML_KEY_PACKAGE, packa.Name, false)
 
 	if _, _, ok := deployer.Client.Packages.Get(packa.Name); ok == nil {
 		var err error
@@ -1147,16 +1160,16 @@ func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
 		})
 
 		if err != nil {
-			return createWhiskClientError(err.(*whisk.WskError), response, "package", false)
+			return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_PACKAGE, false)
 		}
 	}
-	displayPostprocessingInfo("package", packa.Name, false)
+	displayPostprocessingInfo(parsers.YAML_KEY_PACKAGE, packa.Name, false)
 	return nil
 }
 
 func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
 
-	displayPreprocessingInfo("trigger", trigger.Name, false)
+	displayPreprocessingInfo(parsers.YAML_KEY_TRIGGER, trigger.Name, false)
 
 	var err error
 	var response *http.Response
@@ -1166,16 +1179,17 @@ func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
 	})
 
 	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, "trigger", false)
+		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, false)
 	}
 
-	displayPostprocessingInfo("trigger", trigger.Name, false)
+	displayPostprocessingInfo(parsers.YAML_KEY_TRIGGER, trigger.Name, false)
 	return nil
 }
 
 func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedName string) error {
 
 	params := make(whisk.KeyValueArr, 0)
+	// TODO() define keys and operations as const
 	params = append(params, whisk.KeyValue{Key: "authKey", Value: deployer.ClientConfig.AuthToken})
 	params = append(params, whisk.KeyValue{Key: "lifecycleEvent", Value: "DELETE"})
 	params = append(params, whisk.KeyValue{Key: "triggerName", Value: "/" + deployer.Client.Namespace + "/" + trigger.Name})
@@ -1202,7 +1216,7 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 
 	if err != nil {
 		wskErr := err.(*whisk.WskError)
-		errString := wski18n.T("Failed to invoke the feed when deleting trigger feed with error message: {{.err}} and error code: {{.code}}.\n",
+		errString := wski18n.T(wski18n.ID_ERR_FEED_INVOKE_X_err_X_code_X,
 			map[string]interface{}{"err": wskErr.Error(), "code": strconv.Itoa(wskErr.ExitCode)})
 		whisk.Debug(whisk.DbgError, errString)
 		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
@@ -1216,7 +1230,7 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 		})
 
 		if err != nil {
-			return createWhiskClientError(err.(*whisk.WskError), response, "trigger", false)
+			return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, false)
 		}
 	}
 
@@ -1225,7 +1239,7 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 
 func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
 
-	displayPreprocessingInfo("rule", rule.Name, false)
+	displayPreprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, false)
 
 	var err error
 	var response *http.Response
@@ -1235,9 +1249,9 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
 	})
 
 	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, "rule", false)
+		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, false)
 	}
-	displayPostprocessingInfo("rule", rule.Name, false)
+	displayPostprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, false)
 	return nil
 }
 
@@ -1249,7 +1263,7 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
 	}
 
-	displayPreprocessingInfo("action", action.Name, false)
+	displayPreprocessingInfo(parsers.YAML_KEY_ACTION, action.Name, false)
 
 	if _, _, ok := deployer.Client.Actions.Get(action.Name); ok == nil {
 		var err error
@@ -1260,11 +1274,11 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
 		})
 
 		if err != nil {
-			return createWhiskClientError(err.(*whisk.WskError), response, "action", false)
+			return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_ACTION, false)
 
 		}
 	}
-	displayPostprocessingInfo("action", action.Name, false)
+	displayPostprocessingInfo(parsers.YAML_KEY_ACTION, action.Name, false)
 	return nil
 }
 
@@ -1311,6 +1325,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 	// TODO() move to separate function and suppress using some flag
 	wskprint.PrintlnOpenWhiskOutput("         ____      ___                   _    _ _     _     _\n        /\\   \\    / _ \\ _ __   ___ _ __ | |  | | |__ (_)___| | __\n   /\\  /__\\   \\  | | | | '_ \\ / _ \\ '_ \\| |  | | '_ \\| / __| |/ /\n  /  \\____ \\  /  | |_| | |_) |  __/ | | | |/\\| | | | | \\__ \\   <\n  \\   \\  /  \\/    \\___/| .__/ \\___|_| |_|__/\\__|_| |_|_|___/_|\\_\\ \n   \\___\\/              |_|\n")
 
+	// TODO() review format
 	wskprint.PrintlnOpenWhiskOutput("Packages:")
 	for _, pack := range assets.Packages {
 		wskprint.PrintlnOpenWhiskOutput("Name: " + pack.Package.Name)
