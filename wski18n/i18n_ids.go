@@ -97,6 +97,10 @@ const(
 	ID_WARN_MISSING_MANDATORY_KEY_X_key_X_value_X		= "msg_warn_missing_mandatory_key"
 	ID_WARN_KEYVALUE_NOT_SAVED_X_key_X			= "msg_warn_key_value_not_saved"
 	ID_WARN_KEYVALUE_INVALID				= "msg_warn_invalid_key_value"
+	ID_WARN_LIMITS_TIMEOUT					= "msg_warn_limits_timeout"
+	ID_WARN_LIMITS_MEMORY_SIZE				= "msg_warn_limits_memory_size"
+	ID_WARN_LIMITS_LOG_SIZE					= "msg_warn_limits_memory_log_size"
+	ID_WARN_LIMIT_UNCHANGEABLE_X_name_X			= "msg_warn_limit_changeable"
 
 	// Errors
 	ID_ERR_GET_RUNTIMES_X_err_X 				= "msg_err_get_runtimes"
@@ -105,7 +109,6 @@ const(
 	ID_ERR_CREATE_ENTITY_X_key_X_err_X_code_X		= "msg_err_create_entity"
 	ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X		= "msg_err_delete_entity"
 	ID_ERR_FEED_INVOKE_X_err_X_code_X			= "msg_err_feed_invoke"
-
 )
 
 // Known keys used for text replacement in i18n translated strings
@@ -188,6 +191,10 @@ var I18N_ID_SET = [](string){
 	ID_WARN_MISSING_MANDATORY_KEY_X_key_X_value_X,
 	ID_WARN_KEYVALUE_NOT_SAVED_X_key_X,
 	ID_WARN_KEYVALUE_INVALID,
+	ID_WARN_LIMITS_TIMEOUT,
+	ID_WARN_LIMITS_MEMORY_SIZE,
+	ID_WARN_LIMITS_LOG_SIZE,
+	ID_WARN_LIMIT_UNCHANGEABLE_X_name_X,
 	ID_ERR_GET_RUNTIMES_X_err_X,
 	ID_ERR_MISSING_MANDATORY_KEY_X_key_X,
 	ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X,

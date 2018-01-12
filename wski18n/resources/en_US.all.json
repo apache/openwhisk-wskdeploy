@@ -238,27 +238,19 @@
     "translation": "The value for key [{{.key}}] is not valid.\n"
   },
   {
-    "id": "SEPARATOR",
-    "translation": "====================== Entries below this line are not verified ==================================="
-  },
-  {
-    "id": "memorySize of limits in manifest should be an integer between 128 and 512.\n",
+    "id": "msg_warn_limits_memory_size",
     "translation": "memorySize of limits in manifest should be an integer between 128 and 512.\n"
   },
   {
-    "id": "timeout of limits in manifest should be an integer between 100 and 300000.\n",
+    "id": "msg_warn_limits_timeout",
     "translation": "timeout of limits in manifest should be an integer between 100 and 300000.\n"
   },
   {
-    "id": "logSize of limits in manifest should be an integer between 0 and 10.\n",
+    "id": "msg_warn_limits_memory_log_size",
     "translation": "logSize of limits in manifest should be an integer between 0 and 10.\n"
   },
   {
-    "id": "WARNING: Limits  {{.limitname}}  is not changable as to now, which will be ignored.\n",
-    "translation": "WARNING: Limits  {{.limitname}}  is not changable as to now, which will be ignored.\n"
-  },
-  {
-    "id": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n",
-    "translation": "WARNING: application in deployment file will soon be deprecated, please use project instead.\n"
+    "id": "msg_warn_limit_changeable",
+    "translation": "Limit [{{.name}}] is currently not changeable. Ignoring for now....\n"
   }
 ]

@@ -542,9 +542,9 @@ func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma ma
 
 				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
 					map[string]interface{}{
-						"key": parsers.YAML_KEY_ACTION,
-						"name": actionName,
-						"project": aa[utils.OW_PROJECT_NAME]})
+						wski18n.KEY_KEY: parsers.YAML_KEY_ACTION,
+						wski18n.KEY_NAME: actionName,
+						wski18n.KEY_PROJECT: aa[utils.OW_PROJECT_NAME]})
 				wskprint.PrintOpenWhiskWarning(output)
 
 				var err error

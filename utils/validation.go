@@ -139,8 +139,7 @@ func LimitsTimeoutValidation(timeout *int) bool {
 		return true
 	}
 	if *timeout < 100 || *timeout > 300000 {
-		errString := wski18n.T("timeout of limits in manifest should be an integer between 100 and 300000.\n")
-		whisk.Debug(whisk.DbgError, errString)
+		wskprint.PrintlnOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_LIMITS_TIMEOUT))
 		return false
 	}
 	return true
@@ -153,8 +152,7 @@ func LimitsMemoryValidation(memory *int) bool {
 		return true
 	}
 	if *memory < 128 || *memory > 512 {
-		errString := wski18n.T("memorySize of limits in manifest should be an integer between 128 and 512.\n")
-		whisk.Debug(whisk.DbgError, errString)
+		wskprint.PrintlnOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_LIMITS_MEMORY_SIZE))
 		return false
 	}
 	return true
@@ -167,8 +165,7 @@ func LimitsLogsizeValidation(logsize *int) bool {
 		return true
 	}
 	if *logsize < 0 || *logsize > 10 {
-		errString := wski18n.T("logSize of limits in manifest should be an integer between 0 and 10.\n")
-		whisk.Debug(whisk.DbgError, errString)
+		wskprint.PrintlnOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_LIMITS_LOG_SIZE))
 		return false
 	}
 	return true
@@ -176,7 +173,9 @@ func LimitsLogsizeValidation(logsize *int) bool {
 
 func NotSupportLimits(value *int, name string) {
 	if value != nil {
-		warningString := wski18n.T("WARNING: Limits {{.limitname}} is not changable, which will be ignored.\n", map[string]interface{}{"limitname": name})
-		whisk.Debug(whisk.DbgWarn, warningString)
+		warningString := wski18n.T(
+			wski18n.ID_WARN_LIMIT_UNCHANGEABLE_X_name_X,
+			map[string]interface{}{wski18n.KEY_NAME: name})
+		wskprint.PrintlnOpenWhiskWarning(warningString)
 	}
 }
