@@ -696,10 +696,15 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 		pub := false
 		wsktrigger.Publish = &pub
 
-		//print warning information when .Source is not empty
+		// print warning information when .Source key's value is not empty
 		if trigger.Source != "" {
-			warningString := wski18n.T("WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n")
-			whisk.Debug(whisk.DbgWarn, warningString)
+			warningString := wski18n.T(
+				wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
+				map[string]interface{}{
+					"oldkey": "source",
+					"newkey": FEED,
+					"filetype": "manifest"})
+			wskprint.PrintOpenWhiskWarning(warningString)
 		}
 		if trigger.Feed == "" {
 			trigger.Feed = trigger.Source

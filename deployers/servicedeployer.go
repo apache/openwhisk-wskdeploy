@@ -179,7 +179,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 	// (TODO) delete this warning after deprecating application in manifest file
 	if manifest.Application.Name != "" {
-		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
+		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
 			map[string]interface{}{
 				"oldkey": parsers.APPLICATION,
 				"newkey": parsers.PROJECT,
@@ -197,7 +197,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 		// (TODO) delete this warning after deprecating application in deployment file
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
-			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
+			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
 					"oldkey": parsers.APPLICATION,
 					"newkey": parsers.PROJECT,
@@ -267,7 +267,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 
 	// (TODO) delete this warning after deprecating application in manifest file
 	if manifest.Application.Name != "" {
-		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
+		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
 			map[string]interface{}{
 				"oldkey": parsers.APPLICATION,
 				"newkey": parsers.PROJECT,
@@ -284,7 +284,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 
 		// (TODO) delete this warning after deprecating application in deployment file
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
-			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED,
+			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
 					"oldkey": parsers.APPLICATION,
 					"newkey": parsers.PROJECT,

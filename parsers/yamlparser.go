@@ -30,6 +30,7 @@ const(
 	ACTION		= "action"
 	TRIGGER		= "trigger"
 	RULE		= "rule"
+	FEED		= "feed"
 	API		= "api"
 )
 

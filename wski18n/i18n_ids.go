@@ -92,7 +92,7 @@ const(
 	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X			= "msg_action_limit_ignored"	// timeout, memorySize, logSize
 
 	// warnings
-	ID_WARN_DEPRECATED_KEY_REPLACED				= "msg_warn_key_deprecated_replaced"
+	ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X = "msg_warn_key_deprecated_replaced"
 	ID_WARN_WHISK_PROPS_DEPRECATED				= "msg_warn_whisk_properties"
 
 	// Errors
@@ -176,7 +176,7 @@ var I18N_ID_SET = [](string){
 	ID_MSG_PROMPT_APIHOST,
 	ID_MSG_PROMPT_NAMESPACE,
 	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
-	ID_WARN_DEPRECATED_KEY_REPLACED,
+	ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
 	ID_WARN_WHISK_PROPS_DEPRECATED,
 	ID_ERR_GET_RUNTIMES_X_err_X,
 	ID_ERR_MISSING_MANDATORY_KEY_X_key_X,

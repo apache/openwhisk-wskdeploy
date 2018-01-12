@@ -231,10 +231,6 @@
     "translation": "====================== Entries below this line are not verified ==================================="
   },
   {
-    "id": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n",
-    "translation": "WARNING: The 'source' YAML key in trigger entity is deprecated. Please use 'feed' instead as described in specifications.\n"
-  },
-  {
     "id": "WARNING: Mandatory field Package Version must be set.\n",
     "translation": "WARNING: Mandatory field Package Version must be set.\n"
   },
