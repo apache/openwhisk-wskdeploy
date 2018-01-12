@@ -137,7 +137,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 		version := dependency.Version
 		if version == "" {
 			// TODO() interactive ask for branch, AND consider YAML specification to allow key for branch
-			version = "master"
+			version = YAML_VALUE_BRANCH_MASTER
 		}
 
 		location := dependency.Location
@@ -355,7 +355,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 	for key, sequence := range sequences {
 		wskaction := new(whisk.Action)
 		wskaction.Exec = new(whisk.Exec)
-		wskaction.Exec.Kind = SEQUENCE
+		wskaction.Exec.Kind = YAML_KEY_SEQUENCE
 		actionList := strings.Split(sequence.Actions, ",")
 
 		var components []string
@@ -644,38 +644,40 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
  		 */
 		if action.Limits!=nil {
 			wsklimits :=  new(whisk.Limits)
+
+			// TODO() use LIMITS_SUPPORTED in yamlparser to enumerata through instead of hardcoding
+			// perhaps change into a tuple
 			if utils.LimitsTimeoutValidation(action.Limits.Timeout) {
 				wsklimits.Timeout = action.Limits.Timeout
 			} else {
-				// TODO() const for limit values and keys
 				warningString := wski18n.T(wski18n.ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
-					map[string]interface{}{"limit": "timeout"})
+					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_TIMEOUT})
 				wskprint.PrintOpenWhiskWarning(warningString)
 			}
 			if utils.LimitsMemoryValidation(action.Limits.Memory) {
 				wsklimits.Memory = action.Limits.Memory
 			} else {
 				warningString := wski18n.T(wski18n.ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
-					map[string]interface{}{"limit": "memorySize"})
+					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_MEMORY_SIZE})
 				wskprint.PrintOpenWhiskWarning(warningString)
 			}
 			if utils.LimitsLogsizeValidation(action.Limits.Logsize) {
 				wsklimits.Logsize = action.Limits.Logsize
 			} else {
 				warningString := wski18n.T(wski18n.ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
-					map[string]interface{}{"limit": "logSize"})
+					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_LOG_SIZE})
 				wskprint.PrintOpenWhiskWarning(warningString)
 			}
 			if wsklimits.Timeout!=nil || wsklimits.Memory!=nil || wsklimits.Logsize!=nil {
 				wskaction.Limits = wsklimits
 			}
 
-			// TODO() i18n
+			// TODO() use LIMITS_UNSUPPORTED in yamlparser to enumerata through instead of hardcoding
 			// emit warning errors if these limits are not nil
-			utils.NotSupportLimits(action.Limits.ConcurrentActivations,"concurrentActivations")
-			utils.NotSupportLimits(action.Limits.UserInvocationRate,"userInvocationRate")
-			utils.NotSupportLimits(action.Limits.CodeSize,"codeSize")
-			utils.NotSupportLimits(action.Limits.ParameterSize,"parameterSize")
+			utils.NotSupportLimits(action.Limits.ConcurrentActivations, LIMIT_VALUE_CONCURRENT_ACTIVATIONS)
+			utils.NotSupportLimits(action.Limits.UserInvocationRate, LIMIT_VALUE_USER_INVOCATION_RATE)
+			utils.NotSupportLimits(action.Limits.CodeSize, LIMIT_VALUE_CODE_SIZE)
+			utils.NotSupportLimits(action.Limits.ParameterSize, LIMIT_VALUE_PARAMETER_SIZE)
 		}
 
 		wskaction.Name = key
@@ -731,9 +733,9 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 			warningString := wski18n.T(
 				wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
-					"oldkey": "source",
-					"newkey": FEED,
-					"filetype": "manifest"})
+					wski18n.KEY_OLD: "source",
+					wski18n.KEY_NEW: YAML_KEY_FEED,
+					wski18n.KEY_FILE_TYPE: "manifest"})
 			wskprint.PrintOpenWhiskWarning(warningString)
 		}
 		if trigger.Feed == "" {
@@ -744,7 +746,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 		if trigger.Feed != "" {
 			var keyVal whisk.KeyValue
 
-			keyVal.Key = "feed"
+			keyVal.Key = YAML_KEY_FEED
 			keyVal.Value = trigger.Feed
 
 			keyValArr = append(keyValArr, keyVal)

@@ -112,7 +112,7 @@ func wski18nResourcesEn_usAllJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "wski18n/resources/en_US.all.json", size: 8633, mode: os.FileMode(420), modTime: time.Unix(1515773828, 0)}
+	info := bindataFileInfo{name: "wski18n/resources/en_US.all.json", size: 8633, mode: os.FileMode(420), modTime: time.Unix(1515782806, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

@@ -128,6 +128,9 @@ const(
 	KEY_DEPLOYMENT_PATH	= "dpath"
 	KEY_MANIFEST_NAME	= "mname"
 	KEY_MANIFEST_PATH	= "mpath"
+	KEY_OLD			= "oldkey"
+	KEY_NEW			= "newkey"
+	KEY_FILE_TYPE		= "filetype"
 )
 
 var I18N_ID_SET = [](string){

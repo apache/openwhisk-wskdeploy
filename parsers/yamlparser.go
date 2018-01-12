@@ -22,17 +22,17 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 )
 
-// key names
+// YAML schema key names
 const(
-	PROJECT		= "project"
-	APPLICATION	= "application"	// deprecated
-	PACKAGE		= "package"
-	ACTION		= "action"
-	TRIGGER		= "trigger"
-	RULE		= "rule"
-	FEED		= "feed"
-	API		= "api"
-	SEQUENCE	= "sequence"
+	YAML_KEY_PROJECT 	= "project"
+	YAML_KEY_APPLICATION 	= "application"	// deprecated
+	YAML_KEY_PACKAGE 	= "package"
+	YAML_KEY_ACTION 	= "action"
+	YAML_KEY_TRIGGER 	= "trigger"
+	YAML_KEY_RULE 		= "rule"
+	YAML_KEY_FEED 		= "feed"
+	YAML_KEY_API 		= "api"
+	YAML_KEY_SEQUENCE 	= "sequence"
 )
 
 // descriptive key names
@@ -44,11 +44,42 @@ const (
 	TRIGGER_FEED	= "trigger feed"
 )
 
+// YAML schema key values
+const(
+	YAML_VALUE_BRANCH_MASTER	= "master"
+)
+
 // default values
 const(
 	DEFAULT_PACKAGE_LICENSE	= "unlicensed"
 	DEFAULT_PACKAGE_VERSION	= "0.0.1"
 )
+
+// Known Limit values
+const(
+	// supported
+	LIMIT_VALUE_TIMEOUT			= "timeout"
+	LIMIT_VALUE_MEMORY_SIZE			= "memorySize"
+	LIMIT_VALUE_LOG_SIZE			= "logSize"
+	// unsupported
+	LIMIT_VALUE_CONCURRENT_ACTIVATIONS	= "concurrentActivations"
+	LIMIT_VALUE_USER_INVOCATION_RATE	= "userInvocationRate"
+	LIMIT_VALUE_CODE_SIZE			= "codeSize"
+	LIMIT_VALUE_PARAMETER_SIZE		= "parameterSize"
+)
+
+var LIMITS_SUPPORTED = [](string){
+	LIMIT_VALUE_TIMEOUT,
+	LIMIT_VALUE_MEMORY_SIZE,
+	LIMIT_VALUE_LOG_SIZE,
+}
+
+var LIMITS_UNSUPPORTED = [](string){
+	LIMIT_VALUE_CONCURRENT_ACTIVATIONS,
+	LIMIT_VALUE_USER_INVOCATION_RATE,
+	LIMIT_VALUE_CODE_SIZE,
+	LIMIT_VALUE_PARAMETER_SIZE,
+}
 
 // structs that denote the sample manifest.yaml, wrapped yaml.v2
 func NewYAMLParser() *YAMLParser {
