@@ -74,8 +74,9 @@ func Execute() {
 		os.Exit(-1)
 	} else {
 		if utils.Flags.WithinOpenWhisk {
-			// TODO() i18n
-			fmt.Print(`{"deploy":"success"}`) // maybe return report of what has been deployed.
+			// TODO() Why are we printing success here?
+			// TODO() maybe return report of what has been deployed.
+			wskprint.PrintlnOpenWhiskSuccess(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_SUCCEEDED))
 		}
 	}
 }
@@ -116,10 +117,12 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", "config file (default is $HOME/.wskprops)")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	RootCmd.Flags().StringVarP(&utils.Flags.ProjectPath, "project", "p", ".", "path to serverless project")
-	RootCmd.Flags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", "path to manifest file")
-	RootCmd.Flags().StringVarP(&utils.Flags.DeploymentPath, "deployment", "d", "", "path to deployment file")
+	// TODO() Publish command, not completed
+	// TODO() Report command, not completed
+	RootCmd.Flags().BoolP("toggle", "t", false, "Toggle Help message")
+	RootCmd.Flags().StringVarP(&utils.Flags.ProjectPath, "project", "p", ".", wski18n.T(wski18n.ID_CMD_FLAG_PROJECT))
+	RootCmd.Flags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", wski18n.T(wski18n.ID_CMD_FLAG_MANIFEST))
+	RootCmd.Flags().StringVarP(&utils.Flags.DeploymentPath, "deployment", "d", "", wski18n.T(wski18n.ID_CMD_FLAG_DEPLOYMENT))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Strict, "strict", "s", false, "allow user defined runtime version")
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseInteractive, "allow-interactive", "i", false, "allow interactive prompts")
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseDefaults, "allow-defaults", "a", false, "allow defaults")

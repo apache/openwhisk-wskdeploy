@@ -19,24 +19,24 @@ package cmd
 
 import (
 	"fmt"
-
 	"bufio"
-	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/spf13/cobra"
 	"net/http"
 	"net/url"
 	"os"
 	"path"
 	"strings"
+	"github.com/spf13/cobra"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 // publishCmd represents the publish command
 var publishCmd = &cobra.Command{
 	Use:   "publish",
-	SuggestFor: []string {"publicize"},
-	Short: "Publish a package to a registry",
-	Long:  `Publish a package to the registry set in ~/.wskprops`,
+	SuggestFor: []string{"publicize"},
+	Short: wski18n.T(wski18n.ID_CMD_PUBLISH_DESC_SHORT), //"Publish a package to a registry",
+	Long:  wski18n.T(wski18n.ID_CMD_PUBLISH_DESC_LONG), // `Publish a package to the registry set in ~/.wskprops`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Get registry location
 
@@ -45,8 +45,8 @@ var publishCmd = &cobra.Command{
 
 		configs, err := utils.ReadProps(propPath)
 		if err != nil {
-            return err
-        }
+			return err
+		}
 
 		registry, ok := configs["REGISTRY"]
 		if !ok {
@@ -69,9 +69,9 @@ var publishCmd = &cobra.Command{
 
 		// Get repo URL
 		maniyaml, err := parsers.ReadOrCreateManifest()
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 
 		if len(maniyaml.Package.Repositories) > 0 {
 			repoURL := maniyaml.Package.Repositories[0].Url
@@ -83,24 +83,24 @@ var publishCmd = &cobra.Command{
 				return nil
 			}
 
-			repo := paths[l-1]
-			owner := paths[l-2]
+			repo := paths[l - 1]
+			owner := paths[l - 2]
 
 			// Send HTTP request
 			client := &http.Client{}
-			request, err := http.NewRequest("PUT", registry+"?owner="+owner+"&repo="+repo, nil)
+			request, err := http.NewRequest("PUT", registry + "?owner=" + owner + "&repo=" + repo, nil)
 			if err != nil {
-                return err
-            }
+				return err
+			}
 			_, err = client.Do(request)
-            if err != nil {
-                return err
-            }
+			if err != nil {
+				return err
+			}
 
 		} else {
 			fmt.Print("Fatal error: missing repository URL in manifest file.")
 		}
-        return nil
+		return nil
 	},
 }
 

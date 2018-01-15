@@ -19,16 +19,16 @@ package cmd
 
 import (
 	"fmt"
+	"path"
+	"sync"
+	"os"
+	"github.com/fatih/color"
+	"github.com/spf13/cobra"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/fatih/color"
-	"github.com/spf13/cobra"
-	"path"
-	"sync"
-    "os"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 var wskpropsPath string
@@ -82,8 +82,7 @@ func printDeploymentInfo(client *whisk.Client) error {
 	//We currently list packages, actions, triggers, rules.
 	wg.Add(4)
 
-	// TODO() i18n
-	wskprint.PrintlnOpenWhiskStatus("----==== OpenWhisk Deployment Status ====----")
+	wskprint.PrintlnOpenWhiskStatus(wski18n.T(wski18n.ID_CMD_REPORT_STAUTS))
 	// we set the default package list options
 	pkgoptions := &whisk.PackageListOptions{false, 0, 0, 0, false}
 	packages, _, err := client.Packages.List(pkgoptions)

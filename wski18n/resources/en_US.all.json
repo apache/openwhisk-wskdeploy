@@ -24,6 +24,18 @@
     "translation": "namespace"
   },
   {
+    "id": "msg_cmd_flag_project",
+    "translation": "path to serverless project"
+  },
+  {
+    "id": "msg_cmd_flag_manifest",
+    "translation": "path to manifest file"
+  },
+  {
+    "id": "msg_cmd_flag_deployment",
+    "translation": "path to deployment file"
+  },
+  {
     "id": "msg_cmd_flag_auth_key",
     "translation": "authorization `KEY`"
   },
@@ -252,5 +264,17 @@
   {
     "id": "msg_warn_limit_changeable",
     "translation": "Limit [{{.name}}] is currently not changeable. Ignoring for now....\n"
+  },
+  {
+    "id": "msg_cmd_report_status",
+    "translation": "----==== OpenWhisk Deployment Status ====----"
+  },
+  {
+    "id": "msg_cmd_publish_short",
+    "translation": "Publish a package to a registry"
+  },
+  {
+    "id": "msg_cmd_publish_long",
+    "translation": "Publish a package to the registry set in ~/.wskprops"
   }
 ]

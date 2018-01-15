@@ -28,6 +28,9 @@ const(
 	ID_JSON_MISSING_KEY_CMD	= "msg_json_missing_cmd_key"	// "Missing 'cmd' input key"
 
 	// wskdeploy Command messages
+	ID_CMD_FLAG_PROJECT	= "msg_cmd_flag_project"
+	ID_CMD_FLAG_MANIFEST	= "msg_cmd_flag_manifest"
+	ID_CMD_FLAG_DEPLOYMENT	= "msg_cmd_flag_deployment"
 	ID_CMD_FLAG_AUTH_KEY	= "msg_cmd_flag_auth_key"	// "authorization `KEY`"
 	ID_CMD_FLAG_NAMESPACE	= "msg_cmd_flag_namespace"	// "namespace"
 	ID_CMD_FLAG_API_HOST	= "msg_cmd_flag_api_host"	// "whisk API `HOST`"
@@ -109,6 +112,11 @@ const(
 	ID_ERR_CREATE_ENTITY_X_key_X_err_X_code_X		= "msg_err_create_entity"
 	ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X		= "msg_err_delete_entity"
 	ID_ERR_FEED_INVOKE_X_err_X_code_X			= "msg_err_feed_invoke"
+
+	// Misc
+	ID_CMD_REPORT_STAUTS					= "msg_cmd_report_status"
+	ID_CMD_PUBLISH_DESC_SHORT				= "msg_cmd_publish_short"
+	ID_CMD_PUBLISH_DESC_LONG				= "msg_cmd_publish_long"
 )
 
 // Known keys used for text replacement in i18n translated strings
