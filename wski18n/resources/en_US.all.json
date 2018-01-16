@@ -301,10 +301,18 @@
   },
   {
     "id": "msg_warn_limit_changeable",
-    "translation": "Limit [{{.name}}] is currently not changeable. Ignoring for now....\n"
+    "translation": "Limit [{{.name}}] is currently not changeable. Ignoring...\n"
   },
   {
     "id": "msg_warn_retry_command",
     "translation": "Retrying [{{.cmd}}] after error: [{{.err}}]\n"
+  },
+  {
+    "id": "msg_err_url_invalid",
+    "translation": "Missing or invalid {{.urltype}} URL [{{.url}}] in [{{.filetype}}] file.\n"
+  },
+  {
+    "id": "msg_err_url_malformed",
+    "translation": "Malformed {{.urltype}} URL [{{.url}}]. Try again...\n"
   }
 ]

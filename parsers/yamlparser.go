@@ -37,13 +37,17 @@ const(
 
 // descriptive key names
 const (
-	PROJECT_NAME	= "project name"
-	PACKAGE_BINDING = "package binding"
-	PACKAGE_VERSION = "package version"
-	PACKAGE_LICENSE = "package license"
-	TRIGGER_FEED	= "trigger feed"
-	DEPLOYMENT	= "deployment"
-	MANIFEST	= "manifest"
+	PROJECT_NAME		= "project name"
+	PACKAGE_BINDING 	= "package binding"
+	PACKAGE_VERSION 	= "package version"
+	PACKAGE_LICENSE 	= "package license"
+	TRIGGER_FEED		= "trigger feed"
+	DEPLOYMENT		= "deployment"
+	MANIFEST		= "manifest"
+	WHISK_PROPS		= "wskprops"
+	REGISTRY		= "registry"
+	REGISTRY_URL		= "registry URL"
+	REPOSITORY		= "repository"
 )
 
 // YAML schema key values

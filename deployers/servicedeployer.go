@@ -143,7 +143,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		// Project Name in manifest/deployment file is mandatory for managed deployments
 		if deployer.ProjectName == "" {
 			errmsg := wski18n.T(wski18n.ID_ERR_MISSING_MANDATORY_KEY_X_key_X,
-				map[string]interface{}{"key": parsers.PROJECT_NAME})
+				map[string]interface{}{wski18n.KEY_KEY: parsers.PROJECT_NAME})
 
 			return wskderrors.NewYAMLFileFormatError(manifest.Filepath, errmsg)
 		}

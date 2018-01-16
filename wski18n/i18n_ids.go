@@ -120,6 +120,8 @@ const(
 	ID_ERR_CREATE_ENTITY_X_key_X_err_X_code_X		= "msg_err_create_entity"
 	ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X		= "msg_err_delete_entity"
 	ID_ERR_FEED_INVOKE_X_err_X_code_X			= "msg_err_feed_invoke"
+	ID_ERR_INVALID_URL_X_urltype_X_url_X_filetype_X		= "msg_err_url_invalid"
+	ID_ERR_MALFORMED_URL_X_urltype_X_url_X			= "msg_err_url_malformed"
 
 	// Misc
 	ID_CMD_PUBLISH_DESC_SHORT				= "msg_cmd_publish_short"
@@ -150,6 +152,8 @@ const(
 	KEY_OLD			= "oldkey"
 	KEY_NEW			= "newkey"
 	KEY_FILE_TYPE		= "filetype"
+	KEY_URL			= "url"
+	KEY_URL_TYPE		= "urltype"
 )
 
 var I18N_ID_SET = [](string){
@@ -158,12 +162,21 @@ var I18N_ID_SET = [](string){
 	ID_MSG_PREFIX_WARNING,
 	ID_MSG_PREFIX_INFO,
 	ID_JSON_MISSING_KEY_CMD,
+	ID_CMD_FLAG_MANIFEST,
+	ID_CMD_FLAG_DEPLOYMENT,
+	ID_CMD_FLAG_STRICT,
+	ID_CMD_FLAG_INTERACTIVE,
+	ID_CMD_FLAG_DEFAULTS,
+	ID_CMD_FLAG_VERBOSE,
 	ID_CMD_FLAG_AUTH_KEY,
 	ID_CMD_FLAG_NAMESPACE,
 	ID_CMD_FLAG_API_HOST,
 	ID_CMD_FLAG_API_VERSION,
 	ID_CMD_FLAG_KEY_FILE,
 	ID_CMD_FLAG_CERT_FILE,
+	ID_CMD_FLAG_MANAGED,
+	ID_CMD_FLAG_PROJECT,
+	ID_CMD_FLAG_TOGGLE_HELP,
 	ID_MSG_CONFIG_MISSING_AUTHKEY,
 	ID_MSG_CONFIG_MISSING_APIHOST,
 	ID_MSG_CONFIG_MISSING_NAMESPACE,
@@ -181,6 +194,7 @@ var I18N_ID_SET = [](string){
 	ID_MSG_DEPLOYMENT_SUCCEEDED,
 	ID_MSG_DEPLOYMENT_FAILED,
 	ID_MSG_DEPLOYMENT_CANCELLED,
+	ID_MSG_DEPLOYMENT_REPORT,
 	ID_MSG_ENTITY_DEPLOYING_X_key_X_name_X,
 	ID_MSG_ENTITY_UNDEPLOYING_X_key_X_name_X,
 	ID_MSG_ENTITY_DEPLOYED_SUCCESS_X_key_X_name_X,
@@ -216,4 +230,6 @@ var I18N_ID_SET = [](string){
 	ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X,
 	ID_ERR_CREATE_ENTITY_X_key_X_err_X_code_X,
 	ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X,
+	ID_ERR_INVALID_URL_X_urltype_X_url_X_filetype_X,
+	ID_ERR_MALFORMED_URL_X_urltype_X_url_X,
 }
