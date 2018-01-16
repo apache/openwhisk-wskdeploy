@@ -42,6 +42,8 @@ const (
 	PACKAGE_VERSION = "package version"
 	PACKAGE_LICENSE = "package license"
 	TRIGGER_FEED	= "trigger feed"
+	DEPLOYMENT	= "deployment"
+	MANIFEST	= "manifest"
 )
 
 // YAML schema key values

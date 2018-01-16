@@ -20,6 +20,30 @@
     "translation": "JSON input data Missing 'cmd' key"
   },
   {
+    "id": "msg_cmd_flag_strict",
+    "translation": "allow user defined runtime version"
+  },
+  {
+    "id": "msg_cmd_flag_verbose",
+    "translation": "verbose output"
+  },
+  {
+    "id": "msg_cmd_flag_allow_managed",
+    "translation": "allow project entities to be marked managed"
+  },
+  {
+    "id": "msg_cmd_toggle_help",
+    "translation": "Toggle Help message"
+  },
+  {
+    "id": "msg_cmd_flag_interactive",
+    "translation": "allow interactive prompts"
+  },
+  {
+    "id": "msg_cmd_flag_allow_defaults",
+    "translation": "allow defaults"
+  },
+  {
     "id": "msg_cmd_flag_namespace",
     "translation": "namespace"
   },
@@ -54,6 +78,14 @@
   {
     "id": "msg_cmd_flag_cert_file",
     "translation": "path of the .cert file"
+  },
+  {
+    "id": "msg_cmd_publish_long",
+    "translation": "Publish a package to the registry set in ~/.wskprops"
+  },
+  {
+    "id": "msg_cmd_publish_short",
+    "translation": "Publish a package to a registry"
   },
   {
     "id": "msg_prompt_deploy",
@@ -152,6 +184,10 @@
     "translation": "OK. Cancelling deployment.\n"
   },
   {
+    "id": "msg_deployment_report_status",
+    "translation": "----==== OpenWhisk Deployment Status ====----"
+  },
+  {
     "id": "msg_undeployment_succeeded",
     "translation": "Undeployment completed successfully.\n"
   },
@@ -175,10 +211,12 @@
     "id": "msg_warn_key_deprecated_replaced",
     "translation": "The [{{.oldkey}}] key in the {{.filetype}} file will soon be deprecated, please use the [{{.newkey}}] key instead.\n"
   },
-  { "id": "msg_err_missing_mandatory_key",
+  {
+    "id": "msg_err_missing_mandatory_key",
     "translation": "The mandatory key [{{.key}}] is missing.\n"
   },
-  { "id": "msg_warn_missing_mandatory_key",
+  {
+    "id": "msg_warn_missing_mandatory_key",
     "translation": "The mandatory key [{{.key}}] should be set. Using default value [{{.value}}]...\n"
   },
   {
@@ -266,15 +304,7 @@
     "translation": "Limit [{{.name}}] is currently not changeable. Ignoring for now....\n"
   },
   {
-    "id": "msg_cmd_report_status",
-    "translation": "----==== OpenWhisk Deployment Status ====----"
-  },
-  {
-    "id": "msg_cmd_publish_short",
-    "translation": "Publish a package to a registry"
-  },
-  {
-    "id": "msg_cmd_publish_long",
-    "translation": "Publish a package to the registry set in ~/.wskprops"
+    "id": "msg_warn_retry_command",
+    "translation": "Retrying [{{.cmd}}] after error: [{{.err}}]\n"
   }
 ]

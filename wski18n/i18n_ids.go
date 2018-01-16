@@ -28,15 +28,21 @@ const(
 	ID_JSON_MISSING_KEY_CMD	= "msg_json_missing_cmd_key"	// "Missing 'cmd' input key"
 
 	// wskdeploy Command messages
-	ID_CMD_FLAG_PROJECT	= "msg_cmd_flag_project"
 	ID_CMD_FLAG_MANIFEST	= "msg_cmd_flag_manifest"
 	ID_CMD_FLAG_DEPLOYMENT	= "msg_cmd_flag_deployment"
-	ID_CMD_FLAG_AUTH_KEY	= "msg_cmd_flag_auth_key"	// "authorization `KEY`"
-	ID_CMD_FLAG_NAMESPACE	= "msg_cmd_flag_namespace"	// "namespace"
-	ID_CMD_FLAG_API_HOST	= "msg_cmd_flag_api_host"	// "whisk API `HOST`"
-	ID_CMD_FLAG_API_VERSION	= "msg_cmd_flag_api_version"	// "whisk API `VERSION`"
-	ID_CMD_FLAG_KEY_FILE	= "msg_cmd_flag_key_file"	// "path of the .key file"
-	ID_CMD_FLAG_CERT_FILE	= "msg_cmd_flag_cert_file"	// "path of the .cert file"
+	ID_CMD_FLAG_STRICT	= "msg_cmd_flag_strict"
+	ID_CMD_FLAG_INTERACTIVE	= "msg_cmd_flag_interactive"
+	ID_CMD_FLAG_DEFAULTS	= "msg_cmd_flag_allow_defaults"
+	ID_CMD_FLAG_VERBOSE	= "msg_cmd_flag_allow_verbose"
+	ID_CMD_FLAG_AUTH_KEY	= "msg_cmd_flag_auth_key"
+	ID_CMD_FLAG_NAMESPACE	= "msg_cmd_flag_namespace"
+	ID_CMD_FLAG_API_HOST	= "msg_cmd_flag_api_host"
+	ID_CMD_FLAG_API_VERSION	= "msg_cmd_flag_api_version"
+	ID_CMD_FLAG_KEY_FILE	= "msg_cmd_flag_key_file"
+	ID_CMD_FLAG_CERT_FILE	= "msg_cmd_flag_cert_file"
+	ID_CMD_FLAG_MANAGED	= "msg_cmd_flag_allow_managed"
+	ID_CMD_FLAG_PROJECT	= "msg_cmd_flag_project"
+	ID_CMD_FLAG_TOGGLE_HELP	= "msg_cmd_toggle_help"
 
 	// Configuration messages
 	ID_MSG_CONFIG_MISSING_AUTHKEY				= "msg_config_missing_authkey"
@@ -57,12 +63,13 @@ const(
 	ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X		= "msg_runtime_changed"
 	ID_MSG_RUNTIME_UNSUPPORTED_X_runtime_X_action_X		= "msg_runtime_unsupported"
 
-	ID_MSG_MANIFEST_DEPLOY_X_path_X				= "msg_using_manifest_deploy"	// "Using {{.path}} for deployment.\n"
-	ID_MSG_MANIFEST_UNDEPLOY_X_path_X			= "msg_using_manifest_undeploy"	// "Using {{.path}} for undeployment.\n"
+	ID_MSG_MANIFEST_DEPLOY_X_path_X				= "msg_using_manifest_deploy"
+	ID_MSG_MANIFEST_UNDEPLOY_X_path_X			= "msg_using_manifest_undeploy"
 
 	ID_MSG_DEPLOYMENT_SUCCEEDED				= "msg_deployment_succeeded"
 	ID_MSG_DEPLOYMENT_FAILED				= "msg_deployment_failed"
 	ID_MSG_DEPLOYMENT_CANCELLED				= "msg_deployment_cancelled"
+	ID_MSG_DEPLOYMENT_REPORT				= "msg_deployment_report_status"
 
 	ID_MSG_ENTITY_DEPLOYING_X_key_X_name_X 			= "msg_entity_deploying"
 	ID_MSG_ENTITY_UNDEPLOYING_X_key_X_name_X		= "msg_entity_undeploying"
@@ -104,6 +111,7 @@ const(
 	ID_WARN_LIMITS_MEMORY_SIZE				= "msg_warn_limits_memory_size"
 	ID_WARN_LIMITS_LOG_SIZE					= "msg_warn_limits_memory_log_size"
 	ID_WARN_LIMIT_UNCHANGEABLE_X_name_X			= "msg_warn_limit_changeable"
+	ID_WARN_RETRY_COMMAND					= "msg_warn_retry_command"
 
 	// Errors
 	ID_ERR_GET_RUNTIMES_X_err_X 				= "msg_err_get_runtimes"
@@ -114,7 +122,6 @@ const(
 	ID_ERR_FEED_INVOKE_X_err_X_code_X			= "msg_err_feed_invoke"
 
 	// Misc
-	ID_CMD_REPORT_STAUTS					= "msg_cmd_report_status"
 	ID_CMD_PUBLISH_DESC_SHORT				= "msg_cmd_publish_short"
 	ID_CMD_PUBLISH_DESC_LONG				= "msg_cmd_publish_long"
 )
@@ -125,6 +132,7 @@ const(
 	KEY_VALUE		= "value"
 	KEY_NAME		= "name"
 	KEY_CODE		= "code"
+	KEY_CMD			= "cmd"
 	KEY_ERR			= "err"
 	KEY_PROJECT		= "project"
 	KEY_ACTION		= "action"

@@ -28,15 +28,17 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	//"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
+// wski18n.T(wski18n.ID_CMD_PUBLISH_DESC_SHORT),
 // publishCmd represents the publish command
+// wski18n.T(wski18n.ID_CMD_PUBLISH_DESC_LONG),
 var publishCmd = &cobra.Command{
 	Use:   "publish",
 	SuggestFor: []string{"publicize"},
-	Short: wski18n.T(wski18n.ID_CMD_PUBLISH_DESC_SHORT), //"Publish a package to a registry",
-	Long:  wski18n.T(wski18n.ID_CMD_PUBLISH_DESC_LONG), // `Publish a package to the registry set in ~/.wskprops`,
+	Short: "Returns summary of what's been deployed on OpenWhisk in specific namespace",
+	Long: `Command .`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Get registry location
 
