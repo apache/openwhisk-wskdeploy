@@ -32,9 +32,9 @@ openwhisk-wskdeploy
 incubator-openwhisk-wskdeploy
 wskdeploy
 
-#Go IDE
+# Go IDE
 .idea
-.iml
+*.iml
 
 # Gradle
 .gradle
