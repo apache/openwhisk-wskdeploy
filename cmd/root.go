@@ -90,6 +90,7 @@ func substCmdArgs() error {
 
 	arg := os.Args[1]
 
+	// TODO() Move to proper status output/debug/trace
 	fmt.Println("arg is " + arg)
 	// unmarshal the string to a JSON object
 	var obj map[string]interface{}
@@ -99,12 +100,13 @@ func substCmdArgs() error {
 		regex, _ := regexp.Compile("[ ]+")
 		os.Args = regex.Split("wskdeploy "+strings.TrimSpace(v), -1)
 	} else {
-		return errors.New(wski18n.T(wski18n.ID_JSON_MISSING_KEY_CMD))
+		return errors.New(wski18n.T(wski18n.ID_ERR_JSON_MISSING_KEY_CMD))
 	}
 	return nil
 }
 
 func init() {
+	// TODO() move Env var. to some global const
 	utils.Flags.WithinOpenWhisk = len(os.Getenv("__OW_API_HOST")) > 0
 
 	cobra.OnInitialize(initConfig)
@@ -114,7 +116,7 @@ func init() {
 	// will be global for your application.
 
 	// TODO(#682) add in-line descriptions to i18n resource file
-	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", "config file (default is $HOME/.wskprops)")
+	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", wski18n.T(wski18n.ID_CMD_FLAG_CONFIG))
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	// TODO() Publish command, not completed
@@ -147,8 +149,10 @@ func initConfig() {
 		_, err := whisk.ReadProps(utils.Flags.CfgFile)
 		if err != nil {
 			utils.Flags.CfgFile = defaultPath
-			// TODO() i18n
-			wskprint.PrintOpenWhiskWarning("Invalid config file detected, so by default it is set to " + utils.Flags.CfgFile + "\n")
+			warn := wski18n.T(wski18n.ID_WARN_CONFIG_INVALID_X_path_X,
+				map[string]interface{}{
+					wski18n.KEY_PATH: utils.Flags.CfgFile})
+			wskprint.PrintOpenWhiskWarning(warn)
 		}
 
 	} else {

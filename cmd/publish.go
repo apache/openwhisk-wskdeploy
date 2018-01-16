@@ -59,7 +59,6 @@ var publishCmd = &cobra.Command{
 			// TODO() should only read if interactive mode is on
 			reader := bufio.NewReader(os.Stdin)
 			for {
-				// TODO() i18n
 				registry = utils.Ask(reader, parsers.REGISTRY_URL, "")
 
 				_, err := url.Parse(registry)

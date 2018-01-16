@@ -16,7 +16,7 @@
     "translation": "Info"
   },
   {
-    "id": "msg_json_missing_cmd_key",
+    "id": "msg_err_json_missing_cmd_key",
     "translation": "JSON input data Missing 'cmd' key"
   },
   {
@@ -24,7 +24,7 @@
     "translation": "allow user defined runtime version"
   },
   {
-    "id": "msg_cmd_flag_verbose",
+    "id": "msg_cmd_flag_allow_verbose",
     "translation": "verbose output"
   },
   {
@@ -32,8 +32,12 @@
     "translation": "allow project entities to be marked managed"
   },
   {
-    "id": "msg_cmd_toggle_help",
+    "id": "msg_cmd_flag_toggle_help",
     "translation": "Toggle Help message"
+  },
+  {
+    "id": "msg_cmd_flag_config",
+    "translation": "config file (default is $HOME/.wskprops)"
   },
   {
     "id": "msg_cmd_flag_interactive",
@@ -314,5 +318,9 @@
   {
     "id": "msg_err_url_malformed",
     "translation": "Malformed {{.urltype}} URL [{{.url}}]. Try again...\n"
+  },
+  {
+    "id": "msg_warn_config_invalid",
+    "translation": "Missing or invalid config file [{{.path}}] detected.\n"
   }
 ]

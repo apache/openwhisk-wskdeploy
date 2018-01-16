@@ -24,9 +24,6 @@ const(
 	ID_MSG_PREFIX_WARNING	= "msg_prefix_warning"	// "Warning"
 	ID_MSG_PREFIX_INFO	= "msg_prefix_info"	// "Info"
 
-	// wskdeploy (as an Action) JSON messages
-	ID_JSON_MISSING_KEY_CMD	= "msg_json_missing_cmd_key"	// "Missing 'cmd' input key"
-
 	// wskdeploy Command messages
 	ID_CMD_FLAG_MANIFEST	= "msg_cmd_flag_manifest"
 	ID_CMD_FLAG_DEPLOYMENT	= "msg_cmd_flag_deployment"
@@ -42,7 +39,8 @@ const(
 	ID_CMD_FLAG_CERT_FILE	= "msg_cmd_flag_cert_file"
 	ID_CMD_FLAG_MANAGED	= "msg_cmd_flag_allow_managed"
 	ID_CMD_FLAG_PROJECT	= "msg_cmd_flag_project"
-	ID_CMD_FLAG_TOGGLE_HELP	= "msg_cmd_toggle_help"
+	ID_CMD_FLAG_TOGGLE_HELP	= "msg_cmd_flag_toggle_help"
+	ID_CMD_FLAG_CONFIG	= "msg_cmd_flag_config"
 
 	// Configuration messages
 	ID_MSG_CONFIG_MISSING_AUTHKEY				= "msg_config_missing_authkey"
@@ -112,6 +110,7 @@ const(
 	ID_WARN_LIMITS_LOG_SIZE					= "msg_warn_limits_memory_log_size"
 	ID_WARN_LIMIT_UNCHANGEABLE_X_name_X			= "msg_warn_limit_changeable"
 	ID_WARN_RETRY_COMMAND					= "msg_warn_retry_command"
+	ID_WARN_CONFIG_INVALID_X_path_X				= "msg_warn_config_invalid"
 
 	// Errors
 	ID_ERR_GET_RUNTIMES_X_err_X 				= "msg_err_get_runtimes"
@@ -122,6 +121,9 @@ const(
 	ID_ERR_FEED_INVOKE_X_err_X_code_X			= "msg_err_feed_invoke"
 	ID_ERR_INVALID_URL_X_urltype_X_url_X_filetype_X		= "msg_err_url_invalid"
 	ID_ERR_MALFORMED_URL_X_urltype_X_url_X			= "msg_err_url_malformed"
+
+	// wskdeploy (as an Action) JSON messages
+	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"	// "Missing 'cmd' input key"
 
 	// Misc
 	ID_CMD_PUBLISH_DESC_SHORT				= "msg_cmd_publish_short"
@@ -161,7 +163,6 @@ var I18N_ID_SET = [](string){
 	ID_MSG_PREFIX_SUCCESS,
 	ID_MSG_PREFIX_WARNING,
 	ID_MSG_PREFIX_INFO,
-	ID_JSON_MISSING_KEY_CMD,
 	ID_CMD_FLAG_MANIFEST,
 	ID_CMD_FLAG_DEPLOYMENT,
 	ID_CMD_FLAG_STRICT,
@@ -232,4 +233,7 @@ var I18N_ID_SET = [](string){
 	ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X,
 	ID_ERR_INVALID_URL_X_urltype_X_url_X_filetype_X,
 	ID_ERR_MALFORMED_URL_X_urltype_X_url_X,
+	ID_ERR_JSON_MISSING_KEY_CMD,
+	ID_WARN_CONFIG_INVALID_X_path_X,
+	ID_CMD_FLAG_CONFIG,
 }
