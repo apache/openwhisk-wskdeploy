@@ -256,11 +256,11 @@
     "translation": "Deleting {{.key}} [{{.name}}] which was removed from the current managed project [{{.project}}] as part of undeployment.\n"
   },
   {
-    "id": "msg_err_create_entity",
+    "id": "msg_err_entity_create",
     "translation": "Error creating {{.key}} with error message: {{.err}} and error code: {{.code}}.\n"
   },
   {
-    "id": "msg_err_delete_entity",
+    "id": "msg_err_entity_delete",
     "translation": "Error deleting {{.key}} with error message: {{.err}} and error code: {{.code}}.\n"
   },
   {
@@ -326,5 +326,13 @@
   {
     "id": "msg_err_deployment_name_not_found",
     "translation": "The {{.key}} [{{.name}}] in deployment file not found in manifest file.\n"
+  },
+  {
+    "id": "msg_dbg_key_verify",
+    "translation": "Verifying {{.name}} [{{.key}}] exists...\n"
+  },
+  {
+    "id": "msg_warn_value_range",
+    "translation": "The value for {{.name}} [{{.key}}] in {{.filetype}} should type {{.type}} between {{.min}} and {{.mac}}.\n"
   }
 ]

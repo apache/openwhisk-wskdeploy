@@ -19,7 +19,6 @@ package wskprint
 
 import (
 	"fmt"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/fatih/color"
 	"github.com/mattn/go-colorable"
@@ -77,6 +76,8 @@ func PrintlnOpenWhiskOutput(message string) {
    	fmt.Println(message)
 }
 
-func PrintOpenWhiskDebugInfo(message string) {
-	whisk.Debug(whisk.DbgInfo, message)
+func PrintOpenWhiskVerbose(verbose bool, message string) {
+	if verbose{
+		PrintlnOpenWhiskOutput(message)
+	}
 }

@@ -18,13 +18,13 @@
 package deployers
 
 import (
-	"errors"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
+	"github.com/openwhisk/wskdeploy/utils"
 )
 
 type DeploymentReader struct {
@@ -77,7 +77,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 		if len(reader.DeploymentDescriptor.GetProject().Package.Packagename) != 0 {
 			packMap[reader.DeploymentDescriptor.GetProject().Package.Packagename] = reader.DeploymentDescriptor.GetProject().Package
 			warningString := wski18n.T(
-				wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
+				wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
 					wski18n.KEY_OLD: parsers.YAML_KEY_PACKAGE,
 					wski18n.KEY_NEW: parsers.YAML_KEY_PACKAGES,
@@ -252,9 +252,12 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 						}
 					}
 					if !keyExistsInManifest {
-						// TODO() i18n, need to use an ID
-						err := errors.New(wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file."))
-						return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
+						errMsg := wski18n.T(
+							wski18n.ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
+							map[string]interface{}{
+								wski18n.KEY_KEY: parsers.YAML_KEY_ANNOTATION,
+								wski18n.KEY_NAME: name })
+						return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, errMsg)
 					}
 				}
 			}
@@ -312,9 +315,16 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 						depParams[kv.Key] = kv
 					}
 
+					var traceMsg string
 					for _, keyVal := range wskTrigger.Parameters {
-						// TODO() i18n
-						wskprint.PrintlnOpenWhiskOutput("Checking key " + keyVal.Key)
+						traceMsg = wski18n.T(
+							wski18n.ID_DEBUG_KEY_VERIFY_X_name_X_key_X,
+							map[string]interface{}{
+								wski18n.KEY_NAME: parsers.YAML_KEY_ANNOTATION,
+								wski18n.KEY_KEY: keyVal.Key})
+						wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, traceMsg)
+
+						// TODO() verify logic and add Verbose/trace say "found" or "not found"
 						if _, exists := depParams[keyVal.Key]; !exists {
 							keyValArr = append(keyValArr, keyVal)
 						}
@@ -340,9 +350,12 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 						}
 					}
 					if !keyExistsInManifest {
-						// TODO() i18n, need to use an ID
-						err := errors.New(wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file."))
-						return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
+						errMsg := wski18n.T(
+							wski18n.ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
+							map[string]interface{}{
+								wski18n.KEY_KEY: parsers.YAML_KEY_ANNOTATION,
+								wski18n.KEY_NAME: name })
+						return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, errMsg)
 					}
 				}
 			}

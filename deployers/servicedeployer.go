@@ -179,7 +179,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 	// (TODO) delete this warning after deprecating application in manifest file
 	if manifest.Application.Name != "" {
-		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
+		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 			map[string]interface{}{
 				wski18n.KEY_OLD: parsers.YAML_KEY_APPLICATION,
 				wski18n.KEY_NEW: parsers.YAML_KEY_PROJECT,
@@ -197,7 +197,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 		// (TODO) delete this warning after deprecating application in deployment file
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
-			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
+			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
 					wski18n.KEY_OLD: parsers.YAML_KEY_APPLICATION,
 					wski18n.KEY_NEW: parsers.YAML_KEY_PROJECT,
@@ -267,7 +267,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 
 	// (TODO) delete this warning after deprecating application in manifest file
 	if manifest.Application.Name != "" {
-		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
+		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 			map[string]interface{}{
 				wski18n.KEY_OLD: parsers.YAML_KEY_APPLICATION,
 				wski18n.KEY_NEW: parsers.YAML_KEY_PROJECT,
@@ -284,7 +284,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 
 		// (TODO) delete this warning after deprecating application in deployment file
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
-			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
+			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
 					wski18n.KEY_OLD: parsers.YAML_KEY_APPLICATION,
 					wski18n.KEY_NEW: parsers.YAML_KEY_PROJECT,
@@ -1294,7 +1294,7 @@ func retry(attempts int, sleep time.Duration, callback func() error) error {
 			if wskErr.ExitCode == CONFLICT_CODE && strings.Contains(wskErr.Error(), CONFLICT_MESSAGE) {
 				time.Sleep(sleep)
 				// TODO() i18n
-				warningMsg := wski18n.T(wski18n.ID_WARN_RETRY_COMMAND,
+				warningMsg := wski18n.T(wski18n.ID_WARN_COMMAND_RETRY,
 					map[string]interface{}{
 						wski18n.KEY_CMD: strconv.Itoa(i+1),
 						wski18n.KEY_ERR: err.Error()})
@@ -1488,9 +1488,9 @@ func createWhiskClientError(err *whisk.WskError, response *http.Response, entity
 
 	var msgKey string
 	if onCreate{
-		msgKey = wski18n.ID_ERR_CREATE_ENTITY_X_key_X_err_X_code_X
+		msgKey = wski18n.ID_ERR_ENTITY_CREATE_X_key_X_err_X_code_X
 	} else {
-		msgKey = wski18n.ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X
+		msgKey = wski18n.ID_ERR_ENTITY_DELETE_X_key_X_err_X_code_X
 	}
 	errString := wski18n.T(msgKey,
 		map[string]interface{}{
