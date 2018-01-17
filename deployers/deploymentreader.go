@@ -158,10 +158,13 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 					}
 				}
 				if !keyExistsInManifest {
-					// TODO() i18n, need to use an ID
-					// TODO() fix grammar error; need command before "but"
-					err := errors.New(wski18n.T("Annotation key \"" + name + "\" does not exist in manifest file but specified in deployment file."))
-					return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, err)
+					warningString := wski18n.T(
+						wski18n.ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
+						map[string]interface{}{
+							wski18n.KEY_KEY: parsers.YAML_KEY_ANNOTATION,
+							wski18n.KEY_NAME: name })
+					wskprint.PrintlnOpenWhiskWarning(warningString)
+					return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, warningString)
 				}
 			}
 		}

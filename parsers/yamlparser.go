@@ -32,6 +32,7 @@ const(
 	YAML_KEY_FEED 		= "feed"
 	YAML_KEY_API 		= "api"
 	YAML_KEY_SEQUENCE 	= "sequence"
+	YAML_KEY_ANNOTATION 	= "annotoation"
 	YAML_KEY_APPLICATION 	= "application"	// deprecated
 	YAML_KEY_PACKAGE 	= "package"	// deprecated
 	YAML_KEY_SOURCE		= "source"	// deprecated

@@ -116,12 +116,14 @@ const(
 	ID_ERR_GET_RUNTIMES_X_err_X 				= "msg_err_get_runtimes"
 	ID_ERR_MISSING_MANDATORY_KEY_X_key_X			= "msg_err_missing_mandatory_key"
         ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X = "msg_err_mismatch_name_project"
+	// TODO() rename ENTITY_xxx
 	ID_ERR_CREATE_ENTITY_X_key_X_err_X_code_X		= "msg_err_create_entity"
 	ID_ERR_DELETE_ENTITY_X_key_X_err_X_code_X		= "msg_err_delete_entity"
 	ID_ERR_FEED_INVOKE_X_err_X_code_X			= "msg_err_feed_invoke"
 	ID_ERR_INVALID_URL_X_urltype_X_url_X_filetype_X		= "msg_err_url_invalid"
 	ID_ERR_MALFORMED_URL_X_urltype_X_url_X			= "msg_err_url_malformed"
 	ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X		= "msg_err_deployment_name_not_found"
+	ID_ERR_
 
 	// wskdeploy (as an Action) JSON messages
 	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"	// "Missing 'cmd' input key"
