@@ -121,6 +121,7 @@ const(
 	ID_ERR_FEED_INVOKE_X_err_X_code_X			= "msg_err_feed_invoke"
 	ID_ERR_INVALID_URL_X_urltype_X_url_X_filetype_X		= "msg_err_url_invalid"
 	ID_ERR_MALFORMED_URL_X_urltype_X_url_X			= "msg_err_url_malformed"
+	ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X		= "msg_err_deployment_name_not_found"
 
 	// wskdeploy (as an Action) JSON messages
 	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"	// "Missing 'cmd' input key"

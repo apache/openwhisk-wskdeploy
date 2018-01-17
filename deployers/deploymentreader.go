@@ -76,8 +76,13 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 		// a single package is specified in deployment YAML file with "package" key
 		if len(reader.DeploymentDescriptor.GetProject().Package.Packagename) != 0 {
 			packMap[reader.DeploymentDescriptor.GetProject().Package.Packagename] = reader.DeploymentDescriptor.GetProject().Package
-			// TODO() i18n
-			wskprint.PrintlnOpenWhiskWarning("The package YAML key in deployment file will soon be deprecated. Please use packages instead as described in specifications.")
+			warningString := wski18n.T(
+				wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
+				map[string]interface{}{
+					wski18n.KEY_OLD: parsers.YAML_KEY_PACKAGE,
+					wski18n.KEY_NEW: parsers.YAML_KEY_PACKAGES,
+					wski18n.KEY_FILE_TYPE: parsers.DEPLOYMENT})
+			wskprint.PrintlnOpenWhiskWarning(warningString)
 		} else {
 			if reader.DeploymentDescriptor.Packages != nil {
 				for packName, depPacks := range reader.DeploymentDescriptor.Packages {
@@ -100,8 +105,12 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 		serviceDeployPack := reader.serviceDeployer.Deployment.Packages[packName]
 
 		if serviceDeployPack == nil {
-			// TODO() i18n
-			wskprint.PrintlnOpenWhiskWarning("Package name in deployment file " + packName + " does not match with manifest file.")
+			warningString := wski18n.T(
+				wski18n.ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
+				map[string]interface{}{
+					wski18n.KEY_KEY: parsers.PACKAGE_NAME,
+					wski18n.KEY_NAME: packName })
+			wskprint.PrintlnOpenWhiskWarning(warningString)
 			break
 		}
 

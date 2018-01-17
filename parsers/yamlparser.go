@@ -25,19 +25,22 @@ import (
 // YAML schema key names
 const(
 	YAML_KEY_PROJECT 	= "project"
-	YAML_KEY_APPLICATION 	= "application"	// deprecated
-	YAML_KEY_PACKAGE 	= "package"
+	YAML_KEY_PACKAGES 	= "packages"
 	YAML_KEY_ACTION 	= "action"
 	YAML_KEY_TRIGGER 	= "trigger"
 	YAML_KEY_RULE 		= "rule"
 	YAML_KEY_FEED 		= "feed"
 	YAML_KEY_API 		= "api"
 	YAML_KEY_SEQUENCE 	= "sequence"
+	YAML_KEY_APPLICATION 	= "application"	// deprecated
+	YAML_KEY_PACKAGE 	= "package"	// deprecated
+	YAML_KEY_SOURCE		= "source"	// deprecated
 )
 
 // descriptive key names
 const (
 	PROJECT_NAME		= "project name"
+	PACKAGE_NAME	 	= "package name"
 	PACKAGE_BINDING 	= "package binding"
 	PACKAGE_VERSION 	= "package version"
 	PACKAGE_LICENSE 	= "package license"
@@ -171,7 +174,7 @@ type Feed struct {
 	Inputs     map[string]string `yaml:"inputs"`     //used in deployment.yaml
 	Location   string            `yaml:"location"`   //used in manifest.yaml
 	Action     string            `yaml:"action"`     //used in manifest.yaml
-	//TODO: need to define operation structure
+	// TODO(): need to define operation structure
 	Operations map[string]interface{} `yaml:"operations"` //used in manifest.yaml
 	Name       string
 }

@@ -729,13 +729,12 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 
 		// print warning information when .Source key's value is not empty
 		if trigger.Source != "" {
-			// TODO() i18n use const for keys and values on string
 			warningString := wski18n.T(
 				wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
-					wski18n.KEY_OLD: "source",
+					wski18n.KEY_OLD: YAML_KEY_SOURCE,
 					wski18n.KEY_NEW: YAML_KEY_FEED,
-					wski18n.KEY_FILE_TYPE: "manifest"})
+					wski18n.KEY_FILE_TYPE: MANIFEST})
 			wskprint.PrintOpenWhiskWarning(warningString)
 		}
 		if trigger.Feed == "" {

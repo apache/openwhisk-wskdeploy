@@ -322,5 +322,9 @@
   {
     "id": "msg_warn_config_invalid",
     "translation": "Missing or invalid config file [{{.path}}] detected.\n"
+  },
+  {
+    "id": "msg_err_deployment_name_not_found",
+    "translation": "The {{.key}} [{{.name}}] in deployment file not found in manifest file.\n"
   }
 ]

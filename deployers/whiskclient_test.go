@@ -153,7 +153,7 @@ func TestNewWhiskConfigWithWskProps(t *testing.T) {
     assert.True(t, config.Insecure, "Config should set insecure to true")
 }
 
-// (TODO) add the following test
+// TODO() add the following test
 /*func TestNewWhiskConfigInteractiveMode(t *testing.T) {
 	propPath := ""
 	manifestPath := ""
