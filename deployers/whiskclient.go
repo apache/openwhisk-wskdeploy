@@ -251,15 +251,15 @@ func validateClientConfig(credential PropertyValue, apiHost PropertyValue, names
 
 	// Show caller what final values we used for credential, apihost and namespace
 	stdout := wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
-		map[string]interface{}{"host": apiHost.Value, "source": apiHost.Source})
+		map[string]interface{}{wski18n.KEY_HOST: apiHost.Value, wski18n.KEY_SOURCE: apiHost.Source})
 	wskprint.PrintOpenWhiskStatus(stdout)
 
 	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
-		map[string]interface{}{"source": credential.Source})
+		map[string]interface{}{wski18n.KEY_SOURCE: credential.Source})
 	wskprint.PrintOpenWhiskStatus(stdout)
 
 	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
-		map[string]interface{}{"namespace": namespace.Value, "source": namespace.Source})
+		map[string]interface{}{wski18n.KEY_NAMESPACE: namespace.Value, wski18n.KEY_SOURCE: namespace.Source})
 	wskprint.PrintOpenWhiskStatus(stdout)
 
 	return nil
