@@ -37,6 +37,7 @@ var client *whisk.Client
 var wg sync.WaitGroup
 
 // reportCmd represents the report command
+// TODO(#683) short and long desc. should be translated for i18n
 var reportCmd = &cobra.Command{
 	Use:   "report",
 	SuggestFor: []string {"list"},

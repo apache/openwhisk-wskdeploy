@@ -55,14 +55,13 @@ const(
 	ID_MSG_UNMARSHAL_LOCAL					= "msg_unmarshall_local"
 	ID_MSG_UNMARSHAL_NETWORK				= "msg_unmarshall_network"
 
-	// Informational
+	// Informational TODO() many of these are warning if not errors
 	ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X			= "msg_manifest_not_found"
-	ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X	= "msg_runtime_mismatch"
-	ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X		= "msg_runtime_changed"
-	ID_MSG_RUNTIME_UNSUPPORTED_X_runtime_X_action_X		= "msg_runtime_unsupported"
-
 	ID_MSG_MANIFEST_DEPLOY_X_path_X				= "msg_using_manifest_deploy"
 	ID_MSG_MANIFEST_UNDEPLOY_X_path_X			= "msg_using_manifest_undeploy"
+
+	ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X	= "msg_runtime_mismatch"
+	ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X		= "msg_runtime_changed"
 
 	ID_MSG_DEPLOYMENT_SUCCEEDED				= "msg_deployment_succeeded"
 	ID_MSG_DEPLOYMENT_FAILED				= "msg_deployment_failed"
@@ -123,6 +122,8 @@ const(
 	ID_ERR_MALFORMED_URL_X_urltype_X_url_X			= "msg_err_url_malformed"
 	ID_ERR_MISSING_MANDATORY_KEY_X_key_X			= "msg_err_missing_mandatory_key"
         ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X = "msg_err_mismatch_name_project"
+	ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X		= "msg_runtime_invalid"
+
 
 	// Server-side Errors (wskdeploy as an Action)
 	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"	// "Missing 'cmd' input key"
@@ -161,8 +162,8 @@ const(
 	KEY_URL			= "url"
 	KEY_URL_TYPE		= "urltype"
 	KEY_VALUE		= "value"
-	KEY_VALUE_MIN		= "min"
-	KEY_VALUE_MAX		= "max"
+	KEY_VALUE_MIN		= "min"		// TODO() attempt to use this for Limit value range errors
+	KEY_VALUE_MAX		= "max"		// TODO() attempt to use this for Limit value range errors
 )
 
 var I18N_ID_SET = [](string){
@@ -228,7 +229,7 @@ var I18N_ID_SET = [](string){
 	ID_MSG_PROMPT_UNDEPLOY,
 	ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X,
 	ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
-	ID_MSG_RUNTIME_UNSUPPORTED_X_runtime_X_action_X,
+	ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
 	ID_MSG_UNDEPLOYMENT_CANCELLED,
 	ID_MSG_UNDEPLOYMENT_FAILED,
 	ID_MSG_UNDEPLOYMENT_SUCCEEDED,

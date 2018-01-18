@@ -81,3 +81,7 @@ func PrintOpenWhiskVerbose(verbose bool, message string) {
 		PrintlnOpenWhiskOutput(message)
 	}
 }
+
+func PrintlnOpenWhiskVerbose(verbose bool, message string) {
+	PrintOpenWhiskVerbose(verbose, message + "\n")
+}

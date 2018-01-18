@@ -38,7 +38,6 @@ import (
 
 const (
 	CONFLICT_CODE    = 153
-	CONFLICT_MESSAGE = "Concurrent modification to resource detected"
 	DEFAULT_ATTEMPTS = 3
 	DEFAULT_INTERVAL = 1 * time.Second
 )
@@ -1291,9 +1290,9 @@ func retry(attempts int, sleep time.Duration, callback func() error) error {
 		}
 		if err != nil {
 			wskErr := err.(*whisk.WskError)
+			CONFLICT_MESSAGE := "Concurrent modification to resource detected"
 			if wskErr.ExitCode == CONFLICT_CODE && strings.Contains(wskErr.Error(), CONFLICT_MESSAGE) {
 				time.Sleep(sleep)
-				// TODO() i18n
 				warningMsg := wski18n.T(wski18n.ID_WARN_COMMAND_RETRY,
 					map[string]interface{}{
 						wski18n.KEY_CMD: strconv.Itoa(i+1),
@@ -1466,7 +1465,7 @@ func displayPreprocessingInfo(entity string, name string, onDeploy bool){
 		map[string]interface{}{
 			wski18n.KEY_KEY: entity,
 			wski18n.KEY_NAME: name})
-	whisk.Debug(whisk.DbgInfo, msg)
+	wskprint.PrintlnOpenWhiskStatus(msg)
 }
 
 func displayPostprocessingInfo(entity string, name string, onDeploy bool){
@@ -1477,11 +1476,11 @@ func displayPostprocessingInfo(entity string, name string, onDeploy bool){
 	} else {
 		msgKey = wski18n.ID_MSG_ENTITY_UNDEPLOYED_SUCCESS_X_key_X_name_X
 	}
-	errString := wski18n.T(msgKey,
+	msg := wski18n.T(msgKey,
 		map[string]interface{}{
 			wski18n.KEY_KEY: entity,
 			wski18n.KEY_NAME: name})
-	whisk.Debug(whisk.DbgInfo, errString)
+	wskprint.PrintlnOpenWhiskStatus(msg)
 }
 
 func createWhiskClientError(err *whisk.WskError, response *http.Response, entity string, onCreate bool)(*wskderrors.WhiskClientError){
@@ -1497,7 +1496,7 @@ func createWhiskClientError(err *whisk.WskError, response *http.Response, entity
 			wski18n.KEY_KEY: entity,
 			wski18n.KEY_ERR: err.Error(),
 			wski18n.KEY_CODE: strconv.Itoa(err.ExitCode)})
-	whisk.Debug(whisk.DbgError, errString)
+	wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, errString)
 
 	// TODO() add errString as an AppendDetail() to WhiskClientError
 	return wskderrors.NewWhiskClientError(err.Error(), err.ExitCode, response)

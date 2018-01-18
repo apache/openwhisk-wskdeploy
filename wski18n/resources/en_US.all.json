@@ -125,15 +125,15 @@
   },
   {
     "id": "msg_runtime_mismatch",
-    "translation": "Runtime [{{.runtime}}] specified in manifest does not match with action source file extension [{{.ext}}] for action [{{.action}}].\n"
+    "translation": "Runtime [{{.runtime}}] specified in manifest does not match with action's source file extension [{{.ext}}] for action [{{.action}}].\n"
   },
   {
     "id": "msg_runtime_changed",
-    "translation": "Runtime changed to [{{.runtime}}] based on the action source file extension for action [{{.action}}].\n"
+    "translation": "Runtime changed to [{{.runtime}}] based on the action's source file extension for action [{{.action}}].\n"
   },
   {
-    "id": "msg_runtime_unsupported",
-    "translation": "Runtime [{{.runtime}}] specified in manifest is not supported for the action [{{.action}}].\n"
+    "id": "msg_runtime_invalid",
+    "translation": "Invalid or missing runtime [{{.runtime}}] specified in manifest for the action [{{.action}}].\n"
   },
   {
     "id": "msg_action_limit_ignored",
@@ -313,7 +313,7 @@
   },
   {
     "id": "msg_err_url_invalid",
-    "translation": "Missing or invalid {{.urltype}} URL [{{.url}}] in [{{.filetype}}] file.\n"
+    "translation": "Invalid or missing {{.urltype}} URL [{{.url}}] in [{{.filetype}}] file.\n"
   },
   {
     "id": "msg_err_url_malformed",
@@ -321,7 +321,7 @@
   },
   {
     "id": "msg_warn_config_invalid",
-    "translation": "Missing or invalid config file [{{.path}}] detected.\n"
+    "translation": "Invalid or missing config file [{{.path}}] detected.\n"
   },
   {
     "id": "msg_err_deployment_name_not_found",
