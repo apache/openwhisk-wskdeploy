@@ -40,15 +40,11 @@ var stdout = ""
 
 // TODO(#683) short and long desc. should be translated for i18n
 var RootCmd = &cobra.Command{
-	Use:           "wskdeploy",
-	SilenceErrors: true,
-	SilenceUsage:  true,
-	Short:         "A tool set to help deploy your openwhisk packages in batch.",
-	Long: `A tool to deploy openwhisk packages with a manifest and/or deployment yaml file.
-
-wskdeploy without any commands or flags deploys openwhisk package in the current directory if manifest.yaml exists.
-
-      `,
+	Use:		"wskdeploy",
+	SilenceErrors:	true,
+	SilenceUsage:	true,
+	Short:		wski18n.T(wski18n.ID_CMD_DESC_SHORT_ROOT),
+	Long:		wski18n.T(wski18n.ID_CMD_DESC_LONG_ROOT),
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	RunE: RootCmdImp,

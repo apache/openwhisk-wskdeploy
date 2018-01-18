@@ -1290,6 +1290,7 @@ func retry(attempts int, sleep time.Duration, callback func() error) error {
 		}
 		if err != nil {
 			wskErr := err.(*whisk.WskError)
+			// TODO() i18n
 			CONFLICT_MESSAGE := "Concurrent modification to resource detected"
 			if wskErr.ExitCode == CONFLICT_CODE && strings.Contains(wskErr.Error(), CONFLICT_MESSAGE) {
 				time.Sleep(sleep)

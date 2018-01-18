@@ -35,8 +35,8 @@ import (
 var publishCmd = &cobra.Command{
 	Use:   "publish",
 	SuggestFor: []string{"publicize"},
-	Short: wski18n.T(wski18n.ID_CMD_PUBLISH_DESC_SHORT),
-	Long: wski18n.T(wski18n.ID_CMD_PUBLISH_DESC_LONG),
+	Short: wski18n.T(wski18n.ID_CMD_DESC_SHORT_PUBLISH),
+	Long: wski18n.T(wski18n.ID_CMD_DESC_LONG_PUBLISH),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Get registry location
 		userHome := utils.GetHomeDirectory()

@@ -23,35 +23,40 @@ import (
 )
 
 // YAML schema key names
+// DO NOT translate
 const(
-	YAML_KEY_PROJECT 	= "project"
-	YAML_KEY_PACKAGES 	= "packages"
 	YAML_KEY_ACTION 	= "action"
-	YAML_KEY_TRIGGER 	= "trigger"
-	YAML_KEY_RULE 		= "rule"
-	YAML_KEY_FEED 		= "feed"
-	YAML_KEY_API 		= "api"
-	YAML_KEY_SEQUENCE 	= "sequence"
 	YAML_KEY_ANNOTATION 	= "annotoation"
+	YAML_KEY_API 		= "api"
+	YAML_KEY_FEED 		= "feed"
+	YAML_KEY_NAMESPACE 	= "namespace"
+	YAML_KEY_PACKAGES 	= "packages"
+	YAML_KEY_PROJECT 	= "project"
+	YAML_KEY_RULE 		= "rule"
+	YAML_KEY_SEQUENCE 	= "sequence"
+	YAML_KEY_TRIGGER 	= "trigger"
 	YAML_KEY_APPLICATION 	= "application"	// deprecated
 	YAML_KEY_PACKAGE 	= "package"	// deprecated
 	YAML_KEY_SOURCE		= "source"	// deprecated
 )
 
 // descriptive key names
+// Do NOT translate
 const (
-	PROJECT_NAME		= "project name"
-	PACKAGE_NAME	 	= "package name"
-	PACKAGE_BINDING 	= "package binding"
-	PACKAGE_VERSION 	= "package version"
-	PACKAGE_LICENSE 	= "package license"
-	TRIGGER_FEED		= "trigger feed"
+	API_HOST		= "API host"
+	AUTH_KEY		= "authentication key"
 	DEPLOYMENT		= "deployment"
 	MANIFEST		= "manifest"
-	WHISK_PROPS		= "wskprops"
+	PACKAGE_BINDING 	= "package binding"
+	PACKAGE_LICENSE 	= "package license"
+	PACKAGE_NAME	 	= "package name"
+	PACKAGE_VERSION 	= "package version"
+	PROJECT_NAME		= "project name"
 	REGISTRY		= "registry"
 	REGISTRY_URL		= "registry URL"
 	REPOSITORY		= "repository"
+	TRIGGER_FEED		= "trigger feed"
+	WHISK_PROPS		= "wskprops"
 )
 
 // YAML schema key values

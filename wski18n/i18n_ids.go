@@ -55,13 +55,10 @@ const(
 	ID_MSG_UNMARSHAL_LOCAL					= "msg_unmarshall_local"
 	ID_MSG_UNMARSHAL_NETWORK				= "msg_unmarshall_network"
 
-	// Informational TODO() many of these are warning if not errors
+	// Informational
 	ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X			= "msg_manifest_not_found"
 	ID_MSG_MANIFEST_DEPLOY_X_path_X				= "msg_using_manifest_deploy"
 	ID_MSG_MANIFEST_UNDEPLOY_X_path_X			= "msg_using_manifest_undeploy"
-
-	ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X	= "msg_runtime_mismatch"
-	ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X		= "msg_runtime_changed"
 
 	ID_MSG_DEPLOYMENT_SUCCEEDED				= "msg_deployment_succeeded"
 	ID_MSG_DEPLOYMENT_FAILED				= "msg_deployment_failed"
@@ -111,8 +108,10 @@ const(
 	ID_WARN_COMMAND_RETRY					= "msg_warn_retry_command"
 	ID_WARN_VALUE_RANGE_X_name_X_key_X_filetype_X_min_X_max_X = "msg_warn_value_range"
 	ID_WARN_WHISK_PROPS_DEPRECATED				= "msg_warn_whisk_properties"
+	ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X		= "msg_warn_runtime_changed"
 
 	// Errors
+	ID_ERR_DEPENDENCY_UNKNOWN_TYPE				= "msg_err_dependency_unknown_type"
 	ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X		= "msg_err_deployment_name_not_found"
 	ID_ERR_ENTITY_CREATE_X_key_X_err_X_code_X 		= "msg_err_entity_create"
 	ID_ERR_ENTITY_DELETE_X_key_X_err_X_code_X 		= "msg_err_entity_delete"
@@ -121,16 +120,18 @@ const(
 	ID_ERR_INVALID_URL_X_urltype_X_url_X_filetype_X		= "msg_err_url_invalid"
 	ID_ERR_MALFORMED_URL_X_urltype_X_url_X			= "msg_err_url_malformed"
 	ID_ERR_MISSING_MANDATORY_KEY_X_key_X			= "msg_err_missing_mandatory_key"
+	ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X		= "msg_err_runtime_invalid"
+	ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X	= "msg_err_runtime_mismatch"
         ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X = "msg_err_mismatch_name_project"
-	ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X		= "msg_runtime_invalid"
-
 
 	// Server-side Errors (wskdeploy as an Action)
 	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"	// "Missing 'cmd' input key"
 
 	// Cobra command / flag descriptions
-	ID_CMD_PUBLISH_DESC_SHORT				= "msg_cmd_publish_short"
-	ID_CMD_PUBLISH_DESC_LONG				= "msg_cmd_publish_long"
+	ID_CMD_DESC_SHORT_PUBLISH				= "msg_cmd_desc_short_publish"
+	ID_CMD_DESC_LONG_PUBLISH				= "msg_cmd_desc_long_publish"
+	ID_CMD_DESC_SHORT_ROOT					= "msg_cmd_desc_short_root"
+	ID_CMD_DESC_LONG_ROOT					= "msg_cmd_desc_long_root"
 
 	// Verbose (Debug/Trace) messages
 	ID_DEBUG_KEY_VERIFY_X_name_X_key_X			= "msg_dbg_key_verify"
@@ -167,6 +168,10 @@ const(
 )
 
 var I18N_ID_SET = [](string){
+	ID_CMD_DESC_LONG_PUBLISH,
+	ID_CMD_DESC_LONG_ROOT,
+	ID_CMD_DESC_SHORT_PUBLISH,
+	ID_CMD_DESC_SHORT_ROOT,
 	ID_CMD_FLAG_API_HOST,
 	ID_CMD_FLAG_API_VERSION,
 	ID_CMD_FLAG_AUTH_KEY,
@@ -184,6 +189,7 @@ var I18N_ID_SET = [](string){
 	ID_CMD_FLAG_TOGGLE_HELP,
 	ID_CMD_FLAG_VERBOSE,
 	ID_DEBUG_KEY_VERIFY_X_name_X_key_X,
+	ID_ERR_DEPENDENCY_UNKNOWN_TYPE,
 	ID_ERR_ENTITY_CREATE_X_key_X_err_X_code_X,
 	ID_ERR_ENTITY_DELETE_X_key_X_err_X_code_X,
 	ID_ERR_GET_RUNTIMES_X_err_X,
@@ -192,6 +198,8 @@ var I18N_ID_SET = [](string){
 	ID_ERR_MALFORMED_URL_X_urltype_X_url_X,
 	ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X,
 	ID_ERR_MISSING_MANDATORY_KEY_X_key_X,
+	ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
+	ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
 	ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
 	ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
 	ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
@@ -227,9 +235,6 @@ var I18N_ID_SET = [](string){
 	ID_MSG_PROMPT_DEPLOY,
 	ID_MSG_PROMPT_NAMESPACE,
 	ID_MSG_PROMPT_UNDEPLOY,
-	ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X,
-	ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
-	ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
 	ID_MSG_UNDEPLOYMENT_CANCELLED,
 	ID_MSG_UNDEPLOYMENT_FAILED,
 	ID_MSG_UNDEPLOYMENT_SUCCEEDED,
@@ -244,5 +249,6 @@ var I18N_ID_SET = [](string){
 	ID_WARN_LIMITS_MEMORY_SIZE,
 	ID_WARN_LIMITS_TIMEOUT,
 	ID_WARN_MISSING_MANDATORY_KEY_X_key_X_value_X,
+	ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
 	ID_WARN_WHISK_PROPS_DEPRECATED,
 }

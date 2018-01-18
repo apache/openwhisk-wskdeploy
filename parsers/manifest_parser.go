@@ -77,8 +77,6 @@ func (dm *YAMLParser) Unmarshal(input []byte, manifest *YAML) error {
 func (dm *YAMLParser) marshal(manifest *YAML) (output []byte, err error) {
 	data, err := yaml.Marshal(manifest)
 	if err != nil {
-		// TODO() i18n
-		fmt.Printf("err happened during marshal :%v", err)
 		return nil, err
 	}
 	return data, nil
@@ -159,8 +157,8 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 
 			isBinding = false
 		} else {
-			// TODO() i18n
-			return nil, errors.New("Dependency type is unknown.  wskdeploy only supports /whisk.system bindings or github.com packages.")
+			// TODO() create new named error in wskerrors package
+			return nil, errors.New(wski18n.T(wski18n.ID_ERR_DEPENDENCY_UNKNOWN_TYPE))
 		}
 
 		keyValArrParams := make(whisk.KeyValueArr, 0)
@@ -480,7 +478,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				// and its not explicitly specified in the manifest YAML file
 				// and action source is not a zip file
 				if len(kind) == 0 && len(action.Runtime) == 0 && ext != utils.ZIP_FILE_EXTENSION {
-					errMessage := wski18n.T(wski18n.ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
+					errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
 						map[string]interface{}{
 							wski18n.KEY_RUNTIME: action.Runtime,
 							wski18n.KEY_EXTENTION: ext,
@@ -535,7 +533,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					if utils.CheckRuntimeConsistencyWithFileExtension(ext, action.Runtime) {
 						wskaction.Exec.Kind = action.Runtime
 					} else {
-						warnStr := wski18n.T(wski18n.ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
+						warnStr := wski18n.T(wski18n.ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
 							map[string]interface{}{
 								wski18n.KEY_RUNTIME: action.Runtime,
 								wski18n.KEY_EXTENTION: ext,
@@ -546,7 +544,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 						if utils.Flags.Strict {
 							wskaction.Exec.Kind = action.Runtime
 						} else {
-							warnStr := wski18n.T(wski18n.ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X,
+							warnStr := wski18n.T(wski18n.ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
 								map[string]interface{}{
 									wski18n.KEY_RUNTIME: wskaction.Exec.Kind,
 									wski18n.KEY_ACTION: action.Name})
@@ -570,7 +568,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 						action.Runtime,
 						utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				} else {
-					warnStr := wski18n.T(wski18n.ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X,
+					warnStr := wski18n.T(wski18n.ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
 						map[string]interface{}{
 							wski18n.KEY_RUNTIME: wskaction.Exec.Kind,
 							wski18n.KEY_ACTION: action.Name})
