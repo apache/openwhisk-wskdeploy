@@ -33,6 +33,7 @@ import (
 	"strings"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 )
 
 var stderr = ""
@@ -188,7 +189,7 @@ func Deploy() error {
 			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY_X_path_X,
 				map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
 		} else {
-			stderr = wski18n.T(wski18n.ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X,
+			stderr = wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
 				map[string]interface{}{wski18n.KEY_PATH: projectPath})
 			return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
 		}
@@ -247,7 +248,7 @@ func Deploy() error {
 		}
 
 	} else {
-		errString := wski18n.T(wski18n.ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X,
+		errString := wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
 			map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
 		whisk.Debug(whisk.DbgError, errString)
 		return wskderrors.NewErrorManifestFileNotFound(utils.Flags.ManifestPath, errString)
@@ -278,21 +279,31 @@ func Undeploy() error {
 			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_UNDEPLOY_X_path_X,
 				map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
 		} else {
-			stderr = wski18n.T(wski18n.ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X,
+			stderr = wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
 				map[string]interface{}{wski18n.KEY_PATH: projectPath})
 			return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
 		}
-		whisk.Debug(whisk.DbgInfo, stdout)
+		wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, stdout)
 	}
 
-	// TODO() i18n
 	if utils.Flags.DeploymentPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYaml)); err == nil {
 			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYaml)
-			fmt.Printf("Using %s for undeployment \n", utils.Flags.DeploymentPath)
+			// TODO() have a single function that conditionally (verbose) prints ALL Flags
+			dbgMsg := fmt.Sprintf("%s >> [%s]: [%s]",
+				wski18n.T(wski18n.ID_DEBUG_UNDEPLOYING_USING),
+				parsers.DEPLOYMENT,
+				utils.Flags.DeploymentPath)
+			wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
+
 		} else if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYml)); err == nil {
 			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYml)
-			fmt.Printf("Using %s for undeployment \n", utils.Flags.DeploymentPath)
+			// TODO() have a single function that conditionally (verbose) prints ALL Flags
+			dbgMsg := fmt.Sprintf("%s >> [%s]: [%s]",
+				wski18n.T(wski18n.ID_DEBUG_UNDEPLOYING_USING),
+				parsers.DEPLOYMENT,
+				utils.Flags.DeploymentPath)
+			wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
 		}
 	}
 
@@ -335,7 +346,7 @@ func Undeploy() error {
 		}
 
 	} else {
-		errString := wski18n.T(wski18n.ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X,
+		errString := wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
 			map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
 		return wskderrors.NewErrorManifestFileNotFound(utils.Flags.ManifestPath, errString)
 	}

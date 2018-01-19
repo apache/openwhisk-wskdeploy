@@ -128,7 +128,7 @@
     "translation": "\nPlease provide a namespace [default value is guest]: "
   },
   {
-    "id": "msg_manifest_not_found",
+    "id": "msg_err_manifest_not_found",
     "translation": "Manifest file not found at path [{{.path}}].\n"
   },
   {
@@ -354,5 +354,13 @@
   {
     "id": "msg_err_dependency_unknown_type",
     "translation": "Dependency type is unknown.  wskdeploy only supports /whisk.system bindings or github.com packages.\n"
+  },
+  {
+    "id": "msg_dbg_deploying_using",
+    "translation": "Deploying using:\n"
+  },
+  {
+    "id": "msg_dbg_undeploying_using",
+    "translation": "Undeploying using:\n"
   }
 ]

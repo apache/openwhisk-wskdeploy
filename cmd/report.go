@@ -61,7 +61,11 @@ var reportCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(reportCmd)
-	reportCmd.Flags().StringVarP(&wskpropsPath, "wskproppath", "w", path.Join(os.Getenv("HOME"), ".wskprops"), "path to wsk property file, default is to ~/.wskprops")
+
+	// TODO() i18n, REMOVE this flag... the flag -config exists already
+	reportCmd.Flags().StringVarP(&wskpropsPath, "wskproppath", "w",
+		path.Join(os.Getenv("HOME"), ".wskprops"),
+		"path to wsk property file, default is to ~/.wskprops")
 
 	// Here you will define your flags and configuration settings.
 
