@@ -93,11 +93,19 @@
   },
   {
     "id": "msg_cmd_desc_short_publish",
-    "translation": "Publish a package to a registry"
+    "translation": "Publish a package to a registry."
   },
   {
     "id": "msg_cmd_desc_long_publish",
-    "translation": "Publish a package to the registry set in ~/.wskprops"
+    "translation": "Publish a package to the registry set in ~/.wskprops."
+  },
+  {
+    "id": "msg_cmd_desc_short_report",
+    "translation": "Provides a summary report of what's been deployed in the specified namespace."
+  },
+  {
+    "id": "msg_cmd_desc_long_report",
+    "translation": "Reports on deployed entities (i.e., Packages, Actions, Triggers, Rules, etc.) as well as recent Activations in the specified namespace."
   },
   {
     "id": "msg_prompt_deploy",

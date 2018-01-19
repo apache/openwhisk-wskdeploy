@@ -132,6 +132,8 @@ const(
 	ID_CMD_DESC_LONG_PUBLISH				= "msg_cmd_desc_long_publish"
 	ID_CMD_DESC_SHORT_ROOT					= "msg_cmd_desc_short_root"
 	ID_CMD_DESC_LONG_ROOT					= "msg_cmd_desc_long_root"
+	ID_CMD_DESC_SHORT_REPORT				= "msg_cmd_desc_short_report"
+	ID_CMD_DESC_LONG_REPORT					= "msg_cmd_desc_long_report"
 
 	// Verbose (Debug/Trace) messages
 	ID_DEBUG_KEY_VERIFY_X_name_X_key_X			= "msg_dbg_key_verify"
@@ -169,8 +171,10 @@ const(
 
 var I18N_ID_SET = [](string){
 	ID_CMD_DESC_LONG_PUBLISH,
+	ID_CMD_DESC_LONG_REPORT,
 	ID_CMD_DESC_LONG_ROOT,
 	ID_CMD_DESC_SHORT_PUBLISH,
+	ID_CMD_DESC_SHORT_REPORT,
 	ID_CMD_DESC_SHORT_ROOT,
 	ID_CMD_FLAG_API_HOST,
 	ID_CMD_FLAG_API_VERSION,

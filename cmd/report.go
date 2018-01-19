@@ -39,12 +39,10 @@ var wg sync.WaitGroup
 // reportCmd represents the report command
 // TODO(#683) short and long desc. should be translated for i18n
 var reportCmd = &cobra.Command{
-	Use:   "report",
-	SuggestFor: []string {"list"},
-	Short: "Returns summary of what's been deployed on OpenWhisk in specific namespace",
-	Long: `Command helps user get an overall report about what's been deployed
-on OpenWhisk with specific OpenWhisk namespace. By default it will read the wsk property file
-located under current user home.`,
+	Use:		"report",
+	SuggestFor:	[]string {"list"},
+	Short:		wski18n.T(wski18n.ID_CMD_DESC_SHORT_REPORT),
+	Long:		wski18n.T(wski18n.ID_CMD_DESC_SHORT_REPORT),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if wskpropsPath != "" {
 			config, _ := deployers.NewWhiskConfig(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
@@ -159,6 +157,7 @@ func printList(collection interface{}) {
 	}
 }
 
+// TODO() use keywords defined as constants in yamlparser.go
 func printRuleList(rules []whisk.Rule) {
 	fmt.Fprintf(color.Output, "%s\n", boldString("rules"))
 	for _, rule := range rules {
@@ -170,6 +169,7 @@ func printRuleList(rules []whisk.Rule) {
 	}
 }
 
+// TODO() use keywords defined as constants in yamlparser.go
 func printPackageList(packages []whisk.Package) {
 	fmt.Fprintf(color.Output, "%s\n", boldString("packages"))
 	for _, xPackage := range packages {
@@ -181,6 +181,7 @@ func printPackageList(packages []whisk.Package) {
 	}
 }
 
+// TODO() use keywords defined as constants in yamlparser.go
 func printActionList(actions []whisk.Action) {
 	fmt.Fprintf(color.Output, "%s\n", boldString("actions"))
 	for _, action := range actions {
@@ -216,6 +217,7 @@ func getValueString(keyValueArr whisk.KeyValueArr, key string) string {
 		res = castedValue
 	}
 
+	// TODO() i18n
 	whisk.Debug(whisk.DbgInfo, "Got string value '%v' for key '%s'\n", res, key)
 
 	return res
@@ -231,11 +233,13 @@ func getValue(keyValueArr whisk.KeyValueArr, key string) interface{} {
 		}
 	}
 
+	// TODO() i18n
 	whisk.Debug(whisk.DbgInfo, "Got value '%v' from '%v' for key '%s'\n", res, keyValueArr, key)
 
 	return res
 }
 
+// TODO() use keywords defined as constants in yamlparser.go
 func printNamespaceList(namespaces []whisk.Namespace) {
 	fmt.Fprintf(color.Output, "%s\n", boldString("namespaces"))
 	for _, namespace := range namespaces {
@@ -243,6 +247,7 @@ func printNamespaceList(namespaces []whisk.Namespace) {
 	}
 }
 
+// TODO() use keywords defined as constants in yamlparser.go
 func printActivationList(activations []whisk.Activation) {
 	fmt.Fprintf(color.Output, "%s\n", boldString("activations"))
 	for _, activation := range activations {
