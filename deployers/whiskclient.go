@@ -248,7 +248,6 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 	// validate we have credential, apihost and namespace
 	err := validateClientConfig(credential, apiHost, namespace)
-
 	return clientConfig, err
 }
 

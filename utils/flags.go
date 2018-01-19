@@ -17,7 +17,7 @@
 
 package utils
 
-var Flags struct {
+type WskDeployFlags struct {
 	WithinOpenWhisk bool   // is this running within an OpenWhisk action?
 	ApiHost         string // OpenWhisk API host
 	Auth            string // OpenWhisk API key
@@ -37,19 +37,57 @@ var Flags struct {
 	Cert		string
 	Managed 	bool   // OpenWhisk Managed Deployments
 
-	//action flag definition
-	//from go cli
+			       //action flag definition
+			       //from go cli
 	action struct {
-		docker   bool
-		copy     bool
-		pipe     bool
-		web      string
-		sequence bool
-		timeout  int
-		memory   int
-		logsize  int
-		result   bool
-		kind     string
-		main     string
-	}
+				docker   bool
+				copy     bool
+				pipe     bool
+				web      string
+				sequence bool
+				timeout  int
+				memory   int
+				logsize  int
+				result   bool
+				kind     string
+				main     string
+			}
 }
+
+var Flags WskDeployFlags
+//struct {
+	//WithinOpenWhisk bool   // is this running within an OpenWhisk action?
+	//ApiHost         string // OpenWhisk API host
+	//Auth            string // OpenWhisk API key
+	//Namespace       string
+	//ApiVersion      string // OpenWhisk version
+	//CfgFile         string
+	//CliVersion      string
+	//CliBuild        string
+	//Verbose         bool
+	//ProjectPath     string
+	//DeploymentPath  string
+	//ManifestPath    string
+	//UseDefaults     bool
+	//UseInteractive  bool
+	//Strict          bool   // strict flag to support user defined runtime version.
+	//Key		string
+	//Cert		string
+	//Managed 	bool   // OpenWhisk Managed Deployments
+	//
+	////action flag definition
+	////from go cli
+	//action struct {
+	//	docker   bool
+	//	copy     bool
+	//	pipe     bool
+	//	web      string
+	//	sequence bool
+	//	timeout  int
+	//	memory   int
+	//	logsize  int
+	//	result   bool
+	//	kind     string
+	//	main     string
+	//}
+//}

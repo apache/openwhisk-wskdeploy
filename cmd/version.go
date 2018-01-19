@@ -27,6 +27,7 @@ func init() {
 	RootCmd.AddCommand(versionCmd)
 }
 
+// TODO() i18n
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	SuggestFor: []string {"edition", "release"},
