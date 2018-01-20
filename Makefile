@@ -9,15 +9,9 @@ BUILD=`git rev-parse HEAD`
 
 deps:
 	@echo "Installing dependencies"
-	go get -d -t ./...
-
+	godep restore -v
 
 LDFLAGS=-ldflags "-X main.Version=`date -u '+%Y-%m-%dT%H:%M:%S'` -X main.Build=`git rev-parse HEAD` "
-
-updatedeps:
-	@echo "Updating all dependencies"
-	@go get -d -u -f -fix -t ./...
-
 
 test: deps
 	@echo "Testing"
