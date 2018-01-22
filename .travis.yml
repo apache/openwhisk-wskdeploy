@@ -12,6 +12,7 @@ install:
 - export DEPLOY_BUILD_READY=false
 - go get -u github.com/golang/lint/golint
 - go get -u github.com/stretchr/testify
+- go get -u github.com/tools/godep
 script:
 - echo $TRAVIS
 - echo $TRAVIS_PULL_REQUEST
