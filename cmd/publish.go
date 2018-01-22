@@ -50,7 +50,7 @@ var publishCmd = &cobra.Command{
 		registry, ok := configs["REGISTRY"]
 		if !ok {
 			wskprint.PrintOpenWhiskError(
-				wski18n.T(wski18n.ID_ERR_INVALID_URL_X_urltype_X_url_X_filetype_X,
+				wski18n.T(wski18n.ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
 					map[string]interface{}{
 						wski18n.KEY_URL_TYPE: parsers.REGISTRY,
 						wski18n.KEY_URL: "",
@@ -69,7 +69,7 @@ var publishCmd = &cobra.Command{
 
 				// Tell user the URL they entered was invalid, try again...
 				wskprint.PrintOpenWhiskError(
-					wski18n.T(wski18n.ID_ERR_MALFORMED_URL_X_urltype_X_url_X,
+					wski18n.T(wski18n.ID_ERR_URL_MALFORMED_X_urltype_X_url_X,
 						map[string]interface{}{
 							wski18n.KEY_URL_TYPE: parsers.REGISTRY,
 							wski18n.KEY_URL: registry}))
@@ -92,7 +92,7 @@ var publishCmd = &cobra.Command{
 			l := len(paths)
 			if l < 2 {
 				wskprint.PrintOpenWhiskError(
-					wski18n.T(wski18n.ID_ERR_INVALID_URL_X_urltype_X_url_X_filetype_X,
+					wski18n.T(wski18n.ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
 						map[string]interface{}{
 							wski18n.KEY_URL_TYPE: parsers.REPOSITORY,
 							wski18n.KEY_URL: repoURL,
@@ -116,7 +116,7 @@ var publishCmd = &cobra.Command{
 
 		} else {
 			wskprint.PrintOpenWhiskError(
-				wski18n.T(wski18n.ID_ERR_INVALID_URL_X_urltype_X_url_X_filetype_X,
+				wski18n.T(wski18n.ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
 					map[string]interface{}{
 						wski18n.KEY_URL_TYPE: parsers.REPOSITORY,
 						wski18n.KEY_URL: "",

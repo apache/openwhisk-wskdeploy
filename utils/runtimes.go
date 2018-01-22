@@ -94,7 +94,7 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	res, err := netClient.Do(req)
 	if err != nil {
 		// TODO() create an error
-		errString := wski18n.T(wski18n.ID_ERR_GET_RUNTIMES_X_err_X,
+		errString := wski18n.T(wski18n.ID_ERR_RUNTIMES_GET_X_err_X,
 			map[string]interface{}{"err": err.Error()})
 		whisk.Debug(whisk.DbgWarn, errString)
 	}

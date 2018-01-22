@@ -141,7 +141,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		// OpenWhisk entities are annotated with Project Name and therefore
 		// Project Name in manifest/deployment file is mandatory for managed deployments
 		if deployer.ProjectName == "" {
-			errmsg := wski18n.T(wski18n.ID_ERR_MISSING_MANDATORY_KEY_X_key_X,
+			errmsg := wski18n.T(wski18n.ID_ERR_KEY_MISSING_X_key_X,
 				map[string]interface{}{wski18n.KEY_KEY: parsers.PROJECT_NAME})
 
 			return wskderrors.NewYAMLFileFormatError(manifest.Filepath, errmsg)
@@ -207,7 +207,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		if len(deploymentReader.DeploymentDescriptor.GetProject().Packages) != 0 && len(projectName) != 0 {
 			projectNameDeploy := deploymentReader.DeploymentDescriptor.GetProject().Name
 			if projectNameDeploy != projectName {
-				errorString := wski18n.T(wski18n.ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X,
+				errorString := wski18n.T(wski18n.ID_ERR_NAME_MISMATCH_X_key_X_dname_X_dpath_X_mname_X_moath_X,
 					map[string]interface{}{
 						wski18n.KEY_KEY: parsers.YAML_KEY_PROJECT,
 						wski18n.KEY_DEPLOYMENT_NAME: projectNameDeploy,
@@ -294,7 +294,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 		if len(deploymentReader.DeploymentDescriptor.GetProject().Packages) != 0 && len(projectName) != 0 {
 			projectNameDeploy := deploymentReader.DeploymentDescriptor.GetProject().Name
 			if projectNameDeploy != projectName {
-				errorString := wski18n.T(wski18n.ID_ERR_MISMATCH_NAME_X_key_X_dname_X_dpath_X_mname_X_moath_X,
+				errorString := wski18n.T(wski18n.ID_ERR_NAME_MISMATCH_X_key_X_dname_X_dpath_X_mname_X_moath_X,
 					map[string]interface{}{
 						wski18n.KEY_KEY: parsers.YAML_KEY_PROJECT,
 						wski18n.KEY_DEPLOYMENT_NAME: projectNameDeploy,

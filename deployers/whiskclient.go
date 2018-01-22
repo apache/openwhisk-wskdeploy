@@ -96,6 +96,11 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	key = GetPropertyValue(key, keyfile, COMMAND_LINE)
 	cert = GetPropertyValue(cert, certfile, COMMAND_LINE)
 
+        // Print all flags / values if verbose
+	wskprint.PrintOpenWhiskVerbose(
+		utils.Flags.Verbose,
+		"Global Flags: \n" + utils.Flags.Format())
+
 	// TODO() split this logic into its own function
 	// TODO() merge with the same logic used against manifest file (below)
 	// now, read them from deployment file if not found on command line

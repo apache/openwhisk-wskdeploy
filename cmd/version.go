@@ -19,21 +19,25 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 func init() {
 	RootCmd.AddCommand(versionCmd)
 }
 
-// TODO() i18n
 var versionCmd = &cobra.Command{
-	Use:   "version",
+	Use:	"version",
 	SuggestFor: []string {"edition", "release"},
-	Short: "Print the version number of openwhisk-wskdeploy",
-	Long:  `Print the version number of openwhisk-wskdeploy`,
+	Short:	wski18n.T(wski18n.ID_CMD_DESC_SHORT_VERSION),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("openwhisk-wskdeploy version is %s--%s\n", utils.Flags.CliBuild, utils.Flags.CliVersion)
+		wskprint.PrintlnOpenWhiskOutput(
+			// Note: no need to translate the following string
+			fmt.Sprintf("wskdeploy build-version: %s--%s",
+				utils.Flags.CliBuild,
+				utils.Flags.CliVersion))
 	},
 }

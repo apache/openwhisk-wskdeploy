@@ -21,17 +21,17 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-
+	"github.com/spf13/cobra"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/spf13/cobra"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
-	Use:   "add",
+	Use:	"add",
 	SuggestFor: []string {"increase"},
-	Short: "Add an action, feed, trigger or rule to the manifest",
+	Short:	wski18n.T(wski18n.ID_CMD_DESC_SHORT_ADD),
 }
 
 // action represents the `add action` command

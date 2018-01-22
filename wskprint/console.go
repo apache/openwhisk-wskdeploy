@@ -78,27 +78,10 @@ func PrintlnOpenWhiskOutput(message string) {
 
 func PrintOpenWhiskVerbose(verbose bool, message string) {
 	if verbose{
-		PrintlnOpenWhiskOutput(message)
+		PrintOpenWhiskStatus(message)
 	}
 }
 
 func PrintlnOpenWhiskVerbose(verbose bool, message string) {
 	PrintOpenWhiskVerbose(verbose, message + "\n")
 }
-
-
-//func PrintStruc(){
-//
-//	flagNames := reflect.TypeOf(utils.Flags)
-//	flagValues := reflect.ValueOf(utils.Flags)
-//	//fieldCount := flags.NumField()
-//	var name string
-//	var value interface{}
-//	for i := 0; i < flagNames.NumField(); i++  {
-//		//params = params +  "&" + st.Field(i).Tag.Get("paramName") + "=" + st.Field(i).Name
-//		name = flagNames.Field(i).Name
-//		value = flagValues.Field(i)
-//		out := fmt.Sprintf("%s: [%v]", name, value)
-//		fmt.Println(out)
-//	}
-//}

@@ -243,7 +243,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	// TODO(#673) implement STRICT flag
 	if pkg.Version == "" {
 		warningString := wski18n.T(
-			wski18n.ID_WARN_MISSING_MANDATORY_KEY_X_key_X_value_X,
+			wski18n.ID_WARN_KEY_MISSING_X_key_X_value_X,
 			map[string]interface{}{
 				wski18n.KEY_KEY: PACKAGE_VERSION,
 				wski18n.KEY_VALUE: DEFAULT_PACKAGE_VERSION})
@@ -263,7 +263,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	// TODO(#673) implement STRICT flag
 	if pkg.License == "" {
 		warningString := wski18n.T(
-			wski18n.ID_WARN_MISSING_MANDATORY_KEY_X_key_X_value_X,
+			wski18n.ID_WARN_KEY_MISSING_X_key_X_value_X,
 			map[string]interface{}{
 				wski18n.KEY_KEY: PACKAGE_LICENSE,
 				wski18n.KEY_VALUE: DEFAULT_PACKAGE_LICENSE})
@@ -671,21 +671,21 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			if utils.LimitsTimeoutValidation(action.Limits.Timeout) {
 				wsklimits.Timeout = action.Limits.Timeout
 			} else {
-				warningString := wski18n.T(wski18n.ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
+				warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
 					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_TIMEOUT})
 				wskprint.PrintOpenWhiskWarning(warningString)
 			}
 			if utils.LimitsMemoryValidation(action.Limits.Memory) {
 				wsklimits.Memory = action.Limits.Memory
 			} else {
-				warningString := wski18n.T(wski18n.ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
+				warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
 					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_MEMORY_SIZE})
 				wskprint.PrintOpenWhiskWarning(warningString)
 			}
 			if utils.LimitsLogsizeValidation(action.Limits.Logsize) {
 				wsklimits.Logsize = action.Limits.Logsize
 			} else {
-				warningString := wski18n.T(wski18n.ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
+				warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
 					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_LOG_SIZE})
 				wskprint.PrintOpenWhiskWarning(warningString)
 			}
