@@ -24,7 +24,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
-	"github.com/openwhisk/wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 )
 
 type DeploymentReader struct {
