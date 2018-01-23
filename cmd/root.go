@@ -21,19 +21,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/spf13/cobra"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"github.com/spf13/cobra"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 var stderr = ""
@@ -292,7 +291,7 @@ func Undeploy() error {
 			// TODO() have a single function that conditionally (verbose) prints ALL Flags
 			dbgMsg := fmt.Sprintf("%s >> [%s]: [%s]",
 				wski18n.T(wski18n.ID_DEBUG_UNDEPLOYING_USING),
-				parsers.DEPLOYMENT,
+				wski18n.DEPLOYMENT,
 				utils.Flags.DeploymentPath)
 			wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
 
@@ -301,7 +300,7 @@ func Undeploy() error {
 			// TODO() have a single function that conditionally (verbose) prints ALL Flags
 			dbgMsg := fmt.Sprintf("%s >> [%s]: [%s]",
 				wski18n.T(wski18n.ID_DEBUG_UNDEPLOYING_USING),
-				parsers.DEPLOYMENT,
+				wski18n.DEPLOYMENT,
 				utils.Flags.DeploymentPath)
 			wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
 		}

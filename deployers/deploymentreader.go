@@ -81,7 +81,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 				map[string]interface{}{
 					wski18n.KEY_OLD: parsers.YAML_KEY_PACKAGE,
 					wski18n.KEY_NEW: parsers.YAML_KEY_PACKAGES,
-					wski18n.KEY_FILE_TYPE: parsers.DEPLOYMENT})
+					wski18n.KEY_FILE_TYPE: wski18n.DEPLOYMENT})
 			wskprint.PrintlnOpenWhiskWarning(warningString)
 		} else {
 			if reader.DeploymentDescriptor.Packages != nil {
@@ -108,7 +108,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 			warningString := wski18n.T(
 				wski18n.ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 				map[string]interface{}{
-					wski18n.KEY_KEY: parsers.PACKAGE_NAME,
+					wski18n.KEY_KEY: wski18n.PACKAGE_NAME,
 					wski18n.KEY_NAME: packName })
 			wskprint.PrintlnOpenWhiskWarning(warningString)
 			break

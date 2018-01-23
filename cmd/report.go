@@ -22,13 +22,13 @@ import (
 	"path"
 	"sync"
 	"os"
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 )
 
 var wskpropsPath string
@@ -37,7 +37,6 @@ var client *whisk.Client
 var wg sync.WaitGroup
 
 // reportCmd represents the report command
-// TODO(#683) short and long desc. should be translated for i18n
 var reportCmd = &cobra.Command{
 	Use:		"report",
 	SuggestFor:	[]string {"list"},
@@ -76,16 +75,13 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// reportCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 }
-
-var boldString = color.New(color.Bold).SprintFunc()
 
 func printDeploymentInfo(client *whisk.Client) error {
 	//We currently list packages, actions, triggers, rules.
 	wg.Add(4)
 
-	wskprint.PrintlnOpenWhiskStatus(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_REPORT))
+	wskprint.PrintlnOpenWhiskInfo(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_REPORT))
 	// we set the default package list options
 	pkgoptions := &whisk.PackageListOptions{false, 0, 0, 0, false}
 	packages, _, err := client.Packages.List(pkgoptions)
@@ -163,7 +159,8 @@ func printList(collection interface{}) {
 
 // TODO() use keywords defined as constants in yamlparser.go
 func printRuleList(rules []whisk.Rule) {
-	fmt.Fprintf(color.Output, "%s\n", boldString("rules"))
+	//fmt.Fprintf(color.Output, "%s\n", boldString("rules"))
+	wskprint.PrintlnOpenWhiskInfoTitle("rules")
 	for _, rule := range rules {
 		publishState := wski18n.T("private")
 		if *rule.Publish {
@@ -173,9 +170,9 @@ func printRuleList(rules []whisk.Rule) {
 	}
 }
 
-// TODO() use keywords defined as constants in yamlparser.go
+// TODO() i18n private / shared never translated
 func printPackageList(packages []whisk.Package) {
-	fmt.Fprintf(color.Output, "%s\n", boldString("packages"))
+	wskprint.PrintlnOpenWhiskInfoTitle(parsers.YAML_KEY_PACKAGES)
 	for _, xPackage := range packages {
 		publishState := wski18n.T("private")
 		if *xPackage.Publish {
@@ -185,9 +182,9 @@ func printPackageList(packages []whisk.Package) {
 	}
 }
 
-// TODO() use keywords defined as constants in yamlparser.go
+// TODO() i18n private / shared never translated
 func printActionList(actions []whisk.Action) {
-	fmt.Fprintf(color.Output, "%s\n", boldString("actions"))
+	wskprint.PrintlnOpenWhiskInfoTitle(parsers.YAML_KEY_ACTION) // TODO() Plural
 	for _, action := range actions {
 		publishState := wski18n.T("private")
 		if *action.Publish {
@@ -200,7 +197,8 @@ func printActionList(actions []whisk.Action) {
 
 /*
 func printTriggerList(triggers whisk.Trigger) {
-	fmt.Fprintf(color.Output, "%s\n", boldString("triggers"))
+	//fmt.Fprintf(color.Output, "%s\n", boldString("triggers"))
+	wskprint.PrintlnOpenWhiskInfoTitle(parsers.YAML_KEY_TRIGGER) // TODO() Plural
 	for _, trigger := range triggers {
 		publishState := wski18n.T("private")
 		if trigger.Publish {
@@ -245,7 +243,7 @@ func getValue(keyValueArr whisk.KeyValueArr, key string) interface{} {
 
 // TODO() use keywords defined as constants in yamlparser.go
 func printNamespaceList(namespaces []whisk.Namespace) {
-	fmt.Fprintf(color.Output, "%s\n", boldString("namespaces"))
+	wskprint.PrintlnOpenWhiskInfo(parsers.YAML_KEY_NAMESPACE)  // TODO() plural
 	for _, namespace := range namespaces {
 		fmt.Printf("%s\n", namespace.Name)
 	}
@@ -253,7 +251,8 @@ func printNamespaceList(namespaces []whisk.Namespace) {
 
 // TODO() use keywords defined as constants in yamlparser.go
 func printActivationList(activations []whisk.Activation) {
-	fmt.Fprintf(color.Output, "%s\n", boldString("activations"))
+	//fmt.Fprintf(color.Output, "%s\n", boldString("activations"))
+	wskprint.PrintlnOpenWhiskInfo("activations")  // TODO() i18n, plural
 	for _, activation := range activations {
 		fmt.Printf("%s %20s\n", activation.ActivationID, activation.Name)
 	}

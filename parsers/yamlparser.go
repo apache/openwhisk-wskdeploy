@@ -40,25 +40,6 @@ const(
 	YAML_KEY_SOURCE		= "source"	// deprecated
 )
 
-// descriptive key names
-// Do NOT translate
-const (
-	API_HOST		= "API host"
-	AUTH_KEY		= "authentication key"
-	DEPLOYMENT		= "deployment"
-	MANIFEST		= "manifest"
-	PACKAGE_BINDING 	= "package binding"
-	PACKAGE_LICENSE 	= "package license"
-	PACKAGE_NAME	 	= "package name"
-	PACKAGE_VERSION 	= "package version"
-	PROJECT_NAME		= "project name"
-	REGISTRY		= "registry"
-	REGISTRY_URL		= "registry URL"
-	REPOSITORY		= "repository"
-	TRIGGER_FEED		= "trigger feed"
-	WHISK_PROPS		= "wskprops"
-)
-
 // YAML schema key values
 const(
 	YAML_VALUE_BRANCH_MASTER	= "master"

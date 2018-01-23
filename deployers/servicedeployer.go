@@ -142,7 +142,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		// Project Name in manifest/deployment file is mandatory for managed deployments
 		if deployer.ProjectName == "" {
 			errmsg := wski18n.T(wski18n.ID_ERR_KEY_MISSING_X_key_X,
-				map[string]interface{}{wski18n.KEY_KEY: parsers.PROJECT_NAME})
+				map[string]interface{}{wski18n.KEY_KEY: wski18n.PROJECT_NAME})
 
 			return wskderrors.NewYAMLFileFormatError(manifest.Filepath, errmsg)
 		}
@@ -182,7 +182,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 			map[string]interface{}{
 				wski18n.KEY_OLD: parsers.YAML_KEY_APPLICATION,
 				wski18n.KEY_NEW: parsers.YAML_KEY_PROJECT,
-				wski18n.KEY_FILE_TYPE: parsers.MANIFEST}))
+				wski18n.KEY_FILE_TYPE: wski18n.MANIFEST}))
 	}
 
 	// process deployment file
@@ -200,7 +200,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 				map[string]interface{}{
 					wski18n.KEY_OLD: parsers.YAML_KEY_APPLICATION,
 					wski18n.KEY_NEW: parsers.YAML_KEY_PROJECT,
-					wski18n.KEY_FILE_TYPE: parsers.DEPLOYMENT}))
+					wski18n.KEY_FILE_TYPE: wski18n.DEPLOYMENT}))
 		}
 
 		// compare the name of the project
@@ -270,7 +270,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 			map[string]interface{}{
 				wski18n.KEY_OLD: parsers.YAML_KEY_APPLICATION,
 				wski18n.KEY_NEW: parsers.YAML_KEY_PROJECT,
-				wski18n.KEY_FILE_TYPE: parsers.MANIFEST}))
+				wski18n.KEY_FILE_TYPE: wski18n.MANIFEST}))
 	}
 
 	// process deployment file
@@ -287,7 +287,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 				map[string]interface{}{
 					wski18n.KEY_OLD: parsers.YAML_KEY_APPLICATION,
 					wski18n.KEY_NEW: parsers.YAML_KEY_PROJECT,
-					wski18n.KEY_FILE_TYPE: parsers.DEPLOYMENT}))
+					wski18n.KEY_FILE_TYPE: wski18n.DEPLOYMENT}))
 		}
 
 		// compare the name of the application
@@ -737,7 +737,7 @@ func (deployer *ServiceDeployer) DeployApis() error {
 
 func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) error {
 
-	displayPreprocessingInfo(parsers.PACKAGE_BINDING, packa.Name, true)
+	displayPreprocessingInfo(wski18n.PACKAGE_BINDING, packa.Name, true)
 
 	var err error
 	var response *http.Response
@@ -747,10 +747,10 @@ func (deployer *ServiceDeployer) createBinding(packa *whisk.BindingPackage) erro
 	})
 
 	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, parsers.PACKAGE_BINDING, true)
+		return createWhiskClientError(err.(*whisk.WskError), response, wski18n.PACKAGE_BINDING, true)
 	}
 
-	displayPostprocessingInfo(parsers.PACKAGE_BINDING, packa.Name, true)
+	displayPostprocessingInfo(wski18n.PACKAGE_BINDING, packa.Name, true)
 	return nil
 }
 
@@ -792,7 +792,7 @@ func (deployer *ServiceDeployer) createTrigger(trigger *whisk.Trigger) error {
 
 func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedName string) error {
 
-	displayPreprocessingInfo(parsers.TRIGGER_FEED, trigger.Name, true)
+	displayPreprocessingInfo(wski18n.TRIGGER_FEED, trigger.Name, true)
 
 	// to hold and modify trigger parameters, not passed by ref?
 	params := make(map[string]interface{})
@@ -833,7 +833,7 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 		return err
 	})
 	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, parsers.TRIGGER_FEED, true)
+		return createWhiskClientError(err.(*whisk.WskError), response, wski18n.TRIGGER_FEED, true)
 	} else {
 
 		qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
@@ -858,11 +858,11 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 				return err
 			})
 
-			return createWhiskClientError(err.(*whisk.WskError), response, parsers.TRIGGER_FEED, false)
+			return createWhiskClientError(err.(*whisk.WskError), response, wski18n.TRIGGER_FEED, false)
 		}
 	}
 
-	displayPostprocessingInfo(parsers.TRIGGER_FEED, trigger.Name, true)
+	displayPostprocessingInfo(wski18n.TRIGGER_FEED, trigger.Name, true)
 	return nil
 }
 
@@ -1055,7 +1055,7 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
 							return err
 						})
 						if err != nil {
-							return createWhiskClientError(err.(*whisk.WskError), response, parsers.PACKAGE_BINDING, false)
+							return createWhiskClientError(err.(*whisk.WskError), response, wski18n.PACKAGE_BINDING, false)
 						}
 					}
 				}
@@ -1466,7 +1466,7 @@ func displayPreprocessingInfo(entity string, name string, onDeploy bool){
 		map[string]interface{}{
 			wski18n.KEY_KEY: entity,
 			wski18n.KEY_NAME: name})
-	wskprint.PrintlnOpenWhiskStatus(msg)
+	wskprint.PrintlnOpenWhiskInfo(msg)
 }
 
 func displayPostprocessingInfo(entity string, name string, onDeploy bool){
@@ -1481,7 +1481,7 @@ func displayPostprocessingInfo(entity string, name string, onDeploy bool){
 		map[string]interface{}{
 			wski18n.KEY_KEY: entity,
 			wski18n.KEY_NAME: name})
-	wskprint.PrintlnOpenWhiskStatus(msg)
+	wskprint.PrintlnOpenWhiskInfo(msg)
 }
 
 func createWhiskClientError(err *whisk.WskError, response *http.Response, entity string, onCreate bool)(*wskderrors.WhiskClientError){

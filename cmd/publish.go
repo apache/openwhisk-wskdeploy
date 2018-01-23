@@ -52,14 +52,14 @@ var publishCmd = &cobra.Command{
 			wskprint.PrintOpenWhiskError(
 				wski18n.T(wski18n.ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
 					map[string]interface{}{
-						wski18n.KEY_URL_TYPE: parsers.REGISTRY,
+						wski18n.KEY_URL_TYPE: wski18n.REGISTRY,
 						wski18n.KEY_URL: "",
-						wski18n.KEY_FILE_TYPE: parsers.WHISK_PROPS}))
+						wski18n.KEY_FILE_TYPE: wski18n.WHISK_PROPS}))
 
 			// TODO() should only read if interactive mode is on
 			reader := bufio.NewReader(os.Stdin)
 			for {
-				registry = utils.Ask(reader, parsers.REGISTRY_URL, "")
+				registry = utils.Ask(reader, wski18n.REGISTRY_URL, "")
 
 				_, err := url.Parse(registry)
 				if err == nil {
@@ -71,7 +71,7 @@ var publishCmd = &cobra.Command{
 				wskprint.PrintOpenWhiskError(
 					wski18n.T(wski18n.ID_ERR_URL_MALFORMED_X_urltype_X_url_X,
 						map[string]interface{}{
-							wski18n.KEY_URL_TYPE: parsers.REGISTRY,
+							wski18n.KEY_URL_TYPE: wski18n.REGISTRY,
 							wski18n.KEY_URL: registry}))
 			}
 
@@ -94,9 +94,9 @@ var publishCmd = &cobra.Command{
 				wskprint.PrintOpenWhiskError(
 					wski18n.T(wski18n.ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
 						map[string]interface{}{
-							wski18n.KEY_URL_TYPE: parsers.REPOSITORY,
+							wski18n.KEY_URL_TYPE: wski18n.REPOSITORY,
 							wski18n.KEY_URL: repoURL,
-							wski18n.KEY_FILE_TYPE: parsers.MANIFEST}))
+							wski18n.KEY_FILE_TYPE: wski18n.MANIFEST}))
 				return nil
 			}
 
@@ -118,9 +118,9 @@ var publishCmd = &cobra.Command{
 			wskprint.PrintOpenWhiskError(
 				wski18n.T(wski18n.ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
 					map[string]interface{}{
-						wski18n.KEY_URL_TYPE: parsers.REPOSITORY,
+						wski18n.KEY_URL_TYPE: wski18n.REPOSITORY,
 						wski18n.KEY_URL: "",
-						wski18n.KEY_FILE_TYPE: parsers.MANIFEST}))
+						wski18n.KEY_FILE_TYPE: wski18n.MANIFEST}))
 		}
 		return nil
 	},

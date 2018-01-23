@@ -245,13 +245,13 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		warningString := wski18n.T(
 			wski18n.ID_WARN_KEY_MISSING_X_key_X_value_X,
 			map[string]interface{}{
-				wski18n.KEY_KEY: PACKAGE_VERSION,
+				wski18n.KEY_KEY: wski18n.PACKAGE_VERSION,
 				wski18n.KEY_VALUE: DEFAULT_PACKAGE_VERSION})
 		wskprint.PrintOpenWhiskWarning(warningString)
 
 		warningString = wski18n.T(
 			wski18n.ID_WARN_KEYVALUE_NOT_SAVED_X_key_X,
-			map[string]interface{}{wski18n.KEY_KEY: PACKAGE_VERSION})
+			map[string]interface{}{wski18n.KEY_KEY: wski18n.PACKAGE_VERSION})
 
 		wskprint.PrintOpenWhiskWarning(warningString)
 		pkg.Version = DEFAULT_PACKAGE_VERSION
@@ -265,13 +265,13 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		warningString := wski18n.T(
 			wski18n.ID_WARN_KEY_MISSING_X_key_X_value_X,
 			map[string]interface{}{
-				wski18n.KEY_KEY: PACKAGE_LICENSE,
+				wski18n.KEY_KEY: wski18n.PACKAGE_LICENSE,
 				wski18n.KEY_VALUE: DEFAULT_PACKAGE_LICENSE})
 		wskprint.PrintOpenWhiskWarning(warningString)
 
 		warningString = wski18n.T(
 			wski18n.ID_WARN_KEYVALUE_NOT_SAVED_X_key_X,
-			map[string]interface{}{wski18n.KEY_KEY: PACKAGE_VERSION})
+			map[string]interface{}{wski18n.KEY_KEY: wski18n.PACKAGE_VERSION})
 
 		wskprint.PrintOpenWhiskWarning(warningString)
 
@@ -755,7 +755,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 				map[string]interface{}{
 					wski18n.KEY_OLD: YAML_KEY_SOURCE,
 					wski18n.KEY_NEW: YAML_KEY_FEED,
-					wski18n.KEY_FILE_TYPE: MANIFEST})
+					wski18n.KEY_FILE_TYPE: wski18n.MANIFEST})
 			wskprint.PrintOpenWhiskWarning(warningString)
 		}
 		if trigger.Feed == "" {

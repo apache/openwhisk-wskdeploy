@@ -41,23 +41,6 @@ type WskDeployFlags struct {
 	Key		string
 	Cert		string
 	Managed 	bool   // OpenWhisk Managed Deployments
-
-	// TODO() verify we can delete the following struct
-			       //action flag definition
-			       //from go cli
-	//action struct {
-	//			docker   bool
-	//			copy     bool
-	//			pipe     bool
-	//			web      string
-	//			sequence bool
-	//			timeout  int
-	//			memory   int
-	//			logsize  int
-	//			result   bool
-	//			kind     string
-	//			main     string
-	//		}
 }
 
 func (flags *WskDeployFlags) Format() string {

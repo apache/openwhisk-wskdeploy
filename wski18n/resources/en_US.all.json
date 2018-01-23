@@ -125,7 +125,7 @@
   },
   {
     "id": "msg_config_apihost_info",
-    "translation": "The API host is {{.host}}, from {{.source}}.\n"
+    "translation": "The API host is [{{.host}}], from {{.source}}.\n"
   },
   {
     "id": "msg_config_authkey_info",
@@ -133,7 +133,7 @@
   },
   {
     "id": "msg_config_namespace_info",
-    "translation": "The namespace is {{.namespace}}, from {{.source}}.\n"
+    "translation": "The namespace is [{{.namespace}}], from {{.source}}.\n"
   },
   {
     "id": "msg_unmarshall_local",

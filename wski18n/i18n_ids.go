@@ -17,6 +17,25 @@
 
 package wski18n
 
+// descriptive key names
+// Do NOT translate
+const (
+	API_HOST		= "API host"
+	AUTH_KEY		= "authentication key"
+	DEPLOYMENT		= "deployment"
+	MANIFEST		= "manifest"
+	PACKAGE_BINDING 	= "package binding"
+	PACKAGE_LICENSE 	= "package license"
+	PACKAGE_NAME	 	= "package name"
+	PACKAGE_VERSION 	= "package version"
+	PROJECT_NAME		= "project name"
+	REGISTRY		= "registry"
+	REGISTRY_URL		= "registry URL"
+	REPOSITORY		= "repository"
+	TRIGGER_FEED		= "trigger feed"
+	WHISK_PROPS		= "wskprops"
+)
+
 const(
 	// Debug / trace message prefixes
 	ID_MSG_PREFIX_ERROR	= "msg_prefix_error"	// "Error"
@@ -29,6 +48,8 @@ const(
 	ID_CMD_DESC_LONG_REPORT		= "msg_cmd_desc_long_report"
 	ID_CMD_DESC_LONG_ROOT		= "msg_cmd_desc_long_root"
 	ID_CMD_DESC_SHORT_ADD		= "msg_cmd_desc_short_add"
+	ID_CMD_DESC_SHORT_ADD_ACTION	= "msg_cmd_desc_short_add_action"
+
 	ID_CMD_DESC_SHORT_PUBLISH	= "msg_cmd_desc_short_publish"
 	ID_CMD_DESC_SHORT_REPORT	= "msg_cmd_desc_short_report"
 	ID_CMD_DESC_SHORT_ROOT		= "msg_cmd_desc_short_root"

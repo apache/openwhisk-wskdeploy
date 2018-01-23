@@ -96,6 +96,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	key = GetPropertyValue(key, keyfile, COMMAND_LINE)
 	cert = GetPropertyValue(cert, certfile, COMMAND_LINE)
 
+	// TODO() i18n
         // Print all flags / values if verbose
 	wskprint.PrintOpenWhiskVerbose(
 		utils.Flags.Verbose,
@@ -178,7 +179,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	credential = GetPropertyValue(credential, whiskproperty.AuthKey, WHISKPROPERTY)
 	if credential.Source == WHISKPROPERTY {
 		warnMsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
-			map[string]interface{}{wski18n.KEY_KEY: parsers.AUTH_KEY})
+			map[string]interface{}{wski18n.KEY_KEY: wski18n.AUTH_KEY})
 		wskprint.PrintlnOpenWhiskWarning(warnMsg)
 	}
 	namespace = GetPropertyValue(namespace, whiskproperty.Namespace, WHISKPROPERTY)
@@ -190,7 +191,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	apiHost = GetPropertyValue(apiHost, whiskproperty.APIHost, WHISKPROPERTY)
 	if apiHost.Source == WHISKPROPERTY {
 		warnMsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
-			map[string]interface{}{wski18n.KEY_KEY: parsers.API_HOST})
+			map[string]interface{}{wski18n.KEY_KEY: wski18n.API_HOST})
 		wskprint.PrintlnOpenWhiskWarning(warnMsg)
 	}
 
@@ -279,15 +280,15 @@ func validateClientConfig(credential PropertyValue, apiHost PropertyValue, names
 	// Show caller what final values we used for credential, apihost and namespace
 	stdout := wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
 		map[string]interface{}{wski18n.KEY_HOST: apiHost.Value, wski18n.KEY_SOURCE: apiHost.Source})
-	wskprint.PrintOpenWhiskStatus(stdout)
+	wskprint.PrintOpenWhiskInfo(stdout)
 
 	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
 		map[string]interface{}{wski18n.KEY_SOURCE: credential.Source})
-	wskprint.PrintOpenWhiskStatus(stdout)
+	wskprint.PrintOpenWhiskInfo(stdout)
 
 	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
 		map[string]interface{}{wski18n.KEY_NAMESPACE: namespace.Value, wski18n.KEY_SOURCE: namespace.Source})
-	wskprint.PrintOpenWhiskStatus(stdout)
+	wskprint.PrintOpenWhiskInfo(stdout)
 
 	return nil
 }
