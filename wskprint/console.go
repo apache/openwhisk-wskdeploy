@@ -38,8 +38,9 @@ var(
 
 func PrintOpenWhiskError(message string) {
 	outputStream := colorable.NewColorableStderr()
-	fmt.Fprintf(outputStream,COLOR_ERROR.Sprintf( STR_PREFIXED_MESSAGE,
-		wski18n.T(wski18n.ID_MSG_PREFIX_ERROR), message))
+	//fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(wski18n.ID_MSG_PREFIX_ERROR), message)
+	//fmt.Fprintf(outputStream, color.RedString(fmsg))
+	fmt.Fprintf(outputStream,COLOR_ERROR.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(wski18n.ID_MSG_PREFIX_ERROR), message))
 }
 
 func PrintOpenWhiskFromError(err error) {

@@ -9,8 +9,8 @@
 		},
 		{
 			"ImportPath": "github.com/fatih/color",
-			"Comment": "v1.1.0-4-gbf82308",
-			"Rev": "bf82308e8c8546dc2b945157173eb8a959ae9505"
+			"Comment": "v1.5.0",
+			"Rev": "570b54cabe6b8eb0bc2dfce68d964677d63b5260"
 		},
 		{
 			"ImportPath": "github.com/fsnotify/fsnotify",
