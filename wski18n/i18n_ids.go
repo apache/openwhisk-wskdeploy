@@ -18,7 +18,7 @@
 package wski18n
 
 // descriptive key names
-// Do NOT translate
+// DO NOT TRANSLATE
 const (
 	API_HOST		= "API host"
 	AUTH_KEY		= "authentication key"
@@ -34,8 +34,15 @@ const (
 	REPOSITORY		= "repository"
 	TRIGGER_FEED		= "trigger feed"
 	WHISK_PROPS		= "wskprops"
+	NAME_ACTION		= "Action Name"
+	NAME_RULE		= "Rule Name"
+	NAME_TRIGGER		= "Trigger Name"
+	NAME_FEED		= "Feed Name"
+	NAME_RUNTIME		= "Runtime Name"
 )
 
+// i18n Identifiers
+// DO NOT TRANSLATE
 const(
 	// Debug / trace message prefixes
 	ID_MSG_PREFIX_ERROR	= "msg_prefix_error"	// "Error"
@@ -48,8 +55,7 @@ const(
 	ID_CMD_DESC_LONG_REPORT		= "msg_cmd_desc_long_report"
 	ID_CMD_DESC_LONG_ROOT		= "msg_cmd_desc_long_root"
 	ID_CMD_DESC_SHORT_ADD		= "msg_cmd_desc_short_add"
-	ID_CMD_DESC_SHORT_ADD_ACTION	= "msg_cmd_desc_short_add_action"
-
+	ID_CMD_DESC_SHORT_ADD_X_key_X	= "msg_cmd_desc_short_add_entity"
 	ID_CMD_DESC_SHORT_PUBLISH	= "msg_cmd_desc_short_publish"
 	ID_CMD_DESC_SHORT_REPORT	= "msg_cmd_desc_short_report"
 	ID_CMD_DESC_SHORT_ROOT		= "msg_cmd_desc_short_root"
@@ -154,6 +160,7 @@ const(
 	ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X		= "msg_warn_runtime_changed"
 	ID_WARN_VALUE_RANGE_X_name_X_key_X_filetype_X_min_X_max_X = "msg_warn_value_range"		// TODO() not used, but should be used for limit ranges
 	ID_WARN_WHISK_PROPS_DEPRECATED				= "msg_warn_whisk_properties"
+	ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X		= "msg_warn_entity_name_exists"
 
 	// Verbose (Debug/Trace) messages
 	ID_DEBUG_KEY_VERIFY_X_name_X_key_X			= "msg_dbg_key_verify"
@@ -197,6 +204,7 @@ var I18N_ID_SET = [](string){
 	ID_CMD_DESC_LONG_REPORT,
 	ID_CMD_DESC_LONG_ROOT,
 	ID_CMD_DESC_SHORT_ADD,
+	ID_CMD_DESC_SHORT_ADD_X_key_X,
 	ID_CMD_DESC_SHORT_PUBLISH,
 	ID_CMD_DESC_SHORT_REPORT,
 	ID_CMD_DESC_SHORT_ROOT,
@@ -274,6 +282,7 @@ var I18N_ID_SET = [](string){
 	ID_MSG_UNMARSHAL_NETWORK,
 	ID_WARN_COMMAND_RETRY,
 	ID_WARN_CONFIG_INVALID_X_path_X,
+	ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X,
 	ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 	ID_WARN_KEY_MISSING_X_key_X_value_X,
 	ID_WARN_KEYVALUE_INVALID,

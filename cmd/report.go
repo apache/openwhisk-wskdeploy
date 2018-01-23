@@ -41,7 +41,6 @@ var reportCmd = &cobra.Command{
 	Use:		"report",
 	SuggestFor:	[]string {"list"},
 	Short:		wski18n.T(wski18n.ID_CMD_DESC_SHORT_REPORT),
-	Long:		wski18n.T(wski18n.ID_CMD_DESC_SHORT_REPORT),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if wskpropsPath != "" {
 			config, _ := deployers.NewWhiskConfig(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
@@ -61,10 +60,10 @@ var reportCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(reportCmd)
 
-	// TODO() i18n, REMOVE this flag... the flag -config exists already
+	// TODO() REMOVE this flag... the flag -config exists already
 	reportCmd.Flags().StringVarP(&wskpropsPath, "wskproppath", "w",
 		path.Join(os.Getenv("HOME"), ".wskprops"),
-		"path to wsk property file, default is to ~/.wskprops")
+		wski18n.T(wski18n.ID_CMD_FLAG_CONFIG))
 
 	// Here you will define your flags and configuration settings.
 
@@ -159,8 +158,8 @@ func printList(collection interface{}) {
 
 // TODO() use keywords defined as constants in yamlparser.go
 func printRuleList(rules []whisk.Rule) {
-	//fmt.Fprintf(color.Output, "%s\n", boldString("rules"))
 	wskprint.PrintlnOpenWhiskInfoTitle("rules")
+
 	for _, rule := range rules {
 		publishState := wski18n.T("private")
 		if *rule.Publish {

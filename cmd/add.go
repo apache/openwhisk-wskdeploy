@@ -19,25 +19,26 @@ package cmd
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"github.com/spf13/cobra"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:	"add",
-	SuggestFor: []string {"increase"},
+	SuggestFor: []string {"insert"},
 	Short:	wski18n.T(wski18n.ID_CMD_DESC_SHORT_ADD),
 }
 
 // action represents the `add action` command
 var actionCmd = &cobra.Command{
 	Use:   "action",
-	Short: "add action to the manifest file and create default directory structure.",
+	Short: wski18n.T(wski18n.ID_CMD_DESC_SHORT_ADD_X_key_X,
+		map[string]interface{}{wski18n.KEY_KEY: parsers.YAML_KEY_ACTION}),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		maniyaml, err := parsers.ReadOrCreateManifest()
         if err != nil {
@@ -48,16 +49,23 @@ var actionCmd = &cobra.Command{
 	action := parsers.Action{}
 
 	for {
-		action.Name = utils.Ask(reader, "Name", "")
+		action.Name = utils.Ask(reader, wski18n.NAME_ACTION, "")
 
 		// Check action name is unique
 		if _, ok := maniyaml.Package.Actions[action.Name]; !ok {
 			break
 		}
-		fmt.Print(action.Name + " is already used. Pick another action name\n")
+
+		warnMsg := wski18n.T(wski18n.ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X,
+			map[string]interface{}{
+				wski18n.KEY_KEY: parsers.YAML_KEY_ACTION,
+				wski18n.KEY_NAME: action.Name})
+		wskprint.PrintOpenWhiskWarning(warnMsg)
 	}
 
-	action.Runtime = utils.Ask(reader, "Runtime", "nodejs:6")
+	// TODO() use programmatic way to get default runtime (not hardcoded)
+	// TODO() List, as part of promot, all currently supported runtime names(values)
+	action.Runtime = utils.Ask(reader, wski18n.NAME_RUNTIME, "nodejs:6")
 	maniyaml.Package.Actions[action.Name] = action
 
 	// Create directory structure before update manifest, as a way
@@ -75,7 +83,8 @@ var actionCmd = &cobra.Command{
 // trigger represents the `add trigger` command
 var triggerCmd = &cobra.Command{
 	Use:   "trigger",
-	Short: "add trigger to the manifest file.",
+	Short: wski18n.T(wski18n.ID_CMD_DESC_SHORT_ADD_X_key_X,
+		map[string]interface{}{wski18n.KEY_KEY: parsers.YAML_KEY_TRIGGER}),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		maniyaml, err := parsers.ReadOrCreateManifest()
         if err != nil {
@@ -86,16 +95,21 @@ var triggerCmd = &cobra.Command{
 		trigger := parsers.Trigger{}
 
 		for {
-			trigger.Name = utils.Ask(reader, "Name", "")
+			trigger.Name = utils.Ask(reader, wski18n.NAME_TRIGGER, "")
 
 			// Check trigger name is unique
 			if _, ok := maniyaml.Package.Triggers[trigger.Name]; !ok {
 				break
 			}
-			fmt.Print(trigger.Name + " is already used. Pick another trigger name\n")
+
+			warnMsg := wski18n.T(wski18n.ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X,
+				map[string]interface{}{
+					wski18n.KEY_KEY: parsers.YAML_KEY_TRIGGER,
+					wski18n.KEY_NAME: trigger.Name})
+			wskprint.PrintOpenWhiskWarning(warnMsg)
 		}
 
-		trigger.Feed = utils.Ask(reader, "Feed", "")
+		trigger.Feed = utils.Ask(reader, wski18n.NAME_FEED, "")
 		maniyaml.Package.Triggers[trigger.Name] = trigger
 
 		return parsers.Write(maniyaml, utils.ManifestFileNameYaml)
@@ -105,7 +119,8 @@ var triggerCmd = &cobra.Command{
 // rule represents the `add rule` command
 var ruleCmd = &cobra.Command{
 	Use:   "rule",
-	Short: "add rule to the manifest file.",
+	Short: wski18n.T(wski18n.ID_CMD_DESC_SHORT_ADD_X_key_X,
+		map[string]interface{}{wski18n.KEY_KEY: parsers.YAML_KEY_RULE}),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		maniyaml, err := parsers.ReadOrCreateManifest()
         if err != nil {
@@ -116,17 +131,22 @@ var ruleCmd = &cobra.Command{
 		rule := parsers.Rule{}
 
 		for {
-			rule.Rule = utils.Ask(reader, "Rule Name", "")
+			rule.Rule = utils.Ask(reader, wski18n.NAME_RULE, "")
 
 			// Check rule name is unique
 			if _, ok := maniyaml.Package.Triggers[rule.Rule]; !ok {
 				break
 			}
-			fmt.Print(rule.Rule + " is already used. Pick another rule name\n")
+
+			warnMsg := wski18n.T(wski18n.ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X,
+				map[string]interface{}{
+					wski18n.KEY_KEY: parsers.YAML_KEY_RULE,
+					wski18n.KEY_NAME: rule.Name})
+			wskprint.PrintOpenWhiskWarning(warnMsg)
 		}
 
-		rule.Action = utils.Ask(reader, "Action", "")
-		rule.Trigger = utils.Ask(reader, "Trigger", "")
+		rule.Action = utils.Ask(reader, wski18n.NAME_ACTION, "")
+		rule.Trigger = utils.Ask(reader, wski18n.NAME_TRIGGER, "")
 		maniyaml.Package.Rules[rule.Rule] = rule
 
 		return parsers.Write(maniyaml, utils.ManifestFileNameYaml)

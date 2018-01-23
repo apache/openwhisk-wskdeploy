@@ -44,6 +44,10 @@
     "translation": "Add an action, feed, trigger or rule to the manifest"
   },
   {
+    "id": "msg_cmd_desc_short_add_entity",
+    "translation": "Add a/an {{.key}} to the manifest file"
+  },
+  {
     "id": "msg_cmd_desc_short_version",
     "translation": "Print the version number of wskdeploy"
   },
@@ -366,6 +370,10 @@
   {
     "id": "msg_warn_runtime_changed",
     "translation": "Runtime changed to [{{.runtime}}] based on the action's source file extension for action [{{.action}}].\n"
+  },
+  {
+    "id": "msg_warn_entity_name_exists",
+    "translation": "The {{.key}} name [{{.name}}] already exists. Please select another name.\n"
   },
   {
     "id": "DEBUG",

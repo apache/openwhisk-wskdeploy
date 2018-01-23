@@ -29,18 +29,17 @@ const(
 )
 
 var(
-	COLOR_INFO = color.New(color.FgCyan)
-	COLOR_WARNING = color.New(color.FgYellow)
-	COLOR_ERROR = color.New(color.FgRed)
-	COLOR_SUCCESS = color.New(color.FgGreen)
-	COLOR_TITLE = color.New(color.FgRed).Add(color.Underline)
+	clrInfo = color.New(color.FgCyan)
+	clrWarning = color.New(color.FgYellow)
+	clrError = color.New(color.FgRed)
+	clrSuccess = color.New(color.FgGreen)
+	clrTitleInfo = color.New(color.FgCyan).Add(color.Underline)
 )
 
 func PrintOpenWhiskError(message string) {
 	outputStream := colorable.NewColorableStderr()
-	//fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(wski18n.ID_MSG_PREFIX_ERROR), message)
-	//fmt.Fprintf(outputStream, color.RedString(fmsg))
-	fmt.Fprintf(outputStream,COLOR_ERROR.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(wski18n.ID_MSG_PREFIX_ERROR), message))
+	fmt.Fprintf(outputStream, clrError.Sprintf( STR_PREFIXED_MESSAGE,
+		wski18n.T(wski18n.ID_MSG_PREFIX_ERROR), message))
 }
 
 func PrintOpenWhiskFromError(err error) {
@@ -49,7 +48,7 @@ func PrintOpenWhiskFromError(err error) {
 
 func PrintOpenWhiskWarning(message string) {
 	outputStream := colorable.NewColorableStdout()
-	fmt.Fprintf(outputStream,COLOR_WARNING.Sprintf( STR_PREFIXED_MESSAGE,
+	fmt.Fprintf(outputStream, clrWarning.Sprintf( STR_PREFIXED_MESSAGE,
 		wski18n.T(wski18n.ID_MSG_PREFIX_WARNING), message))
 }
 
@@ -59,7 +58,7 @@ func PrintlnOpenWhiskWarning(message string) {
 
 func PrintOpenWhiskSuccess(message string) {
 	outputStream := colorable.NewColorableStdout()
-	fmt.Fprintf(outputStream,COLOR_SUCCESS.Sprintf( STR_PREFIXED_MESSAGE,
+	fmt.Fprintf(outputStream, clrSuccess.Sprintf( STR_PREFIXED_MESSAGE,
 		wski18n.T(wski18n.ID_MSG_PREFIX_SUCCESS), message))
 }
 
@@ -69,7 +68,7 @@ func PrintlnOpenWhiskSuccess(message string) {
 
 func PrintOpenWhiskInfo(message string) {
 	outputStream := colorable.NewColorableStdout()
-	fmt.Fprintf(outputStream,COLOR_INFO.Sprintf( STR_PREFIXED_MESSAGE,
+	fmt.Fprintf(outputStream, clrInfo.Sprintf( STR_PREFIXED_MESSAGE,
 		wski18n.T(wski18n.ID_MSG_PREFIX_INFO), message))
 }
 
@@ -80,7 +79,7 @@ func PrintlnOpenWhiskInfo(message string) {
 
 func PrintlnOpenWhiskInfoTitle(message string) {
 	outputStream := colorable.NewColorableStdout()
-	fmt.Fprintf(outputStream,COLOR_TITLE.Sprintf( STR_PREFIXED_MESSAGE,
+	fmt.Fprintf(outputStream, clrTitleInfo.Sprintf( STR_PREFIXED_MESSAGE,
 		wski18n.T(wski18n.ID_MSG_PREFIX_INFO), message))
 }
 

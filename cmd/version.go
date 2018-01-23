@@ -30,9 +30,9 @@ func init() {
 }
 
 var versionCmd = &cobra.Command{
-	Use:	"version",
-	SuggestFor: []string {"edition", "release"},
-	Short:	wski18n.T(wski18n.ID_CMD_DESC_SHORT_VERSION),
+	Use:        "version",
+	SuggestFor: []string{"edition", "release"},
+	Short:        wski18n.T(wski18n.ID_CMD_DESC_SHORT_VERSION),
 	Run: func(cmd *cobra.Command, args []string) {
 		wskprint.PrintlnOpenWhiskOutput(
 			// Note: no need to translate the following string
