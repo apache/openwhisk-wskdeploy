@@ -34,12 +34,12 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 )
 
+// Possible sources for config info (e.g., API Host, Auth Key, Namespace)
 const (
-	COMMAND_LINE = "wskdeploy command line" // TODO() i18n
-	DEFAULT_VALUE = "default value"		// TODO() i18n
-	WSKPROPS = ".wskprops"
-	WHISKPROPERTY = "whisk.properties"
-	INTERINPUT = "interactve input"
+	SOURCE_WSKPROPS			= ".wskprops"
+	SOURCE_WHISK_PROPERTIES		= "whisk.properties"
+	SOURCE_INTERACTIVE_INPUT	= "interactve input"	// TODO() i18n?
+	SOURCE_DEFAULT_VALUE		= "wskdeploy default"	// TODO() i18n?
 )
 
 type PropertyValue struct {
@@ -90,17 +90,15 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 	// read credentials from command line
 	apihost, auth, ns, keyfile, certfile := GetCommandLineFlags()
-	credential = GetPropertyValue(credential, auth, COMMAND_LINE)
-	namespace = GetPropertyValue(namespace, ns, COMMAND_LINE)
-	apiHost = GetPropertyValue(apiHost, apihost, COMMAND_LINE)
-	key = GetPropertyValue(key, keyfile, COMMAND_LINE)
-	cert = GetPropertyValue(cert, certfile, COMMAND_LINE)
+	credential = GetPropertyValue(credential, auth, wski18n.COMMAND_LINE)
+	namespace = GetPropertyValue(namespace, ns, wski18n.COMMAND_LINE)
+	apiHost = GetPropertyValue(apiHost, apihost, wski18n.COMMAND_LINE)
+	key = GetPropertyValue(key, keyfile, wski18n.COMMAND_LINE)
+	cert = GetPropertyValue(cert, certfile, wski18n.COMMAND_LINE)
 
 	// TODO() i18n
         // Print all flags / values if verbose
-	wskprint.PrintOpenWhiskVerbose(
-		utils.Flags.Verbose,
-		"Global Flags: \n" + utils.Flags.Format())
+	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, wski18n.CONFIGURATION + ":\n" + utils.Flags.Format())
 
 	// TODO() split this logic into its own function
 	// TODO() merge with the same logic used against manifest file (below)
@@ -163,11 +161,11 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 	// The error raised here can be neglected, because we will handle it in the end of this function.
 	wskprops, _ := GetWskPropFromWskprops(pi, proppath)
-	credential = GetPropertyValue(credential, wskprops.AuthKey, WSKPROPS)
-	namespace = GetPropertyValue(namespace, wskprops.Namespace, WSKPROPS)
-	apiHost = GetPropertyValue(apiHost, wskprops.APIHost, WSKPROPS)
-	key = GetPropertyValue(key, wskprops.Key, WSKPROPS)
-	cert = GetPropertyValue(cert, wskprops.Cert, WSKPROPS)
+	credential = GetPropertyValue(credential, wskprops.AuthKey, SOURCE_WSKPROPS)
+	namespace = GetPropertyValue(namespace, wskprops.Namespace, SOURCE_WSKPROPS)
+	apiHost = GetPropertyValue(apiHost, wskprops.APIHost, SOURCE_WSKPROPS)
+	key = GetPropertyValue(key, wskprops.Key, SOURCE_WSKPROPS)
+	cert = GetPropertyValue(cert, wskprops.Cert, SOURCE_WSKPROPS)
 
 	// TODO() see if we can split the following whisk prop logic into a separate function
 	// now, read credentials from whisk.properties but this is only acceptable within Travis
@@ -176,20 +174,20 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 	var warnMsg string
 
-	credential = GetPropertyValue(credential, whiskproperty.AuthKey, WHISKPROPERTY)
-	if credential.Source == WHISKPROPERTY {
+	credential = GetPropertyValue(credential, whiskproperty.AuthKey, SOURCE_WHISK_PROPERTIES)
+	if credential.Source == SOURCE_WHISK_PROPERTIES {
 		warnMsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
 			map[string]interface{}{wski18n.KEY_KEY: wski18n.AUTH_KEY})
 		wskprint.PrintlnOpenWhiskWarning(warnMsg)
 	}
-	namespace = GetPropertyValue(namespace, whiskproperty.Namespace, WHISKPROPERTY)
-	if namespace.Source == WHISKPROPERTY {
+	namespace = GetPropertyValue(namespace, whiskproperty.Namespace, SOURCE_WHISK_PROPERTIES)
+	if namespace.Source == SOURCE_WHISK_PROPERTIES {
 		warnMsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
 			map[string]interface{}{wski18n.KEY_KEY: parsers.YAML_KEY_NAMESPACE})
 		wskprint.PrintlnOpenWhiskWarning(warnMsg)
 	}
-	apiHost = GetPropertyValue(apiHost, whiskproperty.APIHost, WHISKPROPERTY)
-	if apiHost.Source == WHISKPROPERTY {
+	apiHost = GetPropertyValue(apiHost, whiskproperty.APIHost, SOURCE_WHISK_PROPERTIES)
+	if apiHost.Source == SOURCE_WHISK_PROPERTIES {
 		warnMsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
 			map[string]interface{}{wski18n.KEY_KEY: wski18n.API_HOST})
 		wskprint.PrintlnOpenWhiskWarning(warnMsg)
@@ -198,7 +196,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	// set namespace to default namespace if not yet found
 	if len(apiHost.Value) != 0 && len(credential.Value) != 0 && len(namespace.Value) == 0 {
 		namespace.Value = whisk.DEFAULT_NAMESPACE
-		namespace.Source = DEFAULT_VALUE
+		namespace.Source = SOURCE_DEFAULT_VALUE
 	}
 
 	// TODO() See if we can split off the interactive logic into a separate function
@@ -213,23 +211,23 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 			host = "openwhisk.ng.bluemix.net"
 		}
 		apiHost.Value = host
-		apiHost.Source = INTERINPUT
+		apiHost.Source = SOURCE_INTERACTIVE_INPUT
 	}
 
 	if len(credential.Value) == 0 && isInteractive == true {
 		cred := promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_AUTHKEY))
 		credential.Value = cred
-		credential.Source = INTERINPUT
+		credential.Source = SOURCE_INTERACTIVE_INPUT
 
 		// The namespace is always associated with the credential.
 		// Both of them should be picked up from the same source.
 		if len(namespace.Value) == 0 || namespace.Value == whisk.DEFAULT_NAMESPACE {
 			tempNamespace := promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_NAMESPACE))
-			source := INTERINPUT
+			source := SOURCE_INTERACTIVE_INPUT
 
 			if tempNamespace == "" {
 				tempNamespace = whisk.DEFAULT_NAMESPACE
-				source = DEFAULT_VALUE
+				source = SOURCE_DEFAULT_VALUE
 			}
 
 			namespace.Value = tempNamespace
@@ -246,7 +244,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		AuthToken: credential.Value, //Authtoken
 		Namespace: namespace.Value, //Namespace
 		Host:      apiHost.Value,
-		Version:   "v1",  // TODO() should not be hardcoded
+		Version:   "v1",  // TODO() should not be hardcoded, should prompt/warn user of default
 		Cert:      cert.Value,
 		Key:       key.Value,
 		Insecure:  mode, // true if you want to ignore certificate signing

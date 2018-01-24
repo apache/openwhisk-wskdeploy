@@ -87,6 +87,12 @@ func PrintlnOpenWhiskOutput(message string) {
    	fmt.Println(message)
 }
 
+func PrintOpenWhiskVerboseTitle(verbose bool, message string) {
+	if verbose{
+		PrintlnOpenWhiskInfoTitle(message)
+	}
+}
+
 func PrintOpenWhiskVerbose(verbose bool, message string) {
 	if verbose{
 		PrintOpenWhiskInfo(message)

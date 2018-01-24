@@ -58,7 +58,7 @@ func (flags *WskDeployFlags) Format() string {
 		value = flagValues.Field(i)
 		// NOTE: if you need to see the Type, add this line to output
 		//t = flagValues.Field(i).Type()
-		line := fmt.Sprintf("  > %s: [%v]\n", name, value)
+		line := fmt.Sprintf("      > %s: [%v]\n", name, value)
 		result += line
 	}
 

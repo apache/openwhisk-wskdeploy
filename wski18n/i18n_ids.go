@@ -20,12 +20,14 @@ package wski18n
 // descriptive key names
 // DO NOT TRANSLATE
 const (
-	ACTIONS			= "Actions"
 	ACTION_CODE		= "Action source"
+	ACTIONS			= "Actions"
 	ACTIVATIONS		= "Activations"
 	API_HOST		= "API host"
 	AUTH_KEY		= "authentication key"
+	COMMAND_LINE 		= "wskdeploy command line"
 	DEPLOYMENT		= "deployment"
+	CONFIGURATION		= "Configuration"
 	MANIFEST		= "manifest"
 	NAME_ACTION		= "Action Name"
 	NAME_FEED		= "Feed Name"
@@ -235,6 +237,7 @@ var I18N_ID_SET = [](string){
 	ID_CMD_FLAG_VERBOSE,
 	ID_DEBUG_DEPLOYING_USING,
 	ID_DEBUG_KEY_VERIFY_X_name_X_key_X,
+	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X,
 	ID_DEBUG_UNDEPLOYING_USING,
 	ID_ERR_DEPENDENCY_UNKNOWN_TYPE,
 	ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,

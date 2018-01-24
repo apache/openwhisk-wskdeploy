@@ -37,6 +37,7 @@ import (
 )
 
 const (
+	CONFLICT_MESSAGE = "Concurrent modification to resource detected"
 	CONFLICT_CODE    = 153
 	DEFAULT_ATTEMPTS = 3
 	DEFAULT_INTERVAL = 1 * time.Second
@@ -176,7 +177,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		projectName = manifest.GetProject().Name
 	}
 
-	// (TODO) delete this warning after deprecating application in manifest file
+	// TODO(#696) delete this warning after deprecating application in manifest file
 	if manifest.Application.Name != "" {
 		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 			map[string]interface{}{
@@ -194,7 +195,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 			return err
 		}
 
-		// (TODO) delete this warning after deprecating application in deployment file
+		// TODO(#696) delete this warning after deprecating application in deployment file
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
 			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
@@ -264,7 +265,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 		projectName = manifest.GetProject().Name
 	}
 
-	// (TODO) delete this warning after deprecating application in manifest file
+	// TODO(#696) delete this warning after deprecating application in manifest file
 	if manifest.Application.Name != "" {
 		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 			map[string]interface{}{
@@ -281,7 +282,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 			return deployer.Deployment, err
 		}
 
-		// (TODO) delete this warning after deprecating application in deployment file
+		// TODO(#696) delete this warning after deprecating application in deployment file
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
 			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
@@ -1290,8 +1291,6 @@ func retry(attempts int, sleep time.Duration, callback func() error) error {
 		}
 		if err != nil {
 			wskErr := err.(*whisk.WskError)
-			// TODO() i18n
-			CONFLICT_MESSAGE := "Concurrent modification to resource detected"
 			if wskErr.ExitCode == CONFLICT_CODE && strings.Contains(wskErr.Error(), CONFLICT_MESSAGE) {
 				time.Sleep(sleep)
 				warningMsg := wski18n.T(wski18n.ID_WARN_COMMAND_RETRY,
