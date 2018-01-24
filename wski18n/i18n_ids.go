@@ -20,25 +20,31 @@ package wski18n
 // descriptive key names
 // DO NOT TRANSLATE
 const (
+	ACTIONS			= "Actions"
+	ACTIVATIONS		= "Activations"
 	API_HOST		= "API host"
 	AUTH_KEY		= "authentication key"
 	DEPLOYMENT		= "deployment"
 	MANIFEST		= "manifest"
+	NAME_ACTION		= "Action Name"
+	NAME_FEED		= "Feed Name"
+	NAME_RULE		= "Rule Name"
+	NAME_RUNTIME		= "Runtime Name"
+	NAME_TRIGGER		= "Trigger Name"
+	NAMESPACES		= "Namespaces"
 	PACKAGE_BINDING 	= "package binding"
 	PACKAGE_LICENSE 	= "package license"
 	PACKAGE_NAME	 	= "package name"
 	PACKAGE_VERSION 	= "package version"
+	PACKAGES		= "Packages"
 	PROJECT_NAME		= "project name"
 	REGISTRY		= "registry"
 	REGISTRY_URL		= "registry URL"
 	REPOSITORY		= "repository"
+	RULES			= "Rules"
 	TRIGGER_FEED		= "trigger feed"
+	TRIGGERS		= "Triggers"
 	WHISK_PROPS		= "wskprops"
-	NAME_ACTION		= "Action Name"
-	NAME_RULE		= "Rule Name"
-	NAME_TRIGGER		= "Trigger Name"
-	NAME_FEED		= "Feed Name"
-	NAME_RUNTIME		= "Runtime Name"
 )
 
 // i18n Identifiers

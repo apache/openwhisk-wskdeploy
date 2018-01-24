@@ -63,8 +63,8 @@ var actionCmd = &cobra.Command{
 		wskprint.PrintOpenWhiskWarning(warnMsg)
 	}
 
-	// TODO() use programmatic way to get default runtime (not hardcoded)
-	// TODO() List, as part of promot, all currently supported runtime names(values)
+	// TODO() use dynamic/programmatic way to get default runtime (not hardcoded)
+	// TODO() And List all supported runtime names (values) (via API)
 	action.Runtime = utils.Ask(reader, wski18n.NAME_RUNTIME, "nodejs:6")
 	maniyaml.Package.Actions[action.Name] = action
 
