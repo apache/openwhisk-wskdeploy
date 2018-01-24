@@ -21,6 +21,7 @@ package wski18n
 // DO NOT TRANSLATE
 const (
 	ACTIONS			= "Actions"
+	ACTION_CODE		= "Action source"
 	ACTIVATIONS		= "Activations"
 	API_HOST		= "API host"
 	AUTH_KEY		= "authentication key"
@@ -172,6 +173,7 @@ const(
 	ID_DEBUG_KEY_VERIFY_X_name_X_key_X			= "msg_dbg_key_verify"
 	ID_DEBUG_DEPLOYING_USING				= "msg_dbg_deploying_using"
 	ID_DEBUG_UNDEPLOYING_USING				= "msg_dbg_undeploying_using"
+	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X			= "msg_dbg_searching_project_directory"
 )
 
 // Known keys used for text replacement in i18n translated strings

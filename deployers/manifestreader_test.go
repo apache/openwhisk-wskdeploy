@@ -57,5 +57,5 @@ func TestManifestReader_param(t *testing.T) {
 	err := mr.InitRootPackage(ps, ms, whisk.KeyValue{})
 	assert.Equal(t, err, nil, "Init Root Package failed")
 
-	// TODO.
+	// TODO(#695) Is there more to do here?  Original author left a TODO here in comments
 }

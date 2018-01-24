@@ -49,6 +49,7 @@ func (vf *Verifier) Query(deployer *ServiceDeployer) (da *DeploymentProject, err
 	return da, nil
 }
 
+// TODO() function supposedly returns an error, but never does
 func (vf *Verifier) Filter(deployer *ServiceDeployer, target *DeploymentProject) (rs *DeploymentProject, err error) {
 	//substract
 	for _, pa := range target.Packages {
@@ -67,6 +68,8 @@ func (vf *Verifier) Filter(deployer *ServiceDeployer, target *DeploymentProject)
 }
 
 // Convert whisk.package to whisk.SentPackageNoPublish
+// TODO() function supposedly returns an error, but never does
+// TODO() return value named "sentpackage" is instead "sp"
 func convert(pa *whisk.Package) (sentpackage *whisk.Package, err error) {
 	sp := &whisk.Package{}
 	sp.Name = pa.Name
