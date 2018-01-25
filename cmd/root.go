@@ -21,18 +21,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/spf13/cobra"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"github.com/spf13/cobra"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 var stderr = ""
@@ -40,15 +40,11 @@ var stdout = ""
 
 // TODO(#683) short and long desc. should be translated for i18n
 var RootCmd = &cobra.Command{
-	Use:           "wskdeploy",
-	SilenceErrors: true,
-	SilenceUsage:  true,
-	Short:         "A tool set to help deploy your openwhisk packages in batch.",
-	Long: `A tool to deploy openwhisk packages with a manifest and/or deployment yaml file.
-
-wskdeploy without any commands or flags deploys openwhisk package in the current directory if manifest.yaml exists.
-
-      `,
+	Use:		"wskdeploy",
+	SilenceErrors:	true,
+	SilenceUsage:	true,
+	Short:		wski18n.T(wski18n.ID_CMD_DESC_SHORT_ROOT),
+	Long:		wski18n.T(wski18n.ID_CMD_DESC_LONG_ROOT),
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	RunE: RootCmdImp,
@@ -74,8 +70,9 @@ func Execute() {
 		os.Exit(-1)
 	} else {
 		if utils.Flags.WithinOpenWhisk {
-			// TODO() i18n
-			fmt.Print(`{"deploy":"success"}`) // maybe return report of what has been deployed.
+			// TODO() Why are we printing success here?
+			// TODO() maybe return report of what has been deployed.
+			wskprint.PrintlnOpenWhiskSuccess(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_SUCCEEDED))
 		}
 	}
 }
@@ -84,11 +81,11 @@ func Execute() {
 // (i.e., command and arguments) is JSON data (map).
 func substCmdArgs() error {
 	// Extract arguments from input JSON string
-
 	// { "cmd": ".." } // space-separated arguments
 
 	arg := os.Args[1]
 
+	// TODO() Move to proper status output/debug/trace
 	fmt.Println("arg is " + arg)
 	// unmarshal the string to a JSON object
 	var obj map[string]interface{}
@@ -98,12 +95,13 @@ func substCmdArgs() error {
 		regex, _ := regexp.Compile("[ ]+")
 		os.Args = regex.Split("wskdeploy "+strings.TrimSpace(v), -1)
 	} else {
-		return errors.New(wski18n.T(wski18n.ID_JSON_MISSING_KEY_CMD))
+		return errors.New(wski18n.T(wski18n.ID_ERR_JSON_MISSING_KEY_CMD))
 	}
 	return nil
 }
 
 func init() {
+	// TODO() move Env var. to some global const
 	utils.Flags.WithinOpenWhisk = len(os.Getenv("__OW_API_HOST")) > 0
 
 	cobra.OnInitialize(initConfig)
@@ -113,24 +111,27 @@ func init() {
 	// will be global for your application.
 
 	// TODO(#682) add in-line descriptions to i18n resource file
-	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", "config file (default is $HOME/.wskprops)")
+	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", wski18n.T(wski18n.ID_CMD_FLAG_CONFIG))
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	RootCmd.Flags().StringVarP(&utils.Flags.ProjectPath, "project", "p", ".", "path to serverless project")
-	RootCmd.Flags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", "path to manifest file")
-	RootCmd.Flags().StringVarP(&utils.Flags.DeploymentPath, "deployment", "d", "", "path to deployment file")
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Strict, "strict", "s", false, "allow user defined runtime version")
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseInteractive, "allow-interactive", "i", false, "allow interactive prompts")
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseDefaults, "allow-defaults", "a", false, "allow defaults")
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Verbose, "verbose", "v", false, "verbose output")
+	// TODO() Publish command, not completed
+	// TODO() Report command, not completed
+	// TODO() What does toggle do? adding this flag seems to produce an error
+	RootCmd.Flags().BoolP("toggle", "t", false, wski18n.T(wski18n.ID_CMD_FLAG_TOGGLE_HELP))
+	RootCmd.Flags().StringVarP(&utils.Flags.ProjectPath, "project", "p", ".", wski18n.T(wski18n.ID_CMD_FLAG_PROJECT))
+	RootCmd.Flags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", wski18n.T(wski18n.ID_CMD_FLAG_MANIFEST))
+	RootCmd.Flags().StringVarP(&utils.Flags.DeploymentPath, "deployment", "d", "", wski18n.T(wski18n.ID_CMD_FLAG_DEPLOYMENT))
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Strict, "strict", "s", false, wski18n.T(wski18n.ID_CMD_FLAG_STRICT))
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseInteractive, "allow-interactive", "i", false, wski18n.T(wski18n.ID_CMD_FLAG_INTERACTIVE))
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseDefaults, "allow-defaults", "a", false, wski18n.T(wski18n.ID_CMD_FLAG_DEFAULTS))
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Verbose, "verbose", "v", false, wski18n.T(wski18n.ID_CMD_FLAG_VERBOSE))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ApiHost, "apihost", "", "", wski18n.T(wski18n.ID_CMD_FLAG_API_HOST))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Namespace, "namespace", "n", "", wski18n.T(wski18n.ID_CMD_FLAG_NAMESPACE))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Auth, "auth", "u", "", wski18n.T(wski18n.ID_CMD_FLAG_AUTH_KEY))
 	RootCmd.PersistentFlags().StringVar(&utils.Flags.ApiVersion, "apiversion", "", wski18n.T(wski18n.ID_CMD_FLAG_API_VERSION))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Key, "key", "k", "", wski18n.T(wski18n.ID_CMD_FLAG_KEY_FILE))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Cert, "cert", "c", "", wski18n.T(wski18n.ID_CMD_FLAG_CERT_FILE))
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Managed, "managed", "", false, "mark project entities as managed")
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Managed, "managed", "", false, wski18n.T(wski18n.ID_CMD_FLAG_MANAGED))
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -143,8 +144,10 @@ func initConfig() {
 		_, err := whisk.ReadProps(utils.Flags.CfgFile)
 		if err != nil {
 			utils.Flags.CfgFile = defaultPath
-			// TODO() i18n
-			wskprint.PrintOpenWhiskWarning("Invalid config file detected, so by default it is set to " + utils.Flags.CfgFile + "\n")
+			warn := wski18n.T(wski18n.ID_WARN_CONFIG_INVALID_X_path_X,
+				map[string]interface{}{
+					wski18n.KEY_PATH: utils.Flags.CfgFile})
+			wskprint.PrintOpenWhiskWarning(warn)
 		}
 
 	} else {
@@ -174,18 +177,19 @@ func Deploy() error {
 	}
 	projectPath, _ := filepath.Abs(project_Path)
 
+	// TODO() identical code block below; please create function both can share
 	if utils.Flags.ManifestPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
 			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY_X_path_X,
-				map[string]interface{}{"path": utils.Flags.ManifestPath})
+				map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
 		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
 			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY_X_path_X,
-				map[string]interface{}{"path": utils.Flags.ManifestPath})
+				map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
 		} else {
-			stderr = wski18n.T(wski18n.ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X,
-				map[string]interface{}{"path": projectPath})
+			stderr = wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
+				map[string]interface{}{wski18n.KEY_PATH: projectPath})
 			return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
 		}
 		whisk.Debug(whisk.DbgInfo, stdout)
@@ -243,8 +247,8 @@ func Deploy() error {
 		}
 
 	} else {
-		errString := wski18n.T(wski18n.ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X,
-			map[string]interface{}{"path": utils.Flags.ManifestPath})
+		errString := wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
+			map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
 		whisk.Debug(whisk.DbgError, errString)
 		return wskderrors.NewErrorManifestFileNotFound(utils.Flags.ManifestPath, errString)
 	}
@@ -268,26 +272,37 @@ func Undeploy() error {
 		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
 			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_UNDEPLOY_X_path_X,
-				map[string]interface{}{"path": utils.Flags.ManifestPath})
+				map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
 		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
 			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
 			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_UNDEPLOY_X_path_X,
-				map[string]interface{}{"path": utils.Flags.ManifestPath})
+				map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
 		} else {
-			stderr = wski18n.T(wski18n.ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X,
-				map[string]interface{}{"path": projectPath})
+			stderr = wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
+				map[string]interface{}{wski18n.KEY_PATH: projectPath})
 			return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
 		}
-		whisk.Debug(whisk.DbgInfo, stdout)
+		wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, stdout)
 	}
 
 	if utils.Flags.DeploymentPath == "" {
 		if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYaml)); err == nil {
 			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYaml)
-			fmt.Printf("Using %s for undeployment \n", utils.Flags.DeploymentPath)
+			// TODO() have a single function that conditionally (verbose) prints ALL Flags
+			dbgMsg := fmt.Sprintf("%s >> [%s]: [%s]",
+				wski18n.T(wski18n.ID_DEBUG_UNDEPLOYING_USING),
+				wski18n.DEPLOYMENT,
+				utils.Flags.DeploymentPath)
+			wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
+
 		} else if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYml)); err == nil {
 			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYml)
-			fmt.Printf("Using %s for undeployment \n", utils.Flags.DeploymentPath)
+			// TODO() have a single function that conditionally (verbose) prints ALL Flags
+			dbgMsg := fmt.Sprintf("%s >> [%s]: [%s]",
+				wski18n.T(wski18n.ID_DEBUG_UNDEPLOYING_USING),
+				wski18n.DEPLOYMENT,
+				utils.Flags.DeploymentPath)
+			wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
 		}
 	}
 
@@ -330,8 +345,8 @@ func Undeploy() error {
 		}
 
 	} else {
-		errString := wski18n.T(wski18n.ID_MSG_MANIFEST_FILE_NOT_FOUND_X_path_X,
-			map[string]interface{}{"path": utils.Flags.ManifestPath})
+		errString := wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
+			map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
 		return wskderrors.NewErrorManifestFileNotFound(utils.Flags.ManifestPath, errString)
 	}
 }

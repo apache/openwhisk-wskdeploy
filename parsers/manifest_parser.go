@@ -77,8 +77,6 @@ func (dm *YAMLParser) Unmarshal(input []byte, manifest *YAML) error {
 func (dm *YAMLParser) marshal(manifest *YAML) (output []byte, err error) {
 	data, err := yaml.Marshal(manifest)
 	if err != nil {
-		// TODO() i18n
-		fmt.Printf("err happened during marshal :%v", err)
 		return nil, err
 	}
 	return data, nil
@@ -159,8 +157,8 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 
 			isBinding = false
 		} else {
-			// TODO() i18n
-			return nil, errors.New("Dependency type is unknown.  wskdeploy only supports /whisk.system bindings or github.com packages.")
+			// TODO() create new named error in wskerrors package
+			return nil, errors.New(wski18n.T(wski18n.ID_ERR_DEPENDENCY_UNKNOWN_TYPE))
 		}
 
 		keyValArrParams := make(whisk.KeyValueArr, 0)
@@ -245,15 +243,15 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	// TODO(#673) implement STRICT flag
 	if pkg.Version == "" {
 		warningString := wski18n.T(
-			wski18n.ID_WARN_MISSING_MANDATORY_KEY_X_key_X_value_X,
+			wski18n.ID_WARN_KEY_MISSING_X_key_X_value_X,
 			map[string]interface{}{
-				wski18n.KEY_KEY: PACKAGE_VERSION,
+				wski18n.KEY_KEY: wski18n.PACKAGE_VERSION,
 				wski18n.KEY_VALUE: DEFAULT_PACKAGE_VERSION})
 		wskprint.PrintOpenWhiskWarning(warningString)
 
 		warningString = wski18n.T(
 			wski18n.ID_WARN_KEYVALUE_NOT_SAVED_X_key_X,
-			map[string]interface{}{wski18n.KEY_KEY: PACKAGE_VERSION})
+			map[string]interface{}{wski18n.KEY_KEY: wski18n.PACKAGE_VERSION})
 
 		wskprint.PrintOpenWhiskWarning(warningString)
 		pkg.Version = DEFAULT_PACKAGE_VERSION
@@ -265,15 +263,15 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	// TODO(#673) implement STRICT flag
 	if pkg.License == "" {
 		warningString := wski18n.T(
-			wski18n.ID_WARN_MISSING_MANDATORY_KEY_X_key_X_value_X,
+			wski18n.ID_WARN_KEY_MISSING_X_key_X_value_X,
 			map[string]interface{}{
-				wski18n.KEY_KEY: PACKAGE_LICENSE,
+				wski18n.KEY_KEY: wski18n.PACKAGE_LICENSE,
 				wski18n.KEY_VALUE: DEFAULT_PACKAGE_LICENSE})
 		wskprint.PrintOpenWhiskWarning(warningString)
 
 		warningString = wski18n.T(
 			wski18n.ID_WARN_KEYVALUE_NOT_SAVED_X_key_X,
-			map[string]interface{}{wski18n.KEY_KEY: PACKAGE_VERSION})
+			map[string]interface{}{wski18n.KEY_KEY: wski18n.PACKAGE_VERSION})
 
 		wskprint.PrintOpenWhiskWarning(warningString)
 
@@ -423,8 +421,6 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 
 func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action, packageName string, ma whisk.KeyValue) ([]utils.ActionRecord, error) {
 
-	// TODO() i18n
-	const RUNTIME_ERR_MESSAGE = "Please specify any of the supported runtime for zip actions in manifest YAML."
 	var errorParser error
 	var ext string
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
@@ -482,9 +478,15 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				// and its not explicitly specified in the manifest YAML file
 				// and action source is not a zip file
 				if len(kind) == 0 && len(action.Runtime) == 0 && ext != utils.ZIP_FILE_EXTENSION {
-					// TODO() i18n
-					errMessage := "ERROR: Failed to discover runtime from the action source files. " + RUNTIME_ERR_MESSAGE
-					return nil, wskderrors.NewInvalidRuntimeError(errMessage, splitFilePath[len(splitFilePath)-1], action.Name, "Not Specified in Manifest YAML", utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+					errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
+						map[string]interface{}{
+							wski18n.KEY_RUNTIME: action.Runtime,
+							wski18n.KEY_EXTENTION: ext,
+							wski18n.KEY_ACTION: action.Name})
+					return nil, wskderrors.NewInvalidRuntimeError(errMessage,
+						splitFilePath[len(splitFilePath)-1], action.Name,
+						action.Runtime,
+						utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				}
 
 				wskaction.Exec.Kind = kind
@@ -499,9 +501,15 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					code = base64.StdEncoding.EncodeToString([]byte(dat))
 				}
 				if ext == utils.ZIP_FILE_EXTENSION && len(action.Runtime) == 0 {
-					// TODO() i18n
-					errMessage := "ERROR: Runtime is missing for zip action. " + RUNTIME_ERR_MESSAGE
-					return nil, wskderrors.NewInvalidRuntimeError(errMessage, splitFilePath[len(splitFilePath)-1], action.Name, "Not Specified in Manifest YAML", utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+					errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
+						map[string]interface{}{
+							wski18n.KEY_RUNTIME: action.Runtime,
+							wski18n.KEY_ACTION: action.Name})
+					return nil, wskderrors.NewInvalidRuntimeError(errMessage,
+						splitFilePath[len(splitFilePath)-1],
+						action.Name,
+						action.Runtime,
+						utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				}
 				wskaction.Exec.Code = &code
 			}
@@ -525,33 +533,46 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					if utils.CheckRuntimeConsistencyWithFileExtension(ext, action.Runtime) {
 						wskaction.Exec.Kind = action.Runtime
 					} else {
-						errStr := wski18n.T(wski18n.ID_MSG_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
-							map[string]interface{}{"runtime": action.Runtime, "ext": ext, "action": action.Name})
-						wskprint.PrintOpenWhiskWarning(errStr)
+						warnStr := wski18n.T(wski18n.ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
+							map[string]interface{}{
+								wski18n.KEY_RUNTIME: action.Runtime,
+								wski18n.KEY_EXTENTION: ext,
+								wski18n.KEY_ACTION: action.Name})
+						wskprint.PrintOpenWhiskWarning(warnStr)
 
 						// even if runtime is not consistent with file extension, deploy action with specified runtime in strict mode
 						if utils.Flags.Strict {
 							wskaction.Exec.Kind = action.Runtime
 						} else {
-							errStr := wski18n.T(wski18n.ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X,
-								map[string]interface{}{"runtime": wskaction.Exec.Kind, "action": action.Name})
-							wskprint.PrintOpenWhiskWarning(errStr)
+							warnStr := wski18n.T(wski18n.ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
+								map[string]interface{}{
+									wski18n.KEY_RUNTIME: wskaction.Exec.Kind,
+									wski18n.KEY_ACTION: action.Name})
+							wskprint.PrintOpenWhiskWarning(warnStr)
 						}
 					}
 				}
 			} else {
-				errStr := wski18n.T(wski18n.ID_MSG_RUNTIME_UNSUPPORTED_X_runtime_X_action_X,
-					map[string]interface{}{"runtime": action.Runtime, "action": action.Name})
-				whisk.Debug(whisk.DbgWarn, errStr)
+				warnStr := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
+					map[string]interface{}{
+						wski18n.KEY_RUNTIME: action.Runtime,
+						wski18n.KEY_ACTION: action.Name})
+				wskprint.PrintOpenWhiskWarning(warnStr)
+
 				if ext == utils.ZIP_FILE_EXTENSION {
-					// TODO() i18n
-					// for zip action, error out if specified runtime is not supported by OpenWhisk server
-					errMessage := "ERROR: Given runtime for a zip action is not supported by OpenWhisk server. " + RUNTIME_ERR_MESSAGE
-					return nil, wskderrors.NewInvalidRuntimeError(errMessage, splitFilePath[len(splitFilePath)-1], action.Name, action.Runtime, utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+					// for zip action, error out if specified runtime is not supported by
+					// OpenWhisk server
+					return nil, wskderrors.NewInvalidRuntimeError(warnStr,
+						splitFilePath[len(splitFilePath)-1],
+						action.Name,
+						action.Runtime,
+						utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				} else {
-					errStr = wski18n.T(wski18n.ID_MSG_RUNTIME_CHANGED_X_runtime_X_action_X,
-						map[string]interface{}{"runtime": wskaction.Exec.Kind, "action": action.Name})
-					whisk.Debug(whisk.DbgWarn, errStr)
+					warnStr := wski18n.T(wski18n.ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
+						map[string]interface{}{
+							wski18n.KEY_RUNTIME: wskaction.Exec.Kind,
+							wski18n.KEY_ACTION: action.Name})
+					wskprint.PrintOpenWhiskWarning(warnStr)
 				}
 
 			}
@@ -650,21 +671,21 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			if utils.LimitsTimeoutValidation(action.Limits.Timeout) {
 				wsklimits.Timeout = action.Limits.Timeout
 			} else {
-				warningString := wski18n.T(wski18n.ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
+				warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
 					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_TIMEOUT})
 				wskprint.PrintOpenWhiskWarning(warningString)
 			}
 			if utils.LimitsMemoryValidation(action.Limits.Memory) {
 				wsklimits.Memory = action.Limits.Memory
 			} else {
-				warningString := wski18n.T(wski18n.ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
+				warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
 					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_MEMORY_SIZE})
 				wskprint.PrintOpenWhiskWarning(warningString)
 			}
 			if utils.LimitsLogsizeValidation(action.Limits.Logsize) {
 				wsklimits.Logsize = action.Limits.Logsize
 			} else {
-				warningString := wski18n.T(wski18n.ID_MSG_ACTION_LIMIT_IGNORED_X_limit_X,
+				warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
 					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_LOG_SIZE})
 				wskprint.PrintOpenWhiskWarning(warningString)
 			}
@@ -729,13 +750,12 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 
 		// print warning information when .Source key's value is not empty
 		if trigger.Source != "" {
-			// TODO() i18n use const for keys and values on string
 			warningString := wski18n.T(
-				wski18n.ID_WARN_DEPRECATED_KEY_REPLACED_X_oldkey_X_filetype_X_newkey_X,
+				wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
-					wski18n.KEY_OLD: "source",
+					wski18n.KEY_OLD: YAML_KEY_SOURCE,
 					wski18n.KEY_NEW: YAML_KEY_FEED,
-					wski18n.KEY_FILE_TYPE: "manifest"})
+					wski18n.KEY_FILE_TYPE: wski18n.MANIFEST})
 			wskprint.PrintOpenWhiskWarning(warningString)
 		}
 		if trigger.Feed == "" {

@@ -109,6 +109,7 @@ func LicenseRemoteValidation(license string) bool {
 	if len(license_json.Licenses) == 0 {
 		json_data, err := Read(RemoteLicenseURL)
 		if err != nil {
+			// TODO() i18n
 			errString := wski18n.T("Failed to get the remote license json.\n")
 			whisk.Debug(whisk.DbgError, errString)
 			return false
@@ -117,6 +118,7 @@ func LicenseRemoteValidation(license string) bool {
 		//parse json
 		err = json.Unmarshal(json_data, &license_json)
 		if err != nil || len(license_json.Licenses) == 0 {
+			// TODO() i18n
 			errString := wski18n.T("Failed to parse the remote license json.\n")
 			whisk.Debug(whisk.DbgError, errString)
 			return false

@@ -28,6 +28,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 // name of directory that can contain source code
@@ -46,26 +47,33 @@ func NewFileSystemReader(serviceDeployer *ServiceDeployer) *FileSystemReader {
 
 func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]utils.ActionRecord, error) {
 
-	// TODO() i18n
-	wskprint.PrintlnOpenWhiskOutput("Inspecting project directory for actions....")
+	// Inform user of what reader is doing
+	dbgMsg := wski18n.T(wski18n.ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X,
+		map[string]interface{}{
+			wski18n.KEY_PATH: reader.serviceDeployer.ProjectPath,
+			wski18n.KEY_KEY: wski18n.ACTIONS})
+	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
 
 	projectPathCount, err := reader.getFilePathCount(reader.serviceDeployer.ProjectPath)
 	actions := make([]utils.ActionRecord, 0)
-    if err != nil {
-        return actions, err
-    }
+
+	if err != nil {
+		return actions, err
+	}
 
 	err = filepath.Walk(reader.serviceDeployer.ProjectPath, func(fpath string, f os.FileInfo, err error) error {
 		if fpath != reader.serviceDeployer.ProjectPath {
 			pathCount, err := reader.getFilePathCount(fpath)
-            if err != nil {
-                return wskderrors.NewFileReadError(fpath, err.Error())
-            }
+			if err != nil {
+				return wskderrors.NewFileReadError(fpath, err.Error())
+			}
 
 			if !f.IsDir() {
-				if pathCount-projectPathCount == 1 || strings.HasPrefix(fpath, reader.serviceDeployer.ProjectPath+"/"+FileSystemSourceDirectoryName) {
+				if pathCount - projectPathCount == 1 || strings.HasPrefix(fpath, reader.serviceDeployer.ProjectPath + "/" + FileSystemSourceDirectoryName) {
 					ext := filepath.Ext(fpath)
 
+					// TODO(#692) do not hardcoded known extensions here, create a util that associates
+					// known extensions to runtime types
 					foundFile := false
 					switch ext {
 					case ".swift":
@@ -78,9 +86,9 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]
 
 					if foundFile == true {
 						_, action, err := reader.CreateActionFromFile(reader.serviceDeployer.ManifestPath, fpath)
-                        if err != nil {
-                            return wskderrors.NewFileReadError(fpath, err.Error())
-                        }
+						if err != nil {
+							return wskderrors.NewFileReadError(fpath, err.Error())
+						}
 
 						var record utils.ActionRecord
 						record.Action = action
@@ -90,9 +98,17 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]
 						actions = append(actions, record)
 					}
 				}
-			} else if strings.HasPrefix(fpath, reader.serviceDeployer.ProjectPath+"/"+FileSystemSourceDirectoryName) {
-				// TODO() i18n
-				wskprint.PrintlnOpenWhiskOutput("Searching directory " + filepath.Base(fpath) + " for action source code.")
+			} else if strings.HasPrefix(fpath, reader.serviceDeployer.ProjectPath + "/" + FileSystemSourceDirectoryName) {
+				// Inform user of what reader is doing
+				dbgMsg := wski18n.T(wski18n.ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X,
+					map[string]interface{}{
+						wski18n.KEY_PATH: filepath.Base(fpath),
+						wski18n.KEY_KEY: wski18n.ACTION_CODE})
+				wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
+
+				// TODO(#694) It appears there is no code to do what the debug message suggests
+				// TODO(#694) continued: i.e., searching for Action code...
+
 			} else {
 				return filepath.SkipDir
 			}
@@ -115,6 +131,7 @@ func (reader *FileSystemReader) CreateActionFromFile(manipath, filePath string) 
 	name := strings.TrimSuffix(baseName, filepath.Ext(baseName))
 	action := new(whisk.Action)
 
+	// TODO(#692) same TODO as above, that is create util for matching exts. to runtimes in common util pkg.
 	// process source code files
 	if ext == ".swift" || ext == ".js" || ext == ".py" {
 
@@ -130,9 +147,9 @@ func (reader *FileSystemReader) CreateActionFromFile(manipath, filePath string) 
 		}
 
 		dat, err := new(utils.ContentReader).LocalReader.ReadLocal(filePath)
-        if err != nil {
-            return name, action, wskderrors.NewFileReadError(filePath, err.Error())
-        }
+		if err != nil {
+			return name, action, wskderrors.NewFileReadError(filePath, err.Error())
+		}
 
 		action.Exec = new(whisk.Exec)
 		code := string(dat)
@@ -143,6 +160,8 @@ func (reader *FileSystemReader) CreateActionFromFile(manipath, filePath string) 
 		action.Publish = &pub
 		return name, action, nil
 	}
+
+	// TODO(#691) create new named error
 	// If the action is not supported, we better to return an error.
 	return "", nil, errors.New("Unsupported action type.")
 }
@@ -173,6 +192,7 @@ func (reader *FileSystemReader) SetFileActions(actions []utils.ActionRecord) err
 				existAction.Action.Exec.Code = fileAction.Action.Exec.Code
 				existAction.Filepath = fileAction.Filepath
 			} else {
+				// TODO(#691) create new named error
 				// Action exists, but references two different sources
 				return errors.New("Conflict detected for action named " + existAction.Action.Name + ". Found two locations for source file: " + existAction.Filepath + " and " + fileAction.Filepath)
 			}
@@ -183,5 +203,4 @@ func (reader *FileSystemReader) SetFileActions(actions []utils.ActionRecord) err
 	}
 
 	return nil
-
 }

@@ -19,16 +19,15 @@ package cmd
 
 import (
 	"fmt"
+	"path"
+	"sync"
+	"os"
+	"github.com/spf13/cobra"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/fatih/color"
-	"github.com/spf13/cobra"
-	"path"
-	"sync"
-    "os"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 var wskpropsPath string
@@ -38,31 +37,34 @@ var wg sync.WaitGroup
 
 // reportCmd represents the report command
 var reportCmd = &cobra.Command{
-	Use:   "report",
-	SuggestFor: []string {"list"},
-	Short: "Returns summary of what's been deployed on OpenWhisk in specific namespace",
-	Long: `Command helps user get an overall report about what's been deployed
-on OpenWhisk with specific OpenWhisk namespace. By default it will read the wsk property file
-located under current user home.`,
+	Use:		"report",
+	SuggestFor:	[]string{"list"},
+	Short:		wski18n.T(wski18n.ID_CMD_DESC_SHORT_REPORT),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if wskpropsPath != "" {
 			config, _ := deployers.NewWhiskConfig(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
-            client, _ := deployers.CreateNewClient(config)
-            return printDeploymentInfo(client)
+			client, _ := deployers.CreateNewClient(config)
+			return printDeploymentInfo(client)
 		} else {
-            //default to ~/.wskprops
-            userHome := utils.GetHomeDirectory()
-            propPath := path.Join(userHome, ".wskprops")
-            config, _ := deployers.NewWhiskConfig(propPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
-            client, _ := deployers.CreateNewClient(config)
-            return printDeploymentInfo(client)
-        }
+			//default to ~/.wskprops
+			userHome := utils.GetHomeDirectory()
+			// TODO() we should not only use const. for config files like .wskprops, but have a dedicated
+			// set of functions in its own package to interact with it as a resource
+			propPath := path.Join(userHome, ".wskprops")
+			config, _ := deployers.NewWhiskConfig(propPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
+			client, _ := deployers.CreateNewClient(config)
+			return printDeploymentInfo(client)
+		}
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(reportCmd)
-	reportCmd.Flags().StringVarP(&wskpropsPath, "wskproppath", "w", path.Join(os.Getenv("HOME"), ".wskprops"), "path to wsk property file, default is to ~/.wskprops")
+
+	// TODO() REMOVE this flag... the flag -config exists already
+	reportCmd.Flags().StringVarP(&wskpropsPath, "wskproppath", "w",
+		path.Join(os.Getenv("HOME"), ".wskprops"),
+		wski18n.T(wski18n.ID_CMD_FLAG_CONFIG))
 
 	// Here you will define your flags and configuration settings.
 
@@ -73,23 +75,19 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// reportCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 }
-
-var boldString = color.New(color.Bold).SprintFunc()
 
 func printDeploymentInfo(client *whisk.Client) error {
 	//We currently list packages, actions, triggers, rules.
 	wg.Add(4)
 
-	// TODO() i18n
-	wskprint.PrintlnOpenWhiskStatus("----==== OpenWhisk Deployment Status ====----")
+	wskprint.PrintlnOpenWhiskInfo(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_REPORT))
 	// we set the default package list options
 	pkgoptions := &whisk.PackageListOptions{false, 0, 0, 0, false}
 	packages, _, err := client.Packages.List(pkgoptions)
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
 	// list all packages under current namespace.
 	go func() {
@@ -103,24 +101,24 @@ func printDeploymentInfo(client *whisk.Client) error {
 		acnoptions := &whisk.ActionListOptions{0, 0, false}
 		for _, pkg := range packages {
 			actions, _, err := client.Actions.List(pkg.Name, acnoptions)
-            if err != nil {
-                return err
-            }
+			if err != nil {
+				return err
+			}
 			printActionList(actions)
 		}
-        return nil
+		return nil
 	}()
 
 	// list all the triggers under current namespace.
 	go func() error {
 		defer wg.Done()
 		troptions := &whisk.TriggerListOptions{0, 0, false}
-        _, _, err := client.Triggers.List(troptions)
-        if err != nil {
-            return err
-        }
+		_, _, err := client.Triggers.List(troptions)
+		if err != nil {
+			return err
+		}
 		//printTriggerList(triggers)
-        return nil
+		return nil
 	}()
 
 	// list all the rules under current namespace.
@@ -128,11 +126,11 @@ func printDeploymentInfo(client *whisk.Client) error {
 		defer wg.Done()
 		roptions := &whisk.RuleListOptions{0, 0, false}
 		rules, _, err := client.Rules.List(roptions)
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 		printRuleList(rules)
-        return nil
+		return nil
 	}()
 
 	wg.Wait()
@@ -146,6 +144,7 @@ func printList(collection interface{}) {
 	switch collection := collection.(type) {
 	case []whisk.Action:
 		printActionList(collection)
+	// TODO()
 	//case []whisk.Trigger
 	//	printTriggerList(collection)
 	case []whisk.Package:
@@ -159,43 +158,58 @@ func printList(collection interface{}) {
 	}
 }
 
+// TODO() i18n private / shared never translated
 func printRuleList(rules []whisk.Rule) {
-	fmt.Fprintf(color.Output, "%s\n", boldString("rules"))
+	wskprint.PrintlnOpenWhiskInfoTitle(wski18n.RULES)
+
 	for _, rule := range rules {
 		publishState := wski18n.T("private")
 		if *rule.Publish {
 			publishState = wski18n.T("shared")
 		}
-		fmt.Printf("%-70s %s\n", fmt.Sprintf("/%s/%s", rule.Namespace, rule.Name), publishState)
+		output := fmt.Sprintf("%-70s %s\n",
+			fmt.Sprintf("/%s/%s", rule.Namespace, rule.Name),
+			publishState)
+		wskprint.PrintlnOpenWhiskInfo(output)
 	}
 }
 
+// TODO() i18n private / shared never translated
 func printPackageList(packages []whisk.Package) {
-	fmt.Fprintf(color.Output, "%s\n", boldString("packages"))
+	wskprint.PrintlnOpenWhiskInfoTitle(wski18n.PACKAGES)
 	for _, xPackage := range packages {
 		publishState := wski18n.T("private")
 		if *xPackage.Publish {
 			publishState = wski18n.T("shared")
 		}
-		fmt.Printf("%-70s %s\n", fmt.Sprintf("/%s/%s", xPackage.Namespace, xPackage.Name), publishState)
+		output := fmt.Sprintf("%-70s %s\n",
+			fmt.Sprintf("/%s/%s", xPackage.Namespace, xPackage.Name),
+			publishState)
+		wskprint.PrintlnOpenWhiskInfo(output)
 	}
 }
 
+// TODO() i18n private / shared never translated
 func printActionList(actions []whisk.Action) {
-	fmt.Fprintf(color.Output, "%s\n", boldString("actions"))
+	wskprint.PrintlnOpenWhiskInfoTitle(wski18n.ACTIONS)
 	for _, action := range actions {
 		publishState := wski18n.T("private")
 		if *action.Publish {
 			publishState = wski18n.T("shared")
 		}
 		kind := getValueString(action.Annotations, "exec")
-		fmt.Printf("%-70s %s %s\n", fmt.Sprintf("/%s/%s", action.Namespace, action.Name), publishState, kind)
+		output := fmt.Sprintf("%-70s %s %s\n",
+			fmt.Sprintf("/%s/%s", action.Namespace, action.Name),
+			publishState,
+			kind)
+		wskprint.PrintlnOpenWhiskInfo(output)
 	}
 }
 
 /*
 func printTriggerList(triggers whisk.Trigger) {
-	fmt.Fprintf(color.Output, "%s\n", boldString("triggers"))
+	//fmt.Fprintf(color.Output, "%s\n", boldString("triggers"))
+	wskprint.PrintlnOpenWhiskInfoTitle(wski18n.TRIGGERS)
 	for _, trigger := range triggers {
 		publishState := wski18n.T("private")
 		if trigger.Publish {
@@ -216,7 +230,9 @@ func getValueString(keyValueArr whisk.KeyValueArr, key string) string {
 		res = castedValue
 	}
 
-	whisk.Debug(whisk.DbgInfo, "Got string value '%v' for key '%s'\n", res, key)
+	// TODO() This may be too much for end-user debug/trace
+	//dbgMsg := fmt.Sprintf("keyValueArr[%v]: key=[%s] value=[%v]\n",  keyValueArr, key, res)
+	//wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg )
 
 	return res
 }
@@ -231,21 +247,25 @@ func getValue(keyValueArr whisk.KeyValueArr, key string) interface{} {
 		}
 	}
 
-	whisk.Debug(whisk.DbgInfo, "Got value '%v' from '%v' for key '%s'\n", res, keyValueArr, key)
+	// TODO() This may be too much for end-user debug/trace
+	//dbgMsg := fmt.Sprintf("keyValueArr[%v]: key=[%s] value=[%v]\n",  keyValueArr, key, res)
+	//wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg )
 
 	return res
 }
 
 func printNamespaceList(namespaces []whisk.Namespace) {
-	fmt.Fprintf(color.Output, "%s\n", boldString("namespaces"))
+	wskprint.PrintlnOpenWhiskInfo(wski18n.NAMESPACES)
 	for _, namespace := range namespaces {
-		fmt.Printf("%s\n", namespace.Name)
+		output := fmt.Sprintf("%s\n", namespace.Name)
+		wskprint.PrintlnOpenWhiskInfo(output)
 	}
 }
 
 func printActivationList(activations []whisk.Activation) {
-	fmt.Fprintf(color.Output, "%s\n", boldString("activations"))
+	wskprint.PrintlnOpenWhiskInfo(wski18n.ACTIVATIONS)
 	for _, activation := range activations {
-		fmt.Printf("%s %20s\n", activation.ActivationID, activation.Name)
+		output := fmt.Sprintf("%s %20s\n", activation.ActivationID, activation.Name)
+		wskprint.PrintlnOpenWhiskInfo(output)
 	}
 }

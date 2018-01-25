@@ -18,60 +18,72 @@
 package cmd
 
 import (
-	"fmt"
-
 	"bufio"
-	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/spf13/cobra"
 	"net/http"
 	"net/url"
 	"os"
 	"path"
 	"strings"
+	"github.com/spf13/cobra"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 // publishCmd represents the publish command
 var publishCmd = &cobra.Command{
-	Use:   "publish",
-	SuggestFor: []string {"publicize"},
-	Short: "Publish a package to a registry",
-	Long:  `Publish a package to the registry set in ~/.wskprops`,
+	Use:		"publish",
+	SuggestFor:	[]string{"publicize"},
+	Short:		wski18n.T(wski18n.ID_CMD_DESC_SHORT_PUBLISH),
+	Long:		wski18n.T(wski18n.ID_CMD_DESC_LONG_PUBLISH),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Get registry location
-
 		userHome := utils.GetHomeDirectory()
 		propPath := path.Join(userHome, ".wskprops")
 
 		configs, err := utils.ReadProps(propPath)
 		if err != nil {
-            return err
-        }
+			return err
+		}
 
 		registry, ok := configs["REGISTRY"]
 		if !ok {
+			wskprint.PrintOpenWhiskError(
+				wski18n.T(wski18n.ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
+					map[string]interface{}{
+						wski18n.KEY_URL_TYPE: wski18n.REGISTRY,
+						wski18n.KEY_URL: "",
+						wski18n.KEY_FILE_TYPE: wski18n.WHISK_PROPS}))
+
+			// TODO() should only read if interactive mode is on
 			reader := bufio.NewReader(os.Stdin)
-			fmt.Print("Registry URL not found in ~./wskprops. Must be set before publishing.\n")
 			for {
-				registry = utils.Ask(reader, "Registry URL", "")
+				registry = utils.Ask(reader, wski18n.REGISTRY_URL, "")
 
 				_, err := url.Parse(registry)
 				if err == nil {
-					// TODO: send request to registry to check it exists.
+					// TODO() send request to registry to check if it exists.
 					break
 				}
-				fmt.Print("Malformed repository URL. Try again")
 
+				// Tell user the URL they entered was invalid, try again...
+				wskprint.PrintOpenWhiskError(
+					wski18n.T(wski18n.ID_ERR_URL_MALFORMED_X_urltype_X_url_X,
+						map[string]interface{}{
+							wski18n.KEY_URL_TYPE: wski18n.REGISTRY,
+							wski18n.KEY_URL: registry}))
 			}
+
 			configs["REGISTRY"] = registry
 			utils.WriteProps(propPath, configs)
 		}
 
 		// Get repo URL
 		maniyaml, err := parsers.ReadOrCreateManifest()
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 
 		if len(maniyaml.Package.Repositories) > 0 {
 			repoURL := maniyaml.Package.Repositories[0].Url
@@ -79,28 +91,38 @@ var publishCmd = &cobra.Command{
 			paths := strings.Split(repoURL, "/")
 			l := len(paths)
 			if l < 2 {
-				fmt.Print("Fatal error: malformed repository URL in manifest file :" + repoURL)
+				wskprint.PrintOpenWhiskError(
+					wski18n.T(wski18n.ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
+						map[string]interface{}{
+							wski18n.KEY_URL_TYPE: wski18n.REPOSITORY,
+							wski18n.KEY_URL: repoURL,
+							wski18n.KEY_FILE_TYPE: wski18n.MANIFEST}))
 				return nil
 			}
 
-			repo := paths[l-1]
-			owner := paths[l-2]
+			repo := paths[l - 1]
+			owner := paths[l - 2]
 
 			// Send HTTP request
 			client := &http.Client{}
-			request, err := http.NewRequest("PUT", registry+"?owner="+owner+"&repo="+repo, nil)
+			request, err := http.NewRequest("PUT", registry + "?owner=" + owner + "&repo=" + repo, nil)
 			if err != nil {
-                return err
-            }
+				return err
+			}
 			_, err = client.Do(request)
-            if err != nil {
-                return err
-            }
+			if err != nil {
+				return err
+			}
 
 		} else {
-			fmt.Print("Fatal error: missing repository URL in manifest file.")
+			wskprint.PrintOpenWhiskError(
+				wski18n.T(wski18n.ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
+					map[string]interface{}{
+						wski18n.KEY_URL_TYPE: wski18n.REPOSITORY,
+						wski18n.KEY_URL: "",
+						wski18n.KEY_FILE_TYPE: wski18n.MANIFEST}))
 		}
-        return nil
+		return nil
 	},
 }
 

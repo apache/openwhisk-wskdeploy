@@ -19,7 +19,6 @@ package wskprint
 
 import (
 	"fmt"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/fatih/color"
 	"github.com/mattn/go-colorable"
@@ -29,14 +28,18 @@ const(
 	STR_PREFIXED_MESSAGE = "%s: %s"
 )
 
+var(
+	clrInfo = color.New(color.FgCyan)
+	clrWarning = color.New(color.FgYellow)
+	clrError = color.New(color.FgRed)
+	clrSuccess = color.New(color.FgGreen)
+	clrTitleInfo = color.New(color.FgCyan).Add(color.Underline)
+)
+
 func PrintOpenWhiskError(message string) {
 	outputStream := colorable.NewColorableStderr()
-	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(wski18n.ID_MSG_PREFIX_ERROR), message)
-	fmt.Fprintf(outputStream, color.RedString(fmsg))
-}
-
-func PrintlnOpenWhiskError(message string) {
-	PrintOpenWhiskError(message + "\n")
+	fmt.Fprintf(outputStream, clrError.Sprintf( STR_PREFIXED_MESSAGE,
+		wski18n.T(wski18n.ID_MSG_PREFIX_ERROR), message))
 }
 
 func PrintOpenWhiskFromError(err error) {
@@ -45,8 +48,8 @@ func PrintOpenWhiskFromError(err error) {
 
 func PrintOpenWhiskWarning(message string) {
 	outputStream := colorable.NewColorableStdout()
-	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(wski18n.ID_MSG_PREFIX_WARNING), message)
-	fmt.Fprintf(outputStream, color.YellowString(fmsg))
+	fmt.Fprintf(outputStream, clrWarning.Sprintf( STR_PREFIXED_MESSAGE,
+		wski18n.T(wski18n.ID_MSG_PREFIX_WARNING), message))
 }
 
 func PrintlnOpenWhiskWarning(message string) {
@@ -55,28 +58,47 @@ func PrintlnOpenWhiskWarning(message string) {
 
 func PrintOpenWhiskSuccess(message string) {
 	outputStream := colorable.NewColorableStdout()
-	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(wski18n.ID_MSG_PREFIX_SUCCESS), message)
-	fmt.Fprintf(outputStream, color.GreenString(fmsg))
+	fmt.Fprintf(outputStream, clrSuccess.Sprintf( STR_PREFIXED_MESSAGE,
+		wski18n.T(wski18n.ID_MSG_PREFIX_SUCCESS), message))
 }
 
 func PrintlnOpenWhiskSuccess(message string) {
 	PrintOpenWhiskSuccess(message + "\n")
 }
 
-func PrintOpenWhiskStatus(message string) {
+func PrintOpenWhiskInfo(message string) {
 	outputStream := colorable.NewColorableStdout()
-	fmsg := fmt.Sprintf( STR_PREFIXED_MESSAGE, wski18n.T(wski18n.ID_MSG_PREFIX_INFO), message)
-	fmt.Fprintf(outputStream, color.CyanString(fmsg))
+	fmt.Fprintf(outputStream, clrInfo.Sprintf( STR_PREFIXED_MESSAGE,
+		wski18n.T(wski18n.ID_MSG_PREFIX_INFO), message))
 }
 
-func PrintlnOpenWhiskStatus(message string) {
-	PrintOpenWhiskStatus(message + "\n")
+
+func PrintlnOpenWhiskInfo(message string) {
+	PrintOpenWhiskInfo(message + "\n")
+}
+
+func PrintlnOpenWhiskInfoTitle(message string) {
+	outputStream := colorable.NewColorableStdout()
+	fmt.Fprintf(outputStream, clrTitleInfo.Sprintf( STR_PREFIXED_MESSAGE,
+		wski18n.T(wski18n.ID_MSG_PREFIX_INFO), message))
 }
 
 func PrintlnOpenWhiskOutput(message string) {
    	fmt.Println(message)
 }
 
-func PrintOpenWhiskDebugInfo(message string) {
-	whisk.Debug(whisk.DbgInfo, message)
+func PrintOpenWhiskVerboseTitle(verbose bool, message string) {
+	if verbose{
+		PrintlnOpenWhiskInfoTitle(message)
+	}
+}
+
+func PrintOpenWhiskVerbose(verbose bool, message string) {
+	if verbose{
+		PrintOpenWhiskInfo(message)
+	}
+}
+
+func PrintlnOpenWhiskVerbose(verbose bool, message string) {
+	PrintOpenWhiskVerbose(verbose, message + "\n")
 }

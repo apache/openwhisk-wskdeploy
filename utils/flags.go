@@ -17,7 +17,12 @@
 
 package utils
 
-var Flags struct {
+import (
+	"fmt"
+	"reflect"
+)
+
+type WskDeployFlags struct {
 	WithinOpenWhisk bool   // is this running within an OpenWhisk action?
 	ApiHost         string // OpenWhisk API host
 	Auth            string // OpenWhisk API key
@@ -36,20 +41,28 @@ var Flags struct {
 	Key		string
 	Cert		string
 	Managed 	bool   // OpenWhisk Managed Deployments
-
-	//action flag definition
-	//from go cli
-	action struct {
-		docker   bool
-		copy     bool
-		pipe     bool
-		web      string
-		sequence bool
-		timeout  int
-		memory   int
-		logsize  int
-		result   bool
-		kind     string
-		main     string
-	}
 }
+
+func (flags *WskDeployFlags) Format() string {
+
+	flagNames := reflect.TypeOf(*flags)
+	flagValues := reflect.ValueOf(*flags)
+
+	var name string
+	var value interface{}
+	//var t interface{}
+	var result string
+
+	for i := 0; i < flagValues.NumField(); i++  {
+		name = flagNames.Field(i).Name
+		value = flagValues.Field(i)
+		// NOTE: if you need to see the Type, add this line to output
+		//t = flagValues.Field(i).Type()
+		line := fmt.Sprintf("      > %s: [%v]\n", name, value)
+		result += line
+	}
+
+	return result
+}
+
+var Flags WskDeployFlags

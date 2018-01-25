@@ -34,12 +34,12 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 )
 
+// Possible sources for config info (e.g., API Host, Auth Key, Namespace)
 const (
-	COMMANDLINE = "wskdeploy command line"
-	DEFAULTVALUE = "default value"
-	WSKPROPS = ".wskprops"
-	WHISKPROPERTY = "whisk.properties"
-	INTERINPUT = "interactve input"
+	SOURCE_WSKPROPS			= ".wskprops"
+	SOURCE_WHISK_PROPERTIES		= "whisk.properties"
+	SOURCE_INTERACTIVE_INPUT	= "interactve input"	// TODO() i18n?
+	SOURCE_DEFAULT_VALUE		= "wskdeploy default"	// TODO() i18n?
 )
 
 type PropertyValue struct {
@@ -90,38 +90,64 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 	// read credentials from command line
 	apihost, auth, ns, keyfile, certfile := GetCommandLineFlags()
-	credential = GetPropertyValue(credential, auth, COMMANDLINE)
-	namespace = GetPropertyValue(namespace, ns, COMMANDLINE)
-	apiHost = GetPropertyValue(apiHost, apihost, COMMANDLINE)
-	key = GetPropertyValue(key, keyfile, COMMANDLINE)
-	cert = GetPropertyValue(cert, certfile, COMMANDLINE)
+	credential = GetPropertyValue(credential, auth, wski18n.COMMAND_LINE)
+	namespace = GetPropertyValue(namespace, ns, wski18n.COMMAND_LINE)
+	apiHost = GetPropertyValue(apiHost, apihost, wski18n.COMMAND_LINE)
+	key = GetPropertyValue(key, keyfile, wski18n.COMMAND_LINE)
+	cert = GetPropertyValue(cert, certfile, wski18n.COMMAND_LINE)
 
+	// TODO() i18n
+        // Print all flags / values if verbose
+	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, wski18n.CONFIGURATION + ":\n" + utils.Flags.Format())
+
+	// TODO() split this logic into its own function
+	// TODO() merge with the same logic used against manifest file (below)
 	// now, read them from deployment file if not found on command line
 	if len(credential.Value) == 0 || len(namespace.Value) == 0 || len(apiHost.Value) == 0 {
 		if utils.FileExists(deploymentPath) {
 			mm := parsers.NewYAMLParser()
 			deployment, _ := mm.ParseDeployment(deploymentPath)
-			credential = GetPropertyValue(credential, deployment.GetProject().Credential, path.Base(deploymentPath))
-			namespace = GetPropertyValue(namespace, deployment.GetProject().Namespace, path.Base(deploymentPath))
-			apiHost = GetPropertyValue(apiHost, deployment.GetProject().ApiHost, path.Base(deploymentPath))
+			credential = GetPropertyValue(credential,
+				deployment.GetProject().Credential,
+				path.Base(deploymentPath))
+			namespace = GetPropertyValue(namespace,
+				deployment.GetProject().Namespace,
+				path.Base(deploymentPath))
+			apiHost = GetPropertyValue(apiHost,
+				deployment.GetProject().ApiHost,
+				path.Base(deploymentPath))
 		}
 	}
 
+	// TODO() split this logic into its own function
+	// TODO() merge with the same logic used against deployment file (above)
 	// read credentials from manifest file as didn't find them on command line and in deployment file
 	if len(credential.Value) == 0 || len(namespace.Value) == 0 || len(apiHost.Value) == 0 {
 		if utils.FileExists(manifestPath) {
 			mm := parsers.NewYAMLParser()
 			manifest, _ := mm.ParseManifest(manifestPath)
 			if manifest.Package.Packagename != "" {
-				credential = GetPropertyValue(credential, manifest.Package.Credential, path.Base(manifestPath))
-				namespace = GetPropertyValue(namespace, manifest.Package.Namespace, path.Base(manifestPath))
-				apiHost = GetPropertyValue(apiHost, manifest.Package.ApiHost, path.Base(manifestPath))
+				credential = GetPropertyValue(credential,
+					manifest.Package.Credential,
+					path.Base(manifestPath))
+				namespace = GetPropertyValue(namespace,
+					manifest.Package.Namespace,
+					path.Base(manifestPath))
+				apiHost = GetPropertyValue(apiHost,
+					manifest.Package.ApiHost,
+					path.Base(manifestPath))
 			} else if manifest.Packages != nil {
 				if len(manifest.Packages) == 1 {
 					for _, pkg := range manifest.Packages {
-						credential = GetPropertyValue(credential, pkg.Credential, path.Base(manifestPath))
-						namespace = GetPropertyValue(namespace, pkg.Namespace, path.Base(manifestPath))
-						apiHost = GetPropertyValue(apiHost, pkg.ApiHost, path.Base(manifestPath))
+						credential = GetPropertyValue(credential,
+							pkg.Credential,
+							path.Base(manifestPath))
+						namespace = GetPropertyValue(namespace,
+							pkg.Namespace,
+							path.Base(manifestPath))
+						apiHost = GetPropertyValue(apiHost,
+							pkg.ApiHost,
+							path.Base(manifestPath))
 					}
 				}
 			}
@@ -135,42 +161,42 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 	// The error raised here can be neglected, because we will handle it in the end of this function.
 	wskprops, _ := GetWskPropFromWskprops(pi, proppath)
-	credential = GetPropertyValue(credential, wskprops.AuthKey, WSKPROPS)
-	namespace = GetPropertyValue(namespace, wskprops.Namespace, WSKPROPS)
-	apiHost = GetPropertyValue(apiHost, wskprops.APIHost, WSKPROPS)
-	key = GetPropertyValue(key, wskprops.Key, WSKPROPS)
-	cert = GetPropertyValue(cert, wskprops.Cert, WSKPROPS)
+	credential = GetPropertyValue(credential, wskprops.AuthKey, SOURCE_WSKPROPS)
+	namespace = GetPropertyValue(namespace, wskprops.Namespace, SOURCE_WSKPROPS)
+	apiHost = GetPropertyValue(apiHost, wskprops.APIHost, SOURCE_WSKPROPS)
+	key = GetPropertyValue(key, wskprops.Key, SOURCE_WSKPROPS)
+	cert = GetPropertyValue(cert, wskprops.Cert, SOURCE_WSKPROPS)
 
 	// TODO() see if we can split the following whisk prop logic into a separate function
 	// now, read credentials from whisk.properties but this is only acceptable within Travis
 	// whisk.properties will soon be deprecated and should not be used for any production deployment
 	whiskproperty, _ := GetWskPropFromWhiskProperty(pi)
 
-	var warnmsg string
+	var warnMsg string
 
-	credential = GetPropertyValue(credential, whiskproperty.AuthKey, WHISKPROPERTY)
-	if credential.Source == WHISKPROPERTY {
-		warnmsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
-			map[string]interface{}{"key": "authenticaton key"})
-		wskprint.PrintlnOpenWhiskWarning(warnmsg)
+	credential = GetPropertyValue(credential, whiskproperty.AuthKey, SOURCE_WHISK_PROPERTIES)
+	if credential.Source == SOURCE_WHISK_PROPERTIES {
+		warnMsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
+			map[string]interface{}{wski18n.KEY_KEY: wski18n.AUTH_KEY})
+		wskprint.PrintlnOpenWhiskWarning(warnMsg)
 	}
-	namespace = GetPropertyValue(namespace, whiskproperty.Namespace, WHISKPROPERTY)
-	if namespace.Source == WHISKPROPERTY {
-		warnmsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
-			map[string]interface{}{"key": "namespace"})
-		wskprint.PrintlnOpenWhiskWarning(warnmsg)
+	namespace = GetPropertyValue(namespace, whiskproperty.Namespace, SOURCE_WHISK_PROPERTIES)
+	if namespace.Source == SOURCE_WHISK_PROPERTIES {
+		warnMsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
+			map[string]interface{}{wski18n.KEY_KEY: parsers.YAML_KEY_NAMESPACE})
+		wskprint.PrintlnOpenWhiskWarning(warnMsg)
 	}
-	apiHost = GetPropertyValue(apiHost, whiskproperty.APIHost, WHISKPROPERTY)
-	if apiHost.Source == WHISKPROPERTY {
-		warnmsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
-			map[string]interface{}{"key": "API host"})
-		wskprint.PrintlnOpenWhiskWarning(warnmsg)
+	apiHost = GetPropertyValue(apiHost, whiskproperty.APIHost, SOURCE_WHISK_PROPERTIES)
+	if apiHost.Source == SOURCE_WHISK_PROPERTIES {
+		warnMsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
+			map[string]interface{}{wski18n.KEY_KEY: wski18n.API_HOST})
+		wskprint.PrintlnOpenWhiskWarning(warnMsg)
 	}
 
 	// set namespace to default namespace if not yet found
 	if len(apiHost.Value) != 0 && len(credential.Value) != 0 && len(namespace.Value) == 0 {
 		namespace.Value = whisk.DEFAULT_NAMESPACE
-		namespace.Source = DEFAULTVALUE
+		namespace.Source = SOURCE_DEFAULT_VALUE
 	}
 
 	// TODO() See if we can split off the interactive logic into a separate function
@@ -185,22 +211,23 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 			host = "openwhisk.ng.bluemix.net"
 		}
 		apiHost.Value = host
-		apiHost.Source = INTERINPUT
+		apiHost.Source = SOURCE_INTERACTIVE_INPUT
 	}
 
 	if len(credential.Value) == 0 && isInteractive == true {
 		cred := promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_AUTHKEY))
 		credential.Value = cred
-		credential.Source = INTERINPUT
+		credential.Source = SOURCE_INTERACTIVE_INPUT
 
-		// The namespace is always associated with the credential. Both of them should be picked up from the same source.
+		// The namespace is always associated with the credential.
+		// Both of them should be picked up from the same source.
 		if len(namespace.Value) == 0 || namespace.Value == whisk.DEFAULT_NAMESPACE {
 			tempNamespace := promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_NAMESPACE))
-			source := INTERINPUT
+			source := SOURCE_INTERACTIVE_INPUT
 
 			if tempNamespace == "" {
 				tempNamespace = whisk.DEFAULT_NAMESPACE
-				source = DEFAULTVALUE
+				source = SOURCE_DEFAULT_VALUE
 			}
 
 			namespace.Value = tempNamespace
@@ -217,7 +244,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		AuthToken: credential.Value, //Authtoken
 		Namespace: namespace.Value, //Namespace
 		Host:      apiHost.Value,
-		Version:   "v1",
+		Version:   "v1",  // TODO() should not be hardcoded, should prompt/warn user of default
 		Cert:      cert.Value,
 		Key:       key.Value,
 		Insecure:  mode, // true if you want to ignore certificate signing
@@ -225,7 +252,6 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 	// validate we have credential, apihost and namespace
 	err := validateClientConfig(credential, apiHost, namespace)
-
 	return clientConfig, err
 }
 
@@ -251,21 +277,21 @@ func validateClientConfig(credential PropertyValue, apiHost PropertyValue, names
 
 	// Show caller what final values we used for credential, apihost and namespace
 	stdout := wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
-		map[string]interface{}{"host": apiHost.Value, "source": apiHost.Source})
-	wskprint.PrintOpenWhiskStatus(stdout)
+		map[string]interface{}{wski18n.KEY_HOST: apiHost.Value, wski18n.KEY_SOURCE: apiHost.Source})
+	wskprint.PrintOpenWhiskInfo(stdout)
 
 	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
-		map[string]interface{}{"source": credential.Source})
-	wskprint.PrintOpenWhiskStatus(stdout)
+		map[string]interface{}{wski18n.KEY_SOURCE: credential.Source})
+	wskprint.PrintOpenWhiskInfo(stdout)
 
 	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
-		map[string]interface{}{"namespace": namespace.Value, "source": namespace.Source})
-	wskprint.PrintOpenWhiskStatus(stdout)
+		map[string]interface{}{wski18n.KEY_NAMESPACE: namespace.Value, wski18n.KEY_SOURCE: namespace.Source})
+	wskprint.PrintOpenWhiskInfo(stdout)
 
 	return nil
 }
 
-// TODO() move into its own package "wskread" and add support for passing in default value
+// TODO() perhaps move into its own package "wskread" and add support for passing in default value
 var promptForValue = func(msg string) (string) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(msg)
