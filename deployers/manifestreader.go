@@ -373,12 +373,11 @@ func (reader *ManifestReader) SetRules(rules []*whisk.Rule) error {
 
 func (reader *ManifestReader) SetApis(ar []*whisk.ApiCreateRequest) error {
 	dep := reader.serviceDeployer
-	var apis []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
 
-	for _, api := range apis {
+	for _, api := range ar {
 		existApi, exist := dep.Deployment.Apis[api.ApiDoc.ApiName]
 		if exist {
 			existApi.ApiDoc.ApiName = api.ApiDoc.ApiName
