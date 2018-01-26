@@ -133,5 +133,5 @@ func TestGetApisList(t *testing.T) {
 	manifest, _ := mm.ParseManifest(manifestfile_val_tar)
 	pkg := manifest.Packages["manifest2"]
 	apis := pkg.GetApis()
-	assert.Equal(t, 5, len(apis), "Get api list failed.")
+	assert.Equal(t, 1, len(apis), "Get api list failed.")
 }

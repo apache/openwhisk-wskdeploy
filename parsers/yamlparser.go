@@ -182,6 +182,57 @@ type Repository struct {
 	Credential  string `yaml:"credential,omitempty"`
 }
 
+type ApiCreateRequest struct {
+	ApiDoc          *Api      `yaml:"apidoc,omitempty"`
+}
+
+type Api struct {
+	Namespace       string    `yaml:"namespace,omitempty"`
+	ApiName         string    `yaml:"apiName,omitempty"`
+	GatewayBasePath string    `yaml:"gatewayBasePath,omitempty"`
+	GatewayRelPath  string    `yaml:"gatewayPath,omitempty"`
+	GatewayMethod   string    `yaml:"gatewayMethod,omitempty"`
+	Id              string    `yaml:"id,omitempty"`
+	GatewayFullPath string    `yaml:"gatewayFullPath,omitempty"`
+	Swagger         string    `yaml:"swagger,omitempty"`
+	Action          *ApiAction `yaml:"action,omitempty"`
+	PathParameters   []ApiParameter `yaml:"pathParameters,omitempty"`
+}
+
+type ApiParameter struct {
+	Name              string      `yaml:"name"`
+	In                string      `yaml:"in"`
+	Description       string      `yaml:"description,omitempty"`
+	Required          bool        `yaml:"required,omitempty"`
+	Type              string      `yaml:"type,omitempty"`
+	Format            string      `yaml:"format,omitempty"`
+	AllowEmptyValue   bool        `yaml:"allowEmptyValue,omitempty"`
+	Items             map[string]interface{}    `yaml:"items,omitempty"`
+	CollectionFormat  string      `yaml:"collectionFormat,omitempty"`
+	Default           interface{} `yaml:"default,omitempty"`
+	Maximum           int         `yaml:"maximum,omitempty"`
+	ExclusiveMaximum  bool        `yaml:"exclusiveMaximum,omitempty"`
+	Minimum           int         `yaml:"minimum,omitempty"`
+	ExclusiveMinimum  bool        `yaml:"exclusiveMinimum,omitempty"`
+	MaxLength         int         `yaml:"maxLength,omitempty"`
+	MinLength         int         `yaml:"minLength,omitempty"`
+	Pattern           string      `yaml:"pattern,omitempty"`
+	MaxItems          int         `yaml:"maxItems,omitempty"`
+	MinItems          int         `yaml:"minItems,omitempty"`
+	UniqueItems       bool        `yaml:"uniqueItems,omitempty"`
+	MultipleOf        int         `yaml:"multipleOf,omitempty"`
+	Enum              interface{} `yaml:"enum,omitempty"`
+	Ref               string      `yaml:"$ref,omitempty"`
+}
+
+type ApiAction struct {
+	Name            string    `yaml:"name,omitempty"`
+	Namespace       string    `yaml:"namespace,omitempty"`
+	BackendMethod   string    `yaml:"backendMethod,omitempty"`
+	BackendUrl      string    `yaml:"backendUrl,omitempty"`
+	Auth            string    `yaml:"authkey,omitempty"`
+}
+
 type Package struct {
 	//mapping to wsk.SentPackageNoPublish.Name
 	Packagename string `yaml:"name"` //used in manifest.yaml
@@ -202,7 +253,7 @@ type Package struct {
 	Sequences   map[string]Sequence    `yaml:"sequences"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml: parameters` // used in manifest.yaml
-	Apis map[string]map[string]map[string]map[string]string `yaml:"apis"` //used in manifest.yaml
+	Apis 	map[string]ApiCreateRequest `yaml:"apis"` //used in manifest.yaml
 }
 
 type Project struct {
@@ -295,6 +346,22 @@ func (pkg *Package) ComposeWskPackage() *whisk.Package {
 	return wskpag
 }
 
+func (api *ApiCreateRequest) ComposeWskApi() *whisk.ApiCreateRequest {
+	wskapi := new(whisk.ApiCreateRequest)
+	apidoc := new(whisk.Api)
+	apidoc.Namespace = api.ApiDoc.Namespace
+	apidoc.ApiName = api.ApiDoc.ApiName
+	apidoc.GatewayBasePath = api.ApiDoc.GatewayBasePath
+	apidoc.GatewayRelPath = api.ApiDoc.GatewayRelPath
+	apidoc.GatewayMethod = api.ApiDoc.GatewayMethod
+	wskapi.ApiDoc = apidoc
+	action := new(whisk.ApiAction)
+	action.Name = api.ApiDoc.Action.Name
+	action.BackendMethod = api.ApiDoc.Action.BackendMethod
+	wskapi.ApiDoc.Action = action
+	return wskapi
+}
+
 func (pkg *Package) GetActionList() []Action {
 	var s1 []Action = make([]Action, 0)
 	for action_name, action := range pkg.Actions {
@@ -333,27 +400,10 @@ func (pkg *Package) GetFeedList() []Feed {
 }
 
 // This is for parse the manifest yaml file.
-func (pkg *Package) GetApis() []*whisk.Api {
-	var apis = make([]*whisk.Api, 0)
-	for k, v := range pkg.Apis {
-		var apiName string = k
-		for k, v := range v {
-			var gatewayBasePath string = k
-			for k, v := range v {
-				var gatewayRelPath string = k
-				for k, v := range v {
-					api := &whisk.Api{}
-					api.ApiName = apiName
-					api.GatewayBasePath = gatewayBasePath
-					api.GatewayRelPath = gatewayRelPath
-					action := &whisk.ApiAction{}
-					action.Name = k
-					action.BackendMethod = v
-					api.Action = action
-					apis = append(apis, api)
-				}
-			}
-		}
+func (pkg *Package) GetApis() []ApiCreateRequest {
+	var apis []ApiCreateRequest = make([]ApiCreateRequest, 0)
+	for _, api := range pkg.Apis {
+		apis = append(apis, api)
 	}
 	return apis
 }

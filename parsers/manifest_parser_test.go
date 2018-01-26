@@ -1267,23 +1267,18 @@ func TestComposeRules(t *testing.T) {
 }
 
 func TestComposeApiRecords(t *testing.T) {
-    data := `package:
-  name: helloworld
-  apis:
-    book-club:
-      club:
-        books:
-           putBooks: put
-           deleteBooks: delete
-        members:
-           listMembers: get
-    book-club2:
-      club2:
-        books2:
-           getBooks2: get
-           postBooks2: post
-        members2:
-           listMembers2: get`
+    data := `packages:
+  helloworld:
+    apis:
+      api1:
+        apidoc:
+          apiName: book-club
+          gatewayBasePath: club
+          gatewayPath: books
+          gatewayMethod: GET
+          action:
+             name: greeting
+             backendMethod: GET`
     tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
     if err != nil {
         assert.Fail(t, "Failed to create temp file")
@@ -1299,41 +1294,16 @@ func TestComposeApiRecords(t *testing.T) {
     if err != nil {
         assert.Fail(t, "Failed to compose api records")
     }
-    assert.Equal(t, 6, len(apiList), "Failed to get api records")
+    assert.Equal(t, 1, len(apiList), "Failed to get api records")
     for _, apiRecord := range apiList {
         apiDoc := apiRecord.ApiDoc
         action := apiDoc.Action
         switch action.Name {
-        case "putBooks":
+        case "greeting":
             assert.Equal(t, "book-club", apiDoc.ApiName, "Failed to set api name")
             assert.Equal(t, "club", apiDoc.GatewayBasePath, "Failed to set api base path")
             assert.Equal(t, "books", apiDoc.GatewayRelPath, "Failed to set api rel path")
-            assert.Equal(t, "put", action.BackendMethod, "Failed to set api backend method")
-        case "deleteBooks":
-            assert.Equal(t, "book-club", apiDoc.ApiName, "Failed to set api name")
-            assert.Equal(t, "club", apiDoc.GatewayBasePath, "Failed to set api base path")
-            assert.Equal(t, "books", apiDoc.GatewayRelPath, "Failed to set api rel path")
-            assert.Equal(t, "delete", action.BackendMethod, "Failed to set api backend method")
-        case "listMembers":
-            assert.Equal(t, "book-club", apiDoc.ApiName, "Failed to set api name")
-            assert.Equal(t, "club", apiDoc.GatewayBasePath, "Failed to set api base path")
-            assert.Equal(t, "members", apiDoc.GatewayRelPath, "Failed to set api rel path")
-            assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
-        case "getBooks2":
-            assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
-            assert.Equal(t, "club2", apiDoc.GatewayBasePath, "Failed to set api base path")
-            assert.Equal(t, "books2", apiDoc.GatewayRelPath, "Failed to set api rel path")
-            assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
-        case "postBooks2":
-            assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
-            assert.Equal(t, "club2", apiDoc.GatewayBasePath, "Failed to set api base path")
-            assert.Equal(t, "books2", apiDoc.GatewayRelPath, "Failed to set api rel path")
-            assert.Equal(t, "post", action.BackendMethod, "Failed to set api backend method")
-        case "listMembers2":
-            assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
-            assert.Equal(t, "club2", apiDoc.GatewayBasePath, "Failed to set api base path")
-            assert.Equal(t, "members2", apiDoc.GatewayRelPath, "Failed to set api rel path")
-            assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
+            assert.Equal(t, "GET", action.BackendMethod, "Failed to set api backend method")
         default:
             assert.Fail(t, "Failed to get api action name")
         }

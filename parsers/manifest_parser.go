@@ -883,12 +883,10 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *YAML) ([]*whisk
 
 func (dm *YAMLParser) ComposeApiRecords(pkg Package) ([]*whisk.ApiCreateRequest, error) {
 	var acq []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
-	apis := pkg.GetApis()
 
-	for _, api := range apis {
-		acr := new(whisk.ApiCreateRequest)
-		acr.ApiDoc = api
-		acq = append(acq, acr)
+	for _, api := range pkg.GetApis() {
+		wskapi := api.ComposeWskApi()
+		acq = append(acq, wskapi)
 	}
 	return acq, nil
 }
