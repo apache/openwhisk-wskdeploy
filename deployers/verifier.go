@@ -17,11 +17,11 @@
 
 package deployers
 
-import (
-	"fmt"
-
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-)
+//import (
+//	"fmt"
+//
+//	"github.com/apache/incubator-openwhisk-client-go/whisk"
+//)
 
 // The verifier will filter the deployer against the target DeploymentProject
 // the deployer will query the OpenWhisk platform for already deployed entities.
@@ -35,46 +35,46 @@ type Filter interface {
 	// Perform some queries.
 	Query(deployer *ServiceDeployer) (da *DeploymentProject, err error)
 }
-
-func (vf *Verifier) Query(deployer *ServiceDeployer) (da *DeploymentProject, err error) {
-	pkgoptions := &whisk.PackageListOptions{false, 0, 0, 0, false}
-	packages, _, err := deployer.Client.Packages.List(pkgoptions)
-
-	da = NewDeploymentProject()
-	for _, pa := range packages {
-		deppack := NewDeploymentPackage()
-		deppack.Package, _ = convert(&pa)
-		da.Packages[pa.Name] = deppack
-	}
-	return da, nil
-}
-
-// TODO() function supposedly returns an error, but never does
-func (vf *Verifier) Filter(deployer *ServiceDeployer, target *DeploymentProject) (rs *DeploymentProject, err error) {
-	//substract
-	for _, pa := range target.Packages {
-		for _, dpa := range deployer.Deployment.Packages {
-			if pa.Package.Name == dpa.Package.Name {
-				delete(target.Packages, dpa.Package.Name)
-			}
-		}
-	}
-
-	depApp := NewDeploymentProject()
-	// TODO() i18n
-	fmt.Printf("Target Packages are %#v\n", target.Packages)
-	depApp.Packages = target.Packages
-	return depApp, nil
-}
-
-// Convert whisk.package to whisk.SentPackageNoPublish
-// TODO() function supposedly returns an error, but never does
-// TODO() return value named "sentpackage" is instead "sp"
-func convert(pa *whisk.Package) (sentpackage *whisk.Package, err error) {
-	sp := &whisk.Package{}
-	sp.Name = pa.Name
-	sp.Annotations = pa.Annotations
-	sp.Parameters = pa.Parameters
-	sp.Version = pa.Version
-	return sp, nil
-}
+//
+//func (vf *Verifier) Query(deployer *ServiceDeployer) (da *DeploymentProject, err error) {
+//	pkgoptions := &whisk.PackageListOptions{false, 0, 0, 0, false}
+//	packages, _, err := deployer.Client.Packages.List(pkgoptions)
+//
+//	da = NewDeploymentProject()
+//	for _, pa := range packages {
+//		deppack := NewDeploymentPackage()
+//		deppack.Package, _ = convert(&pa)
+//		da.Packages[pa.Name] = deppack
+//	}
+//	return da, nil
+//}
+//
+//// TODO() function supposedly returns an error, but never does
+//func (vf *Verifier) Filter(deployer *ServiceDeployer, target *DeploymentProject) (rs *DeploymentProject, err error) {
+//	//substract
+//	for _, pa := range target.Packages {
+//		for _, dpa := range deployer.Deployment.Packages {
+//			if pa.Package.Name == dpa.Package.Name {
+//				delete(target.Packages, dpa.Package.Name)
+//			}
+//		}
+//	}
+//
+//	depApp := NewDeploymentProject()
+//	// TODO() i18n
+//	fmt.Printf("Target Packages are %#v\n", target.Packages)
+//	depApp.Packages = target.Packages
+//	return depApp, nil
+//}
+//
+//// Convert whisk.package to whisk.SentPackageNoPublish
+//// TODO() function supposedly returns an error, but never does
+//// TODO() return value named "sentpackage" is instead "sp"
+//func convert(pa *whisk.Package) (sentpackage *whisk.Package, err error) {
+//	sp := &whisk.Package{}
+//	sp.Name = pa.Name
+//	sp.Annotations = pa.Annotations
+//	sp.Parameters = pa.Parameters
+//	sp.Version = pa.Version
+//	return sp, nil
+//}
