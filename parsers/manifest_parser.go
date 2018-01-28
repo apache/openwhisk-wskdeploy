@@ -18,20 +18,20 @@
 package parsers
 
 import (
+	"encoding/base64"
 	"errors"
+	"fmt"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path"
 	"strings"
-	"encoding/base64"
-	"fmt"
-	"gopkg.in/yaml.v2"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
@@ -245,7 +245,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		warningString := wski18n.T(
 			wski18n.ID_WARN_KEY_MISSING_X_key_X_value_X,
 			map[string]interface{}{
-				wski18n.KEY_KEY: wski18n.PACKAGE_VERSION,
+				wski18n.KEY_KEY:   wski18n.PACKAGE_VERSION,
 				wski18n.KEY_VALUE: DEFAULT_PACKAGE_VERSION})
 		wskprint.PrintOpenWhiskWarning(warningString)
 
@@ -265,7 +265,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		warningString := wski18n.T(
 			wski18n.ID_WARN_KEY_MISSING_X_key_X_value_X,
 			map[string]interface{}{
-				wski18n.KEY_KEY: wski18n.PACKAGE_LICENSE,
+				wski18n.KEY_KEY:   wski18n.PACKAGE_LICENSE,
 				wski18n.KEY_VALUE: DEFAULT_PACKAGE_LICENSE})
 		wskprint.PrintOpenWhiskWarning(warningString)
 
@@ -359,7 +359,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		var components []string
 		for _, a := range actionList {
 			act := strings.TrimSpace(a)
-			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName +"/") {
+			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") {
 				act = path.Join(packageName, act)
 			}
 			components = append(components, path.Join("/"+namespace, act))
@@ -435,8 +435,8 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		wskaction.Exec = new(whisk.Exec)
 
 		/*
-   		 *  Action.Function
-   		 */
+		 *  Action.Function
+		 */
 		//set action.Function to action.Location
 		//because Location is deprecated in Action entity
 		if action.Function == "" && action.Location != "" {
@@ -480,9 +480,9 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				if len(kind) == 0 && len(action.Runtime) == 0 && ext != utils.ZIP_FILE_EXTENSION {
 					errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
 						map[string]interface{}{
-							wski18n.KEY_RUNTIME: action.Runtime,
+							wski18n.KEY_RUNTIME:   action.Runtime,
 							wski18n.KEY_EXTENTION: ext,
-							wski18n.KEY_ACTION: action.Name})
+							wski18n.KEY_ACTION:    action.Name})
 					return nil, wskderrors.NewInvalidRuntimeError(errMessage,
 						splitFilePath[len(splitFilePath)-1], action.Name,
 						action.Runtime,
@@ -504,7 +504,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
 						map[string]interface{}{
 							wski18n.KEY_RUNTIME: action.Runtime,
-							wski18n.KEY_ACTION: action.Name})
+							wski18n.KEY_ACTION:  action.Name})
 					return nil, wskderrors.NewInvalidRuntimeError(errMessage,
 						splitFilePath[len(splitFilePath)-1],
 						action.Name,
@@ -517,12 +517,12 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		}
 
 		/*
- 		 *  Action.Runtime
-		 *  Perform few checks if action runtime is specified in manifest YAML file
-		 *  (1) Check if specified runtime is one of the supported runtimes by OpenWhisk server
-		 *  (2) Check if specified runtime is consistent with action source file extensions
-		 *  Set the action runtime to match with the source file extension, if wskdeploy is not invoked in strict mode
- 		 */
+			 		 *  Action.Runtime
+					 *  Perform few checks if action runtime is specified in manifest YAML file
+					 *  (1) Check if specified runtime is one of the supported runtimes by OpenWhisk server
+					 *  (2) Check if specified runtime is consistent with action source file extensions
+					 *  Set the action runtime to match with the source file extension, if wskdeploy is not invoked in strict mode
+		*/
 		if action.Runtime != "" {
 			if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {
 				// for zip actions, rely on the runtimes from the manifest file as it can not be derived from the action source file extension
@@ -535,9 +535,9 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					} else {
 						warnStr := wski18n.T(wski18n.ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
 							map[string]interface{}{
-								wski18n.KEY_RUNTIME: action.Runtime,
+								wski18n.KEY_RUNTIME:   action.Runtime,
 								wski18n.KEY_EXTENTION: ext,
-								wski18n.KEY_ACTION: action.Name})
+								wski18n.KEY_ACTION:    action.Name})
 						wskprint.PrintOpenWhiskWarning(warnStr)
 
 						// even if runtime is not consistent with file extension, deploy action with specified runtime in strict mode
@@ -547,7 +547,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 							warnStr := wski18n.T(wski18n.ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
 								map[string]interface{}{
 									wski18n.KEY_RUNTIME: wskaction.Exec.Kind,
-									wski18n.KEY_ACTION: action.Name})
+									wski18n.KEY_ACTION:  action.Name})
 							wskprint.PrintOpenWhiskWarning(warnStr)
 						}
 					}
@@ -556,7 +556,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				warnStr := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
 					map[string]interface{}{
 						wski18n.KEY_RUNTIME: action.Runtime,
-						wski18n.KEY_ACTION: action.Name})
+						wski18n.KEY_ACTION:  action.Name})
 				wskprint.PrintOpenWhiskWarning(warnStr)
 
 				if ext == utils.ZIP_FILE_EXTENSION {
@@ -571,7 +571,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					warnStr := wski18n.T(wski18n.ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
 						map[string]interface{}{
 							wski18n.KEY_RUNTIME: wskaction.Exec.Kind,
-							wski18n.KEY_ACTION: action.Name})
+							wski18n.KEY_ACTION:  action.Name})
 					wskprint.PrintOpenWhiskWarning(warnStr)
 				}
 
@@ -607,7 +607,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		}
 
 		/*
- 		 *  Action.Outputs
+		 *  Action.Outputs
 		 */
 		keyValArr = make(whisk.KeyValueArr, 0)
 		for name, param := range action.Outputs {
@@ -632,8 +632,8 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		}
 
 		/*
- 		 *  Action.Annotations
- 		 */
+		 *  Action.Annotations
+		 */
 		listOfAnnotations := make(whisk.KeyValueArr, 0)
 		for name, value := range action.Annotations {
 			var keyVal whisk.KeyValue
@@ -650,8 +650,8 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		}
 
 		/*
-  		 *  Web Export
-  		 */
+		 *  Web Export
+		 */
 		// TODO() add boolean value const
 		if action.Webexport == "true" {
 			wskaction.Annotations, errorParser = utils.WebAction("yes", listOfAnnotations, false)
@@ -661,10 +661,10 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		}
 
 		/*
- 		 *  Action.Limits
- 		 */
-		if action.Limits!=nil {
-			wsklimits :=  new(whisk.Limits)
+		 *  Action.Limits
+		 */
+		if action.Limits != nil {
+			wsklimits := new(whisk.Limits)
 
 			// TODO() use LIMITS_SUPPORTED in yamlparser to enumerata through instead of hardcoding
 			// perhaps change into a tuple
@@ -689,7 +689,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_LOG_SIZE})
 				wskprint.PrintOpenWhiskWarning(warningString)
 			}
-			if wsklimits.Timeout!=nil || wsklimits.Memory!=nil || wsklimits.Logsize!=nil {
+			if wsklimits.Timeout != nil || wsklimits.Memory != nil || wsklimits.Logsize != nil {
 				wskaction.Limits = wsklimits
 			}
 
@@ -753,8 +753,8 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 			warningString := wski18n.T(
 				wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
-					wski18n.KEY_OLD: YAML_KEY_SOURCE,
-					wski18n.KEY_NEW: YAML_KEY_FEED,
+					wski18n.KEY_OLD:       YAML_KEY_SOURCE,
+					wski18n.KEY_NEW:       YAML_KEY_FEED,
 					wski18n.KEY_FILE_TYPE: wski18n.MANIFEST})
 			wskprint.PrintOpenWhiskWarning(warningString)
 		}
@@ -839,7 +839,6 @@ func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML) ([]*whisk.Rule
 	}
 	return rules, nil
 }
-
 
 func (dm *YAMLParser) ComposeRules(pkg Package, packageName string) ([]*whisk.Rule, error) {
 	var r1 []*whisk.Rule = make([]*whisk.Rule, 0)

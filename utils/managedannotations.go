@@ -21,8 +21,8 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"os"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"os"
 )
 
 /*
@@ -32,15 +32,14 @@ import (
  * 	__OW__PROJECT__NAME: MyProject
  *	__OW__PROJECT_HASH: SHA1("OpenWhisk " + <size_of_manifest_file> + "\0" + <contents_of_manifest_file>)
  *	__OW__FILE: Absolute path of manifest file on file system
-*/
+ */
 
 const (
-	MANAGED   = "managed"
-	OPENWHISK = "OpenWhisk"
-	NULL      = "golang\000"
+	MANAGED         = "managed"
+	OPENWHISK       = "OpenWhisk"
+	NULL            = "golang\000"
 	OW_PROJECT_NAME = "__OW_PROJECT_NAME"
 	OW_PROJECT_HASH = "__OW_PROJECT_HASH"
-
 )
 
 type ManagedAnnotation struct {
@@ -108,6 +107,6 @@ func GenerateManagedAnnotation(projectName string, filePath string) (whisk.KeyVa
 	}
 	var a interface{}
 	err = json.Unmarshal(ma, &a)
-	managedAnnotation = whisk.KeyValue{Key:MANAGED, Value:a.(map[string]interface{})}
+	managedAnnotation = whisk.KeyValue{Key: MANAGED, Value: a.(map[string]interface{})}
 	return managedAnnotation, nil
 }

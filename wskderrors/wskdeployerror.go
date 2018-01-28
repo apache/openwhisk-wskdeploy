@@ -19,55 +19,55 @@ package wskderrors
 
 import (
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"path/filepath"
 	"runtime"
 	"strings"
-	"path/filepath"
-	"net/http"
-	"io/ioutil"
 )
 
 const (
 	// Error message compositional strings
-	STR_UNKNOWN_VALUE = "Unknown value"
-	STR_COMMAND = "Command"
-	STR_ERROR_CODE = "Error code"
-	STR_FILE = "File"
-	STR_PARAMETER = "Parameter"
-	STR_TYPE = "Type"
-	STR_EXPECTED = "Expected"
-	STR_ACTUAL = "Actual"
-	STR_NEWLINE = "\n"
-	STR_ACTION = "Action"
-	STR_RUNTIME = "Runtime"
+	STR_UNKNOWN_VALUE      = "Unknown value"
+	STR_COMMAND            = "Command"
+	STR_ERROR_CODE         = "Error code"
+	STR_FILE               = "File"
+	STR_PARAMETER          = "Parameter"
+	STR_TYPE               = "Type"
+	STR_EXPECTED           = "Expected"
+	STR_ACTUAL             = "Actual"
+	STR_NEWLINE            = "\n"
+	STR_ACTION             = "Action"
+	STR_RUNTIME            = "Runtime"
 	STR_SUPPORTED_RUNTIMES = "Supported Runtimes"
-	STR_HTTP_STATUS = "HTTP Response Status"
-	STR_HTTP_BODY = "HTTP Response Body"
+	STR_HTTP_STATUS        = "HTTP Response Status"
+	STR_HTTP_BODY          = "HTTP Response Body"
 
 	// Formatting
 	STR_INDENT_1 = "==>"
 
 	// Error Types
-	ERROR_COMMAND_FAILED = "ERROR_COMMAND_FAILED"
-	ERROR_WHISK_CLIENT_ERROR = "ERROR_WHISK_CLIENT_ERROR"
-	ERROR_WHISK_CLIENT_INVALID_CONFIG = "ERROR_WHISK_CLIENT_INVALID_CONFIG"
-	ERROR_FILE_READ_ERROR = "ERROR_FILE_READ_ERROR"
-	ERROR_MANIFEST_FILE_NOT_FOUND = "ERROR_MANIFEST_FILE_NOT_FOUND"
-	ERROR_YAML_FILE_FORMAT_ERROR = "ERROR_YAML_FILE_FORMAT_ERROR"
-	ERROR_YAML_PARSER_ERROR = "ERROR_YAML_PARSER_ERROR"
+	ERROR_COMMAND_FAILED               = "ERROR_COMMAND_FAILED"
+	ERROR_WHISK_CLIENT_ERROR           = "ERROR_WHISK_CLIENT_ERROR"
+	ERROR_WHISK_CLIENT_INVALID_CONFIG  = "ERROR_WHISK_CLIENT_INVALID_CONFIG"
+	ERROR_FILE_READ_ERROR              = "ERROR_FILE_READ_ERROR"
+	ERROR_MANIFEST_FILE_NOT_FOUND      = "ERROR_MANIFEST_FILE_NOT_FOUND"
+	ERROR_YAML_FILE_FORMAT_ERROR       = "ERROR_YAML_FILE_FORMAT_ERROR"
+	ERROR_YAML_PARSER_ERROR            = "ERROR_YAML_PARSER_ERROR"
 	ERROR_YAML_PARAMETER_TYPE_MISMATCH = "ERROR_YAML_PARAMETER_TYPE_MISMATCH"
-	ERROR_YAML_INVALID_PARAMETER_TYPE = "ERROR_YAML_INVALID_PARAMETER_TYPE"
-	ERROR_YAML_INVALID_RUNTIME = "ERROR_YAML_INVALID_RUNTIME"
+	ERROR_YAML_INVALID_PARAMETER_TYPE  = "ERROR_YAML_INVALID_PARAMETER_TYPE"
+	ERROR_YAML_INVALID_RUNTIME         = "ERROR_YAML_INVALID_RUNTIME"
 )
 
 /*
  * BaseError
  */
 type WskDeployBaseErr struct {
-	ErrorType 	string
-	FileName  	string
-	LineNum   	int
-	Message   	string
-	MessageFormat	string
+	ErrorType     string
+	FileName      string
+	LineNum       int
+	Message       string
+	MessageFormat string
 }
 
 func NewWskDeployBaseError(typ string, fn string, ln int, msg string) *WskDeployBaseErr {
@@ -100,17 +100,17 @@ func (e *WskDeployBaseErr) SetMessageFormat(fmt string) {
 	e.MessageFormat = fmt
 }
 
-func (e *WskDeployBaseErr) GetMessage()(string) {
+func (e *WskDeployBaseErr) GetMessage() string {
 	return e.Message
 }
 
-func (e *WskDeployBaseErr) GetMessageFormat()(string) {
+func (e *WskDeployBaseErr) GetMessageFormat() string {
 	return e.MessageFormat
 }
 
 func (e *WskDeployBaseErr) SetMessage(message interface{}) {
 
-	if message != nil{
+	if message != nil {
 		switch message.(type) {
 		case string:
 			e.Message = message.(string)
@@ -121,16 +121,16 @@ func (e *WskDeployBaseErr) SetMessage(message interface{}) {
 	}
 }
 
-func (e *WskDeployBaseErr) AppendDetail(detail string){
+func (e *WskDeployBaseErr) AppendDetail(detail string) {
 	e.appendDetail(detail)
 }
 
-func (e *WskDeployBaseErr) appendDetail(detail string){
+func (e *WskDeployBaseErr) appendDetail(detail string) {
 	fmt := fmt.Sprintf("\n%s %s", STR_INDENT_1, detail)
 	e.Message = e.Message + fmt
 }
 
-func (e *WskDeployBaseErr) appendErrorDetails(err error){
+func (e *WskDeployBaseErr) appendErrorDetails(err error) {
 	if err != nil {
 		errorMsg := err.Error()
 		var detailMsg string
@@ -202,8 +202,7 @@ type WhiskClientInvalidConfigError struct {
 }
 
 func NewWhiskClientInvalidConfigError(errorMessage string) *WhiskClientInvalidConfigError {
-	var err = &WhiskClientInvalidConfigError{
-	}
+	var err = &WhiskClientInvalidConfigError{}
 	err.SetErrorType(ERROR_WHISK_CLIENT_INVALID_CONFIG)
 	err.SetCallerByStackFrameSkip(2)
 	err.SetMessage(errorMessage)
@@ -229,7 +228,7 @@ func (e *FileError) SetErrorFileName(fname string) {
 }
 
 func (e *FileError) Error() string {
-	return fmt.Sprintf("%s [%d]: [%s]: " + STR_FILE + ": [%s]: %s\n",
+	return fmt.Sprintf("%s [%d]: [%s]: "+STR_FILE+": [%s]: %s\n",
 		e.FileName,
 		e.LineNum,
 		e.ErrorType,
@@ -246,15 +245,13 @@ type FileReadError struct {
 }
 
 func NewFileReadError(fpath string, errMessage interface{}) *FileReadError {
-	var err = &FileReadError{
-	}
+	var err = &FileReadError{}
 	err.SetErrorType(ERROR_FILE_READ_ERROR)
 	err.SetCallerByStackFrameSkip(2)
 	err.SetErrorFilePath(fpath)
 	err.SetMessage(errMessage)
 	return err
 }
-
 
 /*
  * ManifestFileNotFoundError
@@ -264,8 +261,7 @@ type ErrorManifestFileNotFound struct {
 }
 
 func NewErrorManifestFileNotFound(fpath string, errMessage interface{}) *ErrorManifestFileNotFound {
-	var err = &ErrorManifestFileNotFound{
-	}
+	var err = &ErrorManifestFileNotFound{}
 	err.SetErrorType(ERROR_MANIFEST_FILE_NOT_FOUND)
 	err.SetCallerByStackFrameSkip(2)
 	err.SetErrorFilePath(fpath)
@@ -281,8 +277,7 @@ type YAMLFileFormatError struct {
 }
 
 func NewYAMLFileFormatError(fpath string, errorMessage interface{}) *YAMLFileFormatError {
-	var err = &YAMLFileFormatError{
-	}
+	var err = &YAMLFileFormatError{}
 	err.SetErrorType(ERROR_YAML_FILE_FORMAT_ERROR)
 	err.SetCallerByStackFrameSkip(2)
 	err.SetErrorFilePath(fpath)
@@ -303,7 +298,7 @@ type ParameterTypeMismatchError struct {
 func NewParameterTypeMismatchError(fpath string, param string, expectedType string, actualType string) *ParameterTypeMismatchError {
 	var err = &ParameterTypeMismatchError{
 		ExpectedType: expectedType,
-		ActualType: actualType,
+		ActualType:   actualType,
 	}
 
 	err.SetErrorType(ERROR_YAML_PARAMETER_TYPE_MISMATCH)
@@ -324,8 +319,8 @@ func NewParameterTypeMismatchError(fpath string, param string, expectedType stri
  */
 type InvalidParameterTypeError struct {
 	FileError
-	Parameter    string
-	ActualType   string
+	Parameter  string
+	ActualType string
 }
 
 func NewInvalidParameterTypeError(fpath string, param string, actualType string) *ParameterTypeMismatchError {
@@ -348,29 +343,26 @@ func NewInvalidParameterTypeError(fpath string, param string, actualType string)
  */
 type YAMLParserError struct {
 	FileError
-	lines    []string
-	msgs     []string
+	lines []string
+	msgs  []string
 }
 
 func NewYAMLParserErr(fpath string, msg interface{}) *YAMLParserError {
-	var err = &YAMLParserError{
-
-	}
+	var err = &YAMLParserError{}
 	err.SetErrorType(ERROR_YAML_PARSER_ERROR)
 	err.SetErrorFilePath(fpath)
 	err.SetCallerByStackFrameSkip(2)
-        err.SetMessage(msg)
+	err.SetMessage(msg)
 	return err
 }
-
 
 /*
  * InvalidRuntime
  */
 type InvalidRuntimeError struct {
 	FileError
-	Runtime    		string
-	SupportedRuntimes	[]string
+	Runtime           string
+	SupportedRuntimes []string
 }
 
 func NewInvalidRuntimeError(errMessage string, fpath string, action string, runtime string, supportedRuntimes []string) *InvalidRuntimeError {
@@ -389,7 +381,7 @@ func NewInvalidRuntimeError(errMessage string, fpath string, action string, runt
 	return err
 }
 
-func IsCustomError( err error ) bool {
+func IsCustomError(err error) bool {
 
 	switch err.(type) {
 

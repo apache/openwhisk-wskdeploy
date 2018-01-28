@@ -24,44 +24,44 @@ import (
 
 // YAML schema key names
 // DO NOT translate
-const(
-	YAML_KEY_ACTION 	= "action"
-	YAML_KEY_ANNOTATION 	= "annotoation"
-	YAML_KEY_API 		= "api"
-	YAML_KEY_FEED 		= "feed"
-	YAML_KEY_NAMESPACE 	= "namespace"
-	YAML_KEY_PACKAGES 	= "packages"
-	YAML_KEY_PROJECT 	= "project"
-	YAML_KEY_RULE 		= "rule"
-	YAML_KEY_SEQUENCE 	= "sequence"
-	YAML_KEY_TRIGGER 	= "trigger"
-	YAML_KEY_APPLICATION 	= "application"	// deprecated
-	YAML_KEY_PACKAGE 	= "package"	// deprecated
-	YAML_KEY_SOURCE		= "source"	// deprecated
+const (
+	YAML_KEY_ACTION      = "action"
+	YAML_KEY_ANNOTATION  = "annotoation"
+	YAML_KEY_API         = "api"
+	YAML_KEY_FEED        = "feed"
+	YAML_KEY_NAMESPACE   = "namespace"
+	YAML_KEY_PACKAGES    = "packages"
+	YAML_KEY_PROJECT     = "project"
+	YAML_KEY_RULE        = "rule"
+	YAML_KEY_SEQUENCE    = "sequence"
+	YAML_KEY_TRIGGER     = "trigger"
+	YAML_KEY_APPLICATION = "application" // deprecated
+	YAML_KEY_PACKAGE     = "package"     // deprecated
+	YAML_KEY_SOURCE      = "source"      // deprecated
 )
 
 // YAML schema key values
-const(
-	YAML_VALUE_BRANCH_MASTER	= "master"
+const (
+	YAML_VALUE_BRANCH_MASTER = "master"
 )
 
 // default values
-const(
-	DEFAULT_PACKAGE_LICENSE	= "unlicensed"
-	DEFAULT_PACKAGE_VERSION	= "0.0.1"
+const (
+	DEFAULT_PACKAGE_LICENSE = "unlicensed"
+	DEFAULT_PACKAGE_VERSION = "0.0.1"
 )
 
 // Known Limit values
-const(
+const (
 	// supported
-	LIMIT_VALUE_TIMEOUT			= "timeout"
-	LIMIT_VALUE_MEMORY_SIZE			= "memorySize"
-	LIMIT_VALUE_LOG_SIZE			= "logSize"
+	LIMIT_VALUE_TIMEOUT     = "timeout"
+	LIMIT_VALUE_MEMORY_SIZE = "memorySize"
+	LIMIT_VALUE_LOG_SIZE    = "logSize"
 	// unsupported
-	LIMIT_VALUE_CONCURRENT_ACTIVATIONS	= "concurrentActivations"
-	LIMIT_VALUE_USER_INVOCATION_RATE	= "userInvocationRate"
-	LIMIT_VALUE_CODE_SIZE			= "codeSize"
-	LIMIT_VALUE_PARAMETER_SIZE		= "parameterSize"
+	LIMIT_VALUE_CONCURRENT_ACTIVATIONS = "concurrentActivations"
+	LIMIT_VALUE_USER_INVOCATION_RATE   = "userInvocationRate"
+	LIMIT_VALUE_CODE_SIZE              = "codeSize"
+	LIMIT_VALUE_PARAMETER_SIZE         = "parameterSize"
 )
 
 var LIMITS_SUPPORTED = [](string){

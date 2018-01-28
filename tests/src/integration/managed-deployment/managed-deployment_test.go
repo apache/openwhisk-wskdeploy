@@ -59,4 +59,3 @@ func TestManagedDeployment(t *testing.T) {
 	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 }
-

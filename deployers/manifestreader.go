@@ -135,7 +135,7 @@ func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRe
 	for name, dep := range deps {
 		n := strings.Split(name, ":")
 		depName := n[1]
-		if (depName == "") {
+		if depName == "" {
 			return nil
 		}
 		if !dep.IsBinding && !reader.IsUndeploy {

@@ -20,10 +20,10 @@
 package tests
 
 import (
-	"testing"
 	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
+	"testing"
 )
 
 // TODO: write the integration against openwhisk
@@ -35,5 +35,3 @@ func TestTriggerRule(t *testing.T) {
 	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest file.")
 }
-
-

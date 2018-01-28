@@ -20,10 +20,10 @@
 package deployers
 
 import (
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
 var mr *ManifestReader

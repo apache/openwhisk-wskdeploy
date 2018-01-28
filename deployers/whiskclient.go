@@ -29,17 +29,17 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 )
 
 // Possible sources for config info (e.g., API Host, Auth Key, Namespace)
 const (
-	SOURCE_WSKPROPS			= ".wskprops"
-	SOURCE_WHISK_PROPERTIES		= "whisk.properties"
-	SOURCE_INTERACTIVE_INPUT	= "interactve input"	// TODO() i18n?
-	SOURCE_DEFAULT_VALUE		= "wskdeploy default"	// TODO() i18n?
+	SOURCE_WSKPROPS          = ".wskprops"
+	SOURCE_WHISK_PROPERTIES  = "whisk.properties"
+	SOURCE_INTERACTIVE_INPUT = "interactve input"  // TODO() i18n?
+	SOURCE_DEFAULT_VALUE     = "wskdeploy default" // TODO() i18n?
 )
 
 type PropertyValue struct {
@@ -97,8 +97,8 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	cert = GetPropertyValue(cert, certfile, wski18n.COMMAND_LINE)
 
 	// TODO() i18n
-        // Print all flags / values if verbose
-	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, wski18n.CONFIGURATION + ":\n" + utils.Flags.Format())
+	// Print all flags / values if verbose
+	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, wski18n.CONFIGURATION+":\n"+utils.Flags.Format())
 
 	// TODO() split this logic into its own function
 	// TODO() merge with the same logic used against manifest file (below)
@@ -236,15 +236,15 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	}
 
 	mode := true
-	if (len(cert.Value) != 0 && len(key.Value) != 0) {
+	if len(cert.Value) != 0 && len(key.Value) != 0 {
 		mode = false
 	}
 
 	clientConfig = &whisk.Config{
 		AuthToken: credential.Value, //Authtoken
-		Namespace: namespace.Value, //Namespace
+		Namespace: namespace.Value,  //Namespace
 		Host:      apiHost.Value,
-		Version:   "v1",  // TODO() should not be hardcoded, should prompt/warn user of default
+		Version:   "v1", // TODO() should not be hardcoded, should prompt/warn user of default
 		Cert:      cert.Value,
 		Key:       key.Value,
 		Insecure:  mode, // true if you want to ignore certificate signing
@@ -255,7 +255,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	return clientConfig, err
 }
 
-func validateClientConfig(credential PropertyValue, apiHost PropertyValue, namespace PropertyValue) (error) {
+func validateClientConfig(credential PropertyValue, apiHost PropertyValue, namespace PropertyValue) error {
 
 	// Display error message based upon which config value was missing
 	if len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0 {
@@ -292,7 +292,7 @@ func validateClientConfig(credential PropertyValue, apiHost PropertyValue, names
 }
 
 // TODO() perhaps move into its own package "wskread" and add support for passing in default value
-var promptForValue = func(msg string) (string) {
+var promptForValue = func(msg string) string {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(msg)
 

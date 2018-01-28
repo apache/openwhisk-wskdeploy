@@ -21,18 +21,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/spf13/cobra"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
-	"github.com/spf13/cobra"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 var stderr = ""
@@ -40,11 +40,11 @@ var stdout = ""
 
 // TODO(#683) short and long desc. should be translated for i18n
 var RootCmd = &cobra.Command{
-	Use:		"wskdeploy",
-	SilenceErrors:	true,
-	SilenceUsage:	true,
-	Short:		wski18n.T(wski18n.ID_CMD_DESC_SHORT_ROOT),
-	Long:		wski18n.T(wski18n.ID_CMD_DESC_LONG_ROOT),
+	Use:           "wskdeploy",
+	SilenceErrors: true,
+	SilenceUsage:  true,
+	Short:         wski18n.T(wski18n.ID_CMD_DESC_SHORT_ROOT),
+	Long:          wski18n.T(wski18n.ID_CMD_DESC_LONG_ROOT),
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	RunE: RootCmdImp,

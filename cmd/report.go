@@ -19,15 +19,15 @@ package cmd
 
 import (
 	"fmt"
-	"path"
-	"sync"
-	"os"
-	"github.com/spf13/cobra"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/spf13/cobra"
+	"os"
+	"path"
+	"sync"
 )
 
 var wskpropsPath string
@@ -37,9 +37,9 @@ var wg sync.WaitGroup
 
 // reportCmd represents the report command
 var reportCmd = &cobra.Command{
-	Use:		"report",
-	SuggestFor:	[]string{"list"},
-	Short:		wski18n.T(wski18n.ID_CMD_DESC_SHORT_REPORT),
+	Use:        "report",
+	SuggestFor: []string{"list"},
+	Short:      wski18n.T(wski18n.ID_CMD_DESC_SHORT_REPORT),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if wskpropsPath != "" {
 			config, _ := deployers.NewWhiskConfig(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)

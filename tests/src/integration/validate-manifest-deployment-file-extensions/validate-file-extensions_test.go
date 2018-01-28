@@ -29,7 +29,7 @@ import (
 var projectPath = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-manifest-deployment-file-extensions/"
 
 func TestYAMLExtension(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + projectPath + "manifest.yaml"
+	manifestPath := os.Getenv("GOPATH") + projectPath + "manifest.yaml"
 	deploymentPath := os.Getenv("GOPATH") + projectPath + "deployment.yaml"
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
@@ -39,7 +39,7 @@ func TestYAMLExtension(t *testing.T) {
 }
 
 func TestYMLExtension(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + projectPath + "manifest.yml"
+	manifestPath := os.Getenv("GOPATH") + projectPath + "manifest.yml"
 	deploymentPath := os.Getenv("GOPATH") + projectPath + "deployment.yml"
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
@@ -49,7 +49,7 @@ func TestYMLExtension(t *testing.T) {
 }
 
 func TestNonStandardFileNames(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + projectPath + "not-standard-manifest.yaml"
+	manifestPath := os.Getenv("GOPATH") + projectPath + "not-standard-manifest.yaml"
 	deploymentPath := os.Getenv("GOPATH") + projectPath + "not-standard-deployment.yaml"
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
@@ -59,7 +59,7 @@ func TestNonStandardFileNames(t *testing.T) {
 }
 
 func TestRandomFileNames(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + projectPath + "random-name-1.yaml"
+	manifestPath := os.Getenv("GOPATH") + projectPath + "random-name-1.yaml"
 	deploymentPath := os.Getenv("GOPATH") + projectPath + "random-name-2.yaml"
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
@@ -69,7 +69,7 @@ func TestRandomFileNames(t *testing.T) {
 }
 
 func TestYAMLManifestWithYMLDeployment(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + projectPath + "yaml-manifest-with-yml-deployment.yaml"
+	manifestPath := os.Getenv("GOPATH") + projectPath + "yaml-manifest-with-yml-deployment.yaml"
 	deploymentPath := os.Getenv("GOPATH") + projectPath + "yml-deployment-with-yaml-manifest.yml"
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
@@ -79,7 +79,7 @@ func TestYAMLManifestWithYMLDeployment(t *testing.T) {
 }
 
 func TestYMLManifestWithYAMLDeployment(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + projectPath + "yml-manifest-with-yaml-deployment.yml"
+	manifestPath := os.Getenv("GOPATH") + projectPath + "yml-manifest-with-yaml-deployment.yml"
 	deploymentPath := os.Getenv("GOPATH") + projectPath + "yaml-deployment-with-yml-manifest.yaml"
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
@@ -87,4 +87,3 @@ func TestYMLManifestWithYAMLDeployment(t *testing.T) {
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files with .yml manifest and .yaml deployment file.")
 }
-

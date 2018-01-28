@@ -19,24 +19,24 @@ package cmd
 
 import (
 	"bufio"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/spf13/cobra"
 	"net/http"
 	"net/url"
 	"os"
 	"path"
 	"strings"
-	"github.com/spf13/cobra"
-	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 // publishCmd represents the publish command
 var publishCmd = &cobra.Command{
-	Use:		"publish",
-	SuggestFor:	[]string{"publicize"},
-	Short:		wski18n.T(wski18n.ID_CMD_DESC_SHORT_PUBLISH),
-	Long:		wski18n.T(wski18n.ID_CMD_DESC_LONG_PUBLISH),
+	Use:        "publish",
+	SuggestFor: []string{"publicize"},
+	Short:      wski18n.T(wski18n.ID_CMD_DESC_SHORT_PUBLISH),
+	Long:       wski18n.T(wski18n.ID_CMD_DESC_LONG_PUBLISH),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Get registry location
 		userHome := utils.GetHomeDirectory()
@@ -52,8 +52,8 @@ var publishCmd = &cobra.Command{
 			wskprint.PrintOpenWhiskError(
 				wski18n.T(wski18n.ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
 					map[string]interface{}{
-						wski18n.KEY_URL_TYPE: wski18n.REGISTRY,
-						wski18n.KEY_URL: "",
+						wski18n.KEY_URL_TYPE:  wski18n.REGISTRY,
+						wski18n.KEY_URL:       "",
 						wski18n.KEY_FILE_TYPE: wski18n.WHISK_PROPS}))
 
 			// TODO() should only read if interactive mode is on
@@ -72,7 +72,7 @@ var publishCmd = &cobra.Command{
 					wski18n.T(wski18n.ID_ERR_URL_MALFORMED_X_urltype_X_url_X,
 						map[string]interface{}{
 							wski18n.KEY_URL_TYPE: wski18n.REGISTRY,
-							wski18n.KEY_URL: registry}))
+							wski18n.KEY_URL:      registry}))
 			}
 
 			configs["REGISTRY"] = registry
@@ -94,18 +94,18 @@ var publishCmd = &cobra.Command{
 				wskprint.PrintOpenWhiskError(
 					wski18n.T(wski18n.ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
 						map[string]interface{}{
-							wski18n.KEY_URL_TYPE: wski18n.REPOSITORY,
-							wski18n.KEY_URL: repoURL,
+							wski18n.KEY_URL_TYPE:  wski18n.REPOSITORY,
+							wski18n.KEY_URL:       repoURL,
 							wski18n.KEY_FILE_TYPE: wski18n.MANIFEST}))
 				return nil
 			}
 
-			repo := paths[l - 1]
-			owner := paths[l - 2]
+			repo := paths[l-1]
+			owner := paths[l-2]
 
 			// Send HTTP request
 			client := &http.Client{}
-			request, err := http.NewRequest("PUT", registry + "?owner=" + owner + "&repo=" + repo, nil)
+			request, err := http.NewRequest("PUT", registry+"?owner="+owner+"&repo="+repo, nil)
 			if err != nil {
 				return err
 			}
@@ -118,8 +118,8 @@ var publishCmd = &cobra.Command{
 			wskprint.PrintOpenWhiskError(
 				wski18n.T(wski18n.ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
 					map[string]interface{}{
-						wski18n.KEY_URL_TYPE: wski18n.REPOSITORY,
-						wski18n.KEY_URL: "",
+						wski18n.KEY_URL_TYPE:  wski18n.REPOSITORY,
+						wski18n.KEY_URL:       "",
 						wski18n.KEY_FILE_TYPE: wski18n.MANIFEST}))
 		}
 		return nil

@@ -20,12 +20,12 @@
 package tests
 
 import (
+	"fmt"
 	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"io/ioutil"
+	"os"
 	"strconv"
-	"fmt"
 	"strings"
 	"testing"
 )
@@ -43,13 +43,13 @@ func composeDeployFiles(count int) (manifestStr string, deploymentStr string) {
     TestSequencesCreation:
       actions:
 `
-	sequenceStr :=`  sequences:
+	sequenceStr := `  sequences:
     validate-sequence:
       actions: `
 
 	for i := 1; i < count+1; i++ {
-        	manifestStr = manifestStr + "    func"+strconv.Itoa(i)+":"+
-`
+		manifestStr = manifestStr + "    func" + strconv.Itoa(i) + ":" +
+			`
       function: actions/function.js
       runtime: nodejs:6
       inputs:
@@ -58,44 +58,44 @@ func composeDeployFiles(count int) (manifestStr string, deploymentStr string) {
       outputs:
         visited: string
 `
-		sequenceStr = sequenceStr + "func"+strconv.Itoa(i)+","
-		deploymentStr = deploymentStr + "        func"+strconv.Itoa(i)+":"+
-`
+		sequenceStr = sequenceStr + "func" + strconv.Itoa(i) + ","
+		deploymentStr = deploymentStr + "        func" + strconv.Itoa(i) + ":" +
+			`
           inputs:
-            functionID: `+strconv.Itoa(i)+
-`
+            functionID: ` + strconv.Itoa(i) +
+			`
             visited:
 `
-    	}
-	manifestStr = manifestStr + strings.TrimRight(sequenceStr,",")
+	}
+	manifestStr = manifestStr + strings.TrimRight(sequenceStr, ",")
 	return
 }
 
 func _createTmpfile(data string, filename string) (f *os.File, err error) {
-    dir, _ := os.Getwd()
-    tmpfile, err := ioutil.TempFile(dir, filename)
-    if err != nil {
-        return nil, err
-    }
-    _, err = tmpfile.Write([]byte(data))
-    if err != nil {
-        return tmpfile, err
-    }
-    return tmpfile, nil
+	dir, _ := os.Getwd()
+	tmpfile, err := ioutil.TempFile(dir, filename)
+	if err != nil {
+		return nil, err
+	}
+	_, err = tmpfile.Write([]byte(data))
+	if err != nil {
+		return tmpfile, err
+	}
+	return tmpfile, nil
 }
 
 func TestValidateSequenceCreation(t *testing.T) {
 	count := 10
 	wskdeploy := common.NewWskdeploy()
 	for i := 1; i < count+1; i++ {
-		maniData,deplyData := composeDeployFiles(i+1)
+		maniData, deplyData := composeDeployFiles(i + 1)
 		tmpManifile, err := _createTmpfile(maniData, "sequence_test_mani_")
 		tmpDeplyfile, err := _createTmpfile(deplyData, "sequence_test_deply_")
 		if err != nil {
 			assert.Fail(t, "Failed to create temp file")
 		}
 
-		fmt.Printf("Deploying sequence %d\n:",i)
+		fmt.Printf("Deploying sequence %d\n:", i)
 		_, err = wskdeploy.Deploy(tmpManifile.Name(), tmpDeplyfile.Name())
 		assert.Equal(t, nil, err, "Failed to deploy sequence.")
 		_, err = wskdeploy.Undeploy(tmpManifile.Name(), tmpDeplyfile.Name())
@@ -107,4 +107,3 @@ func TestValidateSequenceCreation(t *testing.T) {
 		os.Remove(tmpDeplyfile.Name())
 	}
 }
-

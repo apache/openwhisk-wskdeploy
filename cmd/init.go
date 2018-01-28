@@ -24,18 +24,18 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
-    "strings"
+	"strings"
 )
 
 var initCmd = &cobra.Command{
-	Use:   "init",
-	SuggestFor: []string {"initialize"},
-	Short: "Init helps you create a manifest file on OpenWhisk",
+	Use:        "init",
+	SuggestFor: []string{"initialize"},
+	Short:      "Init helps you create a manifest file on OpenWhisk",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		maniyaml, err := parsers.ReadOrCreateManifest()
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 
 		reader := bufio.NewReader(os.Stdin)
 
@@ -44,22 +44,22 @@ var initCmd = &cobra.Command{
 		maniyaml.Package.License = askLicense(reader, maniyaml.Package.License)
 
 		err = parsers.Write(maniyaml, utils.ManifestFileNameYaml)
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 
 		// Create directory structure
 		os.Mkdir("actions", 0777)
-        return nil
+		return nil
 	},
 }
 
 func askName(reader *bufio.Reader, def string) string {
 	if len(def) == 0 {
-        path := strings.TrimSpace(utils.Flags.ProjectPath)
-        if (len(path) == 0) {
-            path = utils.DEFAULT_PROJECT_PATH
-        }
+		path := strings.TrimSpace(utils.Flags.ProjectPath)
+		if len(path) == 0 {
+			path = utils.DEFAULT_PROJECT_PATH
+		}
 		abspath, _ := filepath.Abs(path)
 		def = filepath.Base(abspath)
 	}

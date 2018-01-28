@@ -19,8 +19,8 @@ package parsers
 
 import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"gopkg.in/yaml.v2"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"gopkg.in/yaml.v2"
 )
 
 func (dm *YAMLParser) unmarshalDeployment(input []byte, deploy *YAML) error {
@@ -35,21 +35,20 @@ func (dm *YAMLParser) ParseDeployment(deploymentPath string) (*YAML, error) {
 	dplyyaml := YAML{}
 	content, err := new(utils.ContentReader).LocalReader.ReadLocal(deploymentPath)
 
-   	 if err != nil {
-        	return &dplyyaml, wskderrors.NewFileReadError(deploymentPath, err.Error())
-    	}
+	if err != nil {
+		return &dplyyaml, wskderrors.NewFileReadError(deploymentPath, err.Error())
+	}
 
 	err = dm.unmarshalDeployment(content, &dplyyaml)
 
 	if err != nil {
-        	return &dplyyaml, wskderrors.NewYAMLParserErr(deploymentPath, err)
-    	}
+		return &dplyyaml, wskderrors.NewYAMLParserErr(deploymentPath, err)
+	}
 
 	dplyyaml.Filepath = deploymentPath
-    	dplyyamlEnvVar := ReadEnvVariable(&dplyyaml)
+	dplyyamlEnvVar := ReadEnvVariable(&dplyyaml)
 	return dplyyamlEnvVar, nil
 }
-
 
 //********************Project functions*************************//
 //This is for parse the deployment yaml file.

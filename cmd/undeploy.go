@@ -24,11 +24,11 @@ import (
 
 // undeployCmd represents the undeploy command
 var undeployCmd = &cobra.Command{
-	Use:   "undeploy",
-	SuggestFor: []string {"remove"},
-	Short: "Undeploy assets from OpenWhisk",
-	Long:  `Undeploy removes deployed assets from the manifest and deployment files`,
-	RunE:  UndeployCmdImp,
+	Use:        "undeploy",
+	SuggestFor: []string{"remove"},
+	Short:      "Undeploy assets from OpenWhisk",
+	Long:       `Undeploy removes deployed assets from the manifest and deployment files`,
+	RunE:       UndeployCmdImp,
 }
 
 func UndeployCmdImp(cmd *cobra.Command, args []string) error {

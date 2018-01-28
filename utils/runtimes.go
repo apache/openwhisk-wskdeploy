@@ -69,7 +69,6 @@ var FileExtensionRuntimeKindMap map[string]string
 var SupportedRunTimes map[string][]string
 var DefaultRunTimes map[string]string
 
-
 // We could get the openwhisk info from bluemix through running the command
 // `curl -k https://openwhisk.ng.bluemix.net`
 // hard coding it here in case of network unavailable or failure.
@@ -166,10 +165,10 @@ func FileExtensionRuntimes(op OpenWhiskInfo) (ext map[string]string) {
 	return
 }
 
-func CheckRuntimeConsistencyWithFileExtension (ext string, runtime string) bool {
+func CheckRuntimeConsistencyWithFileExtension(ext string, runtime string) bool {
 	rt := FileExtensionRuntimeKindMap[ext]
 	for _, v := range SupportedRunTimes[rt] {
-		if (runtime == v) {
+		if runtime == v {
 			return true
 		}
 	}

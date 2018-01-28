@@ -20,11 +20,11 @@
 package tests
 
 import (
+	"fmt"
 	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
-    "fmt"
 )
 
 /* *
@@ -32,18 +32,18 @@ import (
  * integration test.
  */
 func TestAlarmTrigger(t *testing.T) {
-    wskprops := common.GetWskpropsFromEnvVars(common.BLUEMIX_APIHOST, common.BLUEMIX_NAMESPACE, common.BLUEMIX_AUTH)
-    err := common.ValidateWskprops(wskprops)
-    if err != nil {
-        fmt.Println(err.Error())
-        fmt.Println("Wsk properties are not properly configured, so tests are skipped.")
-    } else {
-        wskdeploy := common.NewWskdeploy()
-        _, err := wskdeploy.DeployWithCredentials(manifestPath, deploymentPath, wskprops)
-        assert.Equal(t, nil, err, "Failed to deploy the manifest file.")
-        _, err = wskdeploy.UndeployWithCredentials(manifestPath, deploymentPath, wskprops)
-        assert.Equal(t, nil, err, "Failed to undeploy the manifest file.")
-    }
+	wskprops := common.GetWskpropsFromEnvVars(common.BLUEMIX_APIHOST, common.BLUEMIX_NAMESPACE, common.BLUEMIX_AUTH)
+	err := common.ValidateWskprops(wskprops)
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Println("Wsk properties are not properly configured, so tests are skipped.")
+	} else {
+		wskdeploy := common.NewWskdeploy()
+		_, err := wskdeploy.DeployWithCredentials(manifestPath, deploymentPath, wskprops)
+		assert.Equal(t, nil, err, "Failed to deploy the manifest file.")
+		_, err = wskdeploy.UndeployWithCredentials(manifestPath, deploymentPath, wskprops)
+		assert.Equal(t, nil, err, "Failed to undeploy the manifest file.")
+	}
 }
 
 var (

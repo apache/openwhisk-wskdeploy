@@ -30,7 +30,7 @@ var PATH = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integ
 
 func TestBindingInputsAnnotations(t *testing.T) {
 
-	manifestPath   := os.Getenv("GOPATH") + PATH + "manifest.yaml"
+	manifestPath := os.Getenv("GOPATH") + PATH + "manifest.yaml"
 	deploymentPath := os.Getenv("GOPATH") + PATH + "deployment.yaml"
 
 	wskdeploy := common.NewWskdeploy()
@@ -146,11 +146,9 @@ func TestBindingInputsAnnotations(t *testing.T) {
 		}
 	}
 
-
 	// testing deploy and undeploy
 	_, err = wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.NoError(t, err, "Failed to deploy based on the manifest and deployment files.")
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.NoError(t, err, "Failed to undeploy based on the manifest and deployment files.")
 }
-

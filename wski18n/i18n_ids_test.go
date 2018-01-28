@@ -20,8 +20,8 @@
 package wski18n
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 /*

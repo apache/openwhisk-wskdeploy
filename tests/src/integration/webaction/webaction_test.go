@@ -26,7 +26,6 @@ import (
 	"testing"
 )
 
-
 var wskprops = common.GetWskprops()
 
 // TODO: write the integration against openwhisk

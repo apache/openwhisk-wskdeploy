@@ -29,7 +29,7 @@ import (
 var path = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-application-and-project/"
 
 func TestApplicationInDeployment(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + path + "manifest-with-application.yaml"
+	manifestPath := os.Getenv("GOPATH") + path + "manifest-with-application.yaml"
 	deploymentPath := os.Getenv("GOPATH") + path + "deployment-with-application.yaml"
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
@@ -39,7 +39,7 @@ func TestApplicationInDeployment(t *testing.T) {
 }
 
 func TestProjectInDeployment(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + path + "manifest-with-project.yaml"
+	manifestPath := os.Getenv("GOPATH") + path + "manifest-with-project.yaml"
 	deploymentPath := os.Getenv("GOPATH") + path + "deployment-with-project.yaml"
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
@@ -47,4 +47,3 @@ func TestProjectInDeployment(t *testing.T) {
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files.")
 }
-

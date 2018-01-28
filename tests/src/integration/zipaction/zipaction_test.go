@@ -20,21 +20,21 @@
 package tests
 
 import (
-    "github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
-    "github.com/stretchr/testify/assert"
-    "os"
-    "testing"
+	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/stretchr/testify/assert"
+	"os"
+	"testing"
 )
 
 func TestZipAction(t *testing.T) {
-    wskdeploy := common.NewWskdeploy()
-    _, err := wskdeploy.Deploy(manifestPath, deploymentPath)
-    assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
-    _, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
-    assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files.")
+	wskdeploy := common.NewWskdeploy()
+	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
+	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files.")
 }
 
 var (
-    manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/zipaction/manifest.yml"
-    deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/zipaction/deployment.yml"
+	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/zipaction/manifest.yml"
+	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/zipaction/deployment.yml"
 )

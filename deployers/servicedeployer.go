@@ -20,6 +20,13 @@ package deployers
 import (
 	"bufio"
 	"fmt"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"net/http"
 	"os"
 	"path"
 	"reflect"
@@ -27,13 +34,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"net/http"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 const (
@@ -181,8 +181,8 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	if manifest.Application.Name != "" {
 		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 			map[string]interface{}{
-				wski18n.KEY_OLD: parsers.YAML_KEY_APPLICATION,
-				wski18n.KEY_NEW: parsers.YAML_KEY_PROJECT,
+				wski18n.KEY_OLD:       parsers.YAML_KEY_APPLICATION,
+				wski18n.KEY_NEW:       parsers.YAML_KEY_PROJECT,
 				wski18n.KEY_FILE_TYPE: wski18n.MANIFEST}))
 	}
 
@@ -199,8 +199,8 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
 			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
-					wski18n.KEY_OLD: parsers.YAML_KEY_APPLICATION,
-					wski18n.KEY_NEW: parsers.YAML_KEY_PROJECT,
+					wski18n.KEY_OLD:       parsers.YAML_KEY_APPLICATION,
+					wski18n.KEY_NEW:       parsers.YAML_KEY_PROJECT,
 					wski18n.KEY_FILE_TYPE: wski18n.DEPLOYMENT}))
 		}
 
@@ -210,11 +210,11 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 			if projectNameDeploy != projectName {
 				errorString := wski18n.T(wski18n.ID_ERR_NAME_MISMATCH_X_key_X_dname_X_dpath_X_mname_X_moath_X,
 					map[string]interface{}{
-						wski18n.KEY_KEY: parsers.YAML_KEY_PROJECT,
+						wski18n.KEY_KEY:             parsers.YAML_KEY_PROJECT,
 						wski18n.KEY_DEPLOYMENT_NAME: projectNameDeploy,
 						wski18n.KEY_DEPLOYMENT_PATH: deployer.DeploymentPath,
-						wski18n.KEY_MANIFEST_NAME: projectName,
-						wski18n.KEY_MANIFEST_PATH: deployer.ManifestPath})
+						wski18n.KEY_MANIFEST_NAME:   projectName,
+						wski18n.KEY_MANIFEST_PATH:   deployer.ManifestPath})
 				return wskderrors.NewYAMLFileFormatError(manifest.Filepath, errorString)
 			}
 		}
@@ -269,8 +269,8 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 	if manifest.Application.Name != "" {
 		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 			map[string]interface{}{
-				wski18n.KEY_OLD: parsers.YAML_KEY_APPLICATION,
-				wski18n.KEY_NEW: parsers.YAML_KEY_PROJECT,
+				wski18n.KEY_OLD:       parsers.YAML_KEY_APPLICATION,
+				wski18n.KEY_NEW:       parsers.YAML_KEY_PROJECT,
 				wski18n.KEY_FILE_TYPE: wski18n.MANIFEST}))
 	}
 
@@ -286,8 +286,8 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
 			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
-					wski18n.KEY_OLD: parsers.YAML_KEY_APPLICATION,
-					wski18n.KEY_NEW: parsers.YAML_KEY_PROJECT,
+					wski18n.KEY_OLD:       parsers.YAML_KEY_APPLICATION,
+					wski18n.KEY_NEW:       parsers.YAML_KEY_PROJECT,
 					wski18n.KEY_FILE_TYPE: wski18n.DEPLOYMENT}))
 		}
 
@@ -297,11 +297,11 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 			if projectNameDeploy != projectName {
 				errorString := wski18n.T(wski18n.ID_ERR_NAME_MISMATCH_X_key_X_dname_X_dpath_X_mname_X_moath_X,
 					map[string]interface{}{
-						wski18n.KEY_KEY: parsers.YAML_KEY_PROJECT,
+						wski18n.KEY_KEY:             parsers.YAML_KEY_PROJECT,
 						wski18n.KEY_DEPLOYMENT_NAME: projectNameDeploy,
 						wski18n.KEY_DEPLOYMENT_PATH: deployer.DeploymentPath,
-						wski18n.KEY_MANIFEST_NAME: projectName,
-						wski18n.KEY_MANIFEST_PATH: deployer.ManifestPath})
+						wski18n.KEY_MANIFEST_NAME:   projectName,
+						wski18n.KEY_MANIFEST_PATH:   deployer.ManifestPath})
 				return deployer.Deployment, wskderrors.NewYAMLFileFormatError(manifest.Filepath, errorString)
 			}
 		}
@@ -542,8 +542,8 @@ func (deployer *ServiceDeployer) RefreshManagedActions(packageName string, ma ma
 
 				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
 					map[string]interface{}{
-						wski18n.KEY_KEY: parsers.YAML_KEY_ACTION,
-						wski18n.KEY_NAME: actionName,
+						wski18n.KEY_KEY:     parsers.YAML_KEY_ACTION,
+						wski18n.KEY_NAME:    actionName,
 						wski18n.KEY_PROJECT: aa[utils.OW_PROJECT_NAME]})
 				wskprint.PrintOpenWhiskWarning(output)
 
@@ -583,8 +583,8 @@ func (deployer *ServiceDeployer) RefreshManagedTriggers(ma map[string]interface{
 				// we have found a trigger which was earlier part of the current project
 				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
 					map[string]interface{}{
-						wski18n.KEY_KEY: parsers.YAML_KEY_TRIGGER,
-						wski18n.KEY_NAME: trigger.Name,
+						wski18n.KEY_KEY:     parsers.YAML_KEY_TRIGGER,
+						wski18n.KEY_NAME:    trigger.Name,
 						wski18n.KEY_PROJECT: ma[utils.OW_PROJECT_NAME]})
 				wskprint.PrintOpenWhiskWarning(output)
 
@@ -635,8 +635,8 @@ func (deployer *ServiceDeployer) RefreshManagedPackages(ma map[string]interface{
 			if pa[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] && pa[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
 				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
 					map[string]interface{}{
-						wski18n.KEY_KEY: parsers.YAML_KEY_PACKAGE,
-						wski18n.KEY_NAME: pkg.Name,
+						wski18n.KEY_KEY:     parsers.YAML_KEY_PACKAGE,
+						wski18n.KEY_NAME:    pkg.Name,
 						wski18n.KEY_PROJECT: pa[utils.OW_PROJECT_NAME]})
 				wskprint.PrintOpenWhiskWarning(output)
 
@@ -1295,7 +1295,7 @@ func retry(attempts int, sleep time.Duration, callback func() error) error {
 				time.Sleep(sleep)
 				warningMsg := wski18n.T(wski18n.ID_WARN_COMMAND_RETRY,
 					map[string]interface{}{
-						wski18n.KEY_CMD: strconv.Itoa(i+1),
+						wski18n.KEY_CMD: strconv.Itoa(i + 1),
 						wski18n.KEY_ERR: err.Error()})
 				wskprint.PrintlnOpenWhiskWarning(warningMsg)
 			} else {
@@ -1453,48 +1453,48 @@ func (deployer *ServiceDeployer) getDependentDeployer(depName string, depRecord 
 	return depServiceDeployer, nil
 }
 
-func displayPreprocessingInfo(entity string, name string, onDeploy bool){
+func displayPreprocessingInfo(entity string, name string, onDeploy bool) {
 
 	var msgKey string
-	if onDeploy{
+	if onDeploy {
 		msgKey = wski18n.ID_MSG_ENTITY_DEPLOYING_X_key_X_name_X
 	} else {
 		msgKey = wski18n.ID_MSG_ENTITY_UNDEPLOYING_X_key_X_name_X
 	}
 	msg := wski18n.T(msgKey,
 		map[string]interface{}{
-			wski18n.KEY_KEY: entity,
+			wski18n.KEY_KEY:  entity,
 			wski18n.KEY_NAME: name})
 	wskprint.PrintlnOpenWhiskInfo(msg)
 }
 
-func displayPostprocessingInfo(entity string, name string, onDeploy bool){
+func displayPostprocessingInfo(entity string, name string, onDeploy bool) {
 
 	var msgKey string
-	if onDeploy{
+	if onDeploy {
 		msgKey = wski18n.ID_MSG_ENTITY_DEPLOYED_SUCCESS_X_key_X_name_X
 	} else {
 		msgKey = wski18n.ID_MSG_ENTITY_UNDEPLOYED_SUCCESS_X_key_X_name_X
 	}
 	msg := wski18n.T(msgKey,
 		map[string]interface{}{
-			wski18n.KEY_KEY: entity,
+			wski18n.KEY_KEY:  entity,
 			wski18n.KEY_NAME: name})
 	wskprint.PrintlnOpenWhiskInfo(msg)
 }
 
-func createWhiskClientError(err *whisk.WskError, response *http.Response, entity string, onCreate bool)(*wskderrors.WhiskClientError){
+func createWhiskClientError(err *whisk.WskError, response *http.Response, entity string, onCreate bool) *wskderrors.WhiskClientError {
 
 	var msgKey string
-	if onCreate{
+	if onCreate {
 		msgKey = wski18n.ID_ERR_ENTITY_CREATE_X_key_X_err_X_code_X
 	} else {
 		msgKey = wski18n.ID_ERR_ENTITY_DELETE_X_key_X_err_X_code_X
 	}
 	errString := wski18n.T(msgKey,
 		map[string]interface{}{
-			wski18n.KEY_KEY: entity,
-			wski18n.KEY_ERR: err.Error(),
+			wski18n.KEY_KEY:  entity,
+			wski18n.KEY_ERR:  err.Error(),
 			wski18n.KEY_CODE: strconv.Itoa(err.ExitCode)})
 	wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, errString)
 
