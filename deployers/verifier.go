@@ -26,15 +26,15 @@ package deployers
 // The verifier will filter the deployer against the target DeploymentProject
 // the deployer will query the OpenWhisk platform for already deployed entities.
 // We assume the deployer and the manifest are targeted for the same namespace.
-type Verifier struct {
-}
-
-type Filter interface {
-	// Perform some filter.
-	Filter(deployer *ServiceDeployer, target *DeploymentProject) (filtered *DeploymentProject, err error)
-	// Perform some queries.
-	Query(deployer *ServiceDeployer) (da *DeploymentProject, err error)
-}
+//type Verifier struct {
+//}
+//
+//type Filter interface {
+//	// Perform some filter.
+//	Filter(deployer *ServiceDeployer, target *DeploymentProject) (filtered *DeploymentProject, err error)
+//	// Perform some queries.
+//	Query(deployer *ServiceDeployer) (da *DeploymentProject, err error)
+//}
 //
 //func (vf *Verifier) Query(deployer *ServiceDeployer) (da *DeploymentProject, err error) {
 //	pkgoptions := &whisk.PackageListOptions{false, 0, 0, 0, false}
