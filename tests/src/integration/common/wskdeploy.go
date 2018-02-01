@@ -22,16 +22,16 @@ import (
 	"errors"
 	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/fatih/color"
 	"github.com/mattn/go-colorable"
 	"os"
 	"os/exec"
-	"strings"
-	"path/filepath"
 	"path"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"path/filepath"
+	"strings"
 )
 
 const (
@@ -205,7 +205,7 @@ func (wskdeploy *Wskdeploy) GetDeploymentObjects(manifestPath string, deployment
 	//invoke ConstructDeploymentPlan to create the in memory objects for deployment
 	err = deployer.ConstructDeploymentPlan()
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	//return the deployment objects
 	return deployer.Deployment, nil

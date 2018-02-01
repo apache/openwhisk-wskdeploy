@@ -22,8 +22,8 @@ package deployers
 import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/stretchr/testify/assert"
-	"testing"
 	"reflect"
+	"testing"
 )
 
 var sd *ServiceDeployer
@@ -171,10 +171,10 @@ func TestDeploymentReader_BindAssets_ActionAnnotations(t *testing.T) {
 
 	pkg_name := "packageActionAnnotations"
 	pkg := dReader.DeploymentDescriptor.Packages[pkg_name]
-	assert.NotNil(t, pkg, "Could not find package with name " + pkg_name)
+	assert.NotNil(t, pkg, "Could not find package with name "+pkg_name)
 	action_name := "helloworld"
 	action := dReader.DeploymentDescriptor.GetProject().Packages[pkg_name].Actions[action_name]
-	assert.NotNil(t, action, "Could not find action with name " + action_name)
+	assert.NotNil(t, action, "Could not find action with name "+action_name)
 	actual_annotations := action.Annotations
 	expected_annotations := map[string]interface{}{
 		"action_annotation_1": "this is annotation 1",
@@ -186,9 +186,9 @@ func TestDeploymentReader_BindAssets_ActionAnnotations(t *testing.T) {
 
 	pkg_name = "packageActionAnnotationsWithWebAction"
 	pkg = dReader.DeploymentDescriptor.Packages[pkg_name]
-	assert.NotNil(t, pkg, "Could not find package with name " + pkg_name)
+	assert.NotNil(t, pkg, "Could not find package with name "+pkg_name)
 	action = dReader.DeploymentDescriptor.GetProject().Packages[pkg_name].Actions[action_name]
-	assert.NotNil(t, action, "Could not find action with name " + action_name)
+	assert.NotNil(t, action, "Could not find action with name "+action_name)
 	actual_annotations = action.Annotations
 	expected_annotations["web-export"] = true
 	assert.Equal(t, len(actual_annotations), len(expected_annotations), "Could not find expected number of annotations specified in manifest file")
@@ -197,9 +197,9 @@ func TestDeploymentReader_BindAssets_ActionAnnotations(t *testing.T) {
 
 	pkg_name = "packageActionAnnotationsFromDeployment"
 	pkg = dReader.DeploymentDescriptor.Packages[pkg_name]
-	assert.NotNil(t, pkg, "Could not find package with name " + pkg_name)
+	assert.NotNil(t, pkg, "Could not find package with name "+pkg_name)
 	action = dReader.DeploymentDescriptor.GetProject().Packages[pkg_name].Actions[action_name]
-	assert.NotNil(t, action, "Could not find action with name " + action_name)
+	assert.NotNil(t, action, "Could not find action with name "+action_name)
 	actual_annotations = action.Annotations
 	expected_annotations = map[string]interface{}{
 		"action_annotation_1": "this is annotation 1 from deployment",
@@ -209,4 +209,3 @@ func TestDeploymentReader_BindAssets_ActionAnnotations(t *testing.T) {
 	eq = reflect.DeepEqual(actual_annotations, expected_annotations)
 	assert.True(t, eq, "Expected list of annotations does not match with actual list, expected annotations: %v actual annotations: %v", expected_annotations, actual_annotations)
 }
-

@@ -20,30 +20,30 @@
 package deployers
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 const (
-	DEPLOYMENT_HOST = "sample.deployment.openwhisk.org"
-	DEPLOYMENT_AUTH = "sample-deployment-credential"
+	DEPLOYMENT_HOST      = "sample.deployment.openwhisk.org"
+	DEPLOYMENT_AUTH      = "sample-deployment-credential"
 	DEPLOYMENT_NAMESPACE = "sample-deployment-namespace"
 
-	MANIFEST_HOST = "sample.manifest.openwhisk.org"
-	MANIFEST_AUTH = "sample-manifest-credential"
+	MANIFEST_HOST      = "sample.manifest.openwhisk.org"
+	MANIFEST_AUTH      = "sample-manifest-credential"
 	MANIFEST_NAMESPACE = "sample-manifest-namespace"
 
-	CLI_HOST = "sample.cli.openwhisk.org"
-	CLI_AUTH = "sample-cli-credential"
+	CLI_HOST      = "sample.cli.openwhisk.org"
+	CLI_AUTH      = "sample-cli-credential"
 	CLI_NAMESPACE = "sample-cli-namespace"
 
-	WSKPROPS_HOST = "openwhisk.ng.bluemix.net"
-	WSKPROPS_AUTH = "a4f8c502:123zO3xZCLrMN6v2BKK"
+	WSKPROPS_HOST      = "openwhisk.ng.bluemix.net"
+	WSKPROPS_AUTH      = "a4f8c502:123zO3xZCLrMN6v2BKK"
 	WSKPROPS_NAMESPACE = "guest"
 
-	WSKPROPS_KEY = "test_key_file"
+	WSKPROPS_KEY  = "test_key_file"
 	WSKPROPS_CERT = "test_cert_file"
 )
 

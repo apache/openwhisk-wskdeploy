@@ -20,17 +20,17 @@
 package tests
 
 import (
-	"testing"
+	"fmt"
 	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
-	"fmt"
+	"testing"
 )
 
 var projectPath = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/apps/owbp-cloudant-trigger/runtimes/"
 
 func TestCloudantTriggerNode(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + projectPath + "node/manifest.yaml"
+	manifestPath := os.Getenv("GOPATH") + projectPath + "node/manifest.yaml"
 	deploymentPath := ""
 	os.Setenv("CLOUDANT_DATABASE", "testdb")
 	wskprops := common.GetWskpropsFromEnvVars(common.BLUEMIX_APIHOST, common.BLUEMIX_NAMESPACE, common.BLUEMIX_AUTH)
@@ -48,7 +48,7 @@ func TestCloudantTriggerNode(t *testing.T) {
 }
 
 func TestCloudantTriggerPhp(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + projectPath + "php/manifest.yaml"
+	manifestPath := os.Getenv("GOPATH") + projectPath + "php/manifest.yaml"
 	deploymentPath := ""
 	os.Setenv("CLOUDANT_DATABASE", "testdb")
 	wskprops := common.GetWskpropsFromEnvVars(common.BLUEMIX_APIHOST, common.BLUEMIX_NAMESPACE, common.BLUEMIX_AUTH)
@@ -66,7 +66,7 @@ func TestCloudantTriggerPhp(t *testing.T) {
 }
 
 func TestCloudantTriggerPython(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + projectPath + "python/manifest.yaml"
+	manifestPath := os.Getenv("GOPATH") + projectPath + "python/manifest.yaml"
 	deploymentPath := ""
 	os.Setenv("CLOUDANT_DATABASE", "testdb")
 	wskprops := common.GetWskpropsFromEnvVars(common.BLUEMIX_APIHOST, common.BLUEMIX_NAMESPACE, common.BLUEMIX_AUTH)
@@ -84,7 +84,7 @@ func TestCloudantTriggerPython(t *testing.T) {
 }
 
 func TestCloudantTriggerSwift(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + projectPath + "swift/manifest.yaml"
+	manifestPath := os.Getenv("GOPATH") + projectPath + "swift/manifest.yaml"
 	deploymentPath := ""
 	os.Setenv("CLOUDANT_DATABASE", "testdb")
 	wskprops := common.GetWskpropsFromEnvVars(common.BLUEMIX_APIHOST, common.BLUEMIX_NAMESPACE, common.BLUEMIX_AUTH)
@@ -100,4 +100,3 @@ func TestCloudantTriggerSwift(t *testing.T) {
 		assert.Equal(t, nil, err, "Failed to undeploy the manifest file.")
 	}
 }
-

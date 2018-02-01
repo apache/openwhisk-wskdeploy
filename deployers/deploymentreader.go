@@ -20,11 +20,11 @@ package deployers
 import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 type DeploymentReader struct {
@@ -79,8 +79,8 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 			warningString := wski18n.T(
 				wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 				map[string]interface{}{
-					wski18n.KEY_OLD: parsers.YAML_KEY_PACKAGE,
-					wski18n.KEY_NEW: parsers.YAML_KEY_PACKAGES,
+					wski18n.KEY_OLD:       parsers.YAML_KEY_PACKAGE,
+					wski18n.KEY_NEW:       parsers.YAML_KEY_PACKAGES,
 					wski18n.KEY_FILE_TYPE: wski18n.DEPLOYMENT})
 			wskprint.PrintlnOpenWhiskWarning(warningString)
 		} else {
@@ -108,8 +108,8 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 			warningString := wski18n.T(
 				wski18n.ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 				map[string]interface{}{
-					wski18n.KEY_KEY: wski18n.PACKAGE_NAME,
-					wski18n.KEY_NAME: packName })
+					wski18n.KEY_KEY:  wski18n.PACKAGE_NAME,
+					wski18n.KEY_NAME: packName})
 			wskprint.PrintlnOpenWhiskWarning(warningString)
 			break
 		}
@@ -161,8 +161,8 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 					warningString := wski18n.T(
 						wski18n.ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 						map[string]interface{}{
-							wski18n.KEY_KEY: parsers.YAML_KEY_ANNOTATION,
-							wski18n.KEY_NAME: name })
+							wski18n.KEY_KEY:  parsers.YAML_KEY_ANNOTATION,
+							wski18n.KEY_NAME: name})
 					wskprint.PrintlnOpenWhiskWarning(warningString)
 					return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, warningString)
 				}
@@ -255,8 +255,8 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 						errMsg := wski18n.T(
 							wski18n.ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 							map[string]interface{}{
-								wski18n.KEY_KEY: parsers.YAML_KEY_ANNOTATION,
-								wski18n.KEY_NAME: name })
+								wski18n.KEY_KEY:  parsers.YAML_KEY_ANNOTATION,
+								wski18n.KEY_NAME: name})
 						return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, errMsg)
 					}
 				}
@@ -321,7 +321,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 							wski18n.ID_DEBUG_KEY_VERIFY_X_name_X_key_X,
 							map[string]interface{}{
 								wski18n.KEY_NAME: parsers.YAML_KEY_ANNOTATION,
-								wski18n.KEY_KEY: keyVal.Key})
+								wski18n.KEY_KEY:  keyVal.Key})
 						wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, traceMsg)
 
 						// TODO() verify logic and add Verbose/trace say "found" or "not found"
@@ -353,8 +353,8 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 						errMsg := wski18n.T(
 							wski18n.ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 							map[string]interface{}{
-								wski18n.KEY_KEY: parsers.YAML_KEY_ANNOTATION,
-								wski18n.KEY_NAME: name })
+								wski18n.KEY_KEY:  parsers.YAML_KEY_ANNOTATION,
+								wski18n.KEY_NAME: name})
 						return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, errMsg)
 					}
 				}

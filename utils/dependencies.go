@@ -24,10 +24,10 @@ import (
 )
 
 type DependencyRecord struct {
-	ProjectPath string	//root of the source codes of dependent projects, e.g. src_project_path/Packages
-	Packagename string	//name of the package
-	Location    string	//location
-	Version     string	//version
+	ProjectPath string //root of the source codes of dependent projects, e.g. src_project_path/Packages
+	Packagename string //name of the package
+	Location    string //location
+	Version     string //version
 	Parameters  whisk.KeyValueArr
 	Annotations whisk.KeyValueArr
 	IsBinding   bool
@@ -36,12 +36,12 @@ type DependencyRecord struct {
 }
 
 func NewDependencyRecord(projectPath string,
-			packagename string,
-			location string,
-			version string,
-			parameters whisk.KeyValueArr,
-			annotations whisk.KeyValueArr,
-			isBinding bool) DependencyRecord {
+	packagename string,
+	location string,
+	version string,
+	parameters whisk.KeyValueArr,
+	annotations whisk.KeyValueArr,
+	isBinding bool) DependencyRecord {
 	var record DependencyRecord
 	record.ProjectPath = projectPath
 	record.Packagename = packagename
@@ -53,9 +53,9 @@ func NewDependencyRecord(projectPath string,
 	//split url to BaseUrl and SubFolder
 	if !record.IsBinding {
 		paths := strings.Split(location, "/")
-		record.BaseRepo = strings.Join([]string{paths[0],paths[1],paths[2],paths[3],paths[4]},"/")
-		if len(paths)>5 {
-			record.SubFolder = strings.TrimPrefix(record.Location,record.BaseRepo)
+		record.BaseRepo = strings.Join([]string{paths[0], paths[1], paths[2], paths[3], paths[4]}, "/")
+		if len(paths) > 5 {
+			record.SubFolder = strings.TrimPrefix(record.Location, record.BaseRepo)
 		} else {
 			record.SubFolder = ""
 		}

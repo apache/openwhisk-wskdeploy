@@ -72,7 +72,7 @@ func ParseQualifiedName(name string, defaultNamespace string) (QualifiedName, er
 		}
 
 		qualifiedName.EntityName = name
-		if (defaultNamespace == "") {
+		if defaultNamespace == "" {
 			defaultNamespace = "_"
 		}
 		qualifiedName.Namespace = defaultNamespace

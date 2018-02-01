@@ -18,10 +18,10 @@
 package wskenv
 
 import (
-	"strings"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"os"
 	"reflect"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"strings"
 )
 
 // Test if a string

@@ -44,15 +44,15 @@ func FileExists(file string) bool {
 func IsDirectory(filePath string) bool {
 	f, err := os.Open(filePath)
 	if err != nil {
-        return false
-    } else {
-        defer f.Close()
-    }
+		return false
+	} else {
+		defer f.Close()
+	}
 
 	fi, err := f.Stat()
-    if err != nil {
-        return false
-    }
+	if err != nil {
+		return false
+	}
 
 	switch mode := fi.Mode(); {
 	case mode.IsDir():
@@ -106,24 +106,24 @@ func WriteProps(path string, props map[string]string) error {
 
 	for k, v := range props {
 		_, err := file.WriteString(k)
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 
 		_, err = file.WriteString("=")
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 
 		_, err = file.WriteString(v)
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 
 		_, err = file.WriteString("\n")
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

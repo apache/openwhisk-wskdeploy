@@ -17,12 +17,12 @@
 package parsers
 
 import (
-	"fmt"
-	"reflect"
 	"encoding/json"
+	"fmt"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
+	"reflect"
 )
 
 // TODO(): Support other valid Package Manifest types
@@ -30,11 +30,11 @@ import (
 // TODO(): Support JSON schema validation for type: json
 // TODO(): Support OpenAPI schema validation
 const (
-	STRING	string = "string"
-	INTEGER	string = "integer"
-	FLOAT	string = "float"
-	BOOLEAN	string = "boolean"
-	JSON	string = "json"
+	STRING  string = "string"
+	INTEGER string = "integer"
+	FLOAT   string = "float"
+	BOOLEAN string = "boolean"
+	JSON    string = "json"
 )
 
 var validParameterNameMap = map[string]string{
@@ -50,7 +50,7 @@ var validParameterNameMap = map[string]string{
 	"int64":   INTEGER,
 	"float32": FLOAT,
 	"float64": FLOAT,
-	JSON:	   JSON,
+	JSON:      JSON,
 	"map":     JSON,
 }
 
@@ -88,18 +88,17 @@ func getTypeDefaultValue(typeName string) interface{} {
 	return nil
 }
 
-
 /*
-    ResolveParamTypeFromValue Resolves the Parameter's data type from its actual value.
+   ResolveParamTypeFromValue Resolves the Parameter's data type from its actual value.
 
-    Inputs:
-    - paramName: name of the parameter for error reporting
-    - filepath: the path, including name, of the YAML file which contained the parameter for error reporting
-    - value: the parameter value to resolve
+   Inputs:
+   - paramName: name of the parameter for error reporting
+   - filepath: the path, including name, of the YAML file which contained the parameter for error reporting
+   - value: the parameter value to resolve
 
-    Returns:
-    - (string) parameter type name as a string
- */
+   Returns:
+   - (string) parameter type name as a string
+*/
 func ResolveParamTypeFromValue(paramName string, value interface{}, filePath string) (string, error) {
 	// Note: 'string' is the default type if not specified and not resolvable.
 	var paramType string = "string"
@@ -121,24 +120,23 @@ func ResolveParamTypeFromValue(paramName string, value interface{}, filePath str
 	return paramType, err
 }
 
-
 /*
-    resolveSingleLineParameter assures that a Parameter's Type is correctly identified and set from its Value.
+   resolveSingleLineParameter assures that a Parameter's Type is correctly identified and set from its Value.
 
-    Additionally, this function:
+   Additionally, this function:
 
-    - detects if the parameter value contains the name of a valid OpenWhisk parameter types. if so, the
-      - param.Type is set to detected OpenWhisk parameter type.
-      - param.Value is set to the zero (default) value for that OpenWhisk parameter type.
+   - detects if the parameter value contains the name of a valid OpenWhisk parameter types. if so, the
+     - param.Type is set to detected OpenWhisk parameter type.
+     - param.Value is set to the zero (default) value for that OpenWhisk parameter type.
 
-    Inputs:
-    - filePath: the path, including name, of the YAML file which contained the parameter for error reporting
-    - paramName: name of the parameter for error reporting
-    - param: pointer to Parameter structure being resolved
+   Inputs:
+   - filePath: the path, including name, of the YAML file which contained the parameter for error reporting
+   - paramName: name of the parameter for error reporting
+   - param: pointer to Parameter structure being resolved
 
-    Returns:
-    - (interface{}) the parameter's resolved value
- */
+   Returns:
+   - (interface{}) the parameter's resolved value
+*/
 func resolveSingleLineParameter(filePath string, paramName string, param *Parameter) (interface{}, error) {
 	var errorParser error
 
@@ -162,28 +160,28 @@ func resolveSingleLineParameter(filePath string, paramName string, param *Parame
 	} else {
 		// TODO() - move string to i18n
 		return param.Value, wskderrors.NewYAMLParserErr(filePath,
-			"Parameter [" + paramName + "] is not single-line format.")
+			"Parameter ["+paramName+"] is not single-line format.")
 	}
 
 	return param.Value, errorParser
 }
 
 /*
-    resolveMultiLineParameter assures that the values for Parameter Type and Value are properly set and are valid.
+   resolveMultiLineParameter assures that the values for Parameter Type and Value are properly set and are valid.
 
-    Additionally, this function:
-    - uses param.Default as param.Value if param.Value is not provided
-    - uses the actual param.Value data type for param.type if param.Type is not provided
+   Additionally, this function:
+   - uses param.Default as param.Value if param.Value is not provided
+   - uses the actual param.Value data type for param.type if param.Type is not provided
 
-    Inputs:
-    - filepath: the path, including name, of the YAML file which contained the parameter for error reporting
-    - paramName: name of the parameter for error reporting
-    - param: pointer to Parameter structure being resolved
+   Inputs:
+   - filepath: the path, including name, of the YAML file which contained the parameter for error reporting
+   - paramName: name of the parameter for error reporting
+   - param: pointer to Parameter structure being resolved
 
-    Returns:
-    - (interface{}) the parameter's resolved value
+   Returns:
+   - (interface{}) the parameter's resolved value
 
- */
+*/
 func resolveMultiLineParameter(filePath string, paramName string, param *Parameter) (interface{}, error) {
 	var errorParser error
 
@@ -203,7 +201,7 @@ func resolveMultiLineParameter(filePath string, paramName string, param *Paramet
 			if !isValidParameterType(param.Type) {
 				// TODO() - move string to i18n
 				return param.Value, wskderrors.NewYAMLParserErr(filePath,
-					"Parameter [" + paramName + "] has an invalid Type. [" + param.Type + "]")
+					"Parameter ["+paramName+"] has an invalid Type. ["+param.Type+"]")
 			}
 		} else {
 			// if we do not have a value for the Parameter Type, use the Parameter Value's Type
@@ -217,30 +215,28 @@ func resolveMultiLineParameter(filePath string, paramName string, param *Paramet
 	} else {
 		// TODO() - move string to i18n
 		return param.Value, wskderrors.NewYAMLParserErr(filePath,
-			"Parameter [" + paramName + "] is not multiline format.")
+			"Parameter ["+paramName+"] is not multiline format.")
 	}
-
 
 	return param.Value, errorParser
 }
 
-
 /*
-    resolveJSONParameter assure JSON data is converted to a map[string]{interface*} type.
+   resolveJSONParameter assure JSON data is converted to a map[string]{interface*} type.
 
-    This function handles the forms JSON data appears in:
-    1) a string containing JSON, which needs to be parsed into map[string]interface{}
-    2) is a map of JSON (but not a map[string]interface{}
+   This function handles the forms JSON data appears in:
+   1) a string containing JSON, which needs to be parsed into map[string]interface{}
+   2) is a map of JSON (but not a map[string]interface{}
 
-    Inputs:
-    - paramName: name of the parameter for error reporting
-    - filePath: the path, including name, of the YAML file which contained the parameter for error reporting
-    - param: pointer to Parameter structure being resolved
-    - value: the current actual value of the parameter being resolved
+   Inputs:
+   - paramName: name of the parameter for error reporting
+   - filePath: the path, including name, of the YAML file which contained the parameter for error reporting
+   - param: pointer to Parameter structure being resolved
+   - value: the current actual value of the parameter being resolved
 
-    Returns:
-    - (interface{}) the parameter's resolved value
- */
+   Returns:
+   - (interface{}) the parameter's resolved value
+*/
 func resolveJSONParameter(filePath string, paramName string, param *Parameter, value interface{}) (interface{}, error) {
 	var errorParser error
 
@@ -259,46 +255,45 @@ func resolveJSONParameter(filePath string, paramName string, param *Parameter, v
 		// Case 2: value contains a map of JSON
 		// We must make sure the map type is map[string]interface{}; otherwise we cannot
 		// marshall it later on to serialize in the body of an HTTP request.
-		if( param.Value != nil && reflect.TypeOf(param.Value).Kind() == reflect.Map ) {
+		if param.Value != nil && reflect.TypeOf(param.Value).Kind() == reflect.Map {
 			if _, ok := param.Value.(map[interface{}]interface{}); ok {
-				var temp map[string]interface{} =
-					utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
+				var temp map[string]interface{} = utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
 				//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, temp)
 				return temp, errorParser
 			}
-		} else{
+		} else {
 			errorParser = wskderrors.NewParameterTypeMismatchError(filePath, paramName, JSON, param.Type)
 		}
 
 	} else {
 		// TODO() - move string to i18n
-		errorParser = wskderrors.NewYAMLParserErr(filePath, "Parameter [" + paramName + "] is not JSON format.")
+		errorParser = wskderrors.NewYAMLParserErr(filePath, "Parameter ["+paramName+"] is not JSON format.")
 	}
 
 	return param.Value, errorParser
 }
 
 /*
-    ResolveParameter assures that the Parameter structure's values are correctly filled out for
-    further processing.  This includes special processing for
+   ResolveParameter assures that the Parameter structure's values are correctly filled out for
+   further processing.  This includes special processing for
 
-    - single-line format parameters
-      - deriving missing param.Type from param.Value
-      - resolving case where param.Value contains a valid Parameter type name
-    - multi-line format parameters:
-      - assures that param.Value is set while taking into account param.Default
-      - validating param.Type
+   - single-line format parameters
+     - deriving missing param.Type from param.Value
+     - resolving case where param.Value contains a valid Parameter type name
+   - multi-line format parameters:
+     - assures that param.Value is set while taking into account param.Default
+     - validating param.Type
 
-    Note: parameter values may set later (overridden) by an (optional) Deployment file
+   Note: parameter values may set later (overridden) by an (optional) Deployment file
 
-    Inputs:
-    - paramName: name of the parameter for error reporting
-    - filepath: the path, including name, of the YAML file which contained the parameter for error reporting
-    - param: pointer to Parameter structure being resolved
+   Inputs:
+   - paramName: name of the parameter for error reporting
+   - filepath: the path, including name, of the YAML file which contained the parameter for error reporting
+   - param: pointer to Parameter structure being resolved
 
-    Returns:
-    - (interface{}) the parameter's resolved value
- */
+   Returns:
+   - (interface{}) the parameter's resolved value
+*/
 func ResolveParameter(paramName string, param *Parameter, filePath string) (interface{}, error) {
 
 	var errorParser error
@@ -321,7 +316,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	// See if we have any Environment Variable replacement within the parameter's value
 
 	// Make sure the parameter's value is a valid, non-empty string
-	if ( param.Value != nil && param.Type == "string") {
+	if param.Value != nil && param.Type == "string" {
 		// perform $ notation replacement on string if any exist
 		value = wskenv.GetEnvVar(param.Value)
 	}

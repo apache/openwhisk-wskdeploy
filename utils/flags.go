@@ -37,10 +37,10 @@ type WskDeployFlags struct {
 	ManifestPath    string
 	UseDefaults     bool
 	UseInteractive  bool
-	Strict          bool   // strict flag to support user defined runtime version.
-	Key		string
-	Cert		string
-	Managed 	bool   // OpenWhisk Managed Deployments
+	Strict          bool // strict flag to support user defined runtime version.
+	Key             string
+	Cert            string
+	Managed         bool // OpenWhisk Managed Deployments
 }
 
 func (flags *WskDeployFlags) Format() string {
@@ -53,7 +53,7 @@ func (flags *WskDeployFlags) Format() string {
 	//var t interface{}
 	var result string
 
-	for i := 0; i < flagValues.NumField(); i++  {
+	for i := 0; i < flagValues.NumField(); i++ {
 		name = flagNames.Field(i).Name
 		value = flagValues.Field(i)
 		// NOTE: if you need to see the Type, add this line to output

@@ -20,10 +20,10 @@
 package tests
 
 import (
-	"testing"
 	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
+	"testing"
 )
 
 var wskprops = common.GetWskprops()
@@ -38,7 +38,6 @@ func TestTriggerRule(t *testing.T) {
 }
 
 var (
-	manifestPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/triggerrule/manifest.yml"
+	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/triggerrule/manifest.yml"
 	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/triggerrule/deployment.yml"
 )
-

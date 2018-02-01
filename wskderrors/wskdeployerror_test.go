@@ -21,12 +21,12 @@ package wskderrors
 
 import (
 	"errors"
-	"testing"
-	"github.com/stretchr/testify/assert"
-	"strings"
 	"fmt"
-	"runtime"
+	"github.com/stretchr/testify/assert"
 	"path/filepath"
+	"runtime"
+	"strings"
+	"testing"
 )
 
 /*
@@ -38,7 +38,7 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	packageName := filepath.Base(fn)
 	const TEST_DEFAULT_ERROR_MESSAGE = "Some bad error"
 	const TEST_COMMAND string = "test"
-	const TEST_ERROR_CODE = 400  // Bad request
+	const TEST_ERROR_CODE = 400 // Bad request
 	const TEST_EXISTANT_MANIFEST_FILE = "tests/dat/manifest_validate_multiline_params.yaml"
 	const TEST_NONEXISTANT_MANIFEST_FILE = "tests/dat/missing_manifest.yaml"
 	const TEST_INVALID_YAML_MANIFEST_FILE = "tests/dat/manifest_bad_yaml_invalid_comment.yaml"
@@ -88,11 +88,11 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult)
 
 	/*
- 	 * FileReadError
- 	 */
+	 * FileReadError
+	 */
 	err4 := NewFileReadError(TEST_NONEXISTANT_MANIFEST_FILE, TEST_DEFAULT_ERROR_MESSAGE)
 	actualResult = strings.TrimSpace(err4.Error())
-	expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + STR_FILE + ": [%s]: %s",
+	expectedResult = fmt.Sprintf("%s [%d]: [%s]: "+STR_FILE+": [%s]: %s",
 		packageName,
 		err4.LineNum,
 		ERROR_FILE_READ_ERROR,
@@ -101,8 +101,8 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult)
 
 	/*
- 	 * ManifestFileNotFoundError
- 	 */
+	 * ManifestFileNotFoundError
+	 */
 	err5 := NewErrorManifestFileNotFound(TEST_NONEXISTANT_MANIFEST_FILE, TEST_DEFAULT_ERROR_MESSAGE)
 	actualResult = strings.TrimSpace(err5.Error())
 	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s: [%s]: %s",
@@ -115,8 +115,8 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult)
 
 	/*
-         * YAMLFileFormatError
-         */
+	 * YAMLFileFormatError
+	 */
 	err6 := NewYAMLFileFormatError(TEST_INVALID_YAML_MANIFEST_FILE, TEST_DEFAULT_ERROR_MESSAGE)
 	actualResult = strings.TrimSpace(err6.Error())
 	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s: [%s]: %s",
@@ -159,7 +159,7 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	msg9 := fmt.Sprintf("%s [%s]: %s [%s]",
 		STR_PARAMETER, TEST_PARAM_NAME,
 		STR_TYPE, TEST_PARAM_TYPE_FOO)
-	expectedResult = fmt.Sprintf("%s [%d]: [%s]: " + STR_FILE + ": [%s]: %s",
+	expectedResult = fmt.Sprintf("%s [%d]: [%s]: "+STR_FILE+": [%s]: %s",
 		packageName,
 		err9.LineNum,
 		ERROR_YAML_INVALID_PARAMETER_TYPE,

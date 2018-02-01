@@ -29,7 +29,7 @@ import (
 var path = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-action-annotations/"
 
 func TestActionAnnotations(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + path + "manifest.yaml"
+	manifestPath := os.Getenv("GOPATH") + path + "manifest.yaml"
 	deploymentPath := os.Getenv("GOPATH") + path + "deployment.yaml"
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
@@ -39,10 +39,9 @@ func TestActionAnnotations(t *testing.T) {
 }
 
 func TestInvalidActionAnnotations(t *testing.T) {
-	manifestPath   := os.Getenv("GOPATH") + path + "manifest.yaml"
+	manifestPath := os.Getenv("GOPATH") + path + "manifest.yaml"
 	deploymentPath := os.Getenv("GOPATH") + path + "deployment-with-invalid-annotations.yaml"
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.NotNil(t, err, "Failed to validate invalid annotations in deployment file")
 }
-

@@ -34,8 +34,8 @@ func TestSupportProjectPath(t *testing.T) {
 	projectPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests"
 	_, err := wskdeploy.DeployProjectPathOnly(projectPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the projectpath")
-    _, err = wskdeploy.UndeployProjectPathOnly(projectPath)
-    assert.Equal(t, nil, err, "Failed to undeploy based on the projectpath")
+	_, err = wskdeploy.UndeployProjectPathOnly(projectPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the projectpath")
 }
 
 // support only projectpath with trailing slash
@@ -44,8 +44,8 @@ func TestSupportProjectPathTrailingSlash(t *testing.T) {
 	projectPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests" + "/"
 	_, err := wskdeploy.DeployProjectPathOnly(projectPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the projectpath")
-    _, err = wskdeploy.UndeployProjectPathOnly(projectPath)
-    assert.Equal(t, nil, err, "Failed to undeploy based on the projectpath")
+	_, err = wskdeploy.UndeployProjectPathOnly(projectPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the projectpath")
 }
 
 // only a yaml manifest
@@ -54,8 +54,8 @@ func TestSupportManifestYamlPath(t *testing.T) {
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/manifest.yaml"
 	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifestpath")
-    _, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
-    assert.Equal(t, nil, err, "Failed to undeploy based on the manifestpath")
+	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the manifestpath")
 }
 
 // only a yml manifest
@@ -64,8 +64,8 @@ func TestSupportManifestYmlPath(t *testing.T) {
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/manifest.yml"
 	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifestpath")
-    _, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
-    assert.Equal(t, nil, err, "Failed to undeploy based on the manifestpath")
+	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the manifestpath")
 }
 
 // manifest yaml and deployment yaml
@@ -73,10 +73,10 @@ func TestSupportManifestYamlDeployment(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/manifest.yaml"
 	deploymentPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/deployment.yml"
-	_, err := wskdeploy.Deploy(manifestPath,deploymentPath)
+	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifestpath and deploymentpath.")
-    _, err = wskdeploy.Undeploy(manifestPath,deploymentPath)
-    assert.Equal(t, nil, err, "Failed to undeploy based on the manifestpath and deploymentpath.")
+	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the manifestpath and deploymentpath.")
 }
 
 // manifest yml and deployment yaml
@@ -84,8 +84,8 @@ func TestSupportManifestYmlDeployment(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/manifest.yml"
 	deploymentPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/flagstests/deployment.yml"
-	_, err := wskdeploy.Deploy(manifestPath,deploymentPath)
+	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifestpath and deploymentpath.")
-    _, err = wskdeploy.Undeploy(manifestPath,deploymentPath)
-    assert.Equal(t, nil, err, "Failed to undeploy based on the manifestpath and deploymentpath.")
+	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the manifestpath and deploymentpath.")
 }

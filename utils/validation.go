@@ -19,11 +19,11 @@
 package utils
 
 import (
-	"strings"
 	"encoding/json"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"strings"
 )
 
 var LocalLicenseRecords = map[string][]string{
