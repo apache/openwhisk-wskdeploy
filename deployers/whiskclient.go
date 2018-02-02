@@ -63,8 +63,8 @@ var GetWskPropFromWhiskProperty = func(pi whisk.Properties) (*whisk.Wskprops, er
 	return whisk.GetWskPropFromWhiskProperty(pi)
 }
 
-var GetCommandLineFlags = func() (string, string, string, string, string) {
-	return utils.Flags.ApiHost, utils.Flags.Auth, utils.Flags.Namespace, utils.Flags.Key, utils.Flags.Cert
+var GetCommandLineFlags = func() (string, string, string, string, string, string) {
+	return utils.Flags.ApiHost, utils.Flags.Auth, utils.Flags.Namespace, utils.Flags.Key, utils.Flags.Cert, utils.Flags.ApigwAccessToken
 }
 
 var CreateNewClient = func(config_input *whisk.Config) (*whisk.Client, error) {
@@ -80,6 +80,8 @@ var CreateNewClient = func(config_input *whisk.Config) (*whisk.Client, error) {
 // (3) manifest file
 // (4) .wskprops
 // (5) prompt for values in interactive mode if any of them are missing
+// we are following the same precedence order for APIGW_ACCESS_TOKEN
+// but in a separate thread as APIGW_ACCESS_TOKEN only needed for APIs
 func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string, isInteractive bool) (*whisk.Config, error) {
 	// struct to store credential, namespace, and host with their respective source
 	credential := PropertyValue{}
@@ -87,14 +89,16 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	apiHost := PropertyValue{}
 	key := PropertyValue{}
 	cert := PropertyValue{}
+	apigwAccessToken := PropertyValue{}
 
 	// read credentials from command line
-	apihost, auth, ns, keyfile, certfile := GetCommandLineFlags()
+	apihost, auth, ns, keyfile, certfile, accessToken := GetCommandLineFlags()
 	credential = GetPropertyValue(credential, auth, wski18n.COMMAND_LINE)
 	namespace = GetPropertyValue(namespace, ns, wski18n.COMMAND_LINE)
 	apiHost = GetPropertyValue(apiHost, apihost, wski18n.COMMAND_LINE)
 	key = GetPropertyValue(key, keyfile, wski18n.COMMAND_LINE)
 	cert = GetPropertyValue(cert, certfile, wski18n.COMMAND_LINE)
+	apigwAccessToken = GetPropertyValue(apigwAccessToken, accessToken, wski18n.COMMAND_LINE)
 
 	// TODO() i18n
         // Print all flags / values if verbose
@@ -117,6 +121,15 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 				deployment.GetProject().ApiHost,
 				path.Base(deploymentPath))
 		}
+	}
+
+	// read APIGW_ACCESS_TOKEN if not found on command line
+	if  len(apigwAccessToken.Value) == 0 {
+		mm := parsers.NewYAMLParser()
+		deployment, _ := mm.ParseDeployment(deploymentPath)
+		apigwAccessToken = GetPropertyValue(apigwAccessToken,
+			deployment.GetProject().ApigwAccessToken,
+			path.Base(deploymentPath))
 	}
 
 	// TODO() split this logic into its own function
@@ -154,6 +167,25 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		}
 	}
 
+	if len(apigwAccessToken.Value) == 0 {
+		if utils.FileExists(manifestPath) {
+			mm := parsers.NewYAMLParser()
+			manifest, _ := mm.ParseManifest(manifestPath)
+			if manifest.Package.Packagename != "" {
+				apigwAccessToken = GetPropertyValue(apigwAccessToken,
+					manifest.Package.ApigwAccessToken,
+					path.Base(manifestPath))
+			} else if manifest.Packages != nil {
+				if len(manifest.Packages) == 1 {
+					for _, pkg := range manifest.Packages {
+						apigwAccessToken = GetPropertyValue(apigwAccessToken,
+							pkg.ApigwAccessToken,
+							path.Base(manifestPath))
+					}
+				}
+		}	}
+	}
+
 	// Third, we need to look up the variables in .wskprops file.
 	pi := whisk.PropertiesImp{
 		OsPackage: whisk.OSPackageImp{},
@@ -166,6 +198,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	apiHost = GetPropertyValue(apiHost, wskprops.APIHost, SOURCE_WSKPROPS)
 	key = GetPropertyValue(key, wskprops.Key, SOURCE_WSKPROPS)
 	cert = GetPropertyValue(cert, wskprops.Cert, SOURCE_WSKPROPS)
+	apigwAccessToken = GetPropertyValue(apigwAccessToken, wskprops.AuthAPIGWKey, SOURCE_WSKPROPS)
 
 	// TODO() see if we can split the following whisk prop logic into a separate function
 	// now, read credentials from whisk.properties but this is only acceptable within Travis
@@ -190,6 +223,12 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	if apiHost.Source == SOURCE_WHISK_PROPERTIES {
 		warnMsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
 			map[string]interface{}{wski18n.KEY_KEY: wski18n.API_HOST})
+		wskprint.PrintlnOpenWhiskWarning(warnMsg)
+	}
+	apigwAccessToken = GetPropertyValue(apigwAccessToken, whiskproperty.AuthAPIGWKey, SOURCE_WHISK_PROPERTIES)
+	if apigwAccessToken.Source == SOURCE_WHISK_PROPERTIES {
+		warnMsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
+			map[string]interface{}{wski18n.KEY_KEY: wski18n.APIGW_ACCESS_TOKEN})
 		wskprint.PrintlnOpenWhiskWarning(warnMsg)
 	}
 
@@ -235,6 +274,12 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		}
 	}
 
+	if len(apigwAccessToken.Value) == 0 && isInteractive == true {
+		accessToken := promptForValue(wski18n.T(wski18n.APIGW_ACCESS_TOKEN))
+		apigwAccessToken.Value = accessToken
+		apigwAccessToken.Source = SOURCE_INTERACTIVE_INPUT
+	}
+
 	mode := true
 	if (len(cert.Value) != 0 && len(key.Value) != 0) {
 		mode = false
@@ -248,6 +293,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		Cert:      cert.Value,
 		Key:       key.Value,
 		Insecure:  mode, // true if you want to ignore certificate signing
+		ApigwAccessToken: apigwAccessToken.Value,
 	}
 
 	// validate we have credential, apihost and namespace

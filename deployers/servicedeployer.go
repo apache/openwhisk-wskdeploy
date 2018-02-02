@@ -932,9 +932,15 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 	var err error
 	var response *http.Response
 
+	apiCreateReqOptions := new(whisk.ApiCreateRequestOptions)
+	apiCreateReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+	// TODO add APIGW_ACCESS_TOKEN
+	apiCreateReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
+	apiCreateReqOptions.ResponseType = "json"
+
 	// TODO() Is there an api delete function? could not find it
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-		_, response, err = deployer.Client.Apis.Insert(api, nil, true)
+		_, response, err = deployer.Client.Apis.Insert(api, apiCreateReqOptions, true)
 		return err
 	})
 

@@ -4,162 +4,6 @@
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package parsers
-
-import (
-	"errors"
-	"io/ioutil"
-	"os"
-	"path"
-	"strings"
-	"encoding/base64"
-	"fmt"
-	"gopkg.in/yaml.v2"
-
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-)
-
-// Read existing manifest file or create new if none exists
-func ReadOrCreateManifest() (*YAML, error) {
-	maniyaml := YAML{}
-
-	if _, err := os.Stat(utils.ManifestFileNameYaml); err == nil {
-		dat, _ := ioutil.ReadFile(utils.ManifestFileNameYaml)
-		err := NewYAMLParser().Unmarshal(dat, &maniyaml)
-		if err != nil {
-			return &maniyaml, wskderrors.NewFileReadError(utils.ManifestFileNameYaml, err.Error())
-		}
-	}
-	return &maniyaml, nil
-}
-
-// Serialize manifest to local file
-func Write(manifest *YAML, filename string) error {
-	output, err := NewYAMLParser().marshal(manifest)
-	if err != nil {
-		return wskderrors.NewYAMLFileFormatError(filename, err.Error())
-	}
-
-	f, err := os.Create(filename)
-	if err != nil {
-		return wskderrors.NewFileReadError(filename, err.Error())
-	}
-	defer f.Close()
-
-	f.Write(output)
-	return nil
-}
-
-func (dm *YAMLParser) Unmarshal(input []byte, manifest *YAML) error {
-	err := yaml.UnmarshalStrict(input, manifest)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (dm *YAMLParser) marshal(manifest *YAML) (output []byte, err error) {
-	data, err := yaml.Marshal(manifest)
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
-}
-
-func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
-	mm := NewYAMLParser()
-	maniyaml := YAML{}
-
-	content, err := utils.Read(manifestPath)
-	if err != nil {
-		return &maniyaml, wskderrors.NewFileReadError(manifestPath, err.Error())
-	}
-
-	err = mm.Unmarshal(content, &maniyaml)
-	if err != nil {
-		return &maniyaml, wskderrors.NewYAMLParserErr(manifestPath, err)
-	}
-	maniyaml.Filepath = manifestPath
-	manifest := ReadEnvVariable(&maniyaml)
-
-	return manifest, nil
-}
-
-func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {
-	dependencies := make(map[string]utils.DependencyRecord)
-	packages := make(map[string]Package)
-	if manifest.Package.Packagename != "" {
-		return dm.ComposeDependencies(manifest.Package, projectPath, filePath, manifest.Package.Packagename)
-	} else {
-		if len(manifest.Packages) != 0 {
-			packages = manifest.Packages
-		} else {
-			packages = manifest.GetProject().Packages
-		}
-	}
-
-	for n, p := range packages {
-		d, err := dm.ComposeDependencies(p, projectPath, filePath, n)
-		if err == nil {
-			for k, v := range d {
-				dependencies[k] = v
-			}
-		} else {
-			return nil, err
-		}
-	}
-	return dependencies, nil
-}
-
-func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string) (map[string]utils.DependencyRecord, error) {
-
-	var errorParser error
-	depMap := make(map[string]utils.DependencyRecord)
-	for key, dependency := range pkg.Dependencies {
-		version := dependency.Version
-		if version == "" {
-			// TODO() interactive ask for branch, AND consider YAML specification to allow key for branch
-			version = YAML_VALUE_BRANCH_MASTER
-		}
-
-		location := dependency.Location
-
-		isBinding := false
-		if utils.LocationIsBinding(location) {
-
-			if !strings.HasPrefix(location, "/") {
-				location = "/" + dependency.Location
-			}
-
-			isBinding = true
-		} else if utils.LocationIsGithub(location) {
-
-			// TODO() define const for the protocol prefix, etc.
-			if !strings.HasPrefix(location, "https://") && !strings.HasPrefix(location, "http://") {
-				location = "https://" + dependency.Location
-			}
-
-			isBinding = false
-		} else {
-			// TODO() create new named error in wskerrors package
-			return nil, errors.New(wski18n.T(wski18n.ID_ERR_DEPENDENCY_UNKNOWN_TYPE))
-		}
 
 		keyValArrParams := make(whisk.KeyValueArr, 0)
 		for name, param := range dependency.Inputs {
@@ -856,12 +700,12 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string) ([]*whisk.Ru
 	return r1, nil
 }
 
-func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *YAML) ([]*whisk.ApiCreateRequest, error) {
+func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, manifest *YAML) ([]*whisk.ApiCreateRequest, error) {
 	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 	manifestPackages := make(map[string]Package)
 
 	if manifest.Package.Packagename != "" {
-		return dm.ComposeApiRecords(manifest.Package)
+		return dm.ComposeApiRecords(client, manifest.Package.Packagename, manifest.Package, manifest.Filepath)
 	} else {
 		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
@@ -870,8 +714,8 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *YAML) ([]*whisk
 		}
 	}
 
-	for _, p := range manifestPackages {
-		r, err := dm.ComposeApiRecords(p)
+	for packageName, p := range manifestPackages {
+		r, err := dm.ComposeApiRecords(client, packageName, p, manifest.Filepath)
 		if err == nil {
 			requests = append(requests, r...)
 		} else {
@@ -881,14 +725,94 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *YAML) ([]*whisk
 	return requests, nil
 }
 
-func (dm *YAMLParser) ComposeApiRecords(pkg Package) ([]*whisk.ApiCreateRequest, error) {
-	var acq []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
-	apis := pkg.GetApis()
+/*
+ * read API section from manifest file:
+ * apis: # List of APIs
+ *     hello-world: #API name
+ *	/hello: #gateway base path
+ *	    /world:   #gateway rel path
+ *		greeting: get #action name: gateway method
+ *
+ * compose APIDoc structure from the manifest:
+ * {
+ *	"apidoc":{
+ *      	"namespace":<namespace>,
+ *      	"gatewayBasePath":"/hello",
+ *      	"gatewayPath":"/world",
+ *      	"gatewayMethod":"GET",
+ *      	"action":{
+ *         		"name":"hello",
+ *			"namespace":"guest",
+ *			"backendMethod":"GET",
+ *			"backendUrl":<url>,
+ *			"authkey":<auth>
+ *		}
+ * 	}
+ * }
+ */
+func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string, pkg Package, manifestPath string) ([]*whisk.ApiCreateRequest, error) {
+	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 
-	for _, api := range apis {
-		acr := new(whisk.ApiCreateRequest)
-		acr.ApiDoc = api
-		acq = append(acq, acr)
+	for apiName, apiDoc := range pkg.Apis {
+		for gatewayBasePath, gatewayBasePathMap := range apiDoc {
+			// is gateway base path valid, it must begin with /
+			if !strings.HasPrefix(gatewayBasePath, "/") {
+				return nil, wskderrors.NewInvalidAPIPathError("Base path must begin with /", manifestPath, gatewayBasePath)
+			}
+			for gatewayRelPath, gatewayRelPathMap := range gatewayBasePathMap {
+				// is gateway relative path valid, it must begin with /
+				if !strings.HasPrefix(gatewayRelPath, "/") {
+					return nil, wskderrors.NewInvalidAPIPathError("Relative path must begin with /", manifestPath, gatewayRelPath)
+				}
+				for actionName, gatewayMethod := range gatewayRelPathMap {
+					// verify that the action is defined under actions sections
+					if _, ok := pkg.Actions[actionName]; ok {
+						// verify that the action is defined as web action
+						web := pkg.Actions[actionName].Webexport
+						// (TODO) Convert web export in Action struct from string to bool
+						if strings.ToUpper(web) == "TRUE" {
+							request := new(whisk.ApiCreateRequest)
+							request.ApiDoc = new(whisk.Api)
+							request.ApiDoc.GatewayBasePath = gatewayBasePath
+							// is API verb is valid, it must be one of (GET, PUT, POST, DELETE)
+							request.ApiDoc.GatewayRelPath = gatewayRelPath
+							if _, ok := whisk.ApiVerbs[strings.ToUpper(gatewayMethod)]; !ok {
+								return nil, wskderrors.NewInvalidAPIGatewayMethodError(manifestPath,
+									gatewayBasePath + gatewayRelPath,
+									gatewayMethod,
+									dm.getGatewayMethods())
+							}
+							request.ApiDoc.GatewayMethod = strings.ToUpper(gatewayMethod)
+							request.ApiDoc.Namespace = client.Namespace
+							request.ApiDoc.ApiName = apiName
+							request.ApiDoc.Id = "API:" + request.ApiDoc.Namespace + ":" + request.ApiDoc.GatewayRelPath
+
+							request.ApiDoc.Action = new(whisk.ApiAction)
+							request.ApiDoc.Action.Name = packageName + "/" + actionName
+							request.ApiDoc.Action.Namespace = client.Namespace
+							request.ApiDoc.Action.BackendUrl = "https://" + client.Host + "/api/v1/web/" +
+								client.Namespace + "/" + packageName + "/" + actionName + ".http"
+							request.ApiDoc.Action.BackendMethod = gatewayMethod
+							request.ApiDoc.Action.Auth = client.AuthToken
+
+							requests = append(requests, request)
+						} else {
+							//(TODO) exit with WARNING
+						}
+					} else {
+						//(TODO) exit with WARNING
+					}
+				}
+			}
+		}
 	}
-	return acq, nil
+	return requests, nil
+}
+
+func (dm *YAMLParser) getGatewayMethods() []string {
+	methods := []string{}
+	for k := range whisk.ApiVerbs {
+		methods = append(methods, k)
+	}
+	return methods
 }

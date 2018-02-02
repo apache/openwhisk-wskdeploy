@@ -194,6 +194,7 @@ type Package struct {
 	Namespace   string                 `yaml:"namespace"`  //used in both manifest.yaml and deployment.yaml
 	Credential  string                 `yaml:"credential"` //used in both manifest.yaml and deployment.yaml
 	ApiHost     string                 `yaml:"apiHost"`    //used in both manifest.yaml and deployment.yaml
+	ApigwAccessToken string		   `yaml:"apigwAccessToken"` //used in both manifest.yaml and deployment.yaml
 	Actions     map[string]Action      `yaml:"actions"`    //used in both manifest.yaml and deployment.yaml
 	Triggers    map[string]Trigger     `yaml:"triggers"`   //used in both manifest.yaml and deployment.yaml
 	Feeds       map[string]Feed        `yaml:"feeds"`      //used in both manifest.yaml and deployment.yaml
@@ -210,6 +211,7 @@ type Project struct {
 	Namespace  string             `yaml:"namespace"` //used in deployment.yaml
 	Credential string             `yaml:"credential"`
 	ApiHost    string             `yaml:"apiHost"`
+	ApigwAccessToken string		   `yaml:"apigwAccessToken"` //used in both manifest.yaml and deployment.yaml
 	Version    string             `yaml:"version"`
 	Packages   map[string]Package `yaml:"packages"` //used in deployment.yaml
 	Package    Package            `yaml:"package"`  // being deprecated, used in deployment.yaml

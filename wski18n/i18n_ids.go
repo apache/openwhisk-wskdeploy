@@ -48,6 +48,7 @@ const (
 	TRIGGER_FEED		= "trigger feed"
 	TRIGGERS		= "Triggers"
 	WHISK_PROPS		= "wskprops"
+	APIGW_ACCESS_TOKEN	= "API Gateway Access Token"
 )
 
 // i18n Identifiers

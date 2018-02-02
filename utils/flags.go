@@ -27,6 +27,7 @@ type WskDeployFlags struct {
 	ApiHost         string // OpenWhisk API host
 	Auth            string // OpenWhisk API key
 	Namespace       string
+	ApigwAccessToken string
 	ApiVersion      string // OpenWhisk version
 	CfgFile         string
 	CliVersion      string
