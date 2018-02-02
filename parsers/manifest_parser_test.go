@@ -949,9 +949,21 @@ func TestComposeActionsForWebActions(t *testing.T) {
 		`package:
   name: helloworld
   actions:
-    hello:
+    hello1:
       function: ../tests/src/integration/helloworld/actions/hello.js
-      web-export: true`
+      web-export: true
+    hello2:
+      function: ../tests/src/integration/helloworld/actions/hello.js
+      web-export: yes
+    hello3:
+      function: ../tests/src/integration/helloworld/actions/hello.js
+      web-export: raw
+    hello4:
+      function: ../tests/src/integration/helloworld/actions/hello.js
+      web-export: false
+    hello5:
+      function: ../tests/src/integration/helloworld/actions/hello.js
+      web-export: no`
 	dir, _ := os.Getwd()
 	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_web_actions_")
 	if err == nil {
@@ -963,7 +975,7 @@ func TestComposeActionsForWebActions(t *testing.T) {
 			actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
 			if err == nil {
 				for i := 0; i < len(actions); i++ {
-					if actions[i].Action.Name == "hello" {
+					if actions[i].Action.Name == "hello1" {
 						for _, a := range actions[i].Action.Annotations {
 							switch a.Key {
 							case "web-export":
@@ -972,6 +984,50 @@ func TestComposeActionsForWebActions(t *testing.T) {
 								assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
 							case "final":
 								assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
+							}
+						}
+					} else if actions[i].Action.Name == "hello2" {
+						for _, a := range actions[i].Action.Annotations {
+							switch a.Key {
+							case "web-export":
+								assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+							case "raw-http":
+								assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+							case "final":
+								assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
+							}
+						}
+					} else if actions[i].Action.Name == "hello3" {
+						for _, a := range actions[i].Action.Annotations {
+							switch a.Key {
+							case "web-export":
+								assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+							case "raw-http":
+								assert.Equal(t, true, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+							case "final":
+								assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
+							}
+						}
+					} else if actions[i].Action.Name == "hello4" {
+						for _, a := range actions[i].Action.Annotations {
+							switch a.Key {
+							case "web-export":
+								assert.Equal(t, false, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+							case "raw-http":
+								assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+							case "final":
+								assert.Equal(t, false, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
+							}
+						}
+					} else if actions[i].Action.Name == "hello5" {
+						for _, a := range actions[i].Action.Annotations {
+							switch a.Key {
+							case "web-export":
+								assert.Equal(t, false, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+							case "raw-http":
+								assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+							case "final":
+								assert.Equal(t, false, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
 							}
 						}
 					}
