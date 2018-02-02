@@ -31,5 +31,5 @@ packages:
         rules:
             webActionRule:
                 trigger: webActionTrigger
-                action: greeting
+                action: greeting-web-action
 
