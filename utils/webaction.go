@@ -19,8 +19,8 @@ package utils
 
 import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"strings"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"strings"
 )
 
 //for web action support, code from wsk cli with tiny adjustments
@@ -28,12 +28,12 @@ const WEB_EXPORT_ANNOT = "web-export"
 const RAW_HTTP_ANNOT = "raw-http"
 const FINAL_ANNOT = "final"
 
-var webexport map[string]string = map[string]string {
-	"TRUE": "true",
+var webexport map[string]string = map[string]string{
+	"TRUE":  "true",
 	"FALSE": "false",
-	"NO": "no",
-	"YES": "yes",
-	"RAW": "raw",
+	"NO":    "no",
+	"YES":   "yes",
+	"RAW":   "raw",
 }
 
 func WebAction(filePath string, action string, webMode string, annotations whisk.KeyValueArr, fetch bool) (whisk.KeyValueArr, error) {
