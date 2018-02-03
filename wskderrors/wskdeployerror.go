@@ -28,20 +28,22 @@ import (
 
 const (
 	// Error message compositional strings
-	STR_UNKNOWN_VALUE      = "Unknown value"
-	STR_COMMAND            = "Command"
-	STR_ERROR_CODE         = "Error code"
-	STR_FILE               = "File"
-	STR_PARAMETER          = "Parameter"
-	STR_TYPE               = "Type"
-	STR_EXPECTED           = "Expected"
-	STR_ACTUAL             = "Actual"
-	STR_NEWLINE            = "\n"
-	STR_ACTION             = "Action"
-	STR_RUNTIME            = "Runtime"
-	STR_SUPPORTED_RUNTIMES = "Supported Runtimes"
-	STR_HTTP_STATUS        = "HTTP Response Status"
-	STR_HTTP_BODY          = "HTTP Response Body"
+	STR_UNKNOWN_VALUE         = "Unknown value"
+	STR_COMMAND               = "Command"
+	STR_ERROR_CODE            = "Error code"
+	STR_FILE                  = "File"
+	STR_PARAMETER             = "Parameter"
+	STR_TYPE                  = "Type"
+	STR_EXPECTED              = "Expected"
+	STR_ACTUAL                = "Actual"
+	STR_NEWLINE               = "\n"
+	STR_ACTION                = "Action"
+	STR_RUNTIME               = "Runtime"
+	STR_SUPPORTED_RUNTIMES    = "Supported Runtimes"
+	STR_HTTP_STATUS           = "HTTP Response Status"
+	STR_HTTP_BODY             = "HTTP Response Body"
+	STR_SUPPORTED_WEB_EXPORTS = "Supported Web Exports"
+	STR_WEB_EXPORT            = "web-export"
 
 	// Formatting
 	STR_INDENT_1 = "==>"
@@ -57,6 +59,7 @@ const (
 	ERROR_YAML_PARAMETER_TYPE_MISMATCH = "ERROR_YAML_PARAMETER_TYPE_MISMATCH"
 	ERROR_YAML_INVALID_PARAMETER_TYPE  = "ERROR_YAML_INVALID_PARAMETER_TYPE"
 	ERROR_YAML_INVALID_RUNTIME         = "ERROR_YAML_INVALID_RUNTIME"
+	ERROR_YAML_INVALID_WEB_EXPORT      = "ERROR_YAML_INVALID_WEB_EXPORT"
 )
 
 /*
@@ -381,6 +384,29 @@ func NewInvalidRuntimeError(errMessage string, fpath string, action string, runt
 	return err
 }
 
+/*
+ * InvalidWebExport
+ */
+type InvalidWebExportError struct {
+	FileError
+	Webexport           string
+	SupportedWebexports []string
+}
+
+func NewInvalidWebExportError(fpath string, action string, webexport string, supportedWebexports []string) *InvalidWebExportError {
+	var err = &InvalidWebExportError{
+		SupportedWebexports: supportedWebexports,
+	}
+	err.SetErrorFilePath(fpath)
+	err.SetErrorType(ERROR_YAML_INVALID_WEB_EXPORT)
+	err.SetCallerByStackFrameSkip(2)
+	str := fmt.Sprintf("%s [%s]: %s [%s]: %s [%s]",
+		STR_ACTION, action,
+		STR_WEB_EXPORT, webexport,
+		STR_SUPPORTED_WEB_EXPORTS, strings.Join(supportedWebexports, ", "))
+	err.SetMessage(str)
+	return err
+}
 func IsCustomError(err error) bool {
 
 	switch err.(type) {

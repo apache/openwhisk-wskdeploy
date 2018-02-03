@@ -1039,6 +1039,30 @@ func TestComposeActionsForWebActions(t *testing.T) {
 	}
 }
 
+// Test 15-1: validate manifest_parser.ComposeActions() method
+func TestComposeActionsForInvalidWebActions(t *testing.T) {
+	data :=
+		`package:
+  name: helloworld
+  actions:
+    hello:
+      function: ../tests/src/integration/helloworld/actions/hello.js
+      web-export: raw123`
+	dir, _ := os.Getwd()
+	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_invalid_web_actions_")
+	if err == nil {
+		defer os.Remove(tmpfile.Name()) // clean up
+		if _, err := tmpfile.Write([]byte(data)); err == nil {
+			// read and parse manifest.yaml file
+			p := NewYAMLParser()
+			m, _ := p.ParseManifest(tmpfile.Name())
+			_, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
+			assert.NotNil(t, err, "Expected error for invalid web-export.")
+		}
+		tmpfile.Close()
+	}
+}
+
 // Test 16: validate manifest_parser.ResolveParameter() method
 func TestResolveParameterForMultiLineParams(t *testing.T) {
 	paramName := "name"
