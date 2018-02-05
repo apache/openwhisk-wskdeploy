@@ -652,9 +652,12 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		/*
 		 *  Web Export
 		 */
-		// TODO() add boolean value const
-		if action.Webexport == "true" {
-			wskaction.Annotations, errorParser = utils.WebAction("yes", listOfAnnotations, false)
+		// Treat ACTION as a web action, a raw HTTP web action, or as a standard action based on web-export;
+		// when web-export is set to yes | true, treat action as a web action,
+		// when web-export is set to raw, treat action as a raw HTTP web action,
+		// when web-export is set to no | false, treat action as a standard action
+		if len(action.Webexport) != 0 {
+			wskaction.Annotations, errorParser = utils.WebAction(filePath, action.Name, action.Webexport, listOfAnnotations, false)
 			if errorParser != nil {
 				return s1, errorParser
 			}

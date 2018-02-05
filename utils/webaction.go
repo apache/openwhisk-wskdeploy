@@ -18,8 +18,8 @@
 package utils
 
 import (
-	"errors"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"strings"
 )
 
@@ -28,20 +28,28 @@ const WEB_EXPORT_ANNOT = "web-export"
 const RAW_HTTP_ANNOT = "raw-http"
 const FINAL_ANNOT = "final"
 
-func WebAction(webMode string, annotations whisk.KeyValueArr, fetch bool) (whisk.KeyValueArr, error) {
+var webexport map[string]string = map[string]string{
+	"TRUE":  "true",
+	"FALSE": "false",
+	"NO":    "no",
+	"YES":   "yes",
+	"RAW":   "raw",
+}
+
+func WebAction(filePath string, action string, webMode string, annotations whisk.KeyValueArr, fetch bool) (whisk.KeyValueArr, error) {
 	switch strings.ToLower(webMode) {
-	case "yes":
+	case webexport["TRUE"]:
 		fallthrough
-	case "true":
+	case webexport["YES"]:
 		return webActionAnnotations(fetch, annotations, addWebAnnotations)
-	case "no":
+	case webexport["NO"]:
 		fallthrough
-	case "false":
+	case webexport["FALSE"]:
 		return webActionAnnotations(fetch, annotations, deleteWebAnnotations)
-	case "raw":
+	case webexport["RAW"]:
 		return webActionAnnotations(fetch, annotations, addRawAnnotations)
 	default:
-		return nil, errors.New(webMode)
+		return nil, wskderrors.NewInvalidWebExportError(filePath, action, webMode, getValidWebExports())
 	}
 }
 
@@ -91,4 +99,12 @@ func deleteWebAnnotationKeys(annotations whisk.KeyValueArr) whisk.KeyValueArr {
 	annotations = deleteKey(FINAL_ANNOT, annotations)
 
 	return annotations
+}
+
+func getValidWebExports() []string {
+	var validWebExports []string
+	for _, v := range webexport {
+		validWebExports = append(validWebExports, v)
+	}
+	return validWebExports
 }

@@ -1,20 +1,35 @@
 packages:
-  IntegrationTestWebAction:
-      actions:
-        greeting:
-          web-export: true
-          version: 1.0
-          function: src/greeting.js
-          runtime: nodejs:6
-          inputs:
-            name: string
-            place: string
-          outputs:
-            payload: string
-      triggers:
-        webActionTrigger:
-      rules:
-        webActionRule:
-          trigger: webActionTrigger
-          action: greeting
+    IntegrationTestWebAction:
+        actions:
+            greeting-web-action:
+                web-export: true
+                version: 1.0
+                function: src/greeting.js
+                runtime: nodejs:6
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
+            greeting-web-action-1:
+                web-export: yes
+                version: 1.0
+                function: src/greeting.js
+                runtime: nodejs:6
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
+            greeting-with-raw-http:
+                web-export: raw
+                version: 1.0
+                function: src/greeting.js
+                runtime: nodejs:6
+        triggers:
+            webActionTrigger:
+        rules:
+            webActionRule:
+                trigger: webActionTrigger
+                action: greeting-web-action
 
