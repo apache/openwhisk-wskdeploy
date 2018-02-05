@@ -20,6 +20,41 @@ ext.dockerContainerName = "wskdeploy"
 ext.dockerBuildArgs = getDockerBuildArgs()
 apply from: 'gradle/docker.gradle'
 
+project.ext {
+    basePackageName = "openwhisk-wskdeploy"
+    packageExtension = "tar.gz"
+    if (project.hasProperty('projectVersion')) {
+        packageVersion = "${projectVersion}"
+    } else {
+        packageVersion = ""
+    }
+    buildFolder = "build"
+}
+
+task taredSources(type: Tar) {
+    baseName basePackageName
+    description "Creates a combined tar.gz file of wskdeploy's sources"
+    group "Release artifact"
+    classifier "sources"
+
+    from(project.rootDir) {
+        include('cmd/*.go', 'deployers/*.go', 'parsers/*.go', 'utils/*.go',
+                'wskderrors/*.go', 'wskenv/*.go', 'wskprint/*.go', 'wski18n/**')
+        include('*.go')
+        include('gradle/**')
+        include('README.md', 'CONTRIBUTING.md', 'DEPENDENCIES.md')
+        include('gradlew', 'gradlew.bat', 'Dockerfile', 'build.gradle')
+        include('LICENSE', 'NOTICE', 'CHANGELOG')
+    }
+    destinationDir file(buildFolder)
+    extension packageExtension
+    version packageVersion
+    compression = Compression.GZIP
+}
+
+task cleanBuild(type: Delete) {
+    delete file(buildFolder).listFiles()
+}
 
 task removeBinary(type: Delete) {
     delete "${projectDir}/bin/wskdeploy"
