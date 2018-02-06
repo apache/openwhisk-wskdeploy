@@ -1,3 +1,21 @@
+<!--
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements.  See the NOTICE file distributed with this work for additional
+# information regarding copyright ownership.  The ASF licenses this file to you
+# under the Apache License, Version 2.0 (the # "License"); you may not use this
+# file except in compliance with the License.  You may obtain a copy of the License
+# at:
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations under the License.
+#
+-->
+
 # GitHub Slack Bot
 
 [Github Slack Bot](https://github.com/apache/incubator-openwhisk-GitHubSlackBot)
@@ -15,7 +33,7 @@ Github Slack Bot application is dependent on three major components:
 3. [Slack Package](https://github.com/apache/incubator-openwhisk-catalog/tree/master/packages/slack)
 
 
-#### `manifest.yaml` for Cloudant Package 
+#### `manifest.yaml` for Cloudant Package
 
 ```yaml
     dependencies:
@@ -27,7 +45,7 @@ Github Slack Bot application is dependent on three major components:
                 host: ${CLOUDANT_USERNAME}.cloudant.com
 ```
 
-#### `manifest.yaml` for Github Package 
+#### `manifest.yaml` for Github Package
 
 ```yaml
     dependencies:
@@ -39,7 +57,7 @@ Github Slack Bot application is dependent on three major components:
                     accessToken: $GITHUB_ACCESSTOKEN
 ```
 
-#### `manifest.yaml` for Slack Package 
+#### `manifest.yaml` for Slack Package
 
 
 ```yaml
@@ -47,7 +65,7 @@ Github Slack Bot application is dependent on three major components:
         slack-package:
             location: /whisk.system/slack
             inputs:
-                username: $SLACK_USERNAME 
+                username: $SLACK_USERNAME
                 url: $SLACK_URL
                 channel: $SLACK_CHANNEL
 ```
@@ -76,7 +94,7 @@ wskdeploy -p tests/apps/openwhisk-githubslackbot
 ### Step 2: Verify
 
 ```
-$ wsk package get TrackPRsInCloudant 
+$ wsk package get TrackPRsInCloudant
 $ wsk package get GitHubWebHook
 $ wsk package get PostPRToSlack
 $ wsk action get track-pull-requests
@@ -87,4 +105,3 @@ $ wsk trigger get Every12Hours
 $ wsk rule get RuleToTrackPullRequests
 $ wsk rule get RuleToPostGitHubPRsToSlack
 ```
-
