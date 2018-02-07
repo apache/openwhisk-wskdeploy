@@ -927,7 +927,9 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 // create api (API Gateway functionality)
 func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 
-	displayPreprocessingInfo(parsers.YAML_KEY_API, api.ApiDoc.ApiName, true)
+	apiPath := api.ApiDoc.ApiName + " " + api.ApiDoc.GatewayBasePath +
+		api.ApiDoc.GatewayRelPath + " " + api.ApiDoc.GatewayMethod
+	displayPreprocessingInfo(parsers.YAML_KEY_API, apiPath, true)
 
 	var err error
 	var response *http.Response
@@ -947,7 +949,7 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_API, true)
 	}
 
-	displayPostprocessingInfo(parsers.YAML_KEY_API, api.ApiDoc.ApiName, true)
+	displayPostprocessingInfo(parsers.YAML_KEY_API, apiPath, true)
 	return nil
 }
 
@@ -995,6 +997,10 @@ func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentProject) error
 }
 
 func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan *DeploymentProject) error {
+	if err := deployer.UnDeployApis(verifiedPlan); err != nil {
+		return err
+	}
+
 	if err := deployer.UnDeployRules(verifiedPlan); err != nil {
 		return err
 	}
@@ -1151,6 +1157,17 @@ func (deployer *ServiceDeployer) UnDeployRules(deployment *DeploymentProject) er
 	return nil
 }
 
+func (deployer *ServiceDeployer) UnDeployApis(deployment *DeploymentProject) error {
+
+	for _, api := range deployment.Apis {
+		err := deployer.deleteApi(api)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
 
 	displayPreprocessingInfo(parsers.YAML_KEY_PACKAGE, packa.Name, false)
@@ -1256,6 +1273,43 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
 		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, false)
 	}
 	displayPostprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, false)
+	return nil
+}
+
+// delete api (API Gateway functionality)
+func (deployer *ServiceDeployer) deleteApi(api *whisk.ApiCreateRequest) error {
+
+	apiPath := api.ApiDoc.ApiName + " " + api.ApiDoc.GatewayBasePath +
+		api.ApiDoc.GatewayRelPath + " " + api.ApiDoc.GatewayMethod
+	displayPreprocessingInfo(parsers.YAML_KEY_API, apiPath, false)
+
+	apiReqOptions := new(whisk.ApiGetRequestOptions)
+	apiReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+	apiReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
+	apiReqOptions.ApiName = api.ApiDoc.ApiName
+	apiReqOptions.ApiBasePath = api.ApiDoc.GatewayBasePath
+
+	a := new(whisk.ApiGetRequest)
+	a.Api = *api.ApiDoc
+
+	if _, _, ok := deployer.Client.Apis.Get(a, apiReqOptions); ok == nil {
+		var err error
+		var response *http.Response
+
+		a := new(whisk.ApiDeleteRequest)
+		a.Api = *api.ApiDoc
+
+		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+			response, err = deployer.Client.Apis.Delete(a, whisk.ApiDeleteRequestOptions(apiReqOptions))
+			return err
+		})
+
+		if err != nil {
+			return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_API, false)
+		}
+	}
+
+	displayPostprocessingInfo(parsers.YAML_KEY_API, apiPath, false)
 	return nil
 }
 

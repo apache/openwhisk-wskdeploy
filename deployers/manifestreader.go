@@ -25,6 +25,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/davecgh/go-spew/spew"
 )
 
 var clientConfig *whisk.Config
@@ -378,13 +379,14 @@ func (reader *ManifestReader) SetApis(ar []*whisk.ApiCreateRequest) error {
 	defer dep.mt.Unlock()
 
 	for _, api := range ar {
-		existApi, exist := dep.Deployment.Apis[api.ApiDoc.ApiName]
+		existApi, exist := dep.Deployment.Apis[api.ApiDoc.Action.Name]
 		if exist {
 			existApi.ApiDoc.ApiName = api.ApiDoc.ApiName
 		} else {
-			dep.Deployment.Apis[api.ApiDoc.ApiName] = api
+			dep.Deployment.Apis[api.ApiDoc.Action.Name] = api
 		}
 
 	}
+	spew.Dump(dep.Deployment.Apis)
 	return nil
 }
