@@ -32,6 +32,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // Possible sources for config info (e.g., API Host, Auth Key, Namespace)
@@ -83,18 +84,30 @@ var CreateNewClient = func(config_input *whisk.Config) (*whisk.Client, error) {
 	return whisk.NewClient(netClient, config_input)
 }
 
-func readFromCLI() {
-	// read credentials, namespace, API host, key file, cert file, and APIGW access token from command line
-	apihost, auth, ns, keyfile, certfile, accessToken := GetCommandLineFlags()
-	GetPropertyValue(credential, auth, wski18n.COMMAND_LINE)
-	GetPropertyValue(namespace, ns, wski18n.COMMAND_LINE)
-	GetPropertyValue(apiHost, apihost, wski18n.COMMAND_LINE)
-	GetPropertyValue(key, keyfile, wski18n.COMMAND_LINE)
-	GetPropertyValue(cert, certfile, wski18n.COMMAND_LINE)
-	GetPropertyValue(apigwAccessToken, accessToken, wski18n.COMMAND_LINE)
+
+func resetWhiskConfig() {
+	credential = PropertyValue{}
+	namespace = PropertyValue{}
+	apiHost = PropertyValue{}
+	key = PropertyValue{}
+	cert = PropertyValue{}
+	apigwAccessToken = PropertyValue{}
 }
 
-func set(cred string, ns string, host string, token string, source string) {
+func readFromCLI() {
+	spew.Dump(apiHost)
+	// read credentials, namespace, API host, key file, cert file, and APIGW access token from command line
+	apihost, auth, ns, keyfile, certfile, accessToken := GetCommandLineFlags()
+	credential = GetPropertyValue(credential, auth, wski18n.COMMAND_LINE)
+	namespace = GetPropertyValue(namespace, ns, wski18n.COMMAND_LINE)
+	apiHost = GetPropertyValue(apiHost, apihost, wski18n.COMMAND_LINE)
+	key = GetPropertyValue(key, keyfile, wski18n.COMMAND_LINE)
+	cert = GetPropertyValue(cert, certfile, wski18n.COMMAND_LINE)
+	apigwAccessToken = GetPropertyValue(apigwAccessToken, accessToken, wski18n.COMMAND_LINE)
+	spew.Dump(apiHost)
+}
+
+func setWhiskConfig(cred string, ns string, host string, token string, source string) {
 	credential = GetPropertyValue(credential, cred, source)
 	namespace = GetPropertyValue(namespace, ns, source)
 	apiHost = GetPropertyValue(apiHost, host, source)
@@ -107,7 +120,7 @@ func readFromDeploymentFile(deploymentPath string) {
 			mm := parsers.NewYAMLParser()
 			deployment, _ := mm.ParseDeployment(deploymentPath)
 			p := deployment.GetProject()
-			set(p.Credential, p.Namespace, p.ApiHost, p.ApigwAccessToken, path.Base(deploymentPath))
+			setWhiskConfig(p.Credential, p.Namespace, p.ApiHost, p.ApigwAccessToken, path.Base(deploymentPath))
 		}
 	}
 }
@@ -127,7 +140,7 @@ func readFromManifestFile(manifestPath string) {
 					}
 				}
 			}
-			set(p.Credential, p.Namespace, p.ApiHost, p.ApigwAccessToken, path.Base(manifestPath))
+			setWhiskConfig(p.Credential, p.Namespace, p.ApiHost, p.ApigwAccessToken, path.Base(manifestPath))
 		}
 	}
 }
@@ -220,6 +233,9 @@ func readInteractivly() {
 // we are following the same precedence order for APIGW_ACCESS_TOKEN
 // but as a separate thread as APIGW_ACCESS_TOKEN only needed for APIs
 func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string, isInteractive bool) (*whisk.Config, error) {
+	// reset credential, apiHost, namespace, etc to avoid any conflicts as they initialized globally
+	resetWhiskConfig()
+
 	// read from command line
 	readFromCLI()
 
