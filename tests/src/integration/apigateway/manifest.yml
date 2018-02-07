@@ -11,18 +11,18 @@ packages:
             getBooks:
                 web-export: true
                 function: src/get-books.js
-#            postBooks:
-#                web-export: true
-#                function: src/post-books.js
-#            putBooks:
-#                web-export: true
-#                function: src/put-books.js
-#            deleteBooks:
-#                web-export: true
-#                function: src/delete-books.js
-#            listMembers:
-#                web-export: true
-#                function: src/list-members.js
+            postBooks:
+                web-export: true
+                function: src/post-books.js
+            putBooks:
+                web-export: true
+                function: src/put-books.js
+            deleteBooks:
+                web-export: true
+                function: src/delete-books.js
+            listMembers:
+                web-export: true
+                function: src/list-members.js
         # new top-level key for defining groups of named APIs
         apis:
             hello-world:
@@ -33,8 +33,8 @@ packages:
                 club:
                     books:
                         getBooks: GET
-#                        postBooks: POST
-#                        putBooks: PUT
-#                        deleteBooks: DELETE
-#                    /members:
-#                        listMembers: GET
+                        postBooks: POST
+                        putBooks: PUT
+                        deleteBooks: DELETE
+                    members:
+                        listMembers: GET
