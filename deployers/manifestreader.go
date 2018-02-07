@@ -25,7 +25,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
-	"github.com/davecgh/go-spew/spew"
 )
 
 var clientConfig *whisk.Config
@@ -387,6 +386,5 @@ func (reader *ManifestReader) SetApis(ar []*whisk.ApiCreateRequest) error {
 		}
 
 	}
-	spew.Dump(dep.Deployment.Apis)
 	return nil
 }
