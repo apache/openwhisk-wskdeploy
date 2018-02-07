@@ -939,7 +939,6 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 	apiCreateReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
 	// TODO() Add Response type apiCreateReqOptions.ResponseType
 
-	// TODO() Is there an api delete function? could not find it
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 		_, response, err = deployer.Client.Apis.Insert(api, apiCreateReqOptions, true)
 		return err
