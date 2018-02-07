@@ -32,7 +32,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
 )
 
 // Possible sources for config info (e.g., API Host, Auth Key, Namespace)
@@ -95,7 +94,6 @@ func resetWhiskConfig() {
 }
 
 func readFromCLI() {
-	spew.Dump(apiHost)
 	// read credentials, namespace, API host, key file, cert file, and APIGW access token from command line
 	apihost, auth, ns, keyfile, certfile, accessToken := GetCommandLineFlags()
 	credential = GetPropertyValue(credential, auth, wski18n.COMMAND_LINE)
@@ -104,7 +102,6 @@ func readFromCLI() {
 	key = GetPropertyValue(key, keyfile, wski18n.COMMAND_LINE)
 	cert = GetPropertyValue(cert, certfile, wski18n.COMMAND_LINE)
 	apigwAccessToken = GetPropertyValue(apigwAccessToken, accessToken, wski18n.COMMAND_LINE)
-	spew.Dump(apiHost)
 }
 
 func setWhiskConfig(cred string, ns string, host string, token string, source string) {
