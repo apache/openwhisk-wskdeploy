@@ -83,7 +83,6 @@ var CreateNewClient = func(config_input *whisk.Config) (*whisk.Client, error) {
 	return whisk.NewClient(netClient, config_input)
 }
 
-
 func resetWhiskConfig() {
 	credential = PropertyValue{}
 	namespace = PropertyValue{}
