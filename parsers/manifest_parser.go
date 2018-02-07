@@ -935,13 +935,19 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 					// verify that the action is defined under actions sections
 					if _, ok := pkg.Actions[actionName]; !ok {
 						return nil, wskderrors.NewYAMLFileFormatError(manifestPath,
-							wski18n.T(wski18n.ID_ERR_API_MISSING_ACTION_X_action_X_api_X))
+							wski18n.T(wski18n.ID_ERR_API_MISSING_ACTION_X_action_X_api_X,
+								map[string]interface{}{
+									wski18n.KEY_ACTION: actionName,
+									wski18n.KEY_API: apiName}))
 					} else {
 						// verify that the action is defined as web action
 						// web-export set to any of [true, yes, raw]
 						if !utils.IsWebAction(pkg.Actions[actionName].Webexport) {
 							return nil, wskderrors.NewYAMLFileFormatError(manifestPath,
-								wski18n.T(wski18n.ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X))
+								wski18n.T(wski18n.ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X,
+									map[string]interface{}{
+										wski18n.KEY_ACTION: actionName,
+										wski18n.KEY_API: apiName}))
 						} else {
 							request := new(whisk.ApiCreateRequest)
 							request.ApiDoc = new(whisk.Api)

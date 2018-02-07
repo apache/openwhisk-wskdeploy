@@ -209,6 +209,7 @@ const (
 	KEY_VALUE           = "value"
 	KEY_VALUE_MIN       = "min" // TODO() attempt to use this for Limit value range errors
 	KEY_VALUE_MAX       = "max" // TODO() attempt to use this for Limit value range errors
+	KEY_API 	    = "api"
 )
 
 // Used to unit test that translations exist with these IDs

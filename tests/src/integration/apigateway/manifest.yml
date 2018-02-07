@@ -28,7 +28,7 @@ packages:
             hello-world:
                 hello:
                     world:
-                        greeting: GET
+                        greeting1: GET
             book-club:
                 club:
                     books:
