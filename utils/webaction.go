@@ -28,7 +28,7 @@ const WEB_EXPORT_ANNOT = "web-export"
 const RAW_HTTP_ANNOT = "raw-http"
 const FINAL_ANNOT = "final"
 
-var webexport map[string]string = map[string]string{
+var webExport map[string]string = map[string]string{
 	"TRUE":  "true",
 	"FALSE": "false",
 	"NO":    "no",
@@ -38,15 +38,15 @@ var webexport map[string]string = map[string]string{
 
 func WebAction(filePath string, action string, webMode string, annotations whisk.KeyValueArr, fetch bool) (whisk.KeyValueArr, error) {
 	switch strings.ToLower(webMode) {
-	case webexport["TRUE"]:
+	case webExport["TRUE"]:
 		fallthrough
-	case webexport["YES"]:
+	case webExport["YES"]:
 		return webActionAnnotations(fetch, annotations, addWebAnnotations)
-	case webexport["NO"]:
+	case webExport["NO"]:
 		fallthrough
-	case webexport["FALSE"]:
+	case webExport["FALSE"]:
 		return webActionAnnotations(fetch, annotations, deleteWebAnnotations)
-	case webexport["RAW"]:
+	case webExport["RAW"]:
 		return webActionAnnotations(fetch, annotations, addRawAnnotations)
 	default:
 		return nil, wskderrors.NewInvalidWebExportError(filePath, action, webMode, getValidWebExports())
@@ -103,8 +103,18 @@ func deleteWebAnnotationKeys(annotations whisk.KeyValueArr) whisk.KeyValueArr {
 
 func getValidWebExports() []string {
 	var validWebExports []string
-	for _, v := range webexport {
+	for _, v := range webExport {
 		validWebExports = append(validWebExports, v)
 	}
 	return validWebExports
+}
+
+func IsWebAction(webexport string) bool {
+	webexport = strings.ToLower(webexport)
+	if len(webexport) != 0 {
+		if webexport == webExport["TRUE"] || webexport == webExport["YES"] || webexport == webExport["RAW"] {
+			return true
+		}
+	}
+	return false
 }

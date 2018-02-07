@@ -23,24 +23,25 @@ import (
 )
 
 type WskDeployFlags struct {
-	WithinOpenWhisk bool   // is this running within an OpenWhisk action?
-	ApiHost         string // OpenWhisk API host
-	Auth            string // OpenWhisk API key
-	Namespace       string
-	ApiVersion      string // OpenWhisk version
-	CfgFile         string
-	CliVersion      string
-	CliBuild        string
-	Verbose         bool
-	ProjectPath     string
-	DeploymentPath  string
-	ManifestPath    string
-	UseDefaults     bool
-	UseInteractive  bool
-	Strict          bool // strict flag to support user defined runtime version.
-	Key             string
-	Cert            string
-	Managed         bool // OpenWhisk Managed Deployments
+	WithinOpenWhisk  bool   // is this running within an OpenWhisk action?
+	ApiHost          string // OpenWhisk API host
+	Auth             string // OpenWhisk API key
+	Namespace        string
+	ApiVersion       string // OpenWhisk version
+	CfgFile          string
+	CliVersion       string
+	CliBuild         string
+	Verbose          bool
+	ProjectPath      string
+	DeploymentPath   string
+	ManifestPath     string
+	UseDefaults      bool
+	UseInteractive   bool
+	Strict           bool // strict flag to support user defined runtime version.
+	Key              string
+	Cert             string
+	Managed          bool // OpenWhisk Managed Deployments
+	ApigwAccessToken string
 }
 
 func (flags *WskDeployFlags) Format() string {

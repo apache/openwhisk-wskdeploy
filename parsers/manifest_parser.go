@@ -35,6 +35,15 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
+const (
+	PATH_SEPERATOR = "/"
+	API            = "API"
+	HTTPS          = "https"
+	HTTP           = "http"
+	API_VERSION    = "v1"
+	WEB            = "web"
+)
+
 // Read existing manifest file or create new if none exists
 func ReadOrCreateManifest() (*YAML, error) {
 	maniyaml := YAML{}
@@ -858,12 +867,12 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string) ([]*whisk.Ru
 	return r1, nil
 }
 
-func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *YAML) ([]*whisk.ApiCreateRequest, error) {
+func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, manifest *YAML) ([]*whisk.ApiCreateRequest, error) {
 	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 	manifestPackages := make(map[string]Package)
 
 	if manifest.Package.Packagename != "" {
-		return dm.ComposeApiRecords(manifest.Package)
+		return dm.ComposeApiRecords(client, manifest.Package.Packagename, manifest.Package, manifest.Filepath)
 	} else {
 		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
@@ -872,8 +881,8 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *YAML) ([]*whisk
 		}
 	}
 
-	for _, p := range manifestPackages {
-		r, err := dm.ComposeApiRecords(p)
+	for packageName, p := range manifestPackages {
+		r, err := dm.ComposeApiRecords(client, packageName, p, manifest.Filepath)
 		if err == nil {
 			requests = append(requests, r...)
 		} else {
@@ -883,14 +892,96 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(manifest *YAML) ([]*whisk
 	return requests, nil
 }
 
-func (dm *YAMLParser) ComposeApiRecords(pkg Package) ([]*whisk.ApiCreateRequest, error) {
-	var acq []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
-	apis := pkg.GetApis()
+/*
+ * read API section from manifest file:
+ * apis: # List of APIs
+ *     hello-world: #API name
+ *	/hello: #gateway base path
+ *	    /world:   #gateway rel path
+ *		greeting: get #action name: gateway method
+ *
+ * compose APIDoc structure from the manifest:
+ * {
+ *	"apidoc":{
+ *      	"namespace":<namespace>,
+ *      	"gatewayBasePath":"/hello",
+ *      	"gatewayPath":"/world",
+ *      	"gatewayMethod":"GET",
+ *      	"action":{
+ *         		"name":"hello",
+ *			"namespace":"guest",
+ *			"backendMethod":"GET",
+ *			"backendUrl":<url>,
+ *			"authkey":<auth>
+ *		}
+ * 	}
+ * }
+ */
+func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string, pkg Package, manifestPath string) ([]*whisk.ApiCreateRequest, error) {
+	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 
-	for _, api := range apis {
-		acr := new(whisk.ApiCreateRequest)
-		acr.ApiDoc = api
-		acq = append(acq, acr)
+	for apiName, apiDoc := range pkg.Apis {
+		for gatewayBasePath, gatewayBasePathMap := range apiDoc {
+			// append "/" to the gateway base path if its missing
+			if !strings.HasPrefix(gatewayBasePath, PATH_SEPERATOR) {
+				gatewayBasePath = PATH_SEPERATOR + gatewayBasePath
+			}
+			for gatewayRelPath, gatewayRelPathMap := range gatewayBasePathMap {
+				// append "/" to the gateway relative path if its missing
+				if !strings.HasPrefix(gatewayRelPath, PATH_SEPERATOR) {
+					gatewayRelPath = PATH_SEPERATOR + gatewayRelPath
+				}
+				for actionName, gatewayMethod := range gatewayRelPathMap {
+					// verify that the action is defined under actions sections
+					if _, ok := pkg.Actions[actionName]; !ok {
+						return nil, wskderrors.NewYAMLFileFormatError(manifestPath,
+							wski18n.T(wski18n.ID_ERR_API_MISSING_ACTION_X_action_X_api_X))
+					} else {
+						// verify that the action is defined as web action
+						// web-export set to any of [true, yes, raw]
+						if !utils.IsWebAction(pkg.Actions[actionName].Webexport) {
+							return nil, wskderrors.NewYAMLFileFormatError(manifestPath,
+								wski18n.T(wski18n.ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X))
+						} else {
+							request := new(whisk.ApiCreateRequest)
+							request.ApiDoc = new(whisk.Api)
+							request.ApiDoc.GatewayBasePath = gatewayBasePath
+							// is API verb is valid, it must be one of (GET, PUT, POST, DELETE)
+							request.ApiDoc.GatewayRelPath = gatewayRelPath
+							if _, ok := whisk.ApiVerbs[strings.ToUpper(gatewayMethod)]; !ok {
+								return nil, wskderrors.NewInvalidAPIGatewayMethodError(manifestPath,
+									gatewayBasePath + gatewayRelPath,
+									gatewayMethod,
+									dm.getGatewayMethods())
+							}
+							request.ApiDoc.GatewayMethod = strings.ToUpper(gatewayMethod)
+							request.ApiDoc.Namespace = client.Namespace
+							request.ApiDoc.ApiName = apiName
+							request.ApiDoc.Id = strings.Join([]string{API, request.ApiDoc.Namespace, request.ApiDoc.GatewayRelPath}, ":")
+							// set action of an API Doc
+							request.ApiDoc.Action = new(whisk.ApiAction)
+							request.ApiDoc.Action.Name = packageName + PATH_SEPERATOR + actionName
+							request.ApiDoc.Action.Namespace = client.Namespace
+							url := []string{HTTPS + ":" + PATH_SEPERATOR, client.Host, strings.ToLower(API),
+								API_VERSION, WEB, client.Namespace, packageName, actionName + "." + HTTP}
+							request.ApiDoc.Action.BackendUrl = strings.Join(url, PATH_SEPERATOR)
+							request.ApiDoc.Action.BackendMethod = gatewayMethod
+							request.ApiDoc.Action.Auth = client.AuthToken
+							// add a newly created ApiCreateRequest object to a list of requests
+							requests = append(requests, request)
+						}
+					}
+				}
+			}
+		}
 	}
-	return acq, nil
+	return requests, nil
+}
+
+func (dm *YAMLParser) getGatewayMethods() []string {
+	methods := []string{}
+	for k := range whisk.ApiVerbs {
+		methods = append(methods, k)
+	}
+	return methods
 }
