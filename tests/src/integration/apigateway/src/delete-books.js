@@ -12,7 +12,7 @@ function main(params) {
             });
             return;
         } else {
-            var message = 'A book ' + params.name + ' was deleted from the book store.;
+            var message = 'A book ' + params.name + ' was deleted from the book store.';
             console.log(message);
             resolve({
                 result: message
