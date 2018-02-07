@@ -938,7 +938,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							wski18n.T(wski18n.ID_ERR_API_MISSING_ACTION_X_action_X_api_X,
 								map[string]interface{}{
 									wski18n.KEY_ACTION: actionName,
-									wski18n.KEY_API: apiName}))
+									wski18n.KEY_API:    apiName}))
 					} else {
 						// verify that the action is defined as web action
 						// web-export set to any of [true, yes, raw]
@@ -947,7 +947,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 								wski18n.T(wski18n.ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X,
 									map[string]interface{}{
 										wski18n.KEY_ACTION: actionName,
-										wski18n.KEY_API: apiName}))
+										wski18n.KEY_API:    apiName}))
 						} else {
 							request := new(whisk.ApiCreateRequest)
 							request.ApiDoc = new(whisk.Api)
@@ -956,7 +956,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							request.ApiDoc.GatewayRelPath = gatewayRelPath
 							if _, ok := whisk.ApiVerbs[strings.ToUpper(gatewayMethod)]; !ok {
 								return nil, wskderrors.NewInvalidAPIGatewayMethodError(manifestPath,
-									gatewayBasePath + gatewayRelPath,
+									gatewayBasePath+gatewayRelPath,
 									gatewayMethod,
 									dm.getGatewayMethods())
 							}
