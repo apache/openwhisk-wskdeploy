@@ -1276,13 +1276,7 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
 	return nil
 }
 
-// delete api (API Gateway functionality)
-func (deployer *ServiceDeployer) deleteApi(api *whisk.ApiCreateRequest) error {
-
-	apiPath := api.ApiDoc.ApiName + " " + api.ApiDoc.GatewayBasePath +
-		api.ApiDoc.GatewayRelPath + " " + api.ApiDoc.GatewayMethod
-	displayPreprocessingInfo(parsers.YAML_KEY_API, apiPath, false)
-
+func (deployer *ServiceDeployer) getApi(api *whisk.ApiCreateRequest) error {
 	apiReqOptions := new(whisk.ApiGetRequestOptions)
 	apiReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
 	apiReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
@@ -1292,15 +1286,32 @@ func (deployer *ServiceDeployer) deleteApi(api *whisk.ApiCreateRequest) error {
 	a := new(whisk.ApiGetRequest)
 	a.Api = *api.ApiDoc
 
-	if _, _, ok := deployer.Client.Apis.Get(a, apiReqOptions); ok == nil {
+	_, _, err := deployer.Client.Apis.Get(a, apiReqOptions)
+	return err
+}
+
+// delete api (API Gateway functionality)
+func (deployer *ServiceDeployer) deleteApi(api *whisk.ApiCreateRequest) error {
+
+	apiPath := api.ApiDoc.ApiName + " " + api.ApiDoc.GatewayBasePath +
+		api.ApiDoc.GatewayRelPath + " " + api.ApiDoc.GatewayMethod
+	displayPreprocessingInfo(parsers.YAML_KEY_API, apiPath, false)
+
+	if ok := deployer.getApi(api); ok == nil {
 		var err error
 		var response *http.Response
+
+		apiDeleteReqOptions := new(whisk.ApiDeleteRequestOptions)
+		apiDeleteReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+		apiDeleteReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
+		apiDeleteReqOptions.ApiName = api.ApiDoc.ApiName
+		apiDeleteReqOptions.ApiBasePath = api.ApiDoc.GatewayBasePath
 
 		a := new(whisk.ApiDeleteRequest)
 		a.Api = *api.ApiDoc
 
 		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-			response, err = deployer.Client.Apis.Delete(a, whisk.ApiDeleteRequestOptions(apiReqOptions))
+			response, err = deployer.Client.Apis.Delete(a, apiDeleteReqOptions)
 			return err
 		})
 
