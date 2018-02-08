@@ -38,4 +38,4 @@ $ANSIBLE_CMD openwhisk.yml -e '{"openwhisk_cli":{"installation_mode":"remote","r
 export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/openwhisk"
 
 cd $TRAVIS_BUILD_DIR
-make integration_test
+#make integration_test
