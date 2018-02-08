@@ -24,6 +24,15 @@ script:
 - "./tools/travis/script.sh"
 after_success:
 - DEPLOY_BUILD_READY=true
+# This tag is automatically generated for the latest merged commit in master branch.
+- if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "push" ] && [ "$TRAVIS_OS_NAME" == "linux" ] ; then
+    git config --global user.email "builds@travis-ci.com";
+    git config --global user.name "Travis CI";
+    export GIT_TAG="latest";
+    git tag -d $GIT_TAG;
+    git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
+    git push -f -q https://$API_KEY@github.com/apache/incubator-openwhisk-cli $GIT_TAG;
+  fi
 after_script:
 - make clean
 before_deploy:
@@ -65,3 +74,5 @@ env:
     # DockerHub
   - secure: R9bjVMNFBHgT3MhdN9e9aVP9jcOa99vN+XtYNBSiVP2gAfC+dFHA3U8wGj2Scho3rJI/Wd8KKNn2Lo5Wlc2tDFXVcKeLjF7nIHf74D5hLGdn6SNuvVPKCYSvnpA3QswfnHz7Y9wbYaQkjkHHkXktl4TwbsuKvMVso3Qgrc1KkQ6X8zzOtEdE9F0Md3Y508yfqxYat0qOOogN32brItJkp/9WMsLTtSZs/7iSFkRxKNCWctJx5mQ26tU/1b9NTCIipoyA+jmbrZNpot0M8b5nJ+8777FaBHhDdKayvQDcsAUpdSFzVOTby32+8Yk4E4PA2F2Q2BxEXe38GK7C3kRpYqHEkQ4lbF0LVjXwiSmEDe5tpdCn3U46/7f45v8JP1eRVearhHISOgwxM7v80S7k0fa0+xWFX0BCce05Rc6sxQzmUP/oRsqtYoBKovS4DK0cYA0dIMkJeJIoNKeyDaHn0tmSnaDxPxLQJz296Ffklyay6j8XIhWMyV0edpgu0rxq2ou+7f7zUL3Fld0ui3Bseb8MkXOIq10hR0hErLnhgKVT1jtYcz5qJ6nwS051rKJXrgnmSiAqQHtrSMRILC90xWxW9UoJt0roPhdW2+tbaaOM+JXZ7U0krw9rI0oAY+jiSX7LY7ESxMaL0Alhe7lFqk3DeRp5QWVMCmMoeG2vWOQ=
   - secure: AA8dirvhPlK/pdm6hzanSkYnLi/b6loEAPrSMc/mNa7ZkNrTPyPBq3B/GkNW1AEmoTOr7JGGfLk33FuffqvqIXGam3bUtVWqZdNpa1pvR9MM4laaWSfBk5fakM6rOdq5UtoYHzr00NlIjz0g/CmTn4DRbGNa43F1CkXgH1XypoBUhZZGYkcMdWMX8qYm3e32kutKUFR2GUd0xoTR91EBgIxRh8sq6wkRlfNFOwrghldYMrLP4VlUTqC/usG5G0lU+U21PlW/k3QEOxe00K46W3qAQIWTFBl3q9fX912HJZwvTC29t5hDS9zsG4Vhj93O9mwHzTfjAE/+vkXRkvnx0FPVOHqSepAAffd4rAD3N4aLGVHpGqWobg5daKegbJmCeoSaknaodNrPYq6YjTUEz4n/ckjaB/RHECkutLZh1wtJgR1joQVfAdvn3WpIYRD3CkNN6v5y5sWnX4fkVL9tCcMcukTzk6U/mEtJr6f+RC8suSw0X1c6tr+rCyXJY6a4o5ZoIXxJ52LtQaKrEbFH6fkRC4aCVuLYUAIyYoeqauXqsGpNfhmkS36DLvx5ojfpXnBdTWwwJMflm24Ec9FdOnQCkRhKiZLIxu1jJS6gy0Pe4/Vt15WiRnt1t2I9F6wIk895G0Qz2yiIQ1MmpjCnMnY8BoT9Nqs78YOfnNtgax8=
+    # API_KEY used to generate the "latest" tag automatically
+  - secure: eC8DivnzwXxicUmfKXZIMcoPZtSK50WBpMOjn1XvkdKxBlSK1qaaDcyUz8qv71MiTB0dzrk03v4ntEhLkNIzE2RCfmcXMy/Swc6gItzT4wm4iyehG/qcya9YQXM39GwySfo/zm0P+zaS0xn2M8gBxU/E0Nbex29834jm5Ho++EuynKaqnDkwDZabo7W171wNrmEjPwWcLI4Dd3bxgqTXV3eRpBPq41XXGyVzTggY9coy8DlVViPHlqpNjYGxW2+WTtxql7hLGWvr5YXK1ONxor4F0FzI/uTIWPOVWCNPu9tkk2QmT7a5DT81WGl5Liz+//4D1hAnz7dVI08U+YZBAHYxXhWYOb2CwCedB31ReMLqHYe789lMpVUkAwiyvmNUmcOlgEba4xW+aPiJGPysSTJuT3WoAqUZHXkVmV4r/zmczm6d4XJQ+o7copCEqHTzONDuOUFEinQFuU7AII/XccUELGQ31Cpny8lK1j/4IbNcSdNJbNTGu1D97lk7dL8QhX95ln8EDh5UCBfv9us+C81nEk+93jncEjAqwQ+Ns1CtoUobqqvj3DlStFwacFBQ+BsP1pyhF1byReONmIsZTe6OXVvZw9aP8cfZCQZyD+lwVO+ldpi74J9SjY/quxWK0g/grMkFElyovnqT0DlooJh4RiIM3p6/AQsQI73nXgw=
