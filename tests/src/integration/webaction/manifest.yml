@@ -26,6 +26,20 @@ packages:
                 version: 1.0
                 function: src/greeting.js
                 runtime: nodejs:6
+            greeting-web-action-with-auth:
+                web-export: true
+                version: 1.0
+                function: src/greeting.js
+                runtime: nodejs:6
+                annotations:
+                    require-whisk-auth: true
+            greeting-web-action-final:
+                web-export: true
+                version: 1.0
+                function: src/greeting.js
+                runtime: nodejs:6
+                annotations:
+                    final: true
         triggers:
             webActionTrigger:
         rules:
