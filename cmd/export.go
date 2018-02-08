@@ -187,14 +187,18 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 			// decode the JSON blob and retrieve __OW_PROJECT_NAME
 			ta := a.(map[string]interface{})
 			if ta[utils.OW_PROJECT_NAME] == projectName {
-				for _, pkg := range maniyaml.Packages {
-					if pkg.Namespace == trg.Namespace {
-						if pkg.Triggers == nil {
+
+				//				for i := 0; i < len(maniyaml.Packages); i++ {
+				for pkgName, _ := range maniyaml.Packages {
+					if maniyaml.Packages[pkgName].Namespace == trg.Namespace {
+						if maniyaml.Packages[pkgName].Triggers == nil {
+							pkg := maniyaml.Packages[pkgName]
 							pkg.Triggers = make(map[string]parsers.Trigger)
+							maniyaml.Packages[pkgName] = pkg
 						}
 
 						// export trigger to manifest
-						pkg.Triggers[trg.Name] = *maniyaml.ComposeParsersTrigger(trg)
+						maniyaml.Packages[pkgName].Triggers[trg.Name] = *maniyaml.ComposeParsersTrigger(trg)
 					}
 				}
 			}
@@ -217,20 +221,22 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 		ruleTrigger := rule.Trigger.(map[string]interface{})["name"].(string)
 
 		// can be simplified once rules moved to top level next to triggers
-		for _, pkg := range maniyaml.Packages {
-			if pkg.Namespace == rule.Namespace {
+		for pkgName, _ := range maniyaml.Packages {
+			if maniyaml.Packages[pkgName].Namespace == rule.Namespace {
 				// iterate over all managed actions  in manifest
-				for _, action := range pkg.Actions {
+				for _, action := range maniyaml.Packages[pkgName].Actions {
 					if action.Name == ruleAction {
-						for _, trigger := range pkg.Triggers {
+						for _, trigger := range maniyaml.Packages[pkgName].Triggers {
 							// check that managed action and trigger equals to rule action and trigger
 							if ruleTrigger == trigger.Name && trigger.Namespace == rule.Namespace {
-								if pkg.Rules == nil {
+								if maniyaml.Packages[pkgName].Rules == nil {
+									pkg := maniyaml.Packages[pkgName]
 									pkg.Rules = make(map[string]parsers.Rule)
+									maniyaml.Packages[pkgName] = pkg
 								}
 
 								// export rule to manifest
-								pkg.Rules[rule.Name] = *maniyaml.ComposeParsersRule(rl)
+								maniyaml.Packages[pkgName].Rules[rule.Name] = *maniyaml.ComposeParsersRule(rl)
 							}
 						}
 					}
