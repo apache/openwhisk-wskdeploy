@@ -40,6 +40,13 @@ packages:
                 runtime: nodejs:6
                 annotations:
                     final: true
+            greeting-web-action-with-custom-options:
+                web-export: true
+                version: 1.0
+                function: src/greeting.js
+                runtime: nodejs:6
+                annotations:
+                    web-custom-options: true
         triggers:
             webActionTrigger:
         rules:
