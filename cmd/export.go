@@ -82,9 +82,17 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML)
 		ext := utils.FileRuntimeExtensionsMap[wskAction.Exec.Kind]
 
 		manifestDir := filepath.Dir(utils.Flags.ManifestPath)
-		functionFile := filepath.Join(manifestDir, wskAction.Name) + "." + ext
+
+		// store function file under action package name subdirectory in the specified manifest folder
+		functionDir := filepath.Join(manifestDir, packageName)
+		os.MkdirAll(functionDir, os.ModePerm)
+
+		// store function in manifest under path relative to manifest root
+		functionFile := filepath.Join(packageName, wskAction.Name) + "." + ext
 		parsedAction.Function = functionFile
 
+		// create function file at the full path
+		functionFile = filepath.Join(manifestDir, functionFile)
 		f, err := os.Create(functionFile)
 		if err != nil {
 			return wskderrors.NewFileReadError(functionFile, err.Error())
