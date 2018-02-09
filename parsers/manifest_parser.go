@@ -871,12 +871,6 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, man
 	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 	manifestPackages := make(map[string]Package)
 
-	// verify APIGW_ACCESS_TOKEN is set before composing APIs
-	// until this point, we dont know whether APIs are specified in manifest or not
-	if len(client.ApigwAccessToken) == 0 {
-		return nil, wskderrors.NewWhiskClientInvalidConfigError(wski18n.ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN)
-	}
-
 	if manifest.Package.Packagename != "" {
 		return dm.ComposeApiRecords(client, manifest.Package.Packagename, manifest.Package, manifest.Filepath)
 	} else {
@@ -925,6 +919,14 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, man
  */
 func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string, pkg Package, manifestPath string) ([]*whisk.ApiCreateRequest, error) {
 	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
+
+	if pkg.Apis != nil {
+		// verify APIGW_ACCESS_TOKEN is set before composing APIs
+		// until this point, we dont know whether APIs are specified in manifest or not
+		if len(client.ApigwAccessToken) == 0 {
+			return nil, wskderrors.NewWhiskClientInvalidConfigError(wski18n.ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN)
+		}
+	}
 
 	for apiName, apiDoc := range pkg.Apis {
 		for gatewayBasePath, gatewayBasePathMap := range apiDoc {
