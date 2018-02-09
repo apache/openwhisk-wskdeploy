@@ -208,7 +208,7 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 			if ta[utils.OW_PROJECT_NAME] == projectName {
 
 				//				for i := 0; i < len(maniyaml.Packages); i++ {
-				for pkgName, _ := range maniyaml.Packages {
+				for pkgName := range maniyaml.Packages {
 					if maniyaml.Packages[pkgName].Namespace == trg.Namespace {
 						if maniyaml.Packages[pkgName].Triggers == nil {
 							pkg := maniyaml.Packages[pkgName]
@@ -240,7 +240,7 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 		ruleTrigger := wskRule.Trigger.(map[string]interface{})["name"].(string)
 
 		// can be simplified once rules moved to top level next to triggers
-		for pkgName, _ := range maniyaml.Packages {
+		for pkgName := range maniyaml.Packages {
 			if maniyaml.Packages[pkgName].Namespace == wskRule.Namespace {
 				// iterate over all managed triggers in manifest
 				for _, trigger := range maniyaml.Packages[pkgName].Triggers {
@@ -255,7 +255,7 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 						}
 
 						// check that there a managed sequence action with name matching the rule action
-						for name, _ := range maniyaml.Packages[pkgName].Sequences {
+						for name := range maniyaml.Packages[pkgName].Sequences {
 							if name == ruleAction {
 								// export rule to manifest
 								ExportRule(*wskRule, pkgName, maniyaml)
