@@ -1,4 +1,4 @@
-// +build integration
+// +build skip_integration
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more

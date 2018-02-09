@@ -93,7 +93,7 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	apis, err := manifestParser.ComposeApiRecordsFromAllPackages(manifest)
+	apis, err := manifestParser.ComposeApiRecordsFromAllPackages(deployer.serviceDeployer.ClientConfig, manifest)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
@@ -373,17 +373,16 @@ func (reader *ManifestReader) SetRules(rules []*whisk.Rule) error {
 
 func (reader *ManifestReader) SetApis(ar []*whisk.ApiCreateRequest) error {
 	dep := reader.serviceDeployer
-	var apis []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
 
-	for _, api := range apis {
-		existApi, exist := dep.Deployment.Apis[api.ApiDoc.ApiName]
+	for _, api := range ar {
+		existApi, exist := dep.Deployment.Apis[api.ApiDoc.Action.Name]
 		if exist {
 			existApi.ApiDoc.ApiName = api.ApiDoc.ApiName
 		} else {
-			dep.Deployment.Apis[api.ApiDoc.ApiName] = api
+			dep.Deployment.Apis[api.ApiDoc.Action.Name] = api
 		}
 
 	}

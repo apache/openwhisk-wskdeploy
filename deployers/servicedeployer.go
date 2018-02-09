@@ -927,14 +927,20 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 // create api (API Gateway functionality)
 func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 
-	displayPreprocessingInfo(parsers.YAML_KEY_API, api.ApiDoc.ApiName, true)
+	apiPath := api.ApiDoc.ApiName + " " + api.ApiDoc.GatewayBasePath +
+		api.ApiDoc.GatewayRelPath + " " + api.ApiDoc.GatewayMethod
+	displayPreprocessingInfo(parsers.YAML_KEY_API, apiPath, true)
 
 	var err error
 	var response *http.Response
 
-	// TODO() Is there an api delete function? could not find it
+	apiCreateReqOptions := new(whisk.ApiCreateRequestOptions)
+	apiCreateReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+	apiCreateReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
+	// TODO() Add Response type apiCreateReqOptions.ResponseType
+
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-		_, response, err = deployer.Client.Apis.Insert(api, nil, true)
+		_, response, err = deployer.Client.Apis.Insert(api, apiCreateReqOptions, true)
 		return err
 	})
 
@@ -942,7 +948,7 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_API, true)
 	}
 
-	displayPostprocessingInfo(parsers.YAML_KEY_API, api.ApiDoc.ApiName, true)
+	displayPostprocessingInfo(parsers.YAML_KEY_API, apiPath, true)
 	return nil
 }
 
@@ -990,6 +996,9 @@ func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentProject) error
 }
 
 func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan *DeploymentProject) error {
+	if err := deployer.UnDeployApis(verifiedPlan); err != nil {
+		return err
+	}
 
 	if err := deployer.UnDeployRules(verifiedPlan); err != nil {
 		return err
@@ -1147,6 +1156,17 @@ func (deployer *ServiceDeployer) UnDeployRules(deployment *DeploymentProject) er
 	return nil
 }
 
+func (deployer *ServiceDeployer) UnDeployApis(deployment *DeploymentProject) error {
+
+	for _, api := range deployment.Apis {
+		err := deployer.deleteApi(api)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
 
 	displayPreprocessingInfo(parsers.YAML_KEY_PACKAGE, packa.Name, false)
@@ -1252,6 +1272,58 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
 		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, false)
 	}
 	displayPostprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, false)
+	return nil
+}
+
+func (deployer *ServiceDeployer) isApi(api *whisk.ApiCreateRequest) bool {
+	apiReqOptions := new(whisk.ApiGetRequestOptions)
+	apiReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
+	apiReqOptions.ApiBasePath = api.ApiDoc.GatewayBasePath
+	apiReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+
+	a := new(whisk.ApiGetRequest)
+
+	retApi, _, err := deployer.Client.Apis.Get(a, apiReqOptions)
+	if err == nil {
+		if retApi.Apis != nil && len(retApi.Apis) > 0 &&
+			retApi.Apis[0].ApiValue != nil {
+			return true
+		}
+
+	}
+	return false
+}
+
+// delete api (API Gateway functionality)
+func (deployer *ServiceDeployer) deleteApi(api *whisk.ApiCreateRequest) error {
+
+	apiPath := api.ApiDoc.ApiName + " " + api.ApiDoc.GatewayBasePath +
+		api.ApiDoc.GatewayRelPath + " " + api.ApiDoc.GatewayMethod
+	displayPreprocessingInfo(parsers.YAML_KEY_API, apiPath, false)
+
+	if deployer.isApi(api) {
+		var err error
+		var response *http.Response
+
+		apiDeleteReqOptions := new(whisk.ApiDeleteRequestOptions)
+		apiDeleteReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
+		apiDeleteReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+		apiDeleteReqOptions.ApiBasePath = api.ApiDoc.GatewayBasePath
+		apiDeleteReqOptions.ApiRelPath = api.ApiDoc.GatewayRelPath
+		apiDeleteReqOptions.ApiVerb = api.ApiDoc.GatewayMethod
+
+		a := new(whisk.ApiDeleteRequest)
+
+		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+			response, err = deployer.Client.Apis.Delete(a, apiDeleteReqOptions)
+			return err
+		})
+
+		if err != nil {
+			return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_API, false)
+		}
+	}
+	displayPostprocessingInfo(parsers.YAML_KEY_API, apiPath, false)
 	return nil
 }
 

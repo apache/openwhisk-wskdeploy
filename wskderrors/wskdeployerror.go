@@ -44,22 +44,26 @@ const (
 	STR_HTTP_BODY             = "HTTP Response Body"
 	STR_SUPPORTED_WEB_EXPORTS = "Supported Web Exports"
 	STR_WEB_EXPORT            = "web-export"
+	STR_API                   = "API"
+	STR_API_METHOD            = "API gateway method"
+	STR_API_SUPPORTED_METHODS = "API gateway supported methods"
 
 	// Formatting
 	STR_INDENT_1 = "==>"
 
 	// Error Types
-	ERROR_COMMAND_FAILED               = "ERROR_COMMAND_FAILED"
-	ERROR_WHISK_CLIENT_ERROR           = "ERROR_WHISK_CLIENT_ERROR"
-	ERROR_WHISK_CLIENT_INVALID_CONFIG  = "ERROR_WHISK_CLIENT_INVALID_CONFIG"
-	ERROR_FILE_READ_ERROR              = "ERROR_FILE_READ_ERROR"
-	ERROR_MANIFEST_FILE_NOT_FOUND      = "ERROR_MANIFEST_FILE_NOT_FOUND"
-	ERROR_YAML_FILE_FORMAT_ERROR       = "ERROR_YAML_FILE_FORMAT_ERROR"
-	ERROR_YAML_PARSER_ERROR            = "ERROR_YAML_PARSER_ERROR"
-	ERROR_YAML_PARAMETER_TYPE_MISMATCH = "ERROR_YAML_PARAMETER_TYPE_MISMATCH"
-	ERROR_YAML_INVALID_PARAMETER_TYPE  = "ERROR_YAML_INVALID_PARAMETER_TYPE"
-	ERROR_YAML_INVALID_RUNTIME         = "ERROR_YAML_INVALID_RUNTIME"
-	ERROR_YAML_INVALID_WEB_EXPORT      = "ERROR_YAML_INVALID_WEB_EXPORT"
+	ERROR_COMMAND_FAILED                  = "ERROR_COMMAND_FAILED"
+	ERROR_WHISK_CLIENT_ERROR              = "ERROR_WHISK_CLIENT_ERROR"
+	ERROR_WHISK_CLIENT_INVALID_CONFIG     = "ERROR_WHISK_CLIENT_INVALID_CONFIG"
+	ERROR_FILE_READ_ERROR                 = "ERROR_FILE_READ_ERROR"
+	ERROR_MANIFEST_FILE_NOT_FOUND         = "ERROR_MANIFEST_FILE_NOT_FOUND"
+	ERROR_YAML_FILE_FORMAT_ERROR          = "ERROR_YAML_FILE_FORMAT_ERROR"
+	ERROR_YAML_PARSER_ERROR               = "ERROR_YAML_PARSER_ERROR"
+	ERROR_YAML_PARAMETER_TYPE_MISMATCH    = "ERROR_YAML_PARAMETER_TYPE_MISMATCH"
+	ERROR_YAML_INVALID_PARAMETER_TYPE     = "ERROR_YAML_INVALID_PARAMETER_TYPE"
+	ERROR_YAML_INVALID_RUNTIME            = "ERROR_YAML_INVALID_RUNTIME"
+	ERROR_YAML_INVALID_WEB_EXPORT         = "ERROR_YAML_INVALID_WEB_EXPORT"
+	ERROR_YAML_INVALID_API_GATEWAY_METHOD = "ERROR_YAML_INVALID_API_GATEWAY_METHOD"
 )
 
 /*
@@ -407,6 +411,31 @@ func NewInvalidWebExportError(fpath string, action string, webexport string, sup
 	err.SetMessage(str)
 	return err
 }
+
+/*
+ * Invalid API Gateway Method
+ */
+type InvalidAPIGatewayMethodError struct {
+	FileError
+	method           string
+	SupportedMethods []string
+}
+
+func NewInvalidAPIGatewayMethodError(fpath string, api string, method string, supportedMethods []string) *InvalidAPIGatewayMethodError {
+	var err = &InvalidAPIGatewayMethodError{
+		SupportedMethods: supportedMethods,
+	}
+	err.SetErrorFilePath(fpath)
+	err.SetErrorType(ERROR_YAML_INVALID_API_GATEWAY_METHOD)
+	err.SetCallerByStackFrameSkip(2)
+	str := fmt.Sprintf("%s [%s]: %s [%s]: %s [%s]",
+		STR_API, api,
+		STR_API_METHOD, method,
+		STR_API_SUPPORTED_METHODS, strings.Join(supportedMethods, ", "))
+	err.SetMessage(str)
+	return err
+}
+
 func IsCustomError(err error) bool {
 
 	switch err.(type) {

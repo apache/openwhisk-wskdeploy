@@ -15,35 +15,42 @@
 #
 
 packages:
-  api-gateway-test:
-      version: 1.0
-      license: Apache-2.0
-      actions:
-          greeting:
-            version: 1.0
-            function: src/greeting.js
-            runtime: nodejs:6
-            inputs:
-              name: string
-              place: string
-            outputs:
-              payload: string
-      apis: # new top-level key for defining groups of named APIs
-        book-club: #api name
-          club: # shared base path
-            books:   #path
-               getBooks: get #action name:verb
-               postBooks: post
-               putBooks: put
-               deleteBooks: delete
-            members: #path
-               listMembers: get #action name:verb
-        book-club2: #api name, added for multi api definition test
-              club2: # shared base path
-                books2:   #path
-                   getBooks2: get #action name:verb
-                   postBooks2: post
-                   putBooks2: put
-                   deleteBooks2: delete
-                members2: #path
-                   listMembers2: get #action name:verb
+    api-gateway-test:
+        version: 1.0
+        license: Apache-2.0
+        actions:
+            greeting:
+                web-export: true
+                version: 1.0
+                function: src/greeting.js
+                runtime: nodejs:6
+            getBooks:
+                web-export: true
+                function: src/get-books.js
+            postBooks:
+                web-export: true
+                function: src/post-books.js
+            putBooks:
+                web-export: true
+                function: src/put-books.js
+            deleteBooks:
+                web-export: true
+                function: src/delete-books.js
+            listMembers:
+                web-export: true
+                function: src/list-members.js
+        # new top-level key for defining groups of named APIs
+        apis:
+            hello-world:
+                hello:
+                    world:
+                        greeting: GET
+            book-club:
+                club:
+                    books:
+                        getBooks: GET
+                        postBooks: POST
+                        putBooks: PUT
+                        deleteBooks: DELETE
+                    members:
+                        listMembers: GET

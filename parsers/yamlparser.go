@@ -191,28 +191,30 @@ type Package struct {
 	Repositories []Repository          `yaml:"repositories,omitempty"`
 	Dependencies map[string]Dependency `yaml: dependencies` //used in manifest.yaml
 	//mapping to wsk.SentPackageNoPublish.Namespace
-	Namespace   string                 `yaml:"namespace"`  //used in both manifest.yaml and deployment.yaml
-	Credential  string                 `yaml:"credential"` //used in both manifest.yaml and deployment.yaml
-	ApiHost     string                 `yaml:"apiHost"`    //used in both manifest.yaml and deployment.yaml
-	Actions     map[string]Action      `yaml:"actions"`    //used in both manifest.yaml and deployment.yaml
-	Triggers    map[string]Trigger     `yaml:"triggers"`   //used in both manifest.yaml and deployment.yaml
-	Feeds       map[string]Feed        `yaml:"feeds"`      //used in both manifest.yaml and deployment.yaml
-	Rules       map[string]Rule        `yaml:"rules"`      //used in both manifest.yaml and deployment.yaml
-	Inputs      map[string]Parameter   `yaml:"inputs"`     //deprecated, used in deployment.yaml
-	Sequences   map[string]Sequence    `yaml:"sequences"`
-	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
+	Namespace        string                 `yaml:"namespace"`  //used in both manifest.yaml and deployment.yaml
+	Credential       string                 `yaml:"credential"` //used in both manifest.yaml and deployment.yaml
+	ApiHost          string                 `yaml:"apiHost"`    //used in both manifest.yaml and deployment.yaml
+	ApigwAccessToken string                 `yaml:"apigwAccessToken"`
+	Actions          map[string]Action      `yaml:"actions"`  //used in both manifest.yaml and deployment.yaml
+	Triggers         map[string]Trigger     `yaml:"triggers"` //used in both manifest.yaml and deployment.yaml
+	Feeds            map[string]Feed        `yaml:"feeds"`    //used in both manifest.yaml and deployment.yaml
+	Rules            map[string]Rule        `yaml:"rules"`    //used in both manifest.yaml and deployment.yaml
+	Inputs           map[string]Parameter   `yaml:"inputs"`   //deprecated, used in deployment.yaml
+	Sequences        map[string]Sequence    `yaml:"sequences"`
+	Annotations      map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml: parameters` // used in manifest.yaml
 	Apis map[string]map[string]map[string]map[string]string `yaml:"apis"` //used in manifest.yaml
 }
 
 type Project struct {
-	Name       string             `yaml:"name"`      //used in deployment.yaml
-	Namespace  string             `yaml:"namespace"` //used in deployment.yaml
-	Credential string             `yaml:"credential"`
-	ApiHost    string             `yaml:"apiHost"`
-	Version    string             `yaml:"version"`
-	Packages   map[string]Package `yaml:"packages"` //used in deployment.yaml
-	Package    Package            `yaml:"package"`  // being deprecated, used in deployment.yaml
+	Name             string             `yaml:"name"`      //used in deployment.yaml
+	Namespace        string             `yaml:"namespace"` //used in deployment.yaml
+	Credential       string             `yaml:"credential"`
+	ApiHost          string             `yaml:"apiHost"`
+	ApigwAccessToken string             `yaml:"apigwAccessToken"`
+	Version          string             `yaml:"version"`
+	Packages         map[string]Package `yaml:"packages"` //used in deployment.yaml
+	Package          Package            `yaml:"package"`  // being deprecated, used in deployment.yaml
 }
 
 type YAML struct {
