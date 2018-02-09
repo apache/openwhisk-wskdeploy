@@ -399,18 +399,18 @@ type bintree struct {
 }
 
 var _bintree = &bintree{nil, map[string]*bintree{
-	"wski18n": &bintree{nil, map[string]*bintree{
-		"resources": &bintree{nil, map[string]*bintree{
-			"de_DE.all.json":   &bintree{wski18nResourcesDe_deAllJson, map[string]*bintree{}},
-			"en_US.all.json":   &bintree{wski18nResourcesEn_usAllJson, map[string]*bintree{}},
-			"es_ES.all.json":   &bintree{wski18nResourcesEs_esAllJson, map[string]*bintree{}},
-			"fr_FR.all.json":   &bintree{wski18nResourcesFr_frAllJson, map[string]*bintree{}},
-			"it_IT.all.json":   &bintree{wski18nResourcesIt_itAllJson, map[string]*bintree{}},
-			"ja_JA.all.json":   &bintree{wski18nResourcesJa_jaAllJson, map[string]*bintree{}},
-			"ko_KR.all.json":   &bintree{wski18nResourcesKo_krAllJson, map[string]*bintree{}},
-			"pt_BR.all.json":   &bintree{wski18nResourcesPt_brAllJson, map[string]*bintree{}},
-			"zh_Hans.all.json": &bintree{wski18nResourcesZh_hansAllJson, map[string]*bintree{}},
-			"zh_Hant.all.json": &bintree{wski18nResourcesZh_hantAllJson, map[string]*bintree{}},
+	"wski18n": {nil, map[string]*bintree{
+		"resources": {nil, map[string]*bintree{
+			"de_DE.all.json":   {wski18nResourcesDe_deAllJson, map[string]*bintree{}},
+			"en_US.all.json":   {wski18nResourcesEn_usAllJson, map[string]*bintree{}},
+			"es_ES.all.json":   {wski18nResourcesEs_esAllJson, map[string]*bintree{}},
+			"fr_FR.all.json":   {wski18nResourcesFr_frAllJson, map[string]*bintree{}},
+			"it_IT.all.json":   {wski18nResourcesIt_itAllJson, map[string]*bintree{}},
+			"ja_JA.all.json":   {wski18nResourcesJa_jaAllJson, map[string]*bintree{}},
+			"ko_KR.all.json":   {wski18nResourcesKo_krAllJson, map[string]*bintree{}},
+			"pt_BR.all.json":   {wski18nResourcesPt_brAllJson, map[string]*bintree{}},
+			"zh_Hans.all.json": {wski18nResourcesZh_hansAllJson, map[string]*bintree{}},
+			"zh_Hant.all.json": {wski18nResourcesZh_hantAllJson, map[string]*bintree{}},
 		}},
 	}},
 }}
