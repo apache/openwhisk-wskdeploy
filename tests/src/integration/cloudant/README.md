@@ -1,9 +1,27 @@
+<!--
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements.  See the NOTICE file distributed with this work for additional
+# information regarding copyright ownership.  The ASF licenses this file to you
+# under the Apache License, Version 2.0 (the # "License"); you may not use this
+# file except in compliance with the License.  You may obtain a copy of the License
+# at:
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations under the License.
+#
+-->
+
 # Using Cloudant Package with `wskdeploy`
 
 The [Cloudant usecase](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/tests/src/integration/cloudant) demonstrates how to build an OpenWhisk app to retrieve document updates from cloudant using `wskdeploy`.
 
 OpenWhisk supports [Cloudant package](https://github.com/apache/incubator-openwhisk-package-cloudant) which can be used to integrate with Cloudant APIs. For our simple app to display document IDs,  we need:
- 
+
 - [manifest.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/tests/usecases/cloudant/manifest.yaml)
 - [Action File](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/tests/usecases/cloudant/src/process-change.js)
 
@@ -38,7 +56,7 @@ These env. variables are used in manifest file for:
 Deploy it using `wskdeploy`:
 
 ```
-wskdeploy -m tests/usecases/cloudant/manifest.yaml 
+wskdeploy -m tests/usecases/cloudant/manifest.yaml
 ```
 
 ### Step 2: Verify
@@ -46,8 +64,8 @@ wskdeploy -m tests/usecases/cloudant/manifest.yaml
 ```
 $ wsk package get cloudant-sample
 $ wsk package get openwhisk-cloudant
-$ wsk trigger get data-inserted-trigger 
-$ wsk rule get log-change-rule 
+$ wsk trigger get data-inserted-trigger
+$ wsk rule get log-change-rule
 ```
 ### Step 3: Run
 

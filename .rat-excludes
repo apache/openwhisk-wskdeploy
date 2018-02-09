@@ -1,0 +1,15 @@
+# files copied from third parties or created by tools
+gradlew
+gradlew.bat
+Godeps
+i18n_resources.go
+
+# JSON data file doesn't support annotation
+.*json
+
+# Test data 
+
+# others
+.gitignore
+.rat-excludes
+

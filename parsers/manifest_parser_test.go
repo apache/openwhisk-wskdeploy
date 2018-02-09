@@ -1516,7 +1516,7 @@ func TestBadYAMLInvalidKeyMappingValueInManifest(t *testing.T) {
 
 	assert.NotNil(t, err)
 	// go-yaml/yaml prints the wrong line number for mapping values. It should be 5.
-	assert.Contains(t, err.Error(), "line 4: mapping values are not allowed in this context")
+	assert.Contains(t, err.Error(), "mapping values are not allowed in this context")
 }
 
 func TestBadYAMLMissingRootKeyInManifest(t *testing.T) {
@@ -1525,7 +1525,7 @@ func TestBadYAMLMissingRootKeyInManifest(t *testing.T) {
 	_, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_missing_root_key.yaml")
 
 	assert.NotNil(t, err)
-	assert.Contains(t, err.Error(), "line 1: field actions not found in struct parsers.YAML")
+	assert.Contains(t, err.Error(), "field actions not found in struct parsers.YAML")
 }
 
 func TestBadYAMLInvalidCommentInManifest(t *testing.T) {
@@ -1534,7 +1534,7 @@ func TestBadYAMLInvalidCommentInManifest(t *testing.T) {
 	_, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_invalid_comment.yaml")
 
 	assert.NotNil(t, err)
-	assert.Contains(t, err.Error(), "line 13: could not find expected ':'")
+	assert.Contains(t, err.Error(), "could not find expected ':'")
 }
 
 // validate manifest_parser:Unmarshal() method for package in manifest YAML

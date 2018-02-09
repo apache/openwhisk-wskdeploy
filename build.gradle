@@ -44,7 +44,7 @@ task taredSources(type: Tar) {
         include('gradle/**')
         include('README.md', 'CONTRIBUTING.md', 'DEPENDENCIES.md')
         include('gradlew', 'gradlew.bat', 'Dockerfile', 'build.gradle')
-        include('LICENSE', 'NOTICE', 'CHANGELOG')
+        include('LICENSE.txt', 'NOTICE.txt', 'CHANGELOG.txt')
     }
     destinationDir file(buildFolder)
     extension packageExtension
@@ -53,7 +53,10 @@ task taredSources(type: Tar) {
 }
 
 task cleanBuild(type: Delete) {
-    delete file(buildFolder).listFiles()
+    def folder = new File(buildFolder)
+    if(folder.exists()) {
+        delete file(buildFolder).listFiles()
+    }
 }
 
 task removeBinary(type: Delete) {
