@@ -42,6 +42,17 @@ var exportCmd = &cobra.Command{
 
 var config *whisk.Config
 
+func ExportRule(wskRule whisk.Rule, pkgName string, maniyaml *parsers.YAML) {
+	if maniyaml.Packages[pkgName].Rules == nil {
+		pkg := maniyaml.Packages[pkgName]
+		pkg.Rules = make(map[string]parsers.Rule)
+		maniyaml.Packages[pkgName] = pkg
+	}
+
+	// export rule to manifest
+	maniyaml.Packages[pkgName].Rules[wskRule.Name] = *maniyaml.ComposeParsersRule(wskRule)
+}
+
 func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML) error {
 
 	pkg := maniyaml.Packages[packageName]
@@ -222,29 +233,32 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 	// TODO: can be simplifyed once OW permits to add annotation to rules
 	// iterate over the list of rules to determine whether any of them is part of
 	// managed trigger -> action set for specified managed project. if yes, add to manifest
-	for _, rl := range rules {
+	for _, rule := range rules {
 		// get rule from OW
-		rule, _, _ := client.Rules.Get(rl.Name)
-		ruleAction := rule.Action.(map[string]interface{})["name"].(string)
-		ruleTrigger := rule.Trigger.(map[string]interface{})["name"].(string)
+		wskRule, _, _ := client.Rules.Get(rule.Name)
+		ruleAction := wskRule.Action.(map[string]interface{})["name"].(string)
+		ruleTrigger := wskRule.Trigger.(map[string]interface{})["name"].(string)
 
 		// can be simplified once rules moved to top level next to triggers
 		for pkgName, _ := range maniyaml.Packages {
-			if maniyaml.Packages[pkgName].Namespace == rule.Namespace {
-				// iterate over all managed actions  in manifest
-				for _, action := range maniyaml.Packages[pkgName].Actions {
-					if action.Name == ruleAction {
-						for _, trigger := range maniyaml.Packages[pkgName].Triggers {
-							// check that managed action and trigger equals to rule action and trigger
-							if ruleTrigger == trigger.Name && trigger.Namespace == rule.Namespace {
-								if maniyaml.Packages[pkgName].Rules == nil {
-									pkg := maniyaml.Packages[pkgName]
-									pkg.Rules = make(map[string]parsers.Rule)
-									maniyaml.Packages[pkgName] = pkg
-								}
-
+			if maniyaml.Packages[pkgName].Namespace == wskRule.Namespace {
+				// iterate over all managed triggers in manifest
+				for _, trigger := range maniyaml.Packages[pkgName].Triggers {
+					// check that managed trigger equals to rule trigger
+					if ruleTrigger == trigger.Name && trigger.Namespace == wskRule.Namespace {
+						// check that there a managed action (or sequence action) equals to rule action
+						for _, action := range maniyaml.Packages[pkgName].Actions {
+							if action.Name == ruleAction {
 								// export rule to manifest
-								maniyaml.Packages[pkgName].Rules[rule.Name] = *maniyaml.ComposeParsersRule(rl)
+								ExportRule(*wskRule, pkgName, maniyaml)
+							}
+						}
+
+						// check that there a managed sequence action with name matching the rule action
+						for name, _ := range maniyaml.Packages[pkgName].Sequences {
+							if name == ruleAction {
+								// export rule to manifest
+								ExportRule(*wskRule, pkgName, maniyaml)
 							}
 						}
 					}
@@ -261,6 +275,6 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 
 func init() {
 	RootCmd.AddCommand(exportCmd)
-	exportCmd.Flags().StringVarP(&utils.Flags.ProjectPath, "pathpath", "p", ".", "name of the managed project")
+	exportCmd.Flags().StringVarP(&utils.Flags.ProjectPath, "project", "p", ".", "name of the managed project")
 	exportCmd.Flags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", "path to manifest file to save exported data")
 }
