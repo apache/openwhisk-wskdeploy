@@ -16,6 +16,7 @@
 
 packages:
     api-gateway-test:
+        apiHost: http://172.17.0.1:9000/v2
         version: 1.0
         license: Apache-2.0
         actions:
