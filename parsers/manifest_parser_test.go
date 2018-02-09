@@ -1395,9 +1395,10 @@ packages:
 	m, _ := p.ParseManifest(tmpfile.Name())
 
 	config := whisk.Config{
-		Namespace: "test",
-		AuthToken: "user:pass",
-		Host:      "host",
+		Namespace:        "test",
+		AuthToken:        "user:pass",
+		Host:             "host",
+		ApigwAccessToken: "token",
 	}
 
 	apiList, err := p.ComposeApiRecordsFromAllPackages(&config, m)
