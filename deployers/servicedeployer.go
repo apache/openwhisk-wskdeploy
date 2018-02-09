@@ -1284,7 +1284,7 @@ func (deployer *ServiceDeployer) isApi(api *whisk.ApiCreateRequest) bool {
 	a := new(whisk.ApiGetRequest)
 
 	retApi, _, err := deployer.Client.Apis.Get(a, apiReqOptions)
-	if err != nil {
+	if err == nil {
 		if retApi.Apis != nil && len(retApi.Apis) > 0 &&
 			retApi.Apis[0].ApiValue != nil {
 			return true

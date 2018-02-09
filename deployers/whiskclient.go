@@ -232,6 +232,12 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 	// reset credential, apiHost, namespace, etc to avoid any conflicts as they initialized globally
 	resetWhiskConfig()
 
+	// initialize APIGW_ACCESS_TOKEN to "DUMMY TOKEN" for Travis builds
+	if strings.ToLower(os.Getenv("TRAVIS")) == "true" {
+		apigwAccessToken.Value = "DUMMY TOKEN"
+		apigwAccessToken.Source = SOURCE_DEFAULT_VALUE
+	}
+
 	// read from command line
 	readFromCLI()
 
@@ -320,6 +326,12 @@ func validateClientConfig(credential PropertyValue, apiHost PropertyValue, names
 	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
 		map[string]interface{}{wski18n.KEY_NAMESPACE: namespace.Value, wski18n.KEY_SOURCE: namespace.Source})
 	wskprint.PrintOpenWhiskInfo(stdout)
+
+	if len(apigwAccessToken.Value) != 0 {
+		stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIGE_ACCESS_TOKEN_X_source_X,
+			map[string]interface{}{wski18n.KEY_SOURCE: apigwAccessToken.Source})
+		wskprint.PrintOpenWhiskInfo(stdout)
+	}
 
 	return nil
 }

@@ -93,9 +93,11 @@ const (
 	ID_MSG_CONFIG_MISSING_AUTHKEY                       = "msg_config_missing_authkey"
 	ID_MSG_CONFIG_MISSING_APIHOST                       = "msg_config_missing_apihost"
 	ID_MSG_CONFIG_MISSING_NAMESPACE                     = "msg_config_missing_namespace"
+	ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN            = "msg_config_missing_apigw_access_token"
 	ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X        = "msg_config_apihost_info"
 	ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X               = "msg_config_authkey_info"
 	ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X = "msg_config_namespace_info"
+	ID_MSG_CONFIG_INFO_APIGE_ACCESS_TOKEN_X_source_X    = "msg_config_apigw_access_token_info"
 
 	// YAML marshall / unmarshall
 	ID_MSG_UNMARSHAL_LOCAL   = "msg_unmarshall_local"
@@ -183,33 +185,34 @@ const (
 
 // Known keys used for text replacement in i18n translated strings
 const (
-	KEY_ACTION          = "action"
-	KEY_CMD             = "cmd"
-	KEY_CODE            = "code"
-	KEY_DEPLOYMENT_NAME = "dname"
-	KEY_DEPLOYMENT_PATH = "dpath"
-	KEY_ERR             = "err"
-	KEY_EXTENTION       = "ext"
-	KEY_FILE_TYPE       = "filetype"
-	KEY_HOST            = "host"
-	KEY_KEY             = "key"
-	KEY_LIMIT           = "limit"
-	KEY_MANIFEST_NAME   = "mname"
-	KEY_MANIFEST_PATH   = "mpath"
-	KEY_NAME            = "name"
-	KEY_NAMESPACE       = "namespace"
-	KEY_NEW             = "newkey"
-	KEY_OLD             = "oldkey"
-	KEY_PATH            = "path"
-	KEY_PROJECT         = "project"
-	KEY_RUNTIME         = "runtime"
-	KEY_SOURCE          = "source"
-	KEY_URL             = "url"
-	KEY_URL_TYPE        = "urltype"
-	KEY_VALUE           = "value"
-	KEY_VALUE_MIN       = "min" // TODO() attempt to use this for Limit value range errors
-	KEY_VALUE_MAX       = "max" // TODO() attempt to use this for Limit value range errors
-	KEY_API             = "api"
+	KEY_ACTION             = "action"
+	KEY_CMD                = "cmd"
+	KEY_CODE               = "code"
+	KEY_DEPLOYMENT_NAME    = "dname"
+	KEY_DEPLOYMENT_PATH    = "dpath"
+	KEY_ERR                = "err"
+	KEY_EXTENTION          = "ext"
+	KEY_FILE_TYPE          = "filetype"
+	KEY_HOST               = "host"
+	KEY_KEY                = "key"
+	KEY_LIMIT              = "limit"
+	KEY_MANIFEST_NAME      = "mname"
+	KEY_MANIFEST_PATH      = "mpath"
+	KEY_NAME               = "name"
+	KEY_NAMESPACE          = "namespace"
+	KEY_NEW                = "newkey"
+	KEY_OLD                = "oldkey"
+	KEY_PATH               = "path"
+	KEY_PROJECT            = "project"
+	KEY_RUNTIME            = "runtime"
+	KEY_SOURCE             = "source"
+	KEY_URL                = "url"
+	KEY_URL_TYPE           = "urltype"
+	KEY_VALUE              = "value"
+	KEY_VALUE_MIN          = "min" // TODO() attempt to use this for Limit value range errors
+	KEY_VALUE_MAX          = "max" // TODO() attempt to use this for Limit value range errors
+	KEY_API                = "api"
+	KEY_APIGW_ACCESS_TOKEN = "apigw_access_token"
 )
 
 // Used to unit test that translations exist with these IDs
