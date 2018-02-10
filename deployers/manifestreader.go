@@ -88,7 +88,7 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	rules, err := manifestParser.ComposeRulesFromAllPackages(manifest)
+	rules, err := manifestParser.ComposeRulesFromAllPackages(manifest, ma)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}

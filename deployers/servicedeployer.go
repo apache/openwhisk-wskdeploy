@@ -603,9 +603,44 @@ func (deployer *ServiceDeployer) RefreshManagedTriggers(ma map[string]interface{
 	return nil
 }
 
-// TODO() engage community to allow metadata (annotations) on Rules
 // TODO() display "update" | "synced" messages pre/post
 func (deployer *ServiceDeployer) RefreshManagedRules(ma map[string]interface{}) error {
+	options := whisk.RuleListOptions{}
+	// Get list of rules in your namespace
+	rules, _, err := deployer.Client.Rules.List(&options)
+	if err != nil {
+		return err
+	}
+	// iterate over the list of rules to determine whether any of them was part of managed project
+	// and now deleted from manifest file we can determine that from the managed annotation
+	// If a rule has attached managed annotation with the project name equals to the current project name
+	// but the project hash is different (project hash differs since the rule is deleted from the manifest file)
+	for _, rule := range rules {
+		// rule has attached managed annotation
+		if a := rule.Annotations.GetValue(utils.MANAGED); a != nil {
+			// decode the JSON blob and retrieve __OW_PROJECT_NAME and __OW_PROJECT_HASH
+			ta := a.(map[string]interface{})
+			if ta[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] && ta[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
+				// we have found a trigger which was earlier part of the current project
+				output := wski18n.T(wski18n.ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
+					map[string]interface{}{
+						wski18n.KEY_KEY:     parsers.YAML_KEY_RULE,
+						wski18n.KEY_NAME:    rule.Name,
+						wski18n.KEY_PROJECT: ma[utils.OW_PROJECT_NAME]})
+				wskprint.PrintOpenWhiskWarning(output)
+
+				var err error
+				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+					_, err := deployer.Client.Rules.Delete(rule.Name)
+					return err
+				})
+
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
 	return nil
 }
 
