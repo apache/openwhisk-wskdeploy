@@ -359,3 +359,60 @@ func (pkg *Package) GetApis() []*whisk.Api {
 	}
 	return apis
 }
+
+//********************YAML functions*************************//
+func (yaml *YAML) ComposeParsersPackage(wskpag whisk.Package) *Package {
+	pkg := new(Package)
+	pkg.Packagename = wskpag.Name
+	pkg.Namespace = wskpag.Namespace
+	pkg.Version = wskpag.Version
+
+	for _, keyval := range wskpag.Parameters {
+		param := new(Parameter)
+		param.Value = keyval.Value
+		pkg.Inputs[keyval.Key] = *param
+	}
+
+	return pkg
+}
+
+func (yaml *YAML) ComposeParsersAction(wskact whisk.Action) *Action {
+	action := new(Action)
+	action.Name = wskact.Name
+	action.Namespace = wskact.Namespace
+	action.Version = wskact.Version
+	action.Runtime = wskact.Exec.Kind
+
+	action.Inputs = make(map[string]Parameter)
+	for _, keyval := range wskact.Parameters {
+		param := new(Parameter)
+		param.Value = keyval.Value
+		action.Inputs[keyval.Key] = *param
+	}
+
+	return action
+}
+
+func (yaml *YAML) ComposeParsersTrigger(wsktrg whisk.Trigger) *Trigger {
+	trigger := new(Trigger)
+	trigger.Name = wsktrg.Name
+	trigger.Namespace = wsktrg.Namespace
+
+	for _, keyval := range wsktrg.Parameters {
+		param := new(Parameter)
+		param.Value = keyval.Value
+		trigger.Inputs[keyval.Key] = *param
+	}
+
+	return trigger
+}
+
+func (yaml *YAML) ComposeParsersRule(wskrule whisk.Rule) *Rule {
+	rule := new(Rule)
+	rule.Name = wskrule.Name
+
+	rule.Action = wskrule.Action.(map[string]interface{})["name"].(string)
+	rule.Trigger = wskrule.Trigger.(map[string]interface{})["name"].(string)
+
+	return rule
+}

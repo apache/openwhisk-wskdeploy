@@ -68,6 +68,7 @@ type OpenWhiskInfo struct {
 var FileExtensionRuntimeKindMap map[string]string
 var SupportedRunTimes map[string][]string
 var DefaultRunTimes map[string]string
+var FileRuntimeExtensionsMap map[string]string
 
 // We could get the openwhisk info from bluemix through running the command
 // `curl -k https://openwhisk.ng.bluemix.net`
@@ -160,6 +161,29 @@ func FileExtensionRuntimes(op OpenWhiskInfo) (ext map[string]string) {
 		} else if strings.Contains(k, JAVA_FILE_EXTENSION) {
 			ext[JAVA_FILE_EXTENSION] = k
 			ext[JAR_FILE_EXTENSION] = k
+		}
+	}
+	return
+}
+
+func FileRuntimeExtensions(op OpenWhiskInfo) (rte map[string]string) {
+	rte = make(map[string]string)
+
+	for k, v := range op.Runtimes {
+		for i := range v {
+			if !v[i].Deprecated {
+				if strings.Contains(k, NODEJS_FILE_EXTENSION) {
+					rte[v[i].Kind] = NODEJS_FILE_EXTENSION
+				} else if strings.Contains(k, PYTHON_FILE_EXTENSION) {
+					rte[v[i].Kind] = PYTHON_FILE_EXTENSION
+				} else if strings.Contains(k, SWIFT_FILE_EXTENSION) {
+					rte[v[i].Kind] = SWIFT_FILE_EXTENSION
+				} else if strings.Contains(k, PHP_FILE_EXTENSION) {
+					rte[v[i].Kind] = PHP_FILE_EXTENSION
+				} else if strings.Contains(k, JAVA_FILE_EXTENSION) {
+					rte[v[i].Kind] = JAVA_FILE_EXTENSION
+				}
+			}
 		}
 	}
 	return

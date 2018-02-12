@@ -21,6 +21,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
+	"path"
+	"path/filepath"
+	"regexp"
+	"strings"
+
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
@@ -28,11 +34,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/spf13/cobra"
-	"os"
-	"path"
-	"path/filepath"
-	"regexp"
-	"strings"
 )
 
 var stderr = ""
@@ -161,6 +162,7 @@ func setSupportedRuntimes(apiHost string) {
 		utils.SupportedRunTimes = utils.ConvertToMap(op)
 		utils.DefaultRunTimes = utils.DefaultRuntimes(op)
 		utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
+		utils.FileRuntimeExtensionsMap = utils.FileRuntimeExtensions(op)
 	}
 }
 
