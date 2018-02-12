@@ -827,12 +827,12 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 	return t1, nil
 }
 
-func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML) ([]*whisk.Rule, error) {
+func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML, ma whisk.KeyValue) ([]*whisk.Rule, error) {
 	var rules []*whisk.Rule = make([]*whisk.Rule, 0)
 	manifestPackages := make(map[string]Package)
 
 	if manifest.Package.Packagename != "" {
-		return dm.ComposeRules(manifest.Package, manifest.Package.Packagename)
+		return dm.ComposeRules(manifest.Package, manifest.Package.Packagename, ma)
 	} else {
 		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
@@ -842,7 +842,7 @@ func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML) ([]*whisk.Rule
 	}
 
 	for n, p := range manifestPackages {
-		r, err := dm.ComposeRules(p, n)
+		r, err := dm.ComposeRules(p, n, ma)
 		if err == nil {
 			rules = append(rules, r...)
 		} else {
@@ -852,16 +852,38 @@ func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML) ([]*whisk.Rule
 	return rules, nil
 }
 
-func (dm *YAMLParser) ComposeRules(pkg Package, packageName string) ([]*whisk.Rule, error) {
+func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.KeyValue) ([]*whisk.Rule, error) {
 	var r1 []*whisk.Rule = make([]*whisk.Rule, 0)
 
 	for _, rule := range pkg.GetRuleList() {
-		wskrule := rule.ComposeWskRule()
+		wskrule := new(whisk.Rule)
+		wskrule.Name = wskenv.ConvertSingleName(rule.Name)
+		//wskrule.Namespace = rule.Namespace
+		pub := false
+		wskrule.Publish = &pub
+		wskrule.Trigger = wskenv.ConvertSingleName(rule.Trigger)
+		wskrule.Action = wskenv.ConvertSingleName(rule.Action)
 		act := strings.TrimSpace(wskrule.Action.(string))
 		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") {
 			act = path.Join(packageName, act)
 		}
 		wskrule.Action = act
+		listOfAnnotations := make(whisk.KeyValueArr, 0)
+		for name, value := range rule.Annotations {
+			var keyVal whisk.KeyValue
+			keyVal.Key = name
+			keyVal.Value = wskenv.GetEnvVar(value)
+			listOfAnnotations = append(listOfAnnotations, keyVal)
+		}
+		if len(listOfAnnotations) > 0 {
+			wskrule.Annotations = append(wskrule.Annotations, listOfAnnotations...)
+		}
+
+		// add managed annotations if its a managed deployment
+		if utils.Flags.Managed {
+			wskrule.Annotations = append(wskrule.Annotations, ma)
+		}
+
 		r1 = append(r1, wskrule)
 	}
 	return r1, nil

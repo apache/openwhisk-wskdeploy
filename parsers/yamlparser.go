@@ -173,7 +173,8 @@ type Rule struct {
 	Action string `yaml:"action"` //used in manifest.yaml
 	Rule   string `yaml:"rule"`   //used in manifest.yaml
 	//mapping to wsk.Rule.Name
-	Name string
+	Name        string
+	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 }
 
 type Repository struct {

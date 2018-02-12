@@ -1327,7 +1327,7 @@ func TestComposeRules(t *testing.T) {
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
 	m, _ := p.ParseManifest(tmpfile.Name())
-	ruleList, err := p.ComposeRulesFromAllPackages(m)
+	ruleList, err := p.ComposeRulesFromAllPackages(m, whisk.KeyValue{})
 	if err != nil {
 		assert.Fail(t, "Failed to compose rules")
 	}
@@ -1800,7 +1800,7 @@ func TestRuleName_Env_Var(t *testing.T) {
 	mm := NewYAMLParser()
 	manifestfile := "../tests/dat/manifest_data_rule_env_var.yaml"
 	manifest, _ := mm.ParseManifest(manifestfile)
-	rules, err := mm.ComposeRulesFromAllPackages(manifest)
+	rules, err := mm.ComposeRulesFromAllPackages(manifest, whisk.KeyValue{})
 	if err != nil {
 		assert.Fail(t, "Failed to compose rules")
 	}
