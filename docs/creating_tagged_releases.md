@@ -23,17 +23,16 @@ The most convenient way to create a tagged release for wskdeploy is to build the
 
 1. Add a tag to a commit id: ```git tag -a <tag/version> <commit hash>```
 
-for example:
+for example, using the (7 min.) leading characters on commit hash:
 ```
-# using the (7 min.) leading characters on commit hash
-git tag -a 0.8.9 c08b0f
+$ git tag -a 0.8.9 c08b0f
 ```
 
 2. Push the tag upstream: ```git push -f upstream <tag/version>```
 
 for example:
 ```
-git push -f upstream 0.8.9
+$ git push -f upstream 0.8.9
 ```
 
 Travis will start the build of 0.8.9 automatically by the event of tag creation.
