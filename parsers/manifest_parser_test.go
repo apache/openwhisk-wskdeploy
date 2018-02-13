@@ -1280,6 +1280,7 @@ func TestComposeSequences(t *testing.T) {
 }
 
 func TestComposeTriggers(t *testing.T) {
+	// set env variables needed for the trigger feed
 	os.Setenv("KAFKA_INSTANCE", "kafka-broker")
 	os.Setenv("SRC_TOPIC", "topic")
 	// read and parse manifest.yaml file located under ../tests folder
