@@ -20,6 +20,29 @@ ext.dockerContainerName = "wskdeploy"
 ext.dockerBuildArgs = getDockerBuildArgs()
 apply from: 'gradle/docker.gradle'
 
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "gradle.plugin.org.nosphere.apache:creadur-rat-gradle:0.3.1"
+  }
+}
+
+apply plugin: "org.nosphere.apache.rat"
+
+rat {
+    excludes += [
+        'Godeps/*',
+        '.gradletasknamecache', 'gradle/wrapper/**', 'gradlew*', 'build/**', // Gradle
+        '.gitignore', '.rat-excludes',
+        'i18n_resources.go',
+        '**/*.json','wski18n/resources/*'
+    ]
+}
+
 project.ext {
     basePackageName = "openwhisk-wskdeploy"
     packageExtension = "tar.gz"
