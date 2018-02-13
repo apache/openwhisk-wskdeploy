@@ -99,9 +99,9 @@ const (
 	ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X = "msg_config_namespace_info"
 	ID_MSG_CONFIG_INFO_APIGE_ACCESS_TOKEN_X_source_X    = "msg_config_apigw_access_token_info"
 
-	// YAML marshall / unmarshall
-	ID_MSG_UNMARSHAL_LOCAL   = "msg_unmarshall_local"
-	ID_MSG_UNMARSHAL_NETWORK = "msg_unmarshall_network"
+	// YAML marshal / unmarshal
+	ID_MSG_UNMARSHAL_LOCAL           = "msg_unmarshal_local"
+	ID_MSG_UNMARSHAL_NETWORK_X_url_X = "msg_unmarshal_network"
 
 	// Informational
 	ID_MSG_DEPLOYMENT_CANCELLED = "msg_deployment_cancelled"
@@ -297,7 +297,7 @@ var I18N_ID_SET = [](string){
 	ID_MSG_UNDEPLOYMENT_FAILED,
 	ID_MSG_UNDEPLOYMENT_SUCCEEDED,
 	ID_MSG_UNMARSHAL_LOCAL,
-	ID_MSG_UNMARSHAL_NETWORK,
+	ID_MSG_UNMARSHAL_NETWORK_X_url_X,
 	ID_WARN_COMMAND_RETRY,
 	ID_WARN_CONFIG_INVALID_X_path_X,
 	ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X,
