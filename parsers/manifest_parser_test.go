@@ -1280,6 +1280,9 @@ func TestComposeSequences(t *testing.T) {
 }
 
 func TestComposeTriggers(t *testing.T) {
+	// set env variables needed for the trigger feed
+	os.Setenv("KAFKA_INSTANCE", "kafka-broker")
+	os.Setenv("SRC_TOPIC", "topic")
 	// read and parse manifest.yaml file located under ../tests folder
 	manifestFile := "../tests/dat/manifest_data_compose_triggers.yaml"
 	p := NewYAMLParser()
@@ -1293,7 +1296,7 @@ func TestComposeTriggers(t *testing.T) {
 		assert.Fail(t, "Failed to compose trigger")
 	}
 
-	assert.Equal(t, 2, len(triggerList), "Failed to get trigger list")
+	assert.Equal(t, 3, len(triggerList), "Failed to get trigger list")
 	for _, trigger := range triggerList {
 		switch trigger.Name {
 		case "trigger1":
@@ -1302,6 +1305,10 @@ func TestComposeTriggers(t *testing.T) {
 			assert.Equal(t, "feed", trigger.Annotations[0].Key, "Failed to set trigger annotation")
 			assert.Equal(t, "myfeed", trigger.Annotations[0].Value, "Failed to set trigger annotation")
 			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
+		case "message-trigger":
+			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
+			assert.Equal(t, "feed", trigger.Annotations[0].Key, "Failed to set trigger annotation")
+			assert.Equal(t, "Bluemix_kafka-broker_Credentials-1/messageHubFeed", trigger.Annotations[0].Value, "Failed to set trigger annotation")
 		}
 	}
 }

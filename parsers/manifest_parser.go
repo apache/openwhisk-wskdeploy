@@ -774,6 +774,10 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 			trigger.Feed = trigger.Source
 		}
 
+		// replacing env. variables here in the trigger feed name
+		// to support trigger feed with $READ_FROM_ENV_TRIGGER_FEED
+		trigger.Feed = wskenv.GetEnvVar(trigger.Feed).(string)
+
 		keyValArr := make(whisk.KeyValueArr, 0)
 		if trigger.Feed != "" {
 			var keyVal whisk.KeyValue

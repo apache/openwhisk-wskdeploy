@@ -26,3 +26,8 @@ package:
       inputs:
         name: myname
         place: myplace
+    message-trigger:
+      feed: Bluemix_${KAFKA_INSTANCE}_Credentials-1/messageHubFeed
+      inputs:
+        isJSONData: true
+        topic: $SRC_TOPIC
