@@ -1280,7 +1280,8 @@ func TestComposeSequences(t *testing.T) {
 }
 
 func TestComposeTriggers(t *testing.T) {
-	os.Setenv("KAKFA_INSTANCE", "kafka-broker")
+	os.Setenv("KAFKA_INSTANCE", "kafka-broker")
+	os.Setenv("SRC_TOPIC", "topic")
 	// read and parse manifest.yaml file located under ../tests folder
 	manifestFile := "../tests/dat/manifest_data_compose_triggers.yaml"
 	p := NewYAMLParser()
