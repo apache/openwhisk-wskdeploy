@@ -20,12 +20,6 @@ package deployers
 import (
 	"bufio"
 	"fmt"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"net/http"
 	"os"
 	"path"
@@ -34,6 +28,13 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 const (
@@ -223,6 +224,11 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		}
 	}
 
+	// process relationships file
+	if utils.Flags.RelationsPath != "" && utils.FileExists(utils.Flags.RelationsPath) {
+		err = deployer.UpdateManagedProjectsListAnnotations(false)
+	}
+
 	return err
 }
 
@@ -236,6 +242,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 		return deployer.Deployment, err
 	}
 
+	deployer.ProjectName = manifest.GetProject().Name
 	deployer.RootPackageName = manifest.Package.Packagename
 	manifestReader.InitRootPackage(manifestParser, manifest, whisk.KeyValue{})
 
@@ -404,6 +411,15 @@ func (deployer *ServiceDeployer) deployAssets() error {
 			errString := wski18n.T(wski18n.ID_MSG_MANAGED_UNDEPLOYMENT_FAILED)
 			whisk.Debug(whisk.DbgError, errString)
 			return err
+		}
+
+		if utils.Flags.RelationsPath != "" {
+			ma := deployer.ManagedAnnotation.Value.(map[string]interface{})
+			if err := deployer.RefreshRelationships(ma); err != nil {
+				errString := wski18n.T(wski18n.ID_MSG_MANAGED_UNDEPLOYMENT_FAILED)
+				whisk.Debug(whisk.DbgError, errString)
+				return err
+			}
 		}
 	}
 
@@ -1607,4 +1623,455 @@ func createWhiskClientError(err *whisk.WskError, response *http.Response, entity
 
 	// TODO() add errString as an AppendDetail() to WhiskClientError
 	return wskderrors.NewWhiskClientError(err.Error(), err.ExitCode, response)
+}
+
+// for all projects in relationships
+// 	 for all rel-packages in rel-project
+// 		for all ow-packages from OW
+// 			if rel-project is the one in ow-package MANAGE annotation (library project)
+//				update MANAGE_LIST annotation with NEW project and add to deploymentPlan
+//			for all actions in rel-package
+//				for all ow-actions in ow-package
+// 					if rel-project is the one in ow-action MANAGE annotation (library project)
+//						update MANAGE_LIST annotation with NEW project and add to deploymentPlan
+func (deployer *ServiceDeployer) UpdateManagedProjectsListAnnotations(isUndeploy bool) error {
+	if utils.Flags.RelationsPath == "" {
+		return nil
+	} else if !utils.FileExists(utils.Flags.RelationsPath) {
+		// TODO: change to correct error
+		return wskderrors.NewCommandError("", "relationships file doesnt exists")
+	}
+
+	rma, err := utils.GenerateManagedAnnotation(deployer.ProjectName, utils.Flags.RelationsPath)
+
+	mm := parsers.NewYAMLParser()
+	relationships, err := mm.ParseRelations(utils.Flags.RelationsPath)
+	if err != nil {
+		return err
+	}
+
+	// get managed annotations
+	for managedProjectName, proj := range relationships.Projects {
+		fmt.Println(managedProjectName)
+		for managedPackageName, pkg := range proj.Packages {
+			updatedPackage, err := deployer.getUpdatedPackage(managedPackageName, managedProjectName, rma, isUndeploy)
+
+			if err != nil {
+				return err
+			}
+
+			// update actions
+			for actionName, _ := range pkg.Actions {
+				updatedAction, err := deployer.getUpdatedAction(managedPackageName, actionName, managedProjectName, rma, isUndeploy)
+
+				if err != nil {
+					return err
+				}
+
+				if updatedAction != nil {
+					updatedPackage.Actions[actionName] = *updatedAction
+				}
+			}
+
+			// add updated package to the deployment plan
+			deployer.Deployment.Packages[managedPackageName] = updatedPackage
+
+			// update triggers
+			for triggerName, _ := range pkg.Triggers {
+				trigger, err := deployer.getUpdatedTrigger(managedPackageName, triggerName, managedProjectName, rma, isUndeploy)
+
+				if err != nil {
+					return err
+				}
+
+				if trigger != nil {
+					deployer.Deployment.Triggers[triggerName] = trigger
+				}
+			}
+
+			// update rules
+			for ruleName, _ := range pkg.Rules {
+				rule, err := deployer.getUpdatedRule(managedPackageName, ruleName, managedProjectName, rma, isUndeploy)
+
+				if err != nil {
+					return err
+				}
+
+				if rule != nil {
+					deployer.Deployment.Rules[ruleName] = rule
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+// update annotation holding asset managed project list
+// in case annotation doesn't exist
+// create MANAGED_LIST annotation
+//		append OLD MANAGED and new project to the MANAGED_LIST
+// in case project present in the list
+//		do nothing
+func (deployer *ServiceDeployer) getUpdatedAnnotations(whiskAnnotations whisk.KeyValueArr, rma whisk.KeyValue, isUndeploy bool) whisk.KeyValueArr {
+	ma := rma.Value.(map[string]interface{})
+	if annotation := whiskAnnotations.GetValue(utils.MANAGED_LIST); annotation != nil {
+		mListIndex := whiskAnnotations.FindKeyValue(utils.MANAGED_LIST)
+
+		managedList := annotation.([]interface{})
+		for i, a := range managedList {
+			managed := a.(map[string]interface{})
+			if managed[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] {
+				// found current project in the list
+				if isUndeploy {
+					// undeploying the project. removing the project annotation from the managed list
+					managedList = managedList[:i+copy(managedList[i:], managedList[i+1:])]
+
+					// check if there left any managed project in the list
+					if len(managedList) == 0 {
+						// remove the MANAGED_LIST annotation from the asset
+						whiskAnnotations = whiskAnnotations[:mListIndex+copy(whiskAnnotations[mListIndex:], whiskAnnotations[mListIndex+1:])]
+					} else {
+						// update the managed list annotation with modified one
+						whiskAnnotations[mListIndex] = whisk.KeyValue{Key: utils.MANAGED_LIST, Value: managedList}
+					}
+
+					return whiskAnnotations
+				} else if managed[utils.OW_PROJECT_HASH] == ma[utils.OW_PROJECT_HASH] {
+					// the project already in managed projects list, no need to update anything
+					return nil
+				} else {
+					// update project hash. the asset appears in the manifest so we dont want to remove it from ow
+					managed[utils.OW_PROJECT_HASH] = ma[utils.OW_PROJECT_HASH]
+					managedList[i] = managed
+					whiskAnnotations[mListIndex] = whisk.KeyValue{Key: utils.MANAGED_LIST, Value: managedList}
+					return whiskAnnotations
+				}
+			}
+		}
+
+		// if we are here, it means that current managed project is not in the list
+		managedList = append(annotation.([]interface{}), ma)
+		whiskAnnotations[mListIndex] = whisk.KeyValue{Key: utils.MANAGED_LIST, Value: managedList}
+		return whiskAnnotations
+	} else if !isUndeploy {
+		aa := make([]interface{}, 1)
+		aa[0] = ma
+
+		return append(whiskAnnotations, whisk.KeyValue{Key: utils.MANAGED_LIST, Value: aa})
+	}
+	return nil
+}
+
+// Find MANAGED_LIST annotation
+//   In case found -
+//		If relations project hash differs from the current one remove - from the list
+//      In case length == 0 remove MANAGED_LIST annotation from the annotations
+func (deployer *ServiceDeployer) RefreshManagedProjectsListAnnotation(whiskAnnotations whisk.KeyValueArr) whisk.KeyValueArr {
+	if utils.Flags.RelationsPath == "" {
+		return nil
+	}
+
+	rma, _ := utils.GenerateManagedAnnotation(deployer.ProjectName, utils.Flags.RelationsPath)
+	ma := rma.Value.(map[string]interface{})
+
+	if annotation := whiskAnnotations.GetValue(utils.MANAGED_LIST); annotation != nil {
+		managedList := annotation.([]interface{})
+		// find managed project index
+		for i, a := range managedList {
+			managed := a.(map[string]interface{})
+
+			if managed[utils.OW_PROJECT_NAME] == ma[utils.OW_PROJECT_NAME] && managed[utils.OW_PROJECT_HASH] != ma[utils.OW_PROJECT_HASH] {
+				// remove managed project from the list
+				managedList = managedList[:i+copy(managedList[i:], managedList[i+1:])]
+
+				// update MANAGED value to the first one in the MANAGED_LIST
+				//				i = whiskAnnotations.FindKeyValue(utils.MANAGED)
+				//				whiskAnnotations[i] = whisk.KeyValue{Key: utils.MANAGED, Value: managedList[0]}
+
+				i = whiskAnnotations.FindKeyValue(utils.MANAGED_LIST)
+				// check if there left single managed project in the list
+				if len(managedList) == 0 {
+					// remove the MANAGED_LIST annotation from the asset
+					whiskAnnotations = whiskAnnotations[:i+copy(whiskAnnotations[i:], whiskAnnotations[i+1:])]
+				} else {
+					// update the managed list annotation with modified one
+					whiskAnnotations[i] = whisk.KeyValue{Key: utils.MANAGED_LIST, Value: managedList}
+				}
+
+				return whiskAnnotations
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (deployer *ServiceDeployer) getUpdatedPackage(packageName string, projectName string, rma whisk.KeyValue, isUndeploy bool) (*DeploymentPackage, error) {
+	fmt.Println(packageName)
+
+	// TODO: what should be done if the asset also appears in the manifest?
+	// options: throw an error - current behaviour
+	//			overwrite and make the current project to be the asset manager
+	//			keep the old one and print warning message. e.g. to specify --force to overwrite
+	for _, pack := range deployer.Deployment.Packages {
+		if pack.Package.GetName() == packageName {
+			return nil, wskderrors.NewCommandError("", "asset can't be specified both in relationships and in manifest")
+		}
+	}
+
+	// get package from OW
+	owPkg, _, err := deployer.Client.Packages.Get(packageName)
+	if err != nil {
+		return nil, err
+	}
+
+	//validate that package MANAGER identical to the one specified in the relationships.yaml
+	managedProjectAnnotation := owPkg.Annotations.GetValue(utils.MANAGED).(map[string]interface{})
+	if managedProjectAnnotation == nil || managedProjectAnnotation[utils.OW_PROJECT_NAME] != projectName {
+		// TODO: change to correct error
+		return nil, wskderrors.NewCommandError("", "relationships file incorrect. Package "+packageName+" expected to be managed by "+projectName)
+	}
+
+	// update managed projects list annotations with new (current) project name if needed
+	annotations := deployer.getUpdatedAnnotations(owPkg.Annotations, rma, isUndeploy)
+
+	if annotations == nil {
+		fmt.Println("no need to update this asset annotations")
+	} else {
+		owPkg.Annotations = annotations
+	}
+
+	deploymentPackage := NewDeploymentPackage()
+	deploymentPackage.Package = owPkg
+
+	return deploymentPackage, nil
+}
+
+func (deployer *ServiceDeployer) getUpdatedAction(packageName string, actionName string, projectName string, rma whisk.KeyValue, isUndeploy bool) (*utils.ActionRecord, error) {
+	if deployer.DeployActionInPackage {
+		actionName = strings.Join([]string{packageName, actionName}, "/")
+	}
+
+	// get action from OW
+	owAction, _, err := deployer.Client.Actions.Get(actionName)
+	if err != nil {
+		return nil, err
+	}
+
+	// update managed annotations with new project name if needed
+	owAction.Annotations = deployer.getUpdatedAnnotations(owAction.Annotations, rma, isUndeploy)
+
+	if owAction.Annotations != nil {
+		// creating action record with new annotation
+		var record utils.ActionRecord
+		record.Action = owAction
+		record.Packagename = packageName
+		return &record, nil
+	}
+
+	return nil, nil
+}
+
+func (deployer *ServiceDeployer) getUpdatedTrigger(packageName string, triggerName string, projectName string, rma whisk.KeyValue, isUndeploy bool) (*whisk.Trigger, error) {
+	// get action from OW
+	trigger, _, err := deployer.Client.Triggers.Get(triggerName)
+	if err != nil {
+		return nil, err
+	}
+
+	// update managed annotations with new project name if needed
+	trigger.Annotations = deployer.getUpdatedAnnotations(trigger.Annotations, rma, isUndeploy)
+
+	if trigger.Annotations != nil {
+		return trigger, nil
+	}
+
+	return nil, nil
+}
+
+func (deployer *ServiceDeployer) getUpdatedRule(packageName string, ruleName string, projectName string, rma whisk.KeyValue, isUndeploy bool) (*whisk.Rule, error) {
+	fmt.Println(ruleName)
+
+	// get action from OW
+	rule, _, err := deployer.Client.Rules.Get(ruleName)
+	if err != nil {
+		return nil, err
+	}
+
+	// update managed annotations with new project name if needed
+	rule.Annotations = deployer.getUpdatedAnnotations(rule.Annotations, rma, isUndeploy)
+
+	//TODO: raise issue for the workaround below. Trigger name should be parsed out to short trigger name
+	rule.Trigger = "/" + rule.Trigger.(map[string]interface{})["path"].(string) + "/" + rule.Trigger.(map[string]interface{})["name"].(string)
+	rule.Action = "/" + rule.Action.(map[string]interface{})["path"].(string) + "/" + rule.Action.(map[string]interface{})["name"].(string)
+
+	if rule.Annotations != nil {
+		return rule, nil
+	}
+
+	return nil, nil
+}
+
+func (deployer *ServiceDeployer) RefreshRelationships(ma map[string]interface{}) error {
+	// Get the list of packages in your namespace
+	packages, _, err := deployer.Client.Packages.List(&whisk.PackageListOptions{})
+	if err != nil {
+		return err
+	}
+
+	// iterate over each package to find and update managed_list annotations
+	for _, pkg := range packages {
+		if pkg.Annotations.GetValue(utils.MANAGED_LIST) != nil {
+			if a := deployer.RefreshManagedProjectsListAnnotation(pkg.Annotations); a != nil {
+				pkg.Annotations = a
+
+				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+					_, _, err := deployer.Client.Packages.Insert(&pkg, true)
+					return err
+				})
+
+				if err != nil {
+					return err
+				}
+			}
+
+			actions, _, err := deployer.Client.Actions.List(pkg.Name, &whisk.ActionListOptions{})
+			if err != nil {
+				return err
+			}
+
+			for _, action := range actions {
+				if action.Annotations.GetValue(utils.MANAGED_LIST) != nil {
+					if a := deployer.RefreshManagedProjectsListAnnotation(action.Annotations); a != nil {
+						actionName := strings.Join([]string{pkg.Name, action.Name}, "/")
+						// get action from OW
+						owAction, _, err := deployer.Client.Actions.Get(actionName)
+						if err != nil {
+							return err
+						}
+						owAction.Annotations = a
+						owAction.Name = actionName
+						fmt.Println(owAction.Exec)
+						err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+							_, _, err := deployer.Client.Actions.Insert(owAction, true)
+							return err
+						})
+					}
+				}
+
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	// Get list of triggers in your namespace
+	triggers, _, err := deployer.Client.Triggers.List(&whisk.TriggerListOptions{})
+	if err != nil {
+		return err
+	}
+
+	for _, trigger := range triggers {
+		var err error
+
+		if trigger.Annotations.GetValue(utils.MANAGED_LIST) != nil {
+			if a := deployer.RefreshManagedProjectsListAnnotation(trigger.Annotations); a != nil {
+				trigger.Annotations = a
+
+				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+					_, _, err := deployer.Client.Triggers.Insert(&trigger, true)
+					return err
+				})
+			}
+		}
+
+		if err != nil {
+			return err
+		}
+
+	}
+
+	// Get list of rules in your namespace
+	rules, _, err := deployer.Client.Rules.List(&whisk.RuleListOptions{})
+	if err != nil {
+		return err
+	}
+
+	for _, rule := range rules {
+		var err error
+
+		// rule has attached managed list annotation
+		if rule.Annotations.GetValue(utils.MANAGED_LIST) != nil {
+			if a := deployer.RefreshManagedProjectsListAnnotation(rule.Annotations); a != nil {
+				rule.Annotations = a
+
+				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+					_, _, err := deployer.Client.Rules.Insert(&rule, true)
+					return err
+				})
+			}
+		}
+		if err != nil {
+			return err
+		}
+
+	}
+
+	return err
+}
+
+func (deployer *ServiceDeployer) UndeployRelationships() error {
+	var err error
+
+	for packageName, pack := range deployer.Deployment.Packages {
+		pkg := pack.Package
+		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+			_, _, err := deployer.Client.Packages.Insert(pkg, true)
+			return err
+		})
+
+		if err != nil {
+			return err
+		}
+
+		for _, action := range pack.Actions {
+			actionName := strings.Join([]string{packageName, action.Action.Name}, "/")
+			action.Action.Name = actionName
+			err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+				_, _, err := deployer.Client.Actions.Insert(action.Action, true)
+				return err
+			})
+
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	for _, rule := range deployer.Deployment.Rules {
+		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+			_, _, err := deployer.Client.Rules.Insert(rule, true)
+			return err
+		})
+
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, trigger := range deployer.Deployment.Triggers {
+		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+			_, _, err := deployer.Client.Triggers.Insert(trigger, true)
+			return err
+		})
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
 }

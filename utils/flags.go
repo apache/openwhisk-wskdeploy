@@ -42,6 +42,7 @@ type WskDeployFlags struct {
 	Cert             string
 	Managed          bool // OpenWhisk Managed Deployments
 	ApigwAccessToken string
+	RelationsPath    string
 }
 
 func (flags *WskDeployFlags) Format() string {

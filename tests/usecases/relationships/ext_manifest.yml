@@ -14,9 +14,9 @@
 # specific language governing permissions and limitations under the License.
 #
 project:
-  name: AAA
+  name: EXT
 packages:
-  triggerrule:
+  triggerrule_ext:
       version: 1.0
       license: Apache-2.0
       actions:
@@ -24,9 +24,3 @@ packages:
           version: 1.0
           function: greeting.js
           runtime: nodejs:6
-      triggers:
-        locationUpdate:
-      rules:
-        myRule:
-          trigger: locationUpdate
-          action: greeting

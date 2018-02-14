@@ -14,7 +14,7 @@
 # specific language governing permissions and limitations under the License.
 #
 project:
-  name: AAA
+  name: LIB
 packages:
   triggerrule:
       version: 1.0

@@ -226,6 +226,10 @@ type YAML struct {
 	Filepath    string             //file path of the yaml file
 }
 
+type PROJECTS struct {
+	Projects map[string]YAML `yaml:"projects"` //used in relationships.yaml
+}
+
 // function to return Project or Application depending on what is specified in
 // manifest and deployment files
 func (yaml *YAML) GetProject() Project {

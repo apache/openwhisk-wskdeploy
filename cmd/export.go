@@ -18,7 +18,6 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -121,6 +120,34 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML)
 	return nil
 }
 
+func ContainsManageProjectAnnotation(annotations whisk.KeyValueArr, projectName string) (res bool) {
+	// get the list of managed projects
+	if annotation := annotations.GetValue(utils.MANAGED_LIST); annotation != nil {
+		// decode the JSON blob and retrieve __OW_PROJECT_NAME_LIST
+		managedList := annotation.([]interface{})
+
+		for _, a := range managedList {
+			managed := a.(map[string]interface{})
+			if managed[utils.OW_PROJECT_NAME] == projectName {
+				return true
+			}
+		}
+	}
+
+	// for backward compatibility check 'managed' annotation as well
+	if a := annotations.GetValue(utils.MANAGED); a != nil {
+		// decode the JSON blob and retrieve __OW_PROJECT_NAME
+		pa := a.(map[string]interface{})
+
+		// we have found a package which is part of the current project
+		if pa[utils.OW_PROJECT_NAME] == projectName {
+			return true
+		}
+	}
+
+	return false
+}
+
 func ExportCmdImp(cmd *cobra.Command, args []string) error {
 
 	projectName := utils.Flags.ProjectPath
@@ -144,52 +171,38 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 	// add to export when managed project name matches with the
 	// specified project name
 	for _, pkg := range packages {
-		if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
-			// decode the JSON blob and retrieve __OW_PROJECT_NAME
-			pa := a.(map[string]interface{})
+		if ContainsManageProjectAnnotation(pkg.Annotations, projectName) {
+			if maniyaml.Packages == nil {
+				maniyaml.Packages = make(map[string]parsers.Package)
+			}
 
-			// we have found a package which is part of the current project
-			if pa[utils.OW_PROJECT_NAME] == projectName {
+			maniyaml.Packages[pkg.Name] = *maniyaml.ComposeParsersPackage(pkg)
 
-				if maniyaml.Packages == nil {
-					maniyaml.Packages = make(map[string]parsers.Package)
-				}
+			// perform the similar check on the list of actions from this package
+			// get a list of actions in your namespace
+			actions, _, err := client.Actions.List(pkg.Name, &whisk.ActionListOptions{})
+			if err != nil {
+				return err
+			}
 
-				maniyaml.Packages[pkg.Name] = *maniyaml.ComposeParsersPackage(pkg)
-				// TODO: throw if there more than single package managed by project
-				// currently will be a mess because triggers and rules managed under packages
-				// instead of the top level (similar to OW model)
-				if len(maniyaml.Packages) > 1 {
-					return errors.New("currently can't work with more than one package managed by one project")
-				}
-
-				// perform the similar check on the list of actions from this package
-				// get a list of actions in your namespace
-				actions, _, err := client.Actions.List(pkg.Name, &whisk.ActionListOptions{})
-				if err != nil {
-					return err
-				}
-
-				// iterate over list of managed package actions to find an action with managed annotations
-				// check if "managed" annotation is attached to an action
-				for _, action := range actions {
-					// TODO: consider to throw error when there unmanaged or "foreign" assets under managed package
-					// an annotation with "managed" key indicates that an action was deployed as part of managed deployment
-					// if such annotation exists, check if it belongs to the current managed deployment
-					// this action has attached managed annotations
-					if a := action.Annotations.GetValue(utils.MANAGED); a != nil {
-						aa := a.(map[string]interface{})
-						if aa[utils.OW_PROJECT_NAME] == projectName {
-							actionName := strings.Join([]string{pkg.Name, action.Name}, "/")
-							// export action to file system
-							err = ExportAction(actionName, pkg.Name, maniyaml)
-							if err != nil {
-								return err
-							}
-						}
+			// iterate over list of managed package actions to find an action with managed annotations
+			// check if "managed" annotation is attached to an action
+			for _, action := range actions {
+				// TODO: consider to throw error when there unmanaged or "foreign" assets under managed package
+				// an annotation with "managed" key indicates that an action was deployed as part of managed deployment
+				// if such annotation exists, check if it belongs to the current managed deployment
+				// this action has attached managed annotations
+				if ContainsManageProjectAnnotation(action.Annotations, projectName) {
+					actionName := strings.Join([]string{pkg.Name, action.Name}, "/")
+					// export action to file system
+					err = ExportAction(actionName, pkg.Name, maniyaml)
+					if err != nil {
+						return err
 					}
+
 				}
 			}
+
 		}
 	}
 
@@ -202,23 +215,17 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 	// iterate over the list of triggers to determine whether any of them part of specified managed project
 	for _, trg := range triggers {
 		// trigger has attached managed annotation
-		if a := trg.Annotations.GetValue(utils.MANAGED); a != nil {
-			// decode the JSON blob and retrieve __OW_PROJECT_NAME
-			ta := a.(map[string]interface{})
-			if ta[utils.OW_PROJECT_NAME] == projectName {
-
-				//				for i := 0; i < len(maniyaml.Packages); i++ {
-				for pkgName := range maniyaml.Packages {
-					if maniyaml.Packages[pkgName].Namespace == trg.Namespace {
-						if maniyaml.Packages[pkgName].Triggers == nil {
-							pkg := maniyaml.Packages[pkgName]
-							pkg.Triggers = make(map[string]parsers.Trigger)
-							maniyaml.Packages[pkgName] = pkg
-						}
-
-						// export trigger to manifest
-						maniyaml.Packages[pkgName].Triggers[trg.Name] = *maniyaml.ComposeParsersTrigger(trg)
+		if ContainsManageProjectAnnotation(trg.Annotations, projectName) {
+			for pkgName := range maniyaml.Packages {
+				if maniyaml.Packages[pkgName].Namespace == trg.Namespace {
+					if maniyaml.Packages[pkgName].Triggers == nil {
+						pkg := maniyaml.Packages[pkgName]
+						pkg.Triggers = make(map[string]parsers.Trigger)
+						maniyaml.Packages[pkgName] = pkg
 					}
+
+					// export trigger to manifest
+					maniyaml.Packages[pkgName].Triggers[trg.Name] = *maniyaml.ComposeParsersTrigger(trg)
 				}
 			}
 		}

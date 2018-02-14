@@ -51,4 +51,5 @@ func init() {
 	undeployCmd.Flags().StringVarP(&utils.Flags.ProjectPath, "pathpath", "p", ".", "path to serverless project")
 	undeployCmd.Flags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", "path to manifest file")
 	undeployCmd.Flags().StringVarP(&utils.Flags.DeploymentPath, "deployment", "d", "", "path to deployment file")
+	undeployCmd.Flags().StringVarP(&utils.Flags.RelationsPath, "", "r", "", "path to relationships file")
 }
