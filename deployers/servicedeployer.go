@@ -132,7 +132,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		return err
 	}
 
-	deployer.RootPackageName = manifest.Package.Packagename
+	//deployer.RootPackageName = manifest.Package.Packagename
 	deployer.ProjectName = manifest.GetProject().Name
 
 	// Generate Managed Annotations if its marked as a Managed Deployment
@@ -155,7 +155,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		}
 	}
 
-	manifestReader.InitRootPackage(manifestParser, manifest, deployer.ManagedAnnotation)
+	manifestReader.InitPackages(manifestParser, manifest, deployer.ManagedAnnotation)
 
 	if deployer.IsDefault == true {
 		fileReader := NewFileSystemReader(deployer)
@@ -236,8 +236,8 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 		return deployer.Deployment, err
 	}
 
-	deployer.RootPackageName = manifest.Package.Packagename
-	manifestReader.InitRootPackage(manifestParser, manifest, whisk.KeyValue{})
+	//deployer.RootPackageName = manifest.Package.Packagename
+	manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
 
 	// process file system
 	if deployer.IsDefault == true {
@@ -453,6 +453,20 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 					return err
 				}
 
+				dependentPackages := []string{}
+				for k := range depServiceDeployer.Deployment.Packages {
+					dependentPackages = append(dependentPackages, k)
+				}
+
+				if len(dependentPackages) > 1 {
+					errMessage := "GitHub dependency " + depName + " has multiple packages in manifest file: " +
+						strings.Join(dependentPackages, ", ") + ". " +
+						"One GitHub dependency can only be associated with single package in manifest file." +
+						"There is no way to reference actions from multiple packages of any GitHub dependencies."
+					return wskderrors.NewYAMLFileFormatError(deployer.ManifestPath, errMessage)
+				}
+
+
 				if err := depServiceDeployer.deployAssets(); err != nil {
 					errString := wski18n.T(wski18n.ID_MSG_DEPENDENCY_DEPLOYMENT_FAILURE_X_name_X,
 						map[string]interface{}{wski18n.KEY_NAME: depName})
@@ -460,16 +474,17 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 					return err
 				}
 
-				// if the RootPackageName is different from depName
-				// create a binding to the origin package
-				if depServiceDeployer.RootPackageName != depName {
+				// if the dependency name in the original package
+				// is different from the package name in the manifest
+				// file of dependent github repo, create a binding to the origin package
+				if ok := depServiceDeployer.Deployment.Packages[depName]; ok == nil {
 					bindingPackage := new(whisk.BindingPackage)
 					bindingPackage.Namespace = pack.Package.Namespace
 					bindingPackage.Name = depName
 					pub := false
 					bindingPackage.Publish = &pub
 
-					qName, err := utils.ParseQualifiedName(depServiceDeployer.RootPackageName, depServiceDeployer.Deployment.Packages[depServiceDeployer.RootPackageName].Package.Namespace)
+					qName, err := utils.ParseQualifiedName(dependentPackages[0], depServiceDeployer.Deployment.Packages[dependentPackages[0]].Package.Namespace)
 					if err != nil {
 						return err
 					}
@@ -914,9 +929,6 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 	// if it contains a slash, then the action is qualified by a package name
 	if strings.Contains(rule.Action.(string), "/") {
 		rule.Action = deployer.getQualifiedName(rule.Action.(string), deployer.ClientConfig.Namespace)
-	} else {
-		// if not, we assume the action is inside the root package
-		rule.Action = deployer.getQualifiedName(strings.Join([]string{deployer.RootPackageName, rule.Action.(string)}, "/"), deployer.ClientConfig.Namespace)
 	}
 
 	var err error
