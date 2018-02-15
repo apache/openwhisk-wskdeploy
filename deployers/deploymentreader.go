@@ -85,14 +85,14 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 		//			wski18n.KEY_FILE_TYPE: wski18n.DEPLOYMENT})
 		//	wskprint.PrintlnOpenWhiskWarning(warningString)
 		//} else {
-			if reader.DeploymentDescriptor.Packages != nil {
-				for packName, depPacks := range reader.DeploymentDescriptor.Packages {
-					depPacks.Packagename = packName
-					packMap[packName] = depPacks
-				}
-			} else {
-				packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
+		if reader.DeploymentDescriptor.Packages != nil {
+			for packName, depPacks := range reader.DeploymentDescriptor.Packages {
+				depPacks.Packagename = packName
+				packMap[packName] = depPacks
 			}
+		} else {
+			packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
+		}
 		//}
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
@@ -183,14 +183,14 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 		//if len(reader.DeploymentDescriptor.GetProject().Package.Packagename) != 0 {
 		//	packMap[reader.DeploymentDescriptor.GetProject().Package.Packagename] = reader.DeploymentDescriptor.GetProject().Package
 		//} else {
-			if reader.DeploymentDescriptor.Packages != nil {
-				for packName, depPacks := range reader.DeploymentDescriptor.Packages {
-					depPacks.Packagename = packName
-					packMap[packName] = depPacks
-				}
-			} else {
-				packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
+		if reader.DeploymentDescriptor.Packages != nil {
+			for packName, depPacks := range reader.DeploymentDescriptor.Packages {
+				depPacks.Packagename = packName
+				packMap[packName] = depPacks
 			}
+		} else {
+			packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
+		}
 		//}
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
@@ -277,14 +277,14 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 		//if len(reader.DeploymentDescriptor.GetProject().Package.Packagename) != 0 {
 		//	packMap[reader.DeploymentDescriptor.GetProject().Package.Packagename] = reader.DeploymentDescriptor.GetProject().Package
 		//} else {
-			if reader.DeploymentDescriptor.Packages != nil {
-				for packName, depPacks := range reader.DeploymentDescriptor.Packages {
-					depPacks.Packagename = packName
-					packMap[packName] = depPacks
-				}
-			} else {
-				packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
+		if reader.DeploymentDescriptor.Packages != nil {
+			for packName, depPacks := range reader.DeploymentDescriptor.Packages {
+				depPacks.Packagename = packName
+				packMap[packName] = depPacks
 			}
+		} else {
+			packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
+		}
 		//}
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
