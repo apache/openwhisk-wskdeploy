@@ -81,15 +81,15 @@ func NewDeploymentPackage() *DeploymentPackage {
 //   3. Collect information about the source code files in the working directory
 //   4. Create a deployment plan to create OpenWhisk service
 type ServiceDeployer struct {
-	ProjectName     string
-	Deployment      *DeploymentProject
-	Client          *whisk.Client
-	mt              sync.RWMutex
-	IsInteractive   bool
-	IsDefault       bool
-	ManifestPath    string
-	ProjectPath     string
-	DeploymentPath  string
+	ProjectName    string
+	Deployment     *DeploymentProject
+	Client         *whisk.Client
+	mt             sync.RWMutex
+	IsInteractive  bool
+	IsDefault      bool
+	ManifestPath   string
+	ProjectPath    string
+	DeploymentPath string
 	// whether to deploy the action under the package
 	DeployActionInPackage bool
 	InteractiveChoice     bool
