@@ -126,16 +126,7 @@ func readFromManifestFile(manifestPath string) {
 		if utils.FileExists(manifestPath) {
 			mm := parsers.NewYAMLParser()
 			manifest, _ := mm.ParseManifest(manifestPath)
-			var p = parsers.Package{}
-			if manifest.Package.Packagename != "" {
-				p = manifest.Package
-			} else if manifest.Packages != nil {
-				if len(manifest.Packages) == 1 {
-					for _, pkg := range manifest.Packages {
-						p = pkg
-					}
-				}
-			}
+			p := manifest.GetProject()
 			setWhiskConfig(p.Credential, p.Namespace, p.ApiHost, p.ApigwAccessToken, path.Base(manifestPath))
 		}
 	}
@@ -258,6 +249,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 
 	readFromWskprops(pi, proppath)
 
+	// TODO() whisk.properties should be deprecated
 	readFromWhiskProperty(pi)
 
 	// set namespace to default namespace if not yet found
