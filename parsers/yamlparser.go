@@ -203,6 +203,9 @@ type Package struct {
 	Inputs           map[string]Parameter   `yaml:"inputs"`   //deprecated, used in deployment.yaml
 	Sequences        map[string]Sequence    `yaml:"sequences"`
 	Annotations      map[string]interface{} `yaml:"annotations,omitempty"`
+
+	// TODO() this is a convenience we want for package-shared vars that would be
+	// propagated to every action within the package.
 	//Parameters  map[string]interface{} `yaml: parameters` // used in manifest.yaml
 	Apis map[string]map[string]map[string]map[string]string `yaml:"apis"` //used in manifest.yaml
 }
@@ -215,7 +218,8 @@ type Project struct {
 	ApigwAccessToken string             `yaml:"apigwAccessToken"`
 	Version          string             `yaml:"version"`
 	Packages         map[string]Package `yaml:"packages"` //used in deployment.yaml
-	Package          Package            `yaml:"package"`  // being deprecated, used in deployment.yaml
+	// xxx
+	//Package          Package            `yaml:"package"`  // being deprecated, used in deployment.yaml
 }
 
 type YAML struct {
@@ -251,11 +255,13 @@ func convertPackageName(packageMap map[string]Package) map[string]Package {
 
 func ReadEnvVariable(yaml *YAML) *YAML {
 	if yaml.Application.Name != "" {
-		yaml.Application.Package.Packagename = wskenv.ConvertSingleName(yaml.Application.Package.Packagename)
+		// xxx
+		//yaml.Application.Package.Packagename = wskenv.ConvertSingleName(yaml.Application.Package.Packagename)
 		yaml.Package.Packagename = wskenv.ConvertSingleName(yaml.Package.Packagename)
 		yaml.Application.Packages = convertPackageName(yaml.Application.Packages)
 	} else {
-		yaml.Project.Package.Packagename = wskenv.ConvertSingleName(yaml.Project.Package.Packagename)
+		// xxx
+		//yaml.Project.Package.Packagename = wskenv.ConvertSingleName(yaml.Project.Package.Packagename)
 		yaml.Package.Packagename = wskenv.ConvertSingleName(yaml.Package.Packagename)
 		yaml.Project.Packages = convertPackageName(yaml.Project.Packages)
 	}

@@ -132,7 +132,8 @@ func TestParseDeploymentYAML_Packages(t *testing.T) {
 	deployment, _ := mm.ParseDeployment("../tests/dat/deployment_data_packages.yaml")
 
 	assert.Equal(t, 0, len(deployment.GetProject().Packages), "Packages under project are empty.")
-	assert.Equal(t, 0, len(deployment.GetProject().Package.Packagename), "Package name is empty.")
+	// xxx
+	//assert.Equal(t, 0, len(deployment.GetProject().Package.Packagename), "Package name is empty.")
 	assert.Equal(t, 1, len(deployment.Packages), "Packages are available.")
 	for pkg_name := range deployment.Packages {
 		assert.Equal(t, "test_package", pkg_name, "Get package name failed.")
@@ -203,7 +204,8 @@ func TestParseDeploymentYAML_Packages_Env(t *testing.T) {
 	deployment, _ := mm.ParseDeployment("../tests/dat/deployment_data_packages_env_var.yaml")
 
 	assert.Equal(t, 0, len(deployment.GetProject().Packages), "Packages under project are empty.")
-	assert.Equal(t, 0, len(deployment.GetProject().Package.Packagename), "Package name is empty.")
+	// xxx
+	//assert.Equal(t, 0, len(deployment.GetProject().Package.Packagename), "Package name is empty.")
 	assert.Equal(t, 1, len(deployment.Packages), "Packages are available.")
 	for pkg_name := range deployment.Packages {
 		assert.Equal(t, testPackage, pkg_name, "Get package name failed.")
@@ -219,6 +221,7 @@ func TestParseDeploymentYAML_Packages_Env(t *testing.T) {
 	}
 }
 
+// xxx
 //func TestParseDeploymentYAML_Package_Env(t *testing.T) {
 //	testPackage := "test_package"
 //	os.Setenv("package_name", testPackage)
@@ -241,21 +244,22 @@ func TestParseDeploymentYAML_Packages_Env(t *testing.T) {
 //	}
 //}
 
-func TestParseDeploymentYAML_Project_Package_Env(t *testing.T) {
-	testPackage := "test_package"
-	os.Setenv("package_name", testPackage)
-	assert.Equal(t, testPackage, os.Getenv("package_name"))
-	mm := NewYAMLParser()
-	deployment, _ := mm.ParseDeployment("../tests/dat/deployment_data_project_package_env_var.yaml")
-	assert.Equal(t, testPackage, deployment.GetProject().Package.Packagename, "Get package name failed.")
-	assert.Equal(t, "/wskdeploy/samples/test", deployment.GetProject().Package.Namespace, "Get package namespace failed.")
-	assert.Equal(t, "12345678ABCDEF", deployment.GetProject().Package.Credential, "Get package credential failed.")
-	assert.Equal(t, 1, len(deployment.GetProject().Package.Inputs), "Get package input list failed.")
-
-	// Verify the case of using concatenation.
-	deployment, _ = mm.ParseDeployment("../tests/dat/deployment_data_project_package_env_var_con.yaml")
-	assert.Equal(t, "test_package-test_package", deployment.GetProject().Package.Packagename, "Get package name failed.")
-}
+// xxx
+//func TestParseDeploymentYAML_Project_Package_Env(t *testing.T) {
+//	testPackage := "test_package"
+//	os.Setenv("package_name", testPackage)
+//	assert.Equal(t, testPackage, os.Getenv("package_name"))
+//	mm := NewYAMLParser()
+//	deployment, _ := mm.ParseDeployment("../tests/dat/deployment_data_project_package_env_var.yaml")
+//	assert.Equal(t, testPackage, deployment.GetProject().Package.Packagename, "Get package name failed.")
+//	assert.Equal(t, "/wskdeploy/samples/test", deployment.GetProject().Package.Namespace, "Get package namespace failed.")
+//	assert.Equal(t, "12345678ABCDEF", deployment.GetProject().Package.Credential, "Get package credential failed.")
+//	assert.Equal(t, 1, len(deployment.GetProject().Package.Inputs), "Get package input list failed.")
+//
+//	// Verify the case of using concatenation.
+//	deployment, _ = mm.ParseDeployment("../tests/dat/deployment_data_project_package_env_var_con.yaml")
+//	assert.Equal(t, "test_package-test_package", deployment.GetProject().Package.Packagename, "Get package name failed.")
+//}
 
 func TestParseDeploymentYAML_Project_Packages_Env(t *testing.T) {
 	testPackage := "test_package"
