@@ -85,7 +85,6 @@ type ServiceDeployer struct {
 	Deployment      *DeploymentProject
 	Client          *whisk.Client
 	mt              sync.RWMutex
-	RootPackageName string
 	IsInteractive   bool
 	IsDefault       bool
 	ManifestPath    string
@@ -132,7 +131,6 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		return err
 	}
 
-	//deployer.RootPackageName = manifest.Package.Packagename
 	deployer.ProjectName = manifest.GetProject().Name
 
 	// Generate Managed Annotations if its marked as a Managed Deployment
@@ -236,7 +234,6 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 		return deployer.Deployment, err
 	}
 
-	//deployer.RootPackageName = manifest.Package.Packagename
 	manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
 
 	// process file system
@@ -1101,8 +1098,13 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
 					return err
 				}
 
+				dependentPackages := []string{}
+				for k := range depServiceDeployer.Deployment.Packages {
+					dependentPackages = append(dependentPackages, k)
+				}
+
 				// delete binding pkg if the origin package name is different
-				if depServiceDeployer.RootPackageName != depName {
+				if ok := depServiceDeployer.Deployment.Packages[depName]; ok == nil {
 					if _, _, ok := deployer.Client.Packages.Get(depName); ok == nil {
 						var err error
 						var response *http.Response
