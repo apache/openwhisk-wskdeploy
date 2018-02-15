@@ -25,6 +25,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+/* NOTE: Though username and password is used here, this does not mean that wskdeploy fully supports private repos.
+ * This is merely one of many changes required to support them.
+ */
+
 func TestLocationIsGithub(t *testing.T) {
 	assert.True(t, LocationIsGithub("github.com/my-org/my-project"), "Does not allow github without a http/https prefix")
 	assert.True(t, LocationIsGithub("github.ibm.com/my-org/my-project"), "Does not allow github.ibm.com without a http/https prefix")
