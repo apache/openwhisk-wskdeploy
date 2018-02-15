@@ -466,7 +466,6 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 					return wskderrors.NewYAMLFileFormatError(deployer.ManifestPath, errMessage)
 				}
 
-
 				if err := depServiceDeployer.deployAssets(); err != nil {
 					errString := wski18n.T(wski18n.ID_MSG_DEPENDENCY_DEPLOYMENT_FAILURE_X_name_X,
 						map[string]interface{}{wski18n.KEY_NAME: depName})
