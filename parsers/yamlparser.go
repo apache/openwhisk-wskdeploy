@@ -218,8 +218,6 @@ type Project struct {
 	ApigwAccessToken string             `yaml:"apigwAccessToken"`
 	Version          string             `yaml:"version"`
 	Packages         map[string]Package `yaml:"packages"` //used in deployment.yaml
-	// xxx
-	//Package          Package            `yaml:"package"`  // being deprecated, used in deployment.yaml
 }
 
 type YAML struct {
@@ -255,13 +253,9 @@ func convertPackageName(packageMap map[string]Package) map[string]Package {
 
 func ReadEnvVariable(yaml *YAML) *YAML {
 	if yaml.Application.Name != "" {
-		// xxx
-		//yaml.Application.Package.Packagename = wskenv.ConvertSingleName(yaml.Application.Package.Packagename)
 		yaml.Package.Packagename = wskenv.ConvertSingleName(yaml.Package.Packagename)
 		yaml.Application.Packages = convertPackageName(yaml.Application.Packages)
 	} else {
-		// xxx
-		//yaml.Project.Package.Packagename = wskenv.ConvertSingleName(yaml.Project.Package.Packagename)
 		yaml.Package.Packagename = wskenv.ConvertSingleName(yaml.Package.Packagename)
 		yaml.Project.Packages = convertPackageName(yaml.Project.Packages)
 	}

@@ -73,18 +73,6 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 	packMap := make(map[string]parsers.Package)
 
 	if reader.DeploymentDescriptor.GetProject().Packages == nil {
-		// xxx
-		//// a single package is specified in deployment YAML file with "package" key
-		//if len(reader.DeploymentDescriptor.GetProject().Package.Packagename) != 0 {
-		//	packMap[reader.DeploymentDescriptor.GetProject().Package.Packagename] = reader.DeploymentDescriptor.GetProject().Package
-		//	warningString := wski18n.T(
-		//		wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
-		//		map[string]interface{}{
-		//			wski18n.KEY_OLD:       parsers.YAML_KEY_PACKAGE,
-		//			wski18n.KEY_NEW:       parsers.YAML_KEY_PACKAGES,
-		//			wski18n.KEY_FILE_TYPE: wski18n.DEPLOYMENT})
-		//	wskprint.PrintlnOpenWhiskWarning(warningString)
-		//} else {
 		if reader.DeploymentDescriptor.Packages != nil {
 			for packName, depPacks := range reader.DeploymentDescriptor.Packages {
 				depPacks.Packagename = packName
@@ -93,7 +81,6 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 		} else {
 			packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
 		}
-		//}
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
 			depPacks.Packagename = packName
@@ -178,11 +165,6 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 	packMap := make(map[string]parsers.Package)
 
 	if reader.DeploymentDescriptor.GetProject().Packages == nil {
-		// xxx
-		//// a single package is specified in deployment YAML file with "package" key
-		//if len(reader.DeploymentDescriptor.GetProject().Package.Packagename) != 0 {
-		//	packMap[reader.DeploymentDescriptor.GetProject().Package.Packagename] = reader.DeploymentDescriptor.GetProject().Package
-		//} else {
 		if reader.DeploymentDescriptor.Packages != nil {
 			for packName, depPacks := range reader.DeploymentDescriptor.Packages {
 				depPacks.Packagename = packName
@@ -191,7 +173,6 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 		} else {
 			packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
 		}
-		//}
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
 			depPacks.Packagename = packName
@@ -273,10 +254,6 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 	packMap := make(map[string]parsers.Package)
 
 	if reader.DeploymentDescriptor.GetProject().Packages == nil {
-		// xxx
-		//if len(reader.DeploymentDescriptor.GetProject().Package.Packagename) != 0 {
-		//	packMap[reader.DeploymentDescriptor.GetProject().Package.Packagename] = reader.DeploymentDescriptor.GetProject().Package
-		//} else {
 		if reader.DeploymentDescriptor.Packages != nil {
 			for packName, depPacks := range reader.DeploymentDescriptor.Packages {
 				depPacks.Packagename = packName
@@ -285,7 +262,6 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 		} else {
 			packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
 		}
-		//}
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
 			depPacks.Packagename = packName
