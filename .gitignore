@@ -35,6 +35,10 @@ wskdeploy
 # Go IDE
 .idea
 *.iml
+.project
+.settings
+.vscode
+Packages/
 
 # Gradle
 .gradle

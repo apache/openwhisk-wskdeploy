@@ -162,6 +162,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 			// TODO() define const for the protocol prefix, etc.
 			if !strings.HasPrefix(location, "https://") && !strings.HasPrefix(location, "http://") {
 				location = "https://" + dependency.Location
+				location = wskenv.InterpolateStringWithEnvVar(location).(string)
 			}
 
 			isBinding = false
@@ -190,7 +191,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 		for name, value := range dependency.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = wskenv.GetEnvVar(value)
+			keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
 
 			keyValArrAnot = append(keyValArrAnot, keyVal)
 		}
@@ -316,7 +317,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	for name, value := range pkg.Annotations {
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
-		keyVal.Value = wskenv.GetEnvVar(value)
+		keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
 		listOfAnnotations = append(listOfAnnotations, keyVal)
 	}
 	if len(listOfAnnotations) > 0 {
@@ -386,7 +387,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		for name, value := range sequence.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = wskenv.GetEnvVar(value)
+			keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
 
 			keyValArr = append(keyValArr, keyVal)
 		}
@@ -650,7 +651,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		for name, value := range action.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = wskenv.GetEnvVar(value)
+			keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
 			listOfAnnotations = append(listOfAnnotations, keyVal)
 		}
 		if len(listOfAnnotations) > 0 {
@@ -780,7 +781,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 
 		// replacing env. variables here in the trigger feed name
 		// to support trigger feed with $READ_FROM_ENV_TRIGGER_FEED
-		trigger.Feed = wskenv.GetEnvVar(trigger.Feed).(string)
+		trigger.Feed = wskenv.InterpolateStringWithEnvVar(trigger.Feed).(string)
 
 		keyValArr := make(whisk.KeyValueArr, 0)
 		if trigger.Feed != "" {
@@ -818,7 +819,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 		for name, value := range trigger.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = wskenv.GetEnvVar(value)
+			keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
 			listOfAnnotations = append(listOfAnnotations, keyVal)
 		}
 		if len(listOfAnnotations) > 0 {
@@ -881,7 +882,7 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.Key
 		for name, value := range rule.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = wskenv.GetEnvVar(value)
+			keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
 			listOfAnnotations = append(listOfAnnotations, keyVal)
 		}
 		if len(listOfAnnotations) > 0 {

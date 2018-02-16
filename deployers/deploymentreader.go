@@ -112,7 +112,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 
 				keyVal.Key = name
 
-				keyVal.Value = wskenv.GetEnvVar(input.Value)
+				keyVal.Value = wskenv.InterpolateStringWithEnvVar(input.Value)
 
 				keyValArr = append(keyValArr, keyVal)
 			}
@@ -201,7 +201,7 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 
 					keyVal.Key = name
 
-					keyVal.Value = wskenv.GetEnvVar(input.Value)
+					keyVal.Value = wskenv.InterpolateStringWithEnvVar(input.Value)
 
 					keyValArr = append(keyValArr, keyVal)
 				}
@@ -287,7 +287,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 					var keyVal whisk.KeyValue
 
 					keyVal.Key = name
-					keyVal.Value = wskenv.GetEnvVar(input.Value)
+					keyVal.Value = wskenv.InterpolateStringWithEnvVar(input.Value)
 
 					keyValArr = append(keyValArr, keyVal)
 				}

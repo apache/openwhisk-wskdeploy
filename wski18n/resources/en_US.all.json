@@ -144,12 +144,12 @@
     "translation": "The apigw access token is set, from {{.source}}.\n"
   },
   {
-    "id": "msg_unmarshall_local",
-    "translation": "Unmarshal OpenWhisk info from local values.\n"
+    "id": "msg_unmarshal_local",
+    "translation": "Unmarshal OpenWhisk runtimes from local values.\n"
   },
   {
-    "id": "msg_unmarshall_network",
-    "translation": "Unmarshal OpenWhisk info from internet.\n"
+    "id": "msg_unmarshal_network",
+    "translation": "Unmarshal OpenWhisk runtimes from internet at {{.url}}.\n"
   },
   {
     "id": "msg_deployment_cancelled",

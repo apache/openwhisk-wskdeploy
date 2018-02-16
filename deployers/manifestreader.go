@@ -52,12 +52,12 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 	return manifest, manifestParser, nil
 }
 
-func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, ma whisk.KeyValue) error {
+func (reader *ManifestReader) InitPackages(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, ma whisk.KeyValue) error {
 	packages, err := manifestParser.ComposeAllPackages(manifest, reader.serviceDeployer.ManifestPath, ma)
 	if err != nil {
 		return err
 	}
-	reader.SetPackage(packages)
+	reader.SetPackages(packages)
 
 	return nil
 }
@@ -161,7 +161,7 @@ func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRe
 	return nil
 }
 
-func (reader *ManifestReader) SetPackage(packages map[string]*whisk.Package) error {
+func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package) error {
 
 	dep := reader.serviceDeployer
 
