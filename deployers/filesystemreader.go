@@ -45,7 +45,6 @@ func NewFileSystemReader(serviceDeployer *ServiceDeployer) *FileSystemReader {
 	return &reader
 }
 
-
 // TODO(#748) This function adds actions to a "Default" package which is not a concept we support
 func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]utils.ActionRecord, error) {
 
@@ -71,7 +70,7 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]
 			}
 
 			if !f.IsDir() {
-				if pathCount - projectPathCount == 1 || strings.HasPrefix(fpath, reader.serviceDeployer.ProjectPath + "/" + FileSystemSourceDirectoryName) {
+				if pathCount-projectPathCount == 1 || strings.HasPrefix(fpath, reader.serviceDeployer.ProjectPath+"/"+FileSystemSourceDirectoryName) {
 					ext := filepath.Ext(fpath)
 
 					// TODO(#692) do not hardcoded known extensions here, create a util that associates
@@ -101,7 +100,7 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]
 						actions = append(actions, record)
 					}
 				}
-			} else if strings.HasPrefix(fpath, reader.serviceDeployer.ProjectPath + "/" + FileSystemSourceDirectoryName) {
+			} else if strings.HasPrefix(fpath, reader.serviceDeployer.ProjectPath+"/"+FileSystemSourceDirectoryName) {
 				// Inform user of what reader is doing
 				dbgMsg := wski18n.T(wski18n.ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X,
 					map[string]interface{}{

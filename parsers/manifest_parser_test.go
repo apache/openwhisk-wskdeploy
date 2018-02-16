@@ -35,22 +35,22 @@ import (
 
 const (
 	// local test assert messages
-	TEST_MSG_PACKAGE_NAME_MISSING = "Package named [%s] missing."
-	TEST_MSG_PACKAGE_NAME_MISMATCH = "Package name mismatched."
-	TEST_MSG_ACTION_NUMBER_MISMATCH = "Number of Actions mismatched."
-	TEST_MSG_ACTION_NAME_MISSING = "Action named [%s] does not exist."
-	TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH = "Action function path mismatched."
-	TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH = "Action function runtime mismatched."
-	TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH = "Action function main name mismatch."
-	TEST_MSG_ACTION_PARAMETER_TYPE_MISMATCH = "Action parameter [%s] had a type mismatch."
-	TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH = "Action parameter [%s] had a value mismatch."
-	TEST_MSG_PARAMETER_NUMBER_MISMATCH = "Number of Paramaters mismatched."
-	TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED = "Manifest [%s]: Expected Unmarshal error."
+	TEST_MSG_PACKAGE_NAME_MISSING                   = "Package named [%s] missing."
+	TEST_MSG_PACKAGE_NAME_MISMATCH                  = "Package name mismatched."
+	TEST_MSG_ACTION_NUMBER_MISMATCH                 = "Number of Actions mismatched."
+	TEST_MSG_ACTION_NAME_MISSING                    = "Action named [%s] does not exist."
+	TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH          = "Action function path mismatched."
+	TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH       = "Action function runtime mismatched."
+	TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH          = "Action function main name mismatch."
+	TEST_MSG_ACTION_PARAMETER_TYPE_MISMATCH         = "Action parameter [%s] had a type mismatch."
+	TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH        = "Action parameter [%s] had a value mismatch."
+	TEST_MSG_PARAMETER_NUMBER_MISMATCH              = "Number of Paramaters mismatched."
+	TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED     = "Manifest [%s]: Expected Unmarshal error."
 	TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED = "Manifest [%s]: Expected runtime error."
 
 	// local error messages
-	TEST_ERROR_MANIFEST_PARSE_FAILURE = "Manifest [%s]: Failed to parse."
-	TEST_ERROR_MANIFEST_READ_FAILURE = "Manifest [%s]: Failed to ReadFile()."
+	TEST_ERROR_MANIFEST_PARSE_FAILURE   = "Manifest [%s]: Failed to parse."
+	TEST_ERROR_MANIFEST_READ_FAILURE    = "Manifest [%s]: Failed to ReadFile()."
 	TEST_ERROR_MANIFEST_DATA_UNMARSHALL = "Manifest [%s]: Failed to Unmarshall manifest."
 )
 
@@ -109,13 +109,13 @@ func testReadAndUnmarshalManifest(t *testing.T, pathManifest string) (YAML, erro
 */
 // TODO() XXX - rewrite test to remove "package"
 func testUnmarshalManifestAndActionBasic(t *testing.T,
-pathManifest string,
-namePackage string,
-numActions int,
-nameAction string,
-pathFunction string,
-nameRuntime string,
-nameMain string) (YAML, error) {
+	pathManifest string,
+	namePackage string,
+	numActions int,
+	nameAction string,
+	pathFunction string,
+	nameRuntime string,
+	nameMain string) (YAML, error) {
 
 	// Test that we are able to read the manifest file and unmarshall into YAML struct
 	m, err := testReadAndUnmarshalManifest(t, pathManifest)
@@ -135,7 +135,6 @@ nameMain string) (YAML, error) {
 		//expectedActionsCount := 1
 		//actualActionsCount := len(m.Packages[namePackage].Actions)
 		//assert.Equal(t, expectedActionsCount, actualActionsCount, TEST_MSG_ACTION_NUMBER_MISMATCH)
-
 
 	}
 
@@ -189,11 +188,11 @@ func testUnmarshalTemporaryFile(data []byte, filename string) (p *YAMLParser, m 
 func TestUnmarshalForHelloNodeJS(t *testing.T) {
 	testUnmarshalManifestAndActionBasic(t,
 		"../tests/dat/manifest_hello_nodejs.yaml", // Manifest path
-		"helloworld", // Package name
-		1, // # of Actions
-		"helloNodejs", // Action name
-		"actions/hello.js", // Function path
-		"nodejs:6", // "Runtime
+		"helloworld",                              // Package name
+		1,                                         // # of Actions
+		"helloNodejs",                             // Action name
+		"actions/hello.js",                        // Function path
+		"nodejs:6",                                // "Runtime
 		"")                                        // "Main" function name
 }
 
@@ -202,11 +201,11 @@ func TestUnmarshalForHelloNodeJS(t *testing.T) {
 func TestUnmarshalForHelloJava(t *testing.T) {
 	testUnmarshalManifestAndActionBasic(t,
 		"../tests/dat/manifest_hello_java_jar.yaml", // Manifest path
-		"helloworld", // Package name
-		1, // # of Actions
-		"helloJava", // Action name
-		"actions/hello.jar", // Function path
-		"java", // "Runtime
+		"helloworld",                                // Package name
+		1,                                           // # of Actions
+		"helloJava",                                 // Action name
+		"actions/hello.jar",                         // Function path
+		"java",                                      // "Runtime
 		"Hello")                                     // "Main" function name
 }
 
@@ -215,11 +214,11 @@ func TestUnmarshalForHelloJava(t *testing.T) {
 func TestUnmarshalForHelloPython(t *testing.T) {
 	testUnmarshalManifestAndActionBasic(t,
 		"../tests/dat/manifest_hello_python.yaml", // Manifest path
-		"helloworld", // Package name
-		1, // # of Actions
-		"helloPython", // Action name
-		"actions/hello.py", // Function path
-		"python", // "Runtime
+		"helloworld",                              // Package name
+		1,                                         // # of Actions
+		"helloPython",                             // Action name
+		"actions/hello.py",                        // Function path
+		"python",                                  // "Runtime
 		"")                                        // "Main" function name
 }
 
@@ -228,11 +227,11 @@ func TestUnmarshalForHelloPython(t *testing.T) {
 func TestUnmarshalForHelloSwift(t *testing.T) {
 	testUnmarshalManifestAndActionBasic(t,
 		"../tests/dat/manifest_hello_swift.yaml", // Manifest path
-		"helloworld", // Package name
-		1, // # of Actions
-		"helloSwift", // Action name
-		"actions/hello.swift", // Function path
-		"swift", // "Runtime
+		"helloworld",                             // Package name
+		1,                                        // # of Actions
+		"helloSwift",                             // Action name
+		"actions/hello.swift",                    // Function path
+		"swift",                                  // "Runtime
 		"")                                       // "Main" function name
 }
 
@@ -271,7 +270,6 @@ func TestUnmarshalForHelloSwift(t *testing.T) {
 //		}
 //	}
 //}
-
 
 // Test 6: validate manifest_parser:Unmarshal() method for an invalid manifest
 // manifest_parser should report an error when a package section is missing
@@ -909,7 +907,7 @@ func TestComposeActionsForFunction(t *testing.T) {
 					if actions[i].Action.Name == "hello1" {
 						expectedResult, _ = filepath.Abs("../tests/src/integration/helloworld/actions/hello.js")
 						actualResult, _ = filepath.Abs(actions[i].Filepath)
-						assert.Equal(t, expectedResult, actualResult, "Expected " + expectedResult + " but got " + actualResult)
+						assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
 						// (TODO) Uncomment the following condition, hello2
 						// (TODO) after issue # 311 is fixed
 						//} else if actions[i].Action.Name == "hello2" {
@@ -1008,55 +1006,55 @@ func TestComposeActionsForWebActions(t *testing.T) {
 						for _, a := range actions[i].Action.Annotations {
 							switch a.Key {
 							case "web-export":
-								assert.Equal(t, true, a.Value, "Expected true for web-export but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
 							case "raw-http":
-								assert.Equal(t, false, a.Value, "Expected false for raw-http but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
 							case "final":
-								assert.Equal(t, true, a.Value, "Expected true for final but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
 							}
 						}
 					} else if actions[i].Action.Name == "hello2" {
 						for _, a := range actions[i].Action.Annotations {
 							switch a.Key {
 							case "web-export":
-								assert.Equal(t, true, a.Value, "Expected true for web-export but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
 							case "raw-http":
-								assert.Equal(t, false, a.Value, "Expected false for raw-http but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
 							case "final":
-								assert.Equal(t, true, a.Value, "Expected true for final but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
 							}
 						}
 					} else if actions[i].Action.Name == "hello3" {
 						for _, a := range actions[i].Action.Annotations {
 							switch a.Key {
 							case "web-export":
-								assert.Equal(t, true, a.Value, "Expected true for web-export but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
 							case "raw-http":
-								assert.Equal(t, true, a.Value, "Expected false for raw-http but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, true, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
 							case "final":
-								assert.Equal(t, true, a.Value, "Expected true for final but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
 							}
 						}
 					} else if actions[i].Action.Name == "hello4" {
 						for _, a := range actions[i].Action.Annotations {
 							switch a.Key {
 							case "web-export":
-								assert.Equal(t, false, a.Value, "Expected true for web-export but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, false, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
 							case "raw-http":
-								assert.Equal(t, false, a.Value, "Expected false for raw-http but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
 							case "final":
-								assert.Equal(t, false, a.Value, "Expected true for final but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, false, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
 							}
 						}
 					} else if actions[i].Action.Name == "hello5" {
 						for _, a := range actions[i].Action.Annotations {
 							switch a.Key {
 							case "web-export":
-								assert.Equal(t, false, a.Value, "Expected true for web-export but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, false, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
 							case "raw-http":
-								assert.Equal(t, false, a.Value, "Expected false for raw-http but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
 							case "final":
-								assert.Equal(t, false, a.Value, "Expected true for final but got " + strconv.FormatBool(a.Value.(bool)))
+								assert.Equal(t, false, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
 							}
 						}
 					}
@@ -1431,7 +1429,7 @@ packages:
 
 	apiList, err := p.ComposeApiRecordsFromAllPackages(&config, m)
 	if err != nil {
-		assert.Fail(t, "Failed to compose api records: " + err.Error())
+		assert.Fail(t, "Failed to compose api records: "+err.Error())
 	}
 	assert.Equal(t, 6, len(apiList), "Failed to get api records")
 	for _, apiRecord := range apiList {
@@ -1591,16 +1589,16 @@ packages:
 	if err == nil {
 		expectedResult := string(2)
 		actualResult := string(len(m.Packages))
-		assert.Equal(t, expectedResult, actualResult, "Expected 2 packages but got " + actualResult)
+		assert.Equal(t, expectedResult, actualResult, "Expected 2 packages but got "+actualResult)
 		// we have two packages
 		// package name should be "helloNodejs" and "helloPython"
 		for k, v := range m.Packages {
 			switch k {
 			case "package1":
-				assert.Equal(t, "package1", k, "Expected package name package1 but got " + k)
+				assert.Equal(t, "package1", k, "Expected package name package1 but got "+k)
 				expectedResult = string(1)
 				actualResult = string(len(v.Actions))
-				assert.Equal(t, expectedResult, actualResult, "Expected 1 but got " + actualResult)
+				assert.Equal(t, expectedResult, actualResult, "Expected 1 but got "+actualResult)
 				// get the action payload from the map of actions which is stored in
 				// YAML.Package.Actions with the type of map[string]Action
 				actionName := "helloNodejs"
@@ -1608,19 +1606,19 @@ packages:
 					// location/function of an action should be "actions/hello.js"
 					expectedResult = "actions/hello.js"
 					actualResult = action.Function
-					assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
+					assert.Equal(t, expectedResult, actualResult, "Expected action function "+expectedResult+" but got "+actualResult)
 					// runtime of an action should be "nodejs:6"
 					expectedResult = "nodejs:6"
 					actualResult = action.Runtime
-					assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+					assert.Equal(t, expectedResult, actualResult, "Expected action runtime "+expectedResult+" but got "+actualResult)
 				} else {
 					t.Error("Action named " + actionName + " does not exist.")
 				}
 			case "package2":
-				assert.Equal(t, "package2", k, "Expected package name package2 but got " + k)
+				assert.Equal(t, "package2", k, "Expected package name package2 but got "+k)
 				expectedResult = string(1)
 				actualResult = string(len(v.Actions))
-				assert.Equal(t, expectedResult, actualResult, "Expected 1 but got " + actualResult)
+				assert.Equal(t, expectedResult, actualResult, "Expected 1 but got "+actualResult)
 				// get the action payload from the map of actions which is stored in
 				// YAML.Package.Actions with the type of map[string]Action
 				actionName := "helloPython"
@@ -1628,11 +1626,11 @@ packages:
 					// location/function of an action should be "actions/hello.js"
 					expectedResult = "actions/hello.py"
 					actualResult = action.Function
-					assert.Equal(t, expectedResult, actualResult, "Expected action function " + expectedResult + " but got " + actualResult)
+					assert.Equal(t, expectedResult, actualResult, "Expected action function "+expectedResult+" but got "+actualResult)
 					// runtime of an action should be "python"
 					expectedResult = "python"
 					actualResult = action.Runtime
-					assert.Equal(t, expectedResult, actualResult, "Expected action runtime " + expectedResult + " but got " + actualResult)
+					assert.Equal(t, expectedResult, actualResult, "Expected action runtime "+expectedResult+" but got "+actualResult)
 				} else {
 					t.Error("Action named " + actionName + " does not exist.")
 				}
@@ -1844,7 +1842,7 @@ func TestRuleName_Env_Var(t *testing.T) {
 		switch rule.Name {
 		case testRule:
 			assert.Equal(t, "test_trigger", rule.Trigger, "Get trigger name failed.")
-			assert.Equal(t, packageName + "/" + testAction, rule.Action, "Get action name failed.")
+			assert.Equal(t, packageName+"/"+testAction, rule.Action, "Get action name failed.")
 		//assert.Equal(t, "true", rule.Rule, "Get rule expression failed.")
 		default:
 			t.Error("Get rule name failed")
@@ -1858,10 +1856,10 @@ func TestComposeActionForAnnotations(t *testing.T) {
 	manifest, _ := mm.ParseManifest(manifestFile)
 	pkg_name := "packageActionAnnotations"
 	pkg := manifest.Packages[pkg_name]
-	assert.NotNil(t, pkg, "Could not find package with name " + pkg_name)
+	assert.NotNil(t, pkg, "Could not find package with name "+pkg_name)
 	action_name := "helloworld"
 	action := pkg.Actions[action_name]
-	assert.NotNil(t, action, "Could not find action with name " + action_name)
+	assert.NotNil(t, action, "Could not find action with name "+action_name)
 	actual_annotations := action.Annotations
 	expected_annotations := map[string]interface{}{
 		"action_annotation_1": "this is annotation 1",
@@ -1875,9 +1873,9 @@ func TestComposeActionForAnnotations(t *testing.T) {
 
 	pkg_name = "packageActionAnnotationsWithWebAction"
 	pkg = manifest.Packages[pkg_name]
-	assert.NotNil(t, pkg, "Could not find package with name " + pkg_name)
+	assert.NotNil(t, pkg, "Could not find package with name "+pkg_name)
 	action = pkg.Actions[action_name]
-	assert.NotNil(t, action, "Could not find action with name " + action_name)
+	assert.NotNil(t, action, "Could not find action with name "+action_name)
 	actual_annotations = action.Annotations
 	expected_annotations["web-export"] = true
 	assert.Equal(t, len(actual_annotations), len(expected_annotations), "Could not find expected number of annotations specified in manifest file")
