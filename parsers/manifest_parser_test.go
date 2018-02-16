@@ -1457,6 +1457,8 @@ func TestComposeDependencies(t *testing.T) {
 	data := `package:
   name: helloworld
   dependencies:
+    my-private-repo:
+      location: ${USERNAME}:${PASSWORD}@github.com/user/repo/folder
     myhelloworld:
       location: github.com/user/repo/folder
     myCloudant:
@@ -1465,6 +1467,8 @@ func TestComposeDependencies(t *testing.T) {
         dbname: myGreatDB
       annotations:
         myAnnotation: Here it is`
+	os.Setenv("USERNAME", "myusername")
+	os.Setenv("PASSWORD", "mypassword")
 	tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
 	if err != nil {
 		assert.Fail(t, "Failed to create temp file")
@@ -1480,27 +1484,32 @@ func TestComposeDependencies(t *testing.T) {
 	if err != nil {
 		assert.Fail(t, "Failed to compose rules")
 	}
-	assert.Equal(t, 2, len(depdList), "Failed to get rules")
+	assert.Equal(t, 3, len(depdList), "Failed to get rules")
 	for depdy_name, depdy := range depdList {
-		assert.Equal(t, "helloworld", depdy.Packagename, "Failed to set dependecy isbinding")
-		assert.Equal(t, "/project_folder/Packages", depdy.ProjectPath, "Failed to set dependecy isbinding")
+		assert.Equal(t, "helloworld", depdy.Packagename, "Failed to set dependency isbinding")
+		assert.Equal(t, "/project_folder/Packages", depdy.ProjectPath, "Failed to set dependency isbinding")
 		d := strings.Split(depdy_name, ":")
 		assert.NotEqual(t, d[1], "", "Failed to get dependency name")
 		switch d[1] {
 		case "myhelloworld":
-			assert.Equal(t, "https://github.com/user/repo/folder", depdy.Location, "Failed to set dependecy location")
-			assert.Equal(t, false, depdy.IsBinding, "Failed to set dependecy isbinding")
-			assert.Equal(t, "https://github.com/user/repo", depdy.BaseRepo, "Failed to set dependecy base repo url")
-			assert.Equal(t, "/folder", depdy.SubFolder, "Failed to set dependecy sub folder")
+			assert.Equal(t, "https://github.com/user/repo/folder", depdy.Location, "Failed to set dependency location")
+			assert.Equal(t, false, depdy.IsBinding, "Failed to set dependency isbinding")
+			assert.Equal(t, "https://github.com/user/repo", depdy.BaseRepo, "Failed to set dependency base repo url")
+			assert.Equal(t, "/folder", depdy.SubFolder, "Failed to set dependency sub folder")
 		case "myCloudant":
 			assert.Equal(t, "/whisk.system/cloudant", depdy.Location, "Failed to set rule trigger")
-			assert.Equal(t, true, depdy.IsBinding, "Failed to set dependecy isbinding")
-			assert.Equal(t, 1, len(depdy.Parameters), "Failed to set dependecy parameter")
-			assert.Equal(t, 1, len(depdy.Annotations), "Failed to set dependecy annotation")
-			assert.Equal(t, "myAnnotation", depdy.Annotations[0].Key, "Failed to set dependecy parameter key")
-			assert.Equal(t, "Here it is", depdy.Annotations[0].Value, "Failed to set dependecy parameter value")
-			assert.Equal(t, "dbname", depdy.Parameters[0].Key, "Failed to set dependecy annotation key")
-			assert.Equal(t, "myGreatDB", depdy.Parameters[0].Value, "Failed to set dependecy annotation value")
+			assert.Equal(t, true, depdy.IsBinding, "Failed to set dependency isbinding")
+			assert.Equal(t, 1, len(depdy.Parameters), "Failed to set dependency parameter")
+			assert.Equal(t, 1, len(depdy.Annotations), "Failed to set dependency annotation")
+			assert.Equal(t, "myAnnotation", depdy.Annotations[0].Key, "Failed to set dependency parameter key")
+			assert.Equal(t, "Here it is", depdy.Annotations[0].Value, "Failed to set dependency parameter value")
+			assert.Equal(t, "dbname", depdy.Parameters[0].Key, "Failed to set dependency annotation key")
+			assert.Equal(t, "myGreatDB", depdy.Parameters[0].Value, "Failed to set dependency annotation value")
+		case "my-private-repo":
+			assert.Equal(t, "https://myusername:mypassword@github.com/user/repo/folder", depdy.Location, "Failed to set dependency location for private repo")
+			assert.Equal(t, false, depdy.IsBinding, "Failed to set dependency isbinding")
+			assert.Equal(t, "https://myusername:mypassword@github.com/user/repo", depdy.BaseRepo, "Failed to set dependency base repo url")
+			assert.Equal(t, "/folder", depdy.SubFolder, "Failed to set dependency sub folder")
 		default:
 			assert.Fail(t, "Failed to get dependency name")
 		}
