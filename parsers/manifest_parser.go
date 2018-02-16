@@ -36,11 +36,11 @@ import (
 
 const (
 	PATH_SEPERATOR = "/"
-	API            = "API"
-	HTTPS          = "https"
-	HTTP           = "http"
-	API_VERSION    = "v1"
-	WEB            = "web"
+	API = "API"
+	HTTPS = "https"
+	HTTP = "http"
+	API_VERSION = "v1"
+	WEB = "web"
 )
 
 // Read existing manifest file or create new if none exists
@@ -116,11 +116,11 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 	//if manifest.Package.Packagename != "" {
 	//	return dm.ComposeDependencies(manifest.Package, projectPath, filePath, manifest.Package.Packagename)
 	//} else {
-		if len(manifest.Packages) != 0 {
-			packages = manifest.Packages
-		} else {
-			packages = manifest.GetProject().Packages
-		}
+	if len(manifest.Packages) != 0 {
+		packages = manifest.Packages
+	} else {
+		packages = manifest.GetProject().Packages
+	}
 	//}
 
 	for n, p := range packages {
@@ -219,11 +219,11 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, ma whi
 	//		return nil, err
 	//	}
 	//} else {
-		if len(manifest.Packages) != 0 {
-			manifestPackages = manifest.Packages
-		} else {
-			manifestPackages = manifest.GetProject().Packages
-		}
+	if len(manifest.Packages) != 0 {
+		manifestPackages = manifest.Packages
+	} else {
+		manifestPackages = manifest.GetProject().Packages
+	}
 	//}
 
 	for n, p := range manifestPackages {
@@ -341,11 +341,11 @@ func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YA
 	//if mani.Package.Packagename != "" {
 	//	return dm.ComposeSequences(namespace, mani.Package.Sequences, mani.Package.Packagename, ma)
 	//} else {
-		if len(mani.Packages) != 0 {
-			manifestPackages = mani.Packages
-		} else {
-			manifestPackages = mani.GetProject().Packages
-		}
+	if len(mani.Packages) != 0 {
+		manifestPackages = mani.Packages
+	} else {
+		manifestPackages = mani.GetProject().Packages
+	}
 	//}
 
 	for n, p := range manifestPackages {
@@ -371,10 +371,10 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		var components []string
 		for _, a := range actionList {
 			act := strings.TrimSpace(a)
-			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") {
+			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName + "/") {
 				act = path.Join(packageName, act)
 			}
-			components = append(components, path.Join("/"+namespace, act))
+			components = append(components, path.Join("/" + namespace, act))
 		}
 
 		wskaction.Exec.Components = components
@@ -415,11 +415,11 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 	//if manifest.Package.Packagename != "" {
 	//	return dm.ComposeActions(filePath, manifest.Package.Actions, manifest.Package.Packagename, ma)
 	//} else {
-		if len(manifest.Packages) != 0 {
-			manifestPackages = manifest.Packages
-		} else {
-			manifestPackages = manifest.GetProject().Packages
-		}
+	if len(manifest.Packages) != 0 {
+		manifestPackages = manifest.Packages
+	} else {
+		manifestPackages = manifest.GetProject().Packages
+	}
 	//}
 	for n, p := range manifestPackages {
 		a, err := dm.ComposeActions(filePath, p.Actions, n, ma)
@@ -459,7 +459,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		//bind action, and exposed URL
 		if action.Function != "" {
 
-			filePath := strings.TrimRight(filePath, splitFilePath[len(splitFilePath)-1]) + action.Function
+			filePath := strings.TrimRight(filePath, splitFilePath[len(splitFilePath) - 1]) + action.Function
 
 			if utils.IsDirectory(filePath) {
 				// TODO() define ext as const
@@ -497,7 +497,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 							wski18n.KEY_EXTENTION: ext,
 							wski18n.KEY_ACTION:    action.Name})
 					return nil, wskderrors.NewInvalidRuntimeError(errMessage,
-						splitFilePath[len(splitFilePath)-1], action.Name,
+						splitFilePath[len(splitFilePath) - 1], action.Name,
 						action.Runtime,
 						utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				}
@@ -519,7 +519,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 							wski18n.KEY_RUNTIME: action.Runtime,
 							wski18n.KEY_ACTION:  action.Name})
 					return nil, wskderrors.NewInvalidRuntimeError(errMessage,
-						splitFilePath[len(splitFilePath)-1],
+						splitFilePath[len(splitFilePath) - 1],
 						action.Name,
 						action.Runtime,
 						utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
@@ -576,7 +576,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					// for zip action, error out if specified runtime is not supported by
 					// OpenWhisk server
 					return nil, wskderrors.NewInvalidRuntimeError(warnStr,
-						splitFilePath[len(splitFilePath)-1],
+						splitFilePath[len(splitFilePath) - 1],
 						action.Name,
 						action.Runtime,
 						utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
@@ -737,11 +737,11 @@ func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath st
 	//if manifest.Package.Packagename != "" {
 	//	return dm.ComposeTriggers(filePath, manifest.Package, ma)
 	//} else {
-		if len(manifest.Packages) != 0 {
-			manifestPackages = manifest.Packages
-		} else {
-			manifestPackages = manifest.GetProject().Packages
-		}
+	if len(manifest.Packages) != 0 {
+		manifestPackages = manifest.Packages
+	} else {
+		manifestPackages = manifest.GetProject().Packages
+	}
 	//}
 	for _, p := range manifestPackages {
 		t, err := dm.ComposeTriggers(filePath, p, ma)
@@ -844,11 +844,11 @@ func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML, ma whisk.KeyVa
 	//if manifest.Package.Packagename != "" {
 	//	return dm.ComposeRules(manifest.Package, manifest.Package.Packagename, ma)
 	//} else {
-		if len(manifest.Packages) != 0 {
-			manifestPackages = manifest.Packages
-		} else {
-			manifestPackages = manifest.GetProject().Packages
-		}
+	if len(manifest.Packages) != 0 {
+		manifestPackages = manifest.Packages
+	} else {
+		manifestPackages = manifest.GetProject().Packages
+	}
 	//}
 
 	for n, p := range manifestPackages {
@@ -874,7 +874,7 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.Key
 		wskrule.Trigger = wskenv.ConvertSingleName(rule.Trigger)
 		wskrule.Action = wskenv.ConvertSingleName(rule.Action)
 		act := strings.TrimSpace(wskrule.Action.(string))
-		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") {
+		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName + "/") {
 			act = path.Join(packageName, act)
 		}
 		wskrule.Action = act
@@ -906,11 +906,11 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, man
 	//if manifest.Package.Packagename != "" {
 	//	return dm.ComposeApiRecords(client, manifest.Package.Packagename, manifest.Package, manifest.Filepath)
 	//} else {
-		if len(manifest.Packages) != 0 {
-			manifestPackages = manifest.Packages
-		} else {
-			manifestPackages = manifest.GetProject().Packages
-		}
+	if len(manifest.Packages) != 0 {
+		manifestPackages = manifest.Packages
+	} else {
+		manifestPackages = manifest.GetProject().Packages
+	}
 	//}
 
 	for packageName, p := range manifestPackages {
@@ -996,7 +996,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							request.ApiDoc.GatewayRelPath = gatewayRelPath
 							if _, ok := whisk.ApiVerbs[strings.ToUpper(gatewayMethod)]; !ok {
 								return nil, wskderrors.NewInvalidAPIGatewayMethodError(manifestPath,
-									gatewayBasePath+gatewayRelPath,
+									gatewayBasePath + gatewayRelPath,
 									gatewayMethod,
 									dm.getGatewayMethods())
 							}
