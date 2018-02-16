@@ -239,7 +239,7 @@ func convertPackageName(packageMap map[string]Package) map[string]Package {
 	packages := make(map[string]Package)
 	for packName, depPacks := range packageMap {
 		name := packName
-		packageName := wskenv.GetEnvVar(packName)
+		packageName := wskenv.InterpolateStringWithEnvVar(packName)
 		if str, ok := packageName.(string); ok {
 			name = str
 		}
