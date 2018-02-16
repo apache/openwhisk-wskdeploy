@@ -20,14 +20,14 @@
 package tests
 
 import (
-//	"fmt"
+	//	"fmt"
 	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
-//	"github.com/stretchr/testify/assert"
+	//	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
-//	"testing"
+	//	"testing"
 )
 
 var wskprops = common.GetWskprops()
