@@ -84,26 +84,26 @@ func _createTmpfile(data string, filename string) (f *os.File, err error) {
 	return tmpfile, nil
 }
 
-func TestValidateSequenceCreation(t *testing.T) {
-	count := 10
-	wskdeploy := common.NewWskdeploy()
-	for i := 1; i < count+1; i++ {
-		maniData, deplyData := composeDeployFiles(i + 1)
-		tmpManifile, err := _createTmpfile(maniData, "sequence_test_mani_")
-		tmpDeplyfile, err := _createTmpfile(deplyData, "sequence_test_deply_")
-		if err != nil {
-			assert.Fail(t, "Failed to create temp file")
-		}
-
-		fmt.Printf("Deploying sequence %d\n:", i)
-		_, err = wskdeploy.Deploy(tmpManifile.Name(), tmpDeplyfile.Name())
-		assert.Equal(t, nil, err, "Failed to deploy sequence.")
-		_, err = wskdeploy.Undeploy(tmpManifile.Name(), tmpDeplyfile.Name())
-		assert.Equal(t, nil, err, "Failed to undeploy sequence.")
-
-		tmpManifile.Close()
-		tmpDeplyfile.Close()
-		os.Remove(tmpManifile.Name())
-		os.Remove(tmpDeplyfile.Name())
-	}
-}
+//func TestValidateSequenceCreation(t *testing.T) {
+//	count := 10
+//	wskdeploy := common.NewWskdeploy()
+//	for i := 1; i < count+1; i++ {
+//		maniData, deplyData := composeDeployFiles(i + 1)
+//		tmpManifile, err := _createTmpfile(maniData, "sequence_test_mani_")
+//		tmpDeplyfile, err := _createTmpfile(deplyData, "sequence_test_deply_")
+//		if err != nil {
+//			assert.Fail(t, "Failed to create temp file")
+//		}
+//
+//		fmt.Printf("Deploying sequence %d\n:", i)
+//		_, err = wskdeploy.Deploy(tmpManifile.Name(), tmpDeplyfile.Name())
+//		assert.Equal(t, nil, err, "Failed to deploy sequence.")
+//		_, err = wskdeploy.Undeploy(tmpManifile.Name(), tmpDeplyfile.Name())
+//		assert.Equal(t, nil, err, "Failed to undeploy sequence.")
+//
+//		tmpManifile.Close()
+//		tmpDeplyfile.Close()
+//		os.Remove(tmpManifile.Name())
+//		os.Remove(tmpDeplyfile.Name())
+//	}
+//}
