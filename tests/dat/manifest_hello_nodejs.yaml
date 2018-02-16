@@ -14,9 +14,9 @@
 # specific language governing permissions and limitations under the License.
 #
 
-package:
-  name: helloworld
-  actions:
-    helloNodejs:
-      function: actions/hello.js
-      runtime: nodejs:6
+packages:
+  helloworld:
+    actions:
+      helloNodejs:
+        function: actions/hello.js
+        runtime: nodejs:6

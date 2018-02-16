@@ -14,10 +14,10 @@
 # specific language governing permissions and limitations under the License.
 #
 
-package:
-  name: helloworld
-  actions:
-    helloJava:
-      function: actions/hello.jar
-      runtime: java
-      main: Hello
+packages:
+  helloworld:
+    actions:
+      helloJava:
+        function: actions/hello.jar
+        runtime: java
+        main: Hello

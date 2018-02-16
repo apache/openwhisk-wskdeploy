@@ -20,7 +20,6 @@ package parsers
 import (
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -113,15 +112,16 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
 func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {
 	dependencies := make(map[string]utils.DependencyRecord)
 	packages := make(map[string]Package)
-	if manifest.Package.Packagename != "" {
-		return dm.ComposeDependencies(manifest.Package, projectPath, filePath, manifest.Package.Packagename)
-	} else {
+	// TODO() XXX
+	//if manifest.Package.Packagename != "" {
+	//	return dm.ComposeDependencies(manifest.Package, projectPath, filePath, manifest.Package.Packagename)
+	//} else {
 		if len(manifest.Packages) != 0 {
 			packages = manifest.Packages
 		} else {
 			packages = manifest.GetProject().Packages
 		}
-	}
+	//}
 
 	for n, p := range packages {
 		d, err := dm.ComposeDependencies(p, projectPath, filePath, n)
@@ -207,22 +207,23 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, ma whi
 	packages := map[string]*whisk.Package{}
 	manifestPackages := make(map[string]Package)
 
-	if manifest.Package.Packagename != "" {
-		// TODO() i18n
-		fmt.Println("WARNING: using package inside of manifest file will soon be deprecated, please use packages instead.")
-		s, err := dm.ComposePackage(manifest.Package, manifest.Package.Packagename, filePath, ma)
-		if err == nil {
-			packages[manifest.Package.Packagename] = s
-		} else {
-			return nil, err
-		}
-	} else {
+	// TODO() XXX
+	//if manifest.Package.Packagename != "" {
+	//	// TODO() i18n
+	//	fmt.Println("WARNING: using package inside of manifest file will soon be deprecated, please use packages instead.")
+	//	s, err := dm.ComposePackage(manifest.Package, manifest.Package.Packagename, filePath, ma)
+	//	if err == nil {
+	//		packages[manifest.Package.Packagename] = s
+	//	} else {
+	//		return nil, err
+	//	}
+	//} else {
 		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
 		}
-	}
+	//}
 
 	for n, p := range manifestPackages {
 		s, err := dm.ComposePackage(p, n, filePath, ma)
@@ -335,15 +336,16 @@ func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YA
 
 	manifestPackages := make(map[string]Package)
 
-	if mani.Package.Packagename != "" {
-		return dm.ComposeSequences(namespace, mani.Package.Sequences, mani.Package.Packagename, ma)
-	} else {
+	// TODO() XXX
+	//if mani.Package.Packagename != "" {
+	//	return dm.ComposeSequences(namespace, mani.Package.Sequences, mani.Package.Packagename, ma)
+	//} else {
 		if len(mani.Packages) != 0 {
 			manifestPackages = mani.Packages
 		} else {
 			manifestPackages = mani.GetProject().Packages
 		}
-	}
+	//}
 
 	for n, p := range manifestPackages {
 		s, err := dm.ComposeSequences(namespace, p.Sequences, n, ma)
@@ -408,15 +410,16 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
 	manifestPackages := make(map[string]Package)
 
-	if manifest.Package.Packagename != "" {
-		return dm.ComposeActions(filePath, manifest.Package.Actions, manifest.Package.Packagename, ma)
-	} else {
+	// TODO() XXX
+	//if manifest.Package.Packagename != "" {
+	//	return dm.ComposeActions(filePath, manifest.Package.Actions, manifest.Package.Packagename, ma)
+	//} else {
 		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
 		}
-	}
+	//}
 	for n, p := range manifestPackages {
 		a, err := dm.ComposeActions(filePath, p.Actions, n, ma)
 		if err == nil {
@@ -729,15 +732,16 @@ func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath st
 	var triggers []*whisk.Trigger = make([]*whisk.Trigger, 0)
 	manifestPackages := make(map[string]Package)
 
-	if manifest.Package.Packagename != "" {
-		return dm.ComposeTriggers(filePath, manifest.Package, ma)
-	} else {
+	// TODO() XXX
+	//if manifest.Package.Packagename != "" {
+	//	return dm.ComposeTriggers(filePath, manifest.Package, ma)
+	//} else {
 		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
 		}
-	}
+	//}
 	for _, p := range manifestPackages {
 		t, err := dm.ComposeTriggers(filePath, p, ma)
 		if err == nil {
@@ -835,15 +839,16 @@ func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML, ma whisk.KeyVa
 	var rules []*whisk.Rule = make([]*whisk.Rule, 0)
 	manifestPackages := make(map[string]Package)
 
-	if manifest.Package.Packagename != "" {
-		return dm.ComposeRules(manifest.Package, manifest.Package.Packagename, ma)
-	} else {
+	// TODO() XXX
+	//if manifest.Package.Packagename != "" {
+	//	return dm.ComposeRules(manifest.Package, manifest.Package.Packagename, ma)
+	//} else {
 		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
 		}
-	}
+	//}
 
 	for n, p := range manifestPackages {
 		r, err := dm.ComposeRules(p, n, ma)
@@ -897,15 +902,15 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, man
 	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 	manifestPackages := make(map[string]Package)
 
-	if manifest.Package.Packagename != "" {
-		return dm.ComposeApiRecords(client, manifest.Package.Packagename, manifest.Package, manifest.Filepath)
-	} else {
+	//if manifest.Package.Packagename != "" {
+	//	return dm.ComposeApiRecords(client, manifest.Package.Packagename, manifest.Package, manifest.Filepath)
+	//} else {
 		if len(manifest.Packages) != 0 {
 			manifestPackages = manifest.Packages
 		} else {
 			manifestPackages = manifest.GetProject().Packages
 		}
-	}
+	//}
 
 	for packageName, p := range manifestPackages {
 		r, err := dm.ComposeApiRecords(client, packageName, p, manifest.Filepath)

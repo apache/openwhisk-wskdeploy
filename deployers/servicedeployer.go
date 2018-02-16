@@ -85,7 +85,7 @@ type ServiceDeployer struct {
 	Deployment      *DeploymentProject
 	Client          *whisk.Client
 	mt              sync.RWMutex
-	RootPackageName string
+	RootPackageName string  // TODO() XXX - Root Package name has no meaning/significance
 	IsInteractive   bool
 	IsDefault       bool
 	ManifestPath    string
@@ -132,7 +132,8 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		return err
 	}
 
-	deployer.RootPackageName = manifest.Package.Packagename
+	// TODO() XXX - Root package name has no meaning
+	//deployer.RootPackageName = manifest.Package.Packagename
 	deployer.ProjectName = manifest.GetProject().Name
 
 	// Generate Managed Annotations if its marked as a Managed Deployment
@@ -236,7 +237,8 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 		return deployer.Deployment, err
 	}
 
-	deployer.RootPackageName = manifest.Package.Packagename
+	// TODO() XXX - Package and "root" package name have no meaning
+	//deployer.RootPackageName = manifest.Package.Packagename
 	manifestReader.InitRootPackage(manifestParser, manifest, whisk.KeyValue{})
 
 	// process file system

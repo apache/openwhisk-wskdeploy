@@ -224,7 +224,8 @@ type YAML struct {
 	Application Project            `yaml:"application"` //used in deployment.yaml (being deprecated)
 	Project     Project            `yaml:"project"`     //used in deployment.yaml
 	Packages    map[string]Package `yaml:"packages"`    //used in deployment.yaml
-	Package     Package            `yaml:"package"`
+	// TODO() XXX - remove Package once and for all time
+	//Package     Package            `yaml:"package"`
 	Filepath    string             //file path of the yaml file
 }
 
@@ -253,10 +254,8 @@ func convertPackageName(packageMap map[string]Package) map[string]Package {
 
 func ReadEnvVariable(yaml *YAML) *YAML {
 	if yaml.Application.Name != "" {
-		yaml.Package.Packagename = wskenv.ConvertSingleName(yaml.Package.Packagename)
 		yaml.Application.Packages = convertPackageName(yaml.Application.Packages)
 	} else {
-		yaml.Package.Packagename = wskenv.ConvertSingleName(yaml.Package.Packagename)
 		yaml.Project.Packages = convertPackageName(yaml.Project.Packages)
 	}
 	yaml.Packages = convertPackageName(yaml.Packages)
