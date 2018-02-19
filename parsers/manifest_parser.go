@@ -230,7 +230,7 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, ma whi
 		warningString := wski18n.T(
 			wski18n.ID_WARN_PACKAGES_NOT_FOUND_X_path_X,
 			map[string]interface{}{
-				wski18n.KEY_PATH:   manifest.Filepath})
+				wski18n.KEY_PATH: manifest.Filepath})
 		wskprint.PrintOpenWhiskWarning(warningString)
 	} else {
 		// Compose each package found in manifest

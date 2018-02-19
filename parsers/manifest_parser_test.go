@@ -24,6 +24,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
@@ -1840,9 +1841,7 @@ func TestRuleName_Env_Var(t *testing.T) {
 
 	assert.Equal(t, 1, len(manifest.Packages[packageName].Rules), "Get rule list failed.")
 	for _, rule := range rules {
-		fmt.Print("ruleName:  ")
-		fmt.Print(rule)
-		//var rule = manifest.Packages[packageName].Rules[rule_name]
+		wskprint.PrintlnOpenWhiskVerbose(false, fmt.Sprintf("ruleName: %v", rule))
 		switch rule.Name {
 		case testRule:
 			assert.Equal(t, "test_trigger", rule.Trigger, "Get trigger name failed.")
