@@ -232,16 +232,16 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, ma whi
 			map[string]interface{}{
 				wski18n.KEY_PATH: manifest.Filepath})
 		wskprint.PrintOpenWhiskWarning(warningString)
-	} else {
-		// Compose each package found in manifest
-		for n, p := range manifestPackages {
-			s, err := dm.ComposePackage(p, n, filePath, ma)
+	}
 
-			if err == nil {
-				packages[n] = s
-			} else {
-				return nil, err
-			}
+	// Compose each package found in manifest
+	for n, p := range manifestPackages {
+		s, err := dm.ComposePackage(p, n, filePath, ma)
+
+		if err == nil {
+			packages[n] = s
+		} else {
+			return nil, err
 		}
 	}
 
