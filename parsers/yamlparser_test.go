@@ -52,7 +52,7 @@ func TestComposeWskPackage(t *testing.T) {
 	}
 }
 
-// TODO() XXX - rewrite
+// TODO(749) - rewrite test to use "packages"
 //func TestComposeWskTrigger(t *testing.T) {
 //	mm := NewYAMLParser()
 //	deployment, _ := mm.ParseDeployment(deployment_compose_trigger)
@@ -80,7 +80,7 @@ func TestComposeWskPackage(t *testing.T) {
 //	}
 //}
 
-// TODO() XXX - rewrite
+// TODO(749) - rewrite test to use "packages"
 //func TestComposeWskRule(t *testing.T) {
 //	mm := NewYAMLParser()
 //	manifest, _ := mm.ParseManifest(manifest_validate_rule)

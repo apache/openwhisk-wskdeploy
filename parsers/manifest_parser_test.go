@@ -107,7 +107,8 @@ func testReadAndUnmarshalManifest(t *testing.T, pathManifest string) (YAML, erro
    Returns:
    - N/A
 */
-// TODO() XXX - rewrite test to remove "package"
+
+// TODO(749) - rewrite test to use "packages"
 func testUnmarshalManifestAndActionBasic(t *testing.T,
 	pathManifest string,
 	namePackage string,
@@ -124,7 +125,7 @@ func testUnmarshalManifestAndActionBasic(t *testing.T,
 	if err != nil {
 		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, pathManifest))
 	} else {
-		// TODO() XXX
+		// TODO(749) - rewrite test to use "packages"
 		//// test package name
 		//
 		////actualResult := m.Package.Packagename
@@ -138,7 +139,7 @@ func testUnmarshalManifestAndActionBasic(t *testing.T,
 
 	}
 
-	// TODO() XXX
+	// TODO(749) - rewrite test to use "packages"
 	//// test # of actions in manifest
 	//if numActions > 0 {
 	//	//actualResult = string(len(m.Package.Actions))
@@ -238,7 +239,7 @@ func TestUnmarshalForHelloSwift(t *testing.T) {
 // Test 5: validate manifest_parser:Unmarshal() method for an action with parameters
 // validate that manifest_parser is able to read and parse the manifest data, specially
 // validate two input parameters and their values
-// TODO() XXX - rewrite test to remove "package"
+// TODO(749) - rewrite test to use "packages"
 //func TestUnmarshalForHelloWithParams(t *testing.T) {
 //
 //	TEST_ACTION_NAME := "helloWithParams"
@@ -273,7 +274,7 @@ func TestUnmarshalForHelloSwift(t *testing.T) {
 
 // Test 6: validate manifest_parser:Unmarshal() method for an invalid manifest
 // manifest_parser should report an error when a package section is missing
-// TODO() XXX - rewrite test to remove "package"
+// TODO(749) - rewrite test to use "packages"
 // TODO() add new testcase that has "packages", but no package name (keu) but just the "actions" key under it
 //func TestUnmarshalForMissingPackage(t *testing.T) {
 //	TEST_MANIFEST := "../tests/dat/manifest_invalid_package_missing.yaml"
@@ -889,7 +890,7 @@ func TestComposeActionsForFunction(t *testing.T) {
   actions:
     hello1:
       function: ../tests/src/integration/helloworld/actions/hello.js`
-	// (TODO) uncomment this after we add support for action file content from URL
+	// TODO() uncomment this after we add support for action file content from URL
 	// hello2:
 	//  function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/isrc/integration/helloworld/manifest.yaml`
 	dir, _ := os.Getwd()
@@ -1067,7 +1068,7 @@ func TestComposeActionsForWebActions(t *testing.T) {
 }
 
 // Test 15-1: validate manifest_parser.ComposeActions() method
-// TODO() XXX - rewrite test to remove "package"
+// TODO(749) - rewrite test to use "packages"
 //func TestComposeActionsForInvalidWebActions(t *testing.T) {
 //	data :=
 //		`package:
@@ -1226,7 +1227,7 @@ func TestParseManifestForJSONParams(t *testing.T) {
 	}
 }
 
-// TODO XXX rewrite testcase as it uses "package"
+// TODO(749) - rewrite test to use "packages"
 //func TestComposePackage(t *testing.T) {
 //	data := `package:
 //  name: helloworld
@@ -1253,7 +1254,7 @@ func TestParseManifestForJSONParams(t *testing.T) {
 //	}
 //}
 
-// TODO XXX rewrite testcase as it uses "package"
+// TODO(749) - rewrite test to use "packages"
 //func TestComposeSequences(t *testing.T) {
 //	data := `package:
 //  name: helloworld
@@ -1296,7 +1297,7 @@ func TestParseManifestForJSONParams(t *testing.T) {
 //	}
 //}
 
-// TODO XXX rewrite testcase as it uses "package"
+// TODO(749) - rewrite test to use "packages"
 //func TestComposeTriggers(t *testing.T) {
 //	// set env variables needed for the trigger feed
 //	os.Setenv("KAFKA_INSTANCE", "kafka-broker")
@@ -1331,7 +1332,7 @@ func TestParseManifestForJSONParams(t *testing.T) {
 //	}
 //}
 
-// TODO XXX rewrite testcase as it uses "package"
+// TODO(749) - rewrite test to use "packages"
 //func TestComposeRules(t *testing.T) {
 //	data := `package:
 //  name: helloworld
@@ -1472,7 +1473,7 @@ packages:
 	}
 }
 
-// TODO XXX rewrite testcase as it uses "package"
+// TODO(749) - rewrite test to use "packages"
 //func TestComposeDependencies(t *testing.T) {
 //	data := `package:
 //  name: helloworld
@@ -1527,7 +1528,7 @@ packages:
 //	}
 //}
 
-// TODO XXX rewrite testcase as it uses "package"
+// TODO(749) - rewrite test to use "packages"
 //func TestBadYAMLInvalidPackageKeyInManifest(t *testing.T) {
 //	// read and parse manifest.yaml file located under ../tests folder
 //	p := NewYAMLParser()

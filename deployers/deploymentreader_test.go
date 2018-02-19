@@ -45,7 +45,7 @@ func TestDeploymentReader_HandleYaml(t *testing.T) {
 	assert.NotNil(t, dr.DeploymentDescriptor.GetProject().Packages["GitHubCommits"], "DeploymentReader handle deployment yaml failed.")
 }
 
-// TODO remove this unused test?
+// TODO(750) remove this unused test?
 func TestDeployerCheck(t *testing.T) {
 	sd := NewServiceDeployer()
 	sd.DeploymentPath = "../tests/usecases/badyaml/deployment.yaml"
@@ -122,7 +122,7 @@ func TestDeploymentReader_bindTrigger_packages(t *testing.T) {
 	}
 }
 
-// TODO() XXX - rewrite test to remove "package"
+// TODO(749) - rewrite test to remove "package"
 //func TestDeploymentReader_bindTrigger_package(t *testing.T) {
 //	//init variables
 //	sDeployer := NewServiceDeployer()

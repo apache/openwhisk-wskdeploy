@@ -1,4 +1,4 @@
-// TODO() XXX for some reason this is faling since removing "Package" from schema
+// TODO(749) for some reason this is failing since removing "Package" from schema
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -28,7 +28,7 @@ import (
 
 var wskprops = common.GetWskprops()
 
-// TODO: write the integration against openwhisk
+// TODO(749): re-write the integration against openwhisk
 //func TestDependency(t *testing.T) {
 //	wskdeploy := common.NewWskdeploy()
 //	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
