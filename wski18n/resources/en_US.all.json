@@ -388,6 +388,10 @@
     "translation": "The {{.key}} name [{{.name}}] already exists. Please select another name.\n"
   },
   {
+    "id": "msg_warn_packages_not_found",
+    "translation": "The manifest file [{{.path}}] contained no packages.\n"
+  },
+  {
     "id": "DEBUG",
     "translation": "================= DEBUG ==================="
   },

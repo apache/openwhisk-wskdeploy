@@ -137,6 +137,9 @@ func testUnmarshalManifestAndActionBasic(t *testing.T,
 		//actualActionsCount := len(m.Packages[namePackage].Actions)
 		//assert.Equal(t, expectedActionsCount, actualActionsCount, TEST_MSG_ACTION_NUMBER_MISMATCH)
 
+		//actualResult := m.Packages[namePackage]
+		//assert.Equal(t, namePackage, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
+
 	}
 
 	// TODO(749) - rewrite test to use "packages"
