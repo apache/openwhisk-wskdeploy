@@ -226,7 +226,7 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, ma whi
 	}
 	//}
 
-	if len(manifest.Packages) == 0 {
+	if len(manifestPackages) == 0 {
 		warningString := wski18n.T(
 			wski18n.ID_WARN_PACKAGES_NOT_FOUND_X_path_X,
 			map[string]interface{}{
