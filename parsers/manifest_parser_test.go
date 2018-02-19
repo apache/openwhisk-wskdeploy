@@ -37,7 +37,6 @@ import (
 const (
 	// local test assert messages
 	TEST_MSG_PACKAGE_NAME_MISSING                   = "Package named [%s] missing."
-	TEST_MSG_PACKAGE_NAME_MISMATCH                  = "Package name mismatched."
 	TEST_MSG_ACTION_NUMBER_MISMATCH                 = "Number of Actions mismatched."
 	TEST_MSG_ACTION_NAME_MISSING                    = "Action named [%s] does not exist."
 	TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH          = "Action function path mismatched."
@@ -110,7 +109,7 @@ func testReadAndUnmarshalManifest(t *testing.T, pathManifest string) (YAML, erro
 */
 
 // TODO(749) - rewrite test to use "packages"
-func testUnmarshalManifestAndActionBasic(t *testing.T,
+func testUnmarshalManifestPackageAndActionBasic(t *testing.T,
 	pathManifest string,
 	namePackage string,
 	numActions int,
@@ -127,47 +126,36 @@ func testUnmarshalManifestAndActionBasic(t *testing.T,
 		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, pathManifest))
 	} else {
 		// TODO(749) - rewrite test to use "packages"
-		//// test package name
-		//
-		////actualResult := m.Package.Packagename
-		//actualResult := m.Packages[namePackage]
-		//assert.Equal(t, namePackage, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
-		//
-		//// validate this package contains one action
-		//expectedActionsCount := 1
-		//actualActionsCount := len(m.Packages[namePackage].Actions)
-		//assert.Equal(t, expectedActionsCount, actualActionsCount, TEST_MSG_ACTION_NUMBER_MISMATCH)
+		// test package (name) exists
+		if pkg, ok := m.Packages[namePackage]; ok {
 
-		//actualResult := m.Packages[namePackage]
-		//assert.Equal(t, namePackage, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
+			// test # of actions in manifest
+			expectedActionsCount := numActions
+			actualActionsCount := len(pkg.Actions)
+			assert.Equal(t, expectedActionsCount, actualActionsCount, TEST_MSG_ACTION_NUMBER_MISMATCH)
 
+			// get an action from map of actions where key is action name and value is Action struct
+			if action, ok := pkg.Actions[nameAction]; ok {
+
+				// test action's function path
+				assert.Equal(t, pathFunction, action.Function, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
+
+				// test action's runtime
+				assert.Equal(t, nameRuntime, action.Runtime, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
+
+				// test action's "Main" function
+				if nameMain != "" {
+					assert.Equal(t, nameMain, action.Main, TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH)
+				}
+
+			} else {
+				t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, nameAction))
+			}
+
+		} else {
+			assert.Fail(t, fmt.Sprintf(TEST_MSG_PACKAGE_NAME_MISSING, namePackage))
+		}
 	}
-
-	// TODO(749) - rewrite test to use "packages"
-	//// test # of actions in manifest
-	//if numActions > 0 {
-	//	//actualResult = string(len(m.Package.Actions))
-	//	actualResult = string(len(m.Packages.Actions))
-	//	assert.Equal(t, string(numActions), actualResult, TEST_MSG_ACTION_NUMBER_MISMATCH)
-	//}
-	//
-	//// get an action from map of actions where key is action name and value is Action struct
-	//if action, ok := m.Package.Actions[nameAction]; ok {
-	//
-	//	// test action's function path
-	//	assert.Equal(t, pathFunction, action.Function, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
-	//
-	//	// test action's runtime
-	//	assert.Equal(t, nameRuntime, action.Runtime, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
-	//
-	//	// test action's "Main" function
-	//	if nameMain != "" {
-	//		assert.Equal(t, nameMain, action.Main, TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH)
-	//	}
-	//
-	//} else {
-	//	t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, nameAction))
-	//}
 
 	return m, nil
 }
@@ -191,7 +179,7 @@ func testUnmarshalTemporaryFile(data []byte, filename string) (p *YAMLParser, m 
 // Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloNodeJS(t *testing.T) {
-	testUnmarshalManifestAndActionBasic(t,
+	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_nodejs.yaml", // Manifest path
 		"helloworld",                              // Package name
 		1,                                         // # of Actions
@@ -204,7 +192,7 @@ func TestUnmarshalForHelloNodeJS(t *testing.T) {
 // Test 2: validate manifest_parser:Unmarshal() method with a sample manifest in Java
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloJava(t *testing.T) {
-	testUnmarshalManifestAndActionBasic(t,
+	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_java_jar.yaml", // Manifest path
 		"helloworld",                                // Package name
 		1,                                           // # of Actions
@@ -217,7 +205,7 @@ func TestUnmarshalForHelloJava(t *testing.T) {
 // Test 3: validate manifest_parser:Unmarshal() method with a sample manifest in Python
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloPython(t *testing.T) {
-	testUnmarshalManifestAndActionBasic(t,
+	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_python.yaml", // Manifest path
 		"helloworld",                              // Package name
 		1,                                         // # of Actions
@@ -230,7 +218,7 @@ func TestUnmarshalForHelloPython(t *testing.T) {
 // Test 4: validate manifest_parser:Unmarshal() method with a sample manifest in Swift
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloSwift(t *testing.T) {
-	testUnmarshalManifestAndActionBasic(t,
+	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_swift.yaml", // Manifest path
 		"helloworld",                             // Package name
 		1,                                        // # of Actions
