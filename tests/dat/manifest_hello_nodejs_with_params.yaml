@@ -14,12 +14,12 @@
 # specific language governing permissions and limitations under the License.
 #
 
-package:
-   name: helloworld
-   actions:
-     helloWithParams:
-       function: actions/hello-with-params.js
-       runtime: nodejs:6
-       inputs:
-         name: Amy
-         place: Paris
+packages:
+   helloworld:
+    actions:
+      helloWithParams:
+        function: actions/hello-with-params.js
+        runtime: nodejs:6
+        inputs:
+          name: Amy
+          place: Paris

@@ -107,8 +107,6 @@ func testReadAndUnmarshalManifest(t *testing.T, pathManifest string) (YAML, erro
    Returns:
    - N/A
 */
-
-// TODO(749) - rewrite test to use "packages"
 func testUnmarshalManifestPackageAndActionBasic(t *testing.T,
 	pathManifest string,
 	namePackage string,
@@ -116,7 +114,7 @@ func testUnmarshalManifestPackageAndActionBasic(t *testing.T,
 	nameAction string,
 	pathFunction string,
 	nameRuntime string,
-	nameMain string) (YAML, error) {
+	nameMain string) (YAML, *Package, error) {
 
 	// Test that we are able to read the manifest file and unmarshall into YAML struct
 	m, err := testReadAndUnmarshalManifest(t, pathManifest)
@@ -125,7 +123,6 @@ func testUnmarshalManifestPackageAndActionBasic(t *testing.T,
 	if err != nil {
 		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, pathManifest))
 	} else {
-		// TODO(749) - rewrite test to use "packages"
 		// test package (name) exists
 		if pkg, ok := m.Packages[namePackage]; ok {
 
@@ -148,6 +145,8 @@ func testUnmarshalManifestPackageAndActionBasic(t *testing.T,
 					assert.Equal(t, nameMain, action.Main, TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH)
 				}
 
+				return m, &pkg, err
+
 			} else {
 				t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, nameAction))
 			}
@@ -157,7 +156,7 @@ func testUnmarshalManifestPackageAndActionBasic(t *testing.T,
 		}
 	}
 
-	return m, nil
+	return m, nil, nil
 }
 
 func testUnmarshalTemporaryFile(data []byte, filename string) (p *YAMLParser, m *YAML, t string) {
@@ -232,37 +231,38 @@ func TestUnmarshalForHelloSwift(t *testing.T) {
 // validate that manifest_parser is able to read and parse the manifest data, specially
 // validate two input parameters and their values
 // TODO(749) - rewrite test to use "packages"
-//func TestUnmarshalForHelloWithParams(t *testing.T) {
-//
-//	TEST_ACTION_NAME := "helloWithParams"
-//	TEST_PARAM_NAME_1 := "name"
-//	TEST_PARAM_VALUE_1 := "Amy"
-//	TEST_PARAM_NAME_2 := "place"
-//	TEST_PARAM_VALUE_2 := "Paris"
-//
-//	m, err := testUnmarshalManifestAndActionBasic(t,
-//		"../tests/dat/manifest_hello_nodejs_with_params.yaml", // Manifest path
-//		"helloworld",                   // Package name
-//		1,                              // # of Actions
-//		TEST_ACTION_NAME,               // Action name
-//		"actions/hello-with-params.js", // Function path
-//		"nodejs:6",                     // "Runtime
-//		"")                             // "Main" function name
-//	if err != nil {
-//		if action, ok := m.Package.Actions[TEST_ACTION_NAME]; ok {
-//
-//			// test action parameters
-//			actualResult := action.Inputs[TEST_PARAM_NAME_1].Value.(string)
-//			assert.Equal(t, TEST_PARAM_VALUE_1, actualResult,
-//				fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, TEST_PARAM_NAME_1))
-//
-//			actualResult = action.Inputs[TEST_PARAM_NAME_2].Value.(string)
-//			assert.Equal(t, TEST_PARAM_VALUE_2, actualResult,
-//				fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, TEST_PARAM_NAME_2))
-//
-//		}
-//	}
-//}
+func TestUnmarshalForHelloWithParams(t *testing.T) {
+
+	TEST_ACTION_NAME := "helloWithParams"
+	TEST_PARAM_NAME_1 := "name"
+	TEST_PARAM_VALUE_1 := "Amy"
+	TEST_PARAM_NAME_2 := "place"
+	TEST_PARAM_VALUE_2 := "Paris"
+
+	_, pkg, _ := testUnmarshalManifestPackageAndActionBasic(t,
+		"../tests/dat/manifest_hello_nodejs_with_params.yaml", // Manifest path
+		"helloworld",                   // Package name
+		1,                              // # of Actions
+		TEST_ACTION_NAME,               // Action name
+		"actions/hello-with-params.js", // Function path
+		"nodejs:6",                     // "Runtime
+		"")                             // "Main" function name
+
+	if pkg != nil {
+		if action, ok := pkg.Actions[TEST_ACTION_NAME]; ok {
+
+			// test action parameters
+			actualResult := action.Inputs[TEST_PARAM_NAME_1].Value.(string)
+			assert.Equal(t, TEST_PARAM_VALUE_1, actualResult,
+				fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, TEST_PARAM_NAME_1))
+
+			actualResult = action.Inputs[TEST_PARAM_NAME_2].Value.(string)
+			assert.Equal(t, TEST_PARAM_VALUE_2, actualResult,
+				fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, TEST_PARAM_NAME_2))
+
+		}
+	}
+}
 
 // Test 6: validate manifest_parser:Unmarshal() method for an invalid manifest
 // manifest_parser should report an error when a package section is missing
