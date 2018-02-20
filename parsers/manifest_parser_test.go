@@ -1217,32 +1217,23 @@ func TestParseManifestForJSONParams(t *testing.T) {
 	}
 }
 
-// TODO(749) - rewrite test to use "packages"
-//func TestComposePackage(t *testing.T) {
-//	data := `package:
-//  name: helloworld
-//  namespace: default`
-//	tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
-//	if err != nil {
-//		assert.Fail(t, "Failed to create temp file")
-//	}
-//	defer func() {
-//		tmpfile.Close()
-//		os.Remove(tmpfile.Name())
-//	}()
-//	// read and parse manifest.yaml file
-//	p := NewYAMLParser()
-//	m, _ := p.ParseManifest(tmpfile.Name())
-//	pkg, err := p.ComposeAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
-//	if err == nil {
-//		n := "helloworld"
-//		assert.NotNil(t, pkg[n], "Failed to get the whole package")
-//		assert.Equal(t, n, pkg[n].Name, "Failed to get package name")
-//		assert.Equal(t, "default", pkg[n].Namespace, "Failed to get package namespace")
-//	} else {
-//		assert.Fail(t, "Failed to compose package")
-//	}
-//}
+func TestComposePackage(t *testing.T) {
+	// manifest file is located under ../tests folder
+	manifestFile := "../tests/dat/manifest_compose_packages.yaml"
+	// read and parse manifest.yaml file
+	p := NewYAMLParser()
+	m, err := p.ParseManifest(manifestFile)
+
+	pkg, err := p.ComposeAllPackages(m, manifestFile, whisk.KeyValue{})
+	if err == nil {
+		n := "helloworld"
+		assert.NotNil(t, pkg[n], "Failed to get the whole package")
+		assert.Equal(t, n, pkg[n].Name, "Failed to get package name")
+		assert.Equal(t, "default", pkg[n].Namespace, "Failed to get package namespace")
+	} else {
+		assert.Fail(t, "Failed to compose package")
+	}
+}
 
 // TODO(749) - rewrite test to use "packages"
 //func TestComposeSequences(t *testing.T) {
