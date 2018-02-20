@@ -266,14 +266,12 @@ func TestUnmarshalForHelloWithParams(t *testing.T) {
 
 // Test 6: validate manifest_parser:Unmarshal() method for an invalid manifest
 // manifest_parser should report an error when a package section is missing
-// TODO(749) - rewrite test to use "packages"
-// TODO() add new testcase that has "packages", but no package name (keu) but just the "actions" key under it
-//func TestUnmarshalForMissingPackage(t *testing.T) {
-//	TEST_MANIFEST := "../tests/dat/manifest_invalid_package_missing.yaml"
-//
-//	_, err := testReadAndUnmarshalManifest(t, TEST_MANIFEST)
-//	assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED, TEST_MANIFEST))
-//}
+func TestUnmarshalForMissingPackages(t *testing.T) {
+	TEST_MANIFEST := "../tests/dat/manifest_invalid_packages_key_missing.yaml"
+
+	_, err := testReadAndUnmarshalManifest(t, TEST_MANIFEST)
+	assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED, TEST_MANIFEST))
+}
 
 /*
  Test 7: validate manifest_parser:ParseManifest() method for multiline parameters
