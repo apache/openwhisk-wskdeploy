@@ -14,22 +14,10 @@
 # specific language governing permissions and limitations under the License.
 #
 
-project:
-  name: foo
-  packages:
-    trigger_compose:
-      triggers:
-        trigger1:
-          inputs:
-            name: string
-            place: string
-        trigger2:
-          feed: myfeed
-          inputs:
-            name: myname
-            place: myplace
-        message-trigger:
-          feed: Bluemix_${KAFKA_INSTANCE}_Credentials-1/messageHubFeed
-          inputs:
-            isJSONData: true
-            topic: $SRC_TOPIC
+packages:
+  helloworld:
+    sequences:
+      sequence1:
+        actions: action1, action2
+      sequence2:
+        actions: action3, action4, action5

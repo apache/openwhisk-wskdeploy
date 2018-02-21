@@ -29,6 +29,7 @@ const (
 	YAML_KEY_ANNOTATION  = "annotoation"
 	YAML_KEY_API         = "api"
 	YAML_KEY_FEED        = "feed"
+	YAML_KEY_MANIFEST    = "manifest"
 	YAML_KEY_NAMESPACE   = "namespace"
 	YAML_KEY_PACKAGES    = "packages"
 	YAML_KEY_PROJECT     = "project"
@@ -278,7 +279,7 @@ func (trigger *Trigger) ComposeWskTrigger(kvarr []whisk.KeyValue) *whisk.Trigger
 func (rule *Rule) ComposeWskRule() *whisk.Rule {
 	wskrule := new(whisk.Rule)
 	wskrule.Name = wskenv.ConvertSingleName(rule.Name)
-	//wskrule.Namespace = rule.Namespace
+	//wskrule.Namespace = rule.Namespace // TODO() ?
 	pub := false
 	wskrule.Publish = &pub
 	wskrule.Trigger = wskenv.ConvertSingleName(rule.Trigger)

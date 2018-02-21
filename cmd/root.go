@@ -39,7 +39,6 @@ import (
 var stderr = ""
 var stdout = ""
 
-// TODO(#683) short and long desc. should be translated for i18n
 var RootCmd = &cobra.Command{
 	Use:           "wskdeploy",
 	SilenceErrors: true,
@@ -118,6 +117,7 @@ func init() {
 	// TODO() Publish command, not completed
 	// TODO() Report command, not completed
 	// TODO() What does toggle do? adding this flag seems to produce an error
+	// TODO() Why are "project" and "manifest" flags NOT persistent?
 	RootCmd.Flags().BoolP("toggle", "t", false, wski18n.T(wski18n.ID_CMD_FLAG_TOGGLE_HELP))
 	RootCmd.Flags().StringVarP(&utils.Flags.ProjectPath, "project", "p", ".", wski18n.T(wski18n.ID_CMD_FLAG_PROJECT))
 	RootCmd.Flags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", wski18n.T(wski18n.ID_CMD_FLAG_MANIFEST))

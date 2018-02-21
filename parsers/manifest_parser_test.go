@@ -1219,7 +1219,7 @@ func TestParseManifestForJSONParams(t *testing.T) {
 
 func TestComposePackage(t *testing.T) {
 	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_compose_packages.yaml"
+	manifestFile := "../tests/dat/manifest_data_compose_packages.yaml"
 	// read and parse manifest.yaml file
 	p := NewYAMLParser()
 	m, err := p.ParseManifest(manifestFile)
@@ -1235,83 +1235,70 @@ func TestComposePackage(t *testing.T) {
 	}
 }
 
-// TODO(749) - rewrite test to use "packages"
-//func TestComposeSequences(t *testing.T) {
-//	data := `package:
-//  name: helloworld
-//  sequences:
-//    sequence1:
-//      actions: action1, action2
-//    sequence2:
-//      actions: action3, action4, action5`
-//	tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
-//	if err != nil {
-//		assert.Fail(t, "Failed to create temp file")
-//	}
-//	defer func() {
-//		tmpfile.Close()
-//		os.Remove(tmpfile.Name())
-//	}()
-//	// read and parse manifest.yaml file
-//	p := NewYAMLParser()
-//	m, _ := p.ParseManifest(tmpfile.Name())
-//	seqList, err := p.ComposeSequencesFromAllPackages("", m, whisk.KeyValue{})
-//	if err != nil {
-//		assert.Fail(t, "Failed to compose sequences")
-//	}
-//	assert.Equal(t, 2, len(seqList), "Failed to get sequences")
-//	for _, seq := range seqList {
-//		wsk_action := seq.Action
-//		switch wsk_action.Name {
-//		case "sequence1":
-//			assert.Equal(t, "sequence", wsk_action.Exec.Kind, "Failed to set sequence exec kind")
-//			assert.Equal(t, 2, len(wsk_action.Exec.Components), "Failed to set sequence exec components")
-//			assert.Equal(t, "/helloworld/action1", wsk_action.Exec.Components[0], "Failed to set sequence 1st exec components")
-//			assert.Equal(t, "/helloworld/action2", wsk_action.Exec.Components[1], "Failed to set sequence 2nd exec components")
-//		case "sequence2":
-//			assert.Equal(t, "sequence", wsk_action.Exec.Kind, "Failed to set sequence exec kind")
-//			assert.Equal(t, 3, len(wsk_action.Exec.Components), "Failed to set sequence exec components")
-//			assert.Equal(t, "/helloworld/action3", wsk_action.Exec.Components[0], "Failed to set sequence 1st exec components")
-//			assert.Equal(t, "/helloworld/action4", wsk_action.Exec.Components[1], "Failed to set sequence 2nd exec components")
-//			assert.Equal(t, "/helloworld/action5", wsk_action.Exec.Components[2], "Failed to set sequence 3rd exec components")
-//		}
-//	}
-//}
+func TestComposeSequences(t *testing.T) {
+	// manifest file is located under ../tests folder
+	manifestFile := "../tests/dat/manifest_data_compose_sequences.yaml"
+	// read and parse manifest.yaml file
+	p := NewYAMLParser()
+	m, err := p.ParseManifest(manifestFile)
+	// Note: set first param (namespace) to empty string
+	seqList, err := p.ComposeSequencesFromAllPackages("", m, whisk.KeyValue{})
+	if err != nil {
+		assert.Fail(t, "Failed to compose sequences")
+	}
+	assert.Equal(t, 2, len(seqList), "Failed to get sequences")
+	for _, seq := range seqList {
+		wsk_action := seq.Action
+		switch wsk_action.Name {
+		case "sequence1":
+			assert.Equal(t, "sequence", wsk_action.Exec.Kind, "Failed to set sequence exec kind")
+			assert.Equal(t, 2, len(wsk_action.Exec.Components), "Failed to set sequence exec components")
+			assert.Equal(t, "/helloworld/action1", wsk_action.Exec.Components[0], "Failed to set sequence 1st exec components")
+			assert.Equal(t, "/helloworld/action2", wsk_action.Exec.Components[1], "Failed to set sequence 2nd exec components")
+		case "sequence2":
+			assert.Equal(t, "sequence", wsk_action.Exec.Kind, "Failed to set sequence exec kind")
+			assert.Equal(t, 3, len(wsk_action.Exec.Components), "Failed to set sequence exec components")
+			assert.Equal(t, "/helloworld/action3", wsk_action.Exec.Components[0], "Failed to set sequence 1st exec components")
+			assert.Equal(t, "/helloworld/action4", wsk_action.Exec.Components[1], "Failed to set sequence 2nd exec components")
+			assert.Equal(t, "/helloworld/action5", wsk_action.Exec.Components[2], "Failed to set sequence 3rd exec components")
+		}
+	}
+}
 
-// TODO(749) - rewrite test to use "packages"
-//func TestComposeTriggers(t *testing.T) {
-//	// set env variables needed for the trigger feed
-//	os.Setenv("KAFKA_INSTANCE", "kafka-broker")
-//	os.Setenv("SRC_TOPIC", "topic")
-//	// read and parse manifest.yaml file located under ../tests folder
-//	manifestFile := "../tests/dat/manifest_data_compose_triggers.yaml"
-//	p := NewYAMLParser()
-//	m, err := p.ParseManifest(manifestFile)
-//	if err != nil {
-//		assert.Fail(t, "Failed to parse manifest: "+manifestFile)
-//	}
-//
-//	triggerList, err := p.ComposeTriggersFromAllPackages(m, manifestFile, whisk.KeyValue{})
-//	if err != nil {
-//		assert.Fail(t, "Failed to compose trigger")
-//	}
-//
-//	assert.Equal(t, 3, len(triggerList), "Failed to get trigger list")
-//	for _, trigger := range triggerList {
-//		switch trigger.Name {
-//		case "trigger1":
-//			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
-//		case "trigger2":
-//			assert.Equal(t, "feed", trigger.Annotations[0].Key, "Failed to set trigger annotation")
-//			assert.Equal(t, "myfeed", trigger.Annotations[0].Value, "Failed to set trigger annotation")
-//			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
-//		case "message-trigger":
-//			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
-//			assert.Equal(t, "feed", trigger.Annotations[0].Key, "Failed to set trigger annotation")
-//			assert.Equal(t, "Bluemix_kafka-broker_Credentials-1/messageHubFeed", trigger.Annotations[0].Value, "Failed to set trigger annotation")
-//		}
-//	}
-//}
+func TestComposeTriggers(t *testing.T) {
+	// set env variables needed for the trigger feed
+	os.Setenv("KAFKA_INSTANCE", "kafka-broker")
+	os.Setenv("SRC_TOPIC", "topic")
+	// read and parse manifest.yaml file located under ../tests folder
+	manifestFile := "../tests/dat/manifest_data_compose_triggers.yaml"
+	p := NewYAMLParser()
+	m, err := p.ParseManifest(manifestFile)
+	if err != nil {
+		assert.Fail(t, "Failed to parse manifest: "+manifestFile)
+	}
+
+	triggerList, err := p.ComposeTriggersFromAllPackages(m, manifestFile, whisk.KeyValue{})
+
+	if err != nil {
+		assert.Fail(t, "Failed to compose trigger")
+	}
+
+	assert.Equal(t, 3, len(triggerList), "Failed to get trigger list")
+	for _, trigger := range triggerList {
+		switch trigger.Name {
+		case "trigger1":
+			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
+		case "trigger2":
+			assert.Equal(t, "feed", trigger.Annotations[0].Key, "Failed to set trigger annotation")
+			assert.Equal(t, "myfeed", trigger.Annotations[0].Value, "Failed to set trigger annotation")
+			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
+		case "message-trigger":
+			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
+			assert.Equal(t, "feed", trigger.Annotations[0].Key, "Failed to set trigger annotation")
+			assert.Equal(t, "Bluemix_kafka-broker_Credentials-1/messageHubFeed", trigger.Annotations[0].Value, "Failed to set trigger annotation")
+		}
+	}
+}
 
 // TODO(749) - rewrite test to use "packages"
 //func TestComposeRules(t *testing.T) {

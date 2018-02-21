@@ -17,7 +17,10 @@
 
 package utils
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 func convertInterfaceArray(in []interface{}) []interface{} {
 	res := make([]interface{}, len(in))
@@ -51,4 +54,10 @@ func convertMapValue(value interface{}) interface{} {
 func PrintTypeInfo(name string, value interface{}) {
 	info := fmt.Sprintf("Name=[%s], Value=[%v], Type=[%T]\n", name, value, value)
 	fmt.Print(info)
+}
+
+func ConvertMapToJSONString(name string, mapIn interface{}) string {
+	PrintTypeInfo(name, mapIn)
+	strMapOut, _ := json.MarshalIndent(mapIn, "", "  ")
+	return string(strMapOut)
 }
