@@ -64,19 +64,6 @@ func init() {
 	}
 }
 
-func _createTmpfile(data string, filename string) (f *os.File, err error) {
-	dir, _ := os.Getwd()
-	tmpfile, err := ioutil.TempFile(dir, filename)
-	if err != nil {
-		return nil, err
-	}
-	_, err = tmpfile.Write([]byte(data))
-	if err != nil {
-		return tmpfile, err
-	}
-	return tmpfile, nil
-}
-
 func testReadAndUnmarshalManifest(t *testing.T, pathManifest string) (YAML, error) {
 	// Init YAML struct and attempt to Unmarshal YAML byte[] data
 	m := YAML{}
@@ -1474,23 +1461,13 @@ func TestBadYAMLInvalidCommentInManifest(t *testing.T) {
 // validate manifest_parser:Unmarshal() method for package in manifest YAML
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForPackages(t *testing.T) {
-	data := `
-packages:
-  package1:
-    actions:
-      helloNodejs:
-        function: actions/hello.js
-        runtime: nodejs:6
-  package2:
-    actions:
-      helloPython:
-        function: actions/hello.py
-        runtime: python`
-	// set the zero value of struct YAML
-	m := YAML{}
+
+	manifestFile := "../tests/dat/manifest_data_unmarshal_packagess.yaml"
+	m, err := testReadAndUnmarshalManifest(t, manifestFile)
+
 	// Unmarshal reads/parses manifest data and sets the values of YAML
 	// And returns an error if parsing a manifest data fails
-	err := NewYAMLParser().Unmarshal([]byte(data), &m)
+	//err := NewYAMLParser().Unmarshal([]byte(data), &m)
 	if err == nil {
 		expectedResult := string(2)
 		actualResult := string(len(m.Packages))
