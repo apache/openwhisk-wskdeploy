@@ -1300,45 +1300,34 @@ func TestComposeTriggers(t *testing.T) {
 	}
 }
 
-// TODO(749) - rewrite test to use "packages"
-//func TestComposeRules(t *testing.T) {
-//	data := `package:
-//  name: helloworld
-//  rules:
-//    rule1:
-//      trigger: locationUpdate
-//      action: greeting
-//    rule2:
-//      trigger: trigger1
-//      action: action1`
-//	tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
-//	if err != nil {
-//		assert.Fail(t, "Failed to create temp file")
-//	}
-//	defer func() {
-//		tmpfile.Close()
-//		os.Remove(tmpfile.Name())
-//	}()
-//	// read and parse manifest.yaml file
-//	p := NewYAMLParser()
-//	m, _ := p.ParseManifest(tmpfile.Name())
-//	ruleList, err := p.ComposeRulesFromAllPackages(m, whisk.KeyValue{})
-//	if err != nil {
-//		assert.Fail(t, "Failed to compose rules")
-//	}
-//	assert.Equal(t, 2, len(ruleList), "Failed to get rules")
-//	for _, rule := range ruleList {
-//		switch rule.Name {
-//		case "rule1":
-//			assert.Equal(t, "locationUpdate", rule.Trigger, "Failed to set rule trigger")
-//			assert.Equal(t, "helloworld/greeting", rule.Action, "Failed to set rule action")
-//		case "rule2":
-//			assert.Equal(t, "trigger1", rule.Trigger, "Failed to set rule trigger")
-//			assert.Equal(t, "helloworld/action1", rule.Action, "Failed to set rule action")
-//		}
-//	}
-//}
+func TestComposeRules(t *testing.T) {
+	// read and parse manifest.yaml file located under ../tests folder
+	manifestFile := "../tests/dat/manifest_data_compose_rules.yaml"
+	p := NewYAMLParser()
+	m, err := p.ParseManifest(manifestFile)
+	if err != nil {
+		assert.Fail(t, "Failed to parse manifest: "+manifestFile)
+	}
 
+	ruleList, err := p.ComposeRulesFromAllPackages(m, whisk.KeyValue{})
+	if err != nil {
+		assert.Fail(t, "Failed to compose rules")
+	}
+	assert.Equal(t, 2, len(ruleList), "Failed to get rules")
+	for _, rule := range ruleList {
+		switch rule.Name {
+		case "rule1":
+			assert.Equal(t, "locationUpdate", rule.Trigger, "Failed to set rule trigger")
+			assert.Equal(t, "helloworld/greeting", rule.Action, "Failed to set rule action")
+		case "rule2":
+			assert.Equal(t, "trigger1", rule.Trigger, "Failed to set rule trigger")
+			assert.Equal(t, "helloworld/action1", rule.Action, "Failed to set rule action")
+		}
+	}
+}
+
+// TODO() We SHOULD automatically add "web-export" to each Action referenced in the "apis" section
+// as this is implied.  The user should not have to do this manually
 func TestComposeApiRecords(t *testing.T) {
 	data := `
 packages:
