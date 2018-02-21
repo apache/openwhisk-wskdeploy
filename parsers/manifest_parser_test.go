@@ -31,6 +31,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -1430,60 +1431,47 @@ packages:
 	}
 }
 
-// TODO(749) - rewrite test to use "packages"
-//func TestComposeDependencies(t *testing.T) {
-//	data := `package:
-//  name: helloworld
-//  dependencies:
-//    myhelloworld:
-//      location: github.com/user/repo/folder
-//    myCloudant:
-//      location: /whisk.system/cloudant
-//      inputs:
-//        dbname: myGreatDB
-//      annotations:
-//        myAnnotation: Here it is`
-//	tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-//	if err != nil {
-//		assert.Fail(t, "Failed to create temp file")
-//	}
-//	defer func() {
-//		tmpfile.Close()
-//		os.Remove(tmpfile.Name())
-//	}()
-//	// read and parse manifest.yaml file
-//	p := NewYAMLParser()
-//	m, _ := p.ParseManifest(tmpfile.Name())
-//	depdList, err := p.ComposeDependenciesFromAllPackages(m, "/project_folder", tmpfile.Name())
-//	if err != nil {
-//		assert.Fail(t, "Failed to compose rules")
-//	}
-//	assert.Equal(t, 2, len(depdList), "Failed to get rules")
-//	for depdy_name, depdy := range depdList {
-//		assert.Equal(t, "helloworld", depdy.Packagename, "Failed to set dependecy isbinding")
-//		assert.Equal(t, "/project_folder/Packages", depdy.ProjectPath, "Failed to set dependecy isbinding")
-//		d := strings.Split(depdy_name, ":")
-//		assert.NotEqual(t, d[1], "", "Failed to get dependency name")
-//		switch d[1] {
-//		case "myhelloworld":
-//			assert.Equal(t, "https://github.com/user/repo/folder", depdy.Location, "Failed to set dependecy location")
-//			assert.Equal(t, false, depdy.IsBinding, "Failed to set dependecy isbinding")
-//			assert.Equal(t, "https://github.com/user/repo", depdy.BaseRepo, "Failed to set dependecy base repo url")
-//			assert.Equal(t, "/folder", depdy.SubFolder, "Failed to set dependecy sub folder")
-//		case "myCloudant":
-//			assert.Equal(t, "/whisk.system/cloudant", depdy.Location, "Failed to set rule trigger")
-//			assert.Equal(t, true, depdy.IsBinding, "Failed to set dependecy isbinding")
-//			assert.Equal(t, 1, len(depdy.Parameters), "Failed to set dependecy parameter")
-//			assert.Equal(t, 1, len(depdy.Annotations), "Failed to set dependecy annotation")
-//			assert.Equal(t, "myAnnotation", depdy.Annotations[0].Key, "Failed to set dependecy parameter key")
-//			assert.Equal(t, "Here it is", depdy.Annotations[0].Value, "Failed to set dependecy parameter value")
-//			assert.Equal(t, "dbname", depdy.Parameters[0].Key, "Failed to set dependecy annotation key")
-//			assert.Equal(t, "myGreatDB", depdy.Parameters[0].Value, "Failed to set dependecy annotation value")
-//		default:
-//			assert.Fail(t, "Failed to get dependency name")
-//		}
-//	}
-//}
+func TestComposeDependencies(t *testing.T) {
+
+	// read and parse manifest.yaml file located under ../tests folder
+	manifestFile := "../tests/dat/manifest_data_compose_dependencies.yaml"
+	p := NewYAMLParser()
+	m, err := p.ParseManifest(manifestFile)
+	if err != nil {
+		assert.Fail(t, "Failed to parse manifest: "+manifestFile)
+	}
+
+	depdList, err := p.ComposeDependenciesFromAllPackages(m, "/project_folder", m.Filepath)
+
+	if err != nil {
+		assert.Fail(t, "Failed to compose rules")
+	}
+	assert.Equal(t, 2, len(depdList), "Failed to get rules")
+	for depdy_name, depdy := range depdList {
+		assert.Equal(t, "helloworld", depdy.Packagename, "Failed to set dependecy isbinding")
+		assert.Equal(t, "/project_folder/Packages", depdy.ProjectPath, "Failed to set dependecy isbinding")
+		d := strings.Split(depdy_name, ":")
+		assert.NotEqual(t, d[1], "", "Failed to get dependency name")
+		switch d[1] {
+		case "myhelloworld":
+			assert.Equal(t, "https://github.com/user/repo/folder", depdy.Location, "Failed to set dependecy location")
+			assert.Equal(t, false, depdy.IsBinding, "Failed to set dependecy isbinding")
+			assert.Equal(t, "https://github.com/user/repo", depdy.BaseRepo, "Failed to set dependecy base repo url")
+			assert.Equal(t, "/folder", depdy.SubFolder, "Failed to set dependecy sub folder")
+		case "myCloudant":
+			assert.Equal(t, "/whisk.system/cloudant", depdy.Location, "Failed to set rule trigger")
+			assert.Equal(t, true, depdy.IsBinding, "Failed to set dependecy isbinding")
+			assert.Equal(t, 1, len(depdy.Parameters), "Failed to set dependecy parameter")
+			assert.Equal(t, 1, len(depdy.Annotations), "Failed to set dependecy annotation")
+			assert.Equal(t, "myAnnotation", depdy.Annotations[0].Key, "Failed to set dependecy parameter key")
+			assert.Equal(t, "Here it is", depdy.Annotations[0].Value, "Failed to set dependecy parameter value")
+			assert.Equal(t, "dbname", depdy.Parameters[0].Key, "Failed to set dependecy annotation key")
+			assert.Equal(t, "myGreatDB", depdy.Parameters[0].Value, "Failed to set dependecy annotation value")
+		default:
+			assert.Fail(t, "Failed to get dependency name")
+		}
+	}
+}
 
 // TODO(749) - rewrite test to use "packages"
 //func TestBadYAMLInvalidPackageKeyInManifest(t *testing.T) {
