@@ -1473,16 +1473,15 @@ func TestComposeDependencies(t *testing.T) {
 	}
 }
 
-// TODO(749) - rewrite test to use "packages"
-//func TestBadYAMLInvalidPackageKeyInManifest(t *testing.T) {
-//	// read and parse manifest.yaml file located under ../tests folder
-//	p := NewYAMLParser()
-//	_, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_invalid_package_key.yaml")
-//
-//	assert.NotNil(t, err)
-//	// NOTE: go-yaml/yaml gets the line # wrong; testing only for the invalid key message
-//	assert.Contains(t, err.Error(), "field invalidKey not found in struct parsers.Package")
-//}
+func TestBadYAMLInvalidPackageKeyInManifest(t *testing.T) {
+	// read and parse manifest.yaml file located under ../tests folder
+	p := NewYAMLParser()
+	_, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_invalid_package_key.yaml")
+
+	assert.NotNil(t, err)
+	// NOTE: go-yaml/yaml gets the line # wrong; testing only for the invalid key message
+	assert.Contains(t, err.Error(), "field invalidKey not found in struct parsers.Package")
+}
 
 func TestBadYAMLInvalidKeyMappingValueInManifest(t *testing.T) {
 	// read and parse manifest.yaml file located under ../tests folder

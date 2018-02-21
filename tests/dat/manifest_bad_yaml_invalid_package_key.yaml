@@ -14,10 +14,10 @@
 # specific language governing permissions and limitations under the License.
 #
 
-package:
-  name: testBadYAMLInvalidPackageKeyInManifest
-  version: 1.0
-  invalidKey: test
-  license: Apache-2.0
+packages:
+  testBadYAMLInvalidPackageKeyInManifest:
+    version: 1.0
+    invalidKey: test
+    license: Apache-2.0
 
 # go-yaml/yaml "line 2: field invalidKey not found in struct parsers.Package".
