@@ -1327,58 +1327,18 @@ func TestComposeRules(t *testing.T) {
 	}
 }
 
-// TODO() We SHOULD automatically add "web-export" to each Action referenced in the "apis" section
+// TODO(752) We SHOULD automatically add "web-export" to each Action referenced in the "apis" section
 // as this is implied.  The user should not have to do this manually
 func TestComposeApiRecords(t *testing.T) {
-	data := `
-packages:
-  apiTest:
-    actions:
-      putBooks:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
-      deleteBooks:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
-      listMembers:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
-      getBooks2:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
-      postBooks2:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
-      listMembers2:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
-    apis:
-      book-club:
-        club:
-          books:
-            putBooks: put
-            deleteBooks: delete
-          members:
-            listMembers: get
-      book-club2:
-        club2:
-          books2:
-            getBooks2: get
-            postBooks2: post
-          members2:
-            listMembers2: get`
-	tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-	if err != nil {
-		assert.Fail(t, "Failed to create temp file")
-	}
-	defer func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}()
-	// read and parse manifest.yaml file
+	// read and parse manifest.yaml file located under ../tests folder
+	manifestFile := "../tests/dat/manifest_data_compose_api_records.yaml"
 	p := NewYAMLParser()
-	m, _ := p.ParseManifest(tmpfile.Name())
+	m, err := p.ParseManifest(manifestFile)
+	if err != nil {
+		assert.Fail(t, "Failed to parse manifest: "+manifestFile)
+	}
 
+	// create a fake configuration
 	config := whisk.Config{
 		Namespace:        "test",
 		AuthToken:        "user:pass",
