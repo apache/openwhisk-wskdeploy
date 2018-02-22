@@ -64,6 +64,17 @@ func init() {
 	}
 }
 
+func testLoadParseManifest(t *testing.T, manifestFile string) (*YAMLParser, *YAML, error) {
+	// read and parse manifest.yaml file located under ../tests folder
+	p := NewYAMLParser()
+	m, err := p.ParseManifest(manifestFile)
+	if err != nil {
+		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
+	}
+
+	return p, m, err
+}
+
 func testReadAndUnmarshalManifest(t *testing.T, pathManifest string) (YAML, error) {
 	// Init YAML struct and attempt to Unmarshal YAML byte[] data
 	m := YAML{}
@@ -218,7 +229,6 @@ func TestUnmarshalForHelloSwift(t *testing.T) {
 // Test 5: validate manifest_parser:Unmarshal() method for an action with parameters
 // validate that manifest_parser is able to read and parse the manifest data, specially
 // validate two input parameters and their values
-// TODO(749) - rewrite test to use "packages"
 func TestUnmarshalForHelloWithParams(t *testing.T) {
 
 	TEST_ACTION_NAME := "helloWithParams"
@@ -255,10 +265,8 @@ func TestUnmarshalForHelloWithParams(t *testing.T) {
 // Test 6: validate manifest_parser:Unmarshal() method for an invalid manifest
 // manifest_parser should report an error when a package section is missing
 func TestUnmarshalForMissingPackages(t *testing.T) {
-	TEST_MANIFEST := "../tests/dat/manifest_invalid_packages_key_missing.yaml"
-
-	_, err := testReadAndUnmarshalManifest(t, TEST_MANIFEST)
-	assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED, TEST_MANIFEST))
+	m, err := testReadAndUnmarshalManifest(t, "../tests/dat/manifest_invalid_packages_key_missing.yaml")
+	assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED, m.Filepath))
 }
 
 /*
@@ -267,14 +275,8 @@ func TestUnmarshalForMissingPackages(t *testing.T) {
  inputs section.
 */
 func TestParseManifestForMultiLineParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
-	// read and parse manifest.yaml file
-	m, err := NewYAMLParser().ParseManifest(manifestFile)
 
-	if err != nil {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
-	}
+	_, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_multiline_params.yaml")
 
 	// validate package name should be "validate"
 	packageName := "validate"
@@ -383,15 +385,8 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
 // Test 8: validate manifest_parser:ParseManifest() method for single line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestParseManifestForSingleLineParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
 
-	// read and parse manifest.yaml file
-	m, err := NewYAMLParser().ParseManifest(manifestFile)
-
-	if err != nil {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
-	}
+	_, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_singleline_params.yaml")
 
 	// validate package name should be "validate"
 	packageName := "validate"
@@ -496,21 +491,10 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
 // when a runtime of an action is not provided, manifest_parser determines the runtime
 // based on the file extension of an action file
 func TestComposeActionsForImplicitRuntimes(t *testing.T) {
-	data :=
-		`package:
-  name: helloworld
-  actions:
-    helloNodejs:
-      function: ../tests/src/integration/helloworld/actions/hello.js
-    helloJava:
-      function: ../tests/src/integration/helloworld/actions/hello.jar
-      main: Hello
-    helloPython:
-      function: ../tests/src/integration/helloworld/actions/hello.py
-    helloSwift:
-      function: ../tests/src/integration/helloworld/actions/hello.swift`
-	p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
-	actions, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_runtimes_implicit.yaml")
+
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
 	var expectedResult string
 	if err == nil {
 		for i := 0; i < len(actions); i++ {
@@ -533,6 +517,7 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
 // Test 10(1): validate manifest_parser.ComposeActions() method for invalid runtimes
 // when the action has a source file written in unsupported runtimes, manifest_parser should
 // report an error for that action
+// TODO() rewrite
 func TestComposeActionsForInvalidRuntime_1(t *testing.T) {
 	data := `packages:
     helloworld:
@@ -595,19 +580,11 @@ func TestComposeActionsForValidRuntime_ZipAction(t *testing.T) {
 // Test 11: validate manifest_parser.ComposeActions() method for single line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestComposeActionsForSingleLineParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
 
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, err := p.ParseManifest(manifestFile)
-
-	if err != nil {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
-	}
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_singleline_params.yaml")
 
 	// Call the method we are testing
-	actions, err := p.ComposeActionsFromAllPackages(m, manifestFile, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
 
 	if err == nil {
 		// test # actions
@@ -779,19 +756,11 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
 // Test 12: validate manifest_parser.ComposeActions() method for multi line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestComposeActionsForMultiLineParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
 
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, err := p.ParseManifest(manifestFile)
-
-	if err != nil {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
-	}
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_multiline_params.yaml")
 
 	// call the method we are testing
-	actions, err := p.ComposeActionsFromAllPackages(m, manifestFile, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
 
 	if err == nil {
 		// test # actions
@@ -902,6 +871,7 @@ func TestComposeActionsForFunction(t *testing.T) {
 }
 
 // Test 14: validate manifest_parser.ComposeActions() method
+// TODO() rewrite
 func TestComposeActionsForLimits(t *testing.T) {
 	data :=
 		`package:
@@ -950,6 +920,7 @@ func TestComposeActionsForLimits(t *testing.T) {
 }
 
 // Test 15: validate manifest_parser.ComposeActions() method
+// TODO() rewrite
 func TestComposeActionsForWebActions(t *testing.T) {
 	data :=
 		`package:
@@ -1128,14 +1099,8 @@ func TestResolveParameterForMultiLineParams(t *testing.T) {
 
 // Test 17: validate JSON parameters
 func TestParseManifestForJSONParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_json_params.yaml"
-	// read and parse manifest.yaml file
-	m, err := NewYAMLParser().ParseManifest(manifestFile)
 
-	if err != nil {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
-	}
+	_, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_json_params.yaml")
 
 	// validate package name should be "validate"
 	packageName := "validate_json"
@@ -1462,12 +1427,11 @@ func TestBadYAMLInvalidCommentInManifest(t *testing.T) {
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForPackages(t *testing.T) {
 
-	manifestFile := "../tests/dat/manifest_data_unmarshal_packagess.yaml"
+	manifestFile := "../tests/dat/manifest_data_unmarshal_packages.yaml"
 	m, err := testReadAndUnmarshalManifest(t, manifestFile)
 
 	// Unmarshal reads/parses manifest data and sets the values of YAML
 	// And returns an error if parsing a manifest data fails
-	//err := NewYAMLParser().Unmarshal([]byte(data), &m)
 	if err == nil {
 		expectedResult := string(2)
 		actualResult := string(len(m.Packages))
