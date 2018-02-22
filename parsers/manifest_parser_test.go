@@ -830,42 +830,25 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
 }
 
 // Test 13: validate manifest_parser.ComposeActions() method
+// TODO() - test is NOT complete. Manifest has code that is commented out for "hello2" action
 func TestComposeActionsForFunction(t *testing.T) {
-	data :=
-		`package:
-  name: helloworld
-  actions:
-    hello1:
-      function: ../tests/src/integration/helloworld/actions/hello.js`
-	// TODO() uncomment this after we add support for action file content from URL
-	// hello2:
-	//  function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/isrc/integration/helloworld/manifest.yaml`
-	dir, _ := os.Getwd()
-	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_locations_")
-	if err == nil {
-		defer os.Remove(tmpfile.Name()) // clean up
-		if _, err := tmpfile.Write([]byte(data)); err == nil {
-			// read and parse manifest.yaml file
-			p := NewYAMLParser()
-			m, _ := p.ParseManifest(tmpfile.Name())
-			actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
-			var expectedResult, actualResult string
-			if err == nil {
-				for i := 0; i < len(actions); i++ {
-					if actions[i].Action.Name == "hello1" {
-						expectedResult, _ = filepath.Abs("../tests/src/integration/helloworld/actions/hello.js")
-						actualResult, _ = filepath.Abs(actions[i].Filepath)
-						assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-						// (TODO) Uncomment the following condition, hello2
-						// (TODO) after issue # 311 is fixed
-						//} else if actions[i].Action.Name == "hello2" {
-						//  assert.NotNil(t, actions[i].Action.Exec.Code, "Expected source code from an action file but found it empty")
-					}
-				}
-			}
 
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_function.yaml")
+
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	var expectedResult, actualResult string
+	if err == nil {
+		for i := 0; i < len(actions); i++ {
+			if actions[i].Action.Name == "hello1" {
+				expectedResult, _ = filepath.Abs("../tests/src/integration/helloworld/actions/hello.js")
+				actualResult, _ = filepath.Abs(actions[i].Filepath)
+				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+				// TODO() Uncomment the following condition, hello2
+				// TODO() after issue # 311 is fixed
+				//} else if actions[i].Action.Name == "hello2" {
+				//  assert.NotNil(t, actions[i].Action.Exec.Code, "Expected source code from an action file but found it empty")
+			}
 		}
-		tmpfile.Close()
 	}
 
 }
@@ -961,29 +944,12 @@ func TestComposeActionsForWebActions(t *testing.T) {
 }
 
 // Test 15-1: validate manifest_parser.ComposeActions() method
-// TODO(749) - rewrite test to use "packages"
-//func TestComposeActionsForInvalidWebActions(t *testing.T) {
-//	data :=
-//		`package:
-//  name: helloworld
-//  actions:
-//    hello:
-//      function: ../tests/src/integration/helloworld/actions/hello.js
-//      web-export: raw123`
-//	dir, _ := os.Getwd()
-//	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_invalid_web_actions_")
-//	if err == nil {
-//		defer os.Remove(tmpfile.Name()) // clean up
-//		if _, err := tmpfile.Write([]byte(data)); err == nil {
-//			// read and parse manifest.yaml file
-//			p := NewYAMLParser()
-//			m, _ := p.ParseManifest(tmpfile.Name())
-//			_, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
-//			assert.NotNil(t, err, "Expected error for invalid web-export.")
-//		}
-//		tmpfile.Close()
-//	}
-//}
+func TestComposeActionsForInvalidWebActions(t *testing.T) {
+
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_invalid_web.yaml")
+	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.NotNil(t, err, "Expected error for invalid web-export.")
+}
 
 // Test 16: validate manifest_parser.ResolveParameter() method
 func TestResolveParameterForMultiLineParams(t *testing.T) {
@@ -1115,11 +1081,6 @@ func TestParseManifestForJSONParams(t *testing.T) {
 }
 
 func TestComposePackage(t *testing.T) {
-	//// manifest file is located under ../tests folder
-	//manifestFile := "../tests/dat/manifest_data_compose_packages.yaml"
-	//// read and parse manifest.yaml file
-	//p := NewYAMLParser()
-	//m, err := p.ParseManifest(manifestFile)
 
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_packages.yaml")
 
@@ -1135,11 +1096,6 @@ func TestComposePackage(t *testing.T) {
 }
 
 func TestComposeSequences(t *testing.T) {
-	//// manifest file is located under ../tests folder
-	//manifestFile := "../tests/dat/manifest_data_compose_sequences.yaml"
-	//// read and parse manifest.yaml file
-	//p := NewYAMLParser()
-	//m, err := p.ParseManifest(manifestFile)
 
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_sequences.yaml")
 
@@ -1171,13 +1127,6 @@ func TestComposeTriggers(t *testing.T) {
 	// set env variables needed for the trigger feed
 	os.Setenv("KAFKA_INSTANCE", "kafka-broker")
 	os.Setenv("SRC_TOPIC", "topic")
-	//// read and parse manifest.yaml file located under ../tests folder
-	//manifestFile := "../tests/dat/manifest_data_compose_triggers.yaml"
-	//p := NewYAMLParser()
-	//m, err := p.ParseManifest(manifestFile)
-	//if err != nil {
-	//	assert.Fail(t, "Failed to parse manifest: "+manifestFile)
-	//}
 
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_triggers.yaml")
 
@@ -1205,13 +1154,6 @@ func TestComposeTriggers(t *testing.T) {
 }
 
 func TestComposeRules(t *testing.T) {
-	//// read and parse manifest.yaml file located under ../tests folder
-	//manifestFile := "../tests/dat/manifest_data_compose_rules.yaml"
-	//p := NewYAMLParser()
-	//m, err := p.ParseManifest(manifestFile)
-	//if err != nil {
-	//	assert.Fail(t, "Failed to parse manifest: "+manifestFile)
-	//}
 
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_rules.yaml")
 
@@ -1235,13 +1177,6 @@ func TestComposeRules(t *testing.T) {
 // TODO(752) We SHOULD automatically add "web-export" to each Action referenced in the "apis" section
 // as this is implied.  The user should not have to do this manually
 func TestComposeApiRecords(t *testing.T) {
-	//// read and parse manifest.yaml file located under ../tests folder
-	//manifestFile := "../tests/dat/manifest_data_compose_api_records.yaml"
-	//p := NewYAMLParser()
-	//m, err := p.ParseManifest(manifestFile)
-	//if err != nil {
-	//	assert.Fail(t, "Failed to parse manifest: "+manifestFile)
-	//}
 
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_api_records.yaml")
 
@@ -1299,14 +1234,6 @@ func TestComposeApiRecords(t *testing.T) {
 }
 
 func TestComposeDependencies(t *testing.T) {
-	//
-	//// read and parse manifest.yaml file located under ../tests folder
-	//manifestFile := "../tests/dat/manifest_data_compose_dependencies.yaml"
-	//p := NewYAMLParser()
-	//m, err := p.ParseManifest(manifestFile)
-	//if err != nil {
-	//	assert.Fail(t, "Failed to parse manifest: "+manifestFile)
-	//}
 
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_dependencies.yaml")
 
