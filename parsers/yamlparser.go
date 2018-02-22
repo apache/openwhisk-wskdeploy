@@ -225,8 +225,7 @@ type YAML struct {
 	Application Project            `yaml:"application"` //used in deployment.yaml (being deprecated)
 	Project     Project            `yaml:"project"`     //used in deployment.yaml
 	Packages    map[string]Package `yaml:"packages"`    //used in deployment.yaml
-	// TODO() XXX - remove Package once and for all time
-	//Package     Package            `yaml:"package"`
+	//Package     Package            `yaml:"package"`   // DEPRECATED.  Should we add warning if found?
 	Filepath string //file path of the yaml file
 }
 

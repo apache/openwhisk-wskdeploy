@@ -23,6 +23,7 @@ import (
 )
 
 // undeployCmd represents the undeploy command
+// TODO() i18n the short/long descriptions
 var undeployCmd = &cobra.Command{
 	Use:        "undeploy",
 	SuggestFor: []string{"remove"},
@@ -44,6 +45,8 @@ func init() {
 	// and all subcommands, e.g.:
 	// undeployCmd.PersistentFlags().String("foo", "", "A help for foo")
 	undeployCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", "config file (default is $HOME/.wskdeploy.yaml)")
+
+	// TODO() remove the following flags (here) and add to persistent flags in root.go
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// undeployCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")=

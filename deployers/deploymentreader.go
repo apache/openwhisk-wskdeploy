@@ -79,10 +79,6 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 				packMap[packName] = depPacks
 			}
 		}
-		// TODO() XXX
-		//else {
-		//		packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
-		//	}
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
 			depPacks.Packagename = packName
@@ -263,10 +259,6 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 				packMap[packName] = depPacks
 			}
 		}
-		// TODO() XXX
-		//else {
-		//		packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
-		//	}
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
 			depPacks.Packagename = packName

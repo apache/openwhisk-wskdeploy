@@ -1,4 +1,4 @@
-// TODO() XXX - rewrite test to not use "package"
+// TODO(749) Rewrite test to use "packages" schema
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -84,6 +84,7 @@ func _createTmpfile(data string, filename string) (f *os.File, err error) {
 	return tmpfile, nil
 }
 
+// TODO(749) - Rewrite to work with "packages" key/schema
 //func TestValidateSequenceCreation(t *testing.T) {
 //	count := 10
 //	wskdeploy := common.NewWskdeploy()
