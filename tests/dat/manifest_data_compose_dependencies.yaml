@@ -15,13 +15,13 @@
 #
 
 packages:
-  TestPackageInDeploymentFile:
-      actions:
-        helloworld:
-          function: actions/helloworld.js
-          runtime: nodejs:6
-          inputs:
-            name: string
-            place: string
-          outputs:
-            payload: string
+  helloworld:
+    dependencies:
+      myhelloworld:
+        location: github.com/user/repo/folder
+      myCloudant:
+        location: /whisk.system/cloudant
+        inputs:
+          dbname: myGreatDB
+        annotations:
+          myAnnotation: Here it is

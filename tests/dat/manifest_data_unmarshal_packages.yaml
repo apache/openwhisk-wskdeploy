@@ -15,8 +15,13 @@
 #
 
 packages:
-  helloworld:
+  package1:
     actions:
       helloNodejs:
         function: actions/hello.js
         runtime: nodejs:6
+  package2:
+    actions:
+      helloPython:
+        function: actions/hello.py
+        runtime: python

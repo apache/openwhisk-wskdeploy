@@ -14,16 +14,11 @@
 # specific language governing permissions and limitations under the License.
 #
 
-project:
-  name: IntegrationTest
-  packages:
-    usingPackageInManifest:
-      actions:
-        helloNodejs-1:
-          inputs:
-            name: Amy
-            place: Paris
-        helloNodejs-3:
-          inputs:
-            name: Arthur
-            place: Hawaii
+# packages:
+test_package:
+  actions:
+    helloNodejs:
+      function: actions/hello.js
+      runtime: nodejs:6
+    helloJava:
+      function: actions/hello.java

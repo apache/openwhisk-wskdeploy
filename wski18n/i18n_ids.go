@@ -175,6 +175,7 @@ const (
 	ID_WARN_VALUE_RANGE_X_name_X_key_X_filetype_X_min_X_max_X = "msg_warn_value_range" // TODO() not used, but should be used for limit ranges
 	ID_WARN_WHISK_PROPS_DEPRECATED                            = "msg_warn_whisk_properties"
 	ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X                 = "msg_warn_entity_name_exists"
+	ID_WARN_PACKAGES_NOT_FOUND_X_path_X                       = "msg_warn_packages_not_found"
 
 	// Verbose (Debug/Trace) messages
 	ID_DEBUG_KEY_VERIFY_X_name_X_key_X     = "msg_dbg_key_verify"
@@ -310,6 +311,7 @@ var I18N_ID_SET = [](string){
 	ID_WARN_LIMITS_LOG_SIZE,
 	ID_WARN_LIMITS_MEMORY_SIZE,
 	ID_WARN_LIMITS_TIMEOUT,
+	ID_WARN_PACKAGES_NOT_FOUND_X_path_X,
 	ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
 	ID_WARN_WHISK_PROPS_DEPRECATED,
 }

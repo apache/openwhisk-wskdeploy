@@ -29,6 +29,7 @@ const (
 	YAML_KEY_ANNOTATION  = "annotoation"
 	YAML_KEY_API         = "api"
 	YAML_KEY_FEED        = "feed"
+	YAML_KEY_MANIFEST    = "manifest"
 	YAML_KEY_NAMESPACE   = "namespace"
 	YAML_KEY_PACKAGES    = "packages"
 	YAML_KEY_PROJECT     = "project"
@@ -203,6 +204,9 @@ type Package struct {
 	Inputs           map[string]Parameter   `yaml:"inputs"`   //deprecated, used in deployment.yaml
 	Sequences        map[string]Sequence    `yaml:"sequences"`
 	Annotations      map[string]interface{} `yaml:"annotations,omitempty"`
+
+	// TODO() this is a convenience we want for package-shared vars that would be
+	// propagated to every action within the package.
 	//Parameters  map[string]interface{} `yaml: parameters` // used in manifest.yaml
 	Apis map[string]map[string]map[string]map[string]string `yaml:"apis"` //used in manifest.yaml
 }
@@ -215,15 +219,14 @@ type Project struct {
 	ApigwAccessToken string             `yaml:"apigwAccessToken"`
 	Version          string             `yaml:"version"`
 	Packages         map[string]Package `yaml:"packages"` //used in deployment.yaml
-	Package          Package            `yaml:"package"`  // being deprecated, used in deployment.yaml
 }
 
 type YAML struct {
 	Application Project            `yaml:"application"` //used in deployment.yaml (being deprecated)
 	Project     Project            `yaml:"project"`     //used in deployment.yaml
 	Packages    map[string]Package `yaml:"packages"`    //used in deployment.yaml
-	Package     Package            `yaml:"package"`
-	Filepath    string             //file path of the yaml file
+	//Package     Package            `yaml:"package"`   // DEPRECATED.  Should we add warning if found?
+	Filepath string //file path of the yaml file
 }
 
 // function to return Project or Application depending on what is specified in
@@ -251,12 +254,8 @@ func convertPackageName(packageMap map[string]Package) map[string]Package {
 
 func ReadEnvVariable(yaml *YAML) *YAML {
 	if yaml.Application.Name != "" {
-		yaml.Application.Package.Packagename = wskenv.ConvertSingleName(yaml.Application.Package.Packagename)
-		yaml.Package.Packagename = wskenv.ConvertSingleName(yaml.Package.Packagename)
 		yaml.Application.Packages = convertPackageName(yaml.Application.Packages)
 	} else {
-		yaml.Project.Package.Packagename = wskenv.ConvertSingleName(yaml.Project.Package.Packagename)
-		yaml.Package.Packagename = wskenv.ConvertSingleName(yaml.Package.Packagename)
 		yaml.Project.Packages = convertPackageName(yaml.Project.Packages)
 	}
 	yaml.Packages = convertPackageName(yaml.Packages)
@@ -279,7 +278,7 @@ func (trigger *Trigger) ComposeWskTrigger(kvarr []whisk.KeyValue) *whisk.Trigger
 func (rule *Rule) ComposeWskRule() *whisk.Rule {
 	wskrule := new(whisk.Rule)
 	wskrule.Name = wskenv.ConvertSingleName(rule.Name)
-	//wskrule.Namespace = rule.Namespace
+	//wskrule.Namespace = rule.Namespace // TODO() ?
 	pub := false
 	wskrule.Publish = &pub
 	wskrule.Trigger = wskenv.ConvertSingleName(rule.Trigger)

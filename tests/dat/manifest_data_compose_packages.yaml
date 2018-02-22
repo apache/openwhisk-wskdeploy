@@ -14,13 +14,6 @@
 # specific language governing permissions and limitations under the License.
 #
 
-project:
-  name: wskdeploy-samples
-  namespace: /wskdeploy/samples/
-
-  package:
-      name: ${package_name}-${package_name}
-      namespace: /wskdeploy/samples/test
-      credential: 12345678ABCDEF
-      inputs:
-        param: value
+packages:
+  helloworld:
+    namespace: default

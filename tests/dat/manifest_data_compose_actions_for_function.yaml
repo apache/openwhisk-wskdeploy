@@ -14,13 +14,12 @@
 # specific language governing permissions and limitations under the License.
 #
 
-project:
-  name: wskdeploy-samples
-  namespace: /wskdeploy/samples/
+packages:
+  helloworld:
+    actions:
+      hello1:
+        function: ../tests/src/integration/helloworld/actions/hello.js
 
-  package:
-      name: ${package_name}
-      namespace: /wskdeploy/samples/test
-      credential: 12345678ABCDEF
-      inputs:
-        param: value
+# TODO() uncomment this after we add support for action file content from URL
+#     hello2:
+#	    function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/isrc/integration/helloworld/manifest.yaml

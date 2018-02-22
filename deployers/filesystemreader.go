@@ -45,6 +45,7 @@ func NewFileSystemReader(serviceDeployer *ServiceDeployer) *FileSystemReader {
 	return &reader
 }
 
+// TODO(#748) This function adds actions to a "Default" package which is not a concept we support
 func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]utils.ActionRecord, error) {
 
 	// Inform user of what reader is doing
@@ -92,7 +93,8 @@ func (reader *FileSystemReader) ReadProjectDirectory(manifest *parsers.YAML) ([]
 
 						var record utils.ActionRecord
 						record.Action = action
-						record.Packagename = manifest.Package.Packagename
+						// TODO(#748) This function adds actions to a "Default" package which is not a concept we support
+						//record.Packagename = manifest.Package.Packagename
 						record.Filepath = fpath
 
 						actions = append(actions, record)

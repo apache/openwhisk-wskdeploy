@@ -45,7 +45,7 @@ func TestDeploymentReader_HandleYaml(t *testing.T) {
 	assert.NotNil(t, dr.DeploymentDescriptor.GetProject().Packages["GitHubCommits"], "DeploymentReader handle deployment yaml failed.")
 }
 
-// TODO remove this unused test?
+// TODO(750) remove this unused test?
 func TestDeployerCheck(t *testing.T) {
 	sd := NewServiceDeployer()
 	sd.DeploymentPath = "../tests/usecases/badyaml/deployment.yaml"
@@ -122,40 +122,41 @@ func TestDeploymentReader_bindTrigger_packages(t *testing.T) {
 	}
 }
 
-func TestDeploymentReader_bindTrigger_package(t *testing.T) {
-	//init variables
-	sDeployer := NewServiceDeployer()
-	sDeployer.DeploymentPath = "../tests/dat/deployment-deploymentreader-test-package.yml"
-	sDeployer.Deployment.Triggers["locationUpdate"] = new(whisk.Trigger)
-
-	//parse deployment and bind triggers input and annotation
-	dReader := NewDeploymentReader(sDeployer)
-	dReader.HandleYaml()
-	dReader.bindTriggerInputsAndAnnotations()
-
-	assert.Equal(t, "triggerrule", dReader.DeploymentDescriptor.Package.Packagename)
-	trigger := sDeployer.Deployment.Triggers["locationUpdate"]
-	for _, param := range trigger.Parameters {
-		switch param.Key {
-		case "name":
-			assert.Equal(t, "Bernie", param.Value, "Failed to set inputs")
-		case "place":
-			assert.Equal(t, "DC", param.Value, "Failed to set inputs")
-		default:
-			assert.Fail(t, "Failed to get inputs key")
-
-		}
-	}
-	for _, annos := range trigger.Annotations {
-		switch annos.Key {
-		case "bbb":
-			assert.Equal(t, "this is an annotation", annos.Value, "Failed to set annotations")
-		default:
-			assert.Fail(t, "Failed to get annotation key")
-
-		}
-	}
-}
+// TODO(749) - rewrite test to remove "package"
+//func TestDeploymentReader_bindTrigger_package(t *testing.T) {
+//	//init variables
+//	sDeployer := NewServiceDeployer()
+//	sDeployer.DeploymentPath = "../tests/dat/deployment-deploymentreader-test-package.yml"
+//	sDeployer.Deployment.Triggers["locationUpdate"] = new(whisk.Trigger)
+//
+//	//parse deployment and bind triggers input and annotation
+//	dReader := NewDeploymentReader(sDeployer)
+//	dReader.HandleYaml()
+//	dReader.bindTriggerInputsAndAnnotations()
+//
+//	assert.Equal(t, "triggerrule", dReader.DeploymentDescriptor.Package.Packagename)
+//	trigger := sDeployer.Deployment.Triggers["locationUpdate"]
+//	for _, param := range trigger.Parameters {
+//		switch param.Key {
+//		case "name":
+//			assert.Equal(t, "Bernie", param.Value, "Failed to set inputs")
+//		case "place":
+//			assert.Equal(t, "DC", param.Value, "Failed to set inputs")
+//		default:
+//			assert.Fail(t, "Failed to get inputs key")
+//
+//		}
+//	}
+//	for _, annos := range trigger.Annotations {
+//		switch annos.Key {
+//		case "bbb":
+//			assert.Equal(t, "this is an annotation", annos.Value, "Failed to set annotations")
+//		default:
+//			assert.Fail(t, "Failed to get annotation key")
+//
+//		}
+//	}
+//}
 
 func TestDeploymentReader_BindAssets_ActionAnnotations(t *testing.T) {
 	sDeployer := NewServiceDeployer()

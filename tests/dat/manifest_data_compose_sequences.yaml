@@ -16,7 +16,8 @@
 
 packages:
   helloworld:
-    actions:
-      helloNodejs:
-        function: actions/hello.js
-        runtime: nodejs:6
+    sequences:
+      sequence1:
+        actions: action1, action2
+      sequence2:
+        actions: action3, action4, action5

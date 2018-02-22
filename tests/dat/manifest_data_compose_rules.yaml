@@ -14,9 +14,12 @@
 # specific language governing permissions and limitations under the License.
 #
 
-  actions:
-    helloNodejs:
-      function: actions/hello.js
-      runtime: nodejs:6
-    helloJava:
-      function: actions/hello.java
+packages:
+  helloworld:
+    rules:
+      rule1:
+        trigger: locationUpdate
+        action: greeting
+      rule2:
+        trigger: trigger1
+        action: action1

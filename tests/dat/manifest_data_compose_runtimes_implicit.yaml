@@ -14,9 +14,15 @@
 # specific language governing permissions and limitations under the License.
 #
 
-package:
-    name: test_package
-    namespace: /wskdeploy/samples/test
-    credential: 12345678ABCDEF
-    inputs:
-      param: value
+packages:
+  helloworld:
+    actions:
+      helloPython:
+        function: ../tests/src/integration/helloworld/actions/hello.py
+      helloJava:
+        function: ../tests/src/integration/helloworld/actions/hello.jar
+        main: Hello
+      helloSwift:
+        function: ../tests/src/integration/helloworld/actions/hello.swift
+      helloNodejs:
+        function: ../tests/src/integration/helloworld/actions/hello.js
