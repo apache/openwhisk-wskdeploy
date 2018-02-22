@@ -871,52 +871,25 @@ func TestComposeActionsForFunction(t *testing.T) {
 }
 
 // Test 14: validate manifest_parser.ComposeActions() method
-// TODO() rewrite
 func TestComposeActionsForLimits(t *testing.T) {
-	data :=
-		`package:
-  name: helloworld
-  actions:
-    hello1:
-      function: ../tests/src/integration/helloworld/actions/hello.js
-      limits:
-        timeout: 1
-    hello2:
-      function: ../tests/src/integration/helloworld/actions/hello.js
-      limits:
-        timeout: 180
-        memorySize: 128
-        logSize: 1
-        concurrentActivations: 10
-        userInvocationRate: 50
-        codeSize: 1024
-        parameterSize: 128`
-	dir, _ := os.Getwd()
-	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_limits_")
-	if err == nil {
-		defer os.Remove(tmpfile.Name()) // clean up
-		if _, err := tmpfile.Write([]byte(data)); err == nil {
-			// read and parse manifest.yaml file
-			p := NewYAMLParser()
-			m, _ := p.ParseManifest(tmpfile.Name())
-			actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
-			//var expectedResult, actualResult string
-			if err == nil {
-				for i := 0; i < len(actions); i++ {
-					if actions[i].Action.Name == "hello1" {
-						assert.Nil(t, actions[i].Action.Limits, "Expected limit section to be empty but got %s", actions[i].Action.Limits)
-					} else if actions[i].Action.Name == "hello2" {
-						assert.NotNil(t, actions[i].Action.Limits, "Expected limit section to be not empty but found it empty")
-						assert.Equal(t, 180, *actions[i].Action.Limits.Timeout, "Failed to get Timeout")
-						assert.Equal(t, 128, *actions[i].Action.Limits.Memory, "Failed to get Memory")
-						assert.Equal(t, 1, *actions[i].Action.Limits.Logsize, "Failed to get Logsize")
-					}
-				}
-			}
 
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_limits.yaml")
+
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+
+	if err == nil {
+		for i := 0; i < len(actions); i++ {
+			if actions[i].Action.Name == "hello1" {
+				assert.Nil(t, actions[i].Action.Limits, "Expected limit section to be empty but got %s", actions[i].Action.Limits)
+			} else if actions[i].Action.Name == "hello2" {
+				assert.NotNil(t, actions[i].Action.Limits, "Expected limit section to be not empty but found it empty")
+				assert.Equal(t, 180, *actions[i].Action.Limits.Timeout, "Failed to get Timeout")
+				assert.Equal(t, 128, *actions[i].Action.Limits.Memory, "Failed to get Memory")
+				assert.Equal(t, 1, *actions[i].Action.Limits.Logsize, "Failed to get Logsize")
+			}
 		}
-		tmpfile.Close()
 	}
+
 }
 
 // Test 15: validate manifest_parser.ComposeActions() method
