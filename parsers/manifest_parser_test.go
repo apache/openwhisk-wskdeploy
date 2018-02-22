@@ -1171,13 +1171,15 @@ func TestParseManifestForJSONParams(t *testing.T) {
 }
 
 func TestComposePackage(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_data_compose_packages.yaml"
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, err := p.ParseManifest(manifestFile)
+	//// manifest file is located under ../tests folder
+	//manifestFile := "../tests/dat/manifest_data_compose_packages.yaml"
+	//// read and parse manifest.yaml file
+	//p := NewYAMLParser()
+	//m, err := p.ParseManifest(manifestFile)
 
-	pkg, err := p.ComposeAllPackages(m, manifestFile, whisk.KeyValue{})
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_packages.yaml")
+
+	pkg, err := p.ComposeAllPackages(m, m.Filepath, whisk.KeyValue{})
 	if err == nil {
 		n := "helloworld"
 		assert.NotNil(t, pkg[n], "Failed to get the whole package")
@@ -1189,11 +1191,14 @@ func TestComposePackage(t *testing.T) {
 }
 
 func TestComposeSequences(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_data_compose_sequences.yaml"
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, err := p.ParseManifest(manifestFile)
+	//// manifest file is located under ../tests folder
+	//manifestFile := "../tests/dat/manifest_data_compose_sequences.yaml"
+	//// read and parse manifest.yaml file
+	//p := NewYAMLParser()
+	//m, err := p.ParseManifest(manifestFile)
+
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_sequences.yaml")
+
 	// Note: set first param (namespace) to empty string
 	seqList, err := p.ComposeSequencesFromAllPackages("", m, whisk.KeyValue{})
 	if err != nil {
@@ -1222,15 +1227,17 @@ func TestComposeTriggers(t *testing.T) {
 	// set env variables needed for the trigger feed
 	os.Setenv("KAFKA_INSTANCE", "kafka-broker")
 	os.Setenv("SRC_TOPIC", "topic")
-	// read and parse manifest.yaml file located under ../tests folder
-	manifestFile := "../tests/dat/manifest_data_compose_triggers.yaml"
-	p := NewYAMLParser()
-	m, err := p.ParseManifest(manifestFile)
-	if err != nil {
-		assert.Fail(t, "Failed to parse manifest: "+manifestFile)
-	}
+	//// read and parse manifest.yaml file located under ../tests folder
+	//manifestFile := "../tests/dat/manifest_data_compose_triggers.yaml"
+	//p := NewYAMLParser()
+	//m, err := p.ParseManifest(manifestFile)
+	//if err != nil {
+	//	assert.Fail(t, "Failed to parse manifest: "+manifestFile)
+	//}
 
-	triggerList, err := p.ComposeTriggersFromAllPackages(m, manifestFile, whisk.KeyValue{})
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_triggers.yaml")
+
+	triggerList, err := p.ComposeTriggersFromAllPackages(m, m.Filepath, whisk.KeyValue{})
 
 	if err != nil {
 		assert.Fail(t, "Failed to compose trigger")
@@ -1254,13 +1261,15 @@ func TestComposeTriggers(t *testing.T) {
 }
 
 func TestComposeRules(t *testing.T) {
-	// read and parse manifest.yaml file located under ../tests folder
-	manifestFile := "../tests/dat/manifest_data_compose_rules.yaml"
-	p := NewYAMLParser()
-	m, err := p.ParseManifest(manifestFile)
-	if err != nil {
-		assert.Fail(t, "Failed to parse manifest: "+manifestFile)
-	}
+	//// read and parse manifest.yaml file located under ../tests folder
+	//manifestFile := "../tests/dat/manifest_data_compose_rules.yaml"
+	//p := NewYAMLParser()
+	//m, err := p.ParseManifest(manifestFile)
+	//if err != nil {
+	//	assert.Fail(t, "Failed to parse manifest: "+manifestFile)
+	//}
+
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_rules.yaml")
 
 	ruleList, err := p.ComposeRulesFromAllPackages(m, whisk.KeyValue{})
 	if err != nil {
@@ -1282,13 +1291,15 @@ func TestComposeRules(t *testing.T) {
 // TODO(752) We SHOULD automatically add "web-export" to each Action referenced in the "apis" section
 // as this is implied.  The user should not have to do this manually
 func TestComposeApiRecords(t *testing.T) {
-	// read and parse manifest.yaml file located under ../tests folder
-	manifestFile := "../tests/dat/manifest_data_compose_api_records.yaml"
-	p := NewYAMLParser()
-	m, err := p.ParseManifest(manifestFile)
-	if err != nil {
-		assert.Fail(t, "Failed to parse manifest: "+manifestFile)
-	}
+	//// read and parse manifest.yaml file located under ../tests folder
+	//manifestFile := "../tests/dat/manifest_data_compose_api_records.yaml"
+	//p := NewYAMLParser()
+	//m, err := p.ParseManifest(manifestFile)
+	//if err != nil {
+	//	assert.Fail(t, "Failed to parse manifest: "+manifestFile)
+	//}
+
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_api_records.yaml")
 
 	// create a fake configuration
 	config := whisk.Config{
@@ -1344,14 +1355,16 @@ func TestComposeApiRecords(t *testing.T) {
 }
 
 func TestComposeDependencies(t *testing.T) {
+	//
+	//// read and parse manifest.yaml file located under ../tests folder
+	//manifestFile := "../tests/dat/manifest_data_compose_dependencies.yaml"
+	//p := NewYAMLParser()
+	//m, err := p.ParseManifest(manifestFile)
+	//if err != nil {
+	//	assert.Fail(t, "Failed to parse manifest: "+manifestFile)
+	//}
 
-	// read and parse manifest.yaml file located under ../tests folder
-	manifestFile := "../tests/dat/manifest_data_compose_dependencies.yaml"
-	p := NewYAMLParser()
-	m, err := p.ParseManifest(manifestFile)
-	if err != nil {
-		assert.Fail(t, "Failed to parse manifest: "+manifestFile)
-	}
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_dependencies.yaml")
 
 	depdList, err := p.ComposeDependenciesFromAllPackages(m, "/project_folder", m.Filepath)
 
@@ -1427,8 +1440,8 @@ func TestBadYAMLInvalidCommentInManifest(t *testing.T) {
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForPackages(t *testing.T) {
 
-	manifestFile := "../tests/dat/manifest_data_unmarshal_packages.yaml"
-	m, err := testReadAndUnmarshalManifest(t, manifestFile)
+	//manifestFile := "../tests/dat/manifest_data_unmarshal_packages.yaml"
+	m, err := testReadAndUnmarshalManifest(t, "../tests/dat/manifest_data_unmarshal_packages.yaml")
 
 	// Unmarshal reads/parses manifest data and sets the values of YAML
 	// And returns an error if parsing a manifest data fails
