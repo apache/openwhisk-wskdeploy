@@ -367,9 +367,15 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		wskaction.Exec.Kind = YAML_KEY_SEQUENCE
 		actionList := strings.Split(sequence.Actions, ",")
 
+		spew.Dump(key)
+		spew.Dump(sequence)
+
 		var components []string
 		for _, a := range actionList {
 			act := strings.TrimSpace(a)
+			println("*********** action name *********")
+			spew.Dump(act)
+			println("*********** action name *********")
 			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") &&
 				strings.ToLower(packageName) != DEFAULT_PACKAGE {
 				act = path.Join(packageName, act)
@@ -997,10 +1003,14 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							request.ApiDoc.Id = strings.Join([]string{API, request.ApiDoc.Namespace, request.ApiDoc.GatewayRelPath}, ":")
 							// set action of an API Doc
 							request.ApiDoc.Action = new(whisk.ApiAction)
-							request.ApiDoc.Action.Name = packageName + PATH_SEPERATOR + actionName
-							request.ApiDoc.Action.Namespace = client.Namespace
+							if packageName == DEFAULT_PACKAGE {
+								request.ApiDoc.Action.Name = actionName
+							} else {
+								request.ApiDoc.Action.Name = packageName + PATH_SEPERATOR + actionName
+							}
 							url := []string{HTTPS + ":" + PATH_SEPERATOR, client.Host, strings.ToLower(API),
 								API_VERSION, WEB, client.Namespace, packageName, actionName + "." + HTTP}
+							request.ApiDoc.Action.Namespace = client.Namespace
 							request.ApiDoc.Action.BackendUrl = strings.Join(url, PATH_SEPERATOR)
 							request.ApiDoc.Action.BackendMethod = gatewayMethod
 							request.ApiDoc.Action.Auth = client.AuthToken

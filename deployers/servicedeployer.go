@@ -92,7 +92,6 @@ type ServiceDeployer struct {
 	ProjectPath    string
 	DeploymentPath string
 	// whether to deploy the action under the package
-	DeployActionInPackage bool
 	InteractiveChoice     bool
 	ClientConfig          *whisk.Config
 	DependencyMaster      map[string]utils.DependencyRecord
@@ -104,7 +103,6 @@ func NewServiceDeployer() *ServiceDeployer {
 	var dep ServiceDeployer
 	dep.Deployment = NewDeploymentProject()
 	dep.IsInteractive = true
-	dep.DeployActionInPackage = true
 	dep.DependencyMaster = make(map[string]utils.DependencyRecord)
 
 	return &dep
@@ -709,9 +707,7 @@ func (deployer *ServiceDeployer) DeployPackages() error {
 		// /<namespace> instead of /<namespace>/<package> and
 		// therefore skip creating a new package and set
 		// deployer.DeployActionInPackage to false which is set to true by default
-		if strings.ToLower(pack.Package.Name) == parsers.DEFAULT_PACKAGE {
-			deployer.DeployActionInPackage = false
-		} else {
+		if strings.ToLower(pack.Package.Name) != parsers.DEFAULT_PACKAGE {
 			err := deployer.createPackage(pack.Package)
 			if err != nil {
 				return err
@@ -954,7 +950,7 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 // Utility function to call go-whisk framework to make action
 func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Action) error {
 	// call ActionService through the Client
-	if deployer.DeployActionInPackage {
+	if strings.ToLower(pkgname) != parsers.DEFAULT_PACKAGE {
 		// the action will be created under package with pattern 'packagename/actionname'
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
 	}
