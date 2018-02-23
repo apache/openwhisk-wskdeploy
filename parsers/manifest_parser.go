@@ -32,6 +32,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -41,6 +42,7 @@ const (
 	HTTP           = "http"
 	API_VERSION    = "v1"
 	WEB            = "web"
+	DEFAULT_PACKAGE = "default"
 )
 
 // Read existing manifest file or create new if none exists
@@ -322,6 +324,15 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		pag.Annotations = append(pag.Annotations, ma)
 	}
 
+	// "default" package is a reserved package name
+	// and in this case wskdeploy deploys openwhisk entities under
+	// /namespace instead of /namespace/package
+	// TODO TODO TODO
+	if strings.ToLower(pag.Name) == DEFAULT_PACKAGE {
+		wskprint.PrintlnOpenWhiskInfo("Package name default is reserved.")
+		wskprint.PrintlnOpenWhiskInfo("all OW entities specified in manifest file under default package will be created under your namespace <namespace>/.")
+	}
+
 	return pag, nil
 }
 
@@ -359,7 +370,8 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		var components []string
 		for _, a := range actionList {
 			act := strings.TrimSpace(a)
-			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") {
+			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") &&
+				strings.ToLower(packageName) != DEFAULT_PACKAGE {
 				act = path.Join(packageName, act)
 			}
 			components = append(components, path.Join("/"+namespace, act))
@@ -848,11 +860,15 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.Key
 		wskrule.Publish = &pub
 		wskrule.Trigger = wskenv.ConvertSingleName(rule.Trigger)
 		wskrule.Action = wskenv.ConvertSingleName(rule.Action)
+		spew.Dump(wskrule.Trigger)
+		spew.Dump(wskrule.Action)
 		act := strings.TrimSpace(wskrule.Action.(string))
-		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") {
+		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") &&
+			strings.ToLower(packageName) != DEFAULT_PACKAGE {
 			act = path.Join(packageName, act)
 		}
 		wskrule.Action = act
+		spew.Dump(wskrule.Action)
 		listOfAnnotations := make(whisk.KeyValueArr, 0)
 		for name, value := range rule.Annotations {
 			var keyVal whisk.KeyValue
