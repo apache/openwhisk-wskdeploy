@@ -32,16 +32,15 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
 )
 
 const (
-	PATH_SEPERATOR = "/"
-	API            = "API"
-	HTTPS          = "https"
-	HTTP           = "http"
-	API_VERSION    = "v1"
-	WEB            = "web"
+	PATH_SEPERATOR  = "/"
+	API             = "API"
+	HTTPS           = "https"
+	HTTP            = "http"
+	API_VERSION     = "v1"
+	WEB             = "web"
 	DEFAULT_PACKAGE = "default"
 )
 
@@ -367,15 +366,9 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		wskaction.Exec.Kind = YAML_KEY_SEQUENCE
 		actionList := strings.Split(sequence.Actions, ",")
 
-		spew.Dump(key)
-		spew.Dump(sequence)
-
 		var components []string
 		for _, a := range actionList {
 			act := strings.TrimSpace(a)
-			println("*********** action name *********")
-			spew.Dump(act)
-			println("*********** action name *********")
 			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") &&
 				strings.ToLower(packageName) != DEFAULT_PACKAGE {
 				act = path.Join(packageName, act)
@@ -866,15 +859,12 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.Key
 		wskrule.Publish = &pub
 		wskrule.Trigger = wskenv.ConvertSingleName(rule.Trigger)
 		wskrule.Action = wskenv.ConvertSingleName(rule.Action)
-		spew.Dump(wskrule.Trigger)
-		spew.Dump(wskrule.Action)
 		act := strings.TrimSpace(wskrule.Action.(string))
 		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") &&
 			strings.ToLower(packageName) != DEFAULT_PACKAGE {
 			act = path.Join(packageName, act)
 		}
 		wskrule.Action = act
-		spew.Dump(wskrule.Action)
 		listOfAnnotations := make(whisk.KeyValueArr, 0)
 		for name, value := range rule.Annotations {
 			var keyVal whisk.KeyValue

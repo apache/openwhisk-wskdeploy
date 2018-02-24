@@ -34,7 +34,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -92,10 +91,10 @@ type ServiceDeployer struct {
 	ProjectPath    string
 	DeploymentPath string
 	// whether to deploy the action under the package
-	InteractiveChoice     bool
-	ClientConfig          *whisk.Config
-	DependencyMaster      map[string]utils.DependencyRecord
-	ManagedAnnotation     whisk.KeyValue
+	InteractiveChoice bool
+	ClientConfig      *whisk.Config
+	DependencyMaster  map[string]utils.DependencyRecord
+	ManagedAnnotation whisk.KeyValue
 }
 
 // NewServiceDeployer is a Factory to create a new ServiceDeployer
@@ -928,9 +927,6 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 	// /namespace/package/action if that action was created under a package
 	// otherwise action should include the namespace with pattern /namespace/action
 	rule.Action = deployer.getQualifiedName(rule.Action.(string))
-
-	spew.Dump(rule.Trigger)
-	spew.Dump(rule.Action)
 
 	var err error
 	var response *http.Response
