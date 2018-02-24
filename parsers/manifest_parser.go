@@ -326,10 +326,8 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	// "default" package is a reserved package name
 	// and in this case wskdeploy deploys openwhisk entities under
 	// /namespace instead of /namespace/package
-	// TODO TODO TODO
 	if strings.ToLower(pag.Name) == DEFAULT_PACKAGE {
-		wskprint.PrintlnOpenWhiskInfo("Package name default is reserved.")
-		wskprint.PrintlnOpenWhiskInfo("all OW entities specified in manifest file under default package will be created under your namespace <namespace>/.")
+		wskprint.PrintlnOpenWhiskInfo(wski18n.T(wski18n.ID_MSG_DEFAULT_PACKAGE))
 	}
 
 	return pag, nil

@@ -256,6 +256,10 @@
     "translation": "Do you really want to undeploy this? (y/N): "
   },
   {
+    "id": "msg_default_package",
+    "translation": "Package name default is reserved, all OpenWhisk entities under default package are deployed/undeployed directly under your namespace."
+  },
+  {
     "id": "ERRORS",
     "translation": "================= ERRORS ==================="
   },
