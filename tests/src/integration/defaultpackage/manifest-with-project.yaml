@@ -57,11 +57,11 @@ project:
                 ruleInDefaultPackage:
                     trigger: triggerInDefaultPackage
                     action: hello-world-series
-            apis:
-                hello-world:
-                    hello:
-                        world:
-                            helloInDefaultPackage: GET
+#            apis:
+#                hello-world:
+#                    hello:
+#                        world:
+#                            helloInDefaultPackage: GET
         package-with-default:
             actions:
                 helloInsidePackage:
@@ -102,9 +102,9 @@ project:
                 ruleInsidePackage:
                     trigger: triggerInsidePackage
                     action: hello-world-series
-            apis:
-                greeting-world:
-                    greeting:
-                        world:
-                            greetingInsidePackage: GET
+#            apis:
+#                greeting-world:
+#                    greeting:
+#                        world:
+#                            greetingInsidePackage: GET
 
