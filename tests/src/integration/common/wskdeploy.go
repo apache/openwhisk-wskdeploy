@@ -180,7 +180,6 @@ func (wskdeploy *Wskdeploy) GetDeploymentObjects(manifestPath string, deployment
 	deployer.ProjectPath = filepath.Dir(manifestPath)
 	deployer.ManifestPath = manifestPath
 	deployer.DeploymentPath = deploymentPath
-	deployer.IsDefault = false
 	deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
 
 	//create client config with namespace, apihost, authkey and etc.
