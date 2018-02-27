@@ -124,7 +124,6 @@ func init() {
 	RootCmd.Flags().StringVarP(&utils.Flags.DeploymentPath, "deployment", "d", "", wski18n.T(wski18n.ID_CMD_FLAG_DEPLOYMENT))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Strict, "strict", "s", false, wski18n.T(wski18n.ID_CMD_FLAG_STRICT))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseInteractive, "allow-interactive", "i", false, wski18n.T(wski18n.ID_CMD_FLAG_INTERACTIVE))
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseDefaults, "allow-defaults", "a", false, wski18n.T(wski18n.ID_CMD_FLAG_DEFAULTS))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Verbose, "verbose", "v", false, wski18n.T(wski18n.ID_CMD_FLAG_VERBOSE))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ApiHost, "apihost", "", "", wski18n.T(wski18n.ID_CMD_FLAG_API_HOST))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Namespace, "namespace", "n", "", wski18n.T(wski18n.ID_CMD_FLAG_NAMESPACE))
@@ -211,8 +210,6 @@ func Deploy() error {
 		deployer.ProjectPath = projectPath
 		deployer.ManifestPath = utils.Flags.ManifestPath
 		deployer.DeploymentPath = utils.Flags.DeploymentPath
-		deployer.IsDefault = utils.Flags.UseDefaults
-
 		deployer.IsInteractive = utils.Flags.UseInteractive
 
 		// master record of any dependency that has been downloaded
@@ -314,9 +311,7 @@ func Undeploy() error {
 		deployer.ProjectPath = utils.Flags.ProjectPath
 		deployer.ManifestPath = utils.Flags.ManifestPath
 		deployer.DeploymentPath = utils.Flags.DeploymentPath
-
 		deployer.IsInteractive = utils.Flags.UseInteractive
-		deployer.IsDefault = utils.Flags.UseDefaults
 
 		clientConfig, error := deployers.NewWhiskConfig(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
 		if error != nil {

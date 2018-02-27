@@ -86,7 +86,6 @@ type ServiceDeployer struct {
 	Client         *whisk.Client
 	mt             sync.RWMutex
 	IsInteractive  bool
-	IsDefault      bool
 	ManifestPath   string
 	ProjectPath    string
 	DeploymentPath string
@@ -154,15 +153,6 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	}
 
 	manifestReader.InitPackages(manifestParser, manifest, deployer.ManagedAnnotation)
-
-	if deployer.IsDefault == true {
-		fileReader := NewFileSystemReader(deployer)
-		fileActions, err := fileReader.ReadProjectDirectory(manifest)
-		if err != nil {
-			return err
-		}
-		fileReader.SetFileActions(fileActions)
-	}
 
 	// process manifest file
 	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, deployer.ManagedAnnotation)
@@ -235,21 +225,6 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 	}
 
 	manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
-
-	// process file system
-	if deployer.IsDefault == true {
-		fileReader := NewFileSystemReader(deployer)
-		fileActions, err := fileReader.ReadProjectDirectory(manifest)
-		if err != nil {
-			return deployer.Deployment, err
-		}
-
-		err = fileReader.SetFileActions(fileActions)
-		if err != nil {
-			return deployer.Deployment, err
-		}
-
-	}
 
 	// process manifest file
 	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})

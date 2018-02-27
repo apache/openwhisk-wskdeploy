@@ -74,7 +74,6 @@ type Input struct {
 	ProjectPath    string
 	DeploymentPath string
 	ManifestPath   string
-	UseDefaults    bool
 	UseInteractive bool
 }
 
@@ -89,7 +88,6 @@ func initializeParameters() {
 
 	expected_input.CfgFile = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/dat/wskprops"
 	expected_input.Verbose = true
-	expected_input.UseDefaults = true
 	expected_input.UseInteractive = true
 	expected_input.ProjectPath = "fake_project_path"
 	expected_input.DeploymentPath = "fake_deployment_path"
@@ -105,7 +103,6 @@ func checkValidAuthInfo(t *testing.T, expected_auth_flags Auth_flags) {
 func checkValidInputInfo(t *testing.T, expected_input Input) {
 	assert.Equal(t, expected_input.CfgFile, utils.Flags.CfgFile, "CfgFile does not match.")
 	assert.Equal(t, expected_input.Verbose, utils.Flags.Verbose, "Verbose does not match.")
-	assert.Equal(t, expected_input.UseDefaults, utils.Flags.UseDefaults, "UseDefaults does not match.")
 	assert.Equal(t, expected_input.UseInteractive, utils.Flags.UseInteractive, "ApiHoUseInteractivest does not match.")
 	assert.Equal(t, expected_input.ProjectPath, utils.Flags.ProjectPath, "ProjectPath does not match.")
 	assert.Equal(t, expected_input.DeploymentPath, utils.Flags.DeploymentPath, "DeploymentPath does not match.")
@@ -137,9 +134,6 @@ func composeCommand(auth Auth_flags, input Input) string {
 	}
 	if input.Verbose {
 		cmd = cmd + "-v "
-	}
-	if input.UseDefaults {
-		cmd = cmd + "-a "
 	}
 	if input.UseInteractive {
 		cmd = cmd + "-i "
