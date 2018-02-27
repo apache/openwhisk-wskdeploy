@@ -57,7 +57,7 @@ func TestDeploymentReader_HandleYaml(t *testing.T) {
 	assert.NotNil(t, dr.DeploymentDescriptor.GetProject().Packages["GitHubCommits"], "DeploymentReader handle deployment yaml failed.")
 }
 
-func appendAnnotation2(t *testing.T, kv whisk.KeyValue) whisk.KeyValueArr{
+func appendAnnotation2(t *testing.T, kv whisk.KeyValue) whisk.KeyValueArr {
 
 	kva := make(whisk.KeyValueArr, 0)
 	//fmt.Println(fmt.Sprintf("appendAnnotation: kva=[%v], kv=[%v]", kva, kv))
@@ -212,7 +212,6 @@ func TestDeploymentReader_PackagesBindTrigger(t *testing.T) {
 			TEST_PACKAGE))
 	}
 }
-
 
 // TODO() XXX this test need to be rewritten perhaps
 //func TestDeploymentReader_bindTrigger_packages(t *testing.T) {
