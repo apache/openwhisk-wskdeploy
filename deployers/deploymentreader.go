@@ -46,7 +46,6 @@ func (reader *DeploymentReader) HandleYaml() error {
 
 	deploymentParser := parsers.NewYAMLParser()
 	deployment, err := deploymentParser.ParseDeployment(dep.DeploymentPath)
-
 	reader.DeploymentDescriptor = deployment
 
 	return err
@@ -168,10 +167,8 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 				depPacks.Packagename = packName
 				packMap[packName] = depPacks
 			}
-		}
-		//else {
-		//		packMap[reader.DeploymentDescriptor.Package.Packagename] = reader.DeploymentDescriptor.Package
-		//	}
+		} // TODO() warning?
+
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
 			depPacks.Packagename = packName

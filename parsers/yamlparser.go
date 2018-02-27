@@ -26,7 +26,7 @@ import (
 // DO NOT translate
 const (
 	YAML_KEY_ACTION      = "action"
-	YAML_KEY_ANNOTATION  = "annotoation"
+	YAML_KEY_ANNOTATION  = "annotation"
 	YAML_KEY_API         = "api"
 	YAML_KEY_FEED        = "feed"
 	YAML_KEY_MANIFEST    = "manifest"
