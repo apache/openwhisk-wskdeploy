@@ -57,31 +57,34 @@ func TestDeploymentReader_HandleYaml(t *testing.T) {
 	assert.NotNil(t, dr.DeploymentDescriptor.GetProject().Packages["GitHubCommits"], "DeploymentReader handle deployment yaml failed.")
 }
 
-func testLoadAndBindDeploymentYAML(t *testing.T, path string, triggerName string) (*ServiceDeployer, *DeploymentReader) {
+func appendAnnotation2(t *testing.T, kv whisk.KeyValue) whisk.KeyValueArr{
+
+	kva := make(whisk.KeyValueArr, 0)
+	//fmt.Println(fmt.Sprintf("appendAnnotation: kva=[%v], kv=[%v]", kva, kv))
+
+	kva = make(whisk.KeyValueArr, 0)
+	kva = append(kva, kv)
+
+	//fmt.Println(fmt.Sprintf("appendAnnotation: kva=[%v]", kva))
+	return kva
+}
+
+func testLoadAndBindDeploymentYAML(t *testing.T, path string, triggerName string, kv whisk.KeyValue) (*ServiceDeployer, *DeploymentReader) {
 
 	sDeployer := NewServiceDeployer()
 	sDeployer.DeploymentPath = path
-	// Create empty Trigger for "bind" function to use (as we would have if we read a matching Manifest)
+
+	// Create Trigger for "bind" function to use (as a Manifest parse would have created)
 	sDeployer.Deployment.Triggers[triggerName] = new(whisk.Trigger)
-
-	// Create an empty Annotation under the Trigger (again to simulate a manifest)
-	// type Annotations []map[string]interface{}
-	var tstKeyValue whisk.KeyValue
-	tstKeyValue.Key = "bbb"
-	tstKeyValue.Value = "old text"
-	var tstArray whisk.KeyValueArr
-
-	b2 := append(tstArray, tstKeyValue)
-
-	fmt.Println(tstKeyValue)
-	fmt.Println(b2)
-	//fmt.Println(tstKeyValArray)
-
-	sDeployer.Deployment.Triggers[triggerName].Annotations = b2
+	sDeployer.Deployment.Triggers[triggerName].Annotations = appendAnnotation2(t, kv)
 
 	//parse deployment and bind triggers input and annotations
 	dReader := NewDeploymentReader(sDeployer)
 	err := dReader.HandleYaml()
+
+	// DEBUG() Uncomment to display initial DeploymentDescriptor (manifest, deployemnt befopre binding)
+	//fmt.Println(utils.ConvertMapToJSONString("BEFORE: dReader.DeploymentDescriptor", dReader.DeploymentDescriptor))
+	fmt.Println(utils.ConvertMapToJSONString("BEFORE: sDeployer.Deployment", sDeployer.Deployment))
 
 	// test load of deployment YAML
 	if err != nil {
@@ -91,17 +94,15 @@ func testLoadAndBindDeploymentYAML(t *testing.T, path string, triggerName string
 	// Test that we can bind Triggers and Annotations
 	err = dReader.bindTriggerInputsAndAnnotations()
 
-	// TODO() XXX remove the following debug stmts
-	//dbg_sDeployer:=utils.ConvertMapToJSONString("sDeployer.Deployment", sDeployer.Deployment)
-	//fmt.Println(dbg_sDeployer)
-	//dbg_dReader:=utils.ConvertMapToJSONString("dReader.DeploymentDescriptor", dReader.DeploymentDescriptor)
-	//fmt.Println(dbg_dReader)
-
 	// test load of deployment YAML
 	if err != nil {
 		fmt.Println(err)
 		assert.Fail(t, fmt.Sprintf(TEST_ERROR_DEPLOYMENT_BIND_TRIGGER_FAILURE, sDeployer.DeploymentPath))
 	}
+
+	// DEBUG() Uncomment to display resultant DeploymentDescriptor (manifest + deployment file binding)
+	//fmt.Println(utils.ConvertMapToJSONString("AFTER: dReader.DeploymentDescriptor", dReader.DeploymentDescriptor))
+	fmt.Println(utils.ConvertMapToJSONString("AFTER: sDeployer.Deployment", sDeployer.Deployment))
 
 	return sDeployer, dReader
 }
@@ -112,11 +113,13 @@ func TestDeploymentReader_ProjectBindTrigger(t *testing.T) {
 	TEST_DATA := "../tests/dat/deployment_deploymentreader_project_bind_trigger.yml"
 	TEST_TRIGGER := "locationUpdate"
 	TEST_PROJECT := "AppWithTriggerRule"
+	TEST_ANOTATION_KEY := "bbb"
+	TEST_ANNOTATION := whisk.KeyValue{TEST_ANOTATION_KEY, "foo"} // value SHOULD be overwritten from deployment YAML
 
 	// Create a ServiceDeployer with a "dummy" DeploymentPlan (i.e., simulate a fake manifest parse)
 	// load the deployment YAMl into dReader.DeploymentDescriptor
 	// bind the deployment inputs and annotations to the named Trigger from Deployment to Manifest YAML
-	sDeployer, dReader := testLoadAndBindDeploymentYAML(t, TEST_DATA, TEST_TRIGGER)
+	sDeployer, dReader := testLoadAndBindDeploymentYAML(t, TEST_DATA, TEST_TRIGGER, TEST_ANNOTATION)
 
 	// test Project exists with expected name
 	projectNameDeploy := dReader.DeploymentDescriptor.GetProject().Name
@@ -131,8 +134,8 @@ func TestDeploymentReader_ProjectBindTrigger(t *testing.T) {
 
 	trigger := sDeployer.Deployment.Triggers[TEST_TRIGGER]
 	for _, param := range trigger.Parameters {
-		dbg := utils.ConvertMapToJSONString("param", param)
-		fmt.Println(dbg)
+		//dbg := utils.ConvertMapToJSONString("param", param)
+		//fmt.Println(dbg)
 		switch param.Key {
 		case "name":
 			assert.Equal(t, "Bernie", param.Value, "Failed to set inputs")
@@ -145,7 +148,7 @@ func TestDeploymentReader_ProjectBindTrigger(t *testing.T) {
 	}
 	for _, annos := range trigger.Annotations {
 		switch annos.Key {
-		case "bbb":
+		case TEST_ANOTATION_KEY:
 			assert.Equal(t, "this is an annotation", annos.Value, "Failed to set annotations")
 		default:
 			assert.Fail(t, "Failed to get annotation key")
@@ -153,6 +156,63 @@ func TestDeploymentReader_ProjectBindTrigger(t *testing.T) {
 		}
 	}
 }
+
+func TestDeploymentReader_PackagesBindTrigger(t *testing.T) {
+	//init variables
+	TEST_DATA := "../tests/dat/deployment_deploymentreader_packages_bind_trigger.yml"
+	TEST_PACKAGE := "triggerrule"
+	TEST_TRIGGER := "locationUpdate"
+	TEST_ANOTATION_KEY := "bbb"
+	TEST_ANNOTATION := whisk.KeyValue{TEST_ANOTATION_KEY, "foo"} // value SHOULD be overwritten from deployment YAML
+
+	sDeployer, dReader := testLoadAndBindDeploymentYAML(t, TEST_DATA, TEST_TRIGGER, TEST_ANNOTATION)
+
+	// Test if we can find a Package with the name we expect
+	packages := dReader.DeploymentDescriptor.Packages
+
+	if packages == nil {
+		assert.Fail(t, fmt.Sprintf(TEST_ERROR_DEPLOYMENT_FIND_PACKAGES, TEST_PACKAGE))
+	}
+
+	if pkg, ok := packages[TEST_PACKAGE]; ok {
+
+		if trigger, ok := pkg.Triggers[TEST_TRIGGER]; ok {
+
+			for key, value := range trigger.Inputs {
+
+				//dbg := utils.ConvertMapToJSONString("value", value)
+				//fmt.Println(dbg)
+				switch key {
+				case "name":
+					assert.Equal(t, "Bernie", value.Value, "Failed to set inputs")
+				case "place":
+					assert.Equal(t, "DC", value.Value, "Failed to set inputs")
+				default:
+					assert.Fail(t, "Failed to get inputs key")
+
+				}
+			}
+			//for _, annos := range trigger.Annotations {
+			//	switch annos.Key {
+			//	case "bbb":
+			//		assert.Equal(t, "this is an annotation", annos.Value, "Failed to set annotations")
+			//	default:
+			//		assert.Fail(t, "Failed to get annotation key")
+			//
+			//	}
+			//}
+		} else {
+			assert.Fail(t, fmt.Sprintf(TEST_ERROR_DEPLOYMENT_FIND_TRIGGER,
+				sDeployer.DeploymentPath,
+				TEST_TRIGGER))
+		}
+	} else {
+		assert.Fail(t, fmt.Sprintf(TEST_ERROR_DEPLOYMENT_FIND_PACKAGE,
+			sDeployer.DeploymentPath,
+			TEST_PACKAGE))
+	}
+}
+
 
 // TODO() XXX this test need to be rewritten perhaps
 //func TestDeploymentReader_bindTrigger_packages(t *testing.T) {
@@ -188,64 +248,6 @@ func TestDeploymentReader_ProjectBindTrigger(t *testing.T) {
 //		}
 //	}
 //}
-
-// TODO(749) - rewrite test to remove "package"
-func TestDeploymentReader_PackagesBindTrigger(t *testing.T) {
-	//init variables
-	TEST_DATA := "../tests/dat/deployment_deploymentreader_packages_bind_trigger.yml"
-	TEST_PACKAGE := "triggerrule"
-	TEST_TRIGGER := "locationUpdate"
-
-	sDeployer, dReader := testLoadAndBindDeploymentYAML(t, TEST_DATA, TEST_TRIGGER)
-
-	// Test if we can find a Package with the name we expect
-	packages := dReader.DeploymentDescriptor.Packages
-
-	if packages == nil {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_DEPLOYMENT_FIND_PACKAGES, TEST_PACKAGE))
-	}
-
-	if pkg, ok := packages[TEST_PACKAGE]; ok {
-
-		if trigger, ok := pkg.Triggers[TEST_TRIGGER]; ok {
-			dbg := utils.ConvertMapToJSONString("trigger", trigger)
-			fmt.Println(dbg)
-
-			for key, value := range trigger.Inputs {
-
-				dbg := utils.ConvertMapToJSONString("value", value)
-				fmt.Println(dbg)
-				switch key {
-				case "name":
-					assert.Equal(t, "Bernie", value.Value, "Failed to set inputs")
-				case "place":
-					assert.Equal(t, "DC", value.Value, "Failed to set inputs")
-				default:
-					assert.Fail(t, "Failed to get inputs key")
-
-				}
-			}
-			//for _, annos := range trigger.Annotations {
-			//	switch annos.Key {
-			//	case "bbb":
-			//		assert.Equal(t, "this is an annotation", annos.Value, "Failed to set annotations")
-			//	default:
-			//		assert.Fail(t, "Failed to get annotation key")
-			//
-			//	}
-			//}
-
-		} else {
-			assert.Fail(t, fmt.Sprintf(TEST_ERROR_DEPLOYMENT_FIND_TRIGGER,
-				sDeployer.DeploymentPath,
-				TEST_TRIGGER))
-		}
-	} else {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_DEPLOYMENT_FIND_PACKAGE,
-			sDeployer.DeploymentPath,
-			TEST_PACKAGE))
-	}
-}
 
 func TestDeploymentReader_BindAssets_ActionAnnotations(t *testing.T) {
 	sDeployer := NewServiceDeployer()
