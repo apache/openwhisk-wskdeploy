@@ -90,11 +90,10 @@ type ServiceDeployer struct {
 	ProjectPath    string
 	DeploymentPath string
 	// whether to deploy the action under the package
-	DeployActionInPackage bool
-	InteractiveChoice     bool
-	ClientConfig          *whisk.Config
-	DependencyMaster      map[string]utils.DependencyRecord
-	ManagedAnnotation     whisk.KeyValue
+	InteractiveChoice bool
+	ClientConfig      *whisk.Config
+	DependencyMaster  map[string]utils.DependencyRecord
+	ManagedAnnotation whisk.KeyValue
 }
 
 // NewServiceDeployer is a Factory to create a new ServiceDeployer
@@ -102,7 +101,6 @@ func NewServiceDeployer() *ServiceDeployer {
 	var dep ServiceDeployer
 	dep.Deployment = NewDeploymentProject()
 	dep.IsInteractive = true
-	dep.DeployActionInPackage = true
 	dep.DependencyMaster = make(map[string]utils.DependencyRecord)
 
 	return &dep
@@ -678,9 +676,16 @@ func (deployer *ServiceDeployer) RefreshManagedPackages(ma map[string]interface{
 
 func (deployer *ServiceDeployer) DeployPackages() error {
 	for _, pack := range deployer.Deployment.Packages {
-		err := deployer.createPackage(pack.Package)
-		if err != nil {
-			return err
+		// "default" package is a reserved package name
+		// all openwhisk entities will be deployed under
+		// /<namespace> instead of /<namespace>/<package> and
+		// therefore skip creating a new package and set
+		// deployer.DeployActionInPackage to false which is set to true by default
+		if strings.ToLower(pack.Package.Name) != parsers.DEFAULT_PACKAGE {
+			err := deployer.createPackage(pack.Package)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -892,15 +897,11 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 	displayPreprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, true)
 
 	// The rule's trigger should include the namespace with pattern /namespace/trigger
-	rule.Trigger = deployer.getQualifiedName(rule.Trigger.(string), deployer.ClientConfig.Namespace)
-	// The rule's action should include the namespace and package
-	// with pattern /namespace/package/action
-	// TODO(TBD): please refer https://github.com/openwhisk/openwhisk/issues/1577
-
-	// if it contains a slash, then the action is qualified by a package name
-	if strings.Contains(rule.Action.(string), "/") {
-		rule.Action = deployer.getQualifiedName(rule.Action.(string), deployer.ClientConfig.Namespace)
-	}
+	rule.Trigger = deployer.getQualifiedName(rule.Trigger.(string))
+	// The rule's action should include the namespace and package with pattern
+	// /namespace/package/action if that action was created under a package
+	// otherwise action should include the namespace with pattern /namespace/action
+	rule.Action = deployer.getQualifiedName(rule.Action.(string))
 
 	var err error
 	var response *http.Response
@@ -920,7 +921,7 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 // Utility function to call go-whisk framework to make action
 func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Action) error {
 	// call ActionService through the Client
-	if deployer.DeployActionInPackage {
+	if strings.ToLower(pkgname) != parsers.DEFAULT_PACKAGE {
 		// the action will be created under package with pattern 'packagename/actionname'
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
 	}
@@ -1111,9 +1112,15 @@ func (deployer *ServiceDeployer) UnDeployDependencies() error {
 
 func (deployer *ServiceDeployer) UnDeployPackages(deployment *DeploymentProject) error {
 	for _, pack := range deployment.Packages {
-		err := deployer.deletePackage(pack.Package)
-		if err != nil {
-			return err
+		// "default" package is a reserved package name
+		// all openwhisk entities were deployed under
+		// /<namespace> instead of /<namespace>/<package> and
+		// therefore skip deleting default package during undeployment
+		if strings.ToLower(pack.Package.Name) != parsers.DEFAULT_PACKAGE {
+			err := deployer.deletePackage(pack.Package)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -1350,10 +1357,10 @@ func (deployer *ServiceDeployer) deleteApi(api *whisk.ApiCreateRequest) error {
 	return nil
 }
 
-// Utility function to call go-whisk framework to make action
+// Utility function to call go-whisk framework to delete action
 func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Action) error {
 	// call ActionService through Client
-	if deployer.DeployActionInPackage {
+	if pkgname != parsers.DEFAULT_PACKAGE {
 		// the action will be deleted under package with pattern 'packagename/actionname'
 		action.Name = strings.Join([]string{pkgname, action.Name}, "/")
 	}
@@ -1403,18 +1410,21 @@ func retry(attempts int, sleep time.Duration, callback func() error) error {
 	return err
 }
 
-// from whisk go client
-func (deployer *ServiceDeployer) getQualifiedName(name string, namespace string) string {
+//  getQualifiedName(name) returns a fully qualified name given a
+//      (possibly fully qualified) resource name.
+//
+//  Examples:
+//      (foo) => /ns/foo
+//      (pkg/foo) => /ns/pkg/foo
+//      (/ns/pkg/foo) => /ns/pkg/foo
+func (deployer *ServiceDeployer) getQualifiedName(name string) string {
+	namespace := deployer.ClientConfig.Namespace
 	if strings.HasPrefix(name, "/") {
 		return name
 	} else if strings.HasPrefix(namespace, "/") {
 		return fmt.Sprintf("%s/%s", namespace, name)
-	} else {
-		if len(namespace) == 0 {
-			namespace = deployer.ClientConfig.Namespace
-		}
-		return fmt.Sprintf("/%s/%s", namespace, name)
 	}
+	return fmt.Sprintf("/%s/%s", namespace, name)
 }
 
 func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject) {

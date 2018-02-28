@@ -35,12 +35,13 @@ import (
 )
 
 const (
-	PATH_SEPERATOR = "/"
-	API            = "API"
-	HTTPS          = "https"
-	HTTP           = "http"
-	API_VERSION    = "v1"
-	WEB            = "web"
+	PATH_SEPERATOR  = "/"
+	API             = "API"
+	HTTPS           = "https"
+	HTTP            = "http"
+	API_VERSION     = "v1"
+	WEB             = "web"
+	DEFAULT_PACKAGE = "default"
 )
 
 // Read existing manifest file or create new if none exists
@@ -322,6 +323,13 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		pag.Annotations = append(pag.Annotations, ma)
 	}
 
+	// "default" package is a reserved package name
+	// and in this case wskdeploy deploys openwhisk entities under
+	// /namespace instead of /namespace/package
+	if strings.ToLower(pag.Name) == DEFAULT_PACKAGE {
+		wskprint.PrintlnOpenWhiskInfo(wski18n.T(wski18n.ID_MSG_DEFAULT_PACKAGE))
+	}
+
 	return pag, nil
 }
 
@@ -359,7 +367,8 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		var components []string
 		for _, a := range actionList {
 			act := strings.TrimSpace(a)
-			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") {
+			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") &&
+				strings.ToLower(packageName) != DEFAULT_PACKAGE {
 				act = path.Join(packageName, act)
 			}
 			components = append(components, path.Join("/"+namespace, act))
@@ -849,7 +858,8 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.Key
 		wskrule.Trigger = wskenv.ConvertSingleName(rule.Trigger)
 		wskrule.Action = wskenv.ConvertSingleName(rule.Action)
 		act := strings.TrimSpace(wskrule.Action.(string))
-		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") {
+		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") &&
+			strings.ToLower(packageName) != DEFAULT_PACKAGE {
 			act = path.Join(packageName, act)
 		}
 		wskrule.Action = act
@@ -981,10 +991,14 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							request.ApiDoc.Id = strings.Join([]string{API, request.ApiDoc.Namespace, request.ApiDoc.GatewayRelPath}, ":")
 							// set action of an API Doc
 							request.ApiDoc.Action = new(whisk.ApiAction)
-							request.ApiDoc.Action.Name = packageName + PATH_SEPERATOR + actionName
-							request.ApiDoc.Action.Namespace = client.Namespace
+							if packageName == DEFAULT_PACKAGE {
+								request.ApiDoc.Action.Name = actionName
+							} else {
+								request.ApiDoc.Action.Name = packageName + PATH_SEPERATOR + actionName
+							}
 							url := []string{HTTPS + ":" + PATH_SEPERATOR, client.Host, strings.ToLower(API),
 								API_VERSION, WEB, client.Namespace, packageName, actionName + "." + HTTP}
+							request.ApiDoc.Action.Namespace = client.Namespace
 							request.ApiDoc.Action.BackendUrl = strings.Join(url, PATH_SEPERATOR)
 							request.ApiDoc.Action.BackendMethod = gatewayMethod
 							request.ApiDoc.Action.Auth = client.AuthToken

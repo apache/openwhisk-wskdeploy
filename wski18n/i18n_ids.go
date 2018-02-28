@@ -128,6 +128,8 @@ const (
 	ID_MSG_DEPENDENCY_UNDEPLOYMENT_FAILURE_X_name_X = "msg_dependency_undeployment_failure"
 	ID_MSG_DEPENDENCY_UNDEPLOYMENT_SUCCESS_X_name_X = "msg_dependency_undeployment_success"
 
+	ID_MSG_DEFAULT_PACKAGE = "msg_default_package"
+
 	// Managed deployments
 	ID_MSG_MANAGED_UNDEPLOYMENT_FAILED                    = "msg_managed_undeployment_failed"
 	ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X = "msg_managed_found_deleted_entity"
