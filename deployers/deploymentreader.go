@@ -98,9 +98,10 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 			break
 		}
 
-		keyValArr := make(whisk.KeyValueArr, 0)
-
 		if len(pack.Inputs) > 0 {
+
+			keyValArr := make(whisk.KeyValueArr, 0)
+
 			for name, input := range pack.Inputs {
 				var keyVal whisk.KeyValue
 
@@ -142,12 +143,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 					}
 				}
 				if !keyExistsInManifest {
-					warnMsg := wski18n.T(
-						wski18n.ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
-						map[string]interface{}{
-							wski18n.KEY_KEY:  parsers.YAML_KEY_ANNOTATION,
-							wski18n.KEY_NAME: name})
-					wskprint.PrintOpenWhiskWarning(warnMsg)
+					displayEntityNotFoundWarning(parsers.YAML_KEY_ANNOTATION, name)
 				}
 			}
 		}
@@ -165,7 +161,7 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 				depPacks.Packagename = packName
 				packMap[packName] = depPacks
 			}
-		} // TODO() warning?
+		}
 
 	} else {
 		for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
@@ -209,6 +205,8 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 						}
 					}
 					wskAction.Action.Parameters = keyValArr
+				} else {
+					displayEntityNotFoundWarning(parsers.YAML_KEY_ACTION, actionName)
 				}
 			}
 
@@ -229,14 +227,11 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 						}
 					}
 					if !keyExistsInManifest {
-						warnMsg := wski18n.T(
-							wski18n.ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
-							map[string]interface{}{
-								wski18n.KEY_KEY:  parsers.YAML_KEY_ANNOTATION,
-								wski18n.KEY_NAME: name})
-						wskprint.PrintOpenWhiskWarning(warnMsg)
+						displayEntityNotFoundWarning(parsers.YAML_KEY_ANNOTATION, name)
 					}
 				}
+			} else {
+				displayEntityNotFoundWarning(parsers.YAML_KEY_ACTION, actionName)
 			}
 		}
 	}
@@ -247,8 +242,8 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 
 	packMap := make(map[string]parsers.Package)
 
-	// get packages array from top-level or under project schema
-	// and place into a local package map
+	// Create local packages list from Deployment file for us to iterate over
+	// either from top-level or under project schema
 	if reader.DeploymentDescriptor.GetProject().Packages == nil {
 		if reader.DeploymentDescriptor.Packages != nil {
 			for packName, depPacks := range reader.DeploymentDescriptor.Packages {
@@ -268,13 +263,15 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 
 		serviceDeployment := reader.serviceDeployer.Deployment
 
+		// for each Deployment file Trigger found in the current package
 		for triggerName, trigger := range pack.Triggers {
 
-			keyValArr := make(whisk.KeyValueArr, 0)
-
+			// If the Deployment file trigger has Input values we will attempt to bind them
 			if len(trigger.Inputs) > 0 {
 
-				// before we bind, interpolate value
+				keyValArr := make(whisk.KeyValueArr, 0)
+
+				// Interpolate values before we bind
 				for name, input := range trigger.Inputs {
 					var keyVal whisk.KeyValue
 
@@ -284,6 +281,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 					keyValArr = append(keyValArr, keyVal)
 				}
 
+				// See if a matching Trigger (name) exists in manifest
 				if wskTrigger, exists := serviceDeployment.Triggers[triggerName]; exists {
 
 					depParams := make(map[string]whisk.KeyValue)
@@ -306,6 +304,8 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 						}
 					}
 					wskTrigger.Parameters = keyValArr
+				} else {
+					displayEntityNotFoundWarning(parsers.YAML_KEY_TRIGGER, triggerName)
 				}
 			}
 
@@ -326,18 +326,24 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 						}
 					}
 					if !keyExistsInManifest {
-						warnMsg := wski18n.T(
-							wski18n.ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
-							map[string]interface{}{
-								wski18n.KEY_KEY:  parsers.YAML_KEY_ANNOTATION,
-								wski18n.KEY_NAME: name})
-						wskprint.PrintOpenWhiskWarning(warnMsg)
+						displayEntityNotFoundWarning(parsers.YAML_KEY_ANNOTATION, name)
 					}
 				}
+			} else {
+				displayEntityNotFoundWarning(parsers.YAML_KEY_TRIGGER, triggerName)
 			}
 
 		}
 
 	}
 	return nil
+}
+
+func displayEntityNotFoundWarning(entityType string, entityName string){
+	warnMsg := wski18n.T(
+		wski18n.ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
+		map[string]interface{}{
+			wski18n.KEY_KEY:  entityType,
+			wski18n.KEY_NAME: entityName})
+	wskprint.PrintOpenWhiskWarning(warnMsg)
 }
