@@ -14,7 +14,7 @@
 # specific language governing permissions and limitations under the License.
 #
 
-application:
+project:
   name: IntegrationTest
   packages:
     ValidateYAMLManifestWithYMLDeployment:

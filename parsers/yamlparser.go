@@ -36,8 +36,7 @@ const (
 	YAML_KEY_RULE        = "rule"
 	YAML_KEY_SEQUENCE    = "sequence"
 	YAML_KEY_TRIGGER     = "trigger"
-	YAML_KEY_APPLICATION = "application" // deprecated
-	YAML_KEY_PACKAGE     = "package"     // deprecated
+	YAML_KEY_PACKAGE     = "package"
 	YAML_KEY_SOURCE      = "source"      // deprecated
 )
 
@@ -222,7 +221,6 @@ type Project struct {
 }
 
 type YAML struct {
-	Application Project            `yaml:"application"` //used in deployment.yaml (being deprecated)
 	Project     Project            `yaml:"project"`     //used in deployment.yaml
 	Packages    map[string]Package `yaml:"packages"`    //used in deployment.yaml
 	//Package     Package            `yaml:"package"`   // DEPRECATED.  Should we add warning if found?
@@ -232,10 +230,7 @@ type YAML struct {
 // function to return Project or Application depending on what is specified in
 // manifest and deployment files
 func (yaml *YAML) GetProject() Project {
-	if yaml.Application.Name == "" {
-		return yaml.Project
-	}
-	return yaml.Application
+	return yaml.Project
 }
 
 func convertPackageName(packageMap map[string]Package) map[string]Package {
@@ -253,11 +248,7 @@ func convertPackageName(packageMap map[string]Package) map[string]Package {
 }
 
 func ReadEnvVariable(yaml *YAML) *YAML {
-	if yaml.Application.Name != "" {
-		yaml.Application.Packages = convertPackageName(yaml.Application.Packages)
-	} else {
-		yaml.Project.Packages = convertPackageName(yaml.Project.Packages)
-	}
+	yaml.Project.Packages = convertPackageName(yaml.Project.Packages)
 	yaml.Packages = convertPackageName(yaml.Packages)
 	return yaml
 }

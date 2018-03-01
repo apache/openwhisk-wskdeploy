@@ -19,27 +19,27 @@
 # Integration Test - Dependencies
 
 `wskdeploy` supports dependencies where it allows you to declare other OpenWhisk
-packages that your application or project (manifest) is dependent on. With declaring
+packages that your project (manifest) is dependent on. With declaring
 dependent packages, `wskdeploy` supports automatic deployment of those dependent
 packages.
 
-For example, our `root-app` application is dependent on `child-app` package located
-at https://github.com/pritidesai/child-app.
+For example, our `root-project` project is dependent on `child-project` package located
+at https://github.com/apache/child-project.
 We can declare this dependency in `manifest.yaml` with:
 
 ```yaml
-package:
-  name: root-app
-  namespace: guest
-  dependencies:
-    child-app:
-      location: github.com/pritidesai/child-app
-  triggers:
-    trigger1:
-  rules:
-    rule1:
-      trigger: trigger1
-      action: child-app/hello
+packages:
+  mainProject:
+    namespace: guest
+    dependencies:
+      child-app:
+        location: github.com//child-app
+    triggers:
+      trigger1:
+    rules:
+      rule1:
+        trigger: trigger1
+        action: child-app/hello
 ```
 
 **Note:**

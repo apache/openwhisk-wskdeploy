@@ -275,6 +275,4 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 
 func init() {
 	RootCmd.AddCommand(exportCmd)
-	exportCmd.Flags().StringVarP(&utils.Flags.ProjectPath, "project", "p", ".", "name of the managed project")
-	exportCmd.Flags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", "path to manifest file to save exported data")
 }

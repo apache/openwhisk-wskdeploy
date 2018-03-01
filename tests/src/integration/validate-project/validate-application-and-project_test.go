@@ -26,21 +26,11 @@ import (
 	"testing"
 )
 
-var path = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-application-and-project/"
-
-func TestApplicationInDeployment(t *testing.T) {
-	manifestPath := os.Getenv("GOPATH") + path + "manifest-with-application.yaml"
-	deploymentPath := os.Getenv("GOPATH") + path + "deployment-with-application.yaml"
-	wskdeploy := common.NewWskdeploy()
-	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
-	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
-	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files.")
-}
+var path = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-project/"
 
 func TestProjectInDeployment(t *testing.T) {
-	manifestPath := os.Getenv("GOPATH") + path + "manifest-with-project.yaml"
-	deploymentPath := os.Getenv("GOPATH") + path + "deployment-with-project.yaml"
+	manifestPath := os.Getenv("GOPATH") + path + "manifest.yaml"
+	deploymentPath := os.Getenv("GOPATH") + path + "deployment.yaml"
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")

@@ -65,16 +65,6 @@ func init() {
 	reportCmd.Flags().StringVarP(&wskpropsPath, "wskproppath", "w",
 		path.Join(os.Getenv("HOME"), ".wskprops"),
 		wski18n.T(wski18n.ID_CMD_FLAG_CONFIG))
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// reportCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// reportCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func printDeploymentInfo(client *whisk.Client) error {

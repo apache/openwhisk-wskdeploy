@@ -163,15 +163,6 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		projectName = manifest.GetProject().Name
 	}
 
-	// TODO(#696) delete this warning after deprecating application in manifest file
-	if manifest.Application.Name != "" {
-		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
-			map[string]interface{}{
-				wski18n.KEY_OLD:       parsers.YAML_KEY_APPLICATION,
-				wski18n.KEY_NEW:       parsers.YAML_KEY_PROJECT,
-				wski18n.KEY_FILE_TYPE: wski18n.MANIFEST}))
-	}
-
 	// process deployment file
 	if utils.FileExists(deployer.DeploymentPath) {
 		var deploymentReader = NewDeploymentReader(deployer)
@@ -179,15 +170,6 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 
 		if err != nil {
 			return err
-		}
-
-		// TODO(#696) delete this warning after deprecating application in deployment file
-		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
-			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
-				map[string]interface{}{
-					wski18n.KEY_OLD:       parsers.YAML_KEY_APPLICATION,
-					wski18n.KEY_NEW:       parsers.YAML_KEY_PROJECT,
-					wski18n.KEY_FILE_TYPE: wski18n.DEPLOYMENT}))
 		}
 
 		// compare the name of the project
@@ -235,15 +217,6 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 		projectName = manifest.GetProject().Name
 	}
 
-	// TODO(#696) delete this warning after deprecating application in manifest file
-	if manifest.Application.Name != "" {
-		wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
-			map[string]interface{}{
-				wski18n.KEY_OLD:       parsers.YAML_KEY_APPLICATION,
-				wski18n.KEY_NEW:       parsers.YAML_KEY_PROJECT,
-				wski18n.KEY_FILE_TYPE: wski18n.MANIFEST}))
-	}
-
 	// process deployment file
 	if utils.FileExists(deployer.DeploymentPath) {
 		var deploymentReader = NewDeploymentReader(deployer)
@@ -252,16 +225,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 			return deployer.Deployment, err
 		}
 
-		// TODO(#696) delete this warning after deprecating application in deployment file
-		if deploymentReader.DeploymentDescriptor.Application.Name != "" {
-			wskprint.PrintOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
-				map[string]interface{}{
-					wski18n.KEY_OLD:       parsers.YAML_KEY_APPLICATION,
-					wski18n.KEY_NEW:       parsers.YAML_KEY_PROJECT,
-					wski18n.KEY_FILE_TYPE: wski18n.DEPLOYMENT}))
-		}
-
-		// compare the name of the application
+		// compare the name of the project
 		if len(deploymentReader.DeploymentDescriptor.GetProject().Packages) != 0 && len(projectName) != 0 {
 			projectNameDeploy := deploymentReader.DeploymentDescriptor.GetProject().Name
 			if projectNameDeploy != projectName {
