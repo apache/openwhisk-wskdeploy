@@ -339,7 +339,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 	return nil
 }
 
-func displayEntityNotFoundWarning(entityType string, entityName string){
+func displayEntityNotFoundWarning(entityType string, entityName string) {
 	warnMsg := wski18n.T(
 		wski18n.ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 		map[string]interface{}{
