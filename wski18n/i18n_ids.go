@@ -31,16 +31,16 @@ const (
 	MANIFEST           = "manifest"
 	NAME_ACTION        = "Action Name"
 	NAME_FEED          = "Feed Name"
+	NAME_PROJECT       = "project name"
 	NAME_RULE          = "Rule Name"
 	NAME_RUNTIME       = "Runtime Name"
 	NAME_TRIGGER       = "Trigger Name"
 	NAMESPACES         = "Namespaces"
 	PACKAGE_BINDING    = "package binding"
 	PACKAGE_LICENSE    = "package license"
-	PACKAGE_NAME       = "package name"
+	NAME_PACKAGE       = "package name"
 	PACKAGE_VERSION    = "package version"
 	PACKAGES           = "Packages"
-	PROJECT_NAME       = "project name"
 	REGISTRY           = "registry"
 	REGISTRY_URL       = "registry URL"
 	REPOSITORY         = "repository"
@@ -61,12 +61,12 @@ const (
 	ID_MSG_PREFIX_WARNING = "msg_prefix_warning" // "Warning"
 
 	// Cobra command descriptions
-	ID_CMD_DESC_LONG_PUBLISH      = "msg_cmd_desc_long_publish"
+	//ID_CMD_DESC_LONG_PUBLISH      = "msg_cmd_desc_long_publish"
 	ID_CMD_DESC_LONG_REPORT       = "msg_cmd_desc_long_report"
 	ID_CMD_DESC_LONG_ROOT         = "msg_cmd_desc_long_root"
-	ID_CMD_DESC_SHORT_ADD         = "msg_cmd_desc_short_add"
-	ID_CMD_DESC_SHORT_ADD_X_key_X = "msg_cmd_desc_short_add_entity"
-	ID_CMD_DESC_SHORT_PUBLISH     = "msg_cmd_desc_short_publish"
+	//ID_CMD_DESC_SHORT_ADD         = "msg_cmd_desc_short_add"
+	//ID_CMD_DESC_SHORT_ADD_X_key_X = "msg_cmd_desc_short_add_entity"
+	//ID_CMD_DESC_SHORT_PUBLISH     = "msg_cmd_desc_short_publish"
 	ID_CMD_DESC_SHORT_REPORT      = "msg_cmd_desc_short_report"
 	ID_CMD_DESC_SHORT_ROOT        = "msg_cmd_desc_short_root"
 	ID_CMD_DESC_SHORT_VERSION     = "msg_cmd_desc_short_version"
@@ -220,12 +220,8 @@ const (
 
 // Used to unit test that translations exist with these IDs
 var I18N_ID_SET = [](string){
-	ID_CMD_DESC_LONG_PUBLISH,
 	ID_CMD_DESC_LONG_REPORT,
 	ID_CMD_DESC_LONG_ROOT,
-	ID_CMD_DESC_SHORT_ADD,
-	ID_CMD_DESC_SHORT_ADD_X_key_X,
-	ID_CMD_DESC_SHORT_PUBLISH,
 	ID_CMD_DESC_SHORT_REPORT,
 	ID_CMD_DESC_SHORT_ROOT,
 	ID_CMD_DESC_SHORT_VERSION,

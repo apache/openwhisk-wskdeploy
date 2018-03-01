@@ -132,6 +132,7 @@ func TestDeploymentReader_ProjectBindTrigger(t *testing.T) {
 		assert.Fail(t, fmt.Sprintf(TEST_ERROR_DEPLOYMENT_FIND_PACKAGES, TEST_PROJECT))
 	}
 
+	// test that values from dReader.DeploymentDescriptor wore "bound" onto sDeployer.Deployment
 	trigger := sDeployer.Deployment.Triggers[TEST_TRIGGER]
 	for _, param := range trigger.Parameters {
 		//dbg := utils.ConvertMapToJSONString("param", param)
