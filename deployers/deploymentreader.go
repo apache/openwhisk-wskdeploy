@@ -247,6 +247,8 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 
 	packMap := make(map[string]parsers.Package)
 
+	// get packages array from top-level or under project schema
+	// and place into a local package map
 	if reader.DeploymentDescriptor.GetProject().Packages == nil {
 		if reader.DeploymentDescriptor.Packages != nil {
 			for packName, depPacks := range reader.DeploymentDescriptor.Packages {
@@ -261,6 +263,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 		}
 	}
 
+	// go through all packages in our local package map
 	for _, pack := range packMap {
 
 		serviceDeployment := reader.serviceDeployer.Deployment
@@ -270,6 +273,8 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 			keyValArr := make(whisk.KeyValueArr, 0)
 
 			if len(trigger.Inputs) > 0 {
+
+				// before we bind, interpolate value
 				for name, input := range trigger.Inputs {
 					var keyVal whisk.KeyValue
 
