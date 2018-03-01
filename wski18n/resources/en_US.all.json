@@ -252,10 +252,6 @@
     "translation": "Dependency type is unknown.  wskdeploy only supports /whisk.system bindings or github.com packages.\n"
   },
   {
-    "id": "msg_err_deployment_name_not_found",
-    "translation": "The {{.key}} [{{.name}}] in deployment file not found in manifest file.\n"
-  },
-  {
     "id": "msg_err_entity_create",
     "translation": "Error creating {{.key}} with error message: {{.err}} and error code: {{.code}}.\n"
   },
@@ -378,6 +374,10 @@
   {
     "id": "msg_warn_packages_not_found",
     "translation": "The manifest file [{{.path}}] contained no packages.\n"
+  },
+  {
+    "id": "msg_warn_deployment_name_not_found",
+    "translation": "The {{.key}} [{{.name}}] in the deployment file was not found in the manifest file.\n"
   },
   {
     "id": "DEBUG",

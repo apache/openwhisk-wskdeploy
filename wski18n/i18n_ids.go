@@ -29,16 +29,16 @@ const (
 	DEPLOYMENT         = "deployment"
 	CONFIGURATION      = "Configuration"
 	MANIFEST           = "manifest"
-	NAME_ACTION        = "Action Name"
-	NAME_FEED          = "Feed Name"
+	NAME_ACTION        = "action Name"
+	NAME_FEED          = "feed Name"
+	NAME_PACKAGE       = "package name"
 	NAME_PROJECT       = "project name"
-	NAME_RULE          = "Rule Name"
-	NAME_RUNTIME       = "Runtime Name"
-	NAME_TRIGGER       = "Trigger Name"
+	NAME_RULE          = "rule Name"
+	NAME_RUNTIME       = "runtime Name"
+	NAME_TRIGGER       = "trigger Name"
 	NAMESPACES         = "Namespaces"
 	PACKAGE_BINDING    = "package binding"
 	PACKAGE_LICENSE    = "package license"
-	NAME_PACKAGE       = "package name"
 	PACKAGE_VERSION    = "package version"
 	PACKAGES           = "Packages"
 	REGISTRY           = "registry"
@@ -62,14 +62,14 @@ const (
 
 	// Cobra command descriptions
 	//ID_CMD_DESC_LONG_PUBLISH      = "msg_cmd_desc_long_publish"
-	ID_CMD_DESC_LONG_REPORT       = "msg_cmd_desc_long_report"
-	ID_CMD_DESC_LONG_ROOT         = "msg_cmd_desc_long_root"
+	ID_CMD_DESC_LONG_REPORT = "msg_cmd_desc_long_report"
+	ID_CMD_DESC_LONG_ROOT   = "msg_cmd_desc_long_root"
 	//ID_CMD_DESC_SHORT_ADD         = "msg_cmd_desc_short_add"
 	//ID_CMD_DESC_SHORT_ADD_X_key_X = "msg_cmd_desc_short_add_entity"
 	//ID_CMD_DESC_SHORT_PUBLISH     = "msg_cmd_desc_short_publish"
-	ID_CMD_DESC_SHORT_REPORT      = "msg_cmd_desc_short_report"
-	ID_CMD_DESC_SHORT_ROOT        = "msg_cmd_desc_short_root"
-	ID_CMD_DESC_SHORT_VERSION     = "msg_cmd_desc_short_version"
+	ID_CMD_DESC_SHORT_REPORT  = "msg_cmd_desc_short_report"
+	ID_CMD_DESC_SHORT_ROOT    = "msg_cmd_desc_short_root"
+	ID_CMD_DESC_SHORT_VERSION = "msg_cmd_desc_short_version"
 
 	// Cobra Flag messages
 	ID_CMD_FLAG_API_HOST    = "msg_cmd_flag_api_host"
@@ -143,7 +143,6 @@ const (
 
 	// Errors
 	ID_ERR_DEPENDENCY_UNKNOWN_TYPE                               = "msg_err_dependency_unknown_type"
-	ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X              = "msg_err_deployment_name_not_found"
 	ID_ERR_ENTITY_CREATE_X_key_X_err_X_code_X                    = "msg_err_entity_create"
 	ID_ERR_ENTITY_DELETE_X_key_X_err_X_code_X                    = "msg_err_entity_delete"
 	ID_ERR_FEED_INVOKE_X_err_X_code_X                            = "msg_err_feed_invoke"
@@ -178,6 +177,7 @@ const (
 	ID_WARN_WHISK_PROPS_DEPRECATED                            = "msg_warn_whisk_properties"
 	ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X                 = "msg_warn_entity_name_exists"
 	ID_WARN_PACKAGES_NOT_FOUND_X_path_X                       = "msg_warn_packages_not_found"
+	ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X          = "msg_warn_deployment_name_not_found"
 
 	// Verbose (Debug/Trace) messages
 	ID_DEBUG_KEY_VERIFY_X_name_X_key_X     = "msg_dbg_key_verify"
@@ -246,7 +246,6 @@ var I18N_ID_SET = [](string){
 	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X,
 	ID_DEBUG_UNDEPLOYING_USING,
 	ID_ERR_DEPENDENCY_UNKNOWN_TYPE,
-	ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 	ID_ERR_ENTITY_CREATE_X_key_X_err_X_code_X,
 	ID_ERR_ENTITY_DELETE_X_key_X_err_X_code_X,
 	ID_ERR_JSON_MISSING_KEY_CMD,
@@ -312,4 +311,5 @@ var I18N_ID_SET = [](string){
 	ID_WARN_PACKAGES_NOT_FOUND_X_path_X,
 	ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
 	ID_WARN_WHISK_PROPS_DEPRECATED,
+	ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 }

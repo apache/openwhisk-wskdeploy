@@ -21,7 +21,6 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
@@ -91,7 +90,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 
 		if serviceDeployPack == nil {
 			warningString := wski18n.T(
-				wski18n.ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
+				wski18n.ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 				map[string]interface{}{
 					wski18n.KEY_KEY:  wski18n.NAME_PACKAGE,
 					wski18n.KEY_NAME: packName})
@@ -143,13 +142,12 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 					}
 				}
 				if !keyExistsInManifest {
-					warningString := wski18n.T(
-						wski18n.ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
+					warnMsg := wski18n.T(
+						wski18n.ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 						map[string]interface{}{
 							wski18n.KEY_KEY:  parsers.YAML_KEY_ANNOTATION,
 							wski18n.KEY_NAME: name})
-					wskprint.PrintlnOpenWhiskWarning(warningString)
-					return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, warningString)
+					wskprint.PrintOpenWhiskWarning(warnMsg)
 				}
 			}
 		}
@@ -231,12 +229,12 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 						}
 					}
 					if !keyExistsInManifest {
-						errMsg := wski18n.T(
-							wski18n.ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
+						warnMsg := wski18n.T(
+							wski18n.ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 							map[string]interface{}{
 								wski18n.KEY_KEY:  parsers.YAML_KEY_ANNOTATION,
 								wski18n.KEY_NAME: name})
-						return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, errMsg)
+						wskprint.PrintOpenWhiskWarning(warnMsg)
 					}
 				}
 			}
@@ -323,12 +321,12 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 						}
 					}
 					if !keyExistsInManifest {
-						errMsg := wski18n.T(
-							wski18n.ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
+						warnMsg := wski18n.T(
+							wski18n.ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 							map[string]interface{}{
 								wski18n.KEY_KEY:  parsers.YAML_KEY_ANNOTATION,
 								wski18n.KEY_NAME: name})
-						return wskderrors.NewYAMLFileFormatError(reader.DeploymentDescriptor.Filepath, errMsg)
+						wskprint.PrintOpenWhiskWarning(warnMsg)
 					}
 				}
 			}
