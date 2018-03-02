@@ -25,7 +25,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
 )
 
 type DeploymentReader struct {
@@ -87,7 +86,6 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 		}
 	}
 
-	spew.Dump(reader.DeploymentDescriptor)
 
 	for packName, pack := range packMap {
 
