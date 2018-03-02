@@ -26,34 +26,34 @@ Let’s use a variant of the [Manifest file from the previous example](examples/
 
 #### _Example: “Hello world” Action, Trigger and Rule with no Parameter bindings_
 ```yaml
-package:
-  name: hello_world_package
+packages:
+  hello_world_package
   ... # Package keys omitted for brevity
-  actions:
-    hello_world_triggerrule:
-      function: src/hello_plus.js
-      runtime: nodejs
-      inputs:
-        name: string
-        place: string
-        children: integer
-        height: float
-      outputs:
-        greeting: string
-        details: string
+    actions:
+      hello_world_triggerrule:
+        function: src/hello_plus.js
+        runtime: nodejs
+        inputs:
+          name: string
+          place: string
+          children: integer
+          height: float
+        outputs:
+          greeting: string
+          details: string
 
-  triggers:
-    meetPerson:
-      inputs:
-        name: string
-        place: string
-        children: integer
-        height: float
+    triggers:
+      meetPerson:
+        inputs:
+          name: string
+          place: string
+          children: integer
+          height: float
 
-  rules:
-    meetPersonRule:
-      trigger: meetPerson
-      action: hello_world_triggerrule
+    rules:
+      meetPersonRule:
+        trigger: meetPerson
+        action: hello_world_triggerrule
 ```
 
 ### Deployment file
@@ -61,7 +61,7 @@ Let’s create a Deployment file that is designed to be applied to the Manifest 
 
 #### _Example: Deployment file that binds parameters to the '```meetPerson```' Trigger_
 ```yaml
-application:
+project:
   packages:
       hello_world_package:
         triggers:

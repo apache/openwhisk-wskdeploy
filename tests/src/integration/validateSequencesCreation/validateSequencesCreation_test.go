@@ -37,7 +37,7 @@ func composeDeployFiles(count int) (manifestStr string, deploymentStr string) {
   name: TestSequencesCreation
   actions:
 `
-	deploymentStr = `application:
+	deploymentStr = `project:
   name: TestSequencesCreationApp
   packages:
     TestSequencesCreation:
