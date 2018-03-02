@@ -47,7 +47,7 @@ var RootCmd = &cobra.Command{
 	SilenceUsage:  true,
 	Short:         wski18n.T(wski18n.ID_CMD_DESC_SHORT_ROOT),
 	Long:          wski18n.T(wski18n.ID_CMD_DESC_LONG_ROOT),
-	RunE: RootCmdImp,
+	RunE:          RootCmdImp,
 }
 
 func RootCmdImp(cmd *cobra.Command, args []string) error {

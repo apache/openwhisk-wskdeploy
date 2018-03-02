@@ -25,19 +25,19 @@ import (
 // YAML schema key names
 // DO NOT translate
 const (
-	YAML_KEY_ACTION      = "action"
-	YAML_KEY_ANNOTATION  = "annotoation"
-	YAML_KEY_API         = "api"
-	YAML_KEY_FEED        = "feed"
-	YAML_KEY_MANIFEST    = "manifest"
-	YAML_KEY_NAMESPACE   = "namespace"
-	YAML_KEY_PACKAGES    = "packages"
-	YAML_KEY_PROJECT     = "project"
-	YAML_KEY_RULE        = "rule"
-	YAML_KEY_SEQUENCE    = "sequence"
-	YAML_KEY_TRIGGER     = "trigger"
-	YAML_KEY_PACKAGE     = "package"
-	YAML_KEY_SOURCE      = "source"      // deprecated
+	YAML_KEY_ACTION     = "action"
+	YAML_KEY_ANNOTATION = "annotoation"
+	YAML_KEY_API        = "api"
+	YAML_KEY_FEED       = "feed"
+	YAML_KEY_MANIFEST   = "manifest"
+	YAML_KEY_NAMESPACE  = "namespace"
+	YAML_KEY_PACKAGES   = "packages"
+	YAML_KEY_PROJECT    = "project"
+	YAML_KEY_RULE       = "rule"
+	YAML_KEY_SEQUENCE   = "sequence"
+	YAML_KEY_TRIGGER    = "trigger"
+	YAML_KEY_PACKAGE    = "package"
+	YAML_KEY_SOURCE     = "source" // deprecated
 )
 
 // YAML schema key values
@@ -221,8 +221,8 @@ type Project struct {
 }
 
 type YAML struct {
-	Project     Project            `yaml:"project"`     //used in deployment.yaml
-	Packages    map[string]Package `yaml:"packages"`    //used in deployment.yaml
+	Project  Project            `yaml:"project"`  //used in deployment.yaml
+	Packages map[string]Package `yaml:"packages"` //used in deployment.yaml
 	//Package     Package            `yaml:"package"`   // DEPRECATED.  Should we add warning if found?
 	Filepath string //file path of the yaml file
 }
