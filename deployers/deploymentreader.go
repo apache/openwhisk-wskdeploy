@@ -86,7 +86,6 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 		}
 	}
 
-
 	for packName, pack := range packMap {
 
 		serviceDeployPack := reader.serviceDeployer.Deployment.Packages[packName]
