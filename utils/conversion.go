@@ -57,7 +57,6 @@ func PrintTypeInfo(name string, value interface{}) {
 }
 
 func ConvertMapToJSONString(name string, mapIn interface{}) string {
-	PrintTypeInfo(name, mapIn)
 	strMapOut, _ := json.MarshalIndent(mapIn, "", "  ")
-	return string(strMapOut)
+	return fmt.Sprintf("%s: %s", name, string(strMapOut))
 }
