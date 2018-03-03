@@ -103,22 +103,6 @@ func (reader *DeploymentReader) getPackageMap() map[string]parsers.Package {
 
 func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 
-	//packMap := make(map[string]parsers.Package)
-	//
-	//if reader.DeploymentDescriptor.GetProject().Packages == nil {
-	//	if reader.DeploymentDescriptor.Packages != nil {
-	//		for packName, depPacks := range reader.DeploymentDescriptor.Packages {
-	//			depPacks.Packagename = packName
-	//			packMap[packName] = depPacks
-	//		}
-	//	}
-	//} else {
-	//	for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
-	//		depPacks.Packagename = packName
-	//		packMap[packName] = depPacks
-	//	}
-	//}
-
 	// retrieve "packages" list from depl. file; either at top-level or under "Project" schema
 	packMap := reader.getPackageMap()
 
@@ -185,23 +169,6 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 }
 
 func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
-
-	//packMap := make(map[string]parsers.Package)
-	//
-	//if reader.DeploymentDescriptor.GetProject().Packages == nil {
-	//	if reader.DeploymentDescriptor.Packages != nil {
-	//		for packName, depPacks := range reader.DeploymentDescriptor.Packages {
-	//			depPacks.Packagename = packName
-	//			packMap[packName] = depPacks
-	//		}
-	//	}
-	//
-	//} else {
-	//	for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
-	//		depPacks.Packagename = packName
-	//		packMap[packName] = depPacks
-	//	}
-	//}
 
 	// retrieve "packages" list from depl. file; either at top-level or under "Project" schema
 	packMap := reader.getPackageMap()
@@ -372,4 +339,13 @@ func displayEntityNotFoundInDeploymentWarning(entityType string, entityName stri
 			wski18n.KEY_KEY:  entityType,
 			wski18n.KEY_NAME: entityName})
 	wskprint.PrintOpenWhiskWarning(warnMsg)
+}
+
+func displayEntityFoundInDeploymentInfi(entityType string, entityName string) {
+	infoMsg := wski18n.T(
+		wski18n.ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
+		map[string]interface{}{
+			wski18n.KEY_KEY:  entityType,
+			wski18n.KEY_NAME: entityName})
+	wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, infoMsg)
 }
