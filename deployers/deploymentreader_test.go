@@ -23,9 +23,9 @@ import (
 	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"reflect"
 	"testing"
-	"os"
 )
 
 var sd *ServiceDeployer
@@ -114,7 +114,7 @@ func TestDeploymentReader_ProjectBindTrigger(t *testing.T) {
 	// Create an annotation (in manifest representation) with key we expect, with value that should be overwritten
 	TEST_ANNOTATION := whisk.KeyValue{TEST_ANNOTATION_KEY, "foo"}
 
-        // create ServicedEployer
+	// create ServicedEployer
 	sDeployer, dReader := testLoadAndBindDeploymentYAML(t, TEST_DATA, TEST_TRIGGER, TEST_ANNOTATION)
 
 	// test Project exists with expected name in Deployment file
@@ -165,7 +165,7 @@ func TestDeploymentReader_PackagesBindTrigger(t *testing.T) {
 	// Create an annotation (in manifest representation) with key we expect, with value that should be overwritten
 	TEST_ANNOTATION := whisk.KeyValue{TEST_ANOTATION_KEY, "bar"}
 
-	fmt.Println("TEST: "+os.Getenv("PKGDIR"))
+	fmt.Println("TEST: " + os.Getenv("PKGDIR"))
 
 	sDeployer, _ := testLoadAndBindDeploymentYAML(t, TEST_DATA, TEST_TRIGGER, TEST_ANNOTATION)
 
