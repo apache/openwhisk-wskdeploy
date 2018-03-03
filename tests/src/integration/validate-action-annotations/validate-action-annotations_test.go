@@ -37,11 +37,3 @@ func TestActionAnnotations(t *testing.T) {
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files.")
 }
-
-func TestInvalidActionAnnotations(t *testing.T) {
-	manifestPath := os.Getenv("GOPATH") + path + "manifest.yaml"
-	deploymentPath := os.Getenv("GOPATH") + path + "deployment-with-invalid-annotations.yaml"
-	wskdeploy := common.NewWskdeploy()
-	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
-	assert.NotNil(t, err, "Failed to validate invalid annotations in deployment file")
-}

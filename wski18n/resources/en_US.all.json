@@ -16,10 +16,6 @@
     "translation": "Warning"
   },
   {
-    "id": "msg_cmd_desc_long_publish",
-    "translation": "Publish a package to the registry set in ~/.wskprops."
-  },
-  {
     "id": "msg_cmd_desc_long_report",
     "translation": "Reports on deployed entities (i.e., Packages, Actions, Triggers, Rules, etc.) as well as recent Activations in the specified namespace."
   },
@@ -28,24 +24,12 @@
     "translation": "A tool to deploy, undeploy and sync openwhisk packages using a manifest and optional deployment files using YAML."
   },
   {
-    "id": "msg_cmd_desc_short_publish",
-    "translation": "Publish a package to a registry."
-  },
-  {
     "id": "msg_cmd_desc_short_report",
     "translation": "Provides a summary report of what's been deployed in the specified namespace."
   },
   {
     "id": "msg_cmd_desc_short_root",
     "translation": "A tool set to help deploy your openwhisk packages using a manifest file."
-  },
-  {
-    "id": "msg_cmd_desc_short_add",
-    "translation": "Add an action, feed, trigger or rule to the manifest"
-  },
-  {
-    "id": "msg_cmd_desc_short_add_entity",
-    "translation": "Add a/an {{.key}} to the manifest file"
   },
   {
     "id": "msg_cmd_desc_short_version",
@@ -268,10 +252,6 @@
     "translation": "Dependency type is unknown.  wskdeploy only supports /whisk.system bindings or github.com packages.\n"
   },
   {
-    "id": "msg_err_deployment_name_not_found",
-    "translation": "The {{.key}} [{{.name}}] in deployment file not found in manifest file.\n"
-  },
-  {
     "id": "msg_err_entity_create",
     "translation": "Error creating {{.key}} with error message: {{.err}} and error code: {{.code}}.\n"
   },
@@ -394,6 +374,10 @@
   {
     "id": "msg_warn_packages_not_found",
     "translation": "The manifest file [{{.path}}] contained no packages.\n"
+  },
+  {
+    "id": "msg_warn_deployment_name_not_found",
+    "translation": "The {{.key}} [{{.name}}] in the deployment file was not found in the manifest file.\n"
   },
   {
     "id": "DEBUG",
