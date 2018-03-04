@@ -32,6 +32,15 @@ packages:
                     param_string_type_and_value_only:
                         type: string
                         value: foo
+                    param_json_type_and_value_only_1:
+                        type: json
+                        value: '{ "name": "Sam", "place": "Shire" }'
+                    param_json_type_and_value_only_2:
+                        type: json
+                        value: { "name": "${USERNAME}", "password": "${PASSWORD}" }
+                    param_json_type_and_value_only_3:
+                        type: json
+                        value: { "name": "$${USERNAME}", "password": "$${PASSWORD}" }
                     # type only
                     param_string_type_only:
                         type: string
