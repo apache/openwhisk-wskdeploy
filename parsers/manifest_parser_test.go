@@ -304,7 +304,7 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
 
 		// test # input params
-		expectedResult = strconv.FormatInt(10, 10)
+		expectedResult = strconv.FormatInt(13, 10)
 		actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_PARAMETER_NUMBER_MISMATCH)
 
