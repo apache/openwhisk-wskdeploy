@@ -384,10 +384,6 @@
     "translation": "================= DEBUG ==================="
   },
   {
-    "id": "msg_dbg_key_verify",
-    "translation": "Verifying {{.name}} [{{.key}}] exists...\n"
-  },
-  {
     "id": "msg_dbg_deploying_using",
     "translation": "Deploying using:\n"
   },
@@ -398,5 +394,9 @@
   {
     "id": "msg_dbg_searching_project_directory",
     "translation": "Searching project directory [{{.path}}] for [{{.key}}]...\n"
+  },
+  {
+    "id": "msg_dbg_deployment_name_found",
+    "translation": "The {{.key}} [{{.name}}] in the deployment file was found in the manifest file.\n"
   }
 ]

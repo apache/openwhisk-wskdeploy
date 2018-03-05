@@ -70,15 +70,12 @@ func (reader *DeploymentReader) BindAssets() error {
 func (reader *DeploymentReader) getPackageMap() map[string]parsers.Package {
 	packMap := make(map[string]parsers.Package)
 
-	//fmt.Println(fmt.Sprintf("length[%s]=%v", "packages",len(reader.DeploymentDescriptor.Packages) ))
-	//fmt.Println(fmt.Sprintf("length[%s]=%v", "application",len(reader.DeploymentDescriptor.Application.Packages) ))
-	//fmt.Println(fmt.Sprintf("length[%s]=%v", "project.packages",len(reader.DeploymentDescriptor.GetProject().Packages) ))
-
 	// Create local packages list from Deployment file for us to iterate over
 	// either from top-level or under project schema
 	if len(reader.DeploymentDescriptor.GetProject().Packages) == 0 {
 
 		if len(reader.DeploymentDescriptor.Packages) > 0 {
+			// TODO() i18n
 			wskprint.PrintOpenWhiskVerbose(true,
 				fmt.Sprintf("Deployment file [%s]: Found top-level packages",
 					reader.DeploymentDescriptor.Filepath,
@@ -89,6 +86,7 @@ func (reader *DeploymentReader) getPackageMap() map[string]parsers.Package {
 			}
 		}
 	} else {
+		//TODO() i18n
 		wskprint.PrintOpenWhiskVerbose(true,
 			fmt.Sprintf("Deployment file [%s]: Found packages under project [%s]",
 				reader.DeploymentDescriptor.Filepath, reader.DeploymentDescriptor.GetProject().Name))
@@ -123,9 +121,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 				var keyVal whisk.KeyValue
 
 				keyVal.Key = name
-
 				keyVal.Value = wskenv.InterpolateStringWithEnvVar(input.Value)
-
 				keyValArr = append(keyValArr, keyVal)
 			}
 
@@ -152,6 +148,9 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 				// iterate over each annotation from manifest file
 				for i, a := range serviceDeployPack.Package.Annotations {
 					if name == a.Key {
+						displayEntityFoundInDeploymentInfo(
+							parsers.YAML_KEY_ANNOTATION, a.Key)
+
 						// annotation key is found in manifest
 						keyExistsInManifest = true
 						// overwrite annotation in manifest file with deployment file
@@ -198,6 +197,9 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 				}
 
 				if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
+
+					displayEntityFoundInDeploymentInfo(parsers.YAML_KEY_ACTION, actionName)
+
 					depParams := make(map[string]whisk.KeyValue)
 					for _, kv := range keyValArr {
 						depParams[kv.Key] = kv
@@ -223,8 +225,13 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 					// iterate over each annotation from manifest file
 					for i, a := range wskAction.Action.Annotations {
 						if name == a.Key {
+
+							displayEntityFoundInDeploymentInfo(
+								parsers.YAML_KEY_ANNOTATION, a.Key)
+
 							// annotation key is found in manifest
 							keyExistsInManifest = true
+
 							// overwrite annotation in manifest file with deployment file
 							wskAction.Action.Annotations[i].Value = input
 							break
@@ -249,15 +256,10 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 
 	// go through all packages in our local package map
 	for _, pack := range packMap {
-
-		//fmt.Println(utils.ConvertMapToJSONString("BEFORE: ["+pack.Packagename+"]", pack))
-
 		serviceDeployment := reader.serviceDeployer.Deployment
 
 		// for each Deployment file Trigger found in the current package
 		for triggerName, trigger := range pack.Triggers {
-
-			//fmt.Println(utils.ConvertMapToJSONString("BEFORE: ["+triggerName+"]", trigger))
 
 			// If the Deployment file trigger has Input values we will attempt to bind them
 			if len(trigger.Inputs) > 0 {
@@ -277,22 +279,18 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 				// See if a matching Trigger (name) exists in manifest
 				if wskTrigger, exists := serviceDeployment.Triggers[triggerName]; exists {
 
+					displayEntityFoundInDeploymentInfo(parsers.YAML_KEY_TRIGGER, triggerName)
+
 					depParams := make(map[string]whisk.KeyValue)
 					for _, kv := range keyValArr {
 						depParams[kv.Key] = kv
 					}
 
-					var traceMsg string
 					for _, keyVal := range wskTrigger.Parameters {
-						traceMsg = wski18n.T(
-							wski18n.ID_DEBUG_KEY_VERIFY_X_name_X_key_X,
-							map[string]interface{}{
-								wski18n.KEY_NAME: parsers.YAML_KEY_ANNOTATION,
-								wski18n.KEY_KEY:  keyVal.Key})
-						wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, traceMsg)
-
 						// TODO() verify logic and add Verbose/trace say "found" or "not found"
 						if _, exists := depParams[keyVal.Key]; !exists {
+							displayEntityFoundInDeploymentInfo(
+								parsers.YAML_KEY_ANNOTATION, keyVal.Key)
 							keyValArr = append(keyValArr, keyVal)
 						}
 					}
@@ -341,9 +339,9 @@ func displayEntityNotFoundInDeploymentWarning(entityType string, entityName stri
 	wskprint.PrintOpenWhiskWarning(warnMsg)
 }
 
-func displayEntityFoundInDeploymentInfi(entityType string, entityName string) {
+func displayEntityFoundInDeploymentInfo(entityType string, entityName string) {
 	infoMsg := wski18n.T(
-		wski18n.ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
+		wski18n.ID_DEBUG_DEPLOYMENT_NAME_FOUND_X_key_X_name_X,
 		map[string]interface{}{
 			wski18n.KEY_KEY:  entityType,
 			wski18n.KEY_NAME: entityName})

@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"reflect"
 	"testing"
 )
@@ -165,17 +164,12 @@ func TestDeploymentReader_PackagesBindTrigger(t *testing.T) {
 	// Create an annotation (in manifest representation) with key we expect, with value that should be overwritten
 	TEST_ANNOTATION := whisk.KeyValue{TEST_ANOTATION_KEY, "bar"}
 
-	fmt.Println("TEST: " + os.Getenv("PKGDIR"))
-
 	sDeployer, _ := testLoadAndBindDeploymentYAML(t, TEST_DATA, TEST_TRIGGER, TEST_ANNOTATION)
 
-	// Test that
+	// test that Input values from dReader.DeploymentDescriptor wore "bound" onto sDeployer.Deployment
 	if trigger, ok := sDeployer.Deployment.Triggers[TEST_TRIGGER]; ok {
 
 		for _, param := range trigger.Parameters {
-
-			//dbg := utils.ConvertMapToJSONString("value", value)
-			//fmt.Println(dbg)
 			switch param.Key {
 			case "name":
 				assert.Equal(t, "Bernie", param.Value, "Failed to set inputs")
@@ -201,43 +195,6 @@ func TestDeploymentReader_PackagesBindTrigger(t *testing.T) {
 			TEST_TRIGGER))
 	}
 }
-
-// TODO() XXX this test need to be rewritten perhaps
-//func TestDeploymentReader_bindTrigger_packages_2(t *testing.T) {
-//	//init variables
-//	sDeployer := NewServiceDeployer()
-//	sDeployer.DeploymentPath = "../tests/dat/deployment_deploymentreader_packages_bind_trigger.yml"
-//	sDeployer.Deployment.Triggers["locationUpdate"] = new(whisk.Trigger)
-//
-//	//parse deployment and bind triggers input and annotation
-//	dReader := NewDeploymentReader(sDeployer)
-//	dReader.HandleYaml()
-//
-//	//fmt.Println(utils.ConvertMapToJSONString("BEFORE: dReader.DeploymentDescriptor", dReader.DeploymentDescriptor))
-//	dReader.bindTriggerInputsAndAnnotations()
-//	//fmt.Println(utils.ConvertMapToJSONString("AFTER: dReader.DeploymentDescriptor", dReader.DeploymentDescriptor))
-//	trigger := sDeployer.Deployment.Triggers["locationUpdate"]
-//	for _, param := range trigger.Parameters {
-//		switch param.Key {
-//		case "name":
-//			assert.Equal(t, "Bernie", param.Value, "Failed to set inputs")
-//		case "place":
-//			assert.Equal(t, "DC", param.Value, "Failed to set inputs")
-//		default:
-//			assert.Fail(t, "Failed to get inputs key")
-//
-//		}
-//	}
-//	for _, annos := range trigger.Annotations {
-//		switch annos.Key {
-//		case "bbb":
-//			assert.Equal(t, "this is an annotation", annos.Value, "Failed to set annotations")
-//		default:
-//			assert.Fail(t, "Failed to get annotation key")
-//
-//		}
-//	}
-//}
 
 func TestDeploymentReader_BindAssets_ActionAnnotations(t *testing.T) {
 	sDeployer := NewServiceDeployer()

@@ -29,25 +29,14 @@ const (
 	DEPLOYMENT         = "deployment"
 	CONFIGURATION      = "Configuration"
 	MANIFEST           = "manifest"
-	NAME_ACTION        = "action Name"
-	NAME_FEED          = "feed Name"
-	NAME_PACKAGE       = "package name"
 	NAME_PROJECT       = "project name"
-	NAME_RULE          = "rule Name"
-	NAME_RUNTIME       = "runtime Name"
-	NAME_TRIGGER       = "trigger Name"
 	NAMESPACES         = "Namespaces"
 	PACKAGE_BINDING    = "package binding"
 	PACKAGE_LICENSE    = "package license"
 	PACKAGE_VERSION    = "package version"
 	PACKAGES           = "Packages"
-	REGISTRY           = "registry"
-	REGISTRY_URL       = "registry URL"
-	REPOSITORY         = "repository"
 	RULES              = "Rules"
 	TRIGGER_FEED       = "trigger feed"
-	TRIGGERS           = "Triggers"
-	WHISK_PROPS        = "wskprops"
 	APIGW_ACCESS_TOKEN = "API Gateway Access Token"
 )
 
@@ -61,12 +50,8 @@ const (
 	ID_MSG_PREFIX_WARNING = "msg_prefix_warning" // "Warning"
 
 	// Cobra command descriptions
-	//ID_CMD_DESC_LONG_PUBLISH      = "msg_cmd_desc_long_publish"
-	ID_CMD_DESC_LONG_REPORT = "msg_cmd_desc_long_report"
-	ID_CMD_DESC_LONG_ROOT   = "msg_cmd_desc_long_root"
-	//ID_CMD_DESC_SHORT_ADD         = "msg_cmd_desc_short_add"
-	//ID_CMD_DESC_SHORT_ADD_X_key_X = "msg_cmd_desc_short_add_entity"
-	//ID_CMD_DESC_SHORT_PUBLISH     = "msg_cmd_desc_short_publish"
+	ID_CMD_DESC_LONG_REPORT   = "msg_cmd_desc_long_report"
+	ID_CMD_DESC_LONG_ROOT     = "msg_cmd_desc_long_root"
 	ID_CMD_DESC_SHORT_REPORT  = "msg_cmd_desc_short_report"
 	ID_CMD_DESC_SHORT_ROOT    = "msg_cmd_desc_short_root"
 	ID_CMD_DESC_SHORT_VERSION = "msg_cmd_desc_short_version"
@@ -180,42 +165,39 @@ const (
 	ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X          = "msg_warn_deployment_name_not_found"
 
 	// Verbose (Debug/Trace) messages
-	ID_DEBUG_KEY_VERIFY_X_name_X_key_X     = "msg_dbg_key_verify"
-	ID_DEBUG_DEPLOYING_USING               = "msg_dbg_deploying_using"
-	ID_DEBUG_UNDEPLOYING_USING             = "msg_dbg_undeploying_using"
-	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X = "msg_dbg_searching_project_directory"
+	ID_DEBUG_DEPLOYING_USING                      = "msg_dbg_deploying_using"
+	ID_DEBUG_UNDEPLOYING_USING                    = "msg_dbg_undeploying_using"
+	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X        = "msg_dbg_searching_project_directory"
+	ID_DEBUG_DEPLOYMENT_NAME_FOUND_X_key_X_name_X = "msg_dbg_deployment_name_found"
 )
 
 // Known keys used for text replacement in i18n translated strings
 const (
-	KEY_ACTION             = "action"
-	KEY_CMD                = "cmd"
-	KEY_CODE               = "code"
-	KEY_DEPLOYMENT_NAME    = "dname"
-	KEY_DEPLOYMENT_PATH    = "dpath"
-	KEY_ERR                = "err"
-	KEY_EXTENTION          = "ext"
-	KEY_FILE_TYPE          = "filetype"
-	KEY_HOST               = "host"
-	KEY_KEY                = "key"
-	KEY_LIMIT              = "limit"
-	KEY_MANIFEST_NAME      = "mname"
-	KEY_MANIFEST_PATH      = "mpath"
-	KEY_NAME               = "name"
-	KEY_NAMESPACE          = "namespace"
-	KEY_NEW                = "newkey"
-	KEY_OLD                = "oldkey"
-	KEY_PATH               = "path"
-	KEY_PROJECT            = "project"
-	KEY_RUNTIME            = "runtime"
-	KEY_SOURCE             = "source"
-	KEY_URL                = "url"
-	KEY_URL_TYPE           = "urltype"
-	KEY_VALUE              = "value"
-	KEY_VALUE_MIN          = "min" // TODO() attempt to use this for Limit value range errors
-	KEY_VALUE_MAX          = "max" // TODO() attempt to use this for Limit value range errors
-	KEY_API                = "api"
-	KEY_APIGW_ACCESS_TOKEN = "apigw_access_token"
+	KEY_ACTION          = "action"
+	KEY_CMD             = "cmd"
+	KEY_CODE            = "code"
+	KEY_DEPLOYMENT_NAME = "dname"
+	KEY_DEPLOYMENT_PATH = "dpath"
+	KEY_ERR             = "err"
+	KEY_EXTENTION       = "ext"
+	KEY_FILE_TYPE       = "filetype"
+	KEY_HOST            = "host"
+	KEY_KEY             = "key"
+	KEY_LIMIT           = "limit"
+	KEY_MANIFEST_NAME   = "mname"
+	KEY_MANIFEST_PATH   = "mpath"
+	KEY_NAME            = "name"
+	KEY_NAMESPACE       = "namespace"
+	KEY_NEW             = "newkey"
+	KEY_OLD             = "oldkey"
+	KEY_PATH            = "path"
+	KEY_PROJECT         = "project"
+	KEY_RUNTIME         = "runtime"
+	KEY_SOURCE          = "source"
+	KEY_VALUE           = "value"
+	KEY_VALUE_MIN       = "min" // TODO() attempt to use this for Limit value range errors
+	KEY_VALUE_MAX       = "max" // TODO() attempt to use this for Limit value range errors
+	KEY_API             = "api"
 )
 
 // Used to unit test that translations exist with these IDs
@@ -242,7 +224,7 @@ var I18N_ID_SET = [](string){
 	ID_CMD_FLAG_TOGGLE_HELP,
 	ID_CMD_FLAG_VERBOSE,
 	ID_DEBUG_DEPLOYING_USING,
-	ID_DEBUG_KEY_VERIFY_X_name_X_key_X,
+	ID_DEBUG_DEPLOYMENT_NAME_FOUND_X_key_X_name_X,
 	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X,
 	ID_DEBUG_UNDEPLOYING_USING,
 	ID_ERR_DEPENDENCY_UNKNOWN_TYPE,
@@ -298,6 +280,7 @@ var I18N_ID_SET = [](string){
 	ID_MSG_UNMARSHAL_NETWORK_X_url_X,
 	ID_WARN_COMMAND_RETRY,
 	ID_WARN_CONFIG_INVALID_X_path_X,
+	ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 	ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X,
 	ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 	ID_WARN_KEY_MISSING_X_key_X_value_X,
@@ -311,5 +294,4 @@ var I18N_ID_SET = [](string){
 	ID_WARN_PACKAGES_NOT_FOUND_X_path_X,
 	ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
 	ID_WARN_WHISK_PROPS_DEPRECATED,
-	ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 }

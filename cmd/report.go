@@ -62,6 +62,8 @@ func init() {
 	RootCmd.AddCommand(reportCmd)
 
 	// TODO() REMOVE this flag... the flag -config exists already
+	// TODO() whiskclient alread retrieves wskprops and has a constant defined for it SOURCE_WSKPROPS
+	// Please remove or reuse code from whiskclient.go
 	reportCmd.Flags().StringVarP(&wskpropsPath, "wskproppath", "w",
 		path.Join(os.Getenv("HOME"), ".wskprops"),
 		wski18n.T(wski18n.ID_CMD_FLAG_CONFIG))
