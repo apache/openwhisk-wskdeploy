@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
@@ -76,9 +75,8 @@ func (reader *DeploymentReader) getPackageMap() map[string]parsers.Package {
 
 		if len(reader.DeploymentDescriptor.Packages) > 0 {
 			// TODO() i18n
-			wskprint.PrintOpenWhiskVerbose(true,
+			wskprint.PrintlnOpenWhiskTrace(true,
 				fmt.Sprintf("Deployment file [%s]: Found top-level packages",
-					reader.DeploymentDescriptor.Filepath,
 					reader.DeploymentDescriptor.Filepath))
 			for packName, depPacks := range reader.DeploymentDescriptor.Packages {
 				depPacks.Packagename = packName
@@ -87,7 +85,7 @@ func (reader *DeploymentReader) getPackageMap() map[string]parsers.Package {
 		}
 	} else {
 		//TODO() i18n
-		wskprint.PrintOpenWhiskVerbose(true,
+		wskprint.PrintlnOpenWhiskTrace(true,
 			fmt.Sprintf("Deployment file [%s]: Found packages under project [%s]",
 				reader.DeploymentDescriptor.Filepath, reader.DeploymentDescriptor.GetProject().Name))
 		for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
@@ -112,6 +110,8 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 			displayEntityNotFoundInDeploymentWarning(parsers.YAML_KEY_PACKAGE, packName)
 			break
 		}
+
+		displayEntityFoundInDeploymentTrace(parsers.YAML_KEY_PACKAGE, packName)
 
 		if len(pack.Inputs) > 0 {
 
@@ -148,7 +148,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 				// iterate over each annotation from manifest file
 				for i, a := range serviceDeployPack.Package.Annotations {
 					if name == a.Key {
-						displayEntityFoundInDeploymentInfo(
+						displayEntityFoundInDeploymentTrace(
 							parsers.YAML_KEY_ANNOTATION, a.Key)
 
 						// annotation key is found in manifest
@@ -198,7 +198,7 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 
 				if wskAction, exists := serviceDeployPack.Actions[actionName]; exists {
 
-					displayEntityFoundInDeploymentInfo(parsers.YAML_KEY_ACTION, actionName)
+					displayEntityFoundInDeploymentTrace(parsers.YAML_KEY_ACTION, actionName)
 
 					depParams := make(map[string]whisk.KeyValue)
 					for _, kv := range keyValArr {
@@ -226,7 +226,7 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 					for i, a := range wskAction.Action.Annotations {
 						if name == a.Key {
 
-							displayEntityFoundInDeploymentInfo(
+							displayEntityFoundInDeploymentTrace(
 								parsers.YAML_KEY_ANNOTATION, a.Key)
 
 							// annotation key is found in manifest
@@ -279,7 +279,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 				// See if a matching Trigger (name) exists in manifest
 				if wskTrigger, exists := serviceDeployment.Triggers[triggerName]; exists {
 
-					displayEntityFoundInDeploymentInfo(parsers.YAML_KEY_TRIGGER, triggerName)
+					displayEntityFoundInDeploymentTrace(parsers.YAML_KEY_TRIGGER, triggerName)
 
 					depParams := make(map[string]whisk.KeyValue)
 					for _, kv := range keyValArr {
@@ -289,7 +289,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 					for _, keyVal := range wskTrigger.Parameters {
 						// TODO() verify logic and add Verbose/trace say "found" or "not found"
 						if _, exists := depParams[keyVal.Key]; !exists {
-							displayEntityFoundInDeploymentInfo(
+							displayEntityFoundInDeploymentTrace(
 								parsers.YAML_KEY_ANNOTATION, keyVal.Key)
 							keyValArr = append(keyValArr, keyVal)
 						}
@@ -339,11 +339,11 @@ func displayEntityNotFoundInDeploymentWarning(entityType string, entityName stri
 	wskprint.PrintOpenWhiskWarning(warnMsg)
 }
 
-func displayEntityFoundInDeploymentInfo(entityType string, entityName string) {
+func displayEntityFoundInDeploymentTrace(entityType string, entityName string) {
 	infoMsg := wski18n.T(
 		wski18n.ID_DEBUG_DEPLOYMENT_NAME_FOUND_X_key_X_name_X,
 		map[string]interface{}{
 			wski18n.KEY_KEY:  entityType,
 			wski18n.KEY_NAME: entityName})
-	wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, infoMsg)
+	wskprint.PrintlnOpenWhiskTrace(true, infoMsg)
 }

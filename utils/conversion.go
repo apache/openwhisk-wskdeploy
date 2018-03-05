@@ -51,11 +51,7 @@ func convertMapValue(value interface{}) interface{} {
 	}
 }
 
-func PrintTypeInfo(name string, value interface{}) {
-	info := fmt.Sprintf("Name=[%s], Value=[%v], Type=[%T]\n", name, value, value)
-	fmt.Print(info)
-}
-
+// TODO() add a Print function to wskprint that calls this and adds the label
 func ConvertMapToJSONString(name string, mapIn interface{}) string {
 	strMapOut, _ := json.MarshalIndent(mapIn, "", "  ")
 	return fmt.Sprintf("%s: %s", name, string(strMapOut))
