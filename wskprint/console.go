@@ -22,6 +22,8 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/fatih/color"
 	"github.com/mattn/go-colorable"
+	"os"
+	"strings"
 )
 
 const (
@@ -100,4 +102,18 @@ func PrintOpenWhiskVerbose(verbose bool, message string) {
 
 func PrintlnOpenWhiskVerbose(verbose bool, message string) {
 	PrintOpenWhiskVerbose(verbose, message+"\n")
+}
+
+// Display "trace" output if either param is true OR we are running Go test verbose (i.e., "go test -v")
+// arg[0] = [/var/folders/nj/2blqqtm500l5ch2d5k0hvqvm0000gn/T/go-build041478919/github.com/apache/incubator-openwhisk-wskdeploy/deployers/_test/deployers.test
+// arg[1] = -test.v=true
+// arg[2] = -test.run=TestDeploymentReader_PackagesBindTrigger]
+// TODO() introduce "trace" as an optional flag (perhaps hidden or picked up from environment)
+func PrintlnOpenWhiskTrace(trace bool, message string) {
+	GO_TEST_VERBOSE := false
+	if len(os.Args) >= 2 {
+		// TODO() move this to an init() routine
+		GO_TEST_VERBOSE = strings.Contains(os.Args[1], "-test.v=true")
+	}
+	PrintOpenWhiskVerbose(GO_TEST_VERBOSE || trace, message+"\n")
 }
