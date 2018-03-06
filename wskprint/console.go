@@ -111,5 +111,5 @@ func PrintlnOpenWhiskVerbose(verbose bool, message string) {
 // TODO() introduce "trace" as an optional flag (perhaps hidden or picked up from environment)
 func PrintlnOpenWhiskTrace(trace bool, message string) {
 	GO_TEST_VERBOSE := strings.Contains(os.Args[1], "-test.v=true")
-	PrintOpenWhiskVerbose(GO_TEST_VERBOSE||trace, message+"\n")
+	PrintOpenWhiskVerbose(GO_TEST_VERBOSE || trace, message+"\n")
 }
