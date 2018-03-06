@@ -19,7 +19,5 @@ projects:
       triggerrule: 
         actions: 
           greeting: ~
-        rules: 
-          myRule: ~
         triggers: 
           locationUpdate: ~

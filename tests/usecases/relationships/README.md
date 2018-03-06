@@ -20,7 +20,7 @@
 
 ### Package description
 
-This Package named `relatinships` includes:
+This Package named `relationships` includes:
 - A package (manifest) based on the one in triggerrule usecase. This package it represents the library project LIB
 - A manifest ext_manifest.yml extending the LIB project
 - relationships.yml describing projects relationships

@@ -1590,13 +1590,15 @@ func createWhiskClientError(err *whisk.WskError, response *http.Response, entity
 
 // for all projects in relationships
 // 	 for all rel-packages in rel-project
-// 		for all ow-packages from OW
+//		get ow-package from OW
 // 			if rel-project is the one in ow-package MANAGE annotation (library project)
 //				update MANAGE_LIST annotation with NEW project and add to deploymentPlan
 //			for all actions in rel-package
 //				for all ow-actions in ow-package
 // 					if rel-project is the one in ow-action MANAGE annotation (library project)
 //						update MANAGE_LIST annotation with NEW project and add to deploymentPlan
+//
+// ... same for triggers and rules
 func (deployer *ServiceDeployer) UpdateManagedProjectsListAnnotations(isUndeploy bool) error {
 	if utils.Flags.RelationsPath == "" {
 		return nil
@@ -1615,7 +1617,6 @@ func (deployer *ServiceDeployer) UpdateManagedProjectsListAnnotations(isUndeploy
 
 	// get managed annotations
 	for managedProjectName, proj := range relationships.Projects {
-		fmt.Println(managedProjectName)
 		for managedPackageName, pkg := range proj.Packages {
 			updatedPackage, err := deployer.getUpdatedPackage(managedPackageName, managedProjectName, rma, isUndeploy)
 
@@ -1772,12 +1773,6 @@ func (deployer *ServiceDeployer) RefreshManagedProjectsListAnnotation(whiskAnnot
 }
 
 func (deployer *ServiceDeployer) getUpdatedPackage(packageName string, projectName string, rma whisk.KeyValue, isUndeploy bool) (*DeploymentPackage, error) {
-	fmt.Println(packageName)
-
-	// TODO: what should be done if the asset also appears in the manifest?
-	// options: throw an error - current behaviour
-	//			overwrite and make the current project to be the asset manager
-	//			keep the old one and print warning message. e.g. to specify --force to overwrite
 	for _, pack := range deployer.Deployment.Packages {
 		if pack.Package.GetName() == packageName {
 			return nil, wskderrors.NewCommandError("", "asset can't be specified both in relationships and in manifest")
