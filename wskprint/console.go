@@ -112,6 +112,7 @@ func PrintlnOpenWhiskVerbose(verbose bool, message string) {
 func PrintlnOpenWhiskTrace(trace bool, message string) {
 	GO_TEST_VERBOSE := false
 	if len(os.Args) >= 2 {
+		// TODO() move this to an init() routine
 		GO_TEST_VERBOSE = strings.Contains(os.Args[1], "-test.v=true")
 	}
 	PrintOpenWhiskVerbose(GO_TEST_VERBOSE || trace, message+"\n")

@@ -18,7 +18,6 @@
 package deployers
 
 import (
-	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
@@ -74,20 +73,25 @@ func (reader *DeploymentReader) getPackageMap() map[string]parsers.Package {
 	if len(reader.DeploymentDescriptor.GetProject().Packages) == 0 {
 
 		if len(reader.DeploymentDescriptor.Packages) > 0 {
-			// TODO() i18n
-			wskprint.PrintlnOpenWhiskTrace(true,
-				fmt.Sprintf("Deployment file [%s]: Found top-level packages",
-					reader.DeploymentDescriptor.Filepath))
+			infoMsg := wski18n.T(
+				wski18n.ID_DEBUG_PACKAGES_FOUND_UNDER_ROOT_X_path_X,
+				map[string]interface{}{
+					wski18n.KEY_PATH: reader.DeploymentDescriptor.Filepath})
+			wskprint.PrintlnOpenWhiskTrace(false, infoMsg)
 			for packName, depPacks := range reader.DeploymentDescriptor.Packages {
 				depPacks.Packagename = packName
 				packMap[packName] = depPacks
 			}
 		}
 	} else {
-		//TODO() i18n
-		wskprint.PrintlnOpenWhiskTrace(true,
-			fmt.Sprintf("Deployment file [%s]: Found packages under project [%s]",
-				reader.DeploymentDescriptor.Filepath, reader.DeploymentDescriptor.GetProject().Name))
+
+		infoMsg := wski18n.T(
+			wski18n.ID_DEBUG_PACKAGES_FOUND_UNDER_PROJECT_X_path_X_name_X,
+			map[string]interface{}{
+				wski18n.KEY_PATH: reader.DeploymentDescriptor.Filepath,
+				wski18n.KEY_NAME: reader.DeploymentDescriptor.GetProject().Name})
+		wskprint.PrintlnOpenWhiskTrace(false, infoMsg)
+
 		for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
 			depPacks.Packagename = packName
 			packMap[packName] = depPacks

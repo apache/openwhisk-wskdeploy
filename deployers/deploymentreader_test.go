@@ -27,11 +27,6 @@ import (
 	"testing"
 )
 
-var sd *ServiceDeployer
-var dr *DeploymentReader
-var deployment_file = "../tests/usecases/github/deployment.yaml"
-var manifest_file = "../tests/usecases/github/manifest.yaml"
-
 const (
 	// local error messages
 	TEST_ERROR_DEPLOYMENT_PARSE_FAILURE        = "Deployment [%s]: Failed to parse."
@@ -42,18 +37,33 @@ const (
 	TEST_ERROR_DEPLOYMENT_FIND_TRIGGER         = "Deployment [%s]: Failed to find Trigger [%s]."
 )
 
+// TODO() these globals are shared by manifest_reader_test.go; these tests should be independent of each other
+var sd *ServiceDeployer
+var dr *DeploymentReader
+var deployment_file = "../tests/usecases/github/deployment.yaml"
+var manifest_file = "../tests/usecases/github/manifest.yaml"
+
 func init() {
+	// TODO(): setup "trace" flag here (and in all unit test files)
+}
+
+// Check DeploymentReader could handle deployment yaml successfully.
+func TestDeploymentReader_HandleYaml(t *testing.T) {
+
 	sd = NewServiceDeployer()
 	sd.DeploymentPath = deployment_file
 	sd.ManifestPath = manifest_file
 	sd.Check()
 	dr = NewDeploymentReader(sd)
-}
 
-// Check DeploymentReader could handle deployment yaml successfully.
-func TestDeploymentReader_HandleYaml(t *testing.T) {
+	TEST_PACKAGE := "GitHubCommits"
 	dr.HandleYaml()
-	assert.NotNil(t, dr.DeploymentDescriptor.GetProject().Packages["GitHubCommits"], "DeploymentReader handle deployment yaml failed.")
+
+	if _, exists := dr.DeploymentDescriptor.GetProject().Packages[TEST_PACKAGE]; !exists {
+		assert.Fail(t, fmt.Sprintf(TEST_ERROR_DEPLOYMENT_FIND_PACKAGE,
+			dr.serviceDeployer.DeploymentPath, TEST_PACKAGE))
+	}
+
 }
 
 func createAnnotationArray(t *testing.T, kv whisk.KeyValue) whisk.KeyValueArr {
@@ -158,7 +168,6 @@ func TestDeploymentReader_ProjectBindTrigger(t *testing.T) {
 func TestDeploymentReader_PackagesBindTrigger(t *testing.T) {
 	//init variables
 	TEST_DATA := "../tests/dat/deployment_deploymentreader_packages_bind_trigger.yml"
-	//TEST_PACKAGE := "triggerrule"
 	TEST_TRIGGER := "locationUpdate"
 	TEST_ANOTATION_KEY := "bbb"
 	// Create an annotation (in manifest representation) with key we expect, with value that should be overwritten

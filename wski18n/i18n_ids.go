@@ -165,10 +165,12 @@ const (
 	ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X          = "msg_warn_deployment_name_not_found"
 
 	// Verbose (Debug/Trace) messages
-	ID_DEBUG_DEPLOYING_USING                      = "msg_dbg_deploying_using"
-	ID_DEBUG_UNDEPLOYING_USING                    = "msg_dbg_undeploying_using"
-	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X        = "msg_dbg_searching_project_directory"
-	ID_DEBUG_DEPLOYMENT_NAME_FOUND_X_key_X_name_X = "msg_dbg_deployment_name_found"
+	ID_DEBUG_DEPLOYING_USING                              = "msg_dbg_deploying_using"
+	ID_DEBUG_UNDEPLOYING_USING                            = "msg_dbg_undeploying_using"
+	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X                = "msg_dbg_searching_project_directory"
+	ID_DEBUG_DEPLOYMENT_NAME_FOUND_X_key_X_name_X         = "msg_dbg_deployment_name_found"
+	ID_DEBUG_PACKAGES_FOUND_UNDER_ROOT_X_path_X           = "msg_dbg_packages_found_root"
+	ID_DEBUG_PACKAGES_FOUND_UNDER_PROJECT_X_path_X_name_X = "msg_dbg_packages_found_project"
 )
 
 // Known keys used for text replacement in i18n translated strings
@@ -179,7 +181,7 @@ const (
 	KEY_DEPLOYMENT_NAME = "dname"
 	KEY_DEPLOYMENT_PATH = "dpath"
 	KEY_ERR             = "err"
-	KEY_EXTENTION       = "ext"
+	KEY_EXTENSION       = "ext"
 	KEY_FILE_TYPE       = "filetype"
 	KEY_HOST            = "host"
 	KEY_KEY             = "key"
@@ -225,6 +227,8 @@ var I18N_ID_SET = [](string){
 	ID_CMD_FLAG_VERBOSE,
 	ID_DEBUG_DEPLOYING_USING,
 	ID_DEBUG_DEPLOYMENT_NAME_FOUND_X_key_X_name_X,
+	ID_DEBUG_PACKAGES_FOUND_UNDER_PROJECT_X_path_X_name_X,
+	ID_DEBUG_PACKAGES_FOUND_UNDER_ROOT_X_path_X,
 	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X,
 	ID_DEBUG_UNDEPLOYING_USING,
 	ID_ERR_DEPENDENCY_UNKNOWN_TYPE,

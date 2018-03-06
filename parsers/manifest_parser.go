@@ -487,7 +487,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
 						map[string]interface{}{
 							wski18n.KEY_RUNTIME:   action.Runtime,
-							wski18n.KEY_EXTENTION: ext,
+							wski18n.KEY_EXTENSION: ext,
 							wski18n.KEY_ACTION:    action.Name})
 					return nil, wskderrors.NewInvalidRuntimeError(errMessage,
 						splitFilePath[len(splitFilePath)-1], action.Name,
@@ -542,7 +542,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 						warnStr := wski18n.T(wski18n.ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
 							map[string]interface{}{
 								wski18n.KEY_RUNTIME:   action.Runtime,
-								wski18n.KEY_EXTENTION: ext,
+								wski18n.KEY_EXTENSION: ext,
 								wski18n.KEY_ACTION:    action.Name})
 						wskprint.PrintOpenWhiskWarning(warnStr)
 
