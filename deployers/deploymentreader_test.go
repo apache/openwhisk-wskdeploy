@@ -35,6 +35,10 @@ const (
 	TEST_ERROR_DEPLOYMENT_FIND_PACKAGES        = "Deployment [%s]: Failed to find Packages for project [%s]."
 	TEST_ERROR_DEPLOYMENT_FIND_PACKAGE         = "Deployment [%s]: Failed to find Package [%s]."
 	TEST_ERROR_DEPLOYMENT_FIND_TRIGGER         = "Deployment [%s]: Failed to find Trigger [%s]."
+	TEST_ERROR_DEPLOYMENT_SET_ANNOTATION       = "Failed to set Annotation value."
+	TEST_ERROR_DEPLOYMENT_SET_INPUT_PARAMETER  = "Failed to set input Parameter value."
+	TEST_ERROR_DEPLOYMENT_GET_ANNOTATION       = "Failed to get Annotation key."
+	TEST_ERROR_DEPLOYMENT_GET_INPUT_PARAMETER  = "Failed to get input Parameter key."
 )
 
 // TODO() these globals are shared by manifest_reader_test.go; these tests should be independent of each other
@@ -143,11 +147,11 @@ func TestDeploymentReader_ProjectBindTrigger(t *testing.T) {
 	for _, param := range trigger.Parameters {
 		switch param.Key {
 		case "name":
-			assert.Equal(t, "Bernie", param.Value, "Failed to set inputs")
+			assert.Equal(t, "Bernie", param.Value, TEST_ERROR_DEPLOYMENT_SET_INPUT_PARAMETER)
 		case "place":
-			assert.Equal(t, "DC", param.Value, "Failed to set inputs")
+			assert.Equal(t, "DC", param.Value, TEST_ERROR_DEPLOYMENT_SET_INPUT_PARAMETER)
 		default:
-			assert.Fail(t, "Failed to get inputs key")
+			assert.Fail(t, TEST_ERROR_DEPLOYMENT_GET_INPUT_PARAMETER)
 
 		}
 	}
@@ -157,9 +161,9 @@ func TestDeploymentReader_ProjectBindTrigger(t *testing.T) {
 		switch annos.Key {
 		case TEST_ANNOTATION_KEY:
 			// Manifest's value should be overwritten
-			assert.Equal(t, "this is an annotation", annos.Value, "Failed to set annotations")
+			assert.Equal(t, "this is an annotation", annos.Value, TEST_ERROR_DEPLOYMENT_SET_ANNOTATION)
 		default:
-			assert.Fail(t, "Failed to get annotation key")
+			assert.Fail(t, TEST_ERROR_DEPLOYMENT_GET_ANNOTATION)
 
 		}
 	}
@@ -181,20 +185,20 @@ func TestDeploymentReader_PackagesBindTrigger(t *testing.T) {
 		for _, param := range trigger.Parameters {
 			switch param.Key {
 			case "name":
-				assert.Equal(t, "Bernie", param.Value, "Failed to set inputs")
+				assert.Equal(t, "Bernie", param.Value, TEST_ERROR_DEPLOYMENT_SET_INPUT_PARAMETER)
 			case "place":
-				assert.Equal(t, "DC", param.Value, "Failed to set inputs")
+				assert.Equal(t, "DC", param.Value, TEST_ERROR_DEPLOYMENT_SET_INPUT_PARAMETER)
 			default:
-				assert.Fail(t, "Failed to get inputs key")
+				assert.Fail(t, TEST_ERROR_DEPLOYMENT_GET_INPUT_PARAMETER)
 
 			}
 		}
 		for _, annos := range trigger.Annotations {
 			switch annos.Key {
 			case "bbb":
-				assert.Equal(t, "this is an annotation", annos.Value, "Failed to set annotations")
+				assert.Equal(t, "this is an annotation", annos.Value, TEST_ERROR_DEPLOYMENT_SET_ANNOTATION)
 			default:
-				assert.Fail(t, "Failed to get annotation key")
+				assert.Fail(t, TEST_ERROR_DEPLOYMENT_GET_ANNOTATION)
 
 			}
 		}
@@ -205,6 +209,7 @@ func TestDeploymentReader_PackagesBindTrigger(t *testing.T) {
 	}
 }
 
+// TODO() use local "load" function
 func TestDeploymentReader_BindAssets_ActionAnnotations(t *testing.T) {
 	sDeployer := NewServiceDeployer()
 	sDeployer.DeploymentPath = "../tests/dat/deployment_validate_action_annotations.yaml"
