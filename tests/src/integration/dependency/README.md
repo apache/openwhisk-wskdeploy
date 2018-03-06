@@ -28,18 +28,18 @@ at https://github.com/pritidesai/child-app.
 We can declare this dependency in `manifest.yaml` with:
 
 ```yaml
-package:
-  name: root-app
-  namespace: guest
-  dependencies:
-    child-app:
-      location: github.com/pritidesai/child-app
-  triggers:
-    trigger1:
-  rules:
-    rule1:
-      trigger: trigger1
-      action: child-app/hello
+packages:
+  root-app:
+    namespace: guest
+    dependencies:
+      child-app:
+        location: github.com/pritidesai/child-app
+    triggers:
+      trigger1:
+    rules:
+      rule1:
+        trigger: trigger1
+        action: child-app/hello
 ```
 
 **Note:**

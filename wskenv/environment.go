@@ -44,7 +44,8 @@ func isValidEnvironmentVar(value string) bool {
 
 // Get the env variable value by key.
 // Get the env variable if the key is start by $
-func GetEnvVar(key interface{}) interface{} {
+// Replace all occurrences of env. variables in the input string
+func InterpolateStringWithEnvVar(key interface{}) interface{} {
 	// Assure the key itself is not nil
 	if key == nil {
 		return nil
@@ -93,7 +94,7 @@ func GetEnvVar(key interface{}) interface{} {
 // the new string with env variables replaced
 func ConvertSingleName(theName string) string {
 	if len(theName) != 0 {
-		theNameEnv := GetEnvVar(theName)
+		theNameEnv := InterpolateStringWithEnvVar(theName)
 		if str, ok := theNameEnv.(string); ok {
 			return str
 		} else {

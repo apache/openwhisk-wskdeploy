@@ -99,9 +99,9 @@ const (
 	ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X = "msg_config_namespace_info"
 	ID_MSG_CONFIG_INFO_APIGE_ACCESS_TOKEN_X_source_X    = "msg_config_apigw_access_token_info"
 
-	// YAML marshall / unmarshall
-	ID_MSG_UNMARSHAL_LOCAL   = "msg_unmarshall_local"
-	ID_MSG_UNMARSHAL_NETWORK = "msg_unmarshall_network"
+	// YAML marshal / unmarshal
+	ID_MSG_UNMARSHAL_LOCAL           = "msg_unmarshal_local"
+	ID_MSG_UNMARSHAL_NETWORK_X_url_X = "msg_unmarshal_network"
 
 	// Informational
 	ID_MSG_DEPLOYMENT_CANCELLED = "msg_deployment_cancelled"
@@ -127,6 +127,8 @@ const (
 	ID_MSG_DEPENDENCY_UNDEPLOYING_X_name_X          = "msg_dependency_undeploying"
 	ID_MSG_DEPENDENCY_UNDEPLOYMENT_FAILURE_X_name_X = "msg_dependency_undeployment_failure"
 	ID_MSG_DEPENDENCY_UNDEPLOYMENT_SUCCESS_X_name_X = "msg_dependency_undeployment_success"
+
+	ID_MSG_DEFAULT_PACKAGE = "msg_default_package"
 
 	// Managed deployments
 	ID_MSG_MANAGED_UNDEPLOYMENT_FAILED                    = "msg_managed_undeployment_failed"
@@ -175,6 +177,7 @@ const (
 	ID_WARN_VALUE_RANGE_X_name_X_key_X_filetype_X_min_X_max_X = "msg_warn_value_range" // TODO() not used, but should be used for limit ranges
 	ID_WARN_WHISK_PROPS_DEPRECATED                            = "msg_warn_whisk_properties"
 	ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X                 = "msg_warn_entity_name_exists"
+	ID_WARN_PACKAGES_NOT_FOUND_X_path_X                       = "msg_warn_packages_not_found"
 
 	// Verbose (Debug/Trace) messages
 	ID_DEBUG_KEY_VERIFY_X_name_X_key_X     = "msg_dbg_key_verify"
@@ -297,7 +300,7 @@ var I18N_ID_SET = [](string){
 	ID_MSG_UNDEPLOYMENT_FAILED,
 	ID_MSG_UNDEPLOYMENT_SUCCEEDED,
 	ID_MSG_UNMARSHAL_LOCAL,
-	ID_MSG_UNMARSHAL_NETWORK,
+	ID_MSG_UNMARSHAL_NETWORK_X_url_X,
 	ID_WARN_COMMAND_RETRY,
 	ID_WARN_CONFIG_INVALID_X_path_X,
 	ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X,
@@ -310,6 +313,7 @@ var I18N_ID_SET = [](string){
 	ID_WARN_LIMITS_LOG_SIZE,
 	ID_WARN_LIMITS_MEMORY_SIZE,
 	ID_WARN_LIMITS_TIMEOUT,
+	ID_WARN_PACKAGES_NOT_FOUND_X_path_X,
 	ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
 	ID_WARN_WHISK_PROPS_DEPRECATED,
 }

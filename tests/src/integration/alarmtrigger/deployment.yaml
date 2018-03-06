@@ -27,3 +27,14 @@ project:
                 Every12Hours:
                     inputs:
                         cron: "0 */12 * * *"
+        default:
+            actions:
+                helloworldInDefault:
+                    inputs:
+                        name: Bob
+                        place: London
+            triggers:
+                Every12HoursInDefault:
+                    inputs:
+                        cron: "0 */12 * * *"
+

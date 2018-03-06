@@ -23,4 +23,3 @@ function main(params) {
     console.log(msg)
     return { payload:  msg };
 }
-

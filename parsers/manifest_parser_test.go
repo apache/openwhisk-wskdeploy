@@ -24,6 +24,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
@@ -37,7 +38,6 @@ import (
 const (
 	// local test assert messages
 	TEST_MSG_PACKAGE_NAME_MISSING                   = "Package named [%s] missing."
-	TEST_MSG_PACKAGE_NAME_MISMATCH                  = "Package name mismatched."
 	TEST_MSG_ACTION_NUMBER_MISMATCH                 = "Number of Actions mismatched."
 	TEST_MSG_ACTION_NAME_MISSING                    = "Action named [%s] does not exist."
 	TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH          = "Action function path mismatched."
@@ -62,6 +62,17 @@ func init() {
 		utils.DefaultRunTimes = utils.DefaultRuntimes(op)
 		utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
 	}
+}
+
+func testLoadParseManifest(t *testing.T, manifestFile string) (*YAMLParser, *YAML, error) {
+	// read and parse manifest.yaml file located under ../tests folder
+	p := NewYAMLParser()
+	m, err := p.ParseManifest(manifestFile)
+	if err != nil {
+		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
+	}
+
+	return p, m, err
 }
 
 func testReadAndUnmarshalManifest(t *testing.T, pathManifest string) (YAML, error) {
@@ -95,14 +106,14 @@ func testReadAndUnmarshalManifest(t *testing.T, pathManifest string) (YAML, erro
    Returns:
    - N/A
 */
-func testUnmarshalManifestAndActionBasic(t *testing.T,
+func testUnmarshalManifestPackageAndActionBasic(t *testing.T,
 	pathManifest string,
 	namePackage string,
 	numActions int,
 	nameAction string,
 	pathFunction string,
 	nameRuntime string,
-	nameMain string) (YAML, error) {
+	nameMain string) (YAML, *Package, error) {
 
 	// Test that we are able to read the manifest file and unmarshall into YAML struct
 	m, err := testReadAndUnmarshalManifest(t, pathManifest)
@@ -111,35 +122,40 @@ func testUnmarshalManifestAndActionBasic(t *testing.T,
 	if err != nil {
 		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_DATA_UNMARSHALL, pathManifest))
 	} else {
-		// test package name
-		actualResult := m.Package.Packagename
-		assert.Equal(t, namePackage, actualResult, TEST_MSG_PACKAGE_NAME_MISMATCH)
+		// test package (name) exists
+		if pkg, ok := m.Packages[namePackage]; ok {
 
-		// test # of actions in manifest
-		if numActions > 0 {
-			actualResult = string(len(m.Package.Actions))
-			assert.Equal(t, string(numActions), actualResult, TEST_MSG_ACTION_NUMBER_MISMATCH)
-		}
+			// test # of actions in manifest
+			expectedActionsCount := numActions
+			actualActionsCount := len(pkg.Actions)
+			assert.Equal(t, expectedActionsCount, actualActionsCount, TEST_MSG_ACTION_NUMBER_MISMATCH)
 
-		// get an action from map of actions where key is action name and value is Action struct
-		if action, ok := m.Package.Actions[nameAction]; ok {
+			// get an action from map of actions where key is action name and value is Action struct
+			if action, ok := pkg.Actions[nameAction]; ok {
 
-			// test action's function path
-			assert.Equal(t, pathFunction, action.Function, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
+				// test action's function path
+				assert.Equal(t, pathFunction, action.Function, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
 
-			// test action's runtime
-			assert.Equal(t, nameRuntime, action.Runtime, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
+				// test action's runtime
+				assert.Equal(t, nameRuntime, action.Runtime, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
 
-			// test action's "Main" function
-			if nameMain != "" {
-				assert.Equal(t, nameMain, action.Main, TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH)
+				// test action's "Main" function
+				if nameMain != "" {
+					assert.Equal(t, nameMain, action.Main, TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH)
+				}
+
+				return m, &pkg, err
+
+			} else {
+				t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, nameAction))
 			}
 
 		} else {
-			t.Error(fmt.Sprintf(TEST_MSG_ACTION_NAME_MISSING, nameAction))
+			assert.Fail(t, fmt.Sprintf(TEST_MSG_PACKAGE_NAME_MISSING, namePackage))
 		}
 	}
-	return m, nil
+
+	return m, nil, nil
 }
 
 func testUnmarshalTemporaryFile(data []byte, filename string) (p *YAMLParser, m *YAML, t string) {
@@ -161,7 +177,7 @@ func testUnmarshalTemporaryFile(data []byte, filename string) (p *YAMLParser, m 
 // Test 1: validate manifest_parser:Unmarshal() method with a sample manifest in NodeJS
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloNodeJS(t *testing.T) {
-	testUnmarshalManifestAndActionBasic(t,
+	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_nodejs.yaml", // Manifest path
 		"helloworld",                              // Package name
 		1,                                         // # of Actions
@@ -174,7 +190,7 @@ func TestUnmarshalForHelloNodeJS(t *testing.T) {
 // Test 2: validate manifest_parser:Unmarshal() method with a sample manifest in Java
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloJava(t *testing.T) {
-	testUnmarshalManifestAndActionBasic(t,
+	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_java_jar.yaml", // Manifest path
 		"helloworld",                                // Package name
 		1,                                           // # of Actions
@@ -187,7 +203,7 @@ func TestUnmarshalForHelloJava(t *testing.T) {
 // Test 3: validate manifest_parser:Unmarshal() method with a sample manifest in Python
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloPython(t *testing.T) {
-	testUnmarshalManifestAndActionBasic(t,
+	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_python.yaml", // Manifest path
 		"helloworld",                              // Package name
 		1,                                         // # of Actions
@@ -200,7 +216,7 @@ func TestUnmarshalForHelloPython(t *testing.T) {
 // Test 4: validate manifest_parser:Unmarshal() method with a sample manifest in Swift
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForHelloSwift(t *testing.T) {
-	testUnmarshalManifestAndActionBasic(t,
+	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_swift.yaml", // Manifest path
 		"helloworld",                             // Package name
 		1,                                        // # of Actions
@@ -221,7 +237,7 @@ func TestUnmarshalForHelloWithParams(t *testing.T) {
 	TEST_PARAM_NAME_2 := "place"
 	TEST_PARAM_VALUE_2 := "Paris"
 
-	m, err := testUnmarshalManifestAndActionBasic(t,
+	_, pkg, _ := testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_nodejs_with_params.yaml", // Manifest path
 		"helloworld",                   // Package name
 		1,                              // # of Actions
@@ -230,8 +246,8 @@ func TestUnmarshalForHelloWithParams(t *testing.T) {
 		"nodejs:6",                     // "Runtime
 		"")                             // "Main" function name
 
-	if err != nil {
-		if action, ok := m.Package.Actions[TEST_ACTION_NAME]; ok {
+	if pkg != nil {
+		if action, ok := pkg.Actions[TEST_ACTION_NAME]; ok {
 
 			// test action parameters
 			actualResult := action.Inputs[TEST_PARAM_NAME_1].Value.(string)
@@ -248,11 +264,9 @@ func TestUnmarshalForHelloWithParams(t *testing.T) {
 
 // Test 6: validate manifest_parser:Unmarshal() method for an invalid manifest
 // manifest_parser should report an error when a package section is missing
-func TestUnmarshalForMissingPackage(t *testing.T) {
-	TEST_MANIFEST := "../tests/dat/manifest_invalid_package_missing.yaml"
-
-	_, err := testReadAndUnmarshalManifest(t, TEST_MANIFEST)
-	assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED, TEST_MANIFEST))
+func TestUnmarshalForMissingPackages(t *testing.T) {
+	m, err := testReadAndUnmarshalManifest(t, "../tests/dat/manifest_invalid_packages_key_missing.yaml")
+	assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED, m.Filepath))
 }
 
 /*
@@ -261,14 +275,8 @@ func TestUnmarshalForMissingPackage(t *testing.T) {
  inputs section.
 */
 func TestParseManifestForMultiLineParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
-	// read and parse manifest.yaml file
-	m, err := NewYAMLParser().ParseManifest(manifestFile)
 
-	if err != nil {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
-	}
+	_, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_multiline_params.yaml")
 
 	// validate package name should be "validate"
 	packageName := "validate"
@@ -377,15 +385,8 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
 // Test 8: validate manifest_parser:ParseManifest() method for single line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestParseManifestForSingleLineParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
 
-	// read and parse manifest.yaml file
-	m, err := NewYAMLParser().ParseManifest(manifestFile)
-
-	if err != nil {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
-	}
+	_, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_singleline_params.yaml")
 
 	// validate package name should be "validate"
 	packageName := "validate"
@@ -490,21 +491,10 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
 // when a runtime of an action is not provided, manifest_parser determines the runtime
 // based on the file extension of an action file
 func TestComposeActionsForImplicitRuntimes(t *testing.T) {
-	data :=
-		`package:
-  name: helloworld
-  actions:
-    helloNodejs:
-      function: ../tests/src/integration/helloworld/actions/hello.js
-    helloJava:
-      function: ../tests/src/integration/helloworld/actions/hello.jar
-      main: Hello
-    helloPython:
-      function: ../tests/src/integration/helloworld/actions/hello.py
-    helloSwift:
-      function: ../tests/src/integration/helloworld/actions/hello.swift`
-	p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
-	actions, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_runtimes_implicit.yaml")
+
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
 	var expectedResult string
 	if err == nil {
 		for i := 0; i < len(actions); i++ {
@@ -527,6 +517,7 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
 // Test 10(1): validate manifest_parser.ComposeActions() method for invalid runtimes
 // when the action has a source file written in unsupported runtimes, manifest_parser should
 // report an error for that action
+// TODO() rewrite
 func TestComposeActionsForInvalidRuntime_1(t *testing.T) {
 	data := `packages:
     helloworld:
@@ -589,19 +580,11 @@ func TestComposeActionsForValidRuntime_ZipAction(t *testing.T) {
 // Test 11: validate manifest_parser.ComposeActions() method for single line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestComposeActionsForSingleLineParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_singleline_params.yaml"
 
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, err := p.ParseManifest(manifestFile)
-
-	if err != nil {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
-	}
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_singleline_params.yaml")
 
 	// Call the method we are testing
-	actions, err := p.ComposeActionsFromAllPackages(m, manifestFile, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
 
 	if err == nil {
 		// test # actions
@@ -773,19 +756,11 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
 // Test 12: validate manifest_parser.ComposeActions() method for multi line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestComposeActionsForMultiLineParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_multiline_params.yaml"
 
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, err := p.ParseManifest(manifestFile)
-
-	if err != nil {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
-	}
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_multiline_params.yaml")
 
 	// call the method we are testing
-	actions, err := p.ComposeActionsFromAllPackages(m, manifestFile, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
 
 	if err == nil {
 		// test # actions
@@ -855,212 +830,125 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
 }
 
 // Test 13: validate manifest_parser.ComposeActions() method
+// TODO() - test is NOT complete. Manifest has code that is commented out for "hello2" action
 func TestComposeActionsForFunction(t *testing.T) {
-	data :=
-		`package:
-  name: helloworld
-  actions:
-    hello1:
-      function: ../tests/src/integration/helloworld/actions/hello.js`
-	// (TODO) uncomment this after we add support for action file content from URL
-	// hello2:
-	//  function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/isrc/integration/helloworld/manifest.yaml`
-	dir, _ := os.Getwd()
-	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_locations_")
-	if err == nil {
-		defer os.Remove(tmpfile.Name()) // clean up
-		if _, err := tmpfile.Write([]byte(data)); err == nil {
-			// read and parse manifest.yaml file
-			p := NewYAMLParser()
-			m, _ := p.ParseManifest(tmpfile.Name())
-			actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
-			var expectedResult, actualResult string
-			if err == nil {
-				for i := 0; i < len(actions); i++ {
-					if actions[i].Action.Name == "hello1" {
-						expectedResult, _ = filepath.Abs("../tests/src/integration/helloworld/actions/hello.js")
-						actualResult, _ = filepath.Abs(actions[i].Filepath)
-						assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-						// (TODO) Uncomment the following condition, hello2
-						// (TODO) after issue # 311 is fixed
-						//} else if actions[i].Action.Name == "hello2" {
-						//  assert.NotNil(t, actions[i].Action.Exec.Code, "Expected source code from an action file but found it empty")
-					}
-				}
-			}
 
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_function.yaml")
+
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	var expectedResult, actualResult string
+	if err == nil {
+		for i := 0; i < len(actions); i++ {
+			if actions[i].Action.Name == "hello1" {
+				expectedResult, _ = filepath.Abs("../tests/src/integration/helloworld/actions/hello.js")
+				actualResult, _ = filepath.Abs(actions[i].Filepath)
+				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+				// TODO() Uncomment the following condition, hello2
+				// TODO() after issue # 311 is fixed
+				//} else if actions[i].Action.Name == "hello2" {
+				//  assert.NotNil(t, actions[i].Action.Exec.Code, "Expected source code from an action file but found it empty")
+			}
 		}
-		tmpfile.Close()
 	}
 
 }
 
 // Test 14: validate manifest_parser.ComposeActions() method
 func TestComposeActionsForLimits(t *testing.T) {
-	data :=
-		`package:
-  name: helloworld
-  actions:
-    hello1:
-      function: ../tests/src/integration/helloworld/actions/hello.js
-      limits:
-        timeout: 1
-    hello2:
-      function: ../tests/src/integration/helloworld/actions/hello.js
-      limits:
-        timeout: 180
-        memorySize: 128
-        logSize: 1
-        concurrentActivations: 10
-        userInvocationRate: 50
-        codeSize: 1024
-        parameterSize: 128`
-	dir, _ := os.Getwd()
-	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_limits_")
-	if err == nil {
-		defer os.Remove(tmpfile.Name()) // clean up
-		if _, err := tmpfile.Write([]byte(data)); err == nil {
-			// read and parse manifest.yaml file
-			p := NewYAMLParser()
-			m, _ := p.ParseManifest(tmpfile.Name())
-			actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
-			//var expectedResult, actualResult string
-			if err == nil {
-				for i := 0; i < len(actions); i++ {
-					if actions[i].Action.Name == "hello1" {
-						assert.Nil(t, actions[i].Action.Limits, "Expected limit section to be empty but got %s", actions[i].Action.Limits)
-					} else if actions[i].Action.Name == "hello2" {
-						assert.NotNil(t, actions[i].Action.Limits, "Expected limit section to be not empty but found it empty")
-						assert.Equal(t, 180, *actions[i].Action.Limits.Timeout, "Failed to get Timeout")
-						assert.Equal(t, 128, *actions[i].Action.Limits.Memory, "Failed to get Memory")
-						assert.Equal(t, 1, *actions[i].Action.Limits.Logsize, "Failed to get Logsize")
-					}
-				}
-			}
 
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_limits.yaml")
+
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+
+	if err == nil {
+		for i := 0; i < len(actions); i++ {
+			if actions[i].Action.Name == "hello1" {
+				assert.Nil(t, actions[i].Action.Limits, "Expected limit section to be empty but got %s", actions[i].Action.Limits)
+			} else if actions[i].Action.Name == "hello2" {
+				assert.NotNil(t, actions[i].Action.Limits, "Expected limit section to be not empty but found it empty")
+				assert.Equal(t, 180, *actions[i].Action.Limits.Timeout, "Failed to get Timeout")
+				assert.Equal(t, 128, *actions[i].Action.Limits.Memory, "Failed to get Memory")
+				assert.Equal(t, 1, *actions[i].Action.Limits.Logsize, "Failed to get Logsize")
+			}
 		}
-		tmpfile.Close()
 	}
+
 }
 
 // Test 15: validate manifest_parser.ComposeActions() method
 func TestComposeActionsForWebActions(t *testing.T) {
-	data :=
-		`package:
-  name: helloworld
-  actions:
-    hello1:
-      function: ../tests/src/integration/helloworld/actions/hello.js
-      web-export: true
-    hello2:
-      function: ../tests/src/integration/helloworld/actions/hello.js
-      web-export: yes
-    hello3:
-      function: ../tests/src/integration/helloworld/actions/hello.js
-      web-export: raw
-    hello4:
-      function: ../tests/src/integration/helloworld/actions/hello.js
-      web-export: false
-    hello5:
-      function: ../tests/src/integration/helloworld/actions/hello.js
-      web-export: no`
-	dir, _ := os.Getwd()
-	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_web_actions_")
+
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_web.yaml")
+
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
 	if err == nil {
-		defer os.Remove(tmpfile.Name()) // clean up
-		if _, err := tmpfile.Write([]byte(data)); err == nil {
-			// read and parse manifest.yaml file
-			p := NewYAMLParser()
-			m, _ := p.ParseManifest(tmpfile.Name())
-			actions, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
-			if err == nil {
-				for i := 0; i < len(actions); i++ {
-					if actions[i].Action.Name == "hello1" {
-						for _, a := range actions[i].Action.Annotations {
-							switch a.Key {
-							case "web-export":
-								assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
-							case "raw-http":
-								assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
-							case "final":
-								assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
-							}
-						}
-					} else if actions[i].Action.Name == "hello2" {
-						for _, a := range actions[i].Action.Annotations {
-							switch a.Key {
-							case "web-export":
-								assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
-							case "raw-http":
-								assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
-							case "final":
-								assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
-							}
-						}
-					} else if actions[i].Action.Name == "hello3" {
-						for _, a := range actions[i].Action.Annotations {
-							switch a.Key {
-							case "web-export":
-								assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
-							case "raw-http":
-								assert.Equal(t, true, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
-							case "final":
-								assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
-							}
-						}
-					} else if actions[i].Action.Name == "hello4" {
-						for _, a := range actions[i].Action.Annotations {
-							switch a.Key {
-							case "web-export":
-								assert.Equal(t, false, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
-							case "raw-http":
-								assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
-							case "final":
-								assert.Equal(t, false, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
-							}
-						}
-					} else if actions[i].Action.Name == "hello5" {
-						for _, a := range actions[i].Action.Annotations {
-							switch a.Key {
-							case "web-export":
-								assert.Equal(t, false, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
-							case "raw-http":
-								assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
-							case "final":
-								assert.Equal(t, false, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
-							}
-						}
+		for i := 0; i < len(actions); i++ {
+			if actions[i].Action.Name == "hello1" {
+				for _, a := range actions[i].Action.Annotations {
+					switch a.Key {
+					case "web-export":
+						assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+					case "raw-http":
+						assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+					case "final":
+						assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
+					}
+				}
+			} else if actions[i].Action.Name == "hello2" {
+				for _, a := range actions[i].Action.Annotations {
+					switch a.Key {
+					case "web-export":
+						assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+					case "raw-http":
+						assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+					case "final":
+						assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
+					}
+				}
+			} else if actions[i].Action.Name == "hello3" {
+				for _, a := range actions[i].Action.Annotations {
+					switch a.Key {
+					case "web-export":
+						assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+					case "raw-http":
+						assert.Equal(t, true, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+					case "final":
+						assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
+					}
+				}
+			} else if actions[i].Action.Name == "hello4" {
+				for _, a := range actions[i].Action.Annotations {
+					switch a.Key {
+					case "web-export":
+						assert.Equal(t, false, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+					case "raw-http":
+						assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+					case "final":
+						assert.Equal(t, false, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
+					}
+				}
+			} else if actions[i].Action.Name == "hello5" {
+				for _, a := range actions[i].Action.Annotations {
+					switch a.Key {
+					case "web-export":
+						assert.Equal(t, false, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+					case "raw-http":
+						assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+					case "final":
+						assert.Equal(t, false, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
 					}
 				}
 			}
-
 		}
-		tmpfile.Close()
 	}
 }
 
 // Test 15-1: validate manifest_parser.ComposeActions() method
 func TestComposeActionsForInvalidWebActions(t *testing.T) {
-	data :=
-		`package:
-  name: helloworld
-  actions:
-    hello:
-      function: ../tests/src/integration/helloworld/actions/hello.js
-      web-export: raw123`
-	dir, _ := os.Getwd()
-	tmpfile, err := ioutil.TempFile(dir, "manifest_parser_validate_invalid_web_actions_")
-	if err == nil {
-		defer os.Remove(tmpfile.Name()) // clean up
-		if _, err := tmpfile.Write([]byte(data)); err == nil {
-			// read and parse manifest.yaml file
-			p := NewYAMLParser()
-			m, _ := p.ParseManifest(tmpfile.Name())
-			_, err := p.ComposeActionsFromAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
-			assert.NotNil(t, err, "Expected error for invalid web-export.")
-		}
-		tmpfile.Close()
-	}
+
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_invalid_web.yaml")
+	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.NotNil(t, err, "Expected error for invalid web-export.")
 }
 
 // Test 16: validate manifest_parser.ResolveParameter() method
@@ -1121,14 +1009,8 @@ func TestResolveParameterForMultiLineParams(t *testing.T) {
 
 // Test 17: validate JSON parameters
 func TestParseManifestForJSONParams(t *testing.T) {
-	// manifest file is located under ../tests folder
-	manifestFile := "../tests/dat/manifest_validate_json_params.yaml"
-	// read and parse manifest.yaml file
-	m, err := NewYAMLParser().ParseManifest(manifestFile)
 
-	if err != nil {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
-	}
+	_, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_json_params.yaml")
 
 	// validate package name should be "validate"
 	packageName := "validate_json"
@@ -1198,35 +1080,11 @@ func TestParseManifestForJSONParams(t *testing.T) {
 	}
 }
 
-func _createTmpfile(data string, filename string) (f *os.File, err error) {
-	dir, _ := os.Getwd()
-	tmpfile, err := ioutil.TempFile(dir, filename)
-	if err != nil {
-		return nil, err
-	}
-	_, err = tmpfile.Write([]byte(data))
-	if err != nil {
-		return tmpfile, err
-	}
-	return tmpfile, nil
-}
-
 func TestComposePackage(t *testing.T) {
-	data := `package:
-  name: helloworld
-  namespace: default`
-	tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
-	if err != nil {
-		assert.Fail(t, "Failed to create temp file")
-	}
-	defer func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}()
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, _ := p.ParseManifest(tmpfile.Name())
-	pkg, err := p.ComposeAllPackages(m, tmpfile.Name(), whisk.KeyValue{})
+
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_packages.yaml")
+
+	pkg, err := p.ComposeAllPackages(m, m.Filepath, whisk.KeyValue{})
 	if err == nil {
 		n := "helloworld"
 		assert.NotNil(t, pkg[n], "Failed to get the whole package")
@@ -1238,24 +1096,10 @@ func TestComposePackage(t *testing.T) {
 }
 
 func TestComposeSequences(t *testing.T) {
-	data := `package:
-  name: helloworld
-  sequences:
-    sequence1:
-      actions: action1, action2
-    sequence2:
-      actions: action3, action4, action5`
-	tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
-	if err != nil {
-		assert.Fail(t, "Failed to create temp file")
-	}
-	defer func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}()
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, _ := p.ParseManifest(tmpfile.Name())
+
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_sequences.yaml")
+
+	// Note: set first param (namespace) to empty string
 	seqList, err := p.ComposeSequencesFromAllPackages("", m, whisk.KeyValue{})
 	if err != nil {
 		assert.Fail(t, "Failed to compose sequences")
@@ -1280,20 +1124,19 @@ func TestComposeSequences(t *testing.T) {
 }
 
 func TestComposeTriggers(t *testing.T) {
-	// read and parse manifest.yaml file located under ../tests folder
-	manifestFile := "../tests/dat/manifest_data_compose_triggers.yaml"
-	p := NewYAMLParser()
-	m, err := p.ParseManifest(manifestFile)
-	if err != nil {
-		assert.Fail(t, "Failed to parse manifest: "+manifestFile)
-	}
+	// set env variables needed for the trigger feed
+	os.Setenv("KAFKA_INSTANCE", "kafka-broker")
+	os.Setenv("SRC_TOPIC", "topic")
 
-	triggerList, err := p.ComposeTriggersFromAllPackages(m, manifestFile, whisk.KeyValue{})
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_triggers.yaml")
+
+	triggerList, err := p.ComposeTriggersFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+
 	if err != nil {
 		assert.Fail(t, "Failed to compose trigger")
 	}
 
-	assert.Equal(t, 2, len(triggerList), "Failed to get trigger list")
+	assert.Equal(t, 3, len(triggerList), "Failed to get trigger list")
 	for _, trigger := range triggerList {
 		switch trigger.Name {
 		case "trigger1":
@@ -1302,31 +1145,18 @@ func TestComposeTriggers(t *testing.T) {
 			assert.Equal(t, "feed", trigger.Annotations[0].Key, "Failed to set trigger annotation")
 			assert.Equal(t, "myfeed", trigger.Annotations[0].Value, "Failed to set trigger annotation")
 			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
+		case "message-trigger":
+			assert.Equal(t, 2, len(trigger.Parameters), "Failed to set trigger parameters")
+			assert.Equal(t, "feed", trigger.Annotations[0].Key, "Failed to set trigger annotation")
+			assert.Equal(t, "Bluemix_kafka-broker_Credentials-1/messageHubFeed", trigger.Annotations[0].Value, "Failed to set trigger annotation")
 		}
 	}
 }
 
 func TestComposeRules(t *testing.T) {
-	data := `package:
-  name: helloworld
-  rules:
-    rule1:
-      trigger: locationUpdate
-      action: greeting
-    rule2:
-      trigger: trigger1
-      action: action1`
-	tmpfile, err := _createTmpfile(data, "manifest_parser_test_compose_package_")
-	if err != nil {
-		assert.Fail(t, "Failed to create temp file")
-	}
-	defer func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}()
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, _ := p.ParseManifest(tmpfile.Name())
+
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_rules.yaml")
+
 	ruleList, err := p.ComposeRulesFromAllPackages(m, whisk.KeyValue{})
 	if err != nil {
 		assert.Fail(t, "Failed to compose rules")
@@ -1344,56 +1174,13 @@ func TestComposeRules(t *testing.T) {
 	}
 }
 
+// TODO(752) We SHOULD automatically add "web-export" to each Action referenced in the "apis" section
+// as this is implied.  The user should not have to do this manually
 func TestComposeApiRecords(t *testing.T) {
-	data := `
-packages:
-  apiTest:
-    actions:
-      putBooks:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
-      deleteBooks:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
-      listMembers:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
-      getBooks2:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
-      postBooks2:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
-      listMembers2:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
-    apis:
-      book-club:
-        club:
-          books:
-            putBooks: put
-            deleteBooks: delete
-          members:
-            listMembers: get
-      book-club2:
-        club2:
-          books2:
-            getBooks2: get
-            postBooks2: post
-          members2:
-            listMembers2: get`
-	tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-	if err != nil {
-		assert.Fail(t, "Failed to create temp file")
-	}
-	defer func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}()
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, _ := p.ParseManifest(tmpfile.Name())
 
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_api_records.yaml")
+
+	// create a fake configuration
 	config := whisk.Config{
 		Namespace:        "test",
 		AuthToken:        "user:pass",
@@ -1447,29 +1234,11 @@ packages:
 }
 
 func TestComposeDependencies(t *testing.T) {
-	data := `package:
-  name: helloworld
-  dependencies:
-    myhelloworld:
-      location: github.com/user/repo/folder
-    myCloudant:
-      location: /whisk.system/cloudant
-      inputs:
-        dbname: myGreatDB
-      annotations:
-        myAnnotation: Here it is`
-	tmpfile, err := _createTmpfile(data, "manifest_parser_test_")
-	if err != nil {
-		assert.Fail(t, "Failed to create temp file")
-	}
-	defer func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}()
-	// read and parse manifest.yaml file
-	p := NewYAMLParser()
-	m, _ := p.ParseManifest(tmpfile.Name())
-	depdList, err := p.ComposeDependenciesFromAllPackages(m, "/project_folder", tmpfile.Name())
+
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_dependencies.yaml")
+
+	depdList, err := p.ComposeDependenciesFromAllPackages(m, "/project_folder", m.Filepath)
+
 	if err != nil {
 		assert.Fail(t, "Failed to compose rules")
 	}
@@ -1541,23 +1310,12 @@ func TestBadYAMLInvalidCommentInManifest(t *testing.T) {
 // validate manifest_parser:Unmarshal() method for package in manifest YAML
 // validate that manifest_parser is able to read and parse the manifest data
 func TestUnmarshalForPackages(t *testing.T) {
-	data := `
-packages:
-  package1:
-    actions:
-      helloNodejs:
-        function: actions/hello.js
-        runtime: nodejs:6
-  package2:
-    actions:
-      helloPython:
-        function: actions/hello.py
-        runtime: python`
-	// set the zero value of struct YAML
-	m := YAML{}
+
+	//manifestFile := "../tests/dat/manifest_data_unmarshal_packages.yaml"
+	m, err := testReadAndUnmarshalManifest(t, "../tests/dat/manifest_data_unmarshal_packages.yaml")
+
 	// Unmarshal reads/parses manifest data and sets the values of YAML
 	// And returns an error if parsing a manifest data fails
-	err := NewYAMLParser().Unmarshal([]byte(data), &m)
 	if err == nil {
 		expectedResult := string(2)
 		actualResult := string(len(m.Packages))
@@ -1808,14 +1566,12 @@ func TestRuleName_Env_Var(t *testing.T) {
 
 	assert.Equal(t, 1, len(manifest.Packages[packageName].Rules), "Get rule list failed.")
 	for _, rule := range rules {
-		fmt.Print("ruleName:  ")
-		fmt.Print(rule)
-		//var rule = manifest.Packages[packageName].Rules[rule_name]
+		wskprint.PrintlnOpenWhiskVerbose(false, fmt.Sprintf("ruleName: %v", rule))
 		switch rule.Name {
 		case testRule:
 			assert.Equal(t, "test_trigger", rule.Trigger, "Get trigger name failed.")
 			assert.Equal(t, packageName+"/"+testAction, rule.Action, "Get action name failed.")
-			//assert.Equal(t, "true", rule.Rule, "Get rule expression failed.")
+		//assert.Equal(t, "true", rule.Rule, "Get rule expression failed.")
 		default:
 			t.Error("Get rule name failed")
 		}

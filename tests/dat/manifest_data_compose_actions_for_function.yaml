@@ -15,13 +15,11 @@
 #
 
 packages:
-  TestPackageInDeploymentFile:
-      actions:
-        helloworld:
-          function: actions/helloworld.js
-          runtime: nodejs:6
-          inputs:
-            name: string
-            place: string
-          outputs:
-            payload: string
+  helloworld:
+    actions:
+      hello1:
+        function: ../tests/src/integration/helloworld/actions/hello.js
+
+# TODO() uncomment this after we add support for action file content from URL
+#     hello2:
+#	    function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/isrc/integration/helloworld/manifest.yaml

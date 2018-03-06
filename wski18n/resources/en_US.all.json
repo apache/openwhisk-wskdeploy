@@ -144,12 +144,12 @@
     "translation": "The apigw access token is set, from {{.source}}.\n"
   },
   {
-    "id": "msg_unmarshall_local",
-    "translation": "Unmarshal OpenWhisk info from local values.\n"
+    "id": "msg_unmarshal_local",
+    "translation": "Unmarshal OpenWhisk runtimes from local values.\n"
   },
   {
-    "id": "msg_unmarshall_network",
-    "translation": "Unmarshal OpenWhisk info from internet.\n"
+    "id": "msg_unmarshal_network",
+    "translation": "Unmarshal OpenWhisk runtimes from internet at {{.url}}.\n"
   },
   {
     "id": "msg_deployment_cancelled",
@@ -254,6 +254,10 @@
   {
     "id": "msg_prompt_undeploy",
     "translation": "Do you really want to undeploy this? (y/N): "
+  },
+  {
+    "id": "msg_default_package",
+    "translation": "Package name default is reserved, all OpenWhisk entities under default package are deployed/undeployed directly under your namespace."
   },
   {
     "id": "ERRORS",
@@ -386,6 +390,10 @@
   {
     "id": "msg_warn_entity_name_exists",
     "translation": "The {{.key}} name [{{.name}}] already exists. Please select another name.\n"
+  },
+  {
+    "id": "msg_warn_packages_not_found",
+    "translation": "The manifest file [{{.path}}] contained no packages.\n"
   },
   {
     "id": "DEBUG",

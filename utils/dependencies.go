@@ -72,10 +72,14 @@ func LocationIsBinding(location string) bool {
 	return false
 }
 
-func LocationIsGithub(location string) bool {
-	if strings.HasPrefix(location, "github.com") || strings.HasPrefix(location, "https://github.com") || strings.HasPrefix(location, "http://github.com") {
-		return true
+func removeProtocol(location string) string {
+	if paths := strings.SplitAfterN(location, "://", 2); len(paths) == 2 {
+		return paths[1]
 	}
+	return location
+}
 
-	return false
+func LocationIsGithub(location string) bool {
+	paths := strings.SplitN(removeProtocol(location), "/", 2)
+	return strings.Contains(paths[0], "github")
 }

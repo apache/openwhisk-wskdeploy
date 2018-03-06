@@ -46,16 +46,7 @@ func TestManifestReader_ParseManifest(t *testing.T) {
 }
 
 // Test could Init root package successfully.
-func TestManifestReader_InitRootPackage(t *testing.T) {
-	err := mr.InitRootPackage(ps, ms, whisk.KeyValue{})
+func TestManifestReader_InitPackages(t *testing.T) {
+	err := mr.InitPackages(ps, ms, whisk.KeyValue{})
 	assert.Equal(t, err, nil, "Init Root Package failed")
-}
-
-// Test Parameters
-func TestManifestReader_param(t *testing.T) {
-	ms, _ := ps.ParseManifest("../tests/dat/manifest6.yaml")
-	err := mr.InitRootPackage(ps, ms, whisk.KeyValue{})
-	assert.Equal(t, err, nil, "Init Root Package failed")
-
-	// TODO(#695) Is there more to do here?  Original author left a TODO here in comments
 }

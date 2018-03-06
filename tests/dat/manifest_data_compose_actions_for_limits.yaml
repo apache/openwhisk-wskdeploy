@@ -14,12 +14,20 @@
 # specific language governing permissions and limitations under the License.
 #
 
-project:
-  name: IntegrationTestPackageInDeployment
-  package:
-    name: TestPackageInDeploymentFile
+packages:
+  helloworld:
     actions:
-      helloworld:
-        inputs:
-          name: Amy Validating Package
-          place: California
+      hello1:
+        function: ../tests/src/integration/helloworld/actions/hello.js
+        limits:
+          timeout: 1
+      hello2:
+        function: ../tests/src/integration/helloworld/actions/hello.js
+        limits:
+          timeout: 180
+          memorySize: 128
+          logSize: 1
+          concurrentActivations: 10
+          userInvocationRate: 50
+          codeSize: 1024
+          parameterSize: 128

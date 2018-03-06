@@ -52,12 +52,12 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 	return manifest, manifestParser, nil
 }
 
-func (reader *ManifestReader) InitRootPackage(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, ma whisk.KeyValue) error {
+func (reader *ManifestReader) InitPackages(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, ma whisk.KeyValue) error {
 	packages, err := manifestParser.ComposeAllPackages(manifest, reader.serviceDeployer.ManifestPath, ma)
 	if err != nil {
 		return err
 	}
-	reader.SetPackage(packages)
+	reader.SetPackages(packages)
 
 	return nil
 }
@@ -161,7 +161,7 @@ func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRe
 	return nil
 }
 
-func (reader *ManifestReader) SetPackage(packages map[string]*whisk.Package) error {
+func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package) error {
 
 	dep := reader.serviceDeployer
 
@@ -169,24 +169,12 @@ func (reader *ManifestReader) SetPackage(packages map[string]*whisk.Package) err
 	defer dep.mt.Unlock()
 
 	for _, pkg := range packages {
-		depPkg, exist := dep.Deployment.Packages[pkg.Name]
+		_, exist := dep.Deployment.Packages[pkg.Name]
 		if exist {
-			if dep.IsDefault == true {
-				existPkg := depPkg.Package
-				existPkg.Annotations = pkg.Annotations
-				existPkg.Namespace = pkg.Namespace
-				existPkg.Parameters = pkg.Parameters
-				existPkg.Publish = pkg.Publish
-				existPkg.Version = pkg.Version
-
-				dep.Deployment.Packages[pkg.Name].Package = existPkg
-				return nil
-			} else {
-				// TODO(): i18n of error message (or create a new named error)
-				// TODO(): Is there a better way to handle an existing dependency of same name?
-				err := errors.New("Package [" + pkg.Name + "] exists already.")
-				return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
-			}
+			// TODO(): i18n of error message (or create a new named error)
+			// TODO(): Is there a better way to handle an existing dependency of same name?
+			err := errors.New("Package [" + pkg.Name + "] exists already.")
+			return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
 		}
 		newPack := NewDeploymentPackage()
 		newPack.Package = pkg

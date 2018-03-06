@@ -31,7 +31,9 @@ install:
 - go get -u github.com/tools/godep
 before_script:
 - GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/)
-- test -z "$(gofmt -s -l $(echo $GO_FILES))"
+- export BAD_GO=$(gofmt -s -l $(echo $GO_FILES))
+- echo $BAD_GO
+- test -z "$BAD_GO"
 script:
 - echo $TRAVIS
 - echo $TRAVIS_PULL_REQUEST

@@ -24,17 +24,24 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+	"time"
 )
 
-func TestPackageInManifest(t *testing.T) {
+func TestDefaultPackage(t *testing.T) {
+	path := "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/defaultpackage/"
+	manifestPath := os.Getenv("GOPATH") + path + "manifest.yaml"
 	wskdeploy := common.NewWskdeploy()
-	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
-	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
-	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest and deployment files.")
-}
+	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
+	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest file.")
 
-var (
-	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-package-in-manifest/manifest.yaml"
-	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-package-in-manifest/deployment.yaml"
-)
+	time.Sleep(10 * time.Second)
+
+	manifestPath = os.Getenv("GOPATH") + path + "manifest-with-project.yaml"
+	_, err = wskdeploy.DeployManifestPathOnly(manifestPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
+	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest file.")
+
+}

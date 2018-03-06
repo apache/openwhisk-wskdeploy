@@ -14,12 +14,15 @@
 # specific language governing permissions and limitations under the License.
 #
 
-application:
-  name: IntegrationTest
-  packages:
-    packageValidatingApplication:
-      actions:
-        hello:
-          inputs:
-            name: Amy
-            place: Paris
+packages:
+  helloworld:
+    actions:
+      helloPython:
+        function: ../tests/src/integration/helloworld/actions/hello.py
+      helloJava:
+        function: ../tests/src/integration/helloworld/actions/hello.jar
+        main: Hello
+      helloSwift:
+        function: ../tests/src/integration/helloworld/actions/hello.swift
+      helloNodejs:
+        function: ../tests/src/integration/helloworld/actions/hello.js

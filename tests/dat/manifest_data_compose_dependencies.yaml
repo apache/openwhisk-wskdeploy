@@ -14,16 +14,14 @@
 # specific language governing permissions and limitations under the License.
 #
 
-project:
-  name: IntegrationTest
-  packages:
-    usingPackageInManifest:
-      actions:
-        helloNodejs-1:
-          inputs:
-            name: Amy
-            place: Paris
-        helloNodejs-3:
-          inputs:
-            name: Arthur
-            place: Hawaii
+packages:
+  helloworld:
+    dependencies:
+      myhelloworld:
+        location: github.com/user/repo/folder
+      myCloudant:
+        location: /whisk.system/cloudant
+        inputs:
+          dbname: myGreatDB
+        annotations:
+          myAnnotation: Here it is

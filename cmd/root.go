@@ -39,16 +39,15 @@ import (
 var stderr = ""
 var stdout = ""
 
-// TODO(#683) short and long desc. should be translated for i18n
+// Whisk Deploy has root command: wskdeploy
+// wskdeploy is being created using Cobra Library
 var RootCmd = &cobra.Command{
 	Use:           "wskdeploy",
 	SilenceErrors: true,
 	SilenceUsage:  true,
 	Short:         wski18n.T(wski18n.ID_CMD_DESC_SHORT_ROOT),
 	Long:          wski18n.T(wski18n.ID_CMD_DESC_LONG_ROOT),
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	RunE: RootCmdImp,
+	RunE:          RootCmdImp,
 }
 
 func RootCmdImp(cmd *cobra.Command, args []string) error {
@@ -107,24 +106,17 @@ func init() {
 
 	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports Persistent Flags, which, if defined here,
-	// will be global for your application.
-
-	// TODO(#682) add in-line descriptions to i18n resource file
-	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", wski18n.T(wski18n.ID_CMD_FLAG_CONFIG))
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
+	// Defining Persistent Flags of Whisk Deploy Root command (wskdeploy)
+	// Persistent flags are global in terms of its availability and acceptable
+	// with any other Whisk Deploy command e.g. undeploy, export, etc.
 	// TODO() Publish command, not completed
 	// TODO() Report command, not completed
-	// TODO() What does toggle do? adding this flag seems to produce an error
-	RootCmd.Flags().BoolP("toggle", "t", false, wski18n.T(wski18n.ID_CMD_FLAG_TOGGLE_HELP))
-	RootCmd.Flags().StringVarP(&utils.Flags.ProjectPath, "project", "p", ".", wski18n.T(wski18n.ID_CMD_FLAG_PROJECT))
-	RootCmd.Flags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", wski18n.T(wski18n.ID_CMD_FLAG_MANIFEST))
-	RootCmd.Flags().StringVarP(&utils.Flags.DeploymentPath, "deployment", "d", "", wski18n.T(wski18n.ID_CMD_FLAG_DEPLOYMENT))
+	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", wski18n.T(wski18n.ID_CMD_FLAG_CONFIG))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ProjectPath, "project", "p", ".", wski18n.T(wski18n.ID_CMD_FLAG_PROJECT))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", wski18n.T(wski18n.ID_CMD_FLAG_MANIFEST))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.DeploymentPath, "deployment", "d", "", wski18n.T(wski18n.ID_CMD_FLAG_DEPLOYMENT))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Strict, "strict", "s", false, wski18n.T(wski18n.ID_CMD_FLAG_STRICT))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseInteractive, "allow-interactive", "i", false, wski18n.T(wski18n.ID_CMD_FLAG_INTERACTIVE))
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseDefaults, "allow-defaults", "a", false, wski18n.T(wski18n.ID_CMD_FLAG_DEFAULTS))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Verbose, "verbose", "v", false, wski18n.T(wski18n.ID_CMD_FLAG_VERBOSE))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ApiHost, "apihost", "", "", wski18n.T(wski18n.ID_CMD_FLAG_API_HOST))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Namespace, "namespace", "n", "", wski18n.T(wski18n.ID_CMD_FLAG_NAMESPACE))
@@ -212,8 +204,6 @@ func Deploy() error {
 		deployer.ProjectPath = projectPath
 		deployer.ManifestPath = utils.Flags.ManifestPath
 		deployer.DeploymentPath = utils.Flags.DeploymentPath
-		deployer.IsDefault = utils.Flags.UseDefaults
-
 		deployer.IsInteractive = utils.Flags.UseInteractive
 
 		// master record of any dependency that has been downloaded
@@ -315,9 +305,7 @@ func Undeploy() error {
 		deployer.ProjectPath = utils.Flags.ProjectPath
 		deployer.ManifestPath = utils.Flags.ManifestPath
 		deployer.DeploymentPath = utils.Flags.DeploymentPath
-
 		deployer.IsInteractive = utils.Flags.UseInteractive
-		deployer.IsDefault = utils.Flags.UseDefaults
 
 		clientConfig, error := deployers.NewWhiskConfig(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
 		if error != nil {

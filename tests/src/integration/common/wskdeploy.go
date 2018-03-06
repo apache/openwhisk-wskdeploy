@@ -170,6 +170,10 @@ func (Wskdeploy *Wskdeploy) ManagedDeployment(manifestPath string, deploymentPat
 	return Wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath, "--managed")
 }
 
+func (Wskdeploy *Wskdeploy) ManagedUndeployment(manifestPath string, deploymentPath string) (string, error) {
+	return Wskdeploy.RunCommand("undeploy", "-m", manifestPath, "-d", deploymentPath, "--managed")
+}
+
 // This method is only for testing
 // This method will mock a construction of deployment plan, creating all the memory objects
 // This method CANNOT be used for real deployment!
@@ -180,7 +184,6 @@ func (wskdeploy *Wskdeploy) GetDeploymentObjects(manifestPath string, deployment
 	deployer.ProjectPath = filepath.Dir(manifestPath)
 	deployer.ManifestPath = manifestPath
 	deployer.DeploymentPath = deploymentPath
-	deployer.IsDefault = false
 	deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
 
 	//create client config with namespace, apihost, authkey and etc.

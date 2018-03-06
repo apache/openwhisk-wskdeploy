@@ -20,11 +20,12 @@ package parsers
 import (
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
 	"strings"
+
+	"gopkg.in/yaml.v2"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
@@ -32,16 +33,16 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"gopkg.in/yaml.v2"
 )
 
 const (
-	PATH_SEPERATOR = "/"
-	API            = "API"
-	HTTPS          = "https"
-	HTTP           = "http"
-	API_VERSION    = "v1"
-	WEB            = "web"
+	PATH_SEPERATOR  = "/"
+	API             = "API"
+	HTTPS           = "https"
+	HTTP            = "http"
+	API_VERSION     = "v1"
+	WEB             = "web"
+	DEFAULT_PACKAGE = "default"
 )
 
 // Read existing manifest file or create new if none exists
@@ -113,14 +114,11 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
 func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {
 	dependencies := make(map[string]utils.DependencyRecord)
 	packages := make(map[string]Package)
-	if manifest.Package.Packagename != "" {
-		return dm.ComposeDependencies(manifest.Package, projectPath, filePath, manifest.Package.Packagename)
+
+	if len(manifest.Packages) != 0 {
+		packages = manifest.Packages
 	} else {
-		if len(manifest.Packages) != 0 {
-			packages = manifest.Packages
-		} else {
-			packages = manifest.GetProject().Packages
-		}
+		packages = manifest.GetProject().Packages
 	}
 
 	for n, p := range packages {
@@ -162,6 +160,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 			// TODO() define const for the protocol prefix, etc.
 			if !strings.HasPrefix(location, "https://") && !strings.HasPrefix(location, "http://") {
 				location = "https://" + dependency.Location
+				location = wskenv.InterpolateStringWithEnvVar(location).(string)
 			}
 
 			isBinding = false
@@ -190,7 +189,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 		for name, value := range dependency.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = wskenv.GetEnvVar(value)
+			keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
 
 			keyValArrAnot = append(keyValArrAnot, keyVal)
 		}
@@ -207,23 +206,21 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, ma whi
 	packages := map[string]*whisk.Package{}
 	manifestPackages := make(map[string]Package)
 
-	if manifest.Package.Packagename != "" {
-		// TODO() i18n
-		fmt.Println("WARNING: using package inside of manifest file will soon be deprecated, please use packages instead.")
-		s, err := dm.ComposePackage(manifest.Package, manifest.Package.Packagename, filePath, ma)
-		if err == nil {
-			packages[manifest.Package.Packagename] = s
-		} else {
-			return nil, err
-		}
+	if len(manifest.Packages) != 0 {
+		manifestPackages = manifest.Packages
 	} else {
-		if len(manifest.Packages) != 0 {
-			manifestPackages = manifest.Packages
-		} else {
-			manifestPackages = manifest.GetProject().Packages
-		}
+		manifestPackages = manifest.GetProject().Packages
 	}
 
+	if len(manifestPackages) == 0 {
+		warningString := wski18n.T(
+			wski18n.ID_WARN_PACKAGES_NOT_FOUND_X_path_X,
+			map[string]interface{}{
+				wski18n.KEY_PATH: manifest.Filepath})
+		wskprint.PrintOpenWhiskWarning(warningString)
+	}
+
+	// Compose each package found in manifest
 	for n, p := range manifestPackages {
 		s, err := dm.ComposePackage(p, n, filePath, ma)
 
@@ -315,7 +312,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	for name, value := range pkg.Annotations {
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
-		keyVal.Value = wskenv.GetEnvVar(value)
+		keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
 		listOfAnnotations = append(listOfAnnotations, keyVal)
 	}
 	if len(listOfAnnotations) > 0 {
@@ -327,6 +324,13 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		pag.Annotations = append(pag.Annotations, ma)
 	}
 
+	// "default" package is a reserved package name
+	// and in this case wskdeploy deploys openwhisk entities under
+	// /namespace instead of /namespace/package
+	if strings.ToLower(pag.Name) == DEFAULT_PACKAGE {
+		wskprint.PrintlnOpenWhiskInfo(wski18n.T(wski18n.ID_MSG_DEFAULT_PACKAGE))
+	}
+
 	return pag, nil
 }
 
@@ -335,14 +339,10 @@ func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YA
 
 	manifestPackages := make(map[string]Package)
 
-	if mani.Package.Packagename != "" {
-		return dm.ComposeSequences(namespace, mani.Package.Sequences, mani.Package.Packagename, ma)
+	if len(mani.Packages) != 0 {
+		manifestPackages = mani.Packages
 	} else {
-		if len(mani.Packages) != 0 {
-			manifestPackages = mani.Packages
-		} else {
-			manifestPackages = mani.GetProject().Packages
-		}
+		manifestPackages = mani.GetProject().Packages
 	}
 
 	for n, p := range manifestPackages {
@@ -368,7 +368,8 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		var components []string
 		for _, a := range actionList {
 			act := strings.TrimSpace(a)
-			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") {
+			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") &&
+				strings.ToLower(packageName) != DEFAULT_PACKAGE {
 				act = path.Join(packageName, act)
 			}
 			components = append(components, path.Join("/"+namespace, act))
@@ -384,7 +385,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		for name, value := range sequence.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = wskenv.GetEnvVar(value)
+			keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
 
 			keyValArr = append(keyValArr, keyVal)
 		}
@@ -408,15 +409,12 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 	var s1 []utils.ActionRecord = make([]utils.ActionRecord, 0)
 	manifestPackages := make(map[string]Package)
 
-	if manifest.Package.Packagename != "" {
-		return dm.ComposeActions(filePath, manifest.Package.Actions, manifest.Package.Packagename, ma)
+	if len(manifest.Packages) != 0 {
+		manifestPackages = manifest.Packages
 	} else {
-		if len(manifest.Packages) != 0 {
-			manifestPackages = manifest.Packages
-		} else {
-			manifestPackages = manifest.GetProject().Packages
-		}
+		manifestPackages = manifest.GetProject().Packages
 	}
+
 	for n, p := range manifestPackages {
 		a, err := dm.ComposeActions(filePath, p.Actions, n, ma)
 		if err == nil {
@@ -647,7 +645,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		for name, value := range action.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = wskenv.GetEnvVar(value)
+			keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
 			listOfAnnotations = append(listOfAnnotations, keyVal)
 		}
 		if len(listOfAnnotations) > 0 {
@@ -729,15 +727,12 @@ func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath st
 	var triggers []*whisk.Trigger = make([]*whisk.Trigger, 0)
 	manifestPackages := make(map[string]Package)
 
-	if manifest.Package.Packagename != "" {
-		return dm.ComposeTriggers(filePath, manifest.Package, ma)
+	if len(manifest.Packages) != 0 {
+		manifestPackages = manifest.Packages
 	} else {
-		if len(manifest.Packages) != 0 {
-			manifestPackages = manifest.Packages
-		} else {
-			manifestPackages = manifest.GetProject().Packages
-		}
+		manifestPackages = manifest.GetProject().Packages
 	}
+
 	for _, p := range manifestPackages {
 		t, err := dm.ComposeTriggers(filePath, p, ma)
 		if err == nil {
@@ -773,6 +768,10 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 		if trigger.Feed == "" {
 			trigger.Feed = trigger.Source
 		}
+
+		// replacing env. variables here in the trigger feed name
+		// to support trigger feed with $READ_FROM_ENV_TRIGGER_FEED
+		trigger.Feed = wskenv.InterpolateStringWithEnvVar(trigger.Feed).(string)
 
 		keyValArr := make(whisk.KeyValueArr, 0)
 		if trigger.Feed != "" {
@@ -810,7 +809,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 		for name, value := range trigger.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = wskenv.GetEnvVar(value)
+			keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
 			listOfAnnotations = append(listOfAnnotations, keyVal)
 		}
 		if len(listOfAnnotations) > 0 {
@@ -831,14 +830,10 @@ func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML, ma whisk.KeyVa
 	var rules []*whisk.Rule = make([]*whisk.Rule, 0)
 	manifestPackages := make(map[string]Package)
 
-	if manifest.Package.Packagename != "" {
-		return dm.ComposeRules(manifest.Package, manifest.Package.Packagename, ma)
+	if len(manifest.Packages) != 0 {
+		manifestPackages = manifest.Packages
 	} else {
-		if len(manifest.Packages) != 0 {
-			manifestPackages = manifest.Packages
-		} else {
-			manifestPackages = manifest.GetProject().Packages
-		}
+		manifestPackages = manifest.GetProject().Packages
 	}
 
 	for n, p := range manifestPackages {
@@ -864,7 +859,8 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.Key
 		wskrule.Trigger = wskenv.ConvertSingleName(rule.Trigger)
 		wskrule.Action = wskenv.ConvertSingleName(rule.Action)
 		act := strings.TrimSpace(wskrule.Action.(string))
-		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") {
+		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+"/") &&
+			strings.ToLower(packageName) != DEFAULT_PACKAGE {
 			act = path.Join(packageName, act)
 		}
 		wskrule.Action = act
@@ -872,7 +868,7 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.Key
 		for name, value := range rule.Annotations {
 			var keyVal whisk.KeyValue
 			keyVal.Key = name
-			keyVal.Value = wskenv.GetEnvVar(value)
+			keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
 			listOfAnnotations = append(listOfAnnotations, keyVal)
 		}
 		if len(listOfAnnotations) > 0 {
@@ -893,15 +889,15 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, man
 	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 	manifestPackages := make(map[string]Package)
 
-	if manifest.Package.Packagename != "" {
-		return dm.ComposeApiRecords(client, manifest.Package.Packagename, manifest.Package, manifest.Filepath)
+	//if manifest.Package.Packagename != "" {
+	//	return dm.ComposeApiRecords(client, manifest.Package.Packagename, manifest.Package, manifest.Filepath)
+	//} else {
+	if len(manifest.Packages) != 0 {
+		manifestPackages = manifest.Packages
 	} else {
-		if len(manifest.Packages) != 0 {
-			manifestPackages = manifest.Packages
-		} else {
-			manifestPackages = manifest.GetProject().Packages
-		}
+		manifestPackages = manifest.GetProject().Packages
 	}
+	//}
 
 	for packageName, p := range manifestPackages {
 		r, err := dm.ComposeApiRecords(client, packageName, p, manifest.Filepath)
@@ -996,10 +992,14 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							request.ApiDoc.Id = strings.Join([]string{API, request.ApiDoc.Namespace, request.ApiDoc.GatewayRelPath}, ":")
 							// set action of an API Doc
 							request.ApiDoc.Action = new(whisk.ApiAction)
-							request.ApiDoc.Action.Name = packageName + PATH_SEPERATOR + actionName
-							request.ApiDoc.Action.Namespace = client.Namespace
+							if packageName == DEFAULT_PACKAGE {
+								request.ApiDoc.Action.Name = actionName
+							} else {
+								request.ApiDoc.Action.Name = packageName + PATH_SEPERATOR + actionName
+							}
 							url := []string{HTTPS + ":" + PATH_SEPERATOR, client.Host, strings.ToLower(API),
 								API_VERSION, WEB, client.Namespace, packageName, actionName + "." + HTTP}
+							request.ApiDoc.Action.Namespace = client.Namespace
 							request.ApiDoc.Action.BackendUrl = strings.Join(url, PATH_SEPERATOR)
 							request.ApiDoc.Action.BackendMethod = gatewayMethod
 							request.ApiDoc.Action.Auth = client.AuthToken

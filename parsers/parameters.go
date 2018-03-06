@@ -318,7 +318,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	// Make sure the parameter's value is a valid, non-empty string
 	if param.Value != nil && param.Type == "string" {
 		// perform $ notation replacement on string if any exist
-		value = wskenv.GetEnvVar(param.Value)
+		value = wskenv.InterpolateStringWithEnvVar(param.Value)
 	}
 
 	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON

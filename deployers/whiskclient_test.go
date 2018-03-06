@@ -116,17 +116,17 @@ func TestNewWhiskConfigDeploymentFile(t *testing.T) {
 	assert.True(t, config.Insecure, "Config should set insecure to true")
 }
 
-func TestNewWhiskConfigManifestFile(t *testing.T) {
-	propPath := ""
-	manifestPath := "../tests/dat/manifest_validate_credentials.yaml"
-	deploymentPath := ""
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
-	assert.Nil(t, err, "Failed to read credentials from manifest file")
-	assert.Equal(t, MANIFEST_HOST, config.Host, "Failed to get host name from manifest file")
-	assert.Equal(t, MANIFEST_AUTH, config.AuthToken, "Failed to get auth token from manifest file")
-	assert.Equal(t, MANIFEST_NAMESPACE, config.Namespace, "Failed to get namespace from manifest file")
-	assert.True(t, config.Insecure, "Config should set insecure to true")
-}
+//func TestNewWhiskConfigManifestFile(t *testing.T) {
+//	propPath := ""
+//	manifestPath := "../tests/dat/manifest_validate_credentials.yaml"
+//	deploymentPath := ""
+//	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+//	assert.Nil(t, err, "Failed to read credentials from manifest file")
+//	assert.Equal(t, MANIFEST_HOST, config.Host, "Failed to get host name from manifest file")
+//	assert.Equal(t, MANIFEST_AUTH, config.AuthToken, "Failed to get auth token from manifest file")
+//	assert.Equal(t, MANIFEST_NAMESPACE, config.Namespace, "Failed to get namespace from manifest file")
+//	assert.True(t, config.Insecure, "Config should set insecure to true")
+//}
 
 func TestNewWhiskConfigWithWskProps(t *testing.T) {
 	propPath := "../tests/dat/wskprops"
