@@ -37,7 +37,7 @@ const (
 	YAML_KEY_RULE       = "rule"
 	YAML_KEY_SEQUENCE   = "sequence"
 	YAML_KEY_TRIGGER    = "trigger"
-	YAML_KEY_SOURCE     = "source" // deprecated
+	YAML_KEY_SOURCE     = "source"
 )
 
 // YAML schema key values
@@ -87,22 +87,23 @@ type YAMLParser struct {
 	lastID    uint32
 }
 
+// Action is mapped to wsk.Action.*
+// Used in both manifest and deployment files
 type Action struct {
-	//mapping to wsk.Action.Version
 	Version  string `yaml:"version"`
-	Location string `yaml:"location"`          //deprecated
+	// TODO(): deprecate location in favor of function
+	Location string `yaml:"location"`
 	Function string `yaml:"function"`
 	Code 	string `yaml:"code"`
 	Runtime  string `yaml:"runtime,omitempty"`
-	//mapping to wsk.Action.Namespace
 	Namespace  string               `yaml:"namespace"`
 	Credential string               `yaml:"credential"`
 	Inputs     map[string]Parameter `yaml:"inputs"`
 	Outputs    map[string]Parameter `yaml:"outputs"`
-	//mapping to wsk.Action.Name
 	Name        string
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
-	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
+	// TODO() this is propoagated from package to every action within that package
+	//Parameters  map[string]interface{} `yaml:parameters`
 	ExposedUrl string  `yaml:"exposedUrl"`
 	Webexport  string  `yaml:"web-export"`
 	Main       string  `yaml:"main"`
@@ -120,7 +121,7 @@ type Limits struct {
 }
 
 type Sequence struct {
-	Actions     string                 `yaml:"actions"` //used in manifest.yaml
+	Actions     string                 `yaml:"actions"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 }
 
@@ -134,7 +135,7 @@ type Dependency struct {
 type Parameter struct {
 	Type        string      `yaml:"type,omitempty"`
 	Description string      `yaml:"description,omitempty"`
-	Value       interface{} `yaml:"value,omitempty"` // JSON Value
+	Value       interface{} `yaml:"value,omitempty"`
 	Required    bool        `yaml:"required,omitempty"`
 	Default     interface{} `yaml:"default,omitempty"`
 	Status      string      `yaml:"status,omitempty"`
@@ -142,28 +143,28 @@ type Parameter struct {
 	multiline   bool
 }
 
+// Trigger is mapped wsk.Trigger.*
 type Trigger struct {
-	//mapping to ????
-	Feed string `yaml:"feed"` //used in manifest.yaml
-	//mapping to wsk.Trigger.Namespace
-	Namespace  string               `yaml:"namespace"`  //used in deployment.yaml
-	Credential string               `yaml:"credential"` //used in deployment.yaml
-	Inputs     map[string]Parameter `yaml:"inputs"`     //used in deployment.yaml
-	//mapping to wsk.Trigger.Name
+	Feed string `yaml:"feed"`
+	Namespace  string               `yaml:"namespace"`
+	Credential string               `yaml:"credential"`
+	Inputs     map[string]Parameter `yaml:"inputs"`
 	Name        string
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
-	Source      string                 `yaml:source` // deprecated, used in manifest.yaml
-	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
+	// TODO() this is propoagated from package to trigger within that package
+	//Parameters  map[string]interface{} `yaml:parameters`
+	// TODO(): deprecated, please delete it
+	Source      string                 `yaml:source`
 }
 
 type Feed struct {
-	Namespace  string            `yaml:"namespace"`  //used in deployment.yaml
-	Credential string            `yaml:"credential"` //used in both manifest.yaml and deployment.yaml
-	Inputs     map[string]string `yaml:"inputs"`     //used in deployment.yaml
-	Location   string            `yaml:"location"`   //used in manifest.yaml
-	Action     string            `yaml:"action"`     //used in manifest.yaml
+	Namespace  string            `yaml:"namespace"`
+	Credential string            `yaml:"credential"`
+	Inputs     map[string]string `yaml:"inputs"`
+	Location   string            `yaml:"location"`
+	Action     string            `yaml:"action"`
 	// TODO(): need to define operation structure
-	Operations map[string]interface{} `yaml:"operations"` //used in manifest.yaml
+	Operations map[string]interface{} `yaml:"operations"`
 	Name       string
 }
 
@@ -186,45 +187,43 @@ type Repository struct {
 
 type Package struct {
 	//mapping to wsk.SentPackageNoPublish.Name
-	Packagename string `yaml:"name"` //used in manifest.yaml
+	Packagename string `yaml:"name"`
 	//mapping to wsk.SentPackageNoPublish.Version
-	Version      string                `yaml:"version"` //used in manifest.yaml, mandatory
-	License      string                `yaml:"license"` //used in manifest.yaml, mandatory
+	Version      string                `yaml:"version"` //mandatory
+	License      string                `yaml:"license"` //mandatory
 	Repositories []Repository          `yaml:"repositories,omitempty"`
-	Dependencies map[string]Dependency `yaml: dependencies` //used in manifest.yaml
+	Dependencies map[string]Dependency `yaml: dependencies`
 	//mapping to wsk.SentPackageNoPublish.Namespace
-	Namespace        string                 `yaml:"namespace"`  //used in both manifest.yaml and deployment.yaml
-	Credential       string                 `yaml:"credential"` //used in both manifest.yaml and deployment.yaml
-	ApiHost          string                 `yaml:"apiHost"`    //used in both manifest.yaml and deployment.yaml
+	Namespace        string                 `yaml:"namespace"`
+	Credential       string                 `yaml:"credential"`
+	ApiHost          string                 `yaml:"apiHost"`
 	ApigwAccessToken string                 `yaml:"apigwAccessToken"`
-	Actions          map[string]Action      `yaml:"actions"`  //used in both manifest.yaml and deployment.yaml
-	Triggers         map[string]Trigger     `yaml:"triggers"` //used in both manifest.yaml and deployment.yaml
-	Feeds            map[string]Feed        `yaml:"feeds"`    //used in both manifest.yaml and deployment.yaml
-	Rules            map[string]Rule        `yaml:"rules"`    //used in both manifest.yaml and deployment.yaml
-	Inputs           map[string]Parameter   `yaml:"inputs"`   //deprecated, used in deployment.yaml
+	Actions          map[string]Action      `yaml:"actions"`
+	Triggers         map[string]Trigger     `yaml:"triggers"`
+	Feeds            map[string]Feed        `yaml:"feeds"`
+	Rules            map[string]Rule        `yaml:"rules"`
+	Inputs           map[string]Parameter   `yaml:"inputs"`
 	Sequences        map[string]Sequence    `yaml:"sequences"`
 	Annotations      map[string]interface{} `yaml:"annotations,omitempty"`
-
 	// TODO() this is a convenience we want for package-shared vars that would be
 	// propagated to every action within the package.
-	//Parameters  map[string]interface{} `yaml: parameters` // used in manifest.yaml
-	Apis map[string]map[string]map[string]map[string]string `yaml:"apis"` //used in manifest.yaml
+	//Parameters  map[string]interface{} `yaml: parameters`
+	Apis map[string]map[string]map[string]map[string]string `yaml:"apis"`
 }
 
 type Project struct {
-	Name             string             `yaml:"name"`      //used in deployment.yaml
-	Namespace        string             `yaml:"namespace"` //used in deployment.yaml
+	Name             string             `yaml:"name"`
+	Namespace        string             `yaml:"namespace"`
 	Credential       string             `yaml:"credential"`
 	ApiHost          string             `yaml:"apiHost"`
 	ApigwAccessToken string             `yaml:"apigwAccessToken"`
 	Version          string             `yaml:"version"`
-	Packages         map[string]Package `yaml:"packages"` //used in deployment.yaml
+	Packages         map[string]Package `yaml:"packages"`
 }
 
 type YAML struct {
-	Project  Project            `yaml:"project"`  //used in deployment.yaml
-	Packages map[string]Package `yaml:"packages"` //used in deployment.yaml
-	//Package     Package            `yaml:"package"`   // DEPRECATED.  Should we add warning if found?
+	Project  Project            `yaml:"project"`
+	Packages map[string]Package `yaml:"packages"`
 	Filepath string //file path of the yaml file
 }
 

@@ -18,12 +18,6 @@ packages:
   helloworld:
     actions:
       hello:
-#        function: ../tests/src/integration/helloworld/actions/hello.js
+        function: ../tests/src/integration/helloworld/actions/hello.js
         code: const main = ({ msg }) => { console.log(msg); return {msg}; }
-        code: |
-              function main(params) {
-                this is a buggy statement;
-                console.log(params);
-                return params || {};
-              }
         runtime: nodejs

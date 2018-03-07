@@ -33,6 +33,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -855,20 +856,22 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
 // TODO() - test is NOT complete. Manifest has code that is commented out for "hello2" action
 func TestComposeActionsForFunction(t *testing.T) {
 
-	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_function.yaml")
+	p, m, err := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_function.yaml")
+
 
 	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
 	var expectedResult, actualResult string
+	spew.Dump(actions)
+	spew.Dump(err)
 	if err == nil {
 		for i := 0; i < len(actions); i++ {
 			if actions[i].Action.Name == "hello1" {
 				expectedResult, _ = filepath.Abs("../tests/src/integration/helloworld/actions/hello.js")
 				actualResult, _ = filepath.Abs(actions[i].Filepath)
 				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-				// TODO() Uncomment the following condition, hello2
-				// TODO() after issue # 311 is fixed
-				//} else if actions[i].Action.Name == "hello2" {
-				//  assert.NotNil(t, actions[i].Action.Exec.Code, "Expected source code from an action file but found it empty")
+			} else if actions[i].Action.Name == "hello2" {
+				spew.Dump(actions[i].Action.Exec.Code)
+				assert.NotNil(t, actions[i].Action.Exec.Code, "Expected source code from an action file but found it empty")
 			}
 		}
 	}
@@ -880,6 +883,13 @@ func TestComposeActionsForFunctionAndCode(t *testing.T) {
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_function_and_code.yaml")
 	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
 	assert.NotNil(t, err, "Compose actions should have exited with error when code and function both exist.")
+}
+
+// validate manifest_parser.ComposeActions() method
+func TestComposeActionsForCodeWithMissingRuntime(t *testing.T) {
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_missing_runtime_With_code.yaml")
+	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.NotNil(t, err, "Compose actions should have exited with error when code is specified but runtime is missing.")
 }
 
 // Test 14: validate manifest_parser.ComposeActions() method

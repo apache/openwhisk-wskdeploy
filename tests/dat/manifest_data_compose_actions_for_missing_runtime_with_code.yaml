@@ -17,8 +17,10 @@
 packages:
   helloworld:
     actions:
-      hello1:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-      hello2:
-        #function: ../tests/src/integration/helloworld/actions/hello.js
-        function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/src/integration/helloworld/actions/hello.js
+      hello:
+        code: |
+              function main(params) {
+                this is a buggy statement;
+                console.log(params);
+                return params || {};
+              }

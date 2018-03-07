@@ -32,6 +32,8 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/davecgh/go-spew/spew"
+	"net/url"
 )
 
 const (
@@ -471,7 +473,15 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		//bind action, and exposed URL
 		if action.Function != "" {
 
-			filePath := strings.TrimRight(filePath, splitFilePath[len(splitFilePath)-1]) + action.Function
+			spew.Dump(action.Function)
+			_, err := url.Parse(action.Function)
+			spew.Dump(err)
+			if err == nil {
+				filePath = action.Function
+			} else {
+				filePath = strings.TrimRight(filePath, splitFilePath[len(splitFilePath) - 1]) + action.Function
+			}
+			spew.Dump(filePath)
 
 			if utils.IsDirectory(filePath) {
 				// TODO() define ext as const
@@ -488,11 +498,13 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 					return nil, err
 				}
 			} else {
+				spew.Dump(filePath)
 				ext = path.Ext(filePath)
 				// drop the "." from file extension
 				if len(ext) > 0 && ext[0] == '.' {
 					ext = ext[1:]
 				}
+				spew.Dump(ext)
 
 				// determine default runtime for the given file extension
 				var kind string
@@ -517,10 +529,12 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				wskaction.Exec.Kind = kind
 
 				action.Function = filePath
+				spew.Dump(filePath)
 				dat, err := utils.Read(filePath)
 				if err != nil {
 					return s1, err
 				}
+				spew.Dump(dat)
 				code := string(dat)
 				if ext == utils.ZIP_FILE_EXTENSION || ext == utils.JAR_FILE_EXTENSION {
 					code = base64.StdEncoding.EncodeToString([]byte(dat))
