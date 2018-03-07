@@ -758,6 +758,8 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
 func TestComposeActionsForMultiLineParams(t *testing.T) {
 	os.Setenv("USERNAME", "MY_USERNAME")
 	os.Setenv("PASSWORD", "MY_PASSWORD")
+	defer os.Unsetenv("USERNAME")
+	defer os.Unsetenv("PASSWORD")
 
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_multiline_params.yaml")
 
