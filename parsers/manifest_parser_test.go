@@ -853,6 +853,13 @@ func TestComposeActionsForFunction(t *testing.T) {
 
 }
 
+// validate manifest_parser.ComposeActions() method
+func TestComposeActionsForFunctionAndCode(t *testing.T) {
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_function_and_code.yaml")
+	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.NotNil(t, err, "Compose actions should have exited with error when code and function both exist.")
+}
+
 // Test 14: validate manifest_parser.ComposeActions() method
 func TestComposeActionsForLimits(t *testing.T) {
 

@@ -449,6 +449,25 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			action.Function = action.Location
 		}
 
+		// Check if either one of action.Function and action.Code is defined
+		if len(action.Code) != 0 {
+			if len(action.Function) != 0 {
+				err := wski18n.T(wski18n.ID_ERR_ACTION_INVALID_X_action_X,
+					map[string]interface{}{
+						wski18n.KEY_ACTION: action.Name})
+				return nil, wskderrors.NewYAMLFileFormatError(filePath, err)
+			}
+			if len(action.Runtime) == 0 {
+				// TODO TODO TODO
+				err := wski18n.T(wski18n.ID_ERR_ACTION_INVALID_X_action_X,
+					map[string]interface{}{
+						wski18n.KEY_ACTION: action.Name})
+				return nil, wskderrors.NewYAMLFileFormatError(filePath, err)
+			}
+			wskaction.Exec.Kind = utils.DefaultRunTimes[action.Runtime]
+			wskaction.Exec.Code = &action.Code
+		}
+
 		//bind action, and exposed URL
 		if action.Function != "" {
 
@@ -523,11 +542,11 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		}
 
 		/*
-			 		 *  Action.Runtime
-					 *  Perform few checks if action runtime is specified in manifest YAML file
-					 *  (1) Check if specified runtime is one of the supported runtimes by OpenWhisk server
-					 *  (2) Check if specified runtime is consistent with action source file extensions
-					 *  Set the action runtime to match with the source file extension, if wskdeploy is not invoked in strict mode
+		*  Action.Runtime
+		*  Perform few checks if action runtime is specified in manifest YAML file
+		*  (1) Check if specified runtime is one of the supported runtimes by OpenWhisk server
+		*  (2) Check if specified runtime is consistent with action source file extensions
+		*  Set the action runtime to match with the source file extension, if wskdeploy is not invoked in strict mode
 		*/
 		if action.Runtime != "" {
 			if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {

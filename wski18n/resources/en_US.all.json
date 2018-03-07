@@ -308,6 +308,10 @@
     "translation": "Action [{{.action}}] is missing from manifest file, API [{{.api}}] can only be created based on the action from manifest file. Please update manifest file to include [{{.action}}] as a web action.\n"
   },
   {
+    "id": "msg_err_action_invalid",
+    "translation": "Action [{{.action}}] is invalid. It has both code and function specified, only one of them is expected.\n"
+  },
+  {
     "id": "WARNINGS",
     "translation": "================= WARNINGS ==================="
   },

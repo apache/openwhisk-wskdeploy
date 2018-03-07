@@ -89,23 +89,24 @@ type YAMLParser struct {
 
 type Action struct {
 	//mapping to wsk.Action.Version
-	Version  string `yaml:"version"`           //used in manifest.yaml
-	Location string `yaml:"location"`          //deprecated, used in manifest.yaml
-	Function string `yaml:"function"`          //used in manifest.yaml
-	Runtime  string `yaml:"runtime,omitempty"` //used in manifest.yaml
+	Version  string `yaml:"version"`
+	Location string `yaml:"location"`          //deprecated
+	Function string `yaml:"function"`
+	Code 	string `yaml:"code"`
+	Runtime  string `yaml:"runtime,omitempty"`
 	//mapping to wsk.Action.Namespace
-	Namespace  string               `yaml:"namespace"`  //used in deployment.yaml
-	Credential string               `yaml:"credential"` //used in deployment.yaml
-	Inputs     map[string]Parameter `yaml:"inputs"`     //used in both manifest.yaml and deployment.yaml
-	Outputs    map[string]Parameter `yaml:"outputs"`    //used in manifest.yaml
+	Namespace  string               `yaml:"namespace"`
+	Credential string               `yaml:"credential"`
+	Inputs     map[string]Parameter `yaml:"inputs"`
+	Outputs    map[string]Parameter `yaml:"outputs"`
 	//mapping to wsk.Action.Name
 	Name        string
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	//Parameters  map[string]interface{} `yaml:parameters` // used in manifest.yaml
-	ExposedUrl string  `yaml:"exposedUrl"` // used in manifest.yaml
-	Webexport  string  `yaml:"web-export"` // used in manifest.yaml
-	Main       string  `yaml:"main"`       // used in manifest.yaml
-	Limits     *Limits `yaml:"limits"`     // used in manifest.yaml
+	ExposedUrl string  `yaml:"exposedUrl"`
+	Webexport  string  `yaml:"web-export"`
+	Main       string  `yaml:"main"`
+	Limits     *Limits `yaml:"limits"`
 }
 
 type Limits struct {

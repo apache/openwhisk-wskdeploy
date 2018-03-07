@@ -244,12 +244,6 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 
 // TODO create named errors
 func (reader *ManifestReader) checkAction(action utils.ActionRecord) error {
-	if action.Filepath == "" {
-		// TODO(): i18n of error message (or create a new named error)
-		err := errors.New("Action [" + action.Action.Name + "] has no source code location set.")
-		return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
-	}
-
 	if action.Action.Exec.Kind == "" {
 		// TODO(): i18n of error message (or create a new named error)
 		err := errors.New("Action [" + action.Action.Name + "] has no kind set.")

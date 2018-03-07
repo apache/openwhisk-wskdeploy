@@ -141,6 +141,7 @@ const (
 	ID_ERR_URL_MALFORMED_X_urltype_X_url_X                       = "msg_err_url_malformed"
 	ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X               = "msg_err_api_missing_web_action"
 	ID_ERR_API_MISSING_ACTION_X_action_X_api_X                   = "msg_err_api_missing_action"
+	ID_ERR_ACTION_INVALID_X_action_X			     = "msg_err_action_invalid"
 
 	// Server-side Errors (wskdeploy as an Action)
 	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"

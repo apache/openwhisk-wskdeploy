@@ -61,7 +61,7 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML)
 		maniyaml.Packages[packageName] = pkg
 	}
 
-	wskAction, _, err := client.Actions.Get(actionName)
+	wskAction, _, err := client.Actions.Get(actionName, true)
 	if err != nil {
 		return err
 	}
