@@ -22,11 +22,8 @@ packages:
       actions:
         greeting:
           version: 1.0
-          function: greeting.js
+          function: src/greeting.js
           runtime: nodejs:6
-		  inputs:
-            name: string
-            place: string
       triggers:
         locationUpdate:
       rules:

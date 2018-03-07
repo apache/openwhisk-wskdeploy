@@ -1348,7 +1348,7 @@ func (deployer *ServiceDeployer) deleteAction(pkgname string, action *whisk.Acti
 
 	displayPreprocessingInfo(parsers.YAML_KEY_ACTION, action.Name, false)
 
-	if _, _, ok := deployer.Client.Actions.Get(action.Name); ok == nil {
+	if _, _, ok := deployer.Client.Actions.Get(action.Name, false); ok == nil {
 		var err error
 		var response *http.Response
 		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
@@ -1813,7 +1813,7 @@ func (deployer *ServiceDeployer) getUpdatedAction(packageName string, actionName
 	}
 
 	// get action from OW
-	owAction, _, err := deployer.Client.Actions.Get(actionName)
+	owAction, _, err := deployer.Client.Actions.Get(actionName, true)
 	if err != nil {
 		return nil, err
 	}
@@ -1905,7 +1905,7 @@ func (deployer *ServiceDeployer) RefreshRelationships(ma map[string]interface{})
 					if a := deployer.RefreshManagedProjectsListAnnotation(action.Annotations); a != nil {
 						actionName := strings.Join([]string{pkg.Name, action.Name}, "/")
 						// get action from OW
-						owAction, _, err := deployer.Client.Actions.Get(actionName)
+						owAction, _, err := deployer.Client.Actions.Get(actionName, true)
 						if err != nil {
 							return err
 						}
