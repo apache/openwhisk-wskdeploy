@@ -61,7 +61,7 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML)
 		maniyaml.Packages[packageName] = pkg
 	}
 
-	wskAction, _, err := client.Actions.Get(actionName)
+	wskAction, _, err := client.Actions.Get(actionName, true)
 	if err != nil {
 		return err
 	}
@@ -112,8 +112,10 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML)
 		defer f.Close()
 
 		// store action function in the filesystem next to the manifest.yml
-		// TODO: consider to name files by namespace + action to make function file names uniqueue
-		f.Write([]byte(*wskAction.Exec.Code))
+		// TODO: consider to name files by namespace + action to make function file names unique
+		if wskAction.Exec.Code != nil {
+			f.Write([]byte(*wskAction.Exec.Code))
+		}
 		pkg.Actions[wskAction.Name] = parsedAction
 	}
 
