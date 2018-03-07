@@ -304,7 +304,7 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
 
 		// test # input params
-		expectedResult = strconv.FormatInt(10, 10)
+		expectedResult = strconv.FormatInt(13, 10)
 		actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_PARAMETER_NUMBER_MISMATCH)
 
@@ -756,6 +756,10 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
 // Test 12: validate manifest_parser.ComposeActions() method for multi line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestComposeActionsForMultiLineParams(t *testing.T) {
+	os.Setenv("USERNAME", "MY_USERNAME")
+	os.Setenv("PASSWORD", "MY_PASSWORD")
+	defer os.Unsetenv("USERNAME")
+	defer os.Unsetenv("PASSWORD")
 
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_multiline_params.yaml")
 
@@ -826,6 +830,24 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
 		expectedResult = strconv.FormatFloat(2.9, 'f', -1, 64)
 		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
 		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+
+		// param_json_type_and_value_only_1 should be { "name": "Sam", "place": "Shire" }
+		paramName = "param_json_type_and_value_only_1"
+		expectedResult1 := map[string]interface{}{"name": "Sam", "place": "Shire"}
+		actualResult1 := action.Action.Parameters.GetValue(paramName)
+		assert.Equal(t, expectedResult1, actualResult1, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+
+		// param_json_type_and_value_only_2 should be { "name": "MY_USERNAME", "password": "MY_PASSWORD" }
+		paramName = "param_json_type_and_value_only_2"
+		expectedResult2 := map[string]interface{}{"name": "MY_USERNAME", "password": "MY_PASSWORD"}
+		actualResult2 := action.Action.Parameters.GetValue(paramName)
+		assert.Equal(t, expectedResult2, actualResult2, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+
+		// param_json_type_and_value_only_3 should be { "name": "${USERNAME}", "password": "${PASSWORD}" }
+		paramName = "param_json_type_and_value_only_3"
+		expectedResult3 := map[string]interface{}{"name": "${USERNAME}", "password": "${PASSWORD}"}
+		actualResult3 := action.Action.Parameters.GetValue(paramName)
+		assert.Equal(t, expectedResult3, actualResult3, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 	}
 }
 
@@ -1032,7 +1054,7 @@ func TestParseManifestForJSONParams(t *testing.T) {
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
 
 		// validate the number of inputs to this action
-		expectedResult = strconv.FormatInt(6, 10)
+		expectedResult = strconv.FormatInt(8, 10)
 		actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_PARAMETER_NUMBER_MISMATCH)
 
@@ -1065,6 +1087,14 @@ func TestParseManifestForJSONParams(t *testing.T) {
 				actualResult6 := param.Value.(map[interface{}]interface{})
 				expectedResult6 := map[interface{}]interface{}{"name": "Frodo", "place": "Undying Lands", "items": []interface{}{"Sting", "Mithril mail"}}
 				assert.Equal(t, expectedResult6, actualResult6, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
+			case "member7":
+				actualResult7 := param.Value.(map[interface{}]interface{})
+				expectedResult7 := map[interface{}]interface{}{"name": "${USERNAME}", "password": "${PASSWORD}"}
+				assert.Equal(t, expectedResult7, actualResult7, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
+			case "member8":
+				actualResult8 := param.Value.(map[interface{}]interface{})
+				expectedResult8 := map[interface{}]interface{}{"name": "$${USERNAME}", "password": "$${PASSWORD}"}
+				assert.Equal(t, expectedResult8, actualResult8, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
 			}
 		}
 
