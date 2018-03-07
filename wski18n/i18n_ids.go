@@ -67,6 +67,7 @@ const (
 	ID_CMD_FLAG_INTERACTIVE = "msg_cmd_flag_interactive"
 	ID_CMD_FLAG_KEY_FILE    = "msg_cmd_flag_key_file"
 	ID_CMD_FLAG_MANAGED     = "msg_cmd_flag_allow_managed"
+	ID_CMD_FLAG_PROJECTNAME = "msg_cmd_flag_project_name"
 	ID_CMD_FLAG_MANIFEST    = "msg_cmd_flag_manifest"
 	ID_CMD_FLAG_NAMESPACE   = "msg_cmd_flag_namespace"
 	ID_CMD_FLAG_PROJECT     = "msg_cmd_flag_project"
@@ -163,6 +164,7 @@ const (
 	ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X                 = "msg_warn_entity_name_exists"
 	ID_WARN_PACKAGES_NOT_FOUND_X_path_X                       = "msg_warn_packages_not_found"
 	ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X          = "msg_warn_deployment_name_not_found"
+	ID_WARN_PROJECT_NAME_OVERRIDDEN                           = "msg_warn_project_name_overridden"
 
 	// Verbose (Debug/Trace) messages
 	ID_DEBUG_DEPLOYING_USING                              = "msg_dbg_deploying_using"
@@ -219,6 +221,7 @@ var I18N_ID_SET = [](string){
 	ID_CMD_FLAG_INTERACTIVE,
 	ID_CMD_FLAG_KEY_FILE,
 	ID_CMD_FLAG_MANAGED,
+	ID_CMD_FLAG_PROJECTNAME,
 	ID_CMD_FLAG_MANIFEST,
 	ID_CMD_FLAG_NAMESPACE,
 	ID_CMD_FLAG_PROJECT,
