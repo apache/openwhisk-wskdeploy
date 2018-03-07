@@ -125,7 +125,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Key, "key", "k", "", wski18n.T(wski18n.ID_CMD_FLAG_KEY_FILE))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Cert, "cert", "c", "", wski18n.T(wski18n.ID_CMD_FLAG_CERT_FILE))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Managed, "managed", "", false, wski18n.T(wski18n.ID_CMD_FLAG_MANAGED))
-	RootCmd.Flags().StringVarP(&utils.Flags.RelationsPath, "relationships", "r", "", "projects reationships manifest")
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.RelationsPath, "relationships", "r", "", "projects reationships manifest")
 }
 
 // initConfig reads in config file and ENV variables if set.

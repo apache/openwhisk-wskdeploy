@@ -392,6 +392,9 @@ func (yaml *YAML) ComposeParsersTrigger(wsktrg whisk.Trigger) *Trigger {
 	trigger := new(Trigger)
 	trigger.Name = wsktrg.Name
 	trigger.Namespace = wsktrg.Namespace
+	if a := wsktrg.Annotations.GetValue(YAML_KEY_FEED); a != nil {
+		trigger.Feed = a.(string)
+	}
 
 	for _, keyval := range wsktrg.Parameters {
 		param := new(Parameter)
