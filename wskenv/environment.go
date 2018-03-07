@@ -63,8 +63,13 @@ func InterpolateStringWithEnvVar(key interface{}) interface{} {
 				return c == '$' || c == '{' || c == '}'
 			}
 			for _, substr := range strings.FieldsFunc(keystr, f) {
-				//if the substr is a $ENV_VAR
-				if strings.Contains(keystr, "$"+substr) {
+				//if the substr is a $${ENV_VAR}
+				// return ${ENV_VAR}
+				if strings.Contains(keystr, "$${"+substr+"}") {
+					keystr = strings.Replace(keystr, "$${"+substr+"}", "${"+substr+"}", -1)
+					//if the substr is a $ENV_VAR
+					// return interpolated string using env. variable
+				} else if strings.Contains(keystr, "$"+substr) {
 					thisValue = os.Getenv(substr)
 					if thisValue == "" {
 						// TODO() i18n
@@ -72,6 +77,7 @@ func InterpolateStringWithEnvVar(key interface{}) interface{} {
 					}
 					keystr = strings.Replace(keystr, "$"+substr, thisValue, -1)
 					//if the substr is a ${ENV_VAR}
+					// return interpolated string using env. variable
 				} else if strings.Contains(keystr, "${"+substr+"}") {
 					thisValue = os.Getenv(substr)
 					if thisValue == "" {

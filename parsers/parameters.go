@@ -258,6 +258,9 @@ func resolveJSONParameter(filePath string, paramName string, param *Parameter, v
 		if param.Value != nil && reflect.TypeOf(param.Value).Kind() == reflect.Map {
 			if _, ok := param.Value.(map[interface{}]interface{}); ok {
 				var temp map[string]interface{} = utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
+				for name, val := range temp {
+					temp[name] = wskenv.InterpolateStringWithEnvVar(val)
+				}
 				//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, temp)
 				return temp, errorParser
 			}
@@ -322,7 +325,7 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	}
 
 	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON
-	if param.Type == "json" {
+	if param.Value != nil && param.Type == "json" {
 		value, errorParser = resolveJSONParameter(filePath, paramName, param, value)
 	}
 
