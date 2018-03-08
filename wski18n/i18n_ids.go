@@ -109,7 +109,7 @@ const (
 	ID_CMD_FLAG_VERBOSE     = "msg_cmd_flag_allow_verbose"
 
 	// Root <command> using <manifest | deployment> file
-	ID_MSG_COMMAND_USING_X_cmd_X_name_X_path_X = "msg_command_using_filename_at_path"
+	ID_MSG_COMMAND_USING_X_cmd_X_filetype_X_path_X = "msg_command_using_filename_at_path"
 
 	// Configuration messages
 	ID_MSG_CONFIG_MISSING_AUTHKEY                       = "msg_config_missing_authkey"
@@ -252,7 +252,7 @@ var I18N_ID_SET = [](string){
 	ID_ERR_RUNTIMES_GET_X_err_X,
 	ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
 	ID_ERR_URL_MALFORMED_X_urltype_X_url_X,
-	ID_MSG_COMMAND_USING_X_cmd_X_name_X_path_X,
+	ID_MSG_COMMAND_USING_X_cmd_X_filetype_X_path_X,
 	ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
 	ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
 	ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,

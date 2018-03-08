@@ -169,7 +169,7 @@
   },
   {
     "id": "msg_command_using_filename_at_path",
-    "translation": "{{.cmd}} using {{.name}} [{{.path}}]...\n"
+    "translation": "{{.cmd}} using {{.filetype}} [{{.path}}]...\n"
   },
   {
     "id": "msg_entity_deployed_success",

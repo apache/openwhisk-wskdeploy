@@ -163,12 +163,12 @@ func setSupportedRuntimes(apiHost string) {
 	}
 }
 
-func displayCommandUsingFilenameMessage(command string, filename string, path string) {
-	msg := wski18n.T(wski18n.ID_MSG_COMMAND_USING_X_cmd_X_name_X_path_X,
+func displayCommandUsingFilenameMessage(command string, filetype string, path string) {
+	msg := wski18n.T(wski18n.ID_MSG_COMMAND_USING_X_cmd_X_filetype_X_path_X,
 		map[string]interface{}{
-			wski18n.KEY_CMD:  command,
-			wski18n.KEY_NAME: filename,
-			wski18n.KEY_PATH: path})
+			wski18n.KEY_CMD:       command,
+			wski18n.KEY_FILE_TYPE: filetype,
+			wski18n.KEY_PATH:      path})
 	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, msg)
 }
 
