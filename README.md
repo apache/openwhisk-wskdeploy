@@ -190,7 +190,7 @@ Then, you will find the binaries and their compressed packages generated under t
 ### Building for Internationalization
 
 Please follow this process for building any changes to translatable strings:
-[How to generate the file i18n_resources.go for internationalization](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/wski18n/README.md)
+- [How to generate the file i18n_resources.go for internationalization](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/wski18n/README.md)
 
 <!-- ----------------------------------------------------------------------------- -->
 
