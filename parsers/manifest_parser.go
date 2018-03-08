@@ -464,8 +464,23 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 						wski18n.KEY_ACTION: action.Name})
 				return nil, wskderrors.NewYAMLFileFormatError(filePath, err)
 			}
-			wskaction.Exec.Kind = utils.DefaultRunTimes[action.Runtime]
 			wskaction.Exec.Code = &action.Code
+
+			// validate runtime from the manifest file
+			// error out if the specified runtime is not valid or not supported
+			// even if runtime is invalid, deploy action with specified runtime in strict mode
+			if utils.Flags.Strict {
+				wskaction.Exec.Kind = action.Runtime
+			} else {
+				if len(utils.DefaultRunTimes[action.Runtime]) == 0 {
+					err := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
+						map[string]interface{}{
+							wski18n.KEY_RUNTIME: action.Runtime,
+							wski18n.KEY_ACTION:  action.Name})
+					return nil, wskderrors.NewYAMLFileFormatError(filePath, err)
+				}
+				wskaction.Exec.Kind = utils.DefaultRunTimes[action.Runtime]
+			}
 		}
 
 		//bind action, and exposed URL
