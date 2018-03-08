@@ -141,9 +141,9 @@ $ git branch --set-upstream-to origin/master  # track master from origin now
 
 You can now use `git push` to push changes to your repository and submit pull requests.
 
-### Use "go deps" and "go build" NOT "go get"
+### Developers should use "go deps" and "go build" not "go get"
 
-The Whisk deploy project is setup for development purposes and uses "go deps" for dependency management. We do NOT recommend using "go get" as this will use the latest dependencies from all imported GitHub repos. which is not supported.
+The Whisk deploy project is setup for development purposes and uses "go deps" for dependency management. We do NOT recommend using "go get" as this will use the latest dependencies for all imported GitHub repos. which is not supported.
 
 - See: [https://github.com/tools/godep](https://github.com/tools/godep)
 
