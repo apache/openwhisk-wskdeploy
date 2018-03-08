@@ -22,6 +22,8 @@ package deployers
 import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -31,6 +33,9 @@ var ps *parsers.YAMLParser
 var ms *parsers.YAML
 
 func init() {
+
+	// Setup "trace" flag for unit tests based upon "go test" -v flag
+	utils.Flags.Trace = wskprint.DetectGoTestVerbose()
 
 	sd = NewServiceDeployer()
 	sd.ManifestPath = manifest_file
