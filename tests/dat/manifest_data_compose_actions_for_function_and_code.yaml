@@ -17,12 +17,7 @@
 packages:
   helloworld:
     actions:
-      helloPython:
-        function: ../src/integration/helloworld/actions/hello.py
-      helloJava:
-        function: ../src/integration/helloworld/actions/hello.jar
-        main: Hello
-      helloSwift:
-        function: ../src/integration/helloworld/actions/hello.swift
-      helloNodejs:
-        function: ../src/integration/helloworld/actions/hello.js
+      hello:
+        function: ../tests/src/integration/helloworld/actions/hello.js
+        code: const main = ({ msg }) => { console.log(msg); return {msg}; }
+        runtime: nodejs

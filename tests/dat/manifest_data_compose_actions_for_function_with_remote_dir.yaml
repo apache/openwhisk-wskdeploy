@@ -17,12 +17,5 @@
 packages:
   helloworld:
     actions:
-      helloPython:
-        function: ../src/integration/helloworld/actions/hello.py
-      helloJava:
-        function: ../src/integration/helloworld/actions/hello.jar
-        main: Hello
-      helloSwift:
-        function: ../src/integration/helloworld/actions/hello.swift
-      helloNodejs:
-        function: ../src/integration/helloworld/actions/hello.js
+      hello:
+        function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/src/integration/helloworld/actions/

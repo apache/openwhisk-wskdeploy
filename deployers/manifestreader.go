@@ -243,13 +243,12 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 }
 
 // TODO create named errors
+// Check action record before deploying it
+// action record is created by reading and composing action elements from manifest file
+// Action.kind is mandatory which is set to
+// (1) action runtime for an action and (2) set to "sequence" for a sequence
+// Also, action executable code should be specified for any action
 func (reader *ManifestReader) checkAction(action utils.ActionRecord) error {
-	if action.Filepath == "" {
-		// TODO(): i18n of error message (or create a new named error)
-		err := errors.New("Action [" + action.Action.Name + "] has no source code location set.")
-		return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
-	}
-
 	if action.Action.Exec.Kind == "" {
 		// TODO(): i18n of error message (or create a new named error)
 		err := errors.New("Action [" + action.Action.Name + "] has no kind set.")
@@ -258,7 +257,7 @@ func (reader *ManifestReader) checkAction(action utils.ActionRecord) error {
 
 	if action.Action.Exec.Code != nil {
 		code := *action.Action.Exec.Code
-		if code == "" && action.Action.Exec.Kind != "sequence" {
+		if code == "" && action.Action.Exec.Kind != parsers.YAML_KEY_SEQUENCE {
 			// TODO(): i18n of error message (or create a new named error)
 			err := errors.New("Action [" + action.Action.Name + "] has no source code.")
 			return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
