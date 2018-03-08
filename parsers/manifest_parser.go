@@ -464,7 +464,8 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 						wski18n.KEY_ACTION: action.Name})
 				return nil, wskderrors.NewYAMLFileFormatError(filePath, err)
 			}
-			wskaction.Exec.Code = &action.Code
+			code := action.Code
+			wskaction.Exec.Code = &code
 
 			// validate runtime from the manifest file
 			// error out if the specified runtime is not valid or not supported
@@ -576,7 +577,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		*  (2) Check if specified runtime is consistent with action source file extensions
 		*  Set the action runtime to match with the source file extension, if wskdeploy is not invoked in strict mode
 		 */
-		if len(action.Runtime) != 0 {
+		if len(action.Runtime) != 0  && len(action.Function) != 0 {
 			if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {
 				// for zip actions, rely on the runtimes from the manifest file as it can not be derived from the action source file extension
 				// pick runtime from manifest file if its supported by OpenWhisk server
