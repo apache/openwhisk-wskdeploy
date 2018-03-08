@@ -52,7 +52,6 @@ var manifest_file = "../tests/usecases/github/manifest.yaml"
 func init() {
 	// Setup "trace" flag for unit tests based upon "go test" -v flag
 	utils.Flags.Trace = wskprint.DetectGoTestVerbose()
-	println(fmt.Sprintf("utils.Flags.Trace=%v", utils.Flags.Trace))
 }
 
 // Check DeploymentReader could handle deployment yaml successfully.

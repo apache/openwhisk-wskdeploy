@@ -111,6 +111,7 @@ func init() {
 	// with any other Whisk Deploy command e.g. undeploy, export, etc.
 	// TODO() Publish command, not completed
 	// TODO() Report command, not completed
+	// TODO() have a single function that conditionally (i.e., Trace=true) prints ALL Flags
 	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", wski18n.T(wski18n.ID_CMD_FLAG_CONFIG))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ProjectPath, "project", "p", ".", wski18n.T(wski18n.ID_CMD_FLAG_PROJECT))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", wski18n.T(wski18n.ID_CMD_FLAG_MANIFEST))
@@ -151,6 +152,7 @@ func initConfig() {
 	}
 }
 
+// TODO() add Trace of runtimes found at apihost
 func setSupportedRuntimes(apiHost string) {
 	op, error := utils.ParseOpenWhisk(apiHost)
 	if error == nil {
@@ -159,6 +161,48 @@ func setSupportedRuntimes(apiHost string) {
 		utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
 		utils.FileRuntimeExtensionsMap = utils.FileRuntimeExtensions(op)
 	}
+}
+
+func loadDefaultManifestFileFromProjectPath(projectPath string) error {
+
+	if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
+		utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
+		stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY_X_path_X,
+			map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
+	} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
+		utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
+		stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY_X_path_X,
+			map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
+	} else {
+		stderr = wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
+			map[string]interface{}{wski18n.KEY_PATH: projectPath})
+		return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
+	}
+	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, stdout)
+	return nil
+}
+
+func loadDefaultDeploymentFileFromProjectPath(projectPath string) error {
+
+	if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYaml)); err == nil {
+		utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYaml)
+
+		// TODO() use i18n string instead of this sprintf
+		dbgMsg := fmt.Sprintf("%s >> [%s]: [%s]",
+			wski18n.T(wski18n.ID_DEBUG_UNDEPLOYING_USING),
+			wski18n.DEPLOYMENT,
+			utils.Flags.DeploymentPath)
+		wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
+
+	} else if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYml)); err == nil {
+		utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYml)
+		dbgMsg := fmt.Sprintf("%s >> [%s]: [%s]",
+			wski18n.T(wski18n.ID_DEBUG_UNDEPLOYING_USING),
+			wski18n.DEPLOYMENT,
+			utils.Flags.DeploymentPath)
+		wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
+	}
+	return nil
 }
 
 func Deploy() error {
@@ -173,29 +217,17 @@ func Deploy() error {
 	}
 	projectPath, _ := filepath.Abs(project_Path)
 
-	// TODO() identical code block below; please create function both can share
+	// If manifest filename is not provided, attempt to load default manifests from project path
 	if utils.Flags.ManifestPath == "" {
-		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
-			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
-			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY_X_path_X,
-				map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
-		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
-			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
-			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY_X_path_X,
-				map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
-		} else {
-			stderr = wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
-				map[string]interface{}{wski18n.KEY_PATH: projectPath})
-			return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
+		if err := loadDefaultManifestFileFromProjectPath(projectPath); err != nil {
+			return err
 		}
-		whisk.Debug(whisk.DbgInfo, stdout)
 	}
 
 	if utils.Flags.DeploymentPath == "" {
-		if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYaml)); err == nil {
-			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYaml)
-		} else if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYml)); err == nil {
-			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYml)
+
+		if err := loadDefaultDeploymentFileFromProjectPath(projectPath); err != nil {
+			return err
 		}
 	}
 
@@ -210,7 +242,11 @@ func Deploy() error {
 		// master record of any dependency that has been downloaded
 		deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
 
-		clientConfig, error := deployers.NewWhiskConfig(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
+		clientConfig, error := deployers.NewWhiskConfig(
+			utils.Flags.CfgFile,
+			utils.Flags.DeploymentPath,
+			utils.Flags.ManifestPath,
+			deployer.IsInteractive)
 		if error != nil {
 			return error
 		}
@@ -261,41 +297,17 @@ func Undeploy() error {
 	}
 	projectPath, _ := filepath.Abs(project_Path)
 
+	// If manifest filename is not provided, attempt to load default manifests from project path
 	if utils.Flags.ManifestPath == "" {
-		if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
-			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
-			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_UNDEPLOY_X_path_X,
-				map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
-		} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
-			utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
-			stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_UNDEPLOY_X_path_X,
-				map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
-		} else {
-			stderr = wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
-				map[string]interface{}{wski18n.KEY_PATH: projectPath})
-			return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
+		if err := loadDefaultManifestFileFromProjectPath(projectPath); err != nil {
+			return err
 		}
-		wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, stdout)
 	}
 
 	if utils.Flags.DeploymentPath == "" {
-		if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYaml)); err == nil {
-			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYaml)
-			// TODO() have a single function that conditionally (verbose) prints ALL Flags
-			dbgMsg := fmt.Sprintf("%s >> [%s]: [%s]",
-				wski18n.T(wski18n.ID_DEBUG_UNDEPLOYING_USING),
-				wski18n.DEPLOYMENT,
-				utils.Flags.DeploymentPath)
-			wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
 
-		} else if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYml)); err == nil {
-			utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYml)
-			// TODO() have a single function that conditionally (verbose) prints ALL Flags
-			dbgMsg := fmt.Sprintf("%s >> [%s]: [%s]",
-				wski18n.T(wski18n.ID_DEBUG_UNDEPLOYING_USING),
-				wski18n.DEPLOYMENT,
-				utils.Flags.DeploymentPath)
-			wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
+		if err := loadDefaultDeploymentFileFromProjectPath(projectPath); err != nil {
+			return err
 		}
 	}
 

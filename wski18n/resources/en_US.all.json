@@ -408,10 +408,6 @@
     "translation": "================= DEBUG ==================="
   },
   {
-    "id": "msg_dbg_deploying_using",
-    "translation": "Deploying using:\n"
-  },
-  {
     "id": "msg_dbg_undeploying_using",
     "translation": "Undeploying using:\n"
   },
