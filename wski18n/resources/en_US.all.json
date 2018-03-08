@@ -288,6 +288,10 @@
     "translation": "Failed to get the supported runtimes from OpenWhisk service: {{.err}}.\n"
   },
   {
+    "id": "msg_err_runtime_action_source_not_supported",
+    "translation": "[{{.action}}] has not specified any runtime and the action source file extension [{{.ext}}] is not supported.\n"
+  },
+  {
     "id": "msg_err_url_invalid",
     "translation": "Invalid or missing {{.urltype}} URL [{{.url}}] in [{{.filetype}}] file.\n"
   },
@@ -310,6 +314,14 @@
   {
     "id": "msg_err_action_invalid",
     "translation": "Action [{{.action}}] is invalid. It has both code and function specified, only one of them is expected.\n"
+  },
+  {
+    "id": "msg_err_action_missing_runtime_with_code",
+    "translation": "Action [{{.action}}] is invalid. It has code specified without any runtime. With action source code, runtime is mandatory."
+  },
+  {
+    "id": "msg_err_action_function_remote_dir_not_supported",
+    "translation": "Action [{{.action}}] has function pointing to remote directory [{{.url}}], such actions are not supported."
   },
   {
     "id": "WARNINGS",

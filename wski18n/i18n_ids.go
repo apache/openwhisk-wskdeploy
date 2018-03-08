@@ -127,21 +127,24 @@ const (
 	ID_MSG_PROMPT_UNDEPLOY  = "msg_prompt_undeploy"
 
 	// Errors
-	ID_ERR_DEPENDENCY_UNKNOWN_TYPE                               = "msg_err_dependency_unknown_type"
-	ID_ERR_ENTITY_CREATE_X_key_X_err_X_code_X                    = "msg_err_entity_create"
-	ID_ERR_ENTITY_DELETE_X_key_X_err_X_code_X                    = "msg_err_entity_delete"
-	ID_ERR_FEED_INVOKE_X_err_X_code_X                            = "msg_err_feed_invoke"
-	ID_ERR_KEY_MISSING_X_key_X                                   = "msg_err_key_missing_mandatory"
-	ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X                      = "msg_err_manifest_not_found"
-	ID_ERR_NAME_MISMATCH_X_key_X_dname_X_dpath_X_mname_X_moath_X = "msg_err_name_mismatch"
-	ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X                  = "msg_err_runtime_invalid"
-	ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X           = "msg_err_runtime_mismatch"
-	ID_ERR_RUNTIMES_GET_X_err_X                                  = "msg_err_runtimes_get"
-	ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X              = "msg_err_url_invalid"
-	ID_ERR_URL_MALFORMED_X_urltype_X_url_X                       = "msg_err_url_malformed"
-	ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X               = "msg_err_api_missing_web_action"
-	ID_ERR_API_MISSING_ACTION_X_action_X_api_X                   = "msg_err_api_missing_action"
-	ID_ERR_ACTION_INVALID_X_action_X			     = "msg_err_action_invalid"
+	ID_ERR_DEPENDENCY_UNKNOWN_TYPE                                   = "msg_err_dependency_unknown_type"
+	ID_ERR_ENTITY_CREATE_X_key_X_err_X_code_X                        = "msg_err_entity_create"
+	ID_ERR_ENTITY_DELETE_X_key_X_err_X_code_X                        = "msg_err_entity_delete"
+	ID_ERR_FEED_INVOKE_X_err_X_code_X                                = "msg_err_feed_invoke"
+	ID_ERR_KEY_MISSING_X_key_X                                       = "msg_err_key_missing_mandatory"
+	ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X                          = "msg_err_manifest_not_found"
+	ID_ERR_NAME_MISMATCH_X_key_X_dname_X_dpath_X_mname_X_moath_X     = "msg_err_name_mismatch"
+	ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X                      = "msg_err_runtime_invalid"
+	ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X               = "msg_err_runtime_mismatch"
+	ID_ERR_RUNTIMES_GET_X_err_X                                      = "msg_err_runtimes_get"
+	ID_ERR_RUNTIME_ACTION_SOURCE_NOT_SUPPORTED_X_ext_X_action_X      = "msg_err_runtime_action_source_not_supported"
+	ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X                  = "msg_err_url_invalid"
+	ID_ERR_URL_MALFORMED_X_urltype_X_url_X                           = "msg_err_url_malformed"
+	ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X                   = "msg_err_api_missing_web_action"
+	ID_ERR_API_MISSING_ACTION_X_action_X_api_X                       = "msg_err_api_missing_action"
+	ID_ERR_ACTION_INVALID_X_action_X                                 = "msg_err_action_invalid"
+	ID_ERR_ACTION_MISSING_RUNTIME_WITH_CODE_X_action_X               = "msg_err_action_missing_runtime_with_code"
+	ID_ERR_ACTION_FUNCTION_REMOTE_DIR_NOT_SUPPORTED_X_action_X_url_X = "msg_err_action_function_remote_dir_not_supported"
 
 	// Server-side Errors (wskdeploy as an Action)
 	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"
@@ -201,6 +204,7 @@ const (
 	KEY_VALUE_MIN       = "min" // TODO() attempt to use this for Limit value range errors
 	KEY_VALUE_MAX       = "max" // TODO() attempt to use this for Limit value range errors
 	KEY_API             = "api"
+	KEY_URL             = "url"
 )
 
 // Used to unit test that translations exist with these IDs

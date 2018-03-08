@@ -459,8 +459,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				return nil, wskderrors.NewYAMLFileFormatError(filePath, err)
 			}
 			if len(action.Runtime) == 0 {
-				// TODO TODO TODO
-				err := wski18n.T(wski18n.ID_ERR_ACTION_INVALID_X_action_X,
+				err := wski18n.T(wski18n.ID_ERR_ACTION_MISSING_RUNTIME_WITH_CODE_X_action_X,
 					map[string]interface{}{
 						wski18n.KEY_ACTION: action.Name})
 				return nil, wskderrors.NewYAMLFileFormatError(filePath, err)
@@ -471,17 +470,23 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 
 		//bind action, and exposed URL
 		if len(action.Function) != 0 {
-			if strings.HasPrefix(action.Function, HTTP) || strings.HasPrefix(action.Function, HTTPS){
+			// check if action function is pointing to an URL
+			// we do not support if function is pointing to remote directory
+			// therefore error out if there is a combination of http/https ending in a directory
+			if strings.HasPrefix(action.Function, HTTP) || strings.HasPrefix(action.Function, HTTPS) {
 				if len(path.Ext(action.Function)) == 0 {
-					//TODO TODO TODO ()error out
-					return nil, wskderrors.NewYAMLFileFormatError(filePath, "we dont support http directory")
+					err := wski18n.T(wski18n.ID_ERR_ACTION_FUNCTION_REMOTE_DIR_NOT_SUPPORTED_X_action_X_url_X,
+						map[string]interface{}{
+							wski18n.KEY_ACTION: action.Name,
+							wski18n.KEY_URL:    action.Function})
+					return nil, wskderrors.NewYAMLFileFormatError(filePath, err)
 				}
 				actionFilePath = action.Function
 			} else {
-				actionFilePath = strings.TrimRight(filePath, splitFilePath[len(splitFilePath) - 1]) + action.Function
+				actionFilePath = strings.TrimRight(filePath, splitFilePath[len(splitFilePath)-1]) + action.Function
 			}
 
-			if utils.IsDirectory(filePath) {
+			if utils.IsDirectory(actionFilePath) {
 				// TODO() define ext as const
 				zipName := actionFilePath + ".zip"
 				err := utils.NewZipWritter(actionFilePath, zipName).Zip()
@@ -511,14 +516,13 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				// and its not explicitly specified in the manifest YAML file
 				// and action source is not a zip file
 				if len(kind) == 0 && len(action.Runtime) == 0 && ext != utils.ZIP_FILE_EXTENSION {
-					errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
+					errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_ACTION_SOURCE_NOT_SUPPORTED_X_ext_X_action_X,
 						map[string]interface{}{
-							wski18n.KEY_RUNTIME:   action.Runtime,
 							wski18n.KEY_EXTENSION: ext,
 							wski18n.KEY_ACTION:    action.Name})
 					return nil, wskderrors.NewInvalidRuntimeError(errMessage,
 						splitFilePath[len(splitFilePath)-1], action.Name,
-						action.Runtime,
+						utils.RUNTIME_NOT_SPECIFIED,
 						utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				}
 
@@ -536,12 +540,12 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 				if ext == utils.ZIP_FILE_EXTENSION && len(action.Runtime) == 0 {
 					errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
 						map[string]interface{}{
-							wski18n.KEY_RUNTIME: action.Runtime,
+							wski18n.KEY_RUNTIME: utils.RUNTIME_NOT_SPECIFIED,
 							wski18n.KEY_ACTION:  action.Name})
 					return nil, wskderrors.NewInvalidRuntimeError(errMessage,
 						splitFilePath[len(splitFilePath)-1],
 						action.Name,
-						action.Runtime,
+						utils.RUNTIME_NOT_SPECIFIED,
 						utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 				}
 				wskaction.Exec.Code = &code
@@ -555,7 +559,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		*  (1) Check if specified runtime is one of the supported runtimes by OpenWhisk server
 		*  (2) Check if specified runtime is consistent with action source file extensions
 		*  Set the action runtime to match with the source file extension, if wskdeploy is not invoked in strict mode
-		*/
+		 */
 		if action.Runtime != "" {
 			if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {
 				// for zip actions, rely on the runtimes from the manifest file as it can not be derived from the action source file extension

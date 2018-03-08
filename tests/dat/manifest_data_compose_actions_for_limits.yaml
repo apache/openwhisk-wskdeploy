@@ -18,11 +18,11 @@ packages:
   helloworld:
     actions:
       hello1:
-        function: ../tests/src/integration/helloworld/actions/hello.js
+        function: ../src/integration/helloworld/actions/hello.js
         limits:
           timeout: 1
       hello2:
-        function: ../tests/src/integration/helloworld/actions/hello.js
+        function: ../src/integration/helloworld/actions/hello.js
         limits:
           timeout: 180
           memorySize: 128

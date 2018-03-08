@@ -18,17 +18,17 @@ packages:
   helloworld:
     actions:
       hello1:
-        function: ../tests/src/integration/helloworld/actions/hello.js
+        function: ../src/integration/helloworld/actions/hello.js
         web-export: true
       hello2:
-        function: ../tests/src/integration/helloworld/actions/hello.js
+        function: ../src/integration/helloworld/actions/hello.js
         web-export: yes
       hello3:
-        function: ../tests/src/integration/helloworld/actions/hello.js
+        function: ../src/integration/helloworld/actions/hello.js
         web-export: raw
       hello4:
-        function: ../tests/src/integration/helloworld/actions/hello.js
+        function: ../src/integration/helloworld/actions/hello.js
         web-export: false
       hello5:
-        function: ../tests/src/integration/helloworld/actions/hello.js
+        function: ../src/integration/helloworld/actions/hello.js
         web-export: no
