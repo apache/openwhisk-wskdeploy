@@ -127,7 +127,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Cert, "cert", "c", "", wski18n.T(wski18n.ID_CMD_FLAG_CERT_FILE))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Managed, "managed", "", false, wski18n.T(wski18n.ID_CMD_FLAG_MANAGED))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ProjectName, "projectname", "", "", wski18n.T(wski18n.ID_CMD_FLAG_PROJECTNAME))
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Trace, "trace", "t", false, "Trace flag")
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Trace, "trace", "t", false, wski18n.T(wski18n.ID_CMD_FLAG_TRACE))
 	RootCmd.PersistentFlags().MarkHidden("trace")
 }
 
@@ -163,45 +163,38 @@ func setSupportedRuntimes(apiHost string) {
 	}
 }
 
-func loadDefaultManifestFileFromProjectPath(projectPath string) error {
+func displayCommandUsingFilenameMessage(command string, filename string, path string) {
+	msg := wski18n.T(wski18n.ID_MSG_COMMAND_USING_X_cmd_X_name_X_path_X,
+		map[string]interface{}{
+			wski18n.KEY_CMD:  command,
+			wski18n.KEY_NAME: filename,
+			wski18n.KEY_PATH: path})
+	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, msg)
+}
+
+func loadDefaultManifestFileFromProjectPath(command string, projectPath string) error {
 
 	if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
 		utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
-		stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY_X_path_X,
-			map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
 	} else if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYml)); err == nil {
 		utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYml)
-		stdout = wski18n.T(wski18n.ID_MSG_MANIFEST_DEPLOY_X_path_X,
-			map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
 	} else {
 		stderr = wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
 			map[string]interface{}{wski18n.KEY_PATH: projectPath})
 		return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
 	}
-	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, stdout)
+	displayCommandUsingFilenameMessage(command, wski18n.MANIFEST_FILE, utils.Flags.ManifestPath)
 	return nil
 }
 
-func loadDefaultDeploymentFileFromProjectPath(projectPath string) error {
+func loadDefaultDeploymentFileFromProjectPath(command string, projectPath string) error {
 
 	if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYaml)); err == nil {
 		utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYaml)
-
-		// TODO() use i18n string instead of this sprintf
-		dbgMsg := fmt.Sprintf("%s >> [%s]: [%s]",
-			wski18n.T(wski18n.ID_DEBUG_UNDEPLOYING_USING),
-			wski18n.DEPLOYMENT,
-			utils.Flags.DeploymentPath)
-		wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
-
 	} else if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYml)); err == nil {
 		utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYml)
-		dbgMsg := fmt.Sprintf("%s >> [%s]: [%s]",
-			wski18n.T(wski18n.ID_DEBUG_UNDEPLOYING_USING),
-			wski18n.DEPLOYMENT,
-			utils.Flags.DeploymentPath)
-		wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, dbgMsg)
 	}
+	displayCommandUsingFilenameMessage(command, wski18n.DEPLOYMENT_FILE, utils.Flags.ManifestPath)
 	return nil
 }
 
@@ -219,14 +212,14 @@ func Deploy() error {
 
 	// If manifest filename is not provided, attempt to load default manifests from project path
 	if utils.Flags.ManifestPath == "" {
-		if err := loadDefaultManifestFileFromProjectPath(projectPath); err != nil {
+		if err := loadDefaultManifestFileFromProjectPath(wski18n.CMD_DEPLOY, projectPath); err != nil {
 			return err
 		}
 	}
 
 	if utils.Flags.DeploymentPath == "" {
 
-		if err := loadDefaultDeploymentFileFromProjectPath(projectPath); err != nil {
+		if err := loadDefaultDeploymentFileFromProjectPath(wski18n.CMD_DEPLOY, projectPath); err != nil {
 			return err
 		}
 	}
@@ -299,14 +292,14 @@ func Undeploy() error {
 
 	// If manifest filename is not provided, attempt to load default manifests from project path
 	if utils.Flags.ManifestPath == "" {
-		if err := loadDefaultManifestFileFromProjectPath(projectPath); err != nil {
+		if err := loadDefaultManifestFileFromProjectPath(wski18n.CMD_UNDEPLOY, projectPath); err != nil {
 			return err
 		}
 	}
 
 	if utils.Flags.DeploymentPath == "" {
 
-		if err := loadDefaultDeploymentFileFromProjectPath(projectPath); err != nil {
+		if err := loadDefaultDeploymentFileFromProjectPath(wski18n.CMD_UNDEPLOY, projectPath); err != nil {
 			return err
 		}
 	}
