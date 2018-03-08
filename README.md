@@ -141,6 +141,22 @@ $ git branch --set-upstream-to origin/master  # track master from origin now
 
 You can now use `git push` to push changes to your repository and submit pull requests.
 
+### Developers should use "go deps" and "go build" not "go get"
+
+The Whisk deploy project is setup for development purposes and uses "go deps" for dependency management. We do NOT recommend using "go get" as this will use the latest dependencies for all imported GitHub repos. which is not supported.
+
+- See: [https://github.com/tools/godep](https://github.com/tools/godep)
+
+Specifically, for development please use:
+
+```
+$ git clone git@github.com:mrutkows/incubator-openwhisk-wskdeploy
+$ go build
+```
+
+for end-users, please use versioned releases of binaries.
+- [https://github.com/apache/incubator-openwhisk-wskdeploy/releases](https://github.com/apache/incubator-openwhisk-wskdeploy/releases)
+
 ### How to Cross Compile Binary with Gradle/Docker
 
 If you don't want to bother with go installation, build, git clone etc, and you can do it with Gradle/Docker.
@@ -174,7 +190,7 @@ Then, you will find the binaries and their compressed packages generated under t
 ### Building for Internationalization
 
 Please follow this process for building any changes to translatable strings:
-[How to generate the file i18n_resources.go for internationalization](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/wski18n/README.md)
+- [How to generate the file i18n_resources.go for internationalization](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/wski18n/README.md)
 
 <!-- ----------------------------------------------------------------------------- -->
 
@@ -204,7 +220,11 @@ while there, you can verify that your upstream repository is set correctly:
 
 #### Git clone RPC failed: HTTP 301
 
-This sometimes occurs using "go get" the wskdeploy code (which indirectly invokes "git clone"). You might get this error when downloading `incubator-openwhisk-wskdeploy`:
+This sometimes occurs using "go get" the wskdeploy code (which indirectly invokes "git clone"). 
+
+<b>Note: Using "go get" for development is unsupported; instead, please use "go deps" for dependency management.</b>
+
+You might get this error when downloading `incubator-openwhisk-wskdeploy`:
 
      Cloning into ''$GOAPTH/src/gopkg.in/yaml.v2'...
      error: RPC failed; HTTP 301 curl 22 The requested URL returned error: 301
