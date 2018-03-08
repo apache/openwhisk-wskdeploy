@@ -143,9 +143,19 @@ You can now use `git push` to push changes to your repository and submit pull re
 
 ### Use "go deps" and "go build" NOT "go get"
 
-The Whisk deploy project is setup for development purposes and uses "go deps" for dependency management. We do NOT recommend using "go get".  
-as this will use latest dependencies from all imported GitHub repos. which is not supported.
+The Whisk deploy project is setup for development purposes and uses "go deps" for dependency management. We do NOT recommend using "go get" as this will use the latest dependencies from all imported GitHub repos. which is not supported.
 
+- See: [https://github.com/tools/godep](https://github.com/tools/godep)
+
+Specifically, for development please use:
+
+```
+$ git clone git@github.com:mrutkows/incubator-openwhisk-wskdeploy
+$ go build
+```
+
+for end-users, please use versioned releases of binaries.
+- [https://github.com/apache/incubator-openwhisk-wskdeploy/releases](https://github.com/apache/incubator-openwhisk-wskdeploy/releases)
 
 ### How to Cross Compile Binary with Gradle/Docker
 
