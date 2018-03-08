@@ -471,15 +471,16 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 			// even if runtime is invalid, deploy action with specified runtime in strict mode
 			if utils.Flags.Strict {
 				wskaction.Exec.Kind = action.Runtime
-			} else {
-				if len(utils.DefaultRunTimes[action.Runtime]) == 0 {
-					err := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
-						map[string]interface{}{
-							wski18n.KEY_RUNTIME: action.Runtime,
-							wski18n.KEY_ACTION:  action.Name})
-					return nil, wskderrors.NewYAMLFileFormatError(filePath, err)
-				}
+			} else if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {
+				wskaction.Exec.Kind = action.Runtime
+			} else if len(utils.DefaultRunTimes[action.Runtime]) != 0 {
 				wskaction.Exec.Kind = utils.DefaultRunTimes[action.Runtime]
+			} else {
+				err := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
+					map[string]interface{}{
+						wski18n.KEY_RUNTIME: action.Runtime,
+						wski18n.KEY_ACTION:  action.Name})
+				return nil, wskderrors.NewYAMLFileFormatError(filePath, err)
 			}
 		}
 
@@ -575,7 +576,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		*  (2) Check if specified runtime is consistent with action source file extensions
 		*  Set the action runtime to match with the source file extension, if wskdeploy is not invoked in strict mode
 		 */
-		if action.Runtime != "" {
+		if len(action.Runtime) != 0 {
 			if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {
 				// for zip actions, rely on the runtimes from the manifest file as it can not be derived from the action source file extension
 				// pick runtime from manifest file if its supported by OpenWhisk server
@@ -631,7 +632,7 @@ func (dm *YAMLParser) ComposeActions(filePath string, actions map[string]Action,
 		}
 
 		// we can specify the name of the action entry point using main
-		if action.Main != "" {
+		if len(action.Main) != 0 {
 			wskaction.Exec.Main = action.Main
 		}
 
