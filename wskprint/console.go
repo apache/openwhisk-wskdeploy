@@ -23,6 +23,8 @@ import (
 	"github.com/fatih/color"
 	"github.com/mattn/go-colorable"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -104,16 +106,26 @@ func PrintlnOpenWhiskVerbose(verbose bool, message string) {
 	PrintOpenWhiskVerbose(verbose, message+"\n")
 }
 
+func PrintlnOpenWhiskTrace(trace bool, message string) {
+
+	if trace {
+		_, fname, lineNum, _ := runtime.Caller(2)
+		out := fmt.Sprintf("%s [%v]: %s\n", filepath.Base(fname), lineNum, message)
+		PrintOpenWhiskVerbose(trace, out)
+	}
+}
+
 // Display "trace" output if either param is true OR we are running Go test verbose (i.e., "go test -v")
-// arg[0] = [/var/folders/nj/2blqqtm500l5ch2d5k0hvqvm0000gn/T/go-build041478919/github.com/apache/incubator-openwhisk-wskdeploy/deployers/_test/deployers.test
+// Typical Args for "go test" looks as follows:
+// arg[0] = [/var/folders/nj/<uuid>/T/<build-id>/github.com/apache/incubator-openwhisk-wskdeploy/deployers/_test/deployers.test
 // arg[1] = -test.v=true
 // arg[2] = -test.run=TestDeploymentReader_PackagesBindTrigger]
-// TODO() introduce "trace" as an optional flag (perhaps hidden or picked up from environment)
-func PrintlnOpenWhiskTrace(trace bool, message string) {
-	GO_TEST_VERBOSE := false
-	if len(os.Args) >= 2 {
-		// TODO() move this to an init() routine
-		GO_TEST_VERBOSE = strings.Contains(os.Args[1], "-test.v=true")
+func DetectGoTestVerbose() bool {
+	arguments := os.Args
+	for i := range arguments {
+		if strings.HasPrefix(arguments[i], "-test.v=true") {
+			return true
+		}
 	}
-	PrintOpenWhiskVerbose(GO_TEST_VERBOSE || trace, message+"\n")
+	return false
 }

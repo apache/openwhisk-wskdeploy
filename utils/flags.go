@@ -31,7 +31,6 @@ type WskDeployFlags struct {
 	CfgFile          string
 	CliVersion       string
 	CliBuild         string
-	Verbose          bool
 	ProjectPath      string
 	DeploymentPath   string
 	ManifestPath     string
@@ -41,6 +40,8 @@ type WskDeployFlags struct {
 	Cert             string
 	Managed          bool // OpenWhisk Managed Deployments
 	ApigwAccessToken string
+	Verbose          bool
+	Trace            bool
 }
 
 func (flags *WskDeployFlags) Format() string {
