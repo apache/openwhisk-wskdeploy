@@ -126,6 +126,8 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Cert, "cert", "c", "", wski18n.T(wski18n.ID_CMD_FLAG_CERT_FILE))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Managed, "managed", "", false, wski18n.T(wski18n.ID_CMD_FLAG_MANAGED))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ProjectName, "projectname", "", "", wski18n.T(wski18n.ID_CMD_FLAG_PROJECTNAME))
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Trace, "trace", "t", false, "Trace flag")
+	RootCmd.PersistentFlags().MarkHidden("trace")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -161,10 +163,9 @@ func setSupportedRuntimes(apiHost string) {
 
 func Deploy() error {
 
+	// Convey flags for verbose and trace to Go client
 	whisk.SetVerbose(utils.Flags.Verbose)
-	// Verbose mode is the only mode for wskdeploy to turn on all the debug messages,
-	// so set Verbose mode (and also debug mode) to true.
-	whisk.SetDebug(utils.Flags.Verbose)
+	whisk.SetDebug(utils.Flags.Trace)
 
 	project_Path := strings.TrimSpace(utils.Flags.ProjectPath)
 	if len(project_Path) == 0 {
@@ -250,10 +251,9 @@ func Deploy() error {
 
 func Undeploy() error {
 
+	// Convey flags for verbose and trace to Go client
 	whisk.SetVerbose(utils.Flags.Verbose)
-	// Verbose mode is the only mode for wskdeploy to turn on all the debug messages, so the currenty Verbose mode
-	// also set debug mode to true.
-	whisk.SetDebug(utils.Flags.Verbose)
+	whisk.SetDebug(utils.Flags.Trace)
 
 	project_Path := strings.TrimSpace(utils.Flags.ProjectPath)
 	if len(project_Path) == 0 {
