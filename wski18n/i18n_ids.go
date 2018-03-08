@@ -28,7 +28,6 @@ const (
 	COMMAND_LINE       = "wskdeploy command line"
 	CONFIGURATION      = "Configuration"
 	DEPLOYMENT_FILE    = "deployment file"
-	MANIFEST           = "manifest" // TODO() remove in favor of MANIFEST_FILE
 	MANIFEST_FILE      = "manifest file"
 	NAME_PROJECT       = "project name"
 	NAMESPACES         = "Namespaces"

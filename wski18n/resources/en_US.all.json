@@ -337,7 +337,7 @@
   },
   {
     "id": "msg_warn_key_deprecated_replaced",
-    "translation": "The [{{.oldkey}}] key in the {{.filetype}} file will soon be deprecated, please use the [{{.newkey}}] key instead.\n"
+    "translation": "The [{{.oldkey}}] key in the {{.filetype}} will soon be deprecated, please use the [{{.newkey}}] key instead.\n"
   },
   {
     "id": "msg_warn_key_missing",
