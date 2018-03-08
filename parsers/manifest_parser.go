@@ -809,7 +809,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 				map[string]interface{}{
 					wski18n.KEY_OLD:       YAML_KEY_SOURCE,
 					wski18n.KEY_NEW:       YAML_KEY_FEED,
-					wski18n.KEY_FILE_TYPE: wski18n.MANIFEST})
+					wski18n.KEY_FILE_TYPE: wski18n.MANIFEST_FILE})
 			wskprint.PrintOpenWhiskWarning(warningString)
 		}
 		if trigger.Feed == "" {
