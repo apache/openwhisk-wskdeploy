@@ -90,16 +90,16 @@ type YAMLParser struct {
 // Action is mapped to wsk.Action.*
 // Used in both manifest and deployment files
 type Action struct {
-	Version  string `yaml:"version"`
+	Version string `yaml:"version"`
 	// TODO(): deprecate location in favor of function
-	Location string `yaml:"location"`
-	Function string `yaml:"function"`
-	Code 	string `yaml:"code"`
-	Runtime  string `yaml:"runtime,omitempty"`
-	Namespace  string               `yaml:"namespace"`
-	Credential string               `yaml:"credential"`
-	Inputs     map[string]Parameter `yaml:"inputs"`
-	Outputs    map[string]Parameter `yaml:"outputs"`
+	Location    string               `yaml:"location"`
+	Function    string               `yaml:"function"`
+	Code        string               `yaml:"code"`
+	Runtime     string               `yaml:"runtime,omitempty"`
+	Namespace   string               `yaml:"namespace"`
+	Credential  string               `yaml:"credential"`
+	Inputs      map[string]Parameter `yaml:"inputs"`
+	Outputs     map[string]Parameter `yaml:"outputs"`
 	Name        string
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	// TODO() this is propoagated from package to every action within that package
@@ -145,16 +145,16 @@ type Parameter struct {
 
 // Trigger is mapped wsk.Trigger.*
 type Trigger struct {
-	Feed string `yaml:"feed"`
-	Namespace  string               `yaml:"namespace"`
-	Credential string               `yaml:"credential"`
-	Inputs     map[string]Parameter `yaml:"inputs"`
+	Feed        string               `yaml:"feed"`
+	Namespace   string               `yaml:"namespace"`
+	Credential  string               `yaml:"credential"`
+	Inputs      map[string]Parameter `yaml:"inputs"`
 	Name        string
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	// TODO() this is propoagated from package to trigger within that package
 	//Parameters  map[string]interface{} `yaml:parameters`
 	// TODO(): deprecated, please delete it
-	Source      string                 `yaml:source`
+	Source string `yaml:source`
 }
 
 type Feed struct {
@@ -224,7 +224,7 @@ type Project struct {
 type YAML struct {
 	Project  Project            `yaml:"project"`
 	Packages map[string]Package `yaml:"packages"`
-	Filepath string //file path of the yaml file
+	Filepath string             //file path of the yaml file
 }
 
 // function to return Project or Application depending on what is specified in
