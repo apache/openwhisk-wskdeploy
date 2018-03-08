@@ -128,7 +128,16 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		return err
 	}
 
-	deployer.ProjectName = manifest.GetProject().Name
+	deployer.ProjectName = utils.Flags.ProjectName
+	if deployer.ProjectName == "" {
+		deployer.ProjectName = manifest.GetProject().Name
+	} else {
+		warningString := wski18n.T(
+			wski18n.ID_WARN_PROJECT_NAME_OVERRIDDEN,
+			map[string]interface{}{
+				wski18n.KEY_PROJECT: deployer.ProjectName})
+		wskprint.PrintOpenWhiskWarning(warningString)
+	}
 
 	// Generate Managed Annotations if its marked as a Managed Deployment
 	// Managed deployments are the ones when OpenWhisk entities are deployed with command line flag --managed.

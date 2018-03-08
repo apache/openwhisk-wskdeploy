@@ -20,10 +20,11 @@
 package tests
 
 import (
-	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestManagedDeployment(t *testing.T) {
@@ -57,5 +58,10 @@ func TestManagedDeployment(t *testing.T) {
 	manifestPath = os.Getenv("GOPATH") + path + "04-manifest-minus-package.yaml"
 	wskdeploy = common.NewWskdeploy()
 	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
+
+	manifestPath = os.Getenv("GOPATH") + path + "05-manifest-headless.yaml"
+	wskdeploy = common.NewWskdeploy()
+	_, err = wskdeploy.HeadlessManagedDeployment(manifestPath, deploymentPath, "Headless Managed")
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 }

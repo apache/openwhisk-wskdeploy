@@ -76,6 +76,10 @@
     "translation": "allow project entities to be marked managed"
   },
   {
+    "id": "msg_cmd_flag_project_name",
+    "translation": "project name"
+  },
+  {
     "id": "msg_cmd_flag_manifest",
     "translation": "path to manifest file"
   },
@@ -394,6 +398,10 @@
   {
     "id": "msg_warn_deployment_name_not_found",
     "translation": "The {{.key}} [{{.name}}] in the deployment file was not found in the manifest file.\n"
+  },
+  {
+    "id": "msg_warn_project_name_overridden",
+    "translation": "The project name has been overridden. Using {{.project}}\n"
   },
   {
     "id": "DEBUG",
