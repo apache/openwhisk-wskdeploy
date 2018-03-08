@@ -126,8 +126,8 @@ type Sequence struct {
 }
 
 type Dependency struct {
-	Version     string                 `yaml: "version, omitempty"`
-	Location    string                 `yaml: "location, omitempty"`
+	Version     string                 `yaml:"version,omitempty"`
+	Location    string                 `yaml:"location,omitempty"`
 	Inputs      map[string]Parameter   `yaml:"inputs"`
 	Annotations map[string]interface{} `yaml:"annotations"`
 }
@@ -154,7 +154,7 @@ type Trigger struct {
 	// TODO() this is propoagated from package to trigger within that package
 	//Parameters  map[string]interface{} `yaml:parameters`
 	// TODO(): deprecated, please delete it
-	Source string `yaml:source`
+	Source string `yaml:"source"`
 }
 
 type Feed struct {
@@ -191,8 +191,9 @@ type Package struct {
 	//mapping to wsk.SentPackageNoPublish.Version
 	Version      string                `yaml:"version"` //mandatory
 	License      string                `yaml:"license"` //mandatory
+	Public       bool                  `yaml:"public,omitempty"`
 	Repositories []Repository          `yaml:"repositories,omitempty"`
-	Dependencies map[string]Dependency `yaml: dependencies`
+	Dependencies map[string]Dependency `yaml:"dependencies"`
 	//mapping to wsk.SentPackageNoPublish.Namespace
 	Namespace        string                 `yaml:"namespace"`
 	Credential       string                 `yaml:"credential"`

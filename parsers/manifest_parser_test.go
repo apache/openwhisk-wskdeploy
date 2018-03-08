@@ -50,10 +50,12 @@ const (
 	TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED = "Manifest [%s]: Expected runtime error."
 
 	// local error messages
-	TEST_ERROR_MANIFEST_PARSE_FAILURE   = "Manifest [%s]: Failed to parse."
-	TEST_ERROR_MANIFEST_READ_FAILURE    = "Manifest [%s]: Failed to ReadFile()."
-	TEST_ERROR_MANIFEST_DATA_UNMARSHALL = "Manifest [%s]: Failed to Unmarshall manifest."
-	TEST_ERROR_COMPOSE_ACTION_FAILURE   = "Manifest [%s]: Failed to compose actions."
+	TEST_ERROR_MANIFEST_PARSE_FAILURE     = "Manifest [%s]: Failed to parse."
+	TEST_ERROR_MANIFEST_READ_FAILURE      = "Manifest [%s]: Failed to ReadFile()."
+	TEST_ERROR_MANIFEST_DATA_UNMARSHALL   = "Manifest [%s]: Failed to Unmarshall manifest."
+	TEST_ERROR_COMPOSE_ACTION_FAILURE     = "Manifest [%s]: Failed to compose actions."
+	TEST_ERROR_COMPOSE_PACKAGE_FAILURE    = "Manifest [%s]: Failed to compose packages."
+	TEST_ERROR_COMPOSE_DEPENDENCY_FAILURE = "Manifest [%s]: Failed to compose dependencies."
 )
 
 func init() {
@@ -1128,17 +1130,22 @@ func TestParseManifestForJSONParams(t *testing.T) {
 
 func TestComposePackage(t *testing.T) {
 
-	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_packages.yaml")
+	file := "../tests/dat/manifest_data_compose_packages.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
 
 	pkg, err := p.ComposeAllPackages(m, m.Filepath, whisk.KeyValue{})
-	if err == nil {
-		n := "helloworld"
-		assert.NotNil(t, pkg[n], "Failed to get the whole package")
-		assert.Equal(t, n, pkg[n].Name, "Failed to get package name")
-		assert.Equal(t, "default", pkg[n].Namespace, "Failed to get package namespace")
-	} else {
-		assert.Fail(t, "Failed to compose package")
-	}
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_PACKAGE_FAILURE, file))
+
+	n := "helloworld"
+	assert.NotNil(t, pkg[n], "Failed to get the whole package")
+	assert.Equal(t, n, pkg[n].Name, "Failed to get package name")
+	assert.Equal(t, "default", pkg[n].Namespace, "Failed to get package namespace")
+
+	n = "mypublicpackage"
+	assert.True(t, *(pkg[n].Publish), "Failed to mark public package as shared.")
+
+	n = "default"
+	assert.False(t, *(pkg[n].Publish), "Default package should not be maked as public.")
 }
 
 func TestComposeSequences(t *testing.T) {
@@ -1281,34 +1288,36 @@ func TestComposeApiRecords(t *testing.T) {
 
 func TestComposeDependencies(t *testing.T) {
 
-	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_dependencies.yaml")
+	file := "../tests/dat/manifest_data_compose_dependencies.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
 
 	depdList, err := p.ComposeDependenciesFromAllPackages(m, "/project_folder", m.Filepath)
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_DEPENDENCY_FAILURE, file))
 
-	if err != nil {
-		assert.Fail(t, "Failed to compose rules")
-	}
-	assert.Equal(t, 2, len(depdList), "Failed to get rules")
-	for depdy_name, depdy := range depdList {
-		assert.Equal(t, "helloworld", depdy.Packagename, "Failed to set dependecy isbinding")
-		assert.Equal(t, "/project_folder/Packages", depdy.ProjectPath, "Failed to set dependecy isbinding")
-		d := strings.Split(depdy_name, ":")
+	assert.Equal(t, 3, len(depdList), "Failed to get rules")
+	for dependency_name, dependency := range depdList {
+		assert.Equal(t, "helloworld", dependency.Packagename, "Failed to set dependency isbinding")
+		assert.Equal(t, "/project_folder/Packages", dependency.ProjectPath, "Failed to set dependency isbinding")
+		d := strings.Split(dependency_name, ":")
 		assert.NotEqual(t, d[1], "", "Failed to get dependency name")
 		switch d[1] {
 		case "myhelloworld":
-			assert.Equal(t, "https://github.com/user/repo/folder", depdy.Location, "Failed to set dependecy location")
-			assert.Equal(t, false, depdy.IsBinding, "Failed to set dependecy isbinding")
-			assert.Equal(t, "https://github.com/user/repo", depdy.BaseRepo, "Failed to set dependecy base repo url")
-			assert.Equal(t, "/folder", depdy.SubFolder, "Failed to set dependecy sub folder")
+			assert.Equal(t, "https://github.com/user/repo/folder", dependency.Location, "Failed to set dependency location")
+			assert.Equal(t, false, dependency.IsBinding, "Failed to set dependency isbinding")
+			assert.Equal(t, "https://github.com/user/repo", dependency.BaseRepo, "Failed to set dependency base repo url")
+			assert.Equal(t, "/folder", dependency.SubFolder, "Failed to set dependency sub folder")
 		case "myCloudant":
-			assert.Equal(t, "/whisk.system/cloudant", depdy.Location, "Failed to set rule trigger")
-			assert.Equal(t, true, depdy.IsBinding, "Failed to set dependecy isbinding")
-			assert.Equal(t, 1, len(depdy.Parameters), "Failed to set dependecy parameter")
-			assert.Equal(t, 1, len(depdy.Annotations), "Failed to set dependecy annotation")
-			assert.Equal(t, "myAnnotation", depdy.Annotations[0].Key, "Failed to set dependecy parameter key")
-			assert.Equal(t, "Here it is", depdy.Annotations[0].Value, "Failed to set dependecy parameter value")
-			assert.Equal(t, "dbname", depdy.Parameters[0].Key, "Failed to set dependecy annotation key")
-			assert.Equal(t, "myGreatDB", depdy.Parameters[0].Value, "Failed to set dependecy annotation value")
+			assert.Equal(t, "/whisk.system/cloudant", dependency.Location, "Failed to set dependency location")
+			assert.Equal(t, true, dependency.IsBinding, "Failed to set dependency isbinding")
+			assert.Equal(t, 1, len(dependency.Parameters), "Failed to set dependency parameter")
+			assert.Equal(t, 1, len(dependency.Annotations), "Failed to set dependency annotation")
+			assert.Equal(t, "myAnnotation", dependency.Annotations[0].Key, "Failed to set dependency parameter key")
+			assert.Equal(t, "Here it is", dependency.Annotations[0].Value, "Failed to set dependency parameter value")
+			assert.Equal(t, "dbname", dependency.Parameters[0].Key, "Failed to set dependency annotation key")
+			assert.Equal(t, "myGreatDB", dependency.Parameters[0].Value, "Failed to set dependency annotation value")
+		case "myPublicPackage":
+			assert.Equal(t, "/namespaceA/public", dependency.Location, "Failed to set dependency location.")
+			assert.True(t, dependency.IsBinding, "Failed to set dependency binding.")
 		default:
 			assert.Fail(t, "Failed to get dependency name")
 		}

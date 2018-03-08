@@ -17,3 +17,7 @@
 packages:
   helloworld:
     namespace: default
+  mypublicpackage:
+    public: true
+  default:
+    public: true

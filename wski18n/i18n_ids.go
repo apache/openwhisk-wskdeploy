@@ -169,6 +169,7 @@ const (
 	ID_WARN_PACKAGES_NOT_FOUND_X_path_X                       = "msg_warn_packages_not_found"
 	ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X          = "msg_warn_deployment_name_not_found"
 	ID_WARN_PROJECT_NAME_OVERRIDDEN                           = "msg_warn_project_name_overridden"
+	ID_WARN_PACKAGE_IS_PUBLIC_X_package_X                     = "msg_warn_package_is_public"
 
 	// Verbose (Debug/Trace) messages
 	ID_DEBUG_DEPLOYING_USING                              = "msg_dbg_deploying_using"
@@ -207,6 +208,7 @@ const (
 	KEY_VALUE_MAX       = "max" // TODO() attempt to use this for Limit value range errors
 	KEY_API             = "api"
 	KEY_URL             = "url"
+	KEY_PACAKGE         = "package"
 )
 
 // Used to unit test that translations exist with these IDs
