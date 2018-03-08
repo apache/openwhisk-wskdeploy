@@ -26,7 +26,7 @@ const (
 	API_HOST           = "API host"
 	AUTH_KEY           = "authentication key"
 	COMMAND_LINE       = "wskdeploy command line"
-	DEPLOYMENT         = "deployment"
+	DEPLOYMENT         = "deployment file"
 	CONFIGURATION      = "Configuration"
 	MANIFEST           = "manifest"
 	NAME_PROJECT       = "project name"
@@ -165,7 +165,7 @@ const (
 	ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X          = "msg_warn_deployment_name_not_found"
 
 	// Verbose (Debug/Trace) messages
-	ID_DEBUG_DEPLOYING_USING                              = "msg_dbg_deploying_using"
+	//ID_DEBUG_DEPLOYING_USING                              = "msg_dbg_deploying_using"
 	ID_DEBUG_UNDEPLOYING_USING                            = "msg_dbg_undeploying_using"
 	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X                = "msg_dbg_searching_project_directory"
 	ID_DEBUG_DEPLOYMENT_NAME_FOUND_X_key_X_name_X         = "msg_dbg_deployment_name_found"
@@ -225,7 +225,7 @@ var I18N_ID_SET = [](string){
 	ID_CMD_FLAG_STRICT,
 	ID_CMD_FLAG_TOGGLE_HELP,
 	ID_CMD_FLAG_VERBOSE,
-	ID_DEBUG_DEPLOYING_USING,
+	//ID_DEBUG_DEPLOYING_USING,
 	ID_DEBUG_DEPLOYMENT_NAME_FOUND_X_key_X_name_X,
 	ID_DEBUG_PACKAGES_FOUND_UNDER_PROJECT_X_path_X_name_X,
 	ID_DEBUG_PACKAGES_FOUND_UNDER_ROOT_X_path_X,

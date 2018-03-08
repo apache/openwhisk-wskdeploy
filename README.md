@@ -141,6 +141,12 @@ $ git branch --set-upstream-to origin/master  # track master from origin now
 
 You can now use `git push` to push changes to your repository and submit pull requests.
 
+### Use "go deps" and "go build" NOT "go get"
+
+The Whisk deploy project is setup for development purposes and uses "go deps" for dependency management. We do NOT recommend using "go get".  
+as this will use latest dependencies from all imported GitHub repos. which is not supported.
+
+
 ### How to Cross Compile Binary with Gradle/Docker
 
 If you don't want to bother with go installation, build, git clone etc, and you can do it with Gradle/Docker.
@@ -204,7 +210,11 @@ while there, you can verify that your upstream repository is set correctly:
 
 #### Git clone RPC failed: HTTP 301
 
-This sometimes occurs using "go get" the wskdeploy code (which indirectly invokes "git clone"). You might get this error when downloading `incubator-openwhisk-wskdeploy`:
+This sometimes occurs using "go get" the wskdeploy code (which indirectly invokes "git clone"). 
+
+<b>Note: Using "go get" for development is unsupported; instead, please use "go deps" for dependency management.</b>
+
+You might get this error when downloading `incubator-openwhisk-wskdeploy`:
 
      Cloning into ''$GOAPTH/src/gopkg.in/yaml.v2'...
      error: RPC failed; HTTP 301 curl 22 The requested URL returned error: 301
