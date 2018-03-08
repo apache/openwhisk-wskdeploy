@@ -408,10 +408,6 @@
     "translation": "================= DEBUG ==================="
   },
   {
-    "id": "msg_dbg_undeploying_using",
-    "translation": "Undeploying using:\n"
-  },
-  {
     "id": "msg_dbg_searching_project_directory",
     "translation": "Searching project directory [{{.path}}] for [{{.key}}]...\n"
   },
