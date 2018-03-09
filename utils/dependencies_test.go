@@ -57,3 +57,18 @@ func TestLocationIsGithub_NonGithub(t *testing.T) {
 	assert.False(t, LocationIsGithub("git.com"), "Allows non-github")
 	assert.False(t, LocationIsGithub(""), "Allows empty location")
 }
+
+func TestLocationIsBinding(t *testing.T) {
+	assert.True(t, LocationIsBinding("/whisk.system"), "Does not allow package binding to /whisk.system")
+	assert.True(t, LocationIsBinding("/whisk.system/cloudant"), "Does not allow package binding to /whisk.system/cloudant")
+	assert.True(t, LocationIsBinding("/namespace"), "Does not allow package binding to /namespace")
+	assert.True(t, LocationIsBinding("/namespace/package"), "Does not allow package binding to /namespace/package")
+
+}
+func TestLocationIsBinding_InvalidNamespace(t *testing.T) {
+	assert.False(t, LocationIsBinding("whisk.system"), "Allows package binding to whisk.system")
+	assert.False(t, LocationIsBinding("whisk.system/cloudant"), "Allows package binding to whisk.system/cloudant")
+	assert.False(t, LocationIsBinding(""), "Allows empty namespace")
+	assert.False(t, LocationIsBinding("namespace/package"), "Allows namespace/package")
+	assert.False(t, LocationIsBinding("namespace"), "Allows just namespace")
+}

@@ -23,6 +23,11 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
+const (
+	GITHUB       = "github"
+	WHISK_SYSTEM = "whisk.system"
+)
+
 type DependencyRecord struct {
 	ProjectPath string //root of the source codes of dependent projects, e.g. src_project_path/Packages
 	Packagename string //name of the package
@@ -65,7 +70,7 @@ func NewDependencyRecord(projectPath string,
 }
 
 func LocationIsBinding(location string) bool {
-	if strings.HasPrefix(location, "/whisk.system") || strings.HasPrefix(location, "whisk.system") {
+	if strings.HasPrefix(location, "/"+WHISK_SYSTEM) || strings.HasPrefix(location, "/") {
 		return true
 	}
 
@@ -81,5 +86,5 @@ func removeProtocol(location string) string {
 
 func LocationIsGithub(location string) bool {
 	paths := strings.SplitN(removeProtocol(location), "/", 2)
-	return strings.Contains(paths[0], "github")
+	return strings.Contains(paths[0], GITHUB)
 }
