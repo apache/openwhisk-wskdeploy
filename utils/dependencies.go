@@ -70,7 +70,7 @@ func NewDependencyRecord(projectPath string,
 }
 
 func LocationIsBinding(location string) bool {
-	if strings.HasPrefix(location, "/"+WHISK_SYSTEM) || strings.HasPrefix(location, WHISK_SYSTEM) || strings.HasPrefix(location, "/") {
+	if strings.HasPrefix(location, "/"+WHISK_SYSTEM) || strings.HasPrefix(location, "/") {
 		return true
 	}
 
