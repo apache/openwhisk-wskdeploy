@@ -96,8 +96,8 @@
     "translation": "allow user defined runtime version"
   },
   {
-    "id": "msg_cmd_flag_toggle_help",
-    "translation": "Toggle Help message"
+    "id": "msg_cmd_flag_trace",
+    "translation": "trace output"
   },
   {
     "id": "msg_cmd_flag_allow_verbose",
@@ -168,12 +168,8 @@
     "translation": "Undeployment completed successfully.\n"
   },
   {
-    "id": "msg_manifest_using_deployment",
-    "translation": "Using [{{.path}}] for deployment.\n"
-  },
-  {
-    "id": "msg_manifest_using_undeployment",
-    "translation": "Using [{{.path}}] for undeployment.\n"
+    "id": "msg_command_using_filename_at_path",
+    "translation": "{{.cmd}} using {{.filetype}} [{{.path}}]...\n"
   },
   {
     "id": "msg_entity_deployed_success",
@@ -189,7 +185,7 @@
   },
   {
     "id": "msg_entity_undeploying",
-    "translation": "Undeploying {{.key}} [{{.name}}] ..."
+    "translation": "Undeploying {{.key}} [{{.name}}]..."
   },
   {
     "id": "msg_dependency_deploying",
@@ -341,7 +337,7 @@
   },
   {
     "id": "msg_warn_key_deprecated_replaced",
-    "translation": "The [{{.oldkey}}] key in the {{.filetype}} file will soon be deprecated, please use the [{{.newkey}}] key instead.\n"
+    "translation": "The [{{.oldkey}}] key in the {{.filetype}} will soon be deprecated, please use the [{{.newkey}}] key instead.\n"
   },
   {
     "id": "msg_warn_key_missing",
@@ -410,14 +406,6 @@
   {
     "id": "DEBUG",
     "translation": "================= DEBUG ==================="
-  },
-  {
-    "id": "msg_dbg_deploying_using",
-    "translation": "Deploying using:\n"
-  },
-  {
-    "id": "msg_dbg_undeploying_using",
-    "translation": "Undeploying using:\n"
   },
   {
     "id": "msg_dbg_searching_project_directory",

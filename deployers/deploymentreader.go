@@ -20,6 +20,7 @@ package deployers
 import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
@@ -77,7 +78,7 @@ func (reader *DeploymentReader) getPackageMap() map[string]parsers.Package {
 				wski18n.ID_DEBUG_PACKAGES_FOUND_UNDER_ROOT_X_path_X,
 				map[string]interface{}{
 					wski18n.KEY_PATH: reader.DeploymentDescriptor.Filepath})
-			wskprint.PrintlnOpenWhiskTrace(false, infoMsg)
+			wskprint.PrintlnOpenWhiskTrace(utils.Flags.Trace, infoMsg)
 			for packName, depPacks := range reader.DeploymentDescriptor.Packages {
 				depPacks.Packagename = packName
 				packMap[packName] = depPacks
@@ -90,7 +91,7 @@ func (reader *DeploymentReader) getPackageMap() map[string]parsers.Package {
 			map[string]interface{}{
 				wski18n.KEY_PATH: reader.DeploymentDescriptor.Filepath,
 				wski18n.KEY_NAME: reader.DeploymentDescriptor.GetProject().Name})
-		wskprint.PrintlnOpenWhiskTrace(false, infoMsg)
+		wskprint.PrintlnOpenWhiskTrace(utils.Flags.Trace, infoMsg)
 
 		for packName, depPacks := range reader.DeploymentDescriptor.GetProject().Packages {
 			depPacks.Packagename = packName
@@ -349,5 +350,5 @@ func displayEntityFoundInDeploymentTrace(entityType string, entityName string) {
 		map[string]interface{}{
 			wski18n.KEY_KEY:  entityType,
 			wski18n.KEY_NAME: entityName})
-	wskprint.PrintlnOpenWhiskTrace(true, infoMsg)
+	wskprint.PrintlnOpenWhiskTrace(utils.Flags.Trace, infoMsg)
 }
