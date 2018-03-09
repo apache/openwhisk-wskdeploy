@@ -22,6 +22,8 @@ package deployers
 import (
 	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -48,7 +50,8 @@ var deployment_file = "../tests/usecases/github/deployment.yaml"
 var manifest_file = "../tests/usecases/github/manifest.yaml"
 
 func init() {
-	// TODO(): setup "trace" flag here (and in all unit test files)
+	// Setup "trace" flag for unit tests based upon "go test" -v flag
+	utils.Flags.Trace = wskprint.DetectGoTestVerbose()
 }
 
 // Check DeploymentReader could handle deployment yaml successfully.
