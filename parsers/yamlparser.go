@@ -90,24 +90,26 @@ type YAMLParser struct {
 // Action is mapped to wsk.Action.*
 // Used in both manifest and deployment files
 type Action struct {
-	Version string `yaml:"version"`
+	Name string
 	// TODO(): deprecate location in favor of function
-	Location    string               `yaml:"location"`
-	Function    string               `yaml:"function"`
-	Code        string               `yaml:"code"`
-	Runtime     string               `yaml:"runtime,omitempty"`
-	Namespace   string               `yaml:"namespace"`
-	Credential  string               `yaml:"credential"`
-	Inputs      map[string]Parameter `yaml:"inputs"`
-	Outputs     map[string]Parameter `yaml:"outputs"`
-	Name        string
+	Location    string                 `yaml:"location"`
+	Version     string                 `yaml:"version"`
+	Function    string                 `yaml:"function"`
+	Code        string                 `yaml:"code"`
+	Runtime     string                 `yaml:"runtime,omitempty"`
+	Namespace   string                 `yaml:"namespace"`
+	Credential  string                 `yaml:"credential"`
+	ExposedUrl  string                 `yaml:"exposedUrl"`
+	Webexport   string                 `yaml:"web-export"`
+	Main        string                 `yaml:"main"`
+	Docker      string                 `yaml:"docker,omitempty"`
+	Native      bool                   `yaml:"native,omitempty"`
+	Limits      *Limits                `yaml:"limits"`
+	Inputs      map[string]Parameter   `yaml:"inputs"`
+	Outputs     map[string]Parameter   `yaml:"outputs"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	// TODO() this is propoagated from package to every action within that package
 	//Parameters  map[string]interface{} `yaml:parameters`
-	ExposedUrl string  `yaml:"exposedUrl"`
-	Webexport  string  `yaml:"web-export"`
-	Main       string  `yaml:"main"`
-	Limits     *Limits `yaml:"limits"`
 }
 
 type Limits struct {

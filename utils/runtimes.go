@@ -40,6 +40,7 @@ const (
 	HTTP_CONTENT_TYPE_KEY   = "Content-Type"
 	HTTP_CONTENT_TYPE_VALUE = "application/json; charset=UTF-8"
 	RUNTIME_NOT_SPECIFIED   = "NOT SPECIFIED"
+	BLACKBOX                = "blackbox"
 )
 
 // Structs used to denote the OpenWhisk Runtime information
