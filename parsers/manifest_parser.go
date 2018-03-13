@@ -435,6 +435,34 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 	return s1, nil
 }
 
+func (dm *YAMLParser) composeInputsOrOutputs(inputs map[string]Parameter, manifestFilePath string) (whisk.KeyValueArr, error) {
+	var errorParser error
+	keyValArr := make(whisk.KeyValueArr, 0)
+	for name, param := range inputs {
+		var keyVal whisk.KeyValue
+		keyVal.Key = name
+		keyVal.Value, errorParser = ResolveParameter(name, &param, manifestFilePath)
+		if errorParser != nil {
+			return nil, errorParser
+		}
+		if keyVal.Value != nil {
+			keyValArr = append(keyValArr, keyVal)
+		}
+	}
+	return keyValArr, nil
+}
+
+func (dm *YAMLParser) composeAnnotations(annotations map[string]interface{}) whisk.KeyValueArr {
+	listOfAnnotations := make(whisk.KeyValueArr, 0)
+	for name, value := range annotations {
+		var keyVal whisk.KeyValue
+		keyVal.Key = name
+		keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
+		listOfAnnotations = append(listOfAnnotations, keyVal)
+	}
+	return listOfAnnotations
+}
+
 func (dm *YAMLParser) validateAction(manifestFilePath string, action Action) error {
 	// Check if action.Function is specified with action.Code
 	// with action.Code, action.Function is not allowed
@@ -726,62 +754,30 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		/*
 		 *  Action.Inputs
 		 */
-		keyValArr := make(whisk.KeyValueArr, 0)
-		for name, param := range action.Inputs {
-			var keyVal whisk.KeyValue
-			keyVal.Key = name
-			keyVal.Value, errorParser = ResolveParameter(name, &param, manifestFilePath)
-
-			if errorParser != nil {
-				return nil, errorParser
-			}
-
-			if keyVal.Value != nil {
-				keyValArr = append(keyValArr, keyVal)
-			}
+		listOfInputs, err := dm.composeInputsOrOutputs(action.Inputs, manifestFilePath)
+		if err != nil {
+			return nil, err
 		}
-
-		// if we have successfully parser valid key/value parameters
-		if len(keyValArr) > 0 {
-			wskaction.Parameters = keyValArr
+		if len(listOfInputs) > 0 {
+			wskaction.Parameters = listOfInputs
 		}
 
 		/*
 		 *  Action.Outputs
 		 */
-		keyValArr = make(whisk.KeyValueArr, 0)
-		for name, param := range action.Outputs {
-			var keyVal whisk.KeyValue
-			keyVal.Key = name
-			keyVal.Value, errorParser = ResolveParameter(name, &param, manifestFilePath)
-
-			// short circuit on error
-			if errorParser != nil {
-				return nil, errorParser
-			}
-
-			if keyVal.Value != nil {
-				keyValArr = append(keyValArr, keyVal)
-			}
-		}
-
 		// TODO{} add outputs as annotations (work to discuss officially supporting for compositions)
-		if len(keyValArr) > 0 {
-			// TODO() ?
-			//wskaction.Annotations  // TBD
+		listOfOutputs, err := dm.composeInputsOrOutputs(action.Outputs, manifestFilePath)
+		if err != nil {
+			return nil, err
+		}
+		if len(listOfOutputs) > 0 {
+			//wskaction.Annotations = listOfOutputs
 		}
 
 		/*
 		 *  Action.Annotations
 		 */
-		listOfAnnotations := make(whisk.KeyValueArr, 0)
-		for name, value := range action.Annotations {
-			var keyVal whisk.KeyValue
-			keyVal.Key = name
-			keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
-			listOfAnnotations = append(listOfAnnotations, keyVal)
-		}
-		if len(listOfAnnotations) > 0 {
+		if listOfAnnotations := dm.composeAnnotations(action.Annotations); len(listOfAnnotations) > 0 {
 			wskaction.Annotations = append(wskaction.Annotations, listOfAnnotations...)
 		}
 		// add managed annotations if its marked as managed deployment
@@ -797,7 +793,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		// when web-export is set to raw, treat action as a raw HTTP web action,
 		// when web-export is set to no | false, treat action as a standard action
 		if len(action.Webexport) != 0 {
-			wskaction.Annotations, errorParser = utils.WebAction(manifestFilePath, action.Name, action.Webexport, listOfAnnotations, false)
+			wskaction.Annotations, errorParser = utils.WebAction(manifestFilePath, action.Name, action.Webexport, wskaction.Annotations, false)
 			if errorParser != nil {
 				return listOfActions, errorParser
 			}
@@ -808,35 +804,42 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		 */
 		if action.Limits != nil {
 			wsklimits := new(whisk.Limits)
+			for _, t := range LIMITS_SUPPORTED {
+				switch t {
+				case LIMIT_VALUE_TIMEOUT:
+					if utils.LimitsTimeoutValidation(action.Limits.Timeout) {
+						wsklimits.Timeout = action.Limits.Timeout
+					} else {
+						warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
+							map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_TIMEOUT})
+						wskprint.PrintOpenWhiskWarning(warningString)
+					}
+				case LIMIT_VALUE_MEMORY_SIZE:
+					if utils.LimitsMemoryValidation(action.Limits.Memory) {
+						wsklimits.Memory = action.Limits.Memory
+					} else {
+						warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
+							map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_MEMORY_SIZE})
+						wskprint.PrintOpenWhiskWarning(warningString)
 
-			// TODO() use LIMITS_SUPPORTED in yamlparser to enumerata through instead of hardcoding
-			// perhaps change into a tuple
-			if utils.LimitsTimeoutValidation(action.Limits.Timeout) {
-				wsklimits.Timeout = action.Limits.Timeout
-			} else {
-				warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
-					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_TIMEOUT})
-				wskprint.PrintOpenWhiskWarning(warningString)
-			}
-			if utils.LimitsMemoryValidation(action.Limits.Memory) {
-				wsklimits.Memory = action.Limits.Memory
-			} else {
-				warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
-					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_MEMORY_SIZE})
-				wskprint.PrintOpenWhiskWarning(warningString)
-			}
-			if utils.LimitsLogsizeValidation(action.Limits.Logsize) {
-				wsklimits.Logsize = action.Limits.Logsize
-			} else {
-				warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
-					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_LOG_SIZE})
-				wskprint.PrintOpenWhiskWarning(warningString)
+					}
+				case LIMIT_VALUE_LOG_SIZE:
+					if utils.LimitsLogsizeValidation(action.Limits.Logsize) {
+						wsklimits.Logsize = action.Limits.Logsize
+					} else {
+						warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
+							map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_LOG_SIZE})
+						wskprint.PrintOpenWhiskWarning(warningString)
+
+					}
+				}
+
 			}
 			if wsklimits.Timeout != nil || wsklimits.Memory != nil || wsklimits.Logsize != nil {
 				wskaction.Limits = wsklimits
 			}
 
-			// TODO() use LIMITS_UNSUPPORTED in yamlparser to enumerata through instead of hardcoding
+			// TODO() use LIMITS_UNSUPPORTED in yamlparser to enumerate through instead of hardcoding
 			// emit warning errors if these limits are not nil
 			utils.NotSupportLimits(action.Limits.ConcurrentActivations, LIMIT_VALUE_CONCURRENT_ACTIVATIONS)
 			utils.NotSupportLimits(action.Limits.UserInvocationRate, LIMIT_VALUE_USER_INVOCATION_RATE)
