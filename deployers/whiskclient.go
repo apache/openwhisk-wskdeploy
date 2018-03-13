@@ -290,16 +290,27 @@ func validateClientConfig(credential PropertyValue, apiHost PropertyValue, names
 
 	// Display error message for each config value found missing
 	if len(credential.Value) == 0 || len(apiHost.Value) == 0 || len(namespace.Value) == 0 {
+
+		var errorMsg string = ""
 		if len(credential.Value) == 0 {
-			wskderrors.NewWhiskClientInvalidConfigError(wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY))
+			errorMsg = wskderrors.AppendDetailToErrorMessage(
+				errorMsg, wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY), 1)
 		}
 
 		if len(apiHost.Value) == 0 {
-			wskderrors.NewWhiskClientInvalidConfigError(wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST))
+			errorMsg = wskderrors.AppendDetailToErrorMessage(
+				errorMsg, wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST), 1)
+
 		}
 
 		if len(namespace.Value) == 0 {
-			wskderrors.NewWhiskClientInvalidConfigError(wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE))
+			errorMsg = wskderrors.AppendDetailToErrorMessage(
+				errorMsg, wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE), 1)
+
+		}
+
+		if len(errorMsg) > 0 {
+			return wskderrors.NewWhiskClientInvalidConfigError(errorMsg)
 		}
 	}
 

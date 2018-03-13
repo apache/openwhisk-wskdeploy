@@ -22,6 +22,7 @@ package deployers
 import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -246,4 +247,18 @@ func TestNewWhiskConfigWithDeploymentAndManifestFile(t *testing.T) {
 	assert.Equal(t, config.AuthToken, DEPLOYMENT_AUTH, "Failed to get auth token from deployment file")
 	assert.Equal(t, config.Namespace, DEPLOYMENT_NAMESPACE, "Failed to get namespace from deployment file")
 	assert.True(t, config.Insecure, "Config should set insecure to true")
+}
+
+func TestValidateClientConfig(t *testing.T) {
+
+	//credential = GetPropertyValue(credential, "", "test")
+	credential.Value = ""
+	apiHost.Value = ""
+	namespace.Value = ""
+	err := validateClientConfig(credential, apiHost, namespace)
+
+	if err != nil {
+		wskprint.PrintlnOpenWhiskInfo(err.Error())
+	}
+	assert.Nil(t, err, "Validation failed")
 }

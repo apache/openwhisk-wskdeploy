@@ -454,3 +454,13 @@ func IsCustomError(err error) bool {
 	}
 	return false
 }
+
+func AppendDetailToErrorMessage(detail string, add string, location int) string {
+
+	if len(detail) == 0 {
+		detail = "\n"
+	}
+	_, fname, lineNum, _ := runtime.Caller(location)
+	detail += fmt.Sprintf("  >> %s [%v]: %s", filepath.Base(fname), lineNum, add)
+	return detail
+}
