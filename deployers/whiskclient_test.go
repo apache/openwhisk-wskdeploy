@@ -22,6 +22,7 @@ package deployers
 import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -47,6 +48,11 @@ const (
 	WSKPROPS_KEY  = "test_key_file"
 	WSKPROPS_CERT = "test_cert_file"
 )
+
+func init() {
+	// Setup "trace" flag for unit tests based upon "go test" -v flag
+	utils.Flags.Trace = wskprint.DetectGoTestVerbose()
+}
 
 func initializeFlags() {
 	utils.Flags.Auth = ""
@@ -249,16 +255,27 @@ func TestNewWhiskConfigWithDeploymentAndManifestFile(t *testing.T) {
 	assert.True(t, config.Insecure, "Config should set insecure to true")
 }
 
+// Test for the following errors if the corresponding config. (wskprop) validation fails
+// wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY)
+// wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST)
+// wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE)
 func TestValidateClientConfig(t *testing.T) {
 
-	//credential = GetPropertyValue(credential, "", "test")
+	ASSERT_ERROR_DETECT_AUTHKEY := "Validation did not detect missing AUTHKEY"
+	//ASSERT_ERROR_DETECT_APIHOST := "Validation did not detect missing APIHOST"
+	//ASSERT_ERROR_DETECT_NAMESPACE := "Validation did not detect missing NAMESPACE"
+
+	// Test 1: credential (AUTHKEY) empty
 	credential.Value = ""
 	apiHost.Value = ""
 	namespace.Value = ""
 	err := validateClientConfig(credential, apiHost, namespace)
+	wskprint.PrintlnOpenWhiskTrace(utils.Flags.Trace, err.Error())
 
 	if err != nil {
-		wskprint.PrintlnOpenWhiskInfo(err.Error())
+		// Contains(t TestingT, s, contains interface{}, msgAndArgs ...interface{}) bool
+		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY), ASSERT_ERROR_DETECT_AUTHKEY)
+	} else {
+		assert.Error(t, err, ASSERT_ERROR_DETECT_AUTHKEY)
 	}
-	assert.Nil(t, err, "Validation failed")
 }
