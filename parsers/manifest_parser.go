@@ -511,7 +511,7 @@ func (dm *YAMLParser) readActionCode(manifestFilePath string, action Action) (*w
 	return exec, nil
 }
 
-func (dm *YAMLParser) validateActionFunction(manifestFilePath string, action Action, ext string, kind string) error {
+func (dm *YAMLParser) validateActionFunction(manifestFileName string, action Action, ext string, kind string) error {
 	if len(action.Runtime) != 0 {
 		// produce an error when a runtime could not be derived from the action file extension
 		// and its not explicitly specified in the manifest YAML file
@@ -523,7 +523,7 @@ func (dm *YAMLParser) validateActionFunction(manifestFilePath string, action Act
 						wski18n.KEY_RUNTIME: utils.RUNTIME_NOT_SPECIFIED,
 						wski18n.KEY_ACTION:  action.Name})
 				return wskderrors.NewInvalidRuntimeError(errMessage,
-					manifestFilePath,
+					manifestFileName,
 					action.Name,
 					utils.RUNTIME_NOT_SPECIFIED,
 					utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
@@ -533,7 +533,7 @@ func (dm *YAMLParser) validateActionFunction(manifestFilePath string, action Act
 						wski18n.KEY_EXTENSION: ext,
 						wski18n.KEY_ACTION:    action.Name})
 				return wskderrors.NewInvalidRuntimeError(errMessage,
-					manifestFilePath,
+					manifestFileName,
 					action.Name,
 					utils.RUNTIME_NOT_SPECIFIED,
 					utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
@@ -543,7 +543,9 @@ func (dm *YAMLParser) validateActionFunction(manifestFilePath string, action Act
 	return nil
 }
 
-func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action, actionFilePath string, manifestFilePath string) (*whisk.Exec, error) {
+func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action, manifestFilePath string) (*whisk.Exec, error) {
+	var actionFilePath string
+	var zipFileName string
 	exec := new(whisk.Exec)
 
 	// check if action function is pointing to an URL
@@ -562,17 +564,16 @@ func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action,
 		actionFilePath = strings.TrimRight(manifestFilePath, manifestFileName) + action.Function
 	}
 
-	var zipFileName string
 	if utils.IsDirectory(actionFilePath) {
 		zipFileName = actionFilePath + "." + utils.ZIP_FILE_EXTENSION
 		err := utils.NewZipWritter(actionFilePath, zipFileName).Zip()
 		if err != nil {
 			return nil, err
 		}
-		// TODO() do not use defer in a loop, resource leaks possible
 		defer os.Remove(zipFileName)
+		actionFilePath = zipFileName
 	}
-	actionFilePath = zipFileName
+
 	action.Function = actionFilePath
 
 	// determine extension of the given action source file
@@ -586,10 +587,11 @@ func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action,
 	var kind string
 	r := utils.FileExtensionRuntimeKindMap[ext]
 	kind = utils.DefaultRunTimes[r]
-	if err := dm.validateActionFunction(manifestFilePath, action, ext, kind); err != nil {
+	if err := dm.validateActionFunction(manifestFileName, action, ext, kind); err != nil {
 		return nil, err
 	}
 	exec.Kind = kind
+
 	dat, err := utils.Read(actionFilePath)
 	if err != nil {
 		return nil, err
@@ -599,6 +601,7 @@ func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action,
 		code = base64.StdEncoding.EncodeToString([]byte(dat))
 	}
 	exec.Code = &code
+
 	/*
 	*  Action.Runtime
 	*  Perform few checks if action runtime is specified in manifest YAML file
@@ -646,7 +649,7 @@ func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action,
 				// for zip action, error out if specified runtime is not supported by
 				// OpenWhisk server
 				return nil, wskderrors.NewInvalidRuntimeError(warnStr,
-					manifestFilePath,
+					manifestFileName,
 					action.Name,
 					action.Runtime,
 					utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
@@ -668,19 +671,19 @@ func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action,
 }
 
 // below codes is from wsk cli with tiny adjusts.
-func (dm *YAMLParser) getExec(actionFilePath string, manifestFileName string, action Action, manifestFilePath string) (*whisk.Exec, error) {
+func (dm *YAMLParser) getExec(manifestFileName string, action Action, manifestFilePath string) (*whisk.Exec, error) {
 	var err error
 	var exec *whisk.Exec
 	exec = new(whisk.Exec)
 
 	if len(action.Code) != 0 {
-		if exec, err = dm.readActionCode(manifestFileName, action); err != nil {
+		if exec, err = dm.readActionCode(manifestFilePath, action); err != nil {
 			return nil, err
 		}
 	}
 
 	if len(action.Function) != 0 {
-		if exec, err = dm.readActionFunction(manifestFilePath, action, actionFilePath, manifestFileName); err != nil {
+		if exec, err = dm.readActionFunction(manifestFilePath, action, manifestFileName); err != nil {
 			return nil, err
 		}
 	}
@@ -740,6 +743,54 @@ func (dm *YAMLParser) getExec(actionFilePath string, manifestFileName string, ac
 	return exec, nil
 }
 
+func (dm *YAMLParser) validateActionLimits(limits Limits) {
+	// TODO() use LIMITS_UNSUPPORTED in yamlparser to enumerate through instead of hardcoding
+	// emit warning errors if these limits are not nil
+	utils.NotSupportLimits(limits.ConcurrentActivations, LIMIT_VALUE_CONCURRENT_ACTIVATIONS)
+	utils.NotSupportLimits(limits.UserInvocationRate, LIMIT_VALUE_USER_INVOCATION_RATE)
+	utils.NotSupportLimits(limits.CodeSize, LIMIT_VALUE_CODE_SIZE)
+	utils.NotSupportLimits(limits.ParameterSize, LIMIT_VALUE_PARAMETER_SIZE)
+}
+
+func (dm *YAMLParser) composeActionLimits(limits Limits) *whisk.Limits {
+	dm.validateActionLimits(limits)
+	wsklimits := new(whisk.Limits)
+	for _, t := range LIMITS_SUPPORTED {
+		switch t {
+		case LIMIT_VALUE_TIMEOUT:
+			if utils.LimitsTimeoutValidation(limits.Timeout) {
+				wsklimits.Timeout = limits.Timeout
+			} else {
+				warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
+					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_TIMEOUT})
+				wskprint.PrintOpenWhiskWarning(warningString)
+			}
+		case LIMIT_VALUE_MEMORY_SIZE:
+			if utils.LimitsMemoryValidation(limits.Memory) {
+				wsklimits.Memory = limits.Memory
+			} else {
+				warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
+					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_MEMORY_SIZE})
+				wskprint.PrintOpenWhiskWarning(warningString)
+
+			}
+		case LIMIT_VALUE_LOG_SIZE:
+			if utils.LimitsLogsizeValidation(limits.Logsize) {
+				wsklimits.Logsize = limits.Logsize
+			} else {
+				warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
+					map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_LOG_SIZE})
+				wskprint.PrintOpenWhiskWarning(warningString)
+
+			}
+		}
+	}
+	if wsklimits.Timeout != nil || wsklimits.Memory != nil || wsklimits.Logsize != nil {
+		return wsklimits
+	}
+	return nil
+}
+
 func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string]Action, packageName string, ma whisk.KeyValue) ([]utils.ActionRecord, error) {
 
 	var errorParser error
@@ -755,24 +806,18 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		// Create action data object from client library
 		wskaction := new(whisk.Action)
 
-		wskaction.Exec = new(whisk.Exec)
-		// a placeholder for action source file, specified using "function"
-		var actionFilePath string
-
 		//set action.Function to action.Location
 		//because Location is deprecated in Action entity
 		if len(action.Function) == 0 && len(action.Location) != 0 {
 			action.Function = action.Location
 		}
 
-		wskaction.Exec, errorParser = dm.getExec(actionFilePath, manifestFileName, action, manifestFilePath)
+		wskaction.Exec, errorParser = dm.getExec(manifestFileName, action, manifestFilePath)
 		if errorParser != nil {
 			return nil, errorParser
 		}
 
-		/*
-		 *  Action.Inputs
-		 */
+		// Action.Inputs
 		listOfInputs, err := dm.composeInputsOrOutputs(action.Inputs, manifestFilePath)
 		if err != nil {
 			return nil, err
@@ -781,9 +826,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 			wskaction.Parameters = listOfInputs
 		}
 
-		/*
-		 *  Action.Outputs
-		 */
+		// Action.Outputs
 		// TODO{} add outputs as annotations (work to discuss officially supporting for compositions)
 		listOfOutputs, err := dm.composeInputsOrOutputs(action.Outputs, manifestFilePath)
 		if err != nil {
@@ -793,20 +836,17 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 			//wskaction.Annotations = listOfOutputs
 		}
 
-		/*
-		 *  Action.Annotations
-		 */
+		// Action.Annotations
 		if listOfAnnotations := dm.composeAnnotations(action.Annotations); len(listOfAnnotations) > 0 {
 			wskaction.Annotations = append(wskaction.Annotations, listOfAnnotations...)
 		}
+
 		// add managed annotations if its marked as managed deployment
 		if utils.Flags.Managed {
 			wskaction.Annotations = append(wskaction.Annotations, ma)
 		}
 
-		/*
-		 *  Web Export
-		 */
+		// Web Export
 		// Treat ACTION as a web action, a raw HTTP web action, or as a standard action based on web-export;
 		// when web-export is set to yes | true, treat action as a web action,
 		// when web-export is set to raw, treat action as a raw HTTP web action,
@@ -818,52 +858,11 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 			}
 		}
 
-		/*
-		 *  Action.Limits
-		 */
+		// Action.Limits
 		if action.Limits != nil {
-			wsklimits := new(whisk.Limits)
-			for _, t := range LIMITS_SUPPORTED {
-				switch t {
-				case LIMIT_VALUE_TIMEOUT:
-					if utils.LimitsTimeoutValidation(action.Limits.Timeout) {
-						wsklimits.Timeout = action.Limits.Timeout
-					} else {
-						warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
-							map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_TIMEOUT})
-						wskprint.PrintOpenWhiskWarning(warningString)
-					}
-				case LIMIT_VALUE_MEMORY_SIZE:
-					if utils.LimitsMemoryValidation(action.Limits.Memory) {
-						wsklimits.Memory = action.Limits.Memory
-					} else {
-						warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
-							map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_MEMORY_SIZE})
-						wskprint.PrintOpenWhiskWarning(warningString)
-
-					}
-				case LIMIT_VALUE_LOG_SIZE:
-					if utils.LimitsLogsizeValidation(action.Limits.Logsize) {
-						wsklimits.Logsize = action.Limits.Logsize
-					} else {
-						warningString := wski18n.T(wski18n.ID_WARN_LIMIT_IGNORED_X_limit_X,
-							map[string]interface{}{wski18n.KEY_LIMIT: LIMIT_VALUE_LOG_SIZE})
-						wskprint.PrintOpenWhiskWarning(warningString)
-
-					}
-				}
-
-			}
-			if wsklimits.Timeout != nil || wsklimits.Memory != nil || wsklimits.Logsize != nil {
+			if wsklimits := dm.composeActionLimits(*(action.Limits)); wsklimits != nil {
 				wskaction.Limits = wsklimits
 			}
-
-			// TODO() use LIMITS_UNSUPPORTED in yamlparser to enumerate through instead of hardcoding
-			// emit warning errors if these limits are not nil
-			utils.NotSupportLimits(action.Limits.ConcurrentActivations, LIMIT_VALUE_CONCURRENT_ACTIVATIONS)
-			utils.NotSupportLimits(action.Limits.UserInvocationRate, LIMIT_VALUE_USER_INVOCATION_RATE)
-			utils.NotSupportLimits(action.Limits.CodeSize, LIMIT_VALUE_CODE_SIZE)
-			utils.NotSupportLimits(action.Limits.ParameterSize, LIMIT_VALUE_PARAMETER_SIZE)
 		}
 
 		wskaction.Name = actionName
