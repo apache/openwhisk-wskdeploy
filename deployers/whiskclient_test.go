@@ -279,4 +279,6 @@ func TestValidateClientConfig(t *testing.T) {
 	} else {
 		assert.Error(t, err, ASSERT_ERROR_DETECT_AUTHKEY)
 	}
+
+	// TODO() test remainder of validateClientConfig() processing
 }
