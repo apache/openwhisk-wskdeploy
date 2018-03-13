@@ -255,7 +255,7 @@ func TestNewWhiskConfigWithDeploymentAndManifestFile(t *testing.T) {
 	assert.True(t, config.Insecure, "Config should set insecure to true")
 }
 
-// Test for the following errors if the corresponding config. (wskprop) validation fails
+// Test for the following error messages if corresponding config. values' validation fails
 // wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY)
 // wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST)
 // wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE)
@@ -265,18 +265,17 @@ func TestValidateClientConfig(t *testing.T) {
 	ASSERT_ERROR_DETECT_APIHOST := "Validation did not detect missing APIHOST"
 	ASSERT_ERROR_DETECT_NAMESPACE := "Validation did not detect missing NAMESPACE"
 
-	// Test 1: credential (AUTHKEY) empty
+	// test missing values for all 3 primary keys
 	credential.Value = ""
 	apiHost.Value = ""
 	namespace.Value = ""
 	err := validateClientConfig(credential, apiHost, namespace)
-	wskprint.PrintlnOpenWhiskTrace(utils.Flags.Trace, err.Error())
 
 	if err != nil {
 		// Contains(t TestingT, s, contains interface{}, msgAndArgs ...interface{}) bool
 		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY), ASSERT_ERROR_DETECT_AUTHKEY)
-		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY), ASSERT_ERROR_DETECT_APIHOST)
-		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY), ASSERT_ERROR_DETECT_NAMESPACE)
+		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST), ASSERT_ERROR_DETECT_APIHOST)
+		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE), ASSERT_ERROR_DETECT_NAMESPACE)
 	} else {
 		assert.Error(t, err, ASSERT_ERROR_DETECT_AUTHKEY)
 	}
