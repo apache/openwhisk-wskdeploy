@@ -262,8 +262,8 @@ func TestNewWhiskConfigWithDeploymentAndManifestFile(t *testing.T) {
 func TestValidateClientConfig(t *testing.T) {
 
 	ASSERT_ERROR_DETECT_AUTHKEY := "Validation did not detect missing AUTHKEY"
-	//ASSERT_ERROR_DETECT_APIHOST := "Validation did not detect missing APIHOST"
-	//ASSERT_ERROR_DETECT_NAMESPACE := "Validation did not detect missing NAMESPACE"
+	ASSERT_ERROR_DETECT_APIHOST := "Validation did not detect missing APIHOST"
+	ASSERT_ERROR_DETECT_NAMESPACE := "Validation did not detect missing NAMESPACE"
 
 	// Test 1: credential (AUTHKEY) empty
 	credential.Value = ""
@@ -275,6 +275,8 @@ func TestValidateClientConfig(t *testing.T) {
 	if err != nil {
 		// Contains(t TestingT, s, contains interface{}, msgAndArgs ...interface{}) bool
 		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY), ASSERT_ERROR_DETECT_AUTHKEY)
+		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY), ASSERT_ERROR_DETECT_APIHOST)
+		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY), ASSERT_ERROR_DETECT_NAMESPACE)
 	} else {
 		assert.Error(t, err, ASSERT_ERROR_DETECT_AUTHKEY)
 	}
