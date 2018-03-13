@@ -463,57 +463,117 @@ func (dm *YAMLParser) composeAnnotations(annotations map[string]interface{}) whi
 	return listOfAnnotations
 }
 
-func (dm *YAMLParser) validateAction(manifestFilePath string, action Action) error {
+func (dm *YAMLParser) validateActionCode(manifestFilePath string, action Action) error {
 	// Check if action.Function is specified with action.Code
 	// with action.Code, action.Function is not allowed
 	// with action.Code, action.Runtime should be specified
-	if len(action.Code) != 0 {
-		if len(action.Function) != 0 {
-			err := wski18n.T(wski18n.ID_ERR_ACTION_INVALID_X_action_X,
-				map[string]interface{}{
-					wski18n.KEY_ACTION: action.Name})
-			return wskderrors.NewYAMLFileFormatError(manifestFilePath, err)
-		}
-		if len(action.Runtime) == 0 {
-			err := wski18n.T(wski18n.ID_ERR_ACTION_MISSING_RUNTIME_WITH_CODE_X_action_X,
-				map[string]interface{}{
-					wski18n.KEY_ACTION: action.Name})
-			return wskderrors.NewYAMLFileFormatError(manifestFilePath, err)
-		}
+	if len(action.Function) != 0 {
+		err := wski18n.T(wski18n.ID_ERR_ACTION_INVALID_X_action_X,
+			map[string]interface{}{
+				wski18n.KEY_ACTION: action.Name})
+		return wskderrors.NewYAMLFileFormatError(manifestFilePath, err)
 	}
-
+	if len(action.Runtime) == 0 {
+		err := wski18n.T(wski18n.ID_ERR_ACTION_MISSING_RUNTIME_WITH_CODE_X_action_X,
+			map[string]interface{}{
+				wski18n.KEY_ACTION: action.Name})
+		return wskderrors.NewYAMLFileFormatError(manifestFilePath, err)
+	}
 	return nil
 }
 
-func (dm *YAMLParser) composeActionExec(manifestFilePath string, action Action) (*whisk.Exec, error) {
+func (dm *YAMLParser) readActionCode(manifestFilePath string, action Action) (*whisk.Exec, error) {
 	exec := new(whisk.Exec)
-	if len(action.Code) != 0 {
-		// validate runtime from the manifest file
-		// error out if the specified runtime is not valid or not supported
-		// even if runtime is invalid, deploy action with specified runtime in strict mode
-		if utils.Flags.Strict {
-			exec.Kind = action.Runtime
-		} else if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {
-			exec.Kind = action.Runtime
-		} else if len(utils.DefaultRunTimes[action.Runtime]) != 0 {
-			exec.Kind = utils.DefaultRunTimes[action.Runtime]
-		} else {
-			err := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
-				map[string]interface{}{
-					wski18n.KEY_RUNTIME: action.Runtime,
-					wski18n.KEY_ACTION:  action.Name})
-			return nil, wskderrors.NewYAMLFileFormatError(manifestFilePath, err)
-		}
-		exec.Code = &(action.Code)
+	if err := dm.validateActionCode(manifestFilePath, action); err != nil {
+		return nil, err
+	}
+	// validate runtime from the manifest file
+	// error out if the specified runtime is not valid or not supported
+	// even if runtime is invalid, deploy action with specified runtime in strict mode
+	if utils.Flags.Strict {
+		exec.Kind = action.Runtime
+	} else if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {
+		exec.Kind = action.Runtime
+	} else if len(utils.DefaultRunTimes[action.Runtime]) != 0 {
+		exec.Kind = utils.DefaultRunTimes[action.Runtime]
+	} else {
+		err := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
+			map[string]interface{}{
+				wski18n.KEY_RUNTIME: action.Runtime,
+				wski18n.KEY_ACTION:  action.Name})
+		return nil, wskderrors.NewYAMLFileFormatError(manifestFilePath, err)
+	}
+	exec.Code = &(action.Code)
+	// we can specify the name of the action entry point using main
+	if len(action.Main) != 0 {
+		exec.Main = action.Main
 	}
 	return exec, nil
 }
 
-// below codes is from wsk cli with tiny adjusts.
-func (dm *YAMLParser) getExec(actionFilePath string, actionRuntime string, isDocker bool, mainEntry string, actionName string, manifestFileName string) (*whisk.Exec, error) {
-	var err error
-	//var content []byte
-	var exec *whisk.Exec
+func (dm *YAMLParser) validateActionFunction(manifestFilePath string, action Action, ext string, kind string) error {
+	if len(action.Runtime) != 0 {
+		// produce an error when a runtime could not be derived from the action file extension
+		// and its not explicitly specified in the manifest YAML file
+		// and action source is not a zip file
+		if len(action.Runtime) == 0 {
+			if ext == utils.ZIP_FILE_EXTENSION {
+				errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
+					map[string]interface{}{
+						wski18n.KEY_RUNTIME: utils.RUNTIME_NOT_SPECIFIED,
+						wski18n.KEY_ACTION:  action.Name})
+				return wskderrors.NewInvalidRuntimeError(errMessage,
+					manifestFilePath,
+					action.Name,
+					utils.RUNTIME_NOT_SPECIFIED,
+					utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+			} else if len(kind) == 0 {
+				errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_ACTION_SOURCE_NOT_SUPPORTED_X_ext_X_action_X,
+					map[string]interface{}{
+						wski18n.KEY_EXTENSION: ext,
+						wski18n.KEY_ACTION:    action.Name})
+				return wskderrors.NewInvalidRuntimeError(errMessage,
+					manifestFilePath,
+					action.Name,
+					utils.RUNTIME_NOT_SPECIFIED,
+					utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+			}
+		}
+	}
+	return nil
+}
+
+func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action, actionFilePath string, manifestFilePath string) (*whisk.Exec, error) {
+	exec := new(whisk.Exec)
+
+	// check if action function is pointing to an URL
+	// we do not support if function is pointing to remote directory
+	// therefore error out if there is a combination of http/https ending in a directory
+	if strings.HasPrefix(action.Function, HTTP) || strings.HasPrefix(action.Function, HTTPS) {
+		if len(path.Ext(action.Function)) == 0 {
+			err := wski18n.T(wski18n.ID_ERR_ACTION_FUNCTION_REMOTE_DIR_NOT_SUPPORTED_X_action_X_url_X,
+				map[string]interface{}{
+					wski18n.KEY_ACTION: action.Name,
+					wski18n.KEY_URL:    action.Function})
+			return nil, wskderrors.NewYAMLFileFormatError(manifestFilePath, err)
+		}
+		actionFilePath = action.Function
+	} else {
+		actionFilePath = strings.TrimRight(manifestFilePath, manifestFileName) + action.Function
+	}
+
+	var zipFileName string
+	if utils.IsDirectory(actionFilePath) {
+		zipFileName = actionFilePath + "." + utils.ZIP_FILE_EXTENSION
+		err := utils.NewZipWritter(actionFilePath, zipFileName).Zip()
+		if err != nil {
+			return nil, err
+		}
+		// TODO() do not use defer in a loop, resource leaks possible
+		defer os.Remove(zipFileName)
+	}
+	actionFilePath = zipFileName
+	action.Function = actionFilePath
 
 	// determine extension of the given action source file
 	ext := filepath.Ext(actionFilePath)
@@ -526,37 +586,10 @@ func (dm *YAMLParser) getExec(actionFilePath string, actionRuntime string, isDoc
 	var kind string
 	r := utils.FileExtensionRuntimeKindMap[ext]
 	kind = utils.DefaultRunTimes[r]
-
-	// produce an error when a runtime could not be derived from the action file extension
-	// and its not explicitly specified in the manifest YAML file
-	// and action source is not a zip file
-	if len(actionRuntime) == 0 {
-		if ext == utils.ZIP_FILE_EXTENSION {
-			errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
-				map[string]interface{}{
-					wski18n.KEY_RUNTIME: utils.RUNTIME_NOT_SPECIFIED,
-					wski18n.KEY_ACTION:  actionName})
-			return nil, wskderrors.NewInvalidRuntimeError(errMessage,
-				manifestFileName,
-				actionName,
-				utils.RUNTIME_NOT_SPECIFIED,
-				utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
-		} else if len(kind) == 0 {
-			errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_ACTION_SOURCE_NOT_SUPPORTED_X_ext_X_action_X,
-				map[string]interface{}{
-					wski18n.KEY_EXTENSION: ext,
-					wski18n.KEY_ACTION:    actionName})
-			return nil, wskderrors.NewInvalidRuntimeError(errMessage,
-				manifestFileName,
-				actionName,
-				utils.RUNTIME_NOT_SPECIFIED,
-				utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
-		}
+	if err := dm.validateActionFunction(manifestFilePath, action, ext, kind); err != nil {
+		return nil, err
 	}
-	exec = new(whisk.Exec)
-
 	exec.Kind = kind
-
 	dat, err := utils.Read(actionFilePath)
 	if err != nil {
 		return nil, err
@@ -566,7 +599,6 @@ func (dm *YAMLParser) getExec(actionFilePath string, actionRuntime string, isDoc
 		code = base64.StdEncoding.EncodeToString([]byte(dat))
 	}
 	exec.Code = &code
-
 	/*
 	*  Action.Runtime
 	*  Perform few checks if action runtime is specified in manifest YAML file
@@ -574,31 +606,31 @@ func (dm *YAMLParser) getExec(actionFilePath string, actionRuntime string, isDoc
 	*  (2) Check if specified runtime is consistent with action source file extensions
 	*  Set the action runtime to match with the source file extension, if wskdeploy is not invoked in strict mode
 	 */
-	if len(actionRuntime) != 0 {
-		if utils.CheckExistRuntime(actionRuntime, utils.SupportedRunTimes) {
+	if len(action.Runtime) != 0 {
+		if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {
 			// for zip actions, rely on the runtimes from the manifest file as it can not be derived from the action source file extension
 			// pick runtime from manifest file if its supported by OpenWhisk server
 			if ext == utils.ZIP_FILE_EXTENSION {
-				exec.Kind = actionRuntime
+				exec.Kind = action.Runtime
 			} else {
-				if utils.CheckRuntimeConsistencyWithFileExtension(ext, actionRuntime) {
-					exec.Kind = actionRuntime
+				if utils.CheckRuntimeConsistencyWithFileExtension(ext, action.Runtime) {
+					exec.Kind = action.Runtime
 				} else {
 					warnStr := wski18n.T(wski18n.ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
 						map[string]interface{}{
-							wski18n.KEY_RUNTIME:   actionRuntime,
+							wski18n.KEY_RUNTIME:   action.Runtime,
 							wski18n.KEY_EXTENSION: ext,
-							wski18n.KEY_ACTION:    actionName})
+							wski18n.KEY_ACTION:    action.Name})
 					wskprint.PrintOpenWhiskWarning(warnStr)
 
 					// even if runtime is not consistent with file extension, deploy action with specified runtime in strict mode
 					if utils.Flags.Strict {
-						exec.Kind = actionRuntime
+						exec.Kind = action.Runtime
 					} else {
 						warnStr := wski18n.T(wski18n.ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
 							map[string]interface{}{
 								wski18n.KEY_RUNTIME: exec.Kind,
-								wski18n.KEY_ACTION:  actionName})
+								wski18n.KEY_ACTION:  action.Name})
 						wskprint.PrintOpenWhiskWarning(warnStr)
 					}
 				}
@@ -606,32 +638,51 @@ func (dm *YAMLParser) getExec(actionFilePath string, actionRuntime string, isDoc
 		} else {
 			warnStr := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
 				map[string]interface{}{
-					wski18n.KEY_RUNTIME: actionRuntime,
-					wski18n.KEY_ACTION:  actionName})
+					wski18n.KEY_RUNTIME: action.Runtime,
+					wski18n.KEY_ACTION:  action.Name})
 			wskprint.PrintOpenWhiskWarning(warnStr)
 
 			if ext == utils.ZIP_FILE_EXTENSION {
 				// for zip action, error out if specified runtime is not supported by
 				// OpenWhisk server
 				return nil, wskderrors.NewInvalidRuntimeError(warnStr,
-					manifestFileName,
-					actionName,
-					actionRuntime,
+					manifestFilePath,
+					action.Name,
+					action.Runtime,
 					utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 			} else {
 				warnStr := wski18n.T(wski18n.ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
 					map[string]interface{}{
 						wski18n.KEY_RUNTIME: exec.Kind,
-						wski18n.KEY_ACTION:  actionName})
+						wski18n.KEY_ACTION:  action.Name})
 				wskprint.PrintOpenWhiskWarning(warnStr)
 			}
 
 		}
 	}
-
 	// we can specify the name of the action entry point using main
-	if len(mainEntry) != 0 {
-		exec.Main = mainEntry
+	if len(action.Main) != 0 {
+		exec.Main = action.Main
+	}
+	return exec, nil
+}
+
+// below codes is from wsk cli with tiny adjusts.
+func (dm *YAMLParser) getExec(actionFilePath string, manifestFileName string, action Action, manifestFilePath string) (*whisk.Exec, error) {
+	var err error
+	var exec *whisk.Exec
+	exec = new(whisk.Exec)
+
+	if len(action.Code) != 0 {
+		if exec, err = dm.readActionCode(manifestFileName, action); err != nil {
+			return nil, err
+		}
+	}
+
+	if len(action.Function) != 0 {
+		if exec, err = dm.readActionFunction(manifestFilePath, action, actionFilePath, manifestFileName); err != nil {
+			return nil, err
+		}
 	}
 
 	// end of else here
@@ -714,41 +765,9 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 			action.Function = action.Location
 		}
 
-		//bind action, and exposed URL
-		if len(action.Function) != 0 {
-			// check if action function is pointing to an URL
-			// we do not support if function is pointing to remote directory
-			// therefore error out if there is a combination of http/https ending in a directory
-			if strings.HasPrefix(action.Function, HTTP) || strings.HasPrefix(action.Function, HTTPS) {
-				if len(path.Ext(action.Function)) == 0 {
-					err := wski18n.T(wski18n.ID_ERR_ACTION_FUNCTION_REMOTE_DIR_NOT_SUPPORTED_X_action_X_url_X,
-						map[string]interface{}{
-							wski18n.KEY_ACTION: action.Name,
-							wski18n.KEY_URL:    action.Function})
-					return nil, wskderrors.NewYAMLFileFormatError(manifestFilePath, err)
-				}
-				actionFilePath = action.Function
-			} else {
-				actionFilePath = strings.TrimRight(manifestFilePath, manifestFileName) + action.Function
-			}
-
-			var zipFileName string
-			if utils.IsDirectory(actionFilePath) {
-				zipFileName = actionFilePath + "." + utils.ZIP_FILE_EXTENSION
-				err := utils.NewZipWritter(actionFilePath, zipFileName).Zip()
-				if err != nil {
-					return nil, err
-				}
-				// TODO() do not use defer in a loop, resource leaks possible
-				defer os.Remove(zipFileName)
-			}
-			actionFilePath = zipFileName
-			action.Function = actionFilePath
-			wskaction.Exec, errorParser = dm.getExec(actionFilePath, action.Runtime, false, action.Main, actionName, manifestFileName)
-			if errorParser != nil {
-				return nil, errorParser
-			}
-
+		wskaction.Exec, errorParser = dm.getExec(actionFilePath, manifestFileName, action, manifestFilePath)
+		if errorParser != nil {
+			return nil, errorParser
 		}
 
 		/*
