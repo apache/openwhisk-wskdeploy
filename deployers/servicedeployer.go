@@ -20,12 +20,6 @@ package deployers
 import (
 	"bufio"
 	"fmt"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"net/http"
 	"os"
 	"path"
@@ -34,6 +28,13 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 const (
@@ -885,6 +886,14 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 
 	if err != nil {
 		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, true)
+	}
+
+	// Consecutive deployments of manifest containing trigger with feed action (and rule) result in inactive
+	// rule. The rule seems to become inactive when its trigger get deleted (part of the wskdeploy feed action update)
+	// Currently simply always setting rule status to active in case not specified implicitly
+	_, _, err = deployer.Client.Rules.SetState(rule.Name, "active")
+	if err != nil {
+		return err
 	}
 
 	displayPostprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, true)
