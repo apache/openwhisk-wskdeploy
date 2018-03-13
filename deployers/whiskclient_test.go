@@ -272,7 +272,7 @@ func TestValidateClientConfig(t *testing.T) {
 	err := validateClientConfig(credential, apiHost, namespace)
 
 	if err != nil {
-		// Contains(t TestingT, s, contains interface{}, msgAndArgs ...interface{}) bool
+		// Verify all 3 missing config. values are accounted for in the error message
 		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY), ASSERT_ERROR_DETECT_AUTHKEY)
 		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST), ASSERT_ERROR_DETECT_APIHOST)
 		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE), ASSERT_ERROR_DETECT_NAMESPACE)
