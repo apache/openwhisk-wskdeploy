@@ -32,6 +32,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/davecgh/go-spew/spew"
 	"path/filepath"
 )
 
@@ -512,38 +513,36 @@ func (dm *YAMLParser) readActionCode(manifestFilePath string, action Action) (*w
 }
 
 func (dm *YAMLParser) validateActionFunction(manifestFileName string, action Action, ext string, kind string) error {
-	if len(action.Runtime) != 0 {
-		// produce an error when a runtime could not be derived from the action file extension
-		// and its not explicitly specified in the manifest YAML file
-		// and action source is not a zip file
-		if len(action.Runtime) == 0 {
-			if ext == utils.ZIP_FILE_EXTENSION {
-				errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
-					map[string]interface{}{
-						wski18n.KEY_RUNTIME: utils.RUNTIME_NOT_SPECIFIED,
-						wski18n.KEY_ACTION:  action.Name})
-				return wskderrors.NewInvalidRuntimeError(errMessage,
-					manifestFileName,
-					action.Name,
-					utils.RUNTIME_NOT_SPECIFIED,
-					utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
-			} else if len(kind) == 0 {
-				errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_ACTION_SOURCE_NOT_SUPPORTED_X_ext_X_action_X,
-					map[string]interface{}{
-						wski18n.KEY_EXTENSION: ext,
-						wski18n.KEY_ACTION:    action.Name})
-				return wskderrors.NewInvalidRuntimeError(errMessage,
-					manifestFileName,
-					action.Name,
-					utils.RUNTIME_NOT_SPECIFIED,
-					utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
-			}
+	// produce an error when a runtime could not be derived from the action file extension
+	// and its not explicitly specified in the manifest YAML file
+	// and action source is not a zip file
+	if len(action.Runtime) == 0 {
+		if ext == utils.ZIP_FILE_EXTENSION {
+			errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
+				map[string]interface{}{
+					wski18n.KEY_RUNTIME: utils.RUNTIME_NOT_SPECIFIED,
+					wski18n.KEY_ACTION:  action.Name})
+			return wskderrors.NewInvalidRuntimeError(errMessage,
+				manifestFileName,
+				action.Name,
+				utils.RUNTIME_NOT_SPECIFIED,
+				utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+		} else if len(kind) == 0 {
+			errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_ACTION_SOURCE_NOT_SUPPORTED_X_ext_X_action_X,
+				map[string]interface{}{
+					wski18n.KEY_EXTENSION: ext,
+					wski18n.KEY_ACTION:    action.Name})
+			return wskderrors.NewInvalidRuntimeError(errMessage,
+				manifestFileName,
+				action.Name,
+				utils.RUNTIME_NOT_SPECIFIED,
+				utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 		}
 	}
 	return nil
 }
 
-func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action, manifestFilePath string) (*whisk.Exec, error) {
+func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileName string, action Action) (string, *whisk.Exec, error) {
 	var actionFilePath string
 	var zipFileName string
 	exec := new(whisk.Exec)
@@ -557,10 +556,13 @@ func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action,
 				map[string]interface{}{
 					wski18n.KEY_ACTION: action.Name,
 					wski18n.KEY_URL:    action.Function})
-			return nil, wskderrors.NewYAMLFileFormatError(manifestFilePath, err)
+			return actionFilePath, nil, wskderrors.NewYAMLFileFormatError(manifestFilePath, err)
 		}
 		actionFilePath = action.Function
 	} else {
+		spew.Dump(manifestFilePath)
+		spew.Dump(manifestFileName)
+		spew.Dump(action.Function)
 		actionFilePath = strings.TrimRight(manifestFilePath, manifestFileName) + action.Function
 	}
 
@@ -568,7 +570,7 @@ func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action,
 		zipFileName = actionFilePath + "." + utils.ZIP_FILE_EXTENSION
 		err := utils.NewZipWritter(actionFilePath, zipFileName).Zip()
 		if err != nil {
-			return nil, err
+			return actionFilePath, nil, err
 		}
 		defer os.Remove(zipFileName)
 		actionFilePath = zipFileName
@@ -588,13 +590,13 @@ func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action,
 	r := utils.FileExtensionRuntimeKindMap[ext]
 	kind = utils.DefaultRunTimes[r]
 	if err := dm.validateActionFunction(manifestFileName, action, ext, kind); err != nil {
-		return nil, err
+		return actionFilePath, nil, err
 	}
 	exec.Kind = kind
 
 	dat, err := utils.Read(actionFilePath)
 	if err != nil {
-		return nil, err
+		return actionFilePath, nil, err
 	}
 	code := string(dat)
 	if ext == utils.ZIP_FILE_EXTENSION || ext == utils.JAR_FILE_EXTENSION {
@@ -648,7 +650,7 @@ func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action,
 			if ext == utils.ZIP_FILE_EXTENSION {
 				// for zip action, error out if specified runtime is not supported by
 				// OpenWhisk server
-				return nil, wskderrors.NewInvalidRuntimeError(warnStr,
+				return actionFilePath, nil, wskderrors.NewInvalidRuntimeError(warnStr,
 					manifestFileName,
 					action.Name,
 					action.Runtime,
@@ -667,24 +669,25 @@ func (dm *YAMLParser) readActionFunction(manifestFileName string, action Action,
 	if len(action.Main) != 0 {
 		exec.Main = action.Main
 	}
-	return exec, nil
+	return actionFilePath, exec, nil
 }
 
 // below codes is from wsk cli with tiny adjusts.
-func (dm *YAMLParser) getExec(manifestFileName string, action Action, manifestFilePath string) (*whisk.Exec, error) {
+func (dm *YAMLParser) getExec(manifestFilePath string, manifestFileName string, action Action) (string, *whisk.Exec, error) {
+	var actionFilePath string
 	var err error
 	var exec *whisk.Exec
 	exec = new(whisk.Exec)
 
 	if len(action.Code) != 0 {
 		if exec, err = dm.readActionCode(manifestFilePath, action); err != nil {
-			return nil, err
+			return actionFilePath, nil, err
 		}
 	}
 
 	if len(action.Function) != 0 {
-		if exec, err = dm.readActionFunction(manifestFilePath, action, manifestFileName); err != nil {
-			return nil, err
+		if actionFilePath, exec, err = dm.readActionFunction(manifestFilePath, manifestFileName, action); err != nil {
+			return actionFilePath, nil, err
 		}
 	}
 
@@ -740,7 +743,7 @@ func (dm *YAMLParser) getExec(manifestFileName string, action Action, manifestFi
 			exec.Code = &code
 		}*/
 
-	return exec, nil
+	return actionFilePath, exec, nil
 }
 
 func (dm *YAMLParser) validateActionLimits(limits Limits) {
@@ -799,6 +802,8 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 	manifestFileName := splitManifestFilePath[len(splitManifestFilePath)-1]
 
 	for actionName, action := range actions {
+		var actionFilePath string
+
 		// update the action (of type Action) to set its name
 		// here key name is the action name
 		action.Name = actionName
@@ -812,7 +817,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 			action.Function = action.Location
 		}
 
-		wskaction.Exec, errorParser = dm.getExec(manifestFileName, action, manifestFilePath)
+		actionFilePath, wskaction.Exec, errorParser = dm.getExec(manifestFilePath, manifestFileName, action)
 		if errorParser != nil {
 			return nil, errorParser
 		}
@@ -869,7 +874,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		pub := false
 		wskaction.Publish = &pub
 
-		record := utils.ActionRecord{Action: wskaction, Packagename: packageName, Filepath: action.Function}
+		record := utils.ActionRecord{Action: wskaction, Packagename: packageName, Filepath: actionFilePath}
 		listOfActions = append(listOfActions, record)
 	}
 
