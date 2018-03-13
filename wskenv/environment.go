@@ -72,7 +72,7 @@ func InterpolateStringWithEnvVar(key interface{}) interface{} {
 				} else if strings.Contains(keystr, "$"+substr) {
 					thisValue = os.Getenv(substr)
 					if thisValue == "" {
-						// TODO() i18n
+						// TODO(797) i18n
 						wskprint.PrintlnOpenWhiskWarning("Missing Environment Variable " + substr + ".")
 					}
 					keystr = strings.Replace(keystr, "$"+substr, thisValue, -1)
@@ -81,7 +81,7 @@ func InterpolateStringWithEnvVar(key interface{}) interface{} {
 				} else if strings.Contains(keystr, "${"+substr+"}") {
 					thisValue = os.Getenv(substr)
 					if thisValue == "" {
-						// TODO() i18n
+						// TODO(797) i18n
 						wskprint.PrintlnOpenWhiskWarning("Missing Environment Variable " + substr + ".")
 					}
 					keystr = strings.Replace(keystr, "${"+substr+"}", thisValue, -1)
