@@ -48,6 +48,9 @@ const (
 	TEST_MSG_PARAMETER_NUMBER_MISMATCH              = "Number of Paramaters mismatched."
 	TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED     = "Manifest [%s]: Expected Unmarshal error."
 	TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED = "Manifest [%s]: Expected runtime error."
+	TEST_MSG_ACTION_DOCKER_KIND_MISMATCH            = "Docker action kind is set to [%s] instead of " + utils.BLACKBOX
+	TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH           = "Docker action image had a value mismatch."
+	TEST_MSG_ACTION_CODE_MISSING                    = "Action code is missing."
 
 	// local error messages
 	TEST_ERROR_MANIFEST_PARSE_FAILURE     = "Manifest [%s]: Failed to parse."
@@ -907,24 +910,24 @@ func TestComposeActionsForDocker(t *testing.T) {
 		switch action.Action.Name {
 		case "OpenWhiskSkeleton":
 		case "OpenWhiskSkeletonWithNative":
-			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, "Docker kind is not set to "+utils.BLACKBOX)
-			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, "Docker image is not set to "+NATIVE_DOCKER_IMAGE)
+			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
+			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
 		case "CustomDockerAction1":
 		case "CustomDockerAction2":
 			expectedResult, _ = filepath.Abs("../tests/src/integration/docker/actions/exec.zip")
 			actualResult, _ = filepath.Abs(action.Filepath)
-			assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, "Docker kind is not set to "+utils.BLACKBOX)
-			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, "Docker image is not set to "+NATIVE_DOCKER_IMAGE)
+			assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
+			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
+			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
 		case "CustomDockerAction3":
 		case "CustomDockerAction4":
-			assert.NotNil(t, action.Action.Exec.Code, "Action source code is nil")
-			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, "Docker kind is not set to "+utils.BLACKBOX)
-			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, "Docker image is not set to "+NATIVE_DOCKER_IMAGE)
+			assert.NotNil(t, action.Action.Exec.Code, TEST_MSG_ACTION_CODE_MISSING)
+			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
+			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
 		case "CustomDockerAction5":
-			assert.NotNil(t, action.Action.Exec.Code, "Action source code is nil")
-			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, "Docker kind is not set to "+utils.BLACKBOX)
-			assert.Equal(t, "mydockerhub/myimage", action.Action.Exec.Image, "Docker image is not set to mydockerhub/myimage")
+			assert.NotNil(t, action.Action.Exec.Code, TEST_MSG_ACTION_CODE_MISSING)
+			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
+			assert.Equal(t, "mydockerhub/myimage", action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
 		}
 	}
 }
