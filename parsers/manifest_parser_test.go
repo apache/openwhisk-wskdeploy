@@ -900,6 +900,8 @@ func TestComposeActionsForFunctionWithRemoteDir(t *testing.T) {
 func TestComposeActionsForDocker(t *testing.T) {
 
 	file := "../tests/dat/manifest_data_compose_actions_for_docker.yaml"
+	actionFile := "../tests/src/integration/docker/actions/exec.zip"
+
 	p, m, _ := testLoadParseManifest(t, file)
 
 	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
@@ -914,7 +916,7 @@ func TestComposeActionsForDocker(t *testing.T) {
 			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
 		case "CustomDockerAction1":
 		case "CustomDockerAction2":
-			expectedResult, _ = filepath.Abs("../tests/src/integration/docker/actions/exec.zip")
+			expectedResult, _ = filepath.Abs(actionFile)
 			actualResult, _ = filepath.Abs(action.Filepath)
 			assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
 			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
