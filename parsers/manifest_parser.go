@@ -364,7 +364,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		var components []string
 		for _, a := range actionList {
 			act := strings.TrimSpace(a)
-			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+PATH_SEPARATOR) &&
+			if !strings.ContainsRune(act, []rune(PATH_SEPARATOR)[0]) && !strings.HasPrefix(act, packageName+PATH_SEPARATOR) &&
 				strings.ToLower(packageName) != DEFAULT_PACKAGE {
 				act = path.Join(packageName, act)
 			}
@@ -906,7 +906,7 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.Key
 		wskrule.Trigger = wskenv.ConvertSingleName(rule.Trigger)
 		wskrule.Action = wskenv.ConvertSingleName(rule.Action)
 		act := strings.TrimSpace(wskrule.Action.(string))
-		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+PATH_SEPARATOR) &&
+		if !strings.ContainsRune(act, []rune(PATH_SEPARATOR)[0]) && !strings.HasPrefix(act, packageName+PATH_SEPARATOR) &&
 			strings.ToLower(packageName) != DEFAULT_PACKAGE {
 			act = path.Join(packageName, act)
 		}
