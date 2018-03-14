@@ -201,7 +201,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 
 		annotations := dm.composeAnnotations(dependency.Annotations)
 
-		packDir := path.Join(projectPath, YAML_KEY_PACKAGES)
+		packDir := path.Join(projectPath, strings.Title(YAML_KEY_PACKAGES))
 		depName := packageName + ":" + key
 		depMap[depName] = utils.NewDependencyRecord(packDir, packageName, location, version, inputs, annotations, isBinding)
 	}
