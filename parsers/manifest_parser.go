@@ -20,11 +20,12 @@ package parsers
 import (
 	"encoding/base64"
 	"errors"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path"
 	"strings"
+
+	"gopkg.in/yaml.v2"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
@@ -994,7 +995,7 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, man
 func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string, pkg Package, manifestPath string) ([]*whisk.ApiCreateRequest, error) {
 	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
 
-	if pkg.Apis != nil {
+	if pkg.Apis != nil && len(pkg.Apis) != 0 {
 		// verify APIGW_ACCESS_TOKEN is set before composing APIs
 		// until this point, we dont know whether APIs are specified in manifest or not
 		if len(client.ApigwAccessToken) == 0 {
