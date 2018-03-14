@@ -41,6 +41,7 @@ const (
 	HTTP                = "http://"
 	API_VERSION         = "v1"
 	WEB                 = "web"
+	PATH_SEPARATOR      = "/"
 	DEFAULT_PACKAGE     = "default"
 	NATIVE_DOCKER_IMAGE = "openwhisk/dockerskeleton"
 )
@@ -176,8 +177,8 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 
 		isBinding := false
 		if utils.LocationIsBinding(location) {
-			if !strings.HasPrefix(location, os.PathSeparator) {
-				location = os.PathSeparator + dependency.Location
+			if !strings.HasPrefix(location, PATH_SEPARATOR) {
+				location = PATH_SEPARATOR + dependency.Location
 			}
 			isBinding = true
 		} else if utils.LocationIsGithub(location) {
@@ -363,11 +364,11 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		var components []string
 		for _, a := range actionList {
 			act := strings.TrimSpace(a)
-			if !strings.ContainsRune(act, os.PathSeparator) && !strings.HasPrefix(act, packageName+os.PathSeparator) &&
+			if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+PATH_SEPARATOR) &&
 				strings.ToLower(packageName) != DEFAULT_PACKAGE {
 				act = path.Join(packageName, act)
 			}
-			components = append(components, path.Join(os.PathSeparator+namespace, act))
+			components = append(components, path.Join(PATH_SEPARATOR+namespace, act))
 		}
 
 		wskaction.Exec.Components = components
@@ -706,7 +707,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 
 	var errorParser error
 	var listOfActions []utils.ActionRecord = make([]utils.ActionRecord, 0)
-	splitManifestFilePath := strings.Split(manifestFilePath, string(os.PathSeparator))
+	splitManifestFilePath := strings.Split(manifestFilePath, string(PATH_SEPARATOR))
 	manifestFileName := splitManifestFilePath[len(splitManifestFilePath)-1]
 
 	for actionName, action := range actions {
@@ -905,7 +906,7 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.Key
 		wskrule.Trigger = wskenv.ConvertSingleName(rule.Trigger)
 		wskrule.Action = wskenv.ConvertSingleName(rule.Action)
 		act := strings.TrimSpace(wskrule.Action.(string))
-		if !strings.ContainsRune(act, os.PathSeparator) && !strings.HasPrefix(act, packageName+os.PathSeparator) &&
+		if !strings.ContainsRune(act, '/') && !strings.HasPrefix(act, packageName+PATH_SEPARATOR) &&
 			strings.ToLower(packageName) != DEFAULT_PACKAGE {
 			act = path.Join(packageName, act)
 		}
@@ -985,13 +986,13 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 	for apiName, apiDoc := range pkg.Apis {
 		for gatewayBasePath, gatewayBasePathMap := range apiDoc {
 			// append "/" to the gateway base path if its missing
-			if !strings.HasPrefix(gatewayBasePath, os.PathSeparator) {
-				gatewayBasePath = os.PathSeparator + gatewayBasePath
+			if !strings.HasPrefix(gatewayBasePath, PATH_SEPARATOR) {
+				gatewayBasePath = PATH_SEPARATOR + gatewayBasePath
 			}
 			for gatewayRelPath, gatewayRelPathMap := range gatewayBasePathMap {
 				// append "/" to the gateway relative path if its missing
-				if !strings.HasPrefix(gatewayRelPath, os.PathSeparator) {
-					gatewayRelPath = os.PathSeparator + gatewayRelPath
+				if !strings.HasPrefix(gatewayRelPath, PATH_SEPARATOR) {
+					gatewayRelPath = PATH_SEPARATOR + gatewayRelPath
 				}
 				for actionName, gatewayMethod := range gatewayRelPathMap {
 					// verify that the action is defined under actions sections
@@ -1031,13 +1032,13 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							if packageName == DEFAULT_PACKAGE {
 								request.ApiDoc.Action.Name = actionName
 							} else {
-								request.ApiDoc.Action.Name = packageName + os.PathSeparator + actionName
+								request.ApiDoc.Action.Name = packageName + PATH_SEPARATOR + actionName
 							}
 							url := []string{HTTPS + client.Host, strings.ToLower(API),
 								API_VERSION, WEB, client.Namespace, packageName,
 								actionName + "." + utils.HTTP_FILE_EXTENSION}
 							request.ApiDoc.Action.Namespace = client.Namespace
-							request.ApiDoc.Action.BackendUrl = strings.Join(url, os.PathSeparator)
+							request.ApiDoc.Action.BackendUrl = strings.Join(url, PATH_SEPARATOR)
 							request.ApiDoc.Action.BackendMethod = gatewayMethod
 							request.ApiDoc.Action.Auth = client.AuthToken
 							// add a newly created ApiCreateRequest object to a list of requests
