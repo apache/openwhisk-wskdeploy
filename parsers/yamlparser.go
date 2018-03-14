@@ -19,6 +19,7 @@ package parsers
 
 import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 )
 
@@ -353,6 +354,17 @@ func (pkg *Package) GetApis() []*whisk.Api {
 }
 
 //********************YAML functions*************************//
+func filterAnnotations(annotations whisk.KeyValueArr) map[string]interface{} {
+	res := make(map[string]interface{})
+	for _, a := range annotations {
+		if a.Key != utils.MANAGED {
+			res[a.Key] = a.Value
+		}
+	}
+
+	return res
+}
+
 func (yaml *YAML) ComposeParsersPackage(wskpag whisk.Package) *Package {
 	pkg := new(Package)
 	pkg.Packagename = wskpag.Name
@@ -365,6 +377,7 @@ func (yaml *YAML) ComposeParsersPackage(wskpag whisk.Package) *Package {
 		pkg.Inputs[keyval.Key] = *param
 	}
 
+	pkg.Annotations = filterAnnotations(wskpag.Annotations)
 	return pkg
 }
 
@@ -382,6 +395,7 @@ func (yaml *YAML) ComposeParsersAction(wskact whisk.Action) *Action {
 		action.Inputs[keyval.Key] = *param
 	}
 
+	action.Annotations = filterAnnotations(wskact.Annotations)
 	return action
 }
 
@@ -396,6 +410,7 @@ func (yaml *YAML) ComposeParsersTrigger(wsktrg whisk.Trigger) *Trigger {
 		trigger.Inputs[keyval.Key] = *param
 	}
 
+	trigger.Annotations = filterAnnotations(wsktrg.Annotations)
 	return trigger
 }
 
@@ -406,5 +421,6 @@ func (yaml *YAML) ComposeParsersRule(wskrule whisk.Rule) *Rule {
 	rule.Action = wskrule.Action.(map[string]interface{})["name"].(string)
 	rule.Trigger = wskrule.Trigger.(map[string]interface{})["name"].(string)
 
+	rule.Annotations = filterAnnotations(wskrule.Annotations)
 	return rule
 }
