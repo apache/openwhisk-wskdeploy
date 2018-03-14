@@ -403,6 +403,7 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 				}
 
 				if len(dependentPackages) > 1 {
+					// TODO(799) i18n
 					errMessage := "GitHub dependency " + depName + " has multiple packages in manifest file: " +
 						strings.Join(dependentPackages, ", ") + ". " +
 						"One GitHub dependency can only be associated with single package in manifest file." +

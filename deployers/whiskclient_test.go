@@ -22,6 +22,8 @@ package deployers
 import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -46,6 +48,11 @@ const (
 	WSKPROPS_KEY  = "test_key_file"
 	WSKPROPS_CERT = "test_cert_file"
 )
+
+func init() {
+	// Setup "trace" flag for unit tests based upon "go test" -v flag
+	utils.Flags.Trace = wskprint.DetectGoTestVerbose()
+}
 
 func initializeFlags() {
 	utils.Flags.Auth = ""
@@ -246,4 +253,32 @@ func TestNewWhiskConfigWithDeploymentAndManifestFile(t *testing.T) {
 	assert.Equal(t, config.AuthToken, DEPLOYMENT_AUTH, "Failed to get auth token from deployment file")
 	assert.Equal(t, config.Namespace, DEPLOYMENT_NAMESPACE, "Failed to get namespace from deployment file")
 	assert.True(t, config.Insecure, "Config should set insecure to true")
+}
+
+// Test for the following error messages if corresponding config. values' validation fails
+// wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY)
+// wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST)
+// wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE)
+func TestValidateClientConfig(t *testing.T) {
+
+	ASSERT_ERROR_DETECT_AUTHKEY := "Validation did not detect missing AUTHKEY"
+	ASSERT_ERROR_DETECT_APIHOST := "Validation did not detect missing APIHOST"
+	ASSERT_ERROR_DETECT_NAMESPACE := "Validation did not detect missing NAMESPACE"
+
+	// test missing values for all 3 primary keys
+	credential.Value = ""
+	apiHost.Value = ""
+	namespace.Value = ""
+	err := validateClientConfig(credential, apiHost, namespace)
+
+	if err != nil {
+		// Verify all 3 missing config. values are accounted for in the error message
+		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_AUTHKEY), ASSERT_ERROR_DETECT_AUTHKEY)
+		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST), ASSERT_ERROR_DETECT_APIHOST)
+		assert.Contains(t, err.Error(), wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE), ASSERT_ERROR_DETECT_NAMESPACE)
+	} else {
+		assert.Error(t, err, ASSERT_ERROR_DETECT_AUTHKEY)
+	}
+
+	// TODO() test remainder of validateClientConfig() processing
 }

@@ -278,7 +278,7 @@ func (reader *ManifestReader) SetSequences(actions []utils.ActionRecord) error {
 		// If the sequence action exists in actions, return error
 		_, exists := reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Actions[seqAction.Action.Name]
 		if exists == true {
-			// TODO(): i18n of error message (or create a new named error)
+			// TODO(798): i18n of error message (or create a new named error)
 			err := errors.New("Sequence action's name [" +
 				seqAction.Action.Name + "] is already used by an action.")
 			return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
