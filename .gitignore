@@ -46,3 +46,4 @@ build/
 
 #emacs
 *~
+bin/content.json

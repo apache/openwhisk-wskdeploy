@@ -44,6 +44,12 @@ packages:
           member6:
             type: json
             value: { "name": "Frodo", "place": "Undying Lands", "items": [ "Sting", "Mithril mail" ] }
+          member7:
+            type: json
+            value: { "name": "${USERNAME}", "password": "${PASSWORD}" }
+          member8:
+            type: json
+            value: { "name": "$${USERNAME}", "password": "$${PASSWORD}" }
         outputs:
             fellowship:
               type: json

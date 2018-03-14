@@ -15,18 +15,9 @@
 #
 
 packages:
-    triggerrule:
-      actions:
-        greeting:
-          inputs:
-            name: Amy
-            place: Paris
-          annotations:
-            aaa: this is an annotation
-      triggers:
-        locationUpdate:
-          inputs:
-            name: Bernie
-            place: DC
-          annotations:
-            bbb: this is an annotation
+  helloworld:
+    actions:
+      hello:
+        function: ../tests/src/integration/helloworld/actions/hello.js
+        code: const main = ({ msg }) => { console.log(msg); return {msg}; }
+        runtime: nodejs

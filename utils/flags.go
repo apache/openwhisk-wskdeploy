@@ -31,7 +31,6 @@ type WskDeployFlags struct {
 	CfgFile          string
 	CliVersion       string
 	CliBuild         string
-	Verbose          bool
 	ProjectPath      string
 	DeploymentPath   string
 	ManifestPath     string
@@ -39,8 +38,11 @@ type WskDeployFlags struct {
 	Strict           bool // strict flag to support user defined runtime version.
 	Key              string
 	Cert             string
-	Managed          bool // OpenWhisk Managed Deployments
+	Managed          bool   // OpenWhisk Managed Deployments
+	ProjectName      string // Project name
 	ApigwAccessToken string
+	Verbose          bool
+	Trace            bool
 	RelationsPath    string
 }
 

@@ -25,3 +25,5 @@ packages:
           dbname: myGreatDB
         annotations:
           myAnnotation: Here it is
+      myPublicPackage:
+        location: /namespaceA/public

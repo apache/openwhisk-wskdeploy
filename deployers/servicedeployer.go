@@ -129,7 +129,16 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		return err
 	}
 
-	deployer.ProjectName = manifest.GetProject().Name
+	deployer.ProjectName = utils.Flags.ProjectName
+	if deployer.ProjectName == "" {
+		deployer.ProjectName = manifest.GetProject().Name
+	} else {
+		warningString := wski18n.T(
+			wski18n.ID_WARN_PROJECT_NAME_OVERRIDDEN,
+			map[string]interface{}{
+				wski18n.KEY_PROJECT: deployer.ProjectName})
+		wskprint.PrintOpenWhiskWarning(warningString)
+	}
 
 	// Generate Managed Annotations if its marked as a Managed Deployment
 	// Managed deployments are the ones when OpenWhisk entities are deployed with command line flag --managed.
@@ -139,7 +148,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		// Project Name in manifest/deployment file is mandatory for managed deployments
 		if deployer.ProjectName == "" {
 			errmsg := wski18n.T(wski18n.ID_ERR_KEY_MISSING_X_key_X,
-				map[string]interface{}{wski18n.KEY_KEY: wski18n.PROJECT_NAME})
+				map[string]interface{}{wski18n.KEY_KEY: wski18n.NAME_PROJECT})
 
 			return wskderrors.NewYAMLFileFormatError(manifest.Filepath, errmsg)
 		}
@@ -410,6 +419,7 @@ func (deployer *ServiceDeployer) DeployDependencies() error {
 				}
 
 				if len(dependentPackages) > 1 {
+					// TODO(799) i18n
 					errMessage := "GitHub dependency " + depName + " has multiple packages in manifest file: " +
 						strings.Join(dependentPackages, ", ") + ". " +
 						"One GitHub dependency can only be associated with single package in manifest file." +
@@ -893,6 +903,14 @@ func (deployer *ServiceDeployer) createRule(rule *whisk.Rule) error {
 
 	if err != nil {
 		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, true)
+	}
+
+	// Consecutive deployments of manifest containing trigger with feed action (and rule) result in inactive
+	// rule. The rule seems to become inactive when its trigger get deleted (part of the wskdeploy feed action update)
+	// Currently simply always setting rule status to active in case not specified implicitly
+	_, _, err = deployer.Client.Rules.SetState(rule.Name, "active")
+	if err != nil {
+		return err
 	}
 
 	displayPostprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, true)

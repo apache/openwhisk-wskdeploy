@@ -17,42 +17,65 @@
 
 package wski18n
 
-// descriptive key names
 // DO NOT TRANSLATE
+// descriptive key names
 const (
-	ACTION_CODE        = "Action source"
 	ACTIONS            = "Actions"
 	ACTIVATIONS        = "Activations"
 	API_HOST           = "API host"
+	APIGW_ACCESS_TOKEN = "API Gateway Access Token"
 	AUTH_KEY           = "authentication key"
 	COMMAND_LINE       = "wskdeploy command line"
-	DEPLOYMENT         = "deployment"
 	CONFIGURATION      = "Configuration"
-	MANIFEST           = "manifest"
-	NAME_ACTION        = "Action Name"
-	NAME_FEED          = "Feed Name"
-	NAME_RULE          = "Rule Name"
-	NAME_RUNTIME       = "Runtime Name"
-	NAME_TRIGGER       = "Trigger Name"
+	DEPLOYMENT_FILE    = "deployment file"
+	MANIFEST_FILE      = "manifest file"
+	NAME_PROJECT       = "project name"
 	NAMESPACES         = "Namespaces"
 	PACKAGE_BINDING    = "package binding"
 	PACKAGE_LICENSE    = "package license"
-	PACKAGE_NAME       = "package name"
 	PACKAGE_VERSION    = "package version"
 	PACKAGES           = "Packages"
-	PROJECT_NAME       = "project name"
-	REGISTRY           = "registry"
-	REGISTRY_URL       = "registry URL"
-	REPOSITORY         = "repository"
 	RULES              = "Rules"
 	TRIGGER_FEED       = "trigger feed"
-	TRIGGERS           = "Triggers"
-	WHISK_PROPS        = "wskprops"
-	APIGW_ACCESS_TOKEN = "API Gateway Access Token"
+	CMD_DEPLOY         = "deploy"
+	CMD_UNDEPLOY       = "undeploy"
+	CMD_SYNC           = "sync"
 )
 
-// i18n Identifiers
 // DO NOT TRANSLATE
+// Known keys used for text replacement in i18n translated strings
+const (
+	KEY_ACTION          = "action"
+	KEY_CMD             = "cmd"
+	KEY_CODE            = "code"
+	KEY_DEPLOYMENT_NAME = "dname"
+	KEY_DEPLOYMENT_PATH = "dpath"
+	KEY_ERR             = "err"
+	KEY_EXTENSION       = "ext"
+	KEY_FILE_TYPE       = "filetype"
+	KEY_HOST            = "host"
+	KEY_KEY             = "key"
+	KEY_LIMIT           = "limit"
+	KEY_MANIFEST_NAME   = "mname"
+	KEY_MANIFEST_PATH   = "mpath"
+	KEY_NAME            = "name"
+	KEY_NAMESPACE       = "namespace"
+	KEY_NEW             = "newkey"
+	KEY_OLD             = "oldkey"
+	KEY_PATH            = "path"
+	KEY_PROJECT         = "project"
+	KEY_RUNTIME         = "runtime"
+	KEY_SOURCE          = "source"
+	KEY_VALUE           = "value"
+	KEY_VALUE_MIN       = "min" // TODO() attempt to use this for Limit value range errors
+	KEY_VALUE_MAX       = "max" // TODO() attempt to use this for Limit value range errors
+	KEY_API             = "api"
+	KEY_URL             = "url"
+	KEY_PACKAGE         = "package"
+)
+
+// DO NOT TRANSLATE
+// i18n Identifiers
 const (
 	// Debug / trace message prefixes
 	ID_MSG_PREFIX_ERROR   = "msg_prefix_error"   // "Error"
@@ -61,15 +84,11 @@ const (
 	ID_MSG_PREFIX_WARNING = "msg_prefix_warning" // "Warning"
 
 	// Cobra command descriptions
-	ID_CMD_DESC_LONG_PUBLISH      = "msg_cmd_desc_long_publish"
-	ID_CMD_DESC_LONG_REPORT       = "msg_cmd_desc_long_report"
-	ID_CMD_DESC_LONG_ROOT         = "msg_cmd_desc_long_root"
-	ID_CMD_DESC_SHORT_ADD         = "msg_cmd_desc_short_add"
-	ID_CMD_DESC_SHORT_ADD_X_key_X = "msg_cmd_desc_short_add_entity"
-	ID_CMD_DESC_SHORT_PUBLISH     = "msg_cmd_desc_short_publish"
-	ID_CMD_DESC_SHORT_REPORT      = "msg_cmd_desc_short_report"
-	ID_CMD_DESC_SHORT_ROOT        = "msg_cmd_desc_short_root"
-	ID_CMD_DESC_SHORT_VERSION     = "msg_cmd_desc_short_version"
+	ID_CMD_DESC_LONG_REPORT   = "msg_cmd_desc_long_report"
+	ID_CMD_DESC_LONG_ROOT     = "msg_cmd_desc_long_root"
+	ID_CMD_DESC_SHORT_REPORT  = "msg_cmd_desc_short_report"
+	ID_CMD_DESC_SHORT_ROOT    = "msg_cmd_desc_short_root"
+	ID_CMD_DESC_SHORT_VERSION = "msg_cmd_desc_short_version"
 
 	// Cobra Flag messages
 	ID_CMD_FLAG_API_HOST    = "msg_cmd_flag_api_host"
@@ -82,12 +101,16 @@ const (
 	ID_CMD_FLAG_INTERACTIVE = "msg_cmd_flag_interactive"
 	ID_CMD_FLAG_KEY_FILE    = "msg_cmd_flag_key_file"
 	ID_CMD_FLAG_MANAGED     = "msg_cmd_flag_allow_managed"
+	ID_CMD_FLAG_PROJECTNAME = "msg_cmd_flag_project_name"
 	ID_CMD_FLAG_MANIFEST    = "msg_cmd_flag_manifest"
 	ID_CMD_FLAG_NAMESPACE   = "msg_cmd_flag_namespace"
 	ID_CMD_FLAG_PROJECT     = "msg_cmd_flag_project"
 	ID_CMD_FLAG_STRICT      = "msg_cmd_flag_strict"
-	ID_CMD_FLAG_TOGGLE_HELP = "msg_cmd_flag_toggle_help"
+	ID_CMD_FLAG_TRACE       = "msg_cmd_flag_trace"
 	ID_CMD_FLAG_VERBOSE     = "msg_cmd_flag_allow_verbose"
+
+	// Root <command> using <manifest | deployment> file
+	ID_MSG_COMMAND_USING_X_cmd_X_filetype_X_path_X = "msg_command_using_filename_at_path"
 
 	// Configuration messages
 	ID_MSG_CONFIG_MISSING_AUTHKEY                       = "msg_config_missing_authkey"
@@ -112,9 +135,6 @@ const (
 	ID_MSG_UNDEPLOYMENT_CANCELLED = "msg_undeployment_cancelled"
 	ID_MSG_UNDEPLOYMENT_FAILED    = "msg_undeployment_failed"
 	ID_MSG_UNDEPLOYMENT_SUCCEEDED = "msg_undeployment_succeeded"
-
-	ID_MSG_MANIFEST_DEPLOY_X_path_X   = "msg_manifest_using_deployment"
-	ID_MSG_MANIFEST_UNDEPLOY_X_path_X = "msg_manifest_using_undeployment"
 
 	ID_MSG_ENTITY_DEPLOYED_SUCCESS_X_key_X_name_X   = "msg_entity_deployed_success"
 	ID_MSG_ENTITY_DEPLOYING_X_key_X_name_X          = "msg_entity_deploying"
@@ -142,21 +162,24 @@ const (
 	ID_MSG_PROMPT_UNDEPLOY  = "msg_prompt_undeploy"
 
 	// Errors
-	ID_ERR_DEPENDENCY_UNKNOWN_TYPE                               = "msg_err_dependency_unknown_type"
-	ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X              = "msg_err_deployment_name_not_found"
-	ID_ERR_ENTITY_CREATE_X_key_X_err_X_code_X                    = "msg_err_entity_create"
-	ID_ERR_ENTITY_DELETE_X_key_X_err_X_code_X                    = "msg_err_entity_delete"
-	ID_ERR_FEED_INVOKE_X_err_X_code_X                            = "msg_err_feed_invoke"
-	ID_ERR_KEY_MISSING_X_key_X                                   = "msg_err_key_missing_mandatory"
-	ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X                      = "msg_err_manifest_not_found"
-	ID_ERR_NAME_MISMATCH_X_key_X_dname_X_dpath_X_mname_X_moath_X = "msg_err_name_mismatch"
-	ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X                  = "msg_err_runtime_invalid"
-	ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X           = "msg_err_runtime_mismatch"
-	ID_ERR_RUNTIMES_GET_X_err_X                                  = "msg_err_runtimes_get"
-	ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X              = "msg_err_url_invalid"
-	ID_ERR_URL_MALFORMED_X_urltype_X_url_X                       = "msg_err_url_malformed"
-	ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X               = "msg_err_api_missing_web_action"
-	ID_ERR_API_MISSING_ACTION_X_action_X_api_X                   = "msg_err_api_missing_action"
+	ID_ERR_DEPENDENCY_UNKNOWN_TYPE                                   = "msg_err_dependency_unknown_type"
+	ID_ERR_ENTITY_CREATE_X_key_X_err_X_code_X                        = "msg_err_entity_create"
+	ID_ERR_ENTITY_DELETE_X_key_X_err_X_code_X                        = "msg_err_entity_delete"
+	ID_ERR_FEED_INVOKE_X_err_X_code_X                                = "msg_err_feed_invoke"
+	ID_ERR_KEY_MISSING_X_key_X                                       = "msg_err_key_missing_mandatory"
+	ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X                          = "msg_err_manifest_not_found"
+	ID_ERR_NAME_MISMATCH_X_key_X_dname_X_dpath_X_mname_X_moath_X     = "msg_err_name_mismatch"
+	ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X                      = "msg_err_runtime_invalid"
+	ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X               = "msg_err_runtime_mismatch"
+	ID_ERR_RUNTIMES_GET_X_err_X                                      = "msg_err_runtimes_get"
+	ID_ERR_RUNTIME_ACTION_SOURCE_NOT_SUPPORTED_X_ext_X_action_X      = "msg_err_runtime_action_source_not_supported"
+	ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X                  = "msg_err_url_invalid"
+	ID_ERR_URL_MALFORMED_X_urltype_X_url_X                           = "msg_err_url_malformed"
+	ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X                   = "msg_err_api_missing_web_action"
+	ID_ERR_API_MISSING_ACTION_X_action_X_api_X                       = "msg_err_api_missing_action"
+	ID_ERR_ACTION_INVALID_X_action_X                                 = "msg_err_action_invalid"
+	ID_ERR_ACTION_MISSING_RUNTIME_WITH_CODE_X_action_X               = "msg_err_action_missing_runtime_with_code"
+	ID_ERR_ACTION_FUNCTION_REMOTE_DIR_NOT_SUPPORTED_X_action_X_url_X = "msg_err_action_function_remote_dir_not_supported"
 
 	// Server-side Errors (wskdeploy as an Action)
 	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"
@@ -178,54 +201,22 @@ const (
 	ID_WARN_WHISK_PROPS_DEPRECATED                            = "msg_warn_whisk_properties"
 	ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X                 = "msg_warn_entity_name_exists"
 	ID_WARN_PACKAGES_NOT_FOUND_X_path_X                       = "msg_warn_packages_not_found"
+	ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X          = "msg_warn_deployment_name_not_found"
+	ID_WARN_PROJECT_NAME_OVERRIDDEN                           = "msg_warn_project_name_overridden"
+	ID_WARN_PACKAGE_IS_PUBLIC_X_package_X                     = "msg_warn_package_is_public"
 
 	// Verbose (Debug/Trace) messages
-	ID_DEBUG_KEY_VERIFY_X_name_X_key_X     = "msg_dbg_key_verify"
-	ID_DEBUG_DEPLOYING_USING               = "msg_dbg_deploying_using"
-	ID_DEBUG_UNDEPLOYING_USING             = "msg_dbg_undeploying_using"
-	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X = "msg_dbg_searching_project_directory"
+	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X                = "msg_dbg_searching_project_directory"
+	ID_DEBUG_DEPLOYMENT_NAME_FOUND_X_key_X_name_X         = "msg_dbg_deployment_name_found"
+	ID_DEBUG_PACKAGES_FOUND_UNDER_ROOT_X_path_X           = "msg_dbg_packages_found_root"
+	ID_DEBUG_PACKAGES_FOUND_UNDER_PROJECT_X_path_X_name_X = "msg_dbg_packages_found_project"
 )
 
-// Known keys used for text replacement in i18n translated strings
-const (
-	KEY_ACTION             = "action"
-	KEY_CMD                = "cmd"
-	KEY_CODE               = "code"
-	KEY_DEPLOYMENT_NAME    = "dname"
-	KEY_DEPLOYMENT_PATH    = "dpath"
-	KEY_ERR                = "err"
-	KEY_EXTENTION          = "ext"
-	KEY_FILE_TYPE          = "filetype"
-	KEY_HOST               = "host"
-	KEY_KEY                = "key"
-	KEY_LIMIT              = "limit"
-	KEY_MANIFEST_NAME      = "mname"
-	KEY_MANIFEST_PATH      = "mpath"
-	KEY_NAME               = "name"
-	KEY_NAMESPACE          = "namespace"
-	KEY_NEW                = "newkey"
-	KEY_OLD                = "oldkey"
-	KEY_PATH               = "path"
-	KEY_PROJECT            = "project"
-	KEY_RUNTIME            = "runtime"
-	KEY_SOURCE             = "source"
-	KEY_URL                = "url"
-	KEY_URL_TYPE           = "urltype"
-	KEY_VALUE              = "value"
-	KEY_VALUE_MIN          = "min" // TODO() attempt to use this for Limit value range errors
-	KEY_VALUE_MAX          = "max" // TODO() attempt to use this for Limit value range errors
-	KEY_API                = "api"
-	KEY_APIGW_ACCESS_TOKEN = "apigw_access_token"
-)
-
+// DO NOT TRANSLATE
 // Used to unit test that translations exist with these IDs
 var I18N_ID_SET = [](string){
-	ID_CMD_DESC_LONG_PUBLISH,
 	ID_CMD_DESC_LONG_REPORT,
 	ID_CMD_DESC_LONG_ROOT,
-	ID_CMD_DESC_SHORT_ADD,
-	ID_CMD_DESC_SHORT_ADD_X_key_X,
-	ID_CMD_DESC_SHORT_PUBLISH,
 	ID_CMD_DESC_SHORT_REPORT,
 	ID_CMD_DESC_SHORT_ROOT,
 	ID_CMD_DESC_SHORT_VERSION,
@@ -242,15 +233,15 @@ var I18N_ID_SET = [](string){
 	ID_CMD_FLAG_MANIFEST,
 	ID_CMD_FLAG_NAMESPACE,
 	ID_CMD_FLAG_PROJECT,
+	ID_CMD_FLAG_PROJECTNAME,
 	ID_CMD_FLAG_STRICT,
-	ID_CMD_FLAG_TOGGLE_HELP,
+	ID_CMD_FLAG_TRACE,
 	ID_CMD_FLAG_VERBOSE,
-	ID_DEBUG_DEPLOYING_USING,
-	ID_DEBUG_KEY_VERIFY_X_name_X_key_X,
+	ID_DEBUG_DEPLOYMENT_NAME_FOUND_X_key_X_name_X,
+	ID_DEBUG_PACKAGES_FOUND_UNDER_PROJECT_X_path_X_name_X,
+	ID_DEBUG_PACKAGES_FOUND_UNDER_ROOT_X_path_X,
 	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X,
-	ID_DEBUG_UNDEPLOYING_USING,
 	ID_ERR_DEPENDENCY_UNKNOWN_TYPE,
-	ID_ERR_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 	ID_ERR_ENTITY_CREATE_X_key_X_err_X_code_X,
 	ID_ERR_ENTITY_DELETE_X_key_X_err_X_code_X,
 	ID_ERR_JSON_MISSING_KEY_CMD,
@@ -263,6 +254,7 @@ var I18N_ID_SET = [](string){
 	ID_ERR_RUNTIMES_GET_X_err_X,
 	ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
 	ID_ERR_URL_MALFORMED_X_urltype_X_url_X,
+	ID_MSG_COMMAND_USING_X_cmd_X_filetype_X_path_X,
 	ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
 	ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
 	ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
@@ -285,8 +277,6 @@ var I18N_ID_SET = [](string){
 	ID_MSG_ENTITY_UNDEPLOYING_X_key_X_name_X,
 	ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X,
 	ID_MSG_MANAGED_UNDEPLOYMENT_FAILED,
-	ID_MSG_MANIFEST_DEPLOY_X_path_X,
-	ID_MSG_MANIFEST_UNDEPLOY_X_path_X,
 	ID_MSG_PREFIX_ERROR,
 	ID_MSG_PREFIX_INFO,
 	ID_MSG_PREFIX_SUCCESS,
@@ -303,6 +293,7 @@ var I18N_ID_SET = [](string){
 	ID_MSG_UNMARSHAL_NETWORK_X_url_X,
 	ID_WARN_COMMAND_RETRY,
 	ID_WARN_CONFIG_INVALID_X_path_X,
+	ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X,
 	ID_WARN_ENTITY_NAME_EXISTS_X_key_X_name_X,
 	ID_WARN_KEY_DEPRECATED_X_oldkey_X_filetype_X_newkey_X,
 	ID_WARN_KEY_MISSING_X_key_X_value_X,

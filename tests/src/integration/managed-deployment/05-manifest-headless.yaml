@@ -15,14 +15,8 @@
 #
 
 packages:
-  helloworld:
+  ManagedPackage-Headless:
     actions:
-      helloPython:
-        function: ../src/integration/helloworld/actions/hello.py
-      helloJava:
-        function: ../src/integration/helloworld/actions/hello.jar
-        main: Hello
-      helloSwift:
-        function: ../src/integration/helloworld/actions/hello.swift
-      helloNodejs:
-        function: ../src/integration/helloworld/actions/hello.js
+      HelloWorld-Headless:
+        function: actions/hello.js
+        runtime: nodejs:6

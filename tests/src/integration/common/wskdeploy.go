@@ -171,6 +171,10 @@ func (Wskdeploy *Wskdeploy) ManagedDeployment(manifestPath string, deploymentPat
 	return Wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath, "--managed")
 }
 
+func (Wskdeploy *Wskdeploy) HeadlessManagedDeployment(manifestPath string, deploymentPath string, name string) (string, error) {
+	return Wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath, "--managed", "--projectname", name)
+}
+
 func (Wskdeploy *Wskdeploy) ManagedUndeployment(manifestPath string, deploymentPath string) (string, error) {
 	return Wskdeploy.RunCommand("undeploy", "-m", manifestPath, "-d", deploymentPath, "--managed")
 }

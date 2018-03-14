@@ -50,9 +50,12 @@ const (
 	TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED = "Manifest [%s]: Expected runtime error."
 
 	// local error messages
-	TEST_ERROR_MANIFEST_PARSE_FAILURE   = "Manifest [%s]: Failed to parse."
-	TEST_ERROR_MANIFEST_READ_FAILURE    = "Manifest [%s]: Failed to ReadFile()."
-	TEST_ERROR_MANIFEST_DATA_UNMARSHALL = "Manifest [%s]: Failed to Unmarshall manifest."
+	TEST_ERROR_MANIFEST_PARSE_FAILURE     = "Manifest [%s]: Failed to parse."
+	TEST_ERROR_MANIFEST_READ_FAILURE      = "Manifest [%s]: Failed to ReadFile()."
+	TEST_ERROR_MANIFEST_DATA_UNMARSHALL   = "Manifest [%s]: Failed to Unmarshall manifest."
+	TEST_ERROR_COMPOSE_ACTION_FAILURE     = "Manifest [%s]: Failed to compose actions."
+	TEST_ERROR_COMPOSE_PACKAGE_FAILURE    = "Manifest [%s]: Failed to compose packages."
+	TEST_ERROR_COMPOSE_DEPENDENCY_FAILURE = "Manifest [%s]: Failed to compose dependencies."
 )
 
 func init() {
@@ -71,7 +74,6 @@ func testLoadParseManifest(t *testing.T, manifestFile string) (*YAMLParser, *YAM
 	if err != nil {
 		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
 	}
-
 	return p, m, err
 }
 
@@ -304,7 +306,7 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
 
 		// test # input params
-		expectedResult = strconv.FormatInt(10, 10)
+		expectedResult = strconv.FormatInt(13, 10)
 		actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_PARAMETER_NUMBER_MISMATCH)
 
@@ -491,27 +493,24 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
 // when a runtime of an action is not provided, manifest_parser determines the runtime
 // based on the file extension of an action file
 func TestComposeActionsForImplicitRuntimes(t *testing.T) {
-
-	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_runtimes_implicit.yaml")
-
+	file := "../tests/dat/manifest_data_compose_runtimes_implicit.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
 	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 	var expectedResult string
-	if err == nil {
-		for i := 0; i < len(actions); i++ {
-			if actions[i].Action.Name == "helloNodejs" {
-				expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["js"]]
-			} else if actions[i].Action.Name == "helloJava" {
-				expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["jar"]]
-			} else if actions[i].Action.Name == "helloPython" {
-				expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["py"]]
-			} else if actions[i].Action.Name == "helloSwift" {
-				expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["swift"]]
-			}
-			actualResult := actions[i].Action.Exec.Kind
-			assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
+	for i := 0; i < len(actions); i++ {
+		if actions[i].Action.Name == "helloNodejs" {
+			expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["js"]]
+		} else if actions[i].Action.Name == "helloJava" {
+			expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["jar"]]
+		} else if actions[i].Action.Name == "helloPython" {
+			expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["py"]]
+		} else if actions[i].Action.Name == "helloSwift" {
+			expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["swift"]]
 		}
+		actualResult := actions[i].Action.Exec.Kind
+		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
 	}
-
 }
 
 // Test 10(1): validate manifest_parser.ComposeActions() method for invalid runtimes
@@ -568,7 +567,8 @@ func TestComposeActionsForValidRuntime_ZipAction(t *testing.T) {
                 function: ../tests/src/integration/runtimetests/src/helloworld/helloworld.zip
                 runtime: nodejs:6`
 	p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
-	actions, _ := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, tmpfile))
 	for _, action := range actions {
 		if action.Action.Name == "hello" {
 			assert.Equal(t, action.Action.Exec.Kind, "nodejs:6", fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH, action))
@@ -580,372 +580,412 @@ func TestComposeActionsForValidRuntime_ZipAction(t *testing.T) {
 // Test 11: validate manifest_parser.ComposeActions() method for single line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestComposeActionsForSingleLineParams(t *testing.T) {
-
-	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_singleline_params.yaml")
+	file := "../tests/dat/manifest_validate_singleline_params.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
 
 	// Call the method we are testing
 	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 
-	if err == nil {
-		// test # actions
-		assert.Equal(t, 1, len(actions), TEST_MSG_ACTION_NUMBER_MISMATCH)
+	// test # actions
+	assert.Equal(t, 1, len(actions), TEST_MSG_ACTION_NUMBER_MISMATCH)
 
-		action := actions[0]
+	action := actions[0]
 
-		/*
-		 * Simple 'string' value tests
-		 */
+	/*
+	 * Simple 'string' value tests
+	 */
 
-		// param_simple_string should value "foo"
-		paramName := "param_simple_string"
-		expectedResult := "foo"
-		actualResult := action.Action.Parameters.GetValue(paramName).(string)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_string should value "foo"
+	paramName := "param_simple_string"
+	expectedResult := "foo"
+	actualResult := action.Action.Parameters.GetValue(paramName).(string)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		/*
-		 * Simple 'integer' value tests
-		 */
+	/*
+	 * Simple 'integer' value tests
+	 */
 
-		// param_simple_integer_1 should have value 1
-		paramName = "param_simple_integer_1"
-		expectedResult = strconv.FormatInt(1, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_integer_1 should have value 1
+	paramName = "param_simple_integer_1"
+	expectedResult = strconv.FormatInt(1, 10)
+	actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_integer_2 should have value 0
-		paramName = "param_simple_integer_2"
-		expectedResult = strconv.FormatInt(0, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_integer_2 should have value 0
+	paramName = "param_simple_integer_2"
+	expectedResult = strconv.FormatInt(0, 10)
+	actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_integer_3 should have value -1
-		paramName = "param_simple_integer_3"
-		expectedResult = strconv.FormatInt(-1, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_integer_3 should have value -1
+	paramName = "param_simple_integer_3"
+	expectedResult = strconv.FormatInt(-1, 10)
+	actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_integer_4 should have value 99999
-		paramName = "param_simple_integer_4"
-		expectedResult = strconv.FormatInt(99999, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_integer_4 should have value 99999
+	paramName = "param_simple_integer_4"
+	expectedResult = strconv.FormatInt(99999, 10)
+	actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_integer_5 should have value -99999
-		paramName = "param_simple_integer_5"
-		expectedResult = strconv.FormatInt(-99999, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_integer_5 should have value -99999
+	paramName = "param_simple_integer_5"
+	expectedResult = strconv.FormatInt(-99999, 10)
+	actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		/*
-		 * Simple 'float' value tests
-		 */
+	/*
+	 * Simple 'float' value tests
+	 */
 
-		// param_simple_float_1 should have value 1.1
-		paramName = "param_simple_float_1"
-		expectedResult = strconv.FormatFloat(1.1, 'f', -1, 64)
-		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_float_1 should have value 1.1
+	paramName = "param_simple_float_1"
+	expectedResult = strconv.FormatFloat(1.1, 'f', -1, 64)
+	actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_float_2 should have value 0.0
-		paramName = "param_simple_float_2"
-		expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
-		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_float_2 should have value 0.0
+	paramName = "param_simple_float_2"
+	expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
+	actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_float_3 should have value -1.1
-		paramName = "param_simple_float_3"
-		expectedResult = strconv.FormatFloat(-1.1, 'f', -1, 64)
-		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_float_3 should have value -1.1
+	paramName = "param_simple_float_3"
+	expectedResult = strconv.FormatFloat(-1.1, 'f', -1, 64)
+	actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		/*
-		 * Environment Variable / dollar ($) notation tests
-		 */
+	/*
+	 * Environment Variable / dollar ($) notation tests
+	 */
 
-		// param_simple_env_var_1 should have value of env. variable $GOPATH
-		paramName = "param_simple_env_var_1"
-		expectedResult = os.Getenv("GOPATH")
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_env_var_1 should have value of env. variable $GOPATH
+	paramName = "param_simple_env_var_1"
+	expectedResult = os.Getenv("GOPATH")
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_env_var_2 should have value of env. variable $GOPATH
-		paramName = "param_simple_env_var_2"
-		expectedResult = os.Getenv("GOPATH")
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_env_var_2 should have value of env. variable $GOPATH
+	paramName = "param_simple_env_var_2"
+	expectedResult = os.Getenv("GOPATH")
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_env_var_3 should have value of env. variable "${}"
-		paramName = "param_simple_env_var_3"
-		expectedResult = "${}"
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_env_var_3 should have value of env. variable "${}"
+	paramName = "param_simple_env_var_3"
+	expectedResult = "${}"
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_invalid_env_var should have value of ""
-		paramName = "param_simple_invalid_env_var"
-		expectedResult = ""
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_invalid_env_var should have value of ""
+	paramName = "param_simple_invalid_env_var"
+	expectedResult = ""
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		/*
-		 * Environment Variable concatenation tests
-		 */
+	/*
+	 * Environment Variable concatenation tests
+	 */
 
-		// param_simple_env_var_concat_1 should have value of env. variable "$GOPTH/test" empty string
-		paramName = "param_simple_env_var_concat_1"
-		expectedResult = os.Getenv("GOPATH") + "/test"
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_env_var_concat_1 should have value of env. variable "$GOPTH/test" empty string
+	paramName = "param_simple_env_var_concat_1"
+	expectedResult = os.Getenv("GOPATH") + "/test"
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_env_var_concat_2 should have value of env. variable "" empty string
-		// as the "/test" is treated as part of the environment var. and not concatenated.
-		paramName = "param_simple_env_var_concat_2"
-		expectedResult = ""
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_env_var_concat_2 should have value of env. variable "" empty string
+	// as the "/test" is treated as part of the environment var. and not concatenated.
+	paramName = "param_simple_env_var_concat_2"
+	expectedResult = ""
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_env_var_concat_3 should have value of env. variable "" empty string
-		paramName = "param_simple_env_var_concat_3"
-		expectedResult = "ddd.ccc." + os.Getenv("GOPATH")
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_env_var_concat_3 should have value of env. variable "" empty string
+	paramName = "param_simple_env_var_concat_3"
+	expectedResult = "ddd.ccc." + os.Getenv("GOPATH")
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		/*
-		 * Empty string tests
-		 */
+	/*
+	 * Empty string tests
+	 */
 
-		// param_simple_implied_empty should be ""
-		paramName = "param_simple_implied_empty"
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Empty(t, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_implied_empty should be ""
+	paramName = "param_simple_implied_empty"
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Empty(t, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_explicit_empty_1 should be ""
-		paramName = "param_simple_explicit_empty_1"
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Empty(t, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_explicit_empty_1 should be ""
+	paramName = "param_simple_explicit_empty_1"
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Empty(t, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_explicit_empty_2 should be ""
-		paramName = "param_simple_explicit_empty_2"
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Empty(t, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_explicit_empty_2 should be ""
+	paramName = "param_simple_explicit_empty_2"
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Empty(t, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		/*
-		 * Test values that contain "Type names" (e.g., "string", "integer", "float, etc.)
-		 */
+	/*
+	 * Test values that contain "Type names" (e.g., "string", "integer", "float, etc.)
+	 */
 
-		// param_simple_type_string should be "" when value set to "string"
-		paramName = "param_simple_type_string"
-		expectedResult = ""
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_type_string should be "" when value set to "string"
+	paramName = "param_simple_type_string"
+	expectedResult = ""
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_type_integer should be 0.0 when value set to "integer"
-		paramName = "param_simple_type_integer"
-		expectedResult = strconv.FormatInt(0, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_type_integer should be 0.0 when value set to "integer"
+	paramName = "param_simple_type_integer"
+	expectedResult = strconv.FormatInt(0, 10)
+	actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_simple_type_float should be 0 when value set to "float"
-		paramName = "param_simple_type_float"
-		expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
-		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_simple_type_float should be 0 when value set to "float"
+	paramName = "param_simple_type_float"
+	expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
+	actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-	}
 }
 
 // Test 12: validate manifest_parser.ComposeActions() method for multi line parameters
 // manifest_parser should be able to parse input section with different types of values
 func TestComposeActionsForMultiLineParams(t *testing.T) {
+	os.Setenv("USERNAME", "MY_USERNAME")
+	os.Setenv("PASSWORD", "MY_PASSWORD")
+	defer os.Unsetenv("USERNAME")
+	defer os.Unsetenv("PASSWORD")
 
-	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_validate_multiline_params.yaml")
+	file := "../tests/dat/manifest_validate_multiline_params.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
 
 	// call the method we are testing
 	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 
-	if err == nil {
-		// test # actions
-		assert.Equal(t, 1, len(actions), TEST_MSG_ACTION_NUMBER_MISMATCH)
+	// test # actions
+	assert.Equal(t, 1, len(actions), TEST_MSG_ACTION_NUMBER_MISMATCH)
 
-		action := actions[0]
+	action := actions[0]
 
-		// param_string_value_only should be "foo"
-		paramName := "param_string_value_only"
-		expectedResult := "foo"
-		actualResult := action.Action.Parameters.GetValue(paramName).(string)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_string_value_only should be "foo"
+	paramName := "param_string_value_only"
+	expectedResult := "foo"
+	actualResult := action.Action.Parameters.GetValue(paramName).(string)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_int_value_only should be 123
-		paramName = "param_int_value_only"
-		expectedResult = strconv.FormatInt(123, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_int_value_only should be 123
+	paramName = "param_int_value_only"
+	expectedResult = strconv.FormatInt(123, 10)
+	actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_float_value_only should be 3.14
-		paramName = "param_float_value_only"
-		expectedResult = strconv.FormatFloat(3.14, 'f', -1, 64)
-		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_float_value_only should be 3.14
+	paramName = "param_float_value_only"
+	expectedResult = strconv.FormatFloat(3.14, 'f', -1, 64)
+	actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_string_type_and_value_only should be foo
-		paramName = "param_string_type_and_value_only"
-		expectedResult = "foo"
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_string_type_and_value_only should be foo
+	paramName = "param_string_type_and_value_only"
+	expectedResult = "foo"
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_string_type_only should be ""
-		paramName = "param_string_type_only"
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Empty(t, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_string_type_only should be ""
+	paramName = "param_string_type_only"
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Empty(t, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_integer_type_only should be 0
-		paramName = "param_integer_type_only"
-		expectedResult = strconv.FormatInt(0, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_integer_type_only should be 0
+	paramName = "param_integer_type_only"
+	expectedResult = strconv.FormatInt(0, 10)
+	actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_float_type_only should be 0
-		paramName = "param_float_type_only"
-		expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
-		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_float_type_only should be 0
+	paramName = "param_float_type_only"
+	expectedResult = strconv.FormatFloat(0.0, 'f', -1, 64)
+	actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_string_with_default should be "bar"
-		paramName = "param_string_with_default"
-		expectedResult = "bar"
-		actualResult = action.Action.Parameters.GetValue(paramName).(string)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_string_with_default should be "bar"
+	paramName = "param_string_with_default"
+	expectedResult = "bar"
+	actualResult = action.Action.Parameters.GetValue(paramName).(string)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_integer_with_default should be -1
-		paramName = "param_integer_with_default"
-		expectedResult = strconv.FormatInt(-1, 10)
-		actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+	// param_integer_with_default should be -1
+	paramName = "param_integer_with_default"
+	expectedResult = strconv.FormatInt(-1, 10)
+	actualResult = strconv.FormatInt(int64(action.Action.Parameters.GetValue(paramName).(int)), 10)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
 
-		// param_float_with_default should be 2.9
-		paramName = "param_float_with_default"
-		expectedResult = strconv.FormatFloat(2.9, 'f', -1, 64)
-		actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
-		assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
-	}
+	// param_float_with_default should be 2.9
+	paramName = "param_float_with_default"
+	expectedResult = strconv.FormatFloat(2.9, 'f', -1, 64)
+	actualResult = strconv.FormatFloat(action.Action.Parameters.GetValue(paramName).(float64), 'f', -1, 64)
+	assert.Equal(t, expectedResult, actualResult, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+
+	// param_json_type_and_value_only_1 should be { "name": "Sam", "place": "Shire" }
+	paramName = "param_json_type_and_value_only_1"
+	expectedResult1 := map[string]interface{}{"name": "Sam", "place": "Shire"}
+	actualResult1 := action.Action.Parameters.GetValue(paramName)
+	assert.Equal(t, expectedResult1, actualResult1, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+
+	// param_json_type_and_value_only_2 should be { "name": "MY_USERNAME", "password": "MY_PASSWORD" }
+	paramName = "param_json_type_and_value_only_2"
+	expectedResult2 := map[string]interface{}{"name": "MY_USERNAME", "password": "MY_PASSWORD"}
+	actualResult2 := action.Action.Parameters.GetValue(paramName)
+	assert.Equal(t, expectedResult2, actualResult2, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+
+	// param_json_type_and_value_only_3 should be { "name": "${USERNAME}", "password": "${PASSWORD}" }
+	paramName = "param_json_type_and_value_only_3"
+	expectedResult3 := map[string]interface{}{"name": "${USERNAME}", "password": "${PASSWORD}"}
+	actualResult3 := action.Action.Parameters.GetValue(paramName)
+	assert.Equal(t, expectedResult3, actualResult3, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, paramName))
+
 }
 
 // Test 13: validate manifest_parser.ComposeActions() method
-// TODO() - test is NOT complete. Manifest has code that is commented out for "hello2" action
 func TestComposeActionsForFunction(t *testing.T) {
 
-	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_function.yaml")
+	file := "../tests/dat/manifest_data_compose_actions_for_function.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
 
 	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
+
 	var expectedResult, actualResult string
-	if err == nil {
-		for i := 0; i < len(actions); i++ {
-			if actions[i].Action.Name == "hello1" {
-				expectedResult, _ = filepath.Abs("../tests/src/integration/helloworld/actions/hello.js")
-				actualResult, _ = filepath.Abs(actions[i].Filepath)
-				assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
-				// TODO() Uncomment the following condition, hello2
-				// TODO() after issue # 311 is fixed
-				//} else if actions[i].Action.Name == "hello2" {
-				//  assert.NotNil(t, actions[i].Action.Exec.Code, "Expected source code from an action file but found it empty")
-			}
+	for i := 0; i < len(actions); i++ {
+		if actions[i].Action.Name == "hello1" {
+			expectedResult, _ = filepath.Abs("../tests/src/integration/helloworld/actions/hello.js")
+			actualResult, _ = filepath.Abs(actions[i].Filepath)
+			assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+		} else if actions[i].Action.Name == "hello2" {
+			assert.NotNil(t, actions[i].Action.Exec.Code, "Expected source code from an action file but found it empty")
 		}
 	}
+}
 
+// validate manifest_parser.ComposeActions() method
+func TestComposeActionsForFunctionAndCode(t *testing.T) {
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_function_and_code.yaml")
+	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.NotNil(t, err, "Compose actions should have exited with error when code and function both exist.")
+}
+
+// validate manifest_parser.ComposeActions() method
+func TestComposeActionsForCodeWithMissingRuntime(t *testing.T) {
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_missing_runtime_with_code.yaml")
+	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.NotNil(t, err, "Compose actions should have exited with error when code is specified but runtime is missing.")
+}
+
+// validate manifest_parser.ComposeActions() method
+func TestComposeActionsForFunctionWithRemoteDir(t *testing.T) {
+	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_function_with_remote_dir.yaml")
+	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.NotNil(t, err, "Compose actions should have exited with error when code is specified but runtime is missing.")
 }
 
 // Test 14: validate manifest_parser.ComposeActions() method
 func TestComposeActionsForLimits(t *testing.T) {
 
-	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_limits.yaml")
+	file := "../tests/dat/manifest_data_compose_actions_for_limits.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
 
 	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 
-	if err == nil {
-		for i := 0; i < len(actions); i++ {
-			if actions[i].Action.Name == "hello1" {
-				assert.Nil(t, actions[i].Action.Limits, "Expected limit section to be empty but got %s", actions[i].Action.Limits)
-			} else if actions[i].Action.Name == "hello2" {
-				assert.NotNil(t, actions[i].Action.Limits, "Expected limit section to be not empty but found it empty")
-				assert.Equal(t, 180, *actions[i].Action.Limits.Timeout, "Failed to get Timeout")
-				assert.Equal(t, 128, *actions[i].Action.Limits.Memory, "Failed to get Memory")
-				assert.Equal(t, 1, *actions[i].Action.Limits.Logsize, "Failed to get Logsize")
-			}
+	for i := 0; i < len(actions); i++ {
+		if actions[i].Action.Name == "hello1" {
+			assert.Nil(t, actions[i].Action.Limits, "Expected limit section to be empty but got %s", actions[i].Action.Limits)
+		} else if actions[i].Action.Name == "hello2" {
+			assert.NotNil(t, actions[i].Action.Limits, "Expected limit section to be not empty but found it empty")
+			assert.Equal(t, 180, *actions[i].Action.Limits.Timeout, "Failed to get Timeout")
+			assert.Equal(t, 128, *actions[i].Action.Limits.Memory, "Failed to get Memory")
+			assert.Equal(t, 1, *actions[i].Action.Limits.Logsize, "Failed to get Logsize")
 		}
 	}
-
 }
 
 // Test 15: validate manifest_parser.ComposeActions() method
 func TestComposeActionsForWebActions(t *testing.T) {
 
-	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_web.yaml")
+	file := "../tests/dat/manifest_data_compose_actions_for_web.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
 
 	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
-	if err == nil {
-		for i := 0; i < len(actions); i++ {
-			if actions[i].Action.Name == "hello1" {
-				for _, a := range actions[i].Action.Annotations {
-					switch a.Key {
-					case "web-export":
-						assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
-					case "raw-http":
-						assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
-					case "final":
-						assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
-					}
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
+
+	for i := 0; i < len(actions); i++ {
+		if actions[i].Action.Name == "hello1" {
+			for _, a := range actions[i].Action.Annotations {
+				switch a.Key {
+				case "web-export":
+					assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+				case "raw-http":
+					assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+				case "final":
+					assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
 				}
-			} else if actions[i].Action.Name == "hello2" {
-				for _, a := range actions[i].Action.Annotations {
-					switch a.Key {
-					case "web-export":
-						assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
-					case "raw-http":
-						assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
-					case "final":
-						assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
-					}
+			}
+		} else if actions[i].Action.Name == "hello2" {
+			for _, a := range actions[i].Action.Annotations {
+				switch a.Key {
+				case "web-export":
+					assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+				case "raw-http":
+					assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+				case "final":
+					assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
 				}
-			} else if actions[i].Action.Name == "hello3" {
-				for _, a := range actions[i].Action.Annotations {
-					switch a.Key {
-					case "web-export":
-						assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
-					case "raw-http":
-						assert.Equal(t, true, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
-					case "final":
-						assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
-					}
+			}
+		} else if actions[i].Action.Name == "hello3" {
+			for _, a := range actions[i].Action.Annotations {
+				switch a.Key {
+				case "web-export":
+					assert.Equal(t, true, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+				case "raw-http":
+					assert.Equal(t, true, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+				case "final":
+					assert.Equal(t, true, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
 				}
-			} else if actions[i].Action.Name == "hello4" {
-				for _, a := range actions[i].Action.Annotations {
-					switch a.Key {
-					case "web-export":
-						assert.Equal(t, false, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
-					case "raw-http":
-						assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
-					case "final":
-						assert.Equal(t, false, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
-					}
+			}
+		} else if actions[i].Action.Name == "hello4" {
+			for _, a := range actions[i].Action.Annotations {
+				switch a.Key {
+				case "web-export":
+					assert.Equal(t, false, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+				case "raw-http":
+					assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+				case "final":
+					assert.Equal(t, false, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
 				}
-			} else if actions[i].Action.Name == "hello5" {
-				for _, a := range actions[i].Action.Annotations {
-					switch a.Key {
-					case "web-export":
-						assert.Equal(t, false, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
-					case "raw-http":
-						assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
-					case "final":
-						assert.Equal(t, false, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
-					}
+			}
+		} else if actions[i].Action.Name == "hello5" {
+			for _, a := range actions[i].Action.Annotations {
+				switch a.Key {
+				case "web-export":
+					assert.Equal(t, false, a.Value, "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+				case "raw-http":
+					assert.Equal(t, false, a.Value, "Expected false for raw-http but got "+strconv.FormatBool(a.Value.(bool)))
+				case "final":
+					assert.Equal(t, false, a.Value, "Expected true for final but got "+strconv.FormatBool(a.Value.(bool)))
 				}
 			}
 		}
 	}
+
 }
 
 // Test 15-1: validate manifest_parser.ComposeActions() method
 func TestComposeActionsForInvalidWebActions(t *testing.T) {
-
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_invalid_web.yaml")
 	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
 	assert.NotNil(t, err, "Expected error for invalid web-export.")
@@ -1032,7 +1072,7 @@ func TestParseManifestForJSONParams(t *testing.T) {
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
 
 		// validate the number of inputs to this action
-		expectedResult = strconv.FormatInt(6, 10)
+		expectedResult = strconv.FormatInt(8, 10)
 		actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_PARAMETER_NUMBER_MISMATCH)
 
@@ -1065,6 +1105,14 @@ func TestParseManifestForJSONParams(t *testing.T) {
 				actualResult6 := param.Value.(map[interface{}]interface{})
 				expectedResult6 := map[interface{}]interface{}{"name": "Frodo", "place": "Undying Lands", "items": []interface{}{"Sting", "Mithril mail"}}
 				assert.Equal(t, expectedResult6, actualResult6, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
+			case "member7":
+				actualResult7 := param.Value.(map[interface{}]interface{})
+				expectedResult7 := map[interface{}]interface{}{"name": "${USERNAME}", "password": "${PASSWORD}"}
+				assert.Equal(t, expectedResult7, actualResult7, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
+			case "member8":
+				actualResult8 := param.Value.(map[interface{}]interface{})
+				expectedResult8 := map[interface{}]interface{}{"name": "$${USERNAME}", "password": "$${PASSWORD}"}
+				assert.Equal(t, expectedResult8, actualResult8, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
 			}
 		}
 
@@ -1082,17 +1130,22 @@ func TestParseManifestForJSONParams(t *testing.T) {
 
 func TestComposePackage(t *testing.T) {
 
-	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_packages.yaml")
+	file := "../tests/dat/manifest_data_compose_packages.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
 
 	pkg, err := p.ComposeAllPackages(m, m.Filepath, whisk.KeyValue{})
-	if err == nil {
-		n := "helloworld"
-		assert.NotNil(t, pkg[n], "Failed to get the whole package")
-		assert.Equal(t, n, pkg[n].Name, "Failed to get package name")
-		assert.Equal(t, "default", pkg[n].Namespace, "Failed to get package namespace")
-	} else {
-		assert.Fail(t, "Failed to compose package")
-	}
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_PACKAGE_FAILURE, file))
+
+	n := "helloworld"
+	assert.NotNil(t, pkg[n], "Failed to get the whole package")
+	assert.Equal(t, n, pkg[n].Name, "Failed to get package name")
+	assert.Equal(t, "default", pkg[n].Namespace, "Failed to get package namespace")
+
+	n = "mypublicpackage"
+	assert.True(t, *(pkg[n].Publish), "Failed to mark public package as shared.")
+
+	n = "default"
+	assert.False(t, *(pkg[n].Publish), "Default package should not be maked as public.")
 }
 
 func TestComposeSequences(t *testing.T) {
@@ -1235,34 +1288,36 @@ func TestComposeApiRecords(t *testing.T) {
 
 func TestComposeDependencies(t *testing.T) {
 
-	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_dependencies.yaml")
+	file := "../tests/dat/manifest_data_compose_dependencies.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
 
 	depdList, err := p.ComposeDependenciesFromAllPackages(m, "/project_folder", m.Filepath)
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_DEPENDENCY_FAILURE, file))
 
-	if err != nil {
-		assert.Fail(t, "Failed to compose rules")
-	}
-	assert.Equal(t, 2, len(depdList), "Failed to get rules")
-	for depdy_name, depdy := range depdList {
-		assert.Equal(t, "helloworld", depdy.Packagename, "Failed to set dependecy isbinding")
-		assert.Equal(t, "/project_folder/Packages", depdy.ProjectPath, "Failed to set dependecy isbinding")
-		d := strings.Split(depdy_name, ":")
+	assert.Equal(t, 3, len(depdList), "Failed to get rules")
+	for dependency_name, dependency := range depdList {
+		assert.Equal(t, "helloworld", dependency.Packagename, "Failed to set dependency isbinding")
+		assert.Equal(t, "/project_folder/Packages", dependency.ProjectPath, "Failed to set dependency isbinding")
+		d := strings.Split(dependency_name, ":")
 		assert.NotEqual(t, d[1], "", "Failed to get dependency name")
 		switch d[1] {
 		case "myhelloworld":
-			assert.Equal(t, "https://github.com/user/repo/folder", depdy.Location, "Failed to set dependecy location")
-			assert.Equal(t, false, depdy.IsBinding, "Failed to set dependecy isbinding")
-			assert.Equal(t, "https://github.com/user/repo", depdy.BaseRepo, "Failed to set dependecy base repo url")
-			assert.Equal(t, "/folder", depdy.SubFolder, "Failed to set dependecy sub folder")
+			assert.Equal(t, "https://github.com/user/repo/folder", dependency.Location, "Failed to set dependency location")
+			assert.Equal(t, false, dependency.IsBinding, "Failed to set dependency isbinding")
+			assert.Equal(t, "https://github.com/user/repo", dependency.BaseRepo, "Failed to set dependency base repo url")
+			assert.Equal(t, "/folder", dependency.SubFolder, "Failed to set dependency sub folder")
 		case "myCloudant":
-			assert.Equal(t, "/whisk.system/cloudant", depdy.Location, "Failed to set rule trigger")
-			assert.Equal(t, true, depdy.IsBinding, "Failed to set dependecy isbinding")
-			assert.Equal(t, 1, len(depdy.Parameters), "Failed to set dependecy parameter")
-			assert.Equal(t, 1, len(depdy.Annotations), "Failed to set dependecy annotation")
-			assert.Equal(t, "myAnnotation", depdy.Annotations[0].Key, "Failed to set dependecy parameter key")
-			assert.Equal(t, "Here it is", depdy.Annotations[0].Value, "Failed to set dependecy parameter value")
-			assert.Equal(t, "dbname", depdy.Parameters[0].Key, "Failed to set dependecy annotation key")
-			assert.Equal(t, "myGreatDB", depdy.Parameters[0].Value, "Failed to set dependecy annotation value")
+			assert.Equal(t, "/whisk.system/cloudant", dependency.Location, "Failed to set dependency location")
+			assert.Equal(t, true, dependency.IsBinding, "Failed to set dependency isbinding")
+			assert.Equal(t, 1, len(dependency.Parameters), "Failed to set dependency parameter")
+			assert.Equal(t, 1, len(dependency.Annotations), "Failed to set dependency annotation")
+			assert.Equal(t, "myAnnotation", dependency.Annotations[0].Key, "Failed to set dependency parameter key")
+			assert.Equal(t, "Here it is", dependency.Annotations[0].Value, "Failed to set dependency parameter value")
+			assert.Equal(t, "dbname", dependency.Parameters[0].Key, "Failed to set dependency annotation key")
+			assert.Equal(t, "myGreatDB", dependency.Parameters[0].Value, "Failed to set dependency annotation value")
+		case "myPublicPackage":
+			assert.Equal(t, "/namespaceA/public", dependency.Location, "Failed to set dependency location.")
+			assert.True(t, dependency.IsBinding, "Failed to set dependency binding.")
 		default:
 			assert.Fail(t, "Failed to get dependency name")
 		}
