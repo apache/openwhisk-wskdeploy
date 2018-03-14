@@ -893,6 +893,42 @@ func TestComposeActionsForFunctionWithRemoteDir(t *testing.T) {
 	assert.NotNil(t, err, "Compose actions should have exited with error when code is specified but runtime is missing.")
 }
 
+// validate manifest_parser.ComposeActions() method
+func TestComposeActionsForDocker(t *testing.T) {
+
+	file := "../tests/dat/manifest_data_compose_actions_for_docker.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
+
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
+
+	var expectedResult, actualResult string
+	for _, action := range actions {
+		switch action.Action.Name {
+		case "OpenWhiskSkeleton":
+		case "OpenWhiskSkeletonWithNative":
+			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, "Docker kind is not set to "+utils.BLACKBOX)
+			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, "Docker image is not set to "+NATIVE_DOCKER_IMAGE)
+		case "CustomDockerAction1":
+		case "CustomDockerAction2":
+			expectedResult, _ = filepath.Abs("../tests/src/integration/docker/actions/exec.zip")
+			actualResult, _ = filepath.Abs(action.Filepath)
+			assert.Equal(t, expectedResult, actualResult, "Expected "+expectedResult+" but got "+actualResult)
+			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, "Docker kind is not set to "+utils.BLACKBOX)
+			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, "Docker image is not set to "+NATIVE_DOCKER_IMAGE)
+		case "CustomDockerAction3":
+		case "CustomDockerAction4":
+			assert.NotNil(t, action.Action.Exec.Code, "Action source code is nil")
+			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, "Docker kind is not set to "+utils.BLACKBOX)
+			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, "Docker image is not set to "+NATIVE_DOCKER_IMAGE)
+		case "CustomDockerAction5":
+			assert.NotNil(t, action.Action.Exec.Code, "Action source code is nil")
+			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, "Docker kind is not set to "+utils.BLACKBOX)
+			assert.Equal(t, "mydockerhub/myimage", action.Action.Exec.Image, "Docker image is not set to mydockerhub/myimage")
+		}
+	}
+}
+
 // Test 14: validate manifest_parser.ComposeActions() method
 func TestComposeActionsForLimits(t *testing.T) {
 

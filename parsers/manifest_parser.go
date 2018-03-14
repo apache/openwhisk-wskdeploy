@@ -32,18 +32,18 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
 	"path/filepath"
 )
 
 const (
-	PATH_SEPERATOR  = "/"
-	API             = "API"
-	HTTPS           = "https"
-	HTTP            = "http"
-	API_VERSION     = "v1"
-	WEB             = "web"
-	DEFAULT_PACKAGE = "default"
+	PATH_SEPERATOR      = "/"
+	API                 = "API"
+	HTTPS               = "https"
+	HTTP                = "http"
+	API_VERSION         = "v1"
+	WEB                 = "web"
+	DEFAULT_PACKAGE     = "default"
+	NATIVE_DOCKER_IMAGE = "openwhisk/dockerskeleton"
 )
 
 // Read existing manifest file or create new if none exists
@@ -516,7 +516,7 @@ func (dm *YAMLParser) validateActionFunction(manifestFileName string, action Act
 	// produce an error when a runtime could not be derived from the action file extension
 	// and its not explicitly specified in the manifest YAML file
 	// and action source is not a zip file
-	if len(action.Runtime) == 0 {
+	if len(action.Runtime) == 0 && len(action.Docker) == 0 && !action.Native {
 		if ext == utils.ZIP_FILE_EXTENSION {
 			errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
 				map[string]interface{}{
@@ -560,9 +560,6 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 		}
 		actionFilePath = action.Function
 	} else {
-		spew.Dump(manifestFilePath)
-		spew.Dump(manifestFileName)
-		spew.Dump(action.Function)
 		actionFilePath = strings.TrimRight(manifestFilePath, manifestFileName) + action.Function
 	}
 
@@ -669,81 +666,44 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 	if len(action.Main) != 0 {
 		exec.Main = action.Main
 	}
+
 	return actionFilePath, exec, nil
 }
 
 // below codes is from wsk cli with tiny adjusts.
 func (dm *YAMLParser) getExec(manifestFilePath string, manifestFileName string, action Action) (string, *whisk.Exec, error) {
 	var actionFilePath string
+	exec := new(whisk.Exec)
 	var err error
-	var exec *whisk.Exec
-	exec = new(whisk.Exec)
 
 	if len(action.Code) != 0 {
-		if exec, err = dm.readActionCode(manifestFilePath, action); err != nil {
+		exec, err = dm.readActionCode(manifestFilePath, action)
+		if err != nil {
 			return actionFilePath, nil, err
 		}
 	}
-
 	if len(action.Function) != 0 {
-		if actionFilePath, exec, err = dm.readActionFunction(manifestFilePath, manifestFileName, action); err != nil {
+		actionFilePath, exec, err = dm.readActionFunction(manifestFilePath, manifestFileName, action)
+		if err != nil {
 			return actionFilePath, nil, err
 		}
 	}
 
-	// end of else here
-
-	/*	if !isDocker || ext == ZIP_FILE_EXTENSION {
-			content, err = new(ContentReader).ReadLocal(actionFilePath)
-			if err != nil {
-				return nil, err
-			}
-			code = string(content)
-			exec.Code = &code
-		}
-
-		if len(kind) > 0 {
-			exec.Kind = kind
-		} else if isDocker {
-			exec.Kind = "blackbox"
-			if ext != ZIP_FILE_EXTENSION {
-				exec.Image = actionFilePath
-			} else {
-				exec.Image = "openwhisk/dockerskeleton"
-			}
+	// when an action has Docker image specified,
+	// set exec.Kind to "blackbox" and
+	// set exec.Image to specified image e.g. dockerhub/image
+	// when an action Native is set to true,
+	// set exec.Image to openwhisk/skeleton
+	if len(action.Docker) != 0 || action.Native {
+		exec.Kind = utils.BLACKBOX
+		if action.Native {
+			exec.Image = NATIVE_DOCKER_IMAGE
 		} else {
-			r := FileExtensionRuntimeKindMap[ext]
-			exec.Kind = DefaultRunTimes[r]
+			exec.Image = action.Docker
 		}
+	}
 
-		if ext == JAR_FILE_EXTENSION {
-			exec.Code = nil
-		}
-
-		if len(exec.Kind) == 0 {
-			if ext == ZIP_FILE_EXTENSION {
-				return nil, zipKindError()
-			} else {
-				return nil, extensionError(ext)
-			}
-		}
-
-		// Error if entry point is not specified for Java
-		if len(mainEntry) != 0 {
-			exec.Main = mainEntry
-		} else {
-			if exec.Kind == "java" {
-				return nil, javaEntryError()
-			}
-		}
-
-		// Base64 encode the zip file content
-		if ext == ZIP_FILE_EXTENSION {
-			code = base64.StdEncoding.EncodeToString([]byte(code))
-			exec.Code = &code
-		}*/
-
-	return actionFilePath, exec, nil
+	return actionFilePath, exec, err
 }
 
 func (dm *YAMLParser) validateActionLimits(limits Limits) {
