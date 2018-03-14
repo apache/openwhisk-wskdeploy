@@ -16,9 +16,9 @@
 #
 -->
 
-# Test Case of projects relationships
+# Test Case of projects' relationships
 
-This is a test case for relationships between projects and library project.
+This is a test case for relationships between a project and a library project.
 It can be deployed and tested with:
 
 ```bash

@@ -22,7 +22,7 @@ packages:
       actions:
         ext_greeting:
           version: 1.0
-          function: greeting.js
+          function: src/greeting.js
           runtime: nodejs:6
       rules:
         ext_rule:

@@ -21,9 +21,9 @@
 ### Package description
 
 This Package named `relationships` includes:
-- A manifest.yaml which represents library project LIB
-- An ext_manifest.yml
-- relationships.yml that describes projects relationships
+- A manifest.yaml represents library project LIB
+- An ext_manifest.yml represents an EXT project that uses assets (lib_trigger) from project LIB
+- relationships.yml describes the projects' relationships
 
 
 ### How to deploy and test
@@ -34,7 +34,7 @@ This Package named `relationships` includes:
 $ wskdeploy -m tests/usecases/relationships/manifest.yml --managed
 ```
 
-#### Step 2. Verify the assets been installed.
+#### Step 2. Verify the assets have been installed.
 
 e.g. 
 ```
@@ -97,7 +97,7 @@ $ wsk package get lib_package
 $ wskdeploy -m tests/usecases/relationships/ext_manifest.yml -r tests/usecases/relationships/relationships.yml --managed
 ```
 
-#### Step 4. Verify the assets relationships been updated.
+#### Step 4. Verify the assets relationships have been updated.
 
 e.g. 
 ```
@@ -180,5 +180,5 @@ ok: got package lib_package
 ```
 $ wskdeploy export -p EXT -m exported_ext.yaml --managed
 
-explore the exported_ext.yaml manifest file and notice both EXT and LIB project assets are there without any notion of LIB project
+explore exported_ext.yaml manifest file and notice both EXT and LIB project assets are there without any notion of the LIB project
 ```

@@ -22,11 +22,11 @@ packages:
       actions:
         lib_greeting_1:
           version: 1.0
-          function: greeting.js
+          function: src/greeting.js
           runtime: nodejs:6
         lib_greeting_2:
           version: 1.0
-          function: greeting.js
+          function: src/greeting.js
           runtime: nodejs:6
       triggers:
         lib_trigger:
