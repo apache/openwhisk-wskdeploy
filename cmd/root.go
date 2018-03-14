@@ -129,6 +129,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ProjectName, "projectname", "", "", wski18n.T(wski18n.ID_CMD_FLAG_PROJECTNAME))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Trace, "trace", "t", false, wski18n.T(wski18n.ID_CMD_FLAG_TRACE))
 	RootCmd.PersistentFlags().MarkHidden("trace")
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.RelationsPath, "relationships", "r", "", "projects reationships manifest")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -327,17 +328,32 @@ func Undeploy() error {
 
 		// The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
 		setSupportedRuntimes(clientConfig.Host)
-
 		verifiedPlan, err := deployer.ConstructUnDeploymentPlan()
 		if err != nil {
 			return err
 		}
-
 		err = deployer.UnDeploy(verifiedPlan)
 		if err != nil {
 			return err
-		} else {
-			return nil
+		}
+
+		// get the relationships update plan
+		// update relationships
+		if utils.Flags.RelationsPath != "" && utils.FileExists(utils.Flags.RelationsPath) {
+			// reset deployer project
+			deployer.Deployment = deployers.NewDeploymentProject()
+
+			// update project with assets with updated relationships
+			err = deployer.UpdateManagedProjectsListAnnotations(true)
+			if err != nil {
+				return err
+			}
+
+			// deploy updated assets
+			err = deployer.UndeployRelationships()
+			if err != nil {
+				return err
+			}
 		}
 
 	} else {
@@ -345,4 +361,6 @@ func Undeploy() error {
 			map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
 		return wskderrors.NewErrorManifestFileNotFound(utils.Flags.ManifestPath, errString)
 	}
+
+	return nil
 }

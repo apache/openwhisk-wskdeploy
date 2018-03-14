@@ -21,17 +21,18 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"os"
+	"os/exec"
+	"path"
+	"path/filepath"
+	"strings"
+
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/fatih/color"
 	"github.com/mattn/go-colorable"
-	"os"
-	"os/exec"
-	"path"
-	"path/filepath"
-	"strings"
 )
 
 const (
@@ -176,6 +177,14 @@ func (Wskdeploy *Wskdeploy) HeadlessManagedDeployment(manifestPath string, deplo
 
 func (Wskdeploy *Wskdeploy) ManagedUndeployment(manifestPath string, deploymentPath string) (string, error) {
 	return Wskdeploy.RunCommand("undeploy", "-m", manifestPath, "-d", deploymentPath, "--managed")
+}
+
+func (wskdeploy *Wskdeploy) ManagedRelationshipsDeployment(manifestPath string, relationshipsPath string) (string, error) {
+	return wskdeploy.RunCommand("-m", manifestPath, "-r", relationshipsPath, "--managed")
+}
+
+func (wskdeploy *Wskdeploy) ManagedRelationshipsUnDeployment(manifestPath string, relationshipsPath string) (string, error) {
+	return wskdeploy.RunCommand("undeploy", "-m", manifestPath, "-r", relationshipsPath, "--managed")
 }
 
 // This method is only for testing

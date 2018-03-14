@@ -21,8 +21,9 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"os"
+
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
 /*
@@ -35,6 +36,7 @@ import (
  */
 
 const (
+	MANAGED_LIST    = "managed_list"
 	MANAGED         = "managed"
 	OPENWHISK       = "OpenWhisk"
 	NULL            = "golang\000"

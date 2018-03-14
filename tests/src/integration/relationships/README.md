@@ -1,3 +1,4 @@
+<!--
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements.  See the NOTICE file distributed with this work for additional
@@ -13,20 +14,13 @@
 # CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations under the License.
 #
-project:
-  name: AAA
-packages:
-  triggerrule:
-      version: 1.0
-      license: Apache-2.0
-      actions:
-        greeting:
-          version: 1.0
-          function: greeting.js
-          runtime: nodejs:6
-      triggers:
-        locationUpdate:
-      rules:
-        myRule:
-          trigger: locationUpdate
-          action: greeting
+-->
+
+# Test Case of projects' relationships
+
+This is a test case for relationships between a project and a library project.
+It can be deployed and tested with:
+
+```bash
+$ wskdeploy -p tests/src/integration/relationships
+```

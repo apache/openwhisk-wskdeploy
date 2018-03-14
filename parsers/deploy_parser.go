@@ -31,6 +31,14 @@ func (dm *YAMLParser) unmarshalDeployment(input []byte, deploy *YAML) error {
 	return nil
 }
 
+func (dm *YAMLParser) unmarshalRelations(input []byte, deploy *PROJECTS) error {
+	err := yaml.UnmarshalStrict(input, deploy)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (dm *YAMLParser) ParseDeployment(deploymentPath string) (*YAML, error) {
 	dplyyaml := YAML{}
 	content, err := new(utils.ContentReader).LocalReader.ReadLocal(deploymentPath)
@@ -48,6 +56,23 @@ func (dm *YAMLParser) ParseDeployment(deploymentPath string) (*YAML, error) {
 	dplyyaml.Filepath = deploymentPath
 	dplyyamlEnvVar := ReadEnvVariable(&dplyyaml)
 	return dplyyamlEnvVar, nil
+}
+
+func (dm *YAMLParser) ParseRelations(deploymentPath string) (*PROJECTS, error) {
+	dplyyaml := PROJECTS{}
+	content, err := new(utils.ContentReader).LocalReader.ReadLocal(deploymentPath)
+
+	if err != nil {
+		return &dplyyaml, wskderrors.NewFileReadError(deploymentPath, err.Error())
+	}
+
+	err = dm.unmarshalRelations(content, &dplyyaml)
+
+	if err != nil {
+		return &dplyyaml, wskderrors.NewYAMLParserErr(deploymentPath, err)
+	}
+
+	return &dplyyaml, nil
 }
 
 //********************Project functions*************************//
