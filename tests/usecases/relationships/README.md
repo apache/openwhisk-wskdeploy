@@ -21,44 +21,63 @@
 ### Package description
 
 This Package named `relationships` includes:
-- A package (manifest) based on the one in triggerrule usecase. This package it represents the library project LIB
-- A manifest ext_manifest.yml extending the LIB project
-- relationships.yml describing projects relationships
+- A manifest.yaml which represents library project LIB
+- An ext_manifest.yml
+- relationships.yml that describes projects relationships
+
 
 ### How to deploy and test
 
 #### Step 1. Deploy the LIB package.
 
 ```
-$ wskdeploy -m tests/usecases/triggerrule/manifest.yml --managed
+$ wskdeploy -m tests/usecases/relationships/manifest.yml --managed
 ```
 
 #### Step 2. Verify the assets been installed.
 
 e.g. 
 ```
-$ wsk package get triggerrule
+$ wsk package get lib_package
 {
-    "name": "triggerrule", 
+    "name": "lib_package",
     "annotations": [
         {
             "key": "managed",
             "value": {
                 "__OW_FILE": "tests/usecases/relationships/manifest.yml",
-                "__OW_PROJECT_HASH": "420e6ac07c0965a488a40770ecff663f0880ad78",
+                "__OW_PROJECT_HASH": "34d92ecfcf71c5ec2d3c2936ae9415c755b05158",
                 "__OW_PROJECT_NAME": "LIB"
             }
         }
     ],
     "actions": [
         {
-            "name": "greeting",
+            "name": "lib_greeting_2",
             "annotations": [
                 {
                     "key": "managed",
                     "value": {
                         "__OW_FILE": "tests/usecases/relationships/manifest.yml",
-                        "__OW_PROJECT_HASH": "420e6ac07c0965a488a40770ecff663f0880ad78",
+                        "__OW_PROJECT_HASH": "34d92ecfcf71c5ec2d3c2936ae9415c755b05158",
+                        "__OW_PROJECT_NAME": "LIB"
+                    }
+                },
+                {
+                    "key": "exec",
+                    "value": "nodejs:6"
+                }
+            ]
+        },
+        {
+            "name": "lib_greeting_1",
+            "version": "0.0.1",
+            "annotations": [
+                {
+                    "key": "managed",
+                    "value": {
+                        "__OW_FILE": "tests/usecases/relationships/manifest.yml",
+                        "__OW_PROJECT_HASH": "34d92ecfcf71c5ec2d3c2936ae9415c755b05158",
                         "__OW_PROJECT_NAME": "LIB"
                     }
                 },
@@ -75,24 +94,22 @@ $ wsk package get triggerrule
 #### Step 3. Deploy the EXT package.
 
 ```
-$ wskdeploy -m tests/usecases/triggerrule/ext_manifest.yml -r tests/usecases/triggerrule/relationships.yml --managed
+$ wskdeploy -m tests/usecases/relationships/ext_manifest.yml -r tests/usecases/relationships/relationships.yml --managed
 ```
 
 #### Step 4. Verify the assets relationships been updated.
 
 e.g. 
 ```
-$ wsk package get triggerrule
-root@hslt1:~# wsk package get triggerrule
-ok: got package triggerrule
+$ wsk package get lib_package
+ok: got package lib_package
 {
-    "name": "triggerrule",
     "annotations": [
         {
             "key": "managed",
             "value": {
                 "__OW_FILE": "tests/usecases/relationships/manifest.yml",
-                "__OW_PROJECT_HASH": "420e6ac07c0965a488a40770ecff663f0880ad78",
+                "__OW_PROJECT_HASH": "34d92ecfcf71c5ec2d3c2936ae9415c755b05158",
                 "__OW_PROJECT_NAME": "LIB"
             }
         },
@@ -101,7 +118,7 @@ ok: got package triggerrule
             "value": [
                 {
                     "__OW_FILE": "tests/usecases/relationships/relationships.yml",
-                    "__OW_PROJECT_HASH": "cb27e577748016b28d9a84b04a1702fe1422c260",
+                    "__OW_PROJECT_HASH": "512917c4df9a0acaa0aa339801526fb810b0ee65",
                     "__OW_PROJECT_NAME": "EXT"
                 }
             ]
@@ -109,13 +126,13 @@ ok: got package triggerrule
     ],
     "actions": [
         {
-            "name": "greeting",
+            "name": "lib_greeting_2",
             "annotations": [
                 {
                     "key": "managed",
                     "value": {
                         "__OW_FILE": "tests/usecases/relationships/manifest.yml",
-                        "__OW_PROJECT_HASH": "420e6ac07c0965a488a40770ecff663f0880ad78",
+                        "__OW_PROJECT_HASH": "34d92ecfcf71c5ec2d3c2936ae9415c755b05158",
                         "__OW_PROJECT_NAME": "LIB"
                     }
                 },
@@ -128,15 +145,33 @@ ok: got package triggerrule
                     "value": [
                         {
                             "__OW_FILE": "tests/usecases/relationships/relationships.yml",
-                            "__OW_PROJECT_HASH": "cb27e577748016b28d9a84b04a1702fe1422c260",
+                            "__OW_PROJECT_HASH": "512917c4df9a0acaa0aa339801526fb810b0ee65",
                             "__OW_PROJECT_NAME": "EXT"
                         }
                     ]
                 }
             ]
+        },
+        {
+            "name": "lib_greeting_1",
+            "annotations": [
+                {
+                    "key": "managed",
+                    "value": {
+                        "__OW_FILE": "tests/usecases/relationships/manifest.yml",
+                        "__OW_PROJECT_HASH": "34d92ecfcf71c5ec2d3c2936ae9415c755b05158",
+                        "__OW_PROJECT_NAME": "LIB"
+                    }
+                },
+                {
+                    "key": "exec",
+                    "value": "nodejs:6"
+                }
+            ]
         }
     ]
 }
+
 
 ```
 
@@ -145,5 +180,5 @@ ok: got package triggerrule
 ```
 $ wskdeploy export -p EXT -m exported_ext.yaml --managed
 
-explore the exported_ext.yaml manifest file and notice all the required EXT and LIB project assets are there
+explore the exported_ext.yaml manifest file and notice both EXT and LIB project assets are there without any notion of LIB project
 ```

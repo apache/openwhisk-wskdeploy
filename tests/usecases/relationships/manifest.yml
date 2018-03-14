@@ -16,17 +16,21 @@
 project:
   name: LIB
 packages:
-  triggerrule:
+  lib_package:
       version: 1.0
       license: Apache-2.0
       actions:
-        greeting:
+        lib_greeting_1:
+          version: 1.0
+          function: greeting.js
+          runtime: nodejs:6
+        lib_greeting_2:
           version: 1.0
           function: greeting.js
           runtime: nodejs:6
       triggers:
-        locationUpdate:
+        lib_trigger:
       rules:
-        myRule:
-          trigger: locationUpdate
-          action: greeting
+        lib_rule:
+          trigger: lib_trigger
+          action: lib_greeting_1

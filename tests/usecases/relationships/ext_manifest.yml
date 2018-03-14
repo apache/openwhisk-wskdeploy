@@ -20,7 +20,11 @@ packages:
       version: 1.0
       license: Apache-2.0
       actions:
-        greeting:
+        ext_greeting:
           version: 1.0
           function: greeting.js
           runtime: nodejs:6
+      rules:
+        ext_rule:
+          trigger: lib_trigger
+          action: ext_greeting
