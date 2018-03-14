@@ -127,3 +127,19 @@ func WriteProps(path string, props map[string]string) error {
 	}
 	return nil
 }
+
+func WriteFile(filename string, content string) error {
+	file, err := os.Create(filename)
+
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	if _, err = file.WriteString(content); err != nil {
+		return err
+	}
+
+	return nil
+}
