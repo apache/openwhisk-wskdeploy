@@ -1643,7 +1643,7 @@ func (deployer *ServiceDeployer) UpdateManagedProjectsListAnnotations(isUndeploy
 			}
 
 			// update actions
-			for actionName, _ := range pkg.Actions {
+			for actionName := range pkg.Actions {
 				updatedAction, err := deployer.getUpdatedAction(managedPackageName, actionName, managedProjectName, rma, isUndeploy)
 
 				if err != nil {
@@ -1659,7 +1659,7 @@ func (deployer *ServiceDeployer) UpdateManagedProjectsListAnnotations(isUndeploy
 			deployer.Deployment.Packages[managedPackageName] = updatedPackage
 
 			// update triggers
-			for triggerName, _ := range pkg.Triggers {
+			for triggerName := range pkg.Triggers {
 				trigger, err := deployer.getUpdatedTrigger(managedPackageName, triggerName, managedProjectName, rma, isUndeploy)
 
 				if err != nil {
@@ -1672,7 +1672,7 @@ func (deployer *ServiceDeployer) UpdateManagedProjectsListAnnotations(isUndeploy
 			}
 
 			// update rules
-			for ruleName, _ := range pkg.Rules {
+			for ruleName := range pkg.Rules {
 				rule, err := deployer.getUpdatedRule(managedPackageName, ruleName, managedProjectName, rma, isUndeploy)
 
 				if err != nil {
