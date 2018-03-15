@@ -19,7 +19,6 @@ package cmd
 
 import (
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
