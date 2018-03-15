@@ -180,6 +180,8 @@ const (
 	ID_ERR_ACTION_INVALID_X_action_X                                 = "msg_err_action_invalid"
 	ID_ERR_ACTION_MISSING_RUNTIME_WITH_CODE_X_action_X               = "msg_err_action_missing_runtime_with_code"
 	ID_ERR_ACTION_FUNCTION_REMOTE_DIR_NOT_SUPPORTED_X_action_X_url_X = "msg_err_action_function_remote_dir_not_supported"
+	ID_ERR_CANT_SAVE_DOCKER_RUNTIME                                  = "msg_err_cant_save_docker"
+	ID_ERR_FILE_ALREADY_EXISTS                                       = "msg_err_file_already_exists"
 
 	// Server-side Errors (wskdeploy as an Action)
 	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"
@@ -254,6 +256,8 @@ var I18N_ID_SET = [](string){
 	ID_ERR_RUNTIMES_GET_X_err_X,
 	ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
 	ID_ERR_URL_MALFORMED_X_urltype_X_url_X,
+	ID_ERR_CANT_SAVE_DOCKER_RUNTIME,
+	ID_ERR_FILE_ALREADY_EXISTS,
 	ID_MSG_COMMAND_USING_X_cmd_X_filetype_X_path_X,
 	ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
 	ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,

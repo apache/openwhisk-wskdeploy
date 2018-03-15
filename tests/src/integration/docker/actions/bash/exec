@@ -1,0 +1,2 @@
+#!/bin/bash
+echo "{ \"hello\": \"ran without a docker pull!\" }"

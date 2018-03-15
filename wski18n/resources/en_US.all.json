@@ -324,6 +324,14 @@
     "translation": "Action [{{.action}}] has function pointing to remote directory [{{.url}}], such actions are not supported."
   },
   {
+    "id": "msg_err_cant_save_docker",
+    "translation": "Cannot save Docker images."
+  },
+  {
+    "id": "msg_err_file_already_exists",
+    "translation": "File already exists."
+  },
+  {
     "id": "WARNINGS",
     "translation": "================= WARNINGS ==================="
   },

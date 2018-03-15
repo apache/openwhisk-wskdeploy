@@ -18,6 +18,8 @@
 package cmd
 
 import (
+	"encoding/base64"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -28,6 +30,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/spf13/cobra"
 )
 
@@ -87,34 +90,20 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML)
 		pkg.Sequences[wskAction.Name] = *seq
 	} else {
 		parsedAction := *maniyaml.ComposeParsersAction(*wskAction)
-
-		// get the action file extension according to action kind (e.g. js for nodejs)
-		ext := utils.FileRuntimeExtensionsMap[wskAction.Exec.Kind]
-
 		manifestDir := filepath.Dir(utils.Flags.ManifestPath)
 
 		// store function file under action package name subdirectory in the specified manifest folder
 		functionDir := filepath.Join(manifestDir, packageName)
 		os.MkdirAll(functionDir, os.ModePerm)
 
-		// store function in manifest under path relative to manifest root
-		functionFile := filepath.Join(packageName, wskAction.Name) + "." + ext
-		parsedAction.Function = functionFile
-
-		// create function file at the full path
-		functionFile = filepath.Join(manifestDir, functionFile)
-		f, err := os.Create(functionFile)
+		// save code file at the full path
+		filename, err := saveCode(*wskAction, functionDir)
 		if err != nil {
-			return wskderrors.NewFileReadError(functionFile, err.Error())
+			return err
 		}
 
-		defer f.Close()
-
-		// store action function in the filesystem next to the manifest.yml
-		// TODO: consider to name files by namespace + action to make function file names unique
-		if wskAction.Exec.Code != nil {
-			f.Write([]byte(*wskAction.Exec.Code))
-		}
+		// store function in manifest under path relative to manifest root
+		parsedAction.Function = filepath.Join(packageName, filename)
 		pkg.Actions[wskAction.Name] = parsedAction
 	}
 
@@ -280,6 +269,64 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 	fmt.Println("Manifest exported to: " + utils.Flags.ManifestPath)
 
 	return nil
+}
+
+const (
+	JAVA_EXT = ".jar"
+	ZIP_EXT  = ".zip"
+	BLACKBOX = "blackbox"
+	JAVA     = "java"
+)
+
+func getBinaryKindExtension(runtime string) (extension string) {
+	switch strings.ToLower(runtime) {
+	case JAVA:
+		extension = JAVA_EXT
+	default:
+		extension = ZIP_EXT
+	}
+
+	return extension
+}
+
+func saveCode(action whisk.Action, directory string) (string, error) {
+	var code string
+	var runtime string
+	var exec whisk.Exec
+
+	exec = *action.Exec
+	runtime = strings.Split(exec.Kind, ":")[0]
+
+	if strings.ToLower(runtime) == BLACKBOX {
+		return "", wskderrors.NewInvalidRuntimeError(wski18n.T(wski18n.ID_ERR_CANT_SAVE_DOCKER_RUNTIME),
+			directory, action.Name, BLACKBOX, utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+	}
+
+	if exec.Code != nil {
+		code = *exec.Code
+	}
+
+	var filename = ""
+	if *exec.Binary {
+		decoded, _ := base64.StdEncoding.DecodeString(code)
+		code = string(decoded)
+
+		filename = action.Name + getBinaryKindExtension(runtime)
+	} else {
+		filename = action.Name + "." + utils.FileRuntimeExtensionsMap[action.Exec.Kind]
+	}
+
+	path := filepath.Join(directory, filename)
+
+	if utils.FileExists(path) {
+		return "", wskderrors.NewFileReadError(path, wski18n.T(wski18n.ID_ERR_FILE_ALREADY_EXISTS))
+	}
+
+	if err := utils.WriteFile(path, code); err != nil {
+		return "", err
+	}
+
+	return filename, nil
 }
 
 func init() {
