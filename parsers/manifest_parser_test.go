@@ -48,6 +48,9 @@ const (
 	TEST_MSG_PARAMETER_NUMBER_MISMATCH              = "Number of Paramaters mismatched."
 	TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED     = "Manifest [%s]: Expected Unmarshal error."
 	TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED = "Manifest [%s]: Expected runtime error."
+	TEST_MSG_ACTION_DOCKER_KIND_MISMATCH            = "Docker action kind is set to [%s] instead of " + utils.BLACKBOX
+	TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH           = "Docker action image had a value mismatch."
+	TEST_MSG_ACTION_CODE_MISSING                    = "Action code is missing."
 
 	// local error messages
 	TEST_ERROR_MANIFEST_PARSE_FAILURE     = "Manifest [%s]: Failed to parse."
@@ -891,6 +894,44 @@ func TestComposeActionsForFunctionWithRemoteDir(t *testing.T) {
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_function_with_remote_dir.yaml")
 	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
 	assert.NotNil(t, err, "Compose actions should have exited with error when code is specified but runtime is missing.")
+}
+
+// validate manifest_parser.ComposeActions() method
+func TestComposeActionsForDocker(t *testing.T) {
+
+	file := "../tests/dat/manifest_data_compose_actions_for_docker.yaml"
+	actionFile := "../tests/src/integration/docker/actions/exec.zip"
+
+	p, m, _ := testLoadParseManifest(t, file)
+
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
+
+	var expectedResult, actualResult string
+	for _, action := range actions {
+		switch action.Action.Name {
+		case "OpenWhiskSkeleton":
+		case "OpenWhiskSkeletonWithNative":
+			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
+			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
+		case "CustomDockerAction1":
+		case "CustomDockerAction2":
+			expectedResult, _ = filepath.Abs(actionFile)
+			actualResult, _ = filepath.Abs(action.Filepath)
+			assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
+			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
+			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
+		case "CustomDockerAction3":
+		case "CustomDockerAction4":
+			assert.NotNil(t, action.Action.Exec.Code, TEST_MSG_ACTION_CODE_MISSING)
+			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
+			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
+		case "CustomDockerAction5":
+			assert.NotNil(t, action.Action.Exec.Code, TEST_MSG_ACTION_CODE_MISSING)
+			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
+			assert.Equal(t, "mydockerhub/myimage", action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
+		}
+	}
 }
 
 // Test 14: validate manifest_parser.ComposeActions() method

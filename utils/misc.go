@@ -20,7 +20,6 @@ package utils
 import (
 	"archive/zip"
 	"bufio"
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -179,74 +178,6 @@ func (zw *ZipWritter) Zip() error {
 		return err
 	}
 	return nil
-}
-
-// below codes is from wsk cli with tiny adjusts.
-func GetExec(artifact string, kind string, isDocker bool, mainEntry string) (*whisk.Exec, error) {
-	var err error
-	var code string
-	var content []byte
-	var exec *whisk.Exec
-
-	ext := filepath.Ext(artifact)
-	// drop the "." from file extension
-	if len(ext) > 0 && ext[0] == '.' {
-		ext = ext[1:]
-	}
-
-	exec = new(whisk.Exec)
-
-	if !isDocker || ext == ZIP_FILE_EXTENSION {
-		content, err = new(ContentReader).ReadLocal(artifact)
-		if err != nil {
-			return nil, err
-		}
-		code = string(content)
-		exec.Code = &code
-	}
-
-	if len(kind) > 0 {
-		exec.Kind = kind
-	} else if isDocker {
-		exec.Kind = "blackbox"
-		if ext != ZIP_FILE_EXTENSION {
-			exec.Image = artifact
-		} else {
-			exec.Image = "openwhisk/dockerskeleton"
-		}
-	} else {
-		r := FileExtensionRuntimeKindMap[ext]
-		exec.Kind = DefaultRunTimes[r]
-	}
-
-	if ext == JAR_FILE_EXTENSION {
-		exec.Code = nil
-	}
-
-	if len(exec.Kind) == 0 {
-		if ext == ZIP_FILE_EXTENSION {
-			return nil, zipKindError()
-		} else {
-			return nil, extensionError(ext)
-		}
-	}
-
-	// Error if entry point is not specified for Java
-	if len(mainEntry) != 0 {
-		exec.Main = mainEntry
-	} else {
-		if exec.Kind == "java" {
-			return nil, javaEntryError()
-		}
-	}
-
-	// Base64 encode the zip file content
-	if ext == ZIP_FILE_EXTENSION {
-		code = base64.StdEncoding.EncodeToString([]byte(code))
-		exec.Code = &code
-	}
-
-	return exec, nil
 }
 
 func zipKindError() error {
