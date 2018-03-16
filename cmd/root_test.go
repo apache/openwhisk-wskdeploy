@@ -74,7 +74,7 @@ type Input struct {
 	ProjectPath    string
 	DeploymentPath string
 	ManifestPath   string
-	UseInteractive bool
+	DryRun         bool
 }
 
 var expected_input Input
@@ -88,7 +88,7 @@ func initializeParameters() {
 
 	expected_input.CfgFile = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/dat/wskprops"
 	expected_input.Verbose = true
-	expected_input.UseInteractive = true
+	expected_input.DryRun = false
 	expected_input.ProjectPath = "fake_project_path"
 	expected_input.DeploymentPath = "fake_deployment_path"
 	expected_input.ManifestPath = "fake_manifest_path"
@@ -103,7 +103,7 @@ func checkValidAuthInfo(t *testing.T, expected_auth_flags Auth_flags) {
 func checkValidInputInfo(t *testing.T, expected_input Input) {
 	assert.Equal(t, expected_input.CfgFile, utils.Flags.CfgFile, "CfgFile does not match.")
 	assert.Equal(t, expected_input.Verbose, utils.Flags.Verbose, "Verbose does not match.")
-	assert.Equal(t, expected_input.UseInteractive, utils.Flags.UseInteractive, "ApiHoUseInteractivest does not match.")
+	assert.Equal(t, expected_input.DryRun, utils.Flags.DryRun, "DryRun does not match.")
 	assert.Equal(t, expected_input.ProjectPath, utils.Flags.ProjectPath, "ProjectPath does not match.")
 	assert.Equal(t, expected_input.DeploymentPath, utils.Flags.DeploymentPath, "DeploymentPath does not match.")
 	assert.Equal(t, expected_input.ManifestPath, utils.Flags.ManifestPath, "ManifestPath does not match.")
@@ -134,9 +134,6 @@ func composeCommand(auth Auth_flags, input Input) string {
 	}
 	if input.Verbose {
 		cmd = cmd + "-v "
-	}
-	if input.UseInteractive {
-		cmd = cmd + "-i "
 	}
 	return cmd
 }

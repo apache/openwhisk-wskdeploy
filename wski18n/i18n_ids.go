@@ -98,7 +98,7 @@ const (
 	ID_CMD_FLAG_CONFIG      = "msg_cmd_flag_config"
 	ID_CMD_FLAG_DEFAULTS    = "msg_cmd_flag_allow_defaults"
 	ID_CMD_FLAG_DEPLOYMENT  = "msg_cmd_flag_deployment"
-	ID_CMD_FLAG_INTERACTIVE = "msg_cmd_flag_interactive"
+	ID_CMD_FLAG_DRYRUN      = "msg_cmd_flag_dryrun"
 	ID_CMD_FLAG_KEY_FILE    = "msg_cmd_flag_key_file"
 	ID_CMD_FLAG_MANAGED     = "msg_cmd_flag_allow_managed"
 	ID_CMD_FLAG_PROJECTNAME = "msg_cmd_flag_project_name"
@@ -153,13 +153,6 @@ const (
 	// Managed deployments
 	ID_MSG_MANAGED_UNDEPLOYMENT_FAILED                    = "msg_managed_undeployment_failed"
 	ID_MSG_MANAGED_FOUND_DELETED_X_key_X_name_X_project_X = "msg_managed_found_deleted_entity"
-
-	// Interactive (prompts)
-	ID_MSG_PROMPT_APIHOST   = "msg_prompt_apihost"
-	ID_MSG_PROMPT_AUTHKEY   = "msg_prompt_authkey"
-	ID_MSG_PROMPT_DEPLOY    = "msg_prompt_deploy"
-	ID_MSG_PROMPT_NAMESPACE = "msg_prompt_namespace"
-	ID_MSG_PROMPT_UNDEPLOY  = "msg_prompt_undeploy"
 
 	// Errors
 	ID_ERR_DEPENDENCY_UNKNOWN_TYPE                                   = "msg_err_dependency_unknown_type"
@@ -229,7 +222,7 @@ var I18N_ID_SET = [](string){
 	ID_CMD_FLAG_CONFIG,
 	ID_CMD_FLAG_DEFAULTS,
 	ID_CMD_FLAG_DEPLOYMENT,
-	ID_CMD_FLAG_INTERACTIVE,
+	ID_CMD_FLAG_DRYRUN,
 	ID_CMD_FLAG_KEY_FILE,
 	ID_CMD_FLAG_MANAGED,
 	ID_CMD_FLAG_MANIFEST,
@@ -285,11 +278,6 @@ var I18N_ID_SET = [](string){
 	ID_MSG_PREFIX_INFO,
 	ID_MSG_PREFIX_SUCCESS,
 	ID_MSG_PREFIX_WARNING,
-	ID_MSG_PROMPT_APIHOST,
-	ID_MSG_PROMPT_AUTHKEY,
-	ID_MSG_PROMPT_DEPLOY,
-	ID_MSG_PROMPT_NAMESPACE,
-	ID_MSG_PROMPT_UNDEPLOY,
 	ID_MSG_UNDEPLOYMENT_CANCELLED,
 	ID_MSG_UNDEPLOYMENT_FAILED,
 	ID_MSG_UNDEPLOYMENT_SUCCEEDED,

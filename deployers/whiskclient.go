@@ -18,8 +18,6 @@
 package deployers
 
 import (
-	"bufio"
-	"fmt"
 	"net/http"
 	"os"
 	"path"
@@ -36,10 +34,9 @@ import (
 
 // Possible sources for config info (e.g., API Host, Auth Key, Namespace)
 const (
-	SOURCE_WSKPROPS          = ".wskprops"
-	SOURCE_WHISK_PROPERTIES  = "whisk.properties"
-	SOURCE_INTERACTIVE_INPUT = "interactve input"  // TODO() i18n?
-	SOURCE_DEFAULT_VALUE     = "wskdeploy default" // TODO() i18n?
+	SOURCE_WSKPROPS         = ".wskprops"
+	SOURCE_WHISK_PROPERTIES = "whisk.properties"
+	SOURCE_DEFAULT_VALUE    = "wskdeploy default" // TODO() i18n?
 )
 
 var (
@@ -174,52 +171,14 @@ func readFromWhiskProperty(pi whisk.PropertiesImp) {
 	}
 }
 
-func readInteractivly() {
-	if len(apiHost.Value) == 0 {
-		host := promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_APIHOST))
-		if host == "" {
-			// TODO() programmatically tell caller that we are using this default
-			// TODO() make this configurable or remove
-			host = "openwhisk.ng.bluemix.net"
-		}
-		apiHost = GetPropertyValue(apiHost, host, SOURCE_INTERACTIVE_INPUT)
-	}
-
-	if len(credential.Value) == 0 {
-		cred := promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_AUTHKEY))
-		credential.Value = cred
-		credential.Source = SOURCE_INTERACTIVE_INPUT
-
-		// The namespace is always associated with the credential.
-		// Both of them should be picked up from the same source.
-		if len(namespace.Value) == 0 || namespace.Value == whisk.DEFAULT_NAMESPACE {
-			tempNamespace := promptForValue(wski18n.T(wski18n.ID_MSG_PROMPT_NAMESPACE))
-			source := SOURCE_INTERACTIVE_INPUT
-
-			if tempNamespace == "" {
-				tempNamespace = whisk.DEFAULT_NAMESPACE
-				source = SOURCE_DEFAULT_VALUE
-			}
-
-			namespace = GetPropertyValue(namespace, tempNamespace, source)
-		}
-	}
-
-	if len(apigwAccessToken.Value) == 0 {
-		accessToken := promptForValue(wski18n.T(wski18n.APIGW_ACCESS_TOKEN))
-		apigwAccessToken = GetPropertyValue(apigwAccessToken, accessToken, SOURCE_INTERACTIVE_INPUT)
-	}
-}
-
 // we are reading openwhisk credentials (apihost, namespace, and auth) in the following precedence order:
 // (1) wskdeploy command line `wskdeploy --apihost --namespace --auth`
 // (2) deployment file
 // (3) manifest file
 // (4) .wskprops
-// (5) prompt for values in interactive mode if any of them are missing
 // we are following the same precedence order for APIGW_ACCESS_TOKEN
 // but as a separate thread as APIGW_ACCESS_TOKEN only needed for APIs
-func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string, isInteractive bool) (*whisk.Config, error) {
+func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string) (*whisk.Config, error) {
 	// reset credential, apiHost, namespace, etc to avoid any conflicts as they initialized globally
 	resetWhiskConfig()
 
@@ -258,13 +217,6 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		namespace.Source = SOURCE_DEFAULT_VALUE
 	}
 
-	// If we still can not find the values we need, check if it is interactive mode.
-	// If so, we prompt users for the input.
-	// The namespace is set to a default value at this point if not provided.
-	if isInteractive {
-		readInteractivly()
-	}
-
 	mode := true
 	if len(cert.Value) != 0 && len(key.Value) != 0 {
 		mode = false
@@ -274,7 +226,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string,
 		AuthToken:        credential.Value, //Authtoken
 		Namespace:        namespace.Value,  //Namespace
 		Host:             apiHost.Value,
-		Version:          "v1", // TODO() should not be hardcoded, should prompt/warn user of default
+		Version:          "v1", // TODO() should not be hardcoded, should warn user of default
 		Cert:             cert.Value,
 		Key:              key.Value,
 		Insecure:         mode, // true if you want to ignore certificate signing
@@ -334,15 +286,4 @@ func validateClientConfig(credential PropertyValue, apiHost PropertyValue, names
 	}
 
 	return nil
-}
-
-// TODO() perhaps move into its own package "wskread" and add support for passing in default value
-var promptForValue = func(msg string) string {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print(msg)
-
-	text, _ := reader.ReadString('\n')
-	text = strings.TrimSpace(text)
-
-	return text
 }

@@ -19,22 +19,20 @@ package utils
 
 import (
 	"archive/zip"
-	"bufio"
 	"errors"
 	"fmt"
-	"io"
-	"os"
-	"os/user"
-	"path/filepath"
-	"reflect"
-	"strings"
-
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/hokaccha/go-prettyjson"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"os/user"
 	"path"
+	"path/filepath"
+	"reflect"
+	"strings"
 )
 
 const (
@@ -100,19 +98,6 @@ func PrettyJSON(j interface{}) (string, error) {
 		return "", err
 	}
 	return string(bytes), nil
-}
-
-// Common utilities
-
-// Prompt for user input
-func Ask(reader *bufio.Reader, question string, def string) string {
-	fmt.Print(question + " (" + def + "): ")
-	answer, _ := reader.ReadString('\n')
-	len := len(answer)
-	if len == 1 {
-		return def
-	}
-	return answer[:len-1]
 }
 
 var kindToJSON []string = []string{"", "boolean", "integer", "integer", "integer", "integer", "integer", "integer", "integer", "integer",
