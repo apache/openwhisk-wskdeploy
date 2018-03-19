@@ -98,7 +98,7 @@ const (
 	ID_CMD_FLAG_CONFIG      = "msg_cmd_flag_config"
 	ID_CMD_FLAG_DEFAULTS    = "msg_cmd_flag_allow_defaults"
 	ID_CMD_FLAG_DEPLOYMENT  = "msg_cmd_flag_deployment"
-	ID_CMD_FLAG_DRYRUN      = "msg_cmd_flag_dryrun"
+	ID_CMD_FLAG_PREVIEW     = "msg_cmd_flag_preview"
 	ID_CMD_FLAG_KEY_FILE    = "msg_cmd_flag_key_file"
 	ID_CMD_FLAG_MANAGED     = "msg_cmd_flag_allow_managed"
 	ID_CMD_FLAG_PROJECTNAME = "msg_cmd_flag_project_name"
@@ -222,7 +222,7 @@ var I18N_ID_SET = [](string){
 	ID_CMD_FLAG_CONFIG,
 	ID_CMD_FLAG_DEFAULTS,
 	ID_CMD_FLAG_DEPLOYMENT,
-	ID_CMD_FLAG_DRYRUN,
+	ID_CMD_FLAG_PREVIEW,
 	ID_CMD_FLAG_KEY_FILE,
 	ID_CMD_FLAG_MANAGED,
 	ID_CMD_FLAG_MANIFEST,

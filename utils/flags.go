@@ -34,7 +34,7 @@ type WskDeployFlags struct {
 	ProjectPath      string
 	DeploymentPath   string
 	ManifestPath     string
-	DryRun           bool
+	Preview          bool
 	Strict           bool // strict flag to support user defined runtime version.
 	Key              string
 	Cert             string

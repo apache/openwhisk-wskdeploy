@@ -64,7 +64,7 @@
     "translation": "path to deployment file"
   },
   {
-    "id": "msg_cmd_flag_dryrun",
+    "id": "msg_cmd_flag_preview",
     "translation": "show deployment/undeployment plan"
   },
   {

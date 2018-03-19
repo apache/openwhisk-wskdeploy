@@ -84,7 +84,7 @@ type ServiceDeployer struct {
 	Deployment        *DeploymentProject
 	Client            *whisk.Client
 	mt                sync.RWMutex
-	DryRun            bool
+	Preview           bool
 	ManifestPath      string
 	ProjectPath       string
 	DeploymentPath    string
@@ -97,7 +97,7 @@ type ServiceDeployer struct {
 func NewServiceDeployer() *ServiceDeployer {
 	var dep ServiceDeployer
 	dep.Deployment = NewDeploymentProject()
-	dep.DryRun = true
+	dep.Preview = true
 	dep.DependencyMaster = make(map[string]utils.DependencyRecord)
 
 	return &dep
@@ -260,7 +260,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 // TODO(TBD): according to some planning?
 func (deployer *ServiceDeployer) Deploy() error {
 
-	if deployer.DryRun {
+	if deployer.Preview {
 		deployer.printDeploymentAssets(deployer.Deployment)
 		return nil
 	}
@@ -921,7 +921,7 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 }
 
 func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentProject) error {
-	if deployer.DryRun == true {
+	if deployer.Preview == true {
 		deployer.printDeploymentAssets(verifiedPlan)
 		return nil
 	}
@@ -1466,7 +1466,7 @@ func (deployer *ServiceDeployer) getDependentDeployer(depName string, depRecord 
 	depServiceDeployer.ProjectPath = projectPath
 	depServiceDeployer.ManifestPath = manifestPath
 	depServiceDeployer.DeploymentPath = deploymentPath
-	depServiceDeployer.DryRun = true
+	depServiceDeployer.Preview = true
 
 	depServiceDeployer.Client = deployer.Client
 	depServiceDeployer.ClientConfig = deployer.ClientConfig

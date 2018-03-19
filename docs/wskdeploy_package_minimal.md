@@ -55,10 +55,10 @@ $ wskdeploy -p <my_directory> -m docs/examples/manifest_package_minimal.yaml
 
 #### Dry Run mode
 
-If you want to simply verify your manifest file can be read and parsed properly before deploying, you can add the ```--dryrun``` flag:
+If you want to simply verify your manifest file can be read and parsed properly before deploying, you can add the ```--preview``` flag:
 
 ```sh
-$ ./wskdeploy --dryrun -m docs/examples/manifest_package_minimal.yaml
+$ ./wskdeploy --preview -m docs/examples/manifest_package_minimal.yaml
 ```
 
 and the utility will stop, show you all the OpenWhisk package components it will deploy from your manifest.
