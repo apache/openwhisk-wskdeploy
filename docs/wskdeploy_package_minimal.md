@@ -53,15 +53,15 @@ If you called your manifest "manifest_helloworld.yaml" (not using the default ma
 $ wskdeploy -p <my_directory> -m docs/examples/manifest_package_minimal.yaml
 ```
 
-#### Interactive mode
+#### Dry Run mode
 
-If you want to simply verify your manifest file can be read and parsed properly before deploying, you can add the ```-i``` or ```--allow-interactive``` flag:
+If you want to simply verify your manifest file can be read and parsed properly before deploying, you can add the ```--preview``` flag:
 
 ```sh
-$ ./wskdeploy -i -m docs/examples/manifest_package_minimal.yaml
+$ ./wskdeploy --preview -m docs/examples/manifest_package_minimal.yaml
 ```
 
-and the utility will stop, show you all the OpenWhisk package components it will deploy from your manifest and ask you if you want to deploy them or not.
+and the utility will stop, show you all the OpenWhisk package components it will deploy from your manifest.
 
 ```sh
 Package:
@@ -70,8 +70,6 @@ Name: hello_world_package
   annotations:
 Triggers:
 Rules:
-
-Do you really want to deploy this? (y/N):
 ```
 
 ### Result

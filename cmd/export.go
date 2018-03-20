@@ -117,7 +117,7 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 	maniyaml := &parsers.YAML{}
 	maniyaml.Project.Name = projectName
 
-	config, _ = deployers.NewWhiskConfig(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
+	config, _ = deployers.NewWhiskConfig(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath)
 	client, _ = deployers.CreateNewClient(config)
 
 	// Init supported runtimes and action files extensions maps

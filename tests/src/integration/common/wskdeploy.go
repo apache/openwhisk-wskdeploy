@@ -194,7 +194,7 @@ func (wskdeploy *Wskdeploy) GetDeploymentObjects(manifestPath string, deployment
 	//these values might be mock values because it's only for testing
 	userHome := utils.GetHomeDirectory()
 	defaultPath := path.Join(userHome, whisk.DEFAULT_LOCAL_CONFIG)
-	clientConfig, err := deployers.NewWhiskConfig(defaultPath, deploymentPath, manifestPath, false)
+	clientConfig, err := deployers.NewWhiskConfig(defaultPath, deploymentPath, manifestPath)
 	if err != nil {
 		return nil, err
 	}

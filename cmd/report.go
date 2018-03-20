@@ -42,7 +42,7 @@ var reportCmd = &cobra.Command{
 	Short:      wski18n.T(wski18n.ID_CMD_DESC_SHORT_REPORT),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if wskpropsPath != "" {
-			config, _ := deployers.NewWhiskConfig(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
+			config, _ := deployers.NewWhiskConfig(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath)
 			client, _ := deployers.CreateNewClient(config)
 			return printDeploymentInfo(client)
 		} else {
@@ -51,7 +51,7 @@ var reportCmd = &cobra.Command{
 			// TODO() we should not only use const. for config files like .wskprops, but have a dedicated
 			// set of functions in its own package to interact with it as a resource
 			propPath := path.Join(userHome, ".wskprops")
-			config, _ := deployers.NewWhiskConfig(propPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, false)
+			config, _ := deployers.NewWhiskConfig(propPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath)
 			client, _ := deployers.CreateNewClient(config)
 			return printDeploymentInfo(client)
 		}
