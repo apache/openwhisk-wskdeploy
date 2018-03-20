@@ -66,7 +66,7 @@ func TestNewWhiskConfig(t *testing.T) {
 	propPath := ""
 	manifestPath := ""
 	deploymentPath := ""
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath)
 	if err == nil {
 		pi := whisk.PropertiesImp{
 			OsPackage: whisk.OSPackageImp{},
@@ -90,7 +90,7 @@ func TestNewWhiskConfigCommandLine(t *testing.T) {
 	utils.Flags.Auth = CLI_AUTH
 	utils.Flags.Namespace = CLI_NAMESPACE
 
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath)
 	assert.Nil(t, err, "Failed to read credentials from wskdeploy command line")
 	assert.Equal(t, CLI_HOST, config.Host, "Failed to get host name from wskdeploy command line")
 	assert.Equal(t, CLI_AUTH, config.AuthToken, "Failed to get auth token from wskdeploy command line")
@@ -99,7 +99,7 @@ func TestNewWhiskConfigCommandLine(t *testing.T) {
 
 	utils.Flags.Key = WSKPROPS_KEY
 	utils.Flags.Cert = WSKPROPS_CERT
-	config, err = NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	config, err = NewWhiskConfig(propPath, deploymentPath, manifestPath)
 	assert.Nil(t, err, "Failed to read credentials from wskdeploy command line")
 	assert.Equal(t, CLI_HOST, config.Host, "Failed to get host name from wskdeploy command line")
 	assert.Equal(t, CLI_AUTH, config.AuthToken, "Failed to get auth token from wskdeploy command line")
@@ -115,7 +115,7 @@ func TestNewWhiskConfigDeploymentFile(t *testing.T) {
 	propPath := ""
 	manifestPath := ""
 	deploymentPath := "../tests/dat/deployment_validate_credentials.yaml"
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath)
 	assert.Nil(t, err, "Failed to read credentials from deployment file")
 	assert.Equal(t, DEPLOYMENT_HOST, config.Host, "Failed to get host name from deployment file")
 	assert.Equal(t, DEPLOYMENT_AUTH, config.AuthToken, "Failed to get auth token from deployment file")
@@ -139,7 +139,7 @@ func TestNewWhiskConfigWithWskProps(t *testing.T) {
 	propPath := "../tests/dat/wskprops"
 	manifestPath := ""
 	deploymentPath := ""
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath)
 	assert.Nil(t, err, "Failed to read credentials from wskprops")
 	assert.Equal(t, WSKPROPS_HOST, config.Host, "Failed to get host name from wskprops")
 	assert.Equal(t, WSKPROPS_AUTH, config.AuthToken, "Failed to get auth token from wskprops")
@@ -149,7 +149,7 @@ func TestNewWhiskConfigWithWskProps(t *testing.T) {
 	assert.False(t, config.Insecure, "Config should set insecure to false")
 
 	propPath = "../tests/dat/wskpropsnokeycert"
-	config, err = NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	config, err = NewWhiskConfig(propPath, deploymentPath, manifestPath)
 	assert.Nil(t, err, "Failed to read credentials from wskprops")
 	assert.Equal(t, WSKPROPS_HOST, config.Host, "Failed to get host name from wskprops")
 	assert.Equal(t, WSKPROPS_AUTH, config.AuthToken, "Failed to get auth token from wskprops")
@@ -158,15 +158,6 @@ func TestNewWhiskConfigWithWskProps(t *testing.T) {
 	assert.Empty(t, config.Cert, "Failed to get cert file from wskprops")
 	assert.True(t, config.Insecure, "Config should set insecure to true")
 }
-
-// TODO(#693) add the following test
-/*func TestNewWhiskConfigInteractiveMode(t *testing.T) {
-	propPath := ""
-	manifestPath := ""
-	deploymentPath := ""
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, true)
-	assert.Nil(t, err, "Failed to read credentials in interactive mode")
-}*/
 
 func TestNewWhiskConfigWithCLIDeploymentAndManifestFile(t *testing.T) {
 	propPath := ""
@@ -177,7 +168,7 @@ func TestNewWhiskConfigWithCLIDeploymentAndManifestFile(t *testing.T) {
 	utils.Flags.Auth = CLI_AUTH
 	utils.Flags.Namespace = CLI_NAMESPACE
 
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath)
 	assert.Nil(t, err, "Failed to read credentials from CLI or deployment or manifest file")
 	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy CLI")
 	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy CLI")
@@ -196,7 +187,7 @@ func TestNewWhiskConfigWithCLIAndDeployment(t *testing.T) {
 	utils.Flags.Auth = CLI_AUTH
 	utils.Flags.Namespace = CLI_NAMESPACE
 
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath)
 	assert.Nil(t, err, "Failed to read credentials from wskdeploy CLI")
 	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy CLI")
 	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy CLI")
@@ -215,7 +206,7 @@ func TestNewWhiskConfigWithCLIAndManifest(t *testing.T) {
 	utils.Flags.Auth = CLI_AUTH
 	utils.Flags.Namespace = CLI_NAMESPACE
 
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath)
 	assert.Nil(t, err, "Failed to read credentials from manifest file")
 	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy CLI")
 	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy CLI")
@@ -233,7 +224,7 @@ func TestNewWhiskConfigWithCLIAndWskProps(t *testing.T) {
 	utils.Flags.ApiHost = CLI_HOST
 	utils.Flags.Auth = CLI_AUTH
 	utils.Flags.Namespace = CLI_NAMESPACE
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath)
 	assert.Nil(t, err, "Failed to read credentials from wskdeploy command line")
 	assert.Equal(t, config.Host, CLI_HOST, "Failed to get host name from wskdeploy command line")
 	assert.Equal(t, config.AuthToken, CLI_AUTH, "Failed to get auth token from wskdeploy command line")
@@ -247,7 +238,7 @@ func TestNewWhiskConfigWithDeploymentAndManifestFile(t *testing.T) {
 	propPath := ""
 	manifestPath := "../tests/dat/manifest_validate_credentials.yaml"
 	deploymentPath := "../tests/dat/deployment_validate_credentials.yaml"
-	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath, false)
+	config, err := NewWhiskConfig(propPath, deploymentPath, manifestPath)
 	assert.Nil(t, err, "Failed to read credentials from manifest or deployment file")
 	assert.Equal(t, config.Host, DEPLOYMENT_HOST, "Failed to get host name from deployment file")
 	assert.Equal(t, config.AuthToken, DEPLOYMENT_AUTH, "Failed to get auth token from deployment file")

@@ -117,7 +117,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", wski18n.T(wski18n.ID_CMD_FLAG_MANIFEST))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.DeploymentPath, "deployment", "d", "", wski18n.T(wski18n.ID_CMD_FLAG_DEPLOYMENT))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Strict, "strict", "s", false, wski18n.T(wski18n.ID_CMD_FLAG_STRICT))
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.UseInteractive, "allow-interactive", "i", false, wski18n.T(wski18n.ID_CMD_FLAG_INTERACTIVE))
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Preview, "preview", "", false, wski18n.T(wski18n.ID_CMD_FLAG_PREVIEW))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Verbose, "verbose", "v", false, wski18n.T(wski18n.ID_CMD_FLAG_VERBOSE))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ApiHost, "apihost", "", "", wski18n.T(wski18n.ID_CMD_FLAG_API_HOST))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Namespace, "namespace", "n", "", wski18n.T(wski18n.ID_CMD_FLAG_NAMESPACE))
@@ -230,7 +230,7 @@ func Deploy() error {
 		deployer.ProjectPath = projectPath
 		deployer.ManifestPath = utils.Flags.ManifestPath
 		deployer.DeploymentPath = utils.Flags.DeploymentPath
-		deployer.IsInteractive = utils.Flags.UseInteractive
+		deployer.Preview = utils.Flags.Preview
 
 		// master record of any dependency that has been downloaded
 		deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
@@ -238,8 +238,7 @@ func Deploy() error {
 		clientConfig, error := deployers.NewWhiskConfig(
 			utils.Flags.CfgFile,
 			utils.Flags.DeploymentPath,
-			utils.Flags.ManifestPath,
-			deployer.IsInteractive)
+			utils.Flags.ManifestPath)
 		if error != nil {
 			return error
 		}
@@ -310,9 +309,9 @@ func Undeploy() error {
 		deployer.ProjectPath = utils.Flags.ProjectPath
 		deployer.ManifestPath = utils.Flags.ManifestPath
 		deployer.DeploymentPath = utils.Flags.DeploymentPath
-		deployer.IsInteractive = utils.Flags.UseInteractive
+		deployer.Preview = utils.Flags.Preview
 
-		clientConfig, error := deployers.NewWhiskConfig(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath, deployer.IsInteractive)
+		clientConfig, error := deployers.NewWhiskConfig(utils.Flags.CfgFile, utils.Flags.DeploymentPath, utils.Flags.ManifestPath)
 		if error != nil {
 			return error
 		}

@@ -26,4 +26,3 @@
 
 -  The ```wskdeploy``` utility will cease deploying as soon as it receives an error from the target platform and display what error information it receives to you.
 - then it will attempt to undeploy any entities that it attempted to deploy.
-  - If "interactive mode" was used to deploy, then you will be prompted to confirm you wish to undeploy.

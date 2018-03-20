@@ -170,7 +170,6 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 	for key, dependency := range pkg.Dependencies {
 		version := dependency.Version
 		if len(version) == 0 {
-			// TODO() interactive ask for branch, AND consider YAML specification to allow key for branch
 			version = YAML_VALUE_BRANCH_MASTER
 		}
 

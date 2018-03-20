@@ -18,10 +18,8 @@
 package deployers
 
 import (
-	"bufio"
 	"fmt"
 	"net/http"
-	"os"
 	"path"
 	"reflect"
 	"strconv"
@@ -82,16 +80,14 @@ func NewDeploymentPackage() *DeploymentPackage {
 //   3. Collect information about the source code files in the working directory
 //   4. Create a deployment plan to create OpenWhisk service
 type ServiceDeployer struct {
-	ProjectName    string
-	Deployment     *DeploymentProject
-	Client         *whisk.Client
-	mt             sync.RWMutex
-	IsInteractive  bool
-	ManifestPath   string
-	ProjectPath    string
-	DeploymentPath string
-	// whether to deploy the action under the package
-	InteractiveChoice bool
+	ProjectName       string
+	Deployment        *DeploymentProject
+	Client            *whisk.Client
+	mt                sync.RWMutex
+	Preview           bool
+	ManifestPath      string
+	ProjectPath       string
+	DeploymentPath    string
 	ClientConfig      *whisk.Config
 	DependencyMaster  map[string]utils.DependencyRecord
 	ManagedAnnotation whisk.KeyValue
@@ -101,7 +97,7 @@ type ServiceDeployer struct {
 func NewServiceDeployer() *ServiceDeployer {
 	var dep ServiceDeployer
 	dep.Deployment = NewDeploymentProject()
-	dep.IsInteractive = true
+	dep.Preview = true
 	dep.DependencyMaster = make(map[string]utils.DependencyRecord)
 
 	return &dep
@@ -264,41 +260,11 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 // TODO(TBD): according to some planning?
 func (deployer *ServiceDeployer) Deploy() error {
 
-	if deployer.IsInteractive == true {
+	if deployer.Preview {
 		deployer.printDeploymentAssets(deployer.Deployment)
-
-		// TODO() See if we can use the promptForValue() function in whiskclient.go
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print(wski18n.T(wski18n.ID_MSG_PROMPT_DEPLOY))
-		text, _ := reader.ReadString('\n')
-		text = strings.TrimSpace(text)
-
-		if text == "" {
-			text = "n"
-		}
-
-		// TODO() make possible responses constants (enum?) and create "No" corallary
-		if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
-			deployer.InteractiveChoice = true
-			if err := deployer.deployAssets(); err != nil {
-				wskprint.PrintOpenWhiskError(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_FAILED))
-				return err
-			}
-
-			wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_SUCCEEDED))
-			return nil
-
-		} else {
-			// TODO() Should acknowledge if user typed (No/N/n) and if not still exit, but
-			// indicate we took the response to mean "No", typically by displaying interpolated
-			// response in parenthesis
-			deployer.InteractiveChoice = false
-			wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_CANCELLED))
-			return nil
-		}
+		return nil
 	}
 
-	// non-interactive
 	if err := deployer.deployAssets(); err != nil {
 		wskprint.PrintOpenWhiskError(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_FAILED))
 		return err
@@ -955,39 +921,11 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 }
 
 func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentProject) error {
-	if deployer.IsInteractive == true {
+	if deployer.Preview == true {
 		deployer.printDeploymentAssets(verifiedPlan)
-
-		// TODO() See if we can use the promptForValue() function in whiskclient.go
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print(wski18n.T(wski18n.ID_MSG_PROMPT_UNDEPLOY))
-		text, _ := reader.ReadString('\n')
-		text = strings.TrimSpace(text)
-
-		if text == "" {
-			text = "n"
-		}
-
-		// TODO() Use constants for possible return values y/N/yes/No etc.
-		if strings.EqualFold(text, "y") || strings.EqualFold(text, "yes") {
-			deployer.InteractiveChoice = true
-
-			if err := deployer.unDeployAssets(verifiedPlan); err != nil {
-				wskprint.PrintOpenWhiskError(wski18n.T(wski18n.T(wski18n.ID_MSG_UNDEPLOYMENT_FAILED)))
-				return err
-			}
-
-			wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.T(wski18n.ID_MSG_UNDEPLOYMENT_SUCCEEDED)))
-			return nil
-
-		} else {
-			deployer.InteractiveChoice = false
-			wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.T(wski18n.ID_MSG_UNDEPLOYMENT_CANCELLED)))
-			return nil
-		}
+		return nil
 	}
 
-	// non-interactive
 	if err := deployer.unDeployAssets(verifiedPlan); err != nil {
 		wskprint.PrintOpenWhiskError(wski18n.T(wski18n.T(wski18n.ID_MSG_UNDEPLOYMENT_FAILED)))
 		return err
@@ -1528,7 +1466,7 @@ func (deployer *ServiceDeployer) getDependentDeployer(depName string, depRecord 
 	depServiceDeployer.ProjectPath = projectPath
 	depServiceDeployer.ManifestPath = manifestPath
 	depServiceDeployer.DeploymentPath = deploymentPath
-	depServiceDeployer.IsInteractive = true
+	depServiceDeployer.Preview = true
 
 	depServiceDeployer.Client = deployer.Client
 	depServiceDeployer.ClientConfig = deployer.ClientConfig

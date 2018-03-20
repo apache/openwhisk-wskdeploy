@@ -64,8 +64,8 @@
     "translation": "path to deployment file"
   },
   {
-    "id": "msg_cmd_flag_interactive",
-    "translation": "allow interactive prompts"
+    "id": "msg_cmd_flag_preview",
+    "translation": "show deployment/undeployment plan"
   },
   {
     "id": "msg_cmd_flag_key_file",
@@ -218,26 +218,6 @@
   {
     "id": "msg_managed_found_deleted_entity",
     "translation": "Deleting {{.key}} [{{.name}}] which was removed from the current managed project [{{.project}}] as part of undeployment.\n"
-  },
-  {
-    "id": "msg_prompt_apihost",
-    "translation": "\nPlease provide the hostname for OpenWhisk: "
-  },
-  {
-    "id": "msg_prompt_authkey",
-    "translation": "\nPlease provide an authentication token: "
-  },
-  {
-    "id": "msg_prompt_deploy",
-    "translation": "Do you really want to deploy this? (y/N): "
-  },
-  {
-    "id": "msg_prompt_namespace",
-    "translation": "\nPlease provide a namespace [default value is guest]: "
-  },
-  {
-    "id": "msg_prompt_undeploy",
-    "translation": "Do you really want to undeploy this? (y/N): "
   },
   {
     "id": "msg_default_package",
