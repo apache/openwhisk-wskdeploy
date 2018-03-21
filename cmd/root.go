@@ -18,13 +18,9 @@
 package cmd
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
 	"os"
 	"path"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
@@ -57,53 +53,13 @@ func RootCmdImp(cmd *cobra.Command, args []string) error {
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	if utils.Flags.WithinOpenWhisk {
-		err := substCmdArgs()
-		if err != nil {
-			wskprint.PrintOpenWhiskFromError(err)
-			return
-		}
-	}
-
 	if err := RootCmd.Execute(); err != nil {
 		wskprint.PrintOpenWhiskFromError(err)
 		os.Exit(-1)
-	} else {
-		if utils.Flags.WithinOpenWhisk {
-			// TODO() Why are we printing success here?
-			// TODO() maybe return report of what has been deployed.
-			wskprint.PrintlnOpenWhiskSuccess(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_SUCCEEDED))
-		}
 	}
-}
-
-// This function is only used when wskdeploy is being called as an Action and its input
-// (i.e., command and arguments) is JSON data (map).
-func substCmdArgs() error {
-	// Extract arguments from input JSON string
-	// { "cmd": ".." } // space-separated arguments
-
-	arg := os.Args[1]
-
-	// TODO() Move to proper status output/debug/trace
-	fmt.Println("arg is " + arg)
-	// unmarshal the string to a JSON object
-	var obj map[string]interface{}
-	json.Unmarshal([]byte(arg), &obj)
-
-	if v, ok := obj["cmd"].(string); ok {
-		regex, _ := regexp.Compile("[ ]+")
-		os.Args = regex.Split("wskdeploy "+strings.TrimSpace(v), -1)
-	} else {
-		return errors.New(wski18n.T(wski18n.ID_ERR_JSON_MISSING_KEY_CMD))
-	}
-	return nil
 }
 
 func init() {
-	// TODO() move Env var. to some global const
-	utils.Flags.WithinOpenWhisk = len(os.Getenv("__OW_API_HOST")) > 0
-
 	cobra.OnInitialize(initConfig)
 
 	// Defining Persistent Flags of Whisk Deploy Root command (wskdeploy)
