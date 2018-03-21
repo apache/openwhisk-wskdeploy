@@ -15,23 +15,75 @@
  * limitations under the License.
  */
 
-ext.dockerImageName = "wskdeploy"
-ext.dockerContainerName = "wskdeploy"
-ext.dockerBuildArgs = getDockerBuildArgs()
-apply from: 'gradle/docker.gradle'
-
 buildscript {
-  repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
-  }
-  dependencies {
-    classpath "gradle.plugin.org.nosphere.apache:creadur-rat-gradle:0.3.1"
-  }
+    dependencies {
+        classpath "gradle.plugin.org.nosphere.apache:creadur-rat-gradle:0.3.1"
+    }
+}
+
+plugins {
+    id 'com.github.blindpirate.gogradle' version '0.8.1'
 }
 
 apply plugin: "org.nosphere.apache.rat"
+
+golang {
+    packagePath = 'github.com/apache/incubator-openwhisk-wskdeploy' as String
+    buildTags = (rootProject.findProperty('goTags')?:'').split(',')
+}
+
+dependencies {
+    golang {
+        build(['name':'github.com/cloudfoundry/jibber_jabber', 'version':'bcc4c8345a21301bf47c032ff42dd1aae2fe3027', 'transitive':false])
+        build(['name':'github.com/fatih/color', 'version':'570b54cabe6b8eb0bc2dfce68d964677d63b5260', 'transitive':false])
+        build(['name':'github.com/fsnotify/fsnotify', 'version':'fd9ec7deca8bf46ecd2a795baaacf2b3a9be1197', 'transitive':false])
+        build(['name':'github.com/google/go-querystring/query', 'version':'9235644dd9e52eeae6fa48efd539fdc351a0af53', 'transitive':false])
+        build(['name':'github.com/hashicorp/hcl', 'version':'973f376f0e7cf09c96e445b44712416c0cb22ec4', 'transitive':false])
+        build(['name':'github.com/hashicorp/hcl/hcl/ast', 'version':'973f376f0e7cf09c96e445b44712416c0cb22ec4', 'transitive':false])
+        build(['name':'github.com/hashicorp/hcl/hcl/parser', 'version':'973f376f0e7cf09c96e445b44712416c0cb22ec4', 'transitive':false])
+        build(['name':'github.com/hashicorp/hcl/hcl/scanner', 'version':'973f376f0e7cf09c96e445b44712416c0cb22ec4', 'transitive':false])
+        build(['name':'github.com/hashicorp/hcl/hcl/strconv', 'version':'973f376f0e7cf09c96e445b44712416c0cb22ec4', 'transitive':false])
+        build(['name':'github.com/hashicorp/hcl/hcl/token', 'version':'973f376f0e7cf09c96e445b44712416c0cb22ec4', 'transitive':false])
+        build(['name':'github.com/hashicorp/hcl/json/parser', 'version':'973f376f0e7cf09c96e445b44712416c0cb22ec4', 'transitive':false])
+        build(['name':'github.com/hashicorp/hcl/json/scanner', 'version':'973f376f0e7cf09c96e445b44712416c0cb22ec4', 'transitive':false])
+        build(['name':'github.com/hashicorp/hcl/json/token', 'version':'973f376f0e7cf09c96e445b44712416c0cb22ec4', 'transitive':false])
+        build(['name':'github.com/hokaccha/go-prettyjson', 'version':'f75235bd99dad4e98ff360db8372d5c0ef1d054a', 'transitive':false])
+        build(['name':'github.com/inconshreveable/mousetrap', 'version':'76626ae9c91c4f2a10f34cad8ce83ea42c93bb75', 'transitive':false])
+        build(['name':'github.com/magiconair/properties', 'version':'0723e352fa358f9322c938cc2dadda874e9151a9', 'transitive':false])
+        build(['name':'github.com/mattn/go-colorable', 'version':'d228849504861217f796da67fae4f6e347643f15', 'transitive':false])
+        build(['name':'github.com/mattn/go-isatty', 'version':'a5cdd64afdee435007ee3e9f6ed4684af949d568', 'transitive':false])
+        build(['name':'github.com/mitchellh/mapstructure', 'version':'f3009df150dadf309fdee4a54ed65c124afad715', 'transitive':false])
+        build(['name':'github.com/nicksnyder/go-i18n/i18n', 'version':'991e81cc94f6c54209edb3192cb98e3995ad71c1', 'transitive':false])
+        build(['name':'github.com/nicksnyder/go-i18n/i18n/bundle', 'version':'991e81cc94f6c54209edb3192cb98e3995ad71c1', 'transitive':false])
+        build(['name':'github.com/nicksnyder/go-i18n/i18n/language', 'version':'991e81cc94f6c54209edb3192cb98e3995ad71c1', 'transitive':false])
+        build(['name':'github.com/nicksnyder/go-i18n/i18n/translation', 'version':'991e81cc94f6c54209edb3192cb98e3995ad71c1', 'transitive':false])
+        build(['name':'github.com/apache/incubator-openwhisk-client-go/whisk', 'version':'717bc3a1638460e069e411e9a8bf0ea5c97f1efa', 'transitive':false])
+        build(['name':'github.com/apache/incubator-openwhisk-client-go/wski18n', 'version':'717bc3a1638460e069e411e9a8bf0ea5c97f1efa', 'transitive':false])
+        build(['name':'github.com/pelletier/go-buffruneio', 'version':'df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d', 'transitive':false])
+        build(['name':'github.com/pelletier/go-toml', 'version':'45932ad32dfdd20826f5671da37a5f3ce9f26a8d', 'transitive':false])
+        build(['name':'github.com/spf13/afero', 'version':'06b7e5f50606ecd49148a01a6008942d9b669217', 'transitive':false])
+        build(['name':'github.com/spf13/afero/mem', 'version':'06b7e5f50606ecd49148a01a6008942d9b669217', 'transitive':false])
+        build(['name':'github.com/spf13/cast', 'version':'2580bc98dc0e62908119e4737030cc2fdfc45e4c', 'transitive':false])
+        build(['name':'github.com/spf13/cobra', 'version':'6e91dded25d73176bf7f60b40dd7aa1f0bf9be8d', 'transitive':false])
+        build(['name':'github.com/spf13/jwalterweatherman', 'version':'33c24e77fb80341fe7130ee7c594256ff08ccc46', 'transitive':false])
+        build(['name':'github.com/spf13/pflag', 'version':'5ccb023bc27df288a957c5e994cd44fd19619465', 'transitive':false])
+        build(['name':'github.com/spf13/viper', 'version':'651d9d916abc3c3d6a91a12549495caba5edffd2', 'transitive':false])
+        build(['name':'golang.org/x/sys/unix', 'version':'9a2e24c3733eddc63871eda99f253e2db29bd3b9', 'transitive':false])
+        build(['name':'golang.org/x/text/transform', 'version':'a8b38433e35b65ba247bb267317037dee1b70cea', 'transitive':false])
+        build(['name':'golang.org/x/text/unicode/norm', 'version':'a8b38433e35b65ba247bb267317037dee1b70cea', 'transitive':false])
+        build(['name':'gopkg.in/yaml.v2', 'version':'eb3733d160e74a9c7e442f435eb3bea458e1d19f', 'transitive':false])
+        build(['name':'github.com/palantir/stacktrace', 'version':'78658fd2d1772b755720ed8c44367d11ee5380d6', 'transitive':false])
+        build(['name':'github.com/cpuguy83/go-md2man/md2man', 'version':'1d903dcb749992f3741d744c0f8376b4bd7eb3e1', 'transitive':false])
+
+        test(['name':'github.com/stretchr/testify', 'version':'b91bfb9ebec76498946beb6af7c0230c7cc7ba6c', 'transitive':false])
+
+    }
+}
 
 rat {
     excludes += [
@@ -43,129 +95,217 @@ rat {
     ]
 }
 
-project.ext {
-    basePackageName = "openwhisk-wskdeploy"
-    packageExtension = "tar.gz"
-    if (project.hasProperty('projectVersion')) {
-        packageVersion = "${projectVersion}"
-    } else {
-        packageVersion = ""
+/*
+    The OpenWhiskPlatform class is a utility class to make the rest of what
+    happens with platforms a bit more understandable.  A "Platform" is a tuple
+    of an operating system and a processor.  Currently, the OpenWhisk Wskdeploy
+    supports three OS's:  Linux, Mac/Darwin, and Windows.  It supports x86
+    (32-bit or 64-bit) on all OS's.  On Linux, it also support System Z (s390x),
+    PowerPC (ppc64le), and ARM (32-bit and 64-bit) architectures.
+
+    Different contexts use different codings to refer to these architectures --
+    the class attempts to provide and interpret all needed codings.  Internal
+    storage is in "GO" format:
+
+        OS: linux, darwin, windows
+        Arch: 386, amd64, s390x, ppc64le, arm
+
+    TODO - It may be appropriate to refactor into a general purpose Platform
+           class for all builds, then to extend with specifics needed for
+           the OpenWhisk Wskdeploy build.
+ */
+class OpenWhiskPlatform {
+    String goOs
+    String goArch
+
+    /*
+        The 'zipFileName' property is the root file name to use for archives.
+     */
+    static String zipFileName
+
+    /*
+        Create a platform for the local platform
+     */
+    OpenWhiskPlatform() {
+        this(System.properties['os.name'], System.properties['os.arch'])
     }
-    buildFolder = "build"
+
+    OpenWhiskPlatform(String platformSpec) {
+        this(*platformSpec.split('-'))
+    }
+
+    OpenWhiskPlatform(String inOs, String inArch) {
+        goOs=inOs.toLowerCase()
+                .replaceAll(~/^mac.*$/,'darwin')
+                .replaceAll(~/^.*n[ui]x.*$/,'linux')
+        goArch=inArch.toLowerCase()
+                .replaceAll('x86_64','amd64')
+                .replaceAll('i386','386')
+                .replaceAll('x86_32','386')
+    }
+
+    /**
+     * Return the Openwhisk OS for this Platform
+     */
+    String getOwOs() {
+        ((goOs == 'darwin') ? 'mac' : goOs)
+    }
+
+    String getGoPlatform() {
+        "${goOs}-${goArch}"
+    }
+
+    /*
+        Everything below here is specific to the Wskdeploy build and could be
+        factored out into a subclass.
+     */
+    String getArchiveDirName() {
+        "${this.owOs}/${goArch}"
+    }
+
+    String getArchiveFileName() {
+        String suffix
+        switch (goArch) {
+            case "386": suffix = '-32bit'; break;
+            case "amd64": suffix = ''; break;
+            default: suffix = "-${goArch}"; break;
+        }
+        String archivetype = (goOs == 'linux') ? 'tgz' : 'zip'
+        "${zipFileName}-${this.owOs}${suffix}.${archivetype}"
+    }
 }
 
-task taredSources(type: Tar) {
-    baseName basePackageName
-    description "Creates a combined tar.gz file of wskdeploy's sources"
-    group "Release artifact"
-    classifier "sources"
+/*
+    Configuration of OpenWhisk Platform behavior based on environment and defaults
+ */
+OpenWhiskPlatform.zipFileName =
+        System.env['zip_file_name'] ?:
+                (rootProject.findProperty('zipFileName') ?: 'openwhisk_wskdeploy')
 
-    from(project.rootDir) {
-        include('cmd/*.go', 'deployers/*.go', 'parsers/*.go', 'utils/*.go',
-                'wskderrors/*.go', 'wskenv/*.go', 'wskprint/*.go', 'wski18n/**')
-        include('*.go')
-        include('gradle/**')
-        include('README.md', 'CONTRIBUTING.md', 'DEPENDENCIES.md')
-        include('gradlew', 'gradlew.bat', 'Dockerfile', 'build.gradle')
-        include('LICENSE.txt', 'NOTICE.txt', 'CHANGELOG.txt')
+project.ext.packageVersion =
+        rootProject.findProperty('packageVersion') ?: 'latest'
+
+String buildFileName = System.env['build_file_name'] ?:
+        (rootProject.findProperty('buildFileName') ?: 'wskdeploy')
+
+/*
+    'platforms' property will be null for a local compile, or a list (comma or
+    space-separated) of hyphenated Goos-Goarch pairs.  Some transformation is
+    done when parsing to handle misconceptions.
+
+    TODO:  More syntax/validity checking and feedback, perhaps as part of a
+    Platform object as proposed above...
+*/
+rootProject.ext.localPlatform = new OpenWhiskPlatform()
+
+if (rootProject.hasProperty('buildPlatforms')) {
+    rootProject.ext.platforms = buildPlatforms.tokenize(' ,').collect {
+        new OpenWhiskPlatform(it)
     }
-    destinationDir file(buildFolder)
-    extension packageExtension
-    version packageVersion
+} else {
+    if (!rootProject.hasProperty('nativeCompile')) {
+        rootProject.ext.platforms = [
+                'linux-386', 'linux-amd64',
+                'linux-s390x', 'linux-ppc64le', 'linux-arm', 'linux-arm64',
+                'darwin-386', 'darwin-amd64',
+                'windows-386', 'windows-amd64'
+        ].collect { new OpenWhiskPlatform(it) }
+    } else {
+        rootProject.ext.platforms = [ rootProject.localPlatform ]
+    }
+}
+
+/*
+    Checks -- add golint and scancode to the checks run prior to build.
+       The get step is needed to be sure a golint binary is available to run.
+ */
+task getGoLint(type: com.github.blindpirate.gogradle.Go) {
+    go 'get -u github.com/golang/lint/golint'
+}
+
+task goLint(type: com.github.blindpirate.gogradle.Go, dependsOn: getGoLint) {
+    // WARNING:  The single quotes are intentional!  The gogradle plugin will
+    //           parse the command with the GString engine at execution time.
+    run '${GOPATH}/bin/golint ' + golang.packagePath
+}
+
+goCheck.dependsOn(goLint)
+
+goBuild {
+    targetPlatform = rootProject.platforms*.goPlatform
+
+    // WARNING:  The single quotes are intentional!  The gogradle plugin will
+    //           parse the command with the GString engine at execution time.
+    go(['build',
+        '-ldflags', "-X main.Version=${packageVersion}" as String,
+        '-o', './build/${GOOS}-${GOARCH}/'+buildFileName+'${GOEXE}',
+        golang.packagePath ] as List<String>)
+}
+
+gofmt {
+    gofmt "-s -w ."
+}
+
+task compile(type: Copy, dependsOn: goBuild) {
+    destinationDir = file('./build')
+    from("./build/${rootProject.localPlatform.goOs}-${rootProject.localPlatform.goArch}")
+}
+
+task build(type: DefaultTask, dependsOn: compile)
+
+/*
+    For each platform, create an individual archive in a platform appropriate
+    format (tarball for Linux, zipfile for Mac & Windows).
+ */
+task individualArchives(
+        dependsOn: rootProject.platforms.collect() { p ->
+            task("release${p.goOs.capitalize()}${p.goArch.capitalize()}",
+                    type: (p.goOs == 'linux') ? Tar : Zip, dependsOn: compile) {
+                if (p.goOs == 'linux') { compression = Compression.GZIP }
+                destinationDir = file('./release')
+                baseName = "${p.zipFileName}-${packageVersion}-${p.owOs}-${p.goArch}"
+                from "./build/${p.goOs}-${p.goArch}/"
+                include "${buildFileName}*"
+            }
+        })
+
+/*
+    Create a 'content.json' file representing all that was
+    compiled and its appropriate directory in the Tarball that will be created
+    for deployment to local Nginx instances.
+ */
+
+task index() {
+    def content = [:]
+    for (p in platforms) {
+        def pathObject = [ "path" : "${p.archiveDirName}/${p.archiveFileName}" ]
+        content.get(p.owOs,[:])[p.goArch] = pathObject
+        // TODO: Default architecture should be configurable as a property
+        if (p.goArch == 'amd64') {
+            content.get(p.owOs,[:])['default'] = pathObject
+        }
+    }
+
+    doLast {
+        mkdir('./build')
+        file('./build/content.json').text = groovy.json.JsonOutput.toJson(["wskdeploy": content])
+    }
+}
+
+task releaseBinaries(type: Tar, dependsOn: [individualArchives, index]) {
     compression = Compression.GZIP
-}
-
-task cleanBuild(type: Delete) {
-    def folder = new File(buildFolder)
-    if(folder.exists()) {
-        delete file(buildFolder).listFiles()
+    destinationDir = file('./release')
+    baseName = "${OpenWhiskPlatform.zipFileName}-${packageVersion}-all"
+    from('./build/content.json') { into('.') }
+    rootProject.platforms.each() { p ->
+        from('./release/') {
+            include("${p.zipFileName}-${packageVersion}-${p.owOs}-${p.goArch}.*")
+            into p.archiveDirName
+            rename { p.archiveFileName }
+        }
     }
 }
 
-task removeBinary(type: Delete) {
-    delete "${projectDir}/bin/wskdeploy"
-    delete "${projectDir}/bin/mac"
-    delete "${projectDir}/bin/linux"
-    delete "${projectDir}/bin/windows"
-}
-
-task distBinary(dependsOn: [removeBinary, distDocker]) {
-    doLast {
-        run(dockerBinary + ["rm", "-f", dockerContainerName], true)
-        run(dockerBinary + ["run", "--name", dockerContainerName, dockerTaggedImageName])
-
-        // Copy all Go binaries from Docker into openwhisk/bin folder
-        run(dockerBinary + ["cp", dockerContainerName +
-                ":/src/github.com/apache/incubator-openwhisk-wskdeploy/build/.", "${projectDir}/bin"])
-
-        run(dockerBinary + ["rm", "-f", dockerContainerName])
-    }
-}
-
-task dumpOSInfo {
-    doLast {
-        println "os.name = "+getOsName()
-        println "os.arch = "+getOsArch()
-        println "go.name = "+mapOsNameToGoName(getOsName())
-        println "go.arch = "+mapOsArchToGoArch(getOsArch())
-    }
-}
-
-task copyWSKDEPLOYShortcut(type: Copy, dependsOn: [distBinary, dumpOSInfo]) {
-    String go_osname     = mapOsNameToGoName(getOsName())
-    String go_osarch     = mapOsArchToGoArch(getOsArch())
-    String from_path_wsk = "${projectDir}/bin/${go_osname}/${go_osarch}/wskdeploy"
-    String to_path_dir   = "${projectDir}/bin"
-
-    from from_path_wsk
-    into to_path_dir
-}
-
-pushImage.finalizedBy copyWSKDEPLOYShortcut
-
-// Returns the Go CLI docker build args
-def getDockerBuildArgs() {
-    String local_os = mapOsNameToGoName(getOsName())
-    String local_arch = mapOsArchToGoArch(getOsArch())
-    def res = []
-
-    if(!project.hasProperty('crossCompileWSKDEPLOY') || project.crossCompileWSKDEPLOY == "false") {
-        res = ["WSKDEPLOY_OS=${local_os}", "WSKDEPLOY_ARCH=${local_arch}"]
-    } else {
-        res = ["WSKDEPLOY_OS=mac linux windows", "WSKDEPLOY_ARCH=386 amd64"]
-    }
-
-    return res
-}
-
-def run(cmd, ignoreError = false) {
-    println("Executing '${cmd.join(" ")}'")
-    def proc = cmd.execute()
-    proc.waitFor()
-    if(!ignoreError && proc.exitValue() != 0) {
-        println("Command '${cmd.join(" ")}' failed with exitCode ${proc.exitValue()}")
-    }
-}
-
-def getOsName() {
-    return System.properties['os.name']
-}
-
-def getOsArch() {
-    return System.properties['os.arch']
-}
-
-def mapOsNameToGoName(String osname) {
-    String osname_l = osname.toLowerCase()
-    if (osname_l.contains("nux") || osname.contains("nix")) return "linux"
-    if (osname_l.contains("mac")) return "mac"
-    if (osname_l.contains("windows")) return "windows"
-    return osname_l
-}
-
-def mapOsArchToGoArch(String osarch) {
-    String osarch_l = osarch.toLowerCase()
-    if (osarch_l.contains("x86_64") || osarch_l == "amd64") return "amd64"
-    if (osarch_l.contains("i386") || osarch_l.contains("x86_32")) return "386"
-    return osarch_l
+task clean(type: Delete, dependsOn: goClean) {
+    delete './build', './release'
 }
