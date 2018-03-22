@@ -1332,7 +1332,7 @@ func TestComposeDependencies(t *testing.T) {
 	file := "../tests/dat/manifest_data_compose_dependencies.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
 
-	depdList, err := p.ComposeDependenciesFromAllPackages(m, "/project_folder", m.Filepath)
+	depdList, err := p.ComposeDependenciesFromAllPackages(m, "/project_folder", m.Filepath, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_DEPENDENCY_FAILURE, file))
 
 	assert.Equal(t, 3, len(depdList), "Failed to get rules")
