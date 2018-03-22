@@ -48,12 +48,16 @@ after_success:
     git config --global user.name "Travis CI";
     export GIT_TAG="latest";
     git tag -d $GIT_TAG;
-    git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
+    git push -q https://$API_KEY@github.com/apache/incubator-openwhisk-wskdeploy :refs/tags/$GIT_TAG
+    GIT_COMMITTER_DATE="$(git show --format=%aD | head -1)" git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
     git push -f -q https://$API_KEY@github.com/apache/incubator-openwhisk-wskdeploy $GIT_TAG;
   fi
 after_script:
 - make clean
 before_deploy:
+- export build_file_name=wskdeploy
+- go get github.com/inconshreveable/mousetrap
+- "./tools/travis/build_tag_releases.sh $build_file_name"
 - ./gradlew --console=plain releaseBinaries
 - export RELEASE_PKG_FILE="$(cd "$TRAVIS_BUILD_DIR/release" && ls ${zip_file_name}-*.tgz ${zip_file_name}-*.zip)"
 - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."
