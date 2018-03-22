@@ -637,16 +637,27 @@ func (deployer *ServiceDeployer) RefreshManagedPackagesWithDependencies(ma map[s
 			// if dependency label (custom-helloworld) is different from the dependent package name,
 			// it must have binding set to the original package ("helloworld")
 			if len(pkg.Binding.Name) != 0 {
-				// get the original package to retrieve its managed annotations
-				pkg, _, err := deployer.Client.Packages.Get(pkg.Binding.Name)
-				if err != nil {
-					return err
+				// having dependency on packages under /whisk.system is treated in a different way
+				// in which dependent package under /whisk.system are not modified to add managed annotation
+				// and parent package does not show this dependency in its managed annotation
+				// because whisk.system packages comes pre-packaged and deployed with OpenWhisk server and not
+				// deployed along with application deployments.
+				// (TODO) here, we are only finding a package with its name as Get method
+				// (TODO) does not support looking under different/seperate namespace
+				// (TODO) we could add support to sync dependencies from different namespaces in future
+				if pkg.Binding.Namespace != utils.WHISK_SYSTEM {
+					// get the original package to retrieve its managed annotations
+					originalPkg, _, err := deployer.Client.Packages.Get(pkg.Binding.Name)
+					if err != nil {
+						return err
+					}
+					pkg = originalPkg
 				}
-				if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
-					//append annotations from this package to deps
-					pkgName := parsers.PATH_SEPARATOR + pkg.Namespace + parsers.PATH_SEPARATOR + pkg.Name
-					dependencyAnnotations = append(dependencyAnnotations, whisk.KeyValue{Key: pkgName, Value: a.(map[string]interface{})})
-				}
+			}
+			if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
+				//append annotations from this package to deps
+				pkgName := parsers.PATH_SEPARATOR + pkg.Namespace + parsers.PATH_SEPARATOR + pkg.Name
+				dependencyAnnotations = append(dependencyAnnotations, whisk.KeyValue{Key: pkgName, Value: a.(map[string]interface{})})
 			}
 		}
 		updatedAnnotation, err := utils.AddDependentAnnotation(ma, dependencyAnnotations)
