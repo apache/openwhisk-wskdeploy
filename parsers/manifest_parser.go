@@ -27,13 +27,14 @@ import (
 
 	"gopkg.in/yaml.v2"
 
+	"path/filepath"
+
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"path/filepath"
 )
 
 const (
@@ -141,7 +142,7 @@ func (dm *YAMLParser) composeAnnotations(annotations map[string]interface{}) whi
 	return listOfAnnotations
 }
 
-func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string, ma whisk.KeyValue) (map[string]utils.DependencyRecord, error) {
 	dependencies := make(map[string]utils.DependencyRecord)
 	packages := make(map[string]Package)
 
@@ -152,7 +153,7 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 	}
 
 	for n, p := range packages {
-		d, err := dm.ComposeDependencies(p, projectPath, filePath, n)
+		d, err := dm.ComposeDependencies(p, projectPath, filePath, n, ma)
 		if err == nil {
 			for k, v := range d {
 				dependencies[k] = v
@@ -164,7 +165,7 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 	return dependencies, nil
 }
 
-func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string, ma whisk.KeyValue) (map[string]utils.DependencyRecord, error) {
 
 	depMap := make(map[string]utils.DependencyRecord)
 	for key, dependency := range pkg.Dependencies {
@@ -200,6 +201,11 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 		}
 
 		annotations := dm.composeAnnotations(dependency.Annotations)
+
+		// add Managed Annotations if this is Managed Deployment
+		if utils.Flags.Managed {
+			annotations = append(annotations, ma)
+		}
 
 		packDir := path.Join(projectPath, strings.Title(YAML_KEY_PACKAGES))
 		depName := packageName + ":" + key

@@ -44,18 +44,7 @@ var exportCmd = &cobra.Command{
 
 var config *whisk.Config
 
-func ExportRule(wskRule whisk.Rule, pkgName string, maniyaml *parsers.YAML) {
-	if maniyaml.Packages[pkgName].Rules == nil {
-		pkg := maniyaml.Packages[pkgName]
-		pkg.Rules = make(map[string]parsers.Rule)
-		maniyaml.Packages[pkgName] = pkg
-	}
-
-	// export rule to manifest
-	maniyaml.Packages[pkgName].Rules[wskRule.Name] = *maniyaml.ComposeParsersRule(wskRule)
-}
-
-func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML) error {
+func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML, targetManifest string) error {
 
 	pkg := maniyaml.Packages[packageName]
 	if pkg.Actions == nil {
@@ -71,7 +60,7 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML)
 		seq := new(parsers.Sequence)
 		for _, component := range wskAction.Exec.Components {
 			// must ommit namespace from seq component name
-			ExportAction(strings.SplitN(component, "/", 3)[2], packageName, maniyaml)
+			ExportAction(strings.SplitN(component, "/", 3)[2], packageName, maniyaml, targetManifest)
 			slices := strings.Split(component, "/")
 
 			// save in the seq list only action names
@@ -90,7 +79,7 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML)
 		pkg.Sequences[wskAction.Name] = *seq
 	} else {
 		parsedAction := *maniyaml.ComposeParsersAction(*wskAction)
-		manifestDir := filepath.Dir(utils.Flags.ManifestPath)
+		manifestDir := filepath.Dir(targetManifest)
 
 		// store function file under action package name subdirectory in the specified manifest folder
 		functionDir := filepath.Join(manifestDir, packageName)
@@ -111,23 +100,17 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML)
 	return nil
 }
 
-func ExportCmdImp(cmd *cobra.Command, args []string) error {
-
-	projectName := utils.Flags.ProjectPath
+func exportProject(projectName string, targetManifest string) error {
 	maniyaml := &parsers.YAML{}
 	maniyaml.Project.Name = projectName
-
-	config, _ = deployers.NewWhiskConfig(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath)
-	client, _ = deployers.CreateNewClient(config)
-
-	// Init supported runtimes and action files extensions maps
-	setSupportedRuntimes(config.Host)
 
 	// Get the list of packages in your namespace
 	packages, _, err := client.Packages.List(&whisk.PackageListOptions{})
 	if err != nil {
 		return err
 	}
+
+	var bindings = make(map[string]whisk.Binding)
 
 	// iterate over each package to find managed annotations
 	// check if "managed" annotation is attached to a package
@@ -140,6 +123,12 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 
 			// we have found a package which is part of the current project
 			if pa[utils.OW_PROJECT_NAME] == projectName {
+
+				// check if the package is dependency
+				if pkg.Annotations.GetValue(utils.BINDING) != nil {
+					bindings[pkg.Name] = *pkg.Binding
+					continue
+				}
 
 				if maniyaml.Packages == nil {
 					maniyaml.Packages = make(map[string]parsers.Package)
@@ -172,7 +161,7 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 						if aa[utils.OW_PROJECT_NAME] == projectName {
 							actionName := strings.Join([]string{pkg.Name, action.Name}, "/")
 							// export action to file system
-							err = ExportAction(actionName, pkg.Name, maniyaml)
+							err = ExportAction(actionName, pkg.Name, maniyaml, targetManifest)
 							if err != nil {
 								return err
 							}
@@ -220,47 +209,98 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// TODO: can be simplifyed once OW permits to add annotation to rules
-	// iterate over the list of rules to determine whether any of them is part of
-	// managed trigger -> action set for specified managed project. if yes, add to manifest
+	// iterate over the list of rules to determine whether any of them is part of the manage dproject
 	for _, rule := range rules {
 		// get rule from OW
 		wskRule, _, _ := client.Rules.Get(rule.Name)
-		ruleAction := wskRule.Action.(map[string]interface{})["name"].(string)
-		ruleTrigger := wskRule.Trigger.(map[string]interface{})["name"].(string)
+		// rule has attached managed annotation
+		if a := wskRule.Annotations.GetValue(utils.MANAGED); a != nil {
+			// decode the JSON blob and retrieve __OW_PROJECT_NAME
+			ta := a.(map[string]interface{})
+			if ta[utils.OW_PROJECT_NAME] == projectName {
 
-		// can be simplified once rules moved to top level next to triggers
-		for pkgName := range maniyaml.Packages {
-			if maniyaml.Packages[pkgName].Namespace == wskRule.Namespace {
-				// iterate over all managed triggers in manifest
-				for _, trigger := range maniyaml.Packages[pkgName].Triggers {
-					// check that managed trigger equals to rule trigger
-					if ruleTrigger == trigger.Name && trigger.Namespace == wskRule.Namespace {
-						// check that there a managed action (or sequence action) equals to rule action
-						for _, action := range maniyaml.Packages[pkgName].Actions {
-							if action.Name == ruleAction {
-								// export rule to manifest
-								ExportRule(*wskRule, pkgName, maniyaml)
-							}
+				for pkgName := range maniyaml.Packages {
+					if maniyaml.Packages[pkgName].Namespace == wskRule.Namespace {
+						if maniyaml.Packages[pkgName].Rules == nil {
+							pkg := maniyaml.Packages[pkgName]
+							pkg.Rules = make(map[string]parsers.Rule)
+							maniyaml.Packages[pkgName] = pkg
 						}
 
-						// check that there a managed sequence action with name matching the rule action
-						for name := range maniyaml.Packages[pkgName].Sequences {
-							if name == ruleAction {
-								// export rule to manifest
-								ExportRule(*wskRule, pkgName, maniyaml)
-							}
-						}
+						// export rule to manifest
+						maniyaml.Packages[pkgName].Rules[wskRule.Name] = *maniyaml.ComposeParsersRule(*wskRule)
 					}
 				}
 			}
 		}
+
 	}
 
-	parsers.Write(maniyaml, utils.Flags.ManifestPath)
-	fmt.Println("Manifest exported to: " + utils.Flags.ManifestPath)
+	// adding dependencies to the first package
+	for pkgName := range maniyaml.Packages {
+		for bPkg, binding := range bindings {
+			if maniyaml.Packages[pkgName].Dependencies == nil {
+				pkg := maniyaml.Packages[pkgName]
+				pkg.Dependencies = make(map[string]parsers.Dependency)
+				maniyaml.Packages[pkgName] = pkg
+			}
+			maniyaml.Packages[pkgName].Dependencies[bPkg] = *maniyaml.ComposeParsersDependency(binding)
+		}
+
+		break
+	}
+
+	// export manifest to file
+	parsers.Write(maniyaml, targetManifest)
+	fmt.Println("Manifest exported to: " + targetManifest)
+
+	// find exported manifest parent directory
+	manifestDir := filepath.Dir(utils.Flags.ManifestPath)
+
+	// create dependencies directory if not exists
+	depDir := filepath.Join(manifestDir, "dependencies")
+
+	if len(bindings) > 0 {
+		fmt.Println("Exporting project dependencies to " + depDir)
+	}
+
+	// now export dependencies to their own manifests
+	for _, binding := range bindings {
+		pkg, _, err := client.Packages.Get(binding.Name)
+		if err != nil {
+			return err
+		}
+
+		if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
+			// decode the JSON blob and retrieve __OW_PROJECT_NAME
+			pa := a.(map[string]interface{})
+
+			os.MkdirAll(depDir, os.ModePerm)
+			depManifestPath := filepath.Join(depDir, pa[utils.OW_PROJECT_NAME].(string)+".yaml")
+
+			// export the whole project as dependency
+			err := exportProject(pa[utils.OW_PROJECT_NAME].(string), depManifestPath)
+			if err != nil {
+				return err
+			}
+		} else {
+			// showing warning to notify user that exported manifest dependent on unmanaged library which can't be exported
+			fmt.Println("Warning! Dependency package " + binding.Name + " currently unmanaged by any project. Unable to export this package")
+		}
+	}
 
 	return nil
+}
+
+func ExportCmdImp(cmd *cobra.Command, args []string) error {
+
+	config, _ = deployers.NewWhiskConfig(wskpropsPath, utils.Flags.DeploymentPath, utils.Flags.ManifestPath)
+	client, _ = deployers.CreateNewClient(config)
+
+	// Init supported runtimes and action files extensions maps
+	setSupportedRuntimes(config.Host)
+
+	return exportProject(utils.Flags.ProjectPath, utils.Flags.ManifestPath)
 }
 
 const (
