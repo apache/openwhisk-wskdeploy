@@ -42,6 +42,7 @@ type WskDeployFlags struct {
 	ApigwAccessToken string
 	Verbose          bool
 	Trace            bool
+	RelationsPath    string
 }
 
 func (flags *WskDeployFlags) Format() string {
