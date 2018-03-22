@@ -40,12 +40,15 @@ const (
 	NULL            = "golang\000"
 	OW_PROJECT_NAME = "__OW_PROJECT_NAME"
 	OW_PROJECT_HASH = "__OW_PROJECT_HASH"
+	OW_PROJECT_DEPS = "__OW_PROJECT_DEPS"
+	OW_File         = "__OW_FILE"
 )
 
 type ManagedAnnotation struct {
-	ProjectName string `json:"__OW_PROJECT_NAME"`
-	ProjectHash string `json:"__OW_PROJECT_HASH"`
-	File        string `json:"__OW_FILE"`
+	ProjectName string            `json:"__OW_PROJECT_NAME"`
+	ProjectHash string            `json:"__OW_PROJECT_HASH"`
+	File        string            `json:"__OW_FILE"`
+	Deps        whisk.KeyValueArr `json:"__OW_PROJECT_DEPS"`
 }
 
 // Project Hash is generated based on the following formula:
@@ -100,13 +103,38 @@ func GenerateManagedAnnotation(projectName string, filePath string) (whisk.KeyVa
 		ProjectName: projectName,
 		ProjectHash: projectHash,
 		File:        filePath,
+		Deps:        make(whisk.KeyValueArr, 0),
 	}
-	ma, err := json.Marshal(m)
+	ma, err := structToJson(m)
 	if err != nil {
 		return managedAnnotation, err
 	}
-	var a interface{}
-	err = json.Unmarshal(ma, &a)
-	managedAnnotation = whisk.KeyValue{Key: MANAGED, Value: a.(map[string]interface{})}
+	managedAnnotation = whisk.KeyValue{Key: MANAGED, Value: ma}
 	return managedAnnotation, nil
+}
+
+func AddDependentAnnotation(existingAnnotation map[string]interface{}, dependencyAnnotations whisk.KeyValueArr) (whisk.KeyValue, error) {
+	managedAnnotation := whisk.KeyValue{}
+	m := ManagedAnnotation{
+		ProjectName: existingAnnotation[OW_PROJECT_NAME].(string),
+		ProjectHash: existingAnnotation[OW_PROJECT_HASH].(string),
+		File:        existingAnnotation[OW_File].(string),
+		Deps:        dependencyAnnotations,
+	}
+	ma, err := structToJson(m)
+	if err != nil {
+		return managedAnnotation, err
+	}
+	managedAnnotation = whisk.KeyValue{Key: MANAGED, Value: ma}
+	return managedAnnotation, nil
+}
+
+func structToJson(m ManagedAnnotation) (map[string]interface{}, error) {
+	ma, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	var a interface{}
+	json.Unmarshal(ma, &a)
+	return a.(map[string]interface{}), nil
 }

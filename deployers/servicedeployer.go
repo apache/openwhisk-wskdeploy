@@ -436,6 +436,9 @@ func (deployer *ServiceDeployer) RefreshManagedEntities(maValue whisk.KeyValue) 
 		return err
 	}
 
+	if err := deployer.RefreshManagedPackagesWithDependencies(ma); err != nil {
+		return err
+	}
 	return nil
 
 }
@@ -611,6 +614,49 @@ func (deployer *ServiceDeployer) RefreshManagedPackages(ma map[string]interface{
 				}
 			}
 		}
+	}
+
+	return nil
+}
+
+func (deployer *ServiceDeployer) RefreshManagedPackagesWithDependencies(ma map[string]interface{}) error {
+	// iterate over each package from the given project
+	for _, p := range deployer.Deployment.Packages {
+		dependencyAnnotations := make(whisk.KeyValueArr, 0)
+		// iterate over the list of dependencies of the package
+		// dependencies could be labeled same as dependent package name
+		// for example, "helloworld" where the package it depends on is also called "helloworld"
+		// dependencies could be labeled different from the dependent package name
+		// for example, "custom-helloworld" where the package it depends on it called "helloworld"
+		for n := range p.Dependencies {
+			// find the package using dependency label
+			pkg, _, err := deployer.Client.Packages.Get(n)
+			if err != nil {
+				return err
+			}
+			// if dependency label (custom-helloworld) is different from the dependent package name,
+			// it must have binding set to the original package ("helloworld")
+			if len(pkg.Binding.Name) != 0 {
+				// get the original package to retrieve its managed annotations
+				pkg, _, err := deployer.Client.Packages.Get(pkg.Binding.Name)
+				if err != nil {
+					return err
+				}
+				if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
+					//append annotations from this package to deps
+					pkgName := parsers.PATH_SEPARATOR + pkg.Namespace + parsers.PATH_SEPARATOR + pkg.Name
+					dependencyAnnotations = append(dependencyAnnotations, whisk.KeyValue{Key: pkgName, Value: a.(map[string]interface{})})
+				}
+			}
+		}
+		updatedAnnotation, err := utils.AddDependentAnnotation(ma, dependencyAnnotations)
+		if err != nil {
+			return err
+		}
+		p.Package.Annotations.AddOrReplace(&updatedAnnotation)
+	}
+	if err := deployer.DeployPackages(); err != nil {
+		return err
 	}
 	return nil
 }

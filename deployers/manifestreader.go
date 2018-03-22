@@ -68,7 +68,7 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 	var err error
 	var manifestName = manifest.Filepath
 
-	deps, err := manifestParser.ComposeDependenciesFromAllPackages(manifest, deployer.serviceDeployer.ProjectPath, deployer.serviceDeployer.ManifestPath)
+	deps, err := manifestParser.ComposeDependenciesFromAllPackages(manifest, deployer.serviceDeployer.ProjectPath, deployer.serviceDeployer.ManifestPath, ma)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
