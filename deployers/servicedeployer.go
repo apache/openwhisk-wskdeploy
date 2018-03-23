@@ -619,6 +619,23 @@ func (deployer *ServiceDeployer) RefreshManagedPackages(ma map[string]interface{
 	return nil
 }
 
+func (deployer *ServiceDeployer) appendDepAnnotation(list whisk.KeyValueArr, pkg *whisk.Package) whisk.KeyValueArr {
+	depExists := false
+	if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
+		//append annotations from this package to deps
+		pkgName := parsers.PATH_SEPARATOR + pkg.Namespace + parsers.PATH_SEPARATOR + pkg.Name
+		for _, dep := range list {
+			if dep.Key == pkgName {
+				depExists = true
+			}
+		}
+		if !depExists {
+			list = append(list, whisk.KeyValue{Key: pkgName, Value: a.(map[string]interface{})})
+		}
+	}
+	return list
+}
+
 func (deployer *ServiceDeployer) RefreshManagedPackagesWithDependencies(ma map[string]interface{}) error {
 	// iterate over each package from the given project
 	for _, p := range deployer.Deployment.Packages {
@@ -629,7 +646,6 @@ func (deployer *ServiceDeployer) RefreshManagedPackagesWithDependencies(ma map[s
 		// dependencies could be labeled different from the dependent package name
 		// for example, "custom-helloworld" where the package it depends on it called "helloworld"
 		for n := range p.Dependencies {
-			depExists := false
 			// find the package using dependency label
 			pkg, _, err := deployer.Client.Packages.Get(n)
 			if err != nil {
@@ -652,32 +668,10 @@ func (deployer *ServiceDeployer) RefreshManagedPackagesWithDependencies(ma map[s
 					if err != nil {
 						return err
 					}
-					if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
-						//append annotations from this package to deps
-						pkgName := parsers.PATH_SEPARATOR + pkg.Namespace + parsers.PATH_SEPARATOR + pkg.Name
-						for _, dep := range dependencyAnnotations {
-							if dep.Key == pkgName {
-								depExists = true
-							}
-						}
-						if !depExists {
-							dependencyAnnotations = append(dependencyAnnotations, whisk.KeyValue{Key: pkgName, Value: a.(map[string]interface{})})
-						}
-					}
+					dependencyAnnotations = deployer.appendDepAnnotation(dependencyAnnotations, pkg)
 				}
 			} else {
-				if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
-					//append annotations from this package to deps
-					pkgName := parsers.PATH_SEPARATOR + pkg.Namespace + parsers.PATH_SEPARATOR + pkg.Name
-					for _, dep := range dependencyAnnotations {
-						if dep.Key == pkgName {
-							depExists = true
-						}
-					}
-					if !depExists {
-						dependencyAnnotations = append(dependencyAnnotations, whisk.KeyValue{Key: pkgName, Value: a.(map[string]interface{})})
-					}
-				}
+				dependencyAnnotations = deployer.appendDepAnnotation(dependencyAnnotations, pkg)
 			}
 		}
 		updatedAnnotation, err := utils.AddDependentAnnotation(ma, dependencyAnnotations)
