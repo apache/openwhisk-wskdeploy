@@ -1439,6 +1439,12 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 			}
 		}
 
+		wskprint.PrintlnOpenWhiskOutput("    annotations: ")
+		for _, p := range pack.Package.Annotations {
+			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
+
+		}
+
 		for key, dep := range pack.Dependencies {
 			wskprint.PrintlnOpenWhiskOutput("  * dependency: " + key)
 			wskprint.PrintlnOpenWhiskOutput("    location: " + dep.Location)
@@ -1486,6 +1492,11 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 		wskprint.PrintlnOpenWhiskOutput("")
 		for _, action := range pack.Sequences {
 			wskprint.PrintlnOpenWhiskOutput("  * sequence: " + action.Action.Name)
+			wskprint.PrintlnOpenWhiskOutput("    annotations: ")
+			for _, p := range action.Action.Annotations {
+				fmt.Printf("        - %s : %v\n", p.Key, p.Value)
+
+			}
 		}
 
 		wskprint.PrintlnOpenWhiskOutput("")
@@ -1507,18 +1518,19 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 
 		wskprint.PrintlnOpenWhiskOutput("    annotations: ")
 		for _, p := range trigger.Annotations {
+			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
 
-			value := "?"
-			if str, ok := p.Value.(string); ok {
-				value = str
-			}
-			wskprint.PrintlnOpenWhiskOutput("        - name: " + p.Key + " value: " + value)
 		}
 	}
 
-	wskprint.PrintlnOpenWhiskOutput("\n Rules")
+	wskprint.PrintlnOpenWhiskOutput("\nRules")
 	for _, rule := range assets.Rules {
 		wskprint.PrintlnOpenWhiskOutput("* rule: " + rule.Name)
+		wskprint.PrintlnOpenWhiskOutput("    annotations: ")
+		for _, p := range rule.Annotations {
+			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
+
+		}
 		wskprint.PrintlnOpenWhiskOutput("    - trigger: " + rule.Trigger.(string) + "\n    - action: " + rule.Action.(string))
 	}
 

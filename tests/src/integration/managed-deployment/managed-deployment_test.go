@@ -75,5 +75,4 @@ func TestManagedDeploymentWithDependency(t *testing.T) {
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
-
 }
