@@ -21,8 +21,9 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"os"
+
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
 /*
@@ -40,6 +41,7 @@ const (
 	NULL            = "golang\000"
 	OW_PROJECT_NAME = "__OW_PROJECT_NAME"
 	OW_PROJECT_HASH = "__OW_PROJECT_HASH"
+	BINDING         = "binding"
 )
 
 type ManagedAnnotation struct {
