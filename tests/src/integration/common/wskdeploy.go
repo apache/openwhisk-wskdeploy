@@ -167,15 +167,11 @@ func (wskdeploy *Wskdeploy) UndeployManifestPathOnly(manifestpath string) (strin
 }
 
 func (Wskdeploy *Wskdeploy) ManagedDeployment(manifestPath string, deploymentPath string) (string, error) {
-	return Wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath, "--managed")
+	return Wskdeploy.RunCommand("sync", "-m", manifestPath, "-d", deploymentPath)
 }
 
 func (Wskdeploy *Wskdeploy) HeadlessManagedDeployment(manifestPath string, deploymentPath string, name string) (string, error) {
-	return Wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath, "--managed", "--projectname", name)
-}
-
-func (Wskdeploy *Wskdeploy) ManagedUndeployment(manifestPath string, deploymentPath string) (string, error) {
-	return Wskdeploy.RunCommand("undeploy", "-m", manifestPath, "-d", deploymentPath, "--managed")
+	return Wskdeploy.RunCommand("sync", "-m", manifestPath, "-d", deploymentPath, "--projectname", name)
 }
 
 // This method is only for testing

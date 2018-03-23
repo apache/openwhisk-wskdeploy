@@ -37,34 +37,31 @@ func TestManagedDeployment(t *testing.T) {
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 
 	manifestPath = os.Getenv("GOPATH") + PATH + "00-manifest-minus-second-package.yaml"
-	wskdeploy = common.NewWskdeploy()
 	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 
 	manifestPath = os.Getenv("GOPATH") + PATH + "01-manifest-minus-sequence-2.yaml"
-	wskdeploy = common.NewWskdeploy()
 	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 
 	manifestPath = os.Getenv("GOPATH") + PATH + "02-manifest-minus-action-3.yaml"
-	wskdeploy = common.NewWskdeploy()
 	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 
 	manifestPath = os.Getenv("GOPATH") + PATH + "03-manifest-minus-trigger.yaml"
-	wskdeploy = common.NewWskdeploy()
 	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 
 	manifestPath = os.Getenv("GOPATH") + PATH + "04-manifest-minus-package.yaml"
-	wskdeploy = common.NewWskdeploy()
 	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 
 	manifestPath = os.Getenv("GOPATH") + PATH + "05-manifest-headless.yaml"
-	wskdeploy = common.NewWskdeploy()
 	_, err = wskdeploy.HeadlessManagedDeployment(manifestPath, deploymentPath, "Headless Managed")
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
+	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
+
 }
 
 func TestManagedDeploymentWithDependency(t *testing.T) {
@@ -72,6 +69,18 @@ func TestManagedDeploymentWithDependency(t *testing.T) {
 	deploymentPath := ""
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
+	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
+
+	manifestPath = os.Getenv("GOPATH") + PATH + "07-manifest-with-single-dependency.yaml"
+	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
+	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
+
+	manifestPath = os.Getenv("GOPATH") + PATH + "08-manifest-with-dependencies-on-whisk-system.yaml"
+	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
