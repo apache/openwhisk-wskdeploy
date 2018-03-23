@@ -201,7 +201,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 
 		annotations := dm.composeAnnotations(dependency.Annotations)
 
-		if utils.Flags.Managed {
+		if utils.Flags.Managed || utils.Flags.Sync {
 			annotations = append(annotations, ma)
 		}
 
@@ -312,7 +312,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	}
 
 	// add Managed Annotations if this is Managed Deployment
-	if utils.Flags.Managed {
+	if utils.Flags.Managed || utils.Flags.Sync {
 		pag.Annotations = append(pag.Annotations, ma)
 	}
 
@@ -387,7 +387,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		}
 
 		// appending managed annotations if its a managed deployment
-		if utils.Flags.Managed {
+		if utils.Flags.Managed || utils.Flags.Sync {
 			wskaction.Annotations = append(wskaction.Annotations, ma)
 		}
 
@@ -760,7 +760,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		}
 
 		// add managed annotations if its marked as managed deployment
-		if utils.Flags.Managed {
+		if utils.Flags.Managed || utils.Flags.Sync {
 			wskaction.Annotations = append(wskaction.Annotations, ma)
 		}
 
@@ -868,7 +868,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 		}
 
 		// add managed annotations if its a managed deployment
-		if utils.Flags.Managed {
+		if utils.Flags.Managed || utils.Flags.Sync {
 			wsktrigger.Annotations = append(wsktrigger.Annotations, ma)
 		}
 
@@ -921,7 +921,7 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.Key
 		}
 
 		// add managed annotations if its a managed deployment
-		if utils.Flags.Managed {
+		if utils.Flags.Managed || utils.Flags.Sync {
 			wskrule.Annotations = append(wskrule.Annotations, ma)
 		}
 

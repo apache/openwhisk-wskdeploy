@@ -139,7 +139,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	// Generate Managed Annotations if its marked as a Managed Deployment
 	// Managed deployments are the ones when OpenWhisk entities are deployed with command line flag --managed.
 	// Which results in a hidden annotation in every OpenWhisk entity in manifest file.
-	if utils.Flags.Managed {
+	if utils.Flags.Managed || utils.Flags.Sync {
 		// OpenWhisk entities are annotated with Project Name and therefore
 		// Project Name in manifest/deployment file is mandatory for managed deployments
 		if deployer.ProjectName == "" {
@@ -309,7 +309,7 @@ func (deployer *ServiceDeployer) deployAssets() error {
 	// refresh previously deployed project entities, delete the assets which is no longer part of the project
 	// i.e. in a subsequent managed deployment of the same project minus few OpenWhisk entities
 	// from the manifest file must result in undeployment of those deleted entities
-	if utils.Flags.Managed {
+	if utils.Flags.Managed || utils.Flags.Sync {
 		if err := deployer.RefreshManagedEntities(deployer.ManagedAnnotation); err != nil {
 			errString := wski18n.T(wski18n.ID_MSG_MANAGED_UNDEPLOYMENT_FAILED)
 			whisk.Debug(whisk.DbgError, errString)
@@ -629,6 +629,7 @@ func (deployer *ServiceDeployer) RefreshManagedPackagesWithDependencies(ma map[s
 		// dependencies could be labeled different from the dependent package name
 		// for example, "custom-helloworld" where the package it depends on it called "helloworld"
 		for n := range p.Dependencies {
+			depExists := false
 			// find the package using dependency label
 			pkg, _, err := deployer.Client.Packages.Get(n)
 			if err != nil {
@@ -647,17 +648,36 @@ func (deployer *ServiceDeployer) RefreshManagedPackagesWithDependencies(ma map[s
 				// (TODO) we could add support to sync dependencies from different namespaces in future
 				if pkg.Binding.Namespace != utils.WHISK_SYSTEM {
 					// get the original package to retrieve its managed annotations
-					originalPkg, _, err := deployer.Client.Packages.Get(pkg.Binding.Name)
+					pkg, _, err := deployer.Client.Packages.Get(pkg.Binding.Name)
 					if err != nil {
 						return err
 					}
-					pkg = originalPkg
+					if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
+						//append annotations from this package to deps
+						pkgName := parsers.PATH_SEPARATOR + pkg.Namespace + parsers.PATH_SEPARATOR + pkg.Name
+						for _, dep := range dependencyAnnotations {
+							if dep.Key == pkgName {
+								depExists = true
+							}
+						}
+						if !depExists {
+							dependencyAnnotations = append(dependencyAnnotations, whisk.KeyValue{Key: pkgName, Value: a.(map[string]interface{})})
+						}
+					}
 				}
-			}
-			if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
-				//append annotations from this package to deps
-				pkgName := parsers.PATH_SEPARATOR + pkg.Namespace + parsers.PATH_SEPARATOR + pkg.Name
-				dependencyAnnotations = append(dependencyAnnotations, whisk.KeyValue{Key: pkgName, Value: a.(map[string]interface{})})
+			} else {
+				if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
+					//append annotations from this package to deps
+					pkgName := parsers.PATH_SEPARATOR + pkg.Namespace + parsers.PATH_SEPARATOR + pkg.Name
+					for _, dep := range dependencyAnnotations {
+						if dep.Key == pkgName {
+							depExists = true
+						}
+					}
+					if !depExists {
+						dependencyAnnotations = append(dependencyAnnotations, whisk.KeyValue{Key: pkgName, Value: a.(map[string]interface{})})
+					}
+				}
 			}
 		}
 		updatedAnnotation, err := utils.AddDependentAnnotation(ma, dependencyAnnotations)

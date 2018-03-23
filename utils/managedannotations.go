@@ -35,20 +35,20 @@ import (
  */
 
 const (
-	MANAGED         = "managed"
+	MANAGED         = "whisk-managed"
 	OPENWHISK       = "OpenWhisk"
 	NULL            = "golang\000"
-	OW_PROJECT_NAME = "__OW_PROJECT_NAME"
-	OW_PROJECT_HASH = "__OW_PROJECT_HASH"
-	OW_PROJECT_DEPS = "__OW_PROJECT_DEPS"
-	OW_File         = "__OW_FILE"
+	OW_PROJECT_NAME = "projectName"
+	OW_PROJECT_HASH = "projectHash"
+	OW_PROJECT_DEPS = "projectDeps"
+	OW_File         = "file"
 )
 
 type ManagedAnnotation struct {
-	ProjectName string            `json:"__OW_PROJECT_NAME"`
-	ProjectHash string            `json:"__OW_PROJECT_HASH"`
-	File        string            `json:"__OW_FILE"`
-	Deps        whisk.KeyValueArr `json:"__OW_PROJECT_DEPS"`
+	ProjectName string            `json:"projectName"`
+	ProjectHash string            `json:"projectHash"`
+	File        string            `json:"file"`
+	Deps        whisk.KeyValueArr `json:"projectDeps"`
 }
 
 // Project Hash is generated based on the following formula:
