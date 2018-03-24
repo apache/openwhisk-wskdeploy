@@ -79,9 +79,9 @@ func TestManagedDeploymentWithDependency(t *testing.T) {
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 
-	manifestPath = os.Getenv("GOPATH") + PATH + "08-manifest-with-dependencies-on-whisk-system.yaml"
-	_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
-	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
+	//manifestPath = os.Getenv("GOPATH") + PATH + "08-manifest-with-dependencies-on-whisk-system.yaml"
+	//_, err = wskdeploy.ManagedDeployment(manifestPath, deploymentPath)
+	//assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
+	//_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
+	//assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 }
