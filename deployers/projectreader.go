@@ -19,6 +19,7 @@ package deployers
 
 import (
 	"net/http"
+	"reflect"
 
 	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
@@ -191,7 +192,44 @@ func (deployer *ServiceDeployer) UndeployProjectTriggers() error {
 	return nil
 }
 
+func (deployer *ServiceDeployer) previewActions(actions []*whisk.Action) {
+	for _, action := range actions {
+		wskprint.PrintlnOpenWhiskOutput("  * action: " + action.Name)
+		wskprint.PrintlnOpenWhiskOutput("    bindings: ")
+		for _, p := range action.Parameters {
+
+			if reflect.TypeOf(p.Value).Kind() == reflect.Map {
+				if _, ok := p.Value.(map[interface{}]interface{}); ok {
+					var temp map[string]interface{} = utils.ConvertInterfaceMap(p.Value.(map[interface{}]interface{}))
+					fmt.Printf("        - %s : %v\n", p.Key, temp)
+				} else {
+					jsonValue, err := utils.PrettyJSON(p.Value)
+					if err != nil {
+						fmt.Printf("        - %s : %s\n", p.Key, wskderrors.STR_UNKNOWN_VALUE)
+					} else {
+						fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+					}
+				}
+			} else {
+				jsonValue, err := utils.PrettyJSON(p.Value)
+				if err != nil {
+					fmt.Printf("        - %s : %s\n", p.Key, wskderrors.STR_UNKNOWN_VALUE)
+				} else {
+					fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+				}
+			}
+
+		}
+		wskprint.PrintlnOpenWhiskOutput("    annotations: ")
+		for _, p := range action.Annotations {
+			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
+
+		}
+	}
+}
+
 func (deployer *ServiceDeployer) UndeployProjectActions() error {
+	actionsPreview := make([]*whisk.Action, 0)
 	listOfPackages, _, err := deployer.Client.Packages.List(&whisk.PackageListOptions{})
 	if err != nil {
 		return err
@@ -209,17 +247,29 @@ func (deployer *ServiceDeployer) UndeployProjectActions() error {
 					if aa := action.Annotations.GetValue(utils.MANAGED); aa != nil {
 						taa := aa.(map[string]interface{})
 						if taa[utils.OW_PROJECT_NAME] == utils.Flags.ProjectName {
-							displayPreprocessingInfo(parsers.YAML_KEY_ACTION, action.Name, false)
 							var err error
 							var response *http.Response
-							err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-								response, err = deployer.Client.Actions.Delete(pkg.Name + parsers.PATH_SEPARATOR + action.Name)
-								return err
-							})
-							if err != nil {
-								return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_ACTION, false)
+							if utils.Flags.Preview {
+								var a *whisk.Action
+								err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+									a, response, err = deployer.Client.Actions.Get(pkg.Name+parsers.PATH_SEPARATOR+action.Name, false)
+									return err
+								})
+								if err != nil {
+									return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_ACTION, false)
+								}
+								actionsPreview = append(actionsPreview, a)
+							} else {
+								displayPreprocessingInfo(parsers.YAML_KEY_ACTION, action.Name, false)
+								err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+									response, err = deployer.Client.Actions.Delete(pkg.Name + parsers.PATH_SEPARATOR + action.Name)
+									return err
+								})
+								if err != nil {
+									return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_ACTION, false)
+								}
+								displayPostprocessingInfo(parsers.YAML_KEY_ACTION, action.Name, false)
 							}
-							displayPostprocessingInfo(parsers.YAML_KEY_ACTION, action.Name, false)
 						}
 					}
 				}
@@ -227,10 +277,36 @@ func (deployer *ServiceDeployer) UndeployProjectActions() error {
 		}
 
 	}
+	if utils.Flags.Preview {
+		deployer.previewActions(actionsPreview)
+	}
 	return nil
 }
 
+func (deployer *ServiceDeployer) previewPackages(packages []*whisk.Package) {
+	wskprint.PrintlnOpenWhiskOutput("Packages:")
+	for _, pack := range packages {
+		wskprint.PrintlnOpenWhiskOutput("Name: " + pack.Name)
+		wskprint.PrintlnOpenWhiskOutput("    bindings: ")
+		for _, p := range pack.Parameters {
+			jsonValue, err := utils.PrettyJSON(p.Value)
+			if err != nil {
+				fmt.Printf("        - %s : %s\n", p.Key, wskderrors.STR_UNKNOWN_VALUE)
+			} else {
+				fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+			}
+		}
+
+		wskprint.PrintlnOpenWhiskOutput("    annotations: ")
+		for _, p := range pack.Annotations {
+			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
+
+		}
+	}
+}
+
 func (deployer *ServiceDeployer) UndeployProjectPackages() error {
+	packagesPreview := make([]*whisk.Package, 0)
 	listOfPackages, _, err := deployer.Client.Packages.List(&whisk.PackageListOptions{})
 	if err != nil {
 		return nil
@@ -240,22 +316,38 @@ func (deployer *ServiceDeployer) UndeployProjectPackages() error {
 			// decode the JSON blob and retrieve __OW_PROJECT_NAME
 			ta := a.(map[string]interface{})
 			if ta[utils.OW_PROJECT_NAME] == utils.Flags.ProjectName {
-				displayPreprocessingInfo(parsers.YAML_KEY_PACKAGE, pkg.Name, false)
 				var err error
 				var response *http.Response
-				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-					response, err = deployer.Client.Packages.Delete(pkg.Name)
-					return err
-				})
-				if err != nil {
-					return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_PACKAGE, false)
+				if utils.Flags.Preview {
+					var a *whisk.Package
+					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+						a, response, err = deployer.Client.Packages.Get(pkg.Name)
+						return err
+					})
+					if err != nil {
+						return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_PACKAGE, false)
+					}
+					packagesPreview = append(packagesPreview, a)
+				} else {
+					displayPreprocessingInfo(parsers.YAML_KEY_PACKAGE, pkg.Name, false)
+					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+						response, err = deployer.Client.Packages.Delete(pkg.Name)
+						return err
+					})
+					if err != nil {
+						return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_PACKAGE, false)
+					}
+					displayPostprocessingInfo(parsers.YAML_KEY_PACKAGE, pkg.Name, false)
 				}
-				displayPostprocessingInfo(parsers.YAML_KEY_PACKAGE, pkg.Name, false)
 			}
 
 		}
 
 	}
+	if utils.Flags.Preview {
+		deployer.previewPackages(packagesPreview)
+	}
+	return nil
 	return nil
 }
 func (deployer *ServiceDeployer) UndeployProjectDependencies() error {
