@@ -24,6 +24,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
@@ -88,9 +89,9 @@ func (deployer *ServiceDeployer) UndeployProjectRules() error {
 			// decode the JSON blob and retrieve __OW_PROJECT_NAME
 			ta := a.(map[string]interface{})
 			if ta[utils.OW_PROJECT_NAME] == utils.Flags.ProjectName {
+				var err error
+				var response *http.Response
 				if utils.Flags.Preview {
-					var err error
-					var response *http.Response
 					var r *whisk.Rule
 					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 						r, response, err = deployer.Client.Rules.Get(rule.Name)
@@ -102,8 +103,6 @@ func (deployer *ServiceDeployer) UndeployProjectRules() error {
 					rulesPreview = append(rulesPreview, r)
 				} else {
 					displayPreprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, false)
-					var err error
-					var response *http.Response
 					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 						response, err = deployer.Client.Rules.Delete(rule.Name)
 						return err
@@ -124,7 +123,31 @@ func (deployer *ServiceDeployer) UndeployProjectRules() error {
 	return nil
 }
 
+func (deployer *ServiceDeployer) previewTriggers(triggers []*whisk.Trigger) {
+	wskprint.PrintlnOpenWhiskOutput("Triggers:")
+	for _, trigger := range triggers {
+		wskprint.PrintlnOpenWhiskOutput("* trigger: " + trigger.Name)
+		wskprint.PrintlnOpenWhiskOutput("    bindings: ")
+
+		for _, p := range trigger.Parameters {
+			jsonValue, err := utils.PrettyJSON(p.Value)
+			if err != nil {
+				fmt.Printf("        - %s : %s\n", p.Key, wskderrors.STR_UNKNOWN_VALUE)
+			} else {
+				fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+			}
+		}
+
+		wskprint.PrintlnOpenWhiskOutput("    annotations: ")
+		for _, p := range trigger.Annotations {
+			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
+
+		}
+	}
+}
+
 func (deployer *ServiceDeployer) UndeployProjectTriggers() error {
+	triggersPreview := make([]*whisk.Trigger, 0)
 	listOfTriggers, _, err := deployer.Client.Triggers.List(&whisk.TriggerListOptions{})
 	if err != nil {
 		return nil
@@ -134,21 +157,36 @@ func (deployer *ServiceDeployer) UndeployProjectTriggers() error {
 			// decode the JSON blob and retrieve __OW_PROJECT_NAME
 			ta := a.(map[string]interface{})
 			if ta[utils.OW_PROJECT_NAME] == utils.Flags.ProjectName {
-				displayPreprocessingInfo(parsers.YAML_KEY_TRIGGER, trigger.Name, false)
 				var err error
 				var response *http.Response
-				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-					_, response, err = deployer.Client.Triggers.Delete(trigger.Name)
-					return err
-				})
-				if err != nil {
-					return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, false)
+				if utils.Flags.Preview {
+					var t *whisk.Trigger
+					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+						t, response, err = deployer.Client.Triggers.Get(trigger.Name)
+						return err
+					})
+					if err != nil {
+						return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, false)
+					}
+					triggersPreview = append(triggersPreview, t)
+				} else {
+					displayPreprocessingInfo(parsers.YAML_KEY_TRIGGER, trigger.Name, false)
+					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+						_, response, err = deployer.Client.Triggers.Delete(trigger.Name)
+						return err
+					})
+					if err != nil {
+						return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, false)
+					}
+					displayPostprocessingInfo(parsers.YAML_KEY_TRIGGER, trigger.Name, false)
 				}
-				displayPostprocessingInfo(parsers.YAML_KEY_TRIGGER, trigger.Name, false)
 			}
 
 		}
 
+	}
+	if utils.Flags.Preview {
+		deployer.previewTriggers(triggersPreview)
 	}
 	return nil
 }
