@@ -20,9 +20,11 @@ package deployers
 import (
 	"net/http"
 
+	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 func (deployer *ServiceDeployer) UnDeployProjectAssets() error {
@@ -58,7 +60,25 @@ func (deployer *ServiceDeployer) UndeployProjectApis() error {
 	return nil
 }
 
+func (deployer *ServiceDeployer) previewRules(rules []*whisk.Rule) {
+	wskprint.PrintlnOpenWhiskOutput("\nRules")
+	for _, r := range rules {
+		wskprint.PrintlnOpenWhiskOutput("* rule: " + r.Name)
+		wskprint.PrintlnOpenWhiskOutput("    annotations: ")
+		for _, p := range r.Annotations {
+			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
+
+		}
+		trigger := r.Trigger.(map[string]interface{})
+		triggerName := trigger["path"].(string) + parsers.PATH_SEPARATOR + trigger["name"].(string)
+		action := r.Action.(map[string]interface{})
+		actionName := action["path"].(string) + parsers.PATH_SEPARATOR + action["name"].(string)
+		wskprint.PrintlnOpenWhiskOutput("    - trigger: " + triggerName + "\n    - action: " + actionName)
+	}
+}
+
 func (deployer *ServiceDeployer) UndeployProjectRules() error {
+	rulesPreview := make([]*whisk.Rule, 0)
 	listOfRules, _, err := deployer.Client.Rules.List(&whisk.RuleListOptions{})
 	if err != nil {
 		return nil
@@ -68,21 +88,38 @@ func (deployer *ServiceDeployer) UndeployProjectRules() error {
 			// decode the JSON blob and retrieve __OW_PROJECT_NAME
 			ta := a.(map[string]interface{})
 			if ta[utils.OW_PROJECT_NAME] == utils.Flags.ProjectName {
-				displayPreprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, false)
-				var err error
-				var response *http.Response
-				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-					response, err = deployer.Client.Rules.Delete(rule.Name)
-					return err
-				})
-				if err != nil {
-					return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, false)
+				if utils.Flags.Preview {
+					var err error
+					var response *http.Response
+					var r *whisk.Rule
+					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+						r, response, err = deployer.Client.Rules.Get(rule.Name)
+						return err
+					})
+					if err != nil {
+						return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, false)
+					}
+					rulesPreview = append(rulesPreview, r)
+				} else {
+					displayPreprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, false)
+					var err error
+					var response *http.Response
+					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+						response, err = deployer.Client.Rules.Delete(rule.Name)
+						return err
+					})
+					if err != nil {
+						return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, false)
+					}
+					displayPostprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, false)
 				}
-				displayPostprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, false)
 			}
 
 		}
 
+	}
+	if utils.Flags.Preview {
+		deployer.previewRules(rulesPreview)
 	}
 	return nil
 }
