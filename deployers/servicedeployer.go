@@ -1006,6 +1006,13 @@ func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentProject) error
 	return nil
 }
 
+func (deployer *ServiceDeployer) UnDeployProject() error {
+	if err := deployer.UnDeployProjectAssets(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan *DeploymentProject) error {
 	if err := deployer.UnDeployApis(verifiedPlan); err != nil {
 		return err
