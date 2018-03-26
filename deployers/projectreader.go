@@ -19,6 +19,7 @@ package deployers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
@@ -27,33 +28,15 @@ import (
 
 func (deployer *ServiceDeployer) UnDeployProjectAssets() error {
 
-	if err := deployer.SetProjectPackages(); err != nil {
-		return err
-	}
-
-	if err := deployer.SetProjectActionsAndSequences(); err != nil {
-		return err
-	}
-
-	if err := deployer.SetProjectTriggers(); err != nil {
-		return err
-	}
-
-	if err := deployer.SetProjectRules(); err != nil {
-		return err
-	}
-
-	if err := deployer.SetProjectApis(); err != nil {
-		return err
-	}
-
-	if err := deployer.SetProjectDependencies(); err != nil {
-		return err
-	}
+	deployer.SetProjectAssets(utils.Flags.ProjectName)
 
 	if utils.Flags.Preview {
 		deployer.printDeploymentAssets(deployer.Deployment)
 		return nil
+	}
+
+	if err := deployer.UndeployProjectDependencies(utils.Flags.ProjectName); err != nil {
+		return err
 	}
 
 	return deployer.unDeployAssets(deployer.Deployment)
@@ -61,78 +44,127 @@ func (deployer *ServiceDeployer) UnDeployProjectAssets() error {
 	return nil
 }
 
-func (deployer *ServiceDeployer) isManagedEntity(a interface{}) bool {
+func (deployer *ServiceDeployer) SetProjectAssets(projectName string) error {
+
+	if err := deployer.SetProjectPackages(projectName); err != nil {
+		return err
+	}
+
+	if err := deployer.SetPackageActionsAndSequences(projectName); err != nil {
+		return err
+	}
+
+	if err := deployer.SetProjectTriggers(projectName); err != nil {
+		return err
+	}
+
+	if err := deployer.SetProjectRules(projectName); err != nil {
+		return err
+	}
+
+	if err := deployer.SetProjectApis(projectName); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (deployer *ServiceDeployer) isManagedEntity(a interface{}, projectName string) bool {
 	if a != nil {
 		ta := a.(map[string]interface{})
-		if ta[utils.OW_PROJECT_NAME] == utils.Flags.ProjectName {
+		if ta[utils.OW_PROJECT_NAME] == projectName {
 			return true
 		}
 	}
 	return false
 }
 
-func (deployer *ServiceDeployer) SetProjectPackages() error {
+func (deployer *ServiceDeployer) getPackage(packageName string) (*DeploymentPackage, error) {
+	var err error
+	var p *whisk.Package
+	var response *http.Response
+	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+		p, response, err = deployer.Client.Packages.Get(packageName)
+		return err
+	})
+	if err != nil {
+		return nil, createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_PACKAGE, false)
+	}
+	newPack := NewDeploymentPackage()
+	newPack.Package = p
+	return newPack, nil
+
+}
+
+func (deployer *ServiceDeployer) SetProjectPackages(projectName string) error {
 	// retrieve a list of all the packages available under the namespace
 	listOfPackages, _, err := deployer.Client.Packages.List(&whisk.PackageListOptions{})
 	if err != nil {
 		return nil
 	}
 	for _, pkg := range listOfPackages {
-		if deployer.isManagedEntity(pkg.Annotations.GetValue(utils.MANAGED)) {
-			var p *whisk.Package
+		if deployer.isManagedEntity(pkg.Annotations.GetValue(utils.MANAGED), projectName) {
+			p, err := deployer.getPackage(pkg.Name)
+			if err != nil {
+				return err
+			}
+			deployer.Deployment.Packages[pkg.Name] = p
+		}
+	}
+
+	return nil
+}
+
+func (deployer *ServiceDeployer) getPackageActionsAndSequences(packageName string, projectName string) (map[string]utils.ActionRecord, map[string]utils.ActionRecord, error) {
+	listOfActions := make(map[string]utils.ActionRecord, 0)
+	listOfSequences := make(map[string]utils.ActionRecord, 0)
+
+	actions, _, err := deployer.Client.Actions.List(packageName, &whisk.ActionListOptions{})
+	if err != nil {
+		return listOfActions, listOfSequences, err
+	}
+	for _, action := range actions {
+		if deployer.isManagedEntity(action.Annotations.GetValue(utils.MANAGED), projectName) {
+			var a *whisk.Action
 			var response *http.Response
 			err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-				p, response, err = deployer.Client.Packages.Get(pkg.Name)
+				a, response, err = deployer.Client.Actions.Get(packageName+parsers.PATH_SEPARATOR+action.Name, false)
 				return err
 			})
 			if err != nil {
-				return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_PACKAGE, false)
+				return listOfActions, listOfSequences, createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_ACTION, false)
 			}
-			newPack := NewDeploymentPackage()
-			newPack.Package = p
-			deployer.Deployment.Packages[pkg.Name] = newPack
+			ar := utils.ActionRecord{Action: a, Packagename: packageName}
+			if a.Exec.Kind == parsers.YAML_KEY_SEQUENCE {
+				listOfSequences[action.Name] = ar
+			} else {
+				listOfActions[action.Name] = ar
+			}
 		}
 	}
-
-	return nil
+	return listOfActions, listOfSequences, err
 }
 
-func (deployer *ServiceDeployer) SetProjectActionsAndSequences() error {
+func (deployer *ServiceDeployer) SetPackageActionsAndSequences(projectName string) error {
 	for _, pkg := range deployer.Deployment.Packages {
-		actions, _, err := deployer.Client.Actions.List(pkg.Package.Name, &whisk.ActionListOptions{})
+		a, s, err := deployer.getPackageActionsAndSequences(pkg.Package.Name, projectName)
 		if err != nil {
 			return err
 		}
-		for _, action := range actions {
-			if deployer.isManagedEntity(action.Annotations.GetValue(utils.MANAGED)) {
-				var a *whisk.Action
-				var response *http.Response
-				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-					a, response, err = deployer.Client.Actions.Get(pkg.Package.Name+parsers.PATH_SEPARATOR+action.Name, false)
-					return err
-				})
-				if err != nil {
-					return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_ACTION, false)
-				}
-				ar := utils.ActionRecord{Action: a, Packagename: pkg.Package.Name}
-				if a.Exec.Kind == parsers.YAML_KEY_SEQUENCE {
-					deployer.Deployment.Packages[pkg.Package.Name].Sequences[action.Name] = ar
-				} else {
-					deployer.Deployment.Packages[pkg.Package.Name].Actions[action.Name] = ar
-				}
-			}
-		}
+		deployer.Deployment.Packages[pkg.Package.Name].Actions = a
+		deployer.Deployment.Packages[pkg.Package.Name].Sequences = s
 	}
 	return nil
 }
 
-func (deployer *ServiceDeployer) SetProjectTriggers() error {
+func (deployer *ServiceDeployer) getProjectTriggers(projectName string) (map[string]*whisk.Trigger, error) {
+	triggers := make(map[string]*whisk.Trigger, 0)
 	listOfTriggers, _, err := deployer.Client.Triggers.List(&whisk.TriggerListOptions{})
 	if err != nil {
-		return nil
+		return triggers, nil
 	}
 	for _, trigger := range listOfTriggers {
-		if deployer.isManagedEntity(trigger.Annotations.GetValue(utils.MANAGED)) {
+		if deployer.isManagedEntity(trigger.Annotations.GetValue(utils.MANAGED), projectName) {
 			var t *whisk.Trigger
 			var response *http.Response
 			err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
@@ -140,21 +172,31 @@ func (deployer *ServiceDeployer) SetProjectTriggers() error {
 				return err
 			})
 			if err != nil {
-				return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, false)
+				return triggers, createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, false)
 			}
-			deployer.Deployment.Triggers[trigger.Name] = t
+			triggers[trigger.Name] = t
 		}
 	}
+	return triggers, nil
+}
+
+func (deployer *ServiceDeployer) SetProjectTriggers(projectName string) error {
+	t, err := deployer.getProjectTriggers(projectName)
+	if err != nil {
+		return err
+	}
+	deployer.Deployment.Triggers = t
 	return nil
 }
 
-func (deployer *ServiceDeployer) SetProjectRules() error {
+func (deployer *ServiceDeployer) getProjectRules(projectName string) (map[string]*whisk.Rule, error) {
+	rules := make(map[string]*whisk.Rule, 0)
 	listOfRules, _, err := deployer.Client.Rules.List(&whisk.RuleListOptions{})
 	if err != nil {
-		return nil
+		return rules, nil
 	}
 	for _, rule := range listOfRules {
-		if deployer.isManagedEntity(rule.Annotations.GetValue(utils.MANAGED)) {
+		if deployer.isManagedEntity(rule.Annotations.GetValue(utils.MANAGED), projectName) {
 			var r *whisk.Rule
 			var response *http.Response
 			err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
@@ -162,18 +204,72 @@ func (deployer *ServiceDeployer) SetProjectRules() error {
 				return err
 			})
 			if err != nil {
-				return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, false)
+				return rules, createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, false)
 			}
-			deployer.Deployment.Rules[rule.Name] = r
+			rules[rule.Name] = r
 		}
 	}
+	return rules, nil
+}
+
+func (deployer *ServiceDeployer) SetProjectRules(projectName string) error {
+	r, err := deployer.getProjectRules(projectName)
+	if err != nil {
+		return err
+	}
+	deployer.Deployment.Rules = r
 	return nil
 }
 
-func (deployer *ServiceDeployer) SetProjectApis() error {
+func (deployer *ServiceDeployer) SetProjectApis(projectName string) error {
 	return nil
 }
 
-func (deployer *ServiceDeployer) SetProjectDependencies() error {
+func (deployer *ServiceDeployer) filterPackageName(name string) string {
+	s := strings.SplitAfterN(name, "/", 3)
+	if len(s) == 3 && len(s[2]) != 0 {
+		return s[2]
+	}
+	return ""
+}
+
+func (deployer *ServiceDeployer) UndeployProjectDependencies(projectName string) error {
+	for _, pkg := range deployer.Deployment.Packages {
+		if a := pkg.Package.Annotations.GetValue(utils.MANAGED); a != nil {
+			d := a.(map[string]interface{})[utils.OW_PROJECT_DEPS]
+			listOfDeps := d.([]interface{})
+			for _, dep := range listOfDeps {
+				depProject := NewDeploymentProject()
+				name := deployer.filterPackageName(dep.(map[string]interface{})["key"].(string)) // dep
+				p, err := deployer.getPackage(name)
+				if err != nil {
+					return err
+				}
+				depProject.Packages[p.Package.Name] = p
+				pa := p.Package.Annotations.GetValue(utils.MANAGED)
+				depProjectName := (pa.(map[string]interface{})[utils.OW_PROJECT_NAME]).(string)
+				actions, sequences, err := deployer.getPackageActionsAndSequences(p.Package.Name, depProjectName)
+				if err != nil {
+					return err
+				}
+				depProject.Packages[p.Package.Name].Actions = actions
+				depProject.Packages[p.Package.Name].Sequences = sequences
+				t, err := deployer.getProjectTriggers(depProjectName)
+				if err != nil {
+					return err
+				}
+				depProject.Triggers = t
+				r, err := deployer.getProjectRules(depProjectName)
+				if err != nil {
+					return err
+				}
+				depProject.Rules = r
+				err = deployer.unDeployAssets(depProject)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
 	return nil
 }
