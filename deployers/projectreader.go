@@ -19,337 +19,161 @@ package deployers
 
 import (
 	"net/http"
-	"reflect"
 
-	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 func (deployer *ServiceDeployer) UnDeployProjectAssets() error {
 
-	if err := deployer.UndeployProjectApis(); err != nil {
+	if err := deployer.SetProjectPackages(); err != nil {
 		return err
 	}
 
-	if err := deployer.UndeployProjectRules(); err != nil {
+	if err := deployer.SetProjectActionsAndSequences(); err != nil {
 		return err
 	}
 
-	if err := deployer.UndeployProjectTriggers(); err != nil {
+	if err := deployer.SetProjectTriggers(); err != nil {
 		return err
 	}
 
-	if err := deployer.UndeployProjectActions(); err != nil {
+	if err := deployer.SetProjectRules(); err != nil {
 		return err
 	}
 
-	if err := deployer.UndeployProjectPackages(); err != nil {
+	if err := deployer.SetProjectApis(); err != nil {
 		return err
 	}
 
-	if err := deployer.UndeployProjectDependencies(); err != nil {
+	if err := deployer.SetProjectDependencies(); err != nil {
 		return err
 	}
+
+	if utils.Flags.Preview {
+		deployer.printDeploymentAssets(deployer.Deployment)
+		return nil
+	}
+
+	return deployer.unDeployAssets(deployer.Deployment)
 
 	return nil
 }
 
-func (deployer *ServiceDeployer) UndeployProjectApis() error {
-	return nil
-}
-
-func (deployer *ServiceDeployer) previewRules(rules []*whisk.Rule) {
-	wskprint.PrintlnOpenWhiskOutput("\nRules")
-	for _, r := range rules {
-		wskprint.PrintlnOpenWhiskOutput("* rule: " + r.Name)
-		wskprint.PrintlnOpenWhiskOutput("    annotations: ")
-		for _, p := range r.Annotations {
-			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
-
+func (deployer *ServiceDeployer) isManagedEntity(a interface{}) bool {
+	if a != nil {
+		ta := a.(map[string]interface{})
+		if ta[utils.OW_PROJECT_NAME] == utils.Flags.ProjectName {
+			return true
 		}
-		trigger := r.Trigger.(map[string]interface{})
-		triggerName := trigger["path"].(string) + parsers.PATH_SEPARATOR + trigger["name"].(string)
-		action := r.Action.(map[string]interface{})
-		actionName := action["path"].(string) + parsers.PATH_SEPARATOR + action["name"].(string)
-		wskprint.PrintlnOpenWhiskOutput("    - trigger: " + triggerName + "\n    - action: " + actionName)
 	}
+	return false
 }
 
-func (deployer *ServiceDeployer) UndeployProjectRules() error {
-	rulesPreview := make([]*whisk.Rule, 0)
-	listOfRules, _, err := deployer.Client.Rules.List(&whisk.RuleListOptions{})
+func (deployer *ServiceDeployer) SetProjectPackages() error {
+	// retrieve a list of all the packages available under the namespace
+	listOfPackages, _, err := deployer.Client.Packages.List(&whisk.PackageListOptions{})
 	if err != nil {
 		return nil
 	}
-	for _, rule := range listOfRules {
-		if a := rule.Annotations.GetValue(utils.MANAGED); a != nil {
-			// decode the JSON blob and retrieve __OW_PROJECT_NAME
-			ta := a.(map[string]interface{})
-			if ta[utils.OW_PROJECT_NAME] == utils.Flags.ProjectName {
-				var err error
+	for _, pkg := range listOfPackages {
+		if deployer.isManagedEntity(pkg.Annotations.GetValue(utils.MANAGED)) {
+			var p *whisk.Package
+			var response *http.Response
+			err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+				p, response, err = deployer.Client.Packages.Get(pkg.Name)
+				return err
+			})
+			if err != nil {
+				return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_PACKAGE, false)
+			}
+			newPack := NewDeploymentPackage()
+			newPack.Package = p
+			deployer.Deployment.Packages[pkg.Name] = newPack
+		}
+	}
+
+	return nil
+}
+
+func (deployer *ServiceDeployer) SetProjectActionsAndSequences() error {
+	for _, pkg := range deployer.Deployment.Packages {
+		actions, _, err := deployer.Client.Actions.List(pkg.Package.Name, &whisk.ActionListOptions{})
+		if err != nil {
+			return err
+		}
+		for _, action := range actions {
+			if deployer.isManagedEntity(action.Annotations.GetValue(utils.MANAGED)) {
+				var a *whisk.Action
 				var response *http.Response
-				if utils.Flags.Preview {
-					var r *whisk.Rule
-					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-						r, response, err = deployer.Client.Rules.Get(rule.Name)
-						return err
-					})
-					if err != nil {
-						return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, false)
-					}
-					rulesPreview = append(rulesPreview, r)
+				err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+					a, response, err = deployer.Client.Actions.Get(pkg.Package.Name+parsers.PATH_SEPARATOR+action.Name, false)
+					return err
+				})
+				if err != nil {
+					return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_ACTION, false)
+				}
+				ar := utils.ActionRecord{Action: a, Packagename: pkg.Package.Name}
+				if a.Exec.Kind == parsers.YAML_KEY_SEQUENCE {
+					deployer.Deployment.Packages[pkg.Package.Name].Sequences[action.Name] = ar
 				} else {
-					displayPreprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, false)
-					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-						response, err = deployer.Client.Rules.Delete(rule.Name)
-						return err
-					})
-					if err != nil {
-						return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, false)
-					}
-					displayPostprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, false)
+					deployer.Deployment.Packages[pkg.Package.Name].Actions[action.Name] = ar
 				}
 			}
-
 		}
-
-	}
-	if utils.Flags.Preview {
-		deployer.previewRules(rulesPreview)
 	}
 	return nil
 }
 
-func (deployer *ServiceDeployer) previewTriggers(triggers []*whisk.Trigger) {
-	wskprint.PrintlnOpenWhiskOutput("Triggers:")
-	for _, trigger := range triggers {
-		wskprint.PrintlnOpenWhiskOutput("* trigger: " + trigger.Name)
-		wskprint.PrintlnOpenWhiskOutput("    bindings: ")
-
-		for _, p := range trigger.Parameters {
-			jsonValue, err := utils.PrettyJSON(p.Value)
-			if err != nil {
-				fmt.Printf("        - %s : %s\n", p.Key, wskderrors.STR_UNKNOWN_VALUE)
-			} else {
-				fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
-			}
-		}
-
-		wskprint.PrintlnOpenWhiskOutput("    annotations: ")
-		for _, p := range trigger.Annotations {
-			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
-
-		}
-	}
-}
-
-func (deployer *ServiceDeployer) UndeployProjectTriggers() error {
-	triggersPreview := make([]*whisk.Trigger, 0)
+func (deployer *ServiceDeployer) SetProjectTriggers() error {
 	listOfTriggers, _, err := deployer.Client.Triggers.List(&whisk.TriggerListOptions{})
 	if err != nil {
 		return nil
 	}
 	for _, trigger := range listOfTriggers {
-		if a := trigger.Annotations.GetValue(utils.MANAGED); a != nil {
-			// decode the JSON blob and retrieve __OW_PROJECT_NAME
-			ta := a.(map[string]interface{})
-			if ta[utils.OW_PROJECT_NAME] == utils.Flags.ProjectName {
-				var err error
-				var response *http.Response
-				if utils.Flags.Preview {
-					var t *whisk.Trigger
-					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-						t, response, err = deployer.Client.Triggers.Get(trigger.Name)
-						return err
-					})
-					if err != nil {
-						return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, false)
-					}
-					triggersPreview = append(triggersPreview, t)
-				} else {
-					displayPreprocessingInfo(parsers.YAML_KEY_TRIGGER, trigger.Name, false)
-					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-						_, response, err = deployer.Client.Triggers.Delete(trigger.Name)
-						return err
-					})
-					if err != nil {
-						return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, false)
-					}
-					displayPostprocessingInfo(parsers.YAML_KEY_TRIGGER, trigger.Name, false)
-				}
-			}
-
-		}
-
-	}
-	if utils.Flags.Preview {
-		deployer.previewTriggers(triggersPreview)
-	}
-	return nil
-}
-
-func (deployer *ServiceDeployer) previewActions(actions []*whisk.Action) {
-	for _, action := range actions {
-		wskprint.PrintlnOpenWhiskOutput("  * action: " + action.Name)
-		wskprint.PrintlnOpenWhiskOutput("    bindings: ")
-		for _, p := range action.Parameters {
-
-			if reflect.TypeOf(p.Value).Kind() == reflect.Map {
-				if _, ok := p.Value.(map[interface{}]interface{}); ok {
-					var temp map[string]interface{} = utils.ConvertInterfaceMap(p.Value.(map[interface{}]interface{}))
-					fmt.Printf("        - %s : %v\n", p.Key, temp)
-				} else {
-					jsonValue, err := utils.PrettyJSON(p.Value)
-					if err != nil {
-						fmt.Printf("        - %s : %s\n", p.Key, wskderrors.STR_UNKNOWN_VALUE)
-					} else {
-						fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
-					}
-				}
-			} else {
-				jsonValue, err := utils.PrettyJSON(p.Value)
-				if err != nil {
-					fmt.Printf("        - %s : %s\n", p.Key, wskderrors.STR_UNKNOWN_VALUE)
-				} else {
-					fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
-				}
-			}
-
-		}
-		wskprint.PrintlnOpenWhiskOutput("    annotations: ")
-		for _, p := range action.Annotations {
-			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
-
-		}
-	}
-}
-
-func (deployer *ServiceDeployer) UndeployProjectActions() error {
-	actionsPreview := make([]*whisk.Action, 0)
-	listOfPackages, _, err := deployer.Client.Packages.List(&whisk.PackageListOptions{})
-	if err != nil {
-		return err
-	}
-	for _, pkg := range listOfPackages {
-		if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
-			// decode the JSON blob and retrieve __OW_PROJECT_NAME
-			ta := a.(map[string]interface{})
-			if ta[utils.OW_PROJECT_NAME] == utils.Flags.ProjectName {
-				actions, _, err := deployer.Client.Actions.List(pkg.Name, &whisk.ActionListOptions{})
-				if err != nil {
-					return err
-				}
-				for _, action := range actions {
-					if aa := action.Annotations.GetValue(utils.MANAGED); aa != nil {
-						taa := aa.(map[string]interface{})
-						if taa[utils.OW_PROJECT_NAME] == utils.Flags.ProjectName {
-							var err error
-							var response *http.Response
-							if utils.Flags.Preview {
-								var a *whisk.Action
-								err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-									a, response, err = deployer.Client.Actions.Get(pkg.Name+parsers.PATH_SEPARATOR+action.Name, false)
-									return err
-								})
-								if err != nil {
-									return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_ACTION, false)
-								}
-								actionsPreview = append(actionsPreview, a)
-							} else {
-								displayPreprocessingInfo(parsers.YAML_KEY_ACTION, action.Name, false)
-								err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-									response, err = deployer.Client.Actions.Delete(pkg.Name + parsers.PATH_SEPARATOR + action.Name)
-									return err
-								})
-								if err != nil {
-									return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_ACTION, false)
-								}
-								displayPostprocessingInfo(parsers.YAML_KEY_ACTION, action.Name, false)
-							}
-						}
-					}
-				}
-			}
-		}
-
-	}
-	if utils.Flags.Preview {
-		deployer.previewActions(actionsPreview)
-	}
-	return nil
-}
-
-func (deployer *ServiceDeployer) previewPackages(packages []*whisk.Package) {
-	wskprint.PrintlnOpenWhiskOutput("Packages:")
-	for _, pack := range packages {
-		wskprint.PrintlnOpenWhiskOutput("Name: " + pack.Name)
-		wskprint.PrintlnOpenWhiskOutput("    bindings: ")
-		for _, p := range pack.Parameters {
-			jsonValue, err := utils.PrettyJSON(p.Value)
+		if deployer.isManagedEntity(trigger.Annotations.GetValue(utils.MANAGED)) {
+			var t *whisk.Trigger
+			var response *http.Response
+			err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+				t, response, err = deployer.Client.Triggers.Get(trigger.Name)
+				return err
+			})
 			if err != nil {
-				fmt.Printf("        - %s : %s\n", p.Key, wskderrors.STR_UNKNOWN_VALUE)
-			} else {
-				fmt.Printf("        - %s : %v\n", p.Key, jsonValue)
+				return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, false)
 			}
-		}
-
-		wskprint.PrintlnOpenWhiskOutput("    annotations: ")
-		for _, p := range pack.Annotations {
-			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
-
+			deployer.Deployment.Triggers[trigger.Name] = t
 		}
 	}
+	return nil
 }
 
-func (deployer *ServiceDeployer) UndeployProjectPackages() error {
-	packagesPreview := make([]*whisk.Package, 0)
-	listOfPackages, _, err := deployer.Client.Packages.List(&whisk.PackageListOptions{})
+func (deployer *ServiceDeployer) SetProjectRules() error {
+	listOfRules, _, err := deployer.Client.Rules.List(&whisk.RuleListOptions{})
 	if err != nil {
 		return nil
 	}
-	for _, pkg := range listOfPackages {
-		if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
-			// decode the JSON blob and retrieve __OW_PROJECT_NAME
-			ta := a.(map[string]interface{})
-			if ta[utils.OW_PROJECT_NAME] == utils.Flags.ProjectName {
-				var err error
-				var response *http.Response
-				if utils.Flags.Preview {
-					var a *whisk.Package
-					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-						a, response, err = deployer.Client.Packages.Get(pkg.Name)
-						return err
-					})
-					if err != nil {
-						return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_PACKAGE, false)
-					}
-					packagesPreview = append(packagesPreview, a)
-				} else {
-					displayPreprocessingInfo(parsers.YAML_KEY_PACKAGE, pkg.Name, false)
-					err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-						response, err = deployer.Client.Packages.Delete(pkg.Name)
-						return err
-					})
-					if err != nil {
-						return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_PACKAGE, false)
-					}
-					displayPostprocessingInfo(parsers.YAML_KEY_PACKAGE, pkg.Name, false)
-				}
+	for _, rule := range listOfRules {
+		if deployer.isManagedEntity(rule.Annotations.GetValue(utils.MANAGED)) {
+			var r *whisk.Rule
+			var response *http.Response
+			err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+				r, response, err = deployer.Client.Rules.Get(rule.Name)
+				return err
+			})
+			if err != nil {
+				return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, false)
 			}
-
+			deployer.Deployment.Rules[rule.Name] = r
 		}
-
 	}
-	if utils.Flags.Preview {
-		deployer.previewPackages(packagesPreview)
-	}
-	return nil
 	return nil
 }
-func (deployer *ServiceDeployer) UndeployProjectDependencies() error {
+
+func (deployer *ServiceDeployer) SetProjectApis() error {
+	return nil
+}
+
+func (deployer *ServiceDeployer) SetProjectDependencies() error {
 	return nil
 }
