@@ -30,14 +30,23 @@ import (
 func (deployer *ServiceDeployer) UnDeployProjectAssets() error {
 
 	deployer.SetProjectAssets(utils.Flags.ProjectName)
+	projectDeps, err := deployer.SetProjectDependencies(utils.Flags.ProjectName)
+	if err != nil {
+		return err
+	}
 
 	if utils.Flags.Preview {
 		deployer.printDeploymentAssets(deployer.Deployment)
+		for _, deps := range projectDeps {
+			deployer.printDeploymentAssets(deps)
+		}
 		return nil
 	}
 
-	if err := deployer.UndeployProjectDependencies(utils.Flags.ProjectName); err != nil {
-		return err
+	for _, deps := range projectDeps {
+		if err := deployer.unDeployAssets(deps); err != nil {
+			return err
+		}
 	}
 
 	return deployer.unDeployAssets(deployer.Deployment)
@@ -273,7 +282,8 @@ func (deployer *ServiceDeployer) isPackageUsedByOtherPackages(projectName string
 // for each dependent package, determine whether any other package is using it or not
 // if not, collect a list of actions, sequences, triggers, and rules of the dependent package
 // and delete them in order following by deleting the package itself
-func (deployer *ServiceDeployer) UndeployProjectDependencies(projectName string) error {
+func (deployer *ServiceDeployer) SetProjectDependencies(projectName string) ([]*DeploymentProject, error) {
+	projectDependencies := make([]*DeploymentProject, 0)
 	// iterate over each package in a given project
 	for _, pkg := range deployer.Deployment.Packages {
 		// get the "whisk-managed" annotation
@@ -291,7 +301,7 @@ func (deployer *ServiceDeployer) UndeployProjectDependencies(projectName string)
 					// get the *whisk.Package object for the given dependent package
 					p, err := deployer.getPackage(name)
 					if err != nil {
-						return err
+						return projectDependencies, err
 					}
 					// construct a new DeploymentProject for each dependency
 					depProject := NewDeploymentProject()
@@ -303,33 +313,28 @@ func (deployer *ServiceDeployer) UndeployProjectDependencies(projectName string)
 					// get a list of actions and sequences of a dependent package
 					actions, sequences, err := deployer.getPackageActionsAndSequences(p.Package.Name, depProjectName)
 					if err != nil {
-						return err
+						return projectDependencies, err
 					}
 					depProject.Packages[p.Package.Name].Actions = actions
 					depProject.Packages[p.Package.Name].Sequences = sequences
 					// get a list of triggers of a dependent project
 					t, err := deployer.getProjectTriggers(depProjectName)
 					if err != nil {
-						return err
+						return projectDependencies, err
 					}
 					depProject.Triggers = t
 					// get a list of rules of a dependent project
 					r, err := deployer.getProjectRules(depProjectName)
 					if err != nil {
-						return err
+						return projectDependencies, err
 					}
 					depProject.Rules = r
-					// now, we have collected list of actions, sequences, rules, and triggers
-					// of a dependent project and ready to undeploy the  whole project
-					err = deployer.unDeployAssets(depProject)
-					if err != nil {
-						return err
-					}
+					projectDependencies = append(projectDependencies, depProject)
 				}
 			}
 		}
 	}
-	return nil
+	return projectDependencies, nil
 }
 
 func (deployer *ServiceDeployer) SetProjectApis(projectName string) error {
