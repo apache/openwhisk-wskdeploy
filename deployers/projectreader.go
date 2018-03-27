@@ -24,6 +24,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 func (deployer *ServiceDeployer) UnDeployProjectAssets() error {
@@ -221,10 +222,9 @@ func (deployer *ServiceDeployer) SetProjectRules(projectName string) error {
 	return nil
 }
 
-func (deployer *ServiceDeployer) SetProjectApis(projectName string) error {
-	return nil
-}
-
+// "whisk-manged" annotation stores package name with namespace such as
+// /<namespace>/<package name>
+// parse this kind of structure to determine package name
 func (deployer *ServiceDeployer) filterPackageName(name string) string {
 	s := strings.SplitAfterN(name, "/", 3)
 	if len(s) == 3 && len(s[2]) != 0 {
@@ -233,43 +233,105 @@ func (deployer *ServiceDeployer) filterPackageName(name string) string {
 	return ""
 }
 
+// determine if any other package on the server is using the dependent package
+func (deployer *ServiceDeployer) isPackageUsedByOtherPackages(projectName string, depPackageName string) bool {
+	// retrieve a list of packages on the server
+	listOfPackages, _, err := deployer.Client.Packages.List(&whisk.PackageListOptions{})
+	if err != nil {
+		return false
+	}
+	for _, pkg := range listOfPackages {
+		if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
+			ta := a.(map[string]interface{})
+			// compare project names of the given package and other packages from server
+			// we want to skip comparing packages from the same project
+			if ta[utils.OW_PROJECT_NAME] != projectName {
+				d := a.(map[string]interface{})[utils.OW_PROJECT_DEPS]
+				listOfDeps := d.([]interface{})
+				// iterate over a list of dependencies of a package
+				// to determine whether it has listed the dependent package as its dependency as well
+				// in such case, we dont want to undeploy dependent package if its used by any other package
+				for _, dep := range listOfDeps {
+					name := deployer.filterPackageName(dep.(map[string]interface{})[wski18n.KEY_KEY].(string))
+					if name == depPackageName {
+						return true
+					}
+
+				}
+
+			}
+
+		}
+	}
+	return false
+}
+
+// derive a map of dependent packages using "whisk-managed" annotation
+// "whisk-managed" annotation has a list of dependent packages in "projectDeps"
+// projectDeps is a list of key value pairs with its own "whisk-managed" annotation
+// for a given package, get the list of dependent packages
+// for each dependent package, determine whether any other package is using it or not
+// if not, collect a list of actions, sequences, triggers, and rules of the dependent package
+// and delete them in order following by deleting the package itself
 func (deployer *ServiceDeployer) UndeployProjectDependencies(projectName string) error {
+	// iterate over each package in a given project
 	for _, pkg := range deployer.Deployment.Packages {
+		// get the "whisk-managed" annotation
 		if a := pkg.Package.Annotations.GetValue(utils.MANAGED); a != nil {
+			// read the list of dependencies from "projectDeps"
 			d := a.(map[string]interface{})[utils.OW_PROJECT_DEPS]
 			listOfDeps := d.([]interface{})
+			// iterate over a list of dependencies
 			for _, dep := range listOfDeps {
-				depProject := NewDeploymentProject()
-				name := deployer.filterPackageName(dep.(map[string]interface{})["key"].(string)) // dep
-				p, err := deployer.getPackage(name)
-				if err != nil {
-					return err
-				}
-				depProject.Packages[p.Package.Name] = p
-				pa := p.Package.Annotations.GetValue(utils.MANAGED)
-				depProjectName := (pa.(map[string]interface{})[utils.OW_PROJECT_NAME]).(string)
-				actions, sequences, err := deployer.getPackageActionsAndSequences(p.Package.Name, depProjectName)
-				if err != nil {
-					return err
-				}
-				depProject.Packages[p.Package.Name].Actions = actions
-				depProject.Packages[p.Package.Name].Sequences = sequences
-				t, err := deployer.getProjectTriggers(depProjectName)
-				if err != nil {
-					return err
-				}
-				depProject.Triggers = t
-				r, err := deployer.getProjectRules(depProjectName)
-				if err != nil {
-					return err
-				}
-				depProject.Rules = r
-				err = deployer.unDeployAssets(depProject)
-				if err != nil {
-					return err
+				// dependent package name is in form of "/<namespace>/<package-name>
+				// filter it to derive the package name
+				name := deployer.filterPackageName(dep.(map[string]interface{})[wski18n.KEY_KEY].(string))
+				// undeploy dependent package if its not used by any other package
+				if !deployer.isPackageUsedByOtherPackages(projectName, name) {
+					// get the *whisk.Package object for the given dependent package
+					p, err := deployer.getPackage(name)
+					if err != nil {
+						return err
+					}
+					// construct a new DeploymentProject for each dependency
+					depProject := NewDeploymentProject()
+					depProject.Packages[p.Package.Name] = p
+					// Now, get the project name of dependent package so that
+					// we can get other entities from that project
+					pa := p.Package.Annotations.GetValue(utils.MANAGED)
+					depProjectName := (pa.(map[string]interface{})[utils.OW_PROJECT_NAME]).(string)
+					// get a list of actions and sequences of a dependent package
+					actions, sequences, err := deployer.getPackageActionsAndSequences(p.Package.Name, depProjectName)
+					if err != nil {
+						return err
+					}
+					depProject.Packages[p.Package.Name].Actions = actions
+					depProject.Packages[p.Package.Name].Sequences = sequences
+					// get a list of triggers of a dependent project
+					t, err := deployer.getProjectTriggers(depProjectName)
+					if err != nil {
+						return err
+					}
+					depProject.Triggers = t
+					// get a list of rules of a dependent project
+					r, err := deployer.getProjectRules(depProjectName)
+					if err != nil {
+						return err
+					}
+					depProject.Rules = r
+					// now, we have collected list of actions, sequences, rules, and triggers
+					// of a dependent project and ready to undeploy the  whole project
+					err = deployer.unDeployAssets(depProject)
+					if err != nil {
+						return err
+					}
 				}
 			}
 		}
 	}
+	return nil
+}
+
+func (deployer *ServiceDeployer) SetProjectApis(projectName string) error {
 	return nil
 }
