@@ -329,14 +329,14 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"wski18n/resources/de_DE.all.json":   wski18nResourcesDe_deAllJson,
-	"wski18n/resources/en_US.all.json":   wski18nResourcesEn_usAllJson,
-	"wski18n/resources/es_ES.all.json":   wski18nResourcesEs_esAllJson,
-	"wski18n/resources/fr_FR.all.json":   wski18nResourcesFr_frAllJson,
-	"wski18n/resources/it_IT.all.json":   wski18nResourcesIt_itAllJson,
-	"wski18n/resources/ja_JA.all.json":   wski18nResourcesJa_jaAllJson,
-	"wski18n/resources/ko_KR.all.json":   wski18nResourcesKo_krAllJson,
-	"wski18n/resources/pt_BR.all.json":   wski18nResourcesPt_brAllJson,
+	"wski18n/resources/de_DE.all.json": wski18nResourcesDe_deAllJson,
+	"wski18n/resources/en_US.all.json": wski18nResourcesEn_usAllJson,
+	"wski18n/resources/es_ES.all.json": wski18nResourcesEs_esAllJson,
+	"wski18n/resources/fr_FR.all.json": wski18nResourcesFr_frAllJson,
+	"wski18n/resources/it_IT.all.json": wski18nResourcesIt_itAllJson,
+	"wski18n/resources/ja_JA.all.json": wski18nResourcesJa_jaAllJson,
+	"wski18n/resources/ko_KR.all.json": wski18nResourcesKo_krAllJson,
+	"wski18n/resources/pt_BR.all.json": wski18nResourcesPt_brAllJson,
 	"wski18n/resources/zh_Hans.all.json": wski18nResourcesZh_hansAllJson,
 	"wski18n/resources/zh_Hant.all.json": wski18nResourcesZh_hantAllJson,
 }
@@ -380,18 +380,17 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
 	"wski18n": &bintree{nil, map[string]*bintree{
 		"resources": &bintree{nil, map[string]*bintree{
-			"de_DE.all.json":   &bintree{wski18nResourcesDe_deAllJson, map[string]*bintree{}},
-			"en_US.all.json":   &bintree{wski18nResourcesEn_usAllJson, map[string]*bintree{}},
-			"es_ES.all.json":   &bintree{wski18nResourcesEs_esAllJson, map[string]*bintree{}},
-			"fr_FR.all.json":   &bintree{wski18nResourcesFr_frAllJson, map[string]*bintree{}},
-			"it_IT.all.json":   &bintree{wski18nResourcesIt_itAllJson, map[string]*bintree{}},
-			"ja_JA.all.json":   &bintree{wski18nResourcesJa_jaAllJson, map[string]*bintree{}},
-			"ko_KR.all.json":   &bintree{wski18nResourcesKo_krAllJson, map[string]*bintree{}},
-			"pt_BR.all.json":   &bintree{wski18nResourcesPt_brAllJson, map[string]*bintree{}},
+			"de_DE.all.json": &bintree{wski18nResourcesDe_deAllJson, map[string]*bintree{}},
+			"en_US.all.json": &bintree{wski18nResourcesEn_usAllJson, map[string]*bintree{}},
+			"es_ES.all.json": &bintree{wski18nResourcesEs_esAllJson, map[string]*bintree{}},
+			"fr_FR.all.json": &bintree{wski18nResourcesFr_frAllJson, map[string]*bintree{}},
+			"it_IT.all.json": &bintree{wski18nResourcesIt_itAllJson, map[string]*bintree{}},
+			"ja_JA.all.json": &bintree{wski18nResourcesJa_jaAllJson, map[string]*bintree{}},
+			"ko_KR.all.json": &bintree{wski18nResourcesKo_krAllJson, map[string]*bintree{}},
+			"pt_BR.all.json": &bintree{wski18nResourcesPt_brAllJson, map[string]*bintree{}},
 			"zh_Hans.all.json": &bintree{wski18nResourcesZh_hansAllJson, map[string]*bintree{}},
 			"zh_Hant.all.json": &bintree{wski18nResourcesZh_hantAllJson, map[string]*bintree{}},
 		}},
@@ -444,3 +443,4 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+

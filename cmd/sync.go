@@ -26,7 +26,7 @@ import (
 // sync represents the mechanism to sync OpenWhisk projects between client and server
 var syncCmd = &cobra.Command{
 	Use:        "sync",
-	SuggestFor: []string{"remove"},
+	SuggestFor: []string{"update"},
 	Short:      wski18n.T(wski18n.ID_CMD_DESC_SHORT_SYNC),
 	Long:       wski18n.T(wski18n.ID_CMD_DESC_LONG_SYNC),
 	RunE:       SyncCmdImp,

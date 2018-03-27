@@ -40,6 +40,7 @@ const (
 	CMD_DEPLOY         = "deploy"
 	CMD_UNDEPLOY       = "undeploy"
 	CMD_SYNC           = "sync"
+	TRIGGERS           = "Triggers"
 )
 
 // DO NOT TRANSLATE
@@ -72,6 +73,9 @@ const (
 	KEY_API             = "api"
 	KEY_URL             = "url"
 	KEY_PACKAGE         = "package"
+	KEY_BINDINGS        = "bindings"
+	KEY_DEPENDENCY      = "dependency"
+	KEY_LOCATION        = "location"
 )
 
 // DO NOT TRANSLATE
