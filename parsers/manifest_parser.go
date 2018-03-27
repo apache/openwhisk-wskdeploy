@@ -141,7 +141,7 @@ func (dm *YAMLParser) composeAnnotations(annotations map[string]interface{}) whi
 	return listOfAnnotations
 }
 
-func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string, ma whisk.KeyValue) (map[string]utils.DependencyRecord, error) {
 	dependencies := make(map[string]utils.DependencyRecord)
 	packages := make(map[string]Package)
 
@@ -152,7 +152,7 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 	}
 
 	for n, p := range packages {
-		d, err := dm.ComposeDependencies(p, projectPath, filePath, n)
+		d, err := dm.ComposeDependencies(p, projectPath, filePath, n, ma)
 		if err == nil {
 			for k, v := range d {
 				dependencies[k] = v
@@ -164,7 +164,7 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 	return dependencies, nil
 }
 
-func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string, ma whisk.KeyValue) (map[string]utils.DependencyRecord, error) {
 
 	depMap := make(map[string]utils.DependencyRecord)
 	for key, dependency := range pkg.Dependencies {
@@ -200,6 +200,10 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 		}
 
 		annotations := dm.composeAnnotations(dependency.Annotations)
+
+		if utils.Flags.Managed || utils.Flags.Sync {
+			annotations = append(annotations, ma)
+		}
 
 		packDir := path.Join(projectPath, strings.Title(YAML_KEY_PACKAGES))
 		depName := packageName + ":" + key
@@ -308,7 +312,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	}
 
 	// add Managed Annotations if this is Managed Deployment
-	if utils.Flags.Managed {
+	if utils.Flags.Managed || utils.Flags.Sync {
 		pag.Annotations = append(pag.Annotations, ma)
 	}
 
@@ -383,7 +387,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		}
 
 		// appending managed annotations if its a managed deployment
-		if utils.Flags.Managed {
+		if utils.Flags.Managed || utils.Flags.Sync {
 			wskaction.Annotations = append(wskaction.Annotations, ma)
 		}
 
@@ -756,7 +760,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		}
 
 		// add managed annotations if its marked as managed deployment
-		if utils.Flags.Managed {
+		if utils.Flags.Managed || utils.Flags.Sync {
 			wskaction.Annotations = append(wskaction.Annotations, ma)
 		}
 
@@ -864,7 +868,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 		}
 
 		// add managed annotations if its a managed deployment
-		if utils.Flags.Managed {
+		if utils.Flags.Managed || utils.Flags.Sync {
 			wsktrigger.Annotations = append(wsktrigger.Annotations, ma)
 		}
 
@@ -917,7 +921,7 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.Key
 		}
 
 		// add managed annotations if its a managed deployment
-		if utils.Flags.Managed {
+		if utils.Flags.Managed || utils.Flags.Sync {
 			wskrule.Annotations = append(wskrule.Annotations, ma)
 		}
 

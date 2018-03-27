@@ -239,6 +239,34 @@ func Undeploy() error {
 	whisk.SetVerbose(utils.Flags.Verbose)
 	whisk.SetDebug(utils.Flags.Trace)
 
+	if len(utils.Flags.ProjectName) != 0 {
+		var deployer = deployers.NewServiceDeployer()
+		deployer.Preview = utils.Flags.Preview
+
+		clientConfig, error := deployers.NewWhiskConfig(utils.Flags.CfgFile, "", "")
+		if error != nil {
+			return error
+		}
+
+		whiskClient, error := deployers.CreateNewClient(clientConfig)
+		if error != nil {
+			return error
+		}
+
+		deployer.Client = whiskClient
+		deployer.ClientConfig = clientConfig
+
+		// The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
+		setSupportedRuntimes(clientConfig.Host)
+
+		err := deployer.UnDeployProject()
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
 	project_Path := strings.TrimSpace(utils.Flags.ProjectPath)
 	if len(project_Path) == 0 {
 		project_Path = utils.DEFAULT_PROJECT_PATH
@@ -294,7 +322,6 @@ func Undeploy() error {
 		} else {
 			return nil
 		}
-
 	} else {
 		errString := wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
 			map[string]interface{}{wski18n.KEY_PATH: utils.Flags.ManifestPath})
