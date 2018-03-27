@@ -1538,11 +1538,15 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
 
 		}
-		trigger := rule.Trigger.(map[string]interface{})
-		triggerName := trigger["path"].(string) + parsers.PATH_SEPARATOR + trigger["name"].(string)
-		action := rule.Action.(map[string]interface{})
-		actionName := action["path"].(string) + parsers.PATH_SEPARATOR + action["name"].(string)
-		wskprint.PrintlnOpenWhiskOutput("    - trigger: " + triggerName + "\n    - action: " + actionName)
+		if reflect.TypeOf(rule.Trigger).Kind() == reflect.String {
+			wskprint.PrintlnOpenWhiskOutput("    - trigger: " + rule.Trigger.(string) + "\n    - action: " + rule.Action.(string))
+		} else if reflect.TypeOf(rule.Trigger).Kind() == reflect.Map {
+			trigger := rule.Trigger.(map[string]interface{})
+			triggerName := trigger["path"].(string) + parsers.PATH_SEPARATOR + trigger["name"].(string)
+			action := rule.Action.(map[string]interface{})
+			actionName := action["path"].(string) + parsers.PATH_SEPARATOR + action["name"].(string)
+			wskprint.PrintlnOpenWhiskOutput("    - trigger: " + triggerName + "\n    - action: " + actionName)
+		}
 
 	}
 
