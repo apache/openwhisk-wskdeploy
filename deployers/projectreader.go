@@ -29,12 +29,16 @@ import (
 
 func (deployer *ServiceDeployer) UnDeployProjectAssets() error {
 
+	// calculate all the project entities such as packages, actions, sequences,
+	// triggers, and rules based on the project name in "whisk-managed" annotation
 	deployer.SetProjectAssets(utils.Flags.ProjectName)
+	// calculate all the dependencies based on the project name
 	projectDeps, err := deployer.SetProjectDependencies(utils.Flags.ProjectName)
 	if err != nil {
 		return err
 	}
 
+	// show preview of which all OpenWhisk entities will be deployed
 	if utils.Flags.Preview {
 		deployer.printDeploymentAssets(deployer.Deployment)
 		for _, deps := range projectDeps {
@@ -43,17 +47,22 @@ func (deployer *ServiceDeployer) UnDeployProjectAssets() error {
 		return nil
 	}
 
+	// now, undeploy all those project dependencies if not used by
+	// any other project or packages
 	for _, deps := range projectDeps {
 		if err := deployer.unDeployAssets(deps); err != nil {
 			return err
 		}
 	}
 
+	// undeploy all the project entities
 	return deployer.unDeployAssets(deployer.Deployment)
 
 	return nil
 }
 
+// based on the project name set in "whisk-managed" annotation
+// calculate and determine list of packages, actions, sequences, rules and triggers
 func (deployer *ServiceDeployer) SetProjectAssets(projectName string) error {
 
 	if err := deployer.SetProjectPackages(projectName); err != nil {
@@ -79,6 +88,7 @@ func (deployer *ServiceDeployer) SetProjectAssets(projectName string) error {
 	return nil
 }
 
+// check if project name matches with the one in "whisk-managed" annotation
 func (deployer *ServiceDeployer) isManagedEntity(a interface{}, projectName string) bool {
 	if a != nil {
 		ta := a.(map[string]interface{})
@@ -89,6 +99,7 @@ func (deployer *ServiceDeployer) isManagedEntity(a interface{}, projectName stri
 	return false
 }
 
+// get an instance of *whisk.Package for the specified package name
 func (deployer *ServiceDeployer) getPackage(packageName string) (*DeploymentPackage, error) {
 	var err error
 	var p *whisk.Package
@@ -106,6 +117,7 @@ func (deployer *ServiceDeployer) getPackage(packageName string) (*DeploymentPack
 
 }
 
+// capture all the packages with "whisk-managed" annotations and matching project name
 func (deployer *ServiceDeployer) SetProjectPackages(projectName string) error {
 	// retrieve a list of all the packages available under the namespace
 	listOfPackages, _, err := deployer.Client.Packages.List(&whisk.PackageListOptions{})
@@ -125,6 +137,7 @@ func (deployer *ServiceDeployer) SetProjectPackages(projectName string) error {
 	return nil
 }
 
+// get a list of actions/sequences of a given package name
 func (deployer *ServiceDeployer) getPackageActionsAndSequences(packageName string, projectName string) (map[string]utils.ActionRecord, map[string]utils.ActionRecord, error) {
 	listOfActions := make(map[string]utils.ActionRecord, 0)
 	listOfSequences := make(map[string]utils.ActionRecord, 0)
@@ -155,6 +168,7 @@ func (deployer *ServiceDeployer) getPackageActionsAndSequences(packageName strin
 	return listOfActions, listOfSequences, err
 }
 
+// capture all the actions/sequences with "whisk-managed" annotations and matching project name
 func (deployer *ServiceDeployer) SetPackageActionsAndSequences(projectName string) error {
 	for _, pkg := range deployer.Deployment.Packages {
 		a, s, err := deployer.getPackageActionsAndSequences(pkg.Package.Name, projectName)
@@ -167,6 +181,7 @@ func (deployer *ServiceDeployer) SetPackageActionsAndSequences(projectName strin
 	return nil
 }
 
+// get a list of triggers from a given project name
 func (deployer *ServiceDeployer) getProjectTriggers(projectName string) (map[string]*whisk.Trigger, error) {
 	triggers := make(map[string]*whisk.Trigger, 0)
 	listOfTriggers, _, err := deployer.Client.Triggers.List(&whisk.TriggerListOptions{})
@@ -190,6 +205,7 @@ func (deployer *ServiceDeployer) getProjectTriggers(projectName string) (map[str
 	return triggers, nil
 }
 
+// capture all the triggers with "whisk-managed" annotations and matching project name
 func (deployer *ServiceDeployer) SetProjectTriggers(projectName string) error {
 	t, err := deployer.getProjectTriggers(projectName)
 	if err != nil {
@@ -199,6 +215,7 @@ func (deployer *ServiceDeployer) SetProjectTriggers(projectName string) error {
 	return nil
 }
 
+// get a list of rules from a given project name
 func (deployer *ServiceDeployer) getProjectRules(projectName string) (map[string]*whisk.Rule, error) {
 	rules := make(map[string]*whisk.Rule, 0)
 	listOfRules, _, err := deployer.Client.Rules.List(&whisk.RuleListOptions{})
@@ -222,6 +239,7 @@ func (deployer *ServiceDeployer) getProjectRules(projectName string) (map[string
 	return rules, nil
 }
 
+// capture all the rules with "whisk-managed" annotations and matching project name
 func (deployer *ServiceDeployer) SetProjectRules(projectName string) error {
 	r, err := deployer.getProjectRules(projectName)
 	if err != nil {
