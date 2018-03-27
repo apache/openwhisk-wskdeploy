@@ -19,6 +19,7 @@ package cmd
 
 import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/spf13/cobra"
 )
 
@@ -26,8 +27,8 @@ import (
 var syncCmd = &cobra.Command{
 	Use:        "sync",
 	SuggestFor: []string{"remove"},
-	Short:      "Sync assets on OpenWhisk",
-	Long:       `Sync reflects asset changes on client side to server.`,
+	Short:      wski18n.T(wski18n.ID_CMD_DESC_SHORT_SYNC),
+	Long:       wski18n.T(wski18n.ID_CMD_DESC_LONG_SYNC),
 	RunE:       SyncCmdImp,
 }
 

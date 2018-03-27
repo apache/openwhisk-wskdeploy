@@ -86,9 +86,11 @@ const (
 	// Cobra command descriptions
 	ID_CMD_DESC_LONG_REPORT   = "msg_cmd_desc_long_report"
 	ID_CMD_DESC_LONG_ROOT     = "msg_cmd_desc_long_root"
+	ID_CMD_DESC_LONG_SYNC     = "msg_cmd_desc_long_sync"
 	ID_CMD_DESC_SHORT_REPORT  = "msg_cmd_desc_short_report"
 	ID_CMD_DESC_SHORT_ROOT    = "msg_cmd_desc_short_root"
 	ID_CMD_DESC_SHORT_VERSION = "msg_cmd_desc_short_version"
+	ID_CMD_DESC_SHORT_SYNC    = "msg_cmd_desc_short_sync"
 
 	// Cobra Flag messages
 	ID_CMD_FLAG_API_HOST    = "msg_cmd_flag_api_host"

@@ -36,6 +36,14 @@
     "translation": "Print the version number of wskdeploy"
   },
   {
+    "id": "msg_cmd_desc_short_sync",
+    "translation": "A tool to sync your OpenWhisk packages between client and server."
+  },
+  {
+    "id": "msg_cmd_desc_long_sync",
+    "translation": "A tool to sync deployment and undeployment of openwhisk packages using a manifest and optional deployment files using YAML."
+  },
+  {
     "id": "msg_cmd_flag_api_host",
     "translation": "whisk API `HOST`"
   },
