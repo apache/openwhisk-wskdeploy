@@ -250,12 +250,13 @@ func exportProject(projectName string, targetManifest string) error {
 		break
 	}
 
+	// find exported manifest parent directory
+	manifestDir := filepath.Dir(utils.Flags.ManifestPath)
+	os.MkdirAll(manifestDir, os.ModePerm)
+
 	// export manifest to file
 	parsers.Write(maniyaml, targetManifest)
 	fmt.Println("Manifest exported to: " + targetManifest)
-
-	// find exported manifest parent directory
-	manifestDir := filepath.Dir(utils.Flags.ManifestPath)
 
 	// create dependencies directory if not exists
 	depDir := filepath.Join(manifestDir, "dependencies")
@@ -349,10 +350,6 @@ func saveCode(action whisk.Action, directory string) (string, error) {
 	}
 
 	path := filepath.Join(directory, filename)
-
-	if utils.FileExists(path) {
-		return "", wskderrors.NewFileReadError(path, wski18n.T(wski18n.ID_ERR_FILE_ALREADY_EXISTS))
-	}
 
 	if err := utils.WriteFile(path, code); err != nil {
 		return "", err
