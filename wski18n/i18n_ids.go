@@ -41,6 +41,7 @@ const (
 	CMD_UNDEPLOY       = "undeploy"
 	CMD_SYNC           = "sync"
 	TRIGGERS           = "Triggers"
+	BINDING            = "binding"
 )
 
 // DO NOT TRANSLATE
