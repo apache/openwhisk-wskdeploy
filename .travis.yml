@@ -22,6 +22,14 @@ services:
 - docker
 git:
   depth: 3
+
+notifications:
+  email: false
+  webhooks:
+    urls:
+      # travis2slack webhook to enable DMs on openwhisk-team.slack.com to PR authors with TravisCI results
+      secure: "gfROHzycfSxU85pp/jscreWed1bABKlBa1w+fBH40mZDIYI9Dhgbnq1lqpkBLz51RasPsCmKvZP8j3gm5NunRJWwPeMk0ZmwPuBzVCiOdEr7r/SOr4hQM6CJjLuQWVg8gIR1ZeIQhIc+oHc8KGPDBJdSPo9b89QNCyVXNL47/M9KAKUn2ilwTdHaezlwGnT3yiTvhvYEQhwaXLxHHIfCtlQjPg+d8Ch93xYRCvqfKu4g3owr1bbZZE5AERH7dkKzq5HtzYAxr3M1UZLfSwiQfktnq4cGWrw9XxXCmENTm6HDKCLc7pcOvLZF5NqpItRd4Od1kma5lPKfR1qK8+SjyohpWqakhrJlnBe5x68zXyyq4Y48yuNuGXqVkdQ1faUF1gY0cE6KvsfFLYUvRXUmPZNYYd1xMaouUM6fiVRSyM/liuR8zK750umNRdgNNTlmYXQNJwg/YlF155hqIblf7Idf2Sg6AW5d7mUIvWa1VIemZpvxFb2wG0SUyADhNvTWFLpxmlIP9ddCzz+ZY5CWpe5ZYj2/snXp983fHgAoVEnxc4ifIlaUf1ALcK/BVGzJh5dgpD4JmyDK8C1YoP5hiMRtvbAetxYK9R8YNZs8Q3K2yZvdFgWrNQhW0OiDG5pIOPhg3vx8Syr886YSlYW+kp7QI3d18HFvCo3ZIZb/Qus="
+
 before_install:
 - "./tools/travis/cloneutils.sh"
 install:
@@ -48,7 +56,8 @@ after_success:
     git config --global user.name "Travis CI";
     export GIT_TAG="latest";
     git tag -d $GIT_TAG;
-    git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
+    git push -q https://$API_KEY@github.com/apache/incubator-openwhisk-wskdeploy :refs/tags/$GIT_TAG;
+    GIT_COMMITTER_DATE="$(git show --format=%aD | head -1)" git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
     git push -f -q https://$API_KEY@github.com/apache/incubator-openwhisk-wskdeploy $GIT_TAG;
   fi
 after_script:
@@ -57,14 +66,18 @@ before_deploy:
 - export build_file_name=wskdeploy
 - go get github.com/inconshreveable/mousetrap
 - "./tools/travis/build_tag_releases.sh $build_file_name"
-- export RELEASE_PKG_FILE=$(ls $build_file_name-*.*)
+- ./gradlew --console=plain releaseBinaries
+- export RELEASE_PKG_FILE="$(cd "$TRAVIS_BUILD_DIR/release" && ls ${zip_file_name}-*.tgz ${zip_file_name}-*.zip)"
 - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."
+
 deploy:
 - provider: releases
   api_key:
     secure: aQGcP7XKlgZEFZ57y4RzYRHfQAM5HEdaa7Y/vTxNepIsE7zY2945qT99UJnU1hfhSjP9jO5eNlHzo+AqJoUx70+iUIhMTyOp39Qp7wb74OKolkXwcntufzP7Ocron5IYUE311tf/kic3vRb5cwoaE2lGfx5PdCuozVjgpsDbIRvV5quQzNr68Toqe+yegKwAhprYRWHPnuIqGbkfa83csqFv6m0viC/gvtFOCB9/4zGCqk/K3CKrcr/5GvnFPxJoaJNfFA6umSZ9VaJjbIJmcXGD3nU+rWP0uEpvzGKIMYhmQq/0JuUTgvh4jnnT4OVZeTh6pMaUqtWH+3HDrOiLAiLjcfeT91j7ZXPnx8LvM6SuoRlvRCuXA2FYx9mz2Vx0TWV5TMqhj3okVO/CvvnMMWwKWOUDD/nSMLy93BM40NjD7zimGjocPsGAjTT9H1PSfau3fiiMjg6iMRWjUTfNY5ra5Wgb7W5G37XaCBJDBZL77Blq/tNWdV5qW4A3l4FWnH+LwOdTdhU35Lr5JWzMuEDdkvVgEv8AQjb07P/ODtBW6z3GRv9Rslg9T9ylxkgJpXoYwdXCbtYU8GNcFdJiDpTaVHrkMeLvHrBTRrDCSnCnRFc3AxsUtLklo7R/EX1wUoX+QcAGjh/AmJ4nJVP1C09913fx96WczkRX6ANg2Mw=
   file_glob: true
-  file: "${build_file_name}-*.*"
+  file:
+    - release/${zip_file_name}-*.tgz
+    - release/${zip_file_name}-*.zip
   overwrite: true
   skip_cleanup: true
   on:
@@ -94,4 +107,4 @@ env:
   - secure: AA8dirvhPlK/pdm6hzanSkYnLi/b6loEAPrSMc/mNa7ZkNrTPyPBq3B/GkNW1AEmoTOr7JGGfLk33FuffqvqIXGam3bUtVWqZdNpa1pvR9MM4laaWSfBk5fakM6rOdq5UtoYHzr00NlIjz0g/CmTn4DRbGNa43F1CkXgH1XypoBUhZZGYkcMdWMX8qYm3e32kutKUFR2GUd0xoTR91EBgIxRh8sq6wkRlfNFOwrghldYMrLP4VlUTqC/usG5G0lU+U21PlW/k3QEOxe00K46W3qAQIWTFBl3q9fX912HJZwvTC29t5hDS9zsG4Vhj93O9mwHzTfjAE/+vkXRkvnx0FPVOHqSepAAffd4rAD3N4aLGVHpGqWobg5daKegbJmCeoSaknaodNrPYq6YjTUEz4n/ckjaB/RHECkutLZh1wtJgR1joQVfAdvn3WpIYRD3CkNN6v5y5sWnX4fkVL9tCcMcukTzk6U/mEtJr6f+RC8suSw0X1c6tr+rCyXJY6a4o5ZoIXxJ52LtQaKrEbFH6fkRC4aCVuLYUAIyYoeqauXqsGpNfhmkS36DLvx5ojfpXnBdTWwwJMflm24Ec9FdOnQCkRhKiZLIxu1jJS6gy0Pe4/Vt15WiRnt1t2I9F6wIk895G0Qz2yiIQ1MmpjCnMnY8BoT9Nqs78YOfnNtgax8=
     # API_KEY used to generate the "latest" tag automatically
   - secure: CHEYJanoGBV2W9LqBbnG312cOBj4FIWeiLLjfult/VDcjBlAQ71EzpBEv+H9c5J5ZmeRouQ3+dUC2wCJTCeTdzAOIi9Qci7tvTT8yYPShqGS3R1q+Hx1VBaGZhEDpxDcUDDGETBOQD6du7OTKOy+4bW0EdgZA6XENcIQNp5lCPVA2BMp8wI4vUgydbK3Po1vbj4KauBtk+XPU7cUkTxtw/QUyC5Eih6QphVovBIIngBSP917sO0ENwQHjOOkCb0rG1b5OnrAMOQSbpQsVgblv8caKINqnLG5aePN3YJCB5AFzXtQI515RQ9Tf8mX1XSceFtPwAfJhqLw8kHCoiu/ptLi/rxhuv1DTD+t+Y7413bMg/qIP08KKjyj+ScyeMRVnPEfNRC+z98Ka55FDhid9+FDx0uQ7ICDpi/TkCv8GDStk55vkSp3tYfNbORk453y4K6Yf7eS041ugfC3KejlmU2IPulwxQCFjFDZl7JMZo5NMOqBj6RUStWiF3DlxcM2M0I97B2cycwL6jTOlvFJUEFPoU9UIN9ICEYRdY33nxyG5qr+ymq0YgmZqmcjK3dGd5j32xXMqsDO+vrG+CnEpwht7uo6IQWYD44qsixe8J4HcoSYkm901mQYqT7VpNy6BXqHjPBSFUYkHaV/whT6QtCxKaaa7dg0s/jqi/zAnQY=
-
+  - zip_file_name=openwhisk_wskdeploy

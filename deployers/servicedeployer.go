@@ -139,7 +139,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	// Generate Managed Annotations if its marked as a Managed Deployment
 	// Managed deployments are the ones when OpenWhisk entities are deployed with command line flag --managed.
 	// Which results in a hidden annotation in every OpenWhisk entity in manifest file.
-	if utils.Flags.Managed {
+	if utils.Flags.Managed || utils.Flags.Sync {
 		// OpenWhisk entities are annotated with Project Name and therefore
 		// Project Name in manifest/deployment file is mandatory for managed deployments
 		if deployer.ProjectName == "" {
@@ -309,7 +309,7 @@ func (deployer *ServiceDeployer) deployAssets() error {
 	// refresh previously deployed project entities, delete the assets which is no longer part of the project
 	// i.e. in a subsequent managed deployment of the same project minus few OpenWhisk entities
 	// from the manifest file must result in undeployment of those deleted entities
-	if utils.Flags.Managed {
+	if utils.Flags.Managed || utils.Flags.Sync {
 		if err := deployer.RefreshManagedEntities(deployer.ManagedAnnotation); err != nil {
 			errString := wski18n.T(wski18n.ID_MSG_MANAGED_UNDEPLOYMENT_FAILED)
 			whisk.Debug(whisk.DbgError, errString)
@@ -436,6 +436,9 @@ func (deployer *ServiceDeployer) RefreshManagedEntities(maValue whisk.KeyValue) 
 		return err
 	}
 
+	if err := deployer.RefreshManagedPackagesWithDependencies(ma); err != nil {
+		return err
+	}
 	return nil
 
 }
@@ -611,6 +614,74 @@ func (deployer *ServiceDeployer) RefreshManagedPackages(ma map[string]interface{
 				}
 			}
 		}
+	}
+
+	return nil
+}
+
+func (deployer *ServiceDeployer) appendDepAnnotation(list whisk.KeyValueArr, pkg *whisk.Package) whisk.KeyValueArr {
+	depExists := false
+	if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
+		//append annotations from this package to deps
+		pkgName := parsers.PATH_SEPARATOR + pkg.Namespace + parsers.PATH_SEPARATOR + pkg.Name
+		for _, dep := range list {
+			if dep.Key == pkgName {
+				depExists = true
+			}
+		}
+		if !depExists {
+			list = append(list, whisk.KeyValue{Key: pkgName, Value: a.(map[string]interface{})})
+		}
+	}
+	return list
+}
+
+func (deployer *ServiceDeployer) RefreshManagedPackagesWithDependencies(ma map[string]interface{}) error {
+	// iterate over each package from the given project
+	for _, p := range deployer.Deployment.Packages {
+		dependencyAnnotations := make(whisk.KeyValueArr, 0)
+		// iterate over the list of dependencies of the package
+		// dependencies could be labeled same as dependent package name
+		// for example, "helloworld" where the package it depends on is also called "helloworld"
+		// dependencies could be labeled different from the dependent package name
+		// for example, "custom-helloworld" where the package it depends on it called "helloworld"
+		for n := range p.Dependencies {
+			// find the package using dependency label
+			pkg, _, err := deployer.Client.Packages.Get(n)
+			if err != nil {
+				return err
+			}
+			// if dependency label (custom-helloworld) is different from the dependent package name,
+			// it must have binding set to the original package ("helloworld")
+			if len(pkg.Binding.Name) != 0 {
+				// having dependency on packages under /whisk.system is treated in a different way
+				// in which dependent package under /whisk.system are not modified to add managed annotation
+				// and parent package does not show this dependency in its managed annotation
+				// because whisk.system packages comes pre-packaged and deployed with OpenWhisk server and not
+				// deployed along with application deployments.
+				// (TODO) here, we are only finding a package with its name as Get method
+				// (TODO) does not support looking under different/seperate namespace
+				// (TODO) we could add support to sync dependencies from different namespaces in future
+				if pkg.Binding.Namespace != utils.WHISK_SYSTEM {
+					// get the original package to retrieve its managed annotations
+					pkg, _, err := deployer.Client.Packages.Get(pkg.Binding.Name)
+					if err != nil {
+						return err
+					}
+					dependencyAnnotations = deployer.appendDepAnnotation(dependencyAnnotations, pkg)
+				}
+			} else {
+				dependencyAnnotations = deployer.appendDepAnnotation(dependencyAnnotations, pkg)
+			}
+		}
+		updatedAnnotation, err := utils.AddDependentAnnotation(ma, dependencyAnnotations)
+		if err != nil {
+			return err
+		}
+		p.Package.Annotations.AddOrReplace(&updatedAnnotation)
+	}
+	if err := deployer.DeployPackages(); err != nil {
+		return err
 	}
 	return nil
 }
@@ -932,6 +1003,13 @@ func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentProject) error
 	}
 
 	wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.T(wski18n.ID_MSG_UNDEPLOYMENT_SUCCEEDED)))
+	return nil
+}
+
+func (deployer *ServiceDeployer) UnDeployProject() error {
+	if err := deployer.UnDeployProjectAssets(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -1355,10 +1433,10 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 	wskprint.PrintlnOpenWhiskOutput("         ____      ___                   _    _ _     _     _\n        /\\   \\    / _ \\ _ __   ___ _ __ | |  | | |__ (_)___| | __\n   /\\  /__\\   \\  | | | | '_ \\ / _ \\ '_ \\| |  | | '_ \\| / __| |/ /\n  /  \\____ \\  /  | |_| | |_) |  __/ | | | |/\\| | | | | \\__ \\   <\n  \\   \\  /  \\/    \\___/| .__/ \\___|_| |_|__/\\__|_| |_|_|___/_|\\_\\ \n   \\___\\/              |_|\n")
 
 	// TODO() review format
-	wskprint.PrintlnOpenWhiskOutput("Packages:")
+	wskprint.PrintlnOpenWhiskOutput(strings.Title(parsers.YAML_KEY_PACKAGES) + ":")
 	for _, pack := range assets.Packages {
-		wskprint.PrintlnOpenWhiskOutput("Name: " + pack.Package.Name)
-		wskprint.PrintlnOpenWhiskOutput("    bindings: ")
+		wskprint.PrintlnOpenWhiskOutput(strings.Title(wski18n.KEY_NAME) + ": " + pack.Package.Name)
+		wskprint.PrintlnOpenWhiskOutput("    " + wski18n.KEY_BINDINGS + ": ")
 		for _, p := range pack.Package.Parameters {
 			jsonValue, err := utils.PrettyJSON(p.Value)
 			if err != nil {
@@ -1368,19 +1446,25 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 			}
 		}
 
+		wskprint.PrintlnOpenWhiskOutput("    " + parsers.YAML_KEY_ANNOTATION + ": ")
+		for _, p := range pack.Package.Annotations {
+			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
+
+		}
+
 		for key, dep := range pack.Dependencies {
-			wskprint.PrintlnOpenWhiskOutput("  * dependency: " + key)
-			wskprint.PrintlnOpenWhiskOutput("    location: " + dep.Location)
+			wskprint.PrintlnOpenWhiskOutput("  * " + wski18n.KEY_DEPENDENCY + ": " + key)
+			wskprint.PrintlnOpenWhiskOutput("    " + wski18n.KEY_LOCATION + ": " + dep.Location)
 			if !dep.IsBinding {
-				wskprint.PrintlnOpenWhiskOutput("    local path: " + dep.ProjectPath)
+				wskprint.PrintlnOpenWhiskOutput("    " + wski18n.KEY_PATH + ": " + dep.ProjectPath)
 			}
 		}
 
 		wskprint.PrintlnOpenWhiskOutput("")
 
 		for _, action := range pack.Actions {
-			wskprint.PrintlnOpenWhiskOutput("  * action: " + action.Action.Name)
-			wskprint.PrintlnOpenWhiskOutput("    bindings: ")
+			wskprint.PrintlnOpenWhiskOutput("  * " + parsers.YAML_KEY_ACTION + ": " + action.Action.Name)
+			wskprint.PrintlnOpenWhiskOutput("    " + wski18n.KEY_BINDINGS + ": ")
 			for _, p := range action.Action.Parameters {
 
 				if reflect.TypeOf(p.Value).Kind() == reflect.Map {
@@ -1405,7 +1489,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 				}
 
 			}
-			wskprint.PrintlnOpenWhiskOutput("    annotations: ")
+			wskprint.PrintlnOpenWhiskOutput("    " + parsers.YAML_KEY_ANNOTATION + ": ")
 			for _, p := range action.Action.Annotations {
 				fmt.Printf("        - %s : %v\n", p.Key, p.Value)
 
@@ -1414,16 +1498,21 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 
 		wskprint.PrintlnOpenWhiskOutput("")
 		for _, action := range pack.Sequences {
-			wskprint.PrintlnOpenWhiskOutput("  * sequence: " + action.Action.Name)
+			wskprint.PrintlnOpenWhiskOutput("  * " + parsers.YAML_KEY_SEQUENCE + ": " + action.Action.Name)
+			wskprint.PrintlnOpenWhiskOutput("    " + parsers.YAML_KEY_ANNOTATION + ": ")
+			for _, p := range action.Action.Annotations {
+				fmt.Printf("        - %s : %v\n", p.Key, p.Value)
+
+			}
 		}
 
 		wskprint.PrintlnOpenWhiskOutput("")
 	}
 
-	wskprint.PrintlnOpenWhiskOutput("Triggers:")
+	wskprint.PrintlnOpenWhiskOutput(wski18n.TRIGGERS + ":")
 	for _, trigger := range assets.Triggers {
-		wskprint.PrintlnOpenWhiskOutput("* trigger: " + trigger.Name)
-		wskprint.PrintlnOpenWhiskOutput("    bindings: ")
+		wskprint.PrintlnOpenWhiskOutput("* " + parsers.YAML_KEY_TRIGGER + ": " + trigger.Name)
+		wskprint.PrintlnOpenWhiskOutput("    " + wski18n.KEY_BINDINGS + ": ")
 
 		for _, p := range trigger.Parameters {
 			jsonValue, err := utils.PrettyJSON(p.Value)
@@ -1434,21 +1523,31 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 			}
 		}
 
-		wskprint.PrintlnOpenWhiskOutput("    annotations: ")
+		wskprint.PrintlnOpenWhiskOutput("    " + parsers.YAML_KEY_ANNOTATION + ": ")
 		for _, p := range trigger.Annotations {
+			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
 
-			value := "?"
-			if str, ok := p.Value.(string); ok {
-				value = str
-			}
-			wskprint.PrintlnOpenWhiskOutput("        - name: " + p.Key + " value: " + value)
 		}
 	}
 
-	wskprint.PrintlnOpenWhiskOutput("\n Rules")
+	wskprint.PrintlnOpenWhiskOutput("\n" + wski18n.RULES)
 	for _, rule := range assets.Rules {
-		wskprint.PrintlnOpenWhiskOutput("* rule: " + rule.Name)
-		wskprint.PrintlnOpenWhiskOutput("    - trigger: " + rule.Trigger.(string) + "\n    - action: " + rule.Action.(string))
+		wskprint.PrintlnOpenWhiskOutput("* " + parsers.YAML_KEY_RULE + ": " + rule.Name)
+		wskprint.PrintlnOpenWhiskOutput("    " + parsers.YAML_KEY_ANNOTATION + ": ")
+		for _, p := range rule.Annotations {
+			fmt.Printf("        - %s : %v\n", p.Key, p.Value)
+
+		}
+		if reflect.TypeOf(rule.Trigger).Kind() == reflect.String {
+			wskprint.PrintlnOpenWhiskOutput("    - " + parsers.YAML_KEY_TRIGGER + ": " + rule.Trigger.(string) + "\n    - " + parsers.YAML_KEY_ACTION + ": " + rule.Action.(string))
+		} else if reflect.TypeOf(rule.Trigger).Kind() == reflect.Map {
+			trigger := rule.Trigger.(map[string]interface{})
+			triggerName := trigger["path"].(string) + parsers.PATH_SEPARATOR + trigger["name"].(string)
+			action := rule.Action.(map[string]interface{})
+			actionName := action["path"].(string) + parsers.PATH_SEPARATOR + action["name"].(string)
+			wskprint.PrintlnOpenWhiskOutput("    - " + parsers.YAML_KEY_TRIGGER + ": " + triggerName + "\n    - " + parsers.YAML_KEY_ACTION + ": " + actionName)
+		}
+
 	}
 
 	wskprint.PrintlnOpenWhiskOutput("")
