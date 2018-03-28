@@ -207,7 +207,7 @@ project:
         Extension1:
             dependencies:
                 helloworlds:
-                    location: github.com/pritidesai/incubator-openwhisk-test/packages/helloworlds
+                    location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
 ```
 
 After deploying this project with `wskdeploy sync -m manifest.yaml`, package `Extension2` has following annotation:
@@ -276,9 +276,9 @@ project:
         Extension2:
             dependencies:
                 helloworlds:
-                    location: github.com/pritidesai/incubator-openwhisk-test/packages/helloworlds
+                    location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
                 custom-hellowhisk:
-                    location: github.com/pritidesai/incubator-openwhisk-test/packages/hellowhisk
+                    location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
 ...
 ```
 
