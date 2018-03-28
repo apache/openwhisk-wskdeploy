@@ -301,7 +301,7 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 	// Init supported runtimes and action files extensions maps
 	setSupportedRuntimes(config.Host)
 
-	return exportProject(utils.Flags.ProjectPath, utils.Flags.ManifestPath)
+	return exportProject(utils.Flags.ProjectName, utils.Flags.ManifestPath)
 }
 
 const (
