@@ -21,17 +21,18 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"os"
+	"os/exec"
+	"path"
+	"path/filepath"
+	"strings"
+
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/fatih/color"
 	"github.com/mattn/go-colorable"
-	"os"
-	"os/exec"
-	"path"
-	"path/filepath"
-	"strings"
 )
 
 const (
@@ -166,12 +167,20 @@ func (wskdeploy *Wskdeploy) UndeployManifestPathOnly(manifestpath string) (strin
 	return wskdeploy.RunCommand("undeploy", "-m", manifestpath)
 }
 
+func (Wskdeploy *Wskdeploy) ManagedDeploymentOnlyManifest(manifestPath string) (string, error) {
+	return Wskdeploy.RunCommand("sync", "-m", manifestPath)
+}
+
 func (Wskdeploy *Wskdeploy) ManagedDeployment(manifestPath string, deploymentPath string) (string, error) {
 	return Wskdeploy.RunCommand("sync", "-m", manifestPath, "-d", deploymentPath)
 }
 
 func (Wskdeploy *Wskdeploy) HeadlessManagedDeployment(manifestPath string, deploymentPath string, name string) (string, error) {
 	return Wskdeploy.RunCommand("sync", "-m", manifestPath, "-d", deploymentPath, "--projectname", name)
+}
+
+func (wskdeploy *Wskdeploy) ExportProject(projectName string, targetManifestPath string) (string, error) {
+	return wskdeploy.RunCommand("export", "-m", targetManifestPath, "--projectname", projectName)
 }
 
 // This method is only for testing

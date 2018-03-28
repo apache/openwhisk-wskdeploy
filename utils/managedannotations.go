@@ -21,8 +21,9 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"os"
+
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
 )
 
 /*

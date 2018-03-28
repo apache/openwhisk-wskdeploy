@@ -428,6 +428,13 @@ func (yaml *YAML) ComposeParsersTrigger(wsktrg whisk.Trigger) *Trigger {
 	return trigger
 }
 
+func (yaml *YAML) ComposeParsersDependency(binding whisk.Binding) *Dependency {
+	dependency := new(Dependency)
+	dependency.Location = "/" + binding.Namespace + "/" + binding.Name
+
+	return dependency
+}
+
 func (yaml *YAML) ComposeParsersRule(wskrule whisk.Rule) *Rule {
 	rule := new(Rule)
 	rule.Name = wskrule.Name

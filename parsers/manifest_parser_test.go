@@ -20,13 +20,6 @@
 package parsers
 
 import (
-	"fmt"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -34,6 +27,12 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -1043,7 +1042,6 @@ func TestComposeActionsForWebAndWebExport(t *testing.T) {
 	for _, action := range actions {
 		if action.Action.Name == "hello1" || action.Action.Name == "hello2" {
 			for _, a := range action.Action.Annotations {
-				spew.Dump(a)
 				switch a.Key {
 				case "web-export":
 					assert.True(t, a.Value.(bool), "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
@@ -1051,7 +1049,6 @@ func TestComposeActionsForWebAndWebExport(t *testing.T) {
 			}
 		} else if action.Action.Name == "hello3" {
 			for _, a := range action.Action.Annotations {
-				spew.Dump(a)
 				switch a.Key {
 				case "web-export":
 					assert.False(t, a.Value.(bool), "Expected false for web-export but got "+strconv.FormatBool(a.Value.(bool)))
@@ -1059,7 +1056,6 @@ func TestComposeActionsForWebAndWebExport(t *testing.T) {
 			}
 		} else if action.Action.Name == "hello4" {
 			for _, a := range action.Action.Annotations {
-				spew.Dump(a)
 				switch a.Key {
 				case "web-export":
 					assert.True(t, a.Value.(bool), "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
