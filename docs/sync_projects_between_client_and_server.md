@@ -282,7 +282,7 @@ project:
 ...
 ```
 
-After deploying this project with `wskdeploy sync -m manifest.yaml`, package `Extension1` has following annotation:
+After deploying this project with `wskdeploy sync -m manifest.yaml`, package `Extension2` has following annotation:
 
 ```
 bx wsk package get Extension2
