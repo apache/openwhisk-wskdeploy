@@ -198,7 +198,7 @@ Now, a question is how does `sync` work in case of a project which has dependenc
 
 ### GitHub Dependency
 
-[Here](../tests/src/integration/managed-deployment/07-manifest-with-single-dependency.yaml) is a sample project definition with single dependency:
+[Here](../tests/src/integration/managed-deployment/07-manifest-with-dependency.yaml) is a sample project definition with single dependency:
 
 ```
 project:
@@ -267,7 +267,7 @@ bx wsk package get helloworlds
 
 Here, on server side, package `Extension1` is showing dependency on `helloworlds` using `whisk-managed` annotation.
 
-Now, let's add one more dependency in our project with [manifest.yaml](../tests/src/integration/managed-deployment/06-manifest-with-dependency.yaml):
+Now, let's add one more dependency in our project with [manifest.yaml](../tests/src/integration/managed-deployment/06-manifest-with-single-dependency.yaml):
 
 ```
 project:
