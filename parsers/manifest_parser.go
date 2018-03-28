@@ -141,7 +141,7 @@ func (dm *YAMLParser) composeAnnotations(annotations map[string]interface{}) whi
 	return listOfAnnotations
 }
 
-func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string, ma whisk.KeyValue) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string, managedAnnotations whisk.KeyValue) (map[string]utils.DependencyRecord, error) {
 	dependencies := make(map[string]utils.DependencyRecord)
 	packages := make(map[string]Package)
 
@@ -152,7 +152,7 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 	}
 
 	for n, p := range packages {
-		d, err := dm.ComposeDependencies(p, projectPath, filePath, n, ma)
+		d, err := dm.ComposeDependencies(p, projectPath, filePath, n, managedAnnotations)
 		if err == nil {
 			for k, v := range d {
 				dependencies[k] = v
@@ -164,7 +164,7 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 	return dependencies, nil
 }
 
-func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string, ma whisk.KeyValue) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string, managedAnnotations whisk.KeyValue) (map[string]utils.DependencyRecord, error) {
 
 	depMap := make(map[string]utils.DependencyRecord)
 	for key, dependency := range pkg.Dependencies {
@@ -202,7 +202,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 		annotations := dm.composeAnnotations(dependency.Annotations)
 
 		if utils.Flags.Managed || utils.Flags.Sync {
-			annotations = append(annotations, ma)
+			annotations = append(annotations, managedAnnotations)
 		}
 
 		packDir := path.Join(projectPath, strings.Title(YAML_KEY_PACKAGES))
@@ -213,7 +213,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 	return depMap, nil
 }
 
-func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, ma whisk.KeyValue) (map[string]*whisk.Package, error) {
+func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, managedAnnotations whisk.KeyValue) (map[string]*whisk.Package, error) {
 	packages := map[string]*whisk.Package{}
 	manifestPackages := make(map[string]Package)
 
@@ -233,7 +233,7 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, ma whi
 
 	// Compose each package found in manifest
 	for n, p := range manifestPackages {
-		s, err := dm.ComposePackage(p, n, filePath, ma)
+		s, err := dm.ComposePackage(p, n, filePath, managedAnnotations)
 
 		if err == nil {
 			packages[n] = s
@@ -245,7 +245,7 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, ma whi
 	return packages, nil
 }
 
-func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath string, ma whisk.KeyValue) (*whisk.Package, error) {
+func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath string, managedAnnotations whisk.KeyValue) (*whisk.Package, error) {
 	pag := &whisk.Package{}
 	pag.Name = packageName
 	//The namespace for this package is absent, so we use default guest here.
@@ -313,7 +313,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 
 	// add Managed Annotations if this is Managed Deployment
 	if utils.Flags.Managed || utils.Flags.Sync {
-		pag.Annotations = append(pag.Annotations, ma)
+		pag.Annotations = append(pag.Annotations, managedAnnotations)
 	}
 
 	// "default" package is a reserved package name
@@ -335,7 +335,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	return pag, nil
 }
 
-func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YAML, ma whisk.KeyValue) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YAML, manifestFilePath string, managedAnnotations whisk.KeyValue) ([]utils.ActionRecord, error) {
 	var sequences []utils.ActionRecord = make([]utils.ActionRecord, 0)
 	manifestPackages := make(map[string]Package)
 
@@ -346,7 +346,7 @@ func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YA
 	}
 
 	for n, p := range manifestPackages {
-		s, err := dm.ComposeSequences(namespace, p.Sequences, n, ma)
+		s, err := dm.ComposeSequences(namespace, p.Sequences, n, manifestFilePath, managedAnnotations)
 		if err == nil {
 			sequences = append(sequences, s...)
 		} else {
@@ -356,8 +356,9 @@ func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YA
 	return sequences, nil
 }
 
-func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Sequence, packageName string, ma whisk.KeyValue) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Sequence, packageName string, manifestFilePath string, managedAnnotations whisk.KeyValue) ([]utils.ActionRecord, error) {
 	var listOfSequences []utils.ActionRecord = make([]utils.ActionRecord, 0)
+	var errorParser error
 
 	for key, sequence := range sequences {
 		wskaction := new(whisk.Action)
@@ -388,7 +389,19 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 
 		// appending managed annotations if its a managed deployment
 		if utils.Flags.Managed || utils.Flags.Sync {
-			wskaction.Annotations = append(wskaction.Annotations, ma)
+			wskaction.Annotations = append(wskaction.Annotations, managedAnnotations)
+		}
+
+		// Web Export
+		// Treat sequence as a web action, a raw HTTP web action, or as a standard action based on web-export;
+		// when web-export is set to yes | true, treat sequence as a web action,
+		// when web-export is set to raw, treat sequence as a raw HTTP web action,
+		// when web-export is set to no | false, treat sequence as a standard action
+		if len(sequence.Web) != 0 {
+			wskaction.Annotations, errorParser = utils.WebAction(manifestFilePath, wskaction.Name, sequence.Web, wskaction.Annotations, false)
+			if errorParser != nil {
+				return nil, errorParser
+			}
 		}
 
 		record := utils.ActionRecord{Action: wskaction, Packagename: packageName, Filepath: key}
@@ -397,7 +410,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 	return listOfSequences, nil
 }
 
-func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath string, ma whisk.KeyValue) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath string, managedAnnotations whisk.KeyValue) ([]utils.ActionRecord, error) {
 	var actions []utils.ActionRecord = make([]utils.ActionRecord, 0)
 	manifestPackages := make(map[string]Package)
 
@@ -408,7 +421,7 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 	}
 
 	for n, p := range manifestPackages {
-		a, err := dm.ComposeActions(filePath, p.Actions, n, ma)
+		a, err := dm.ComposeActions(filePath, p.Actions, n, managedAnnotations)
 		if err == nil {
 			actions = append(actions, a...)
 		} else {
@@ -707,7 +720,15 @@ func (dm *YAMLParser) composeActionLimits(limits Limits) *whisk.Limits {
 	return nil
 }
 
-func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string]Action, packageName string, ma whisk.KeyValue) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) validateActionWebFlag(action Action) {
+	if len(action.Web) != 0 && len(action.Webexport) != 0 {
+		warningString := wski18n.T(wski18n.ID_WARN_ACTION_WEB_X_action_X,
+			map[string]interface{}{wski18n.KEY_ACTION: action.Name})
+		wskprint.PrintOpenWhiskWarning(warningString)
+	}
+}
+
+func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string]Action, packageName string, managedAnnotations whisk.KeyValue) ([]utils.ActionRecord, error) {
 
 	var errorParser error
 	var listOfActions []utils.ActionRecord = make([]utils.ActionRecord, 0)
@@ -761,7 +782,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 
 		// add managed annotations if its marked as managed deployment
 		if utils.Flags.Managed || utils.Flags.Sync {
-			wskaction.Annotations = append(wskaction.Annotations, ma)
+			wskaction.Annotations = append(wskaction.Annotations, managedAnnotations)
 		}
 
 		// Web Export
@@ -769,8 +790,9 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		// when web-export is set to yes | true, treat action as a web action,
 		// when web-export is set to raw, treat action as a raw HTTP web action,
 		// when web-export is set to no | false, treat action as a standard action
-		if len(action.Webexport) != 0 {
-			wskaction.Annotations, errorParser = utils.WebAction(manifestFilePath, action.Name, action.Webexport, wskaction.Annotations, false)
+		dm.validateActionWebFlag(action)
+		if len(action.GetWeb()) != 0 {
+			wskaction.Annotations, errorParser = utils.WebAction(manifestFilePath, action.Name, action.GetWeb(), wskaction.Annotations, false)
 			if errorParser != nil {
 				return listOfActions, errorParser
 			}
@@ -781,6 +803,10 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 			if wsklimits := dm.composeActionLimits(*(action.Limits)); wsklimits != nil {
 				wskaction.Limits = wsklimits
 			}
+		}
+		// Conductor Action
+		if action.Conductor {
+			wskaction.Annotations = append(wskaction.Annotations, utils.ConductorAction())
 		}
 
 		wskaction.Name = actionName
@@ -795,7 +821,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 
 }
 
-func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath string, ma whisk.KeyValue) ([]*whisk.Trigger, error) {
+func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath string, managedAnnotations whisk.KeyValue) ([]*whisk.Trigger, error) {
 	var triggers []*whisk.Trigger = make([]*whisk.Trigger, 0)
 	manifestPackages := make(map[string]Package)
 
@@ -806,7 +832,7 @@ func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath st
 	}
 
 	for _, p := range manifestPackages {
-		t, err := dm.ComposeTriggers(filePath, p, ma)
+		t, err := dm.ComposeTriggers(filePath, p, managedAnnotations)
 		if err == nil {
 			triggers = append(triggers, t...)
 		} else {
@@ -816,7 +842,7 @@ func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath st
 	return triggers, nil
 }
 
-func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.KeyValue) ([]*whisk.Trigger, error) {
+func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, managedAnnotations whisk.KeyValue) ([]*whisk.Trigger, error) {
 	var errorParser error
 	var listOfTriggers []*whisk.Trigger = make([]*whisk.Trigger, 0)
 
@@ -869,7 +895,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 
 		// add managed annotations if its a managed deployment
 		if utils.Flags.Managed || utils.Flags.Sync {
-			wsktrigger.Annotations = append(wsktrigger.Annotations, ma)
+			wsktrigger.Annotations = append(wsktrigger.Annotations, managedAnnotations)
 		}
 
 		listOfTriggers = append(listOfTriggers, wsktrigger)
@@ -877,7 +903,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, ma whisk.Key
 	return listOfTriggers, nil
 }
 
-func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML, ma whisk.KeyValue) ([]*whisk.Rule, error) {
+func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML, managedAnnotations whisk.KeyValue) ([]*whisk.Rule, error) {
 	var rules []*whisk.Rule = make([]*whisk.Rule, 0)
 	manifestPackages := make(map[string]Package)
 
@@ -888,7 +914,7 @@ func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML, ma whisk.KeyVa
 	}
 
 	for n, p := range manifestPackages {
-		r, err := dm.ComposeRules(p, n, ma)
+		r, err := dm.ComposeRules(p, n, managedAnnotations)
 		if err == nil {
 			rules = append(rules, r...)
 		} else {
@@ -898,7 +924,7 @@ func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML, ma whisk.KeyVa
 	return rules, nil
 }
 
-func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.KeyValue) ([]*whisk.Rule, error) {
+func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, managedAnnotations whisk.KeyValue) ([]*whisk.Rule, error) {
 	var rules []*whisk.Rule = make([]*whisk.Rule, 0)
 
 	for _, rule := range pkg.GetRuleList() {
@@ -922,7 +948,7 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, ma whisk.Key
 
 		// add managed annotations if its a managed deployment
 		if utils.Flags.Managed || utils.Flags.Sync {
-			wskrule.Annotations = append(wskrule.Annotations, ma)
+			wskrule.Annotations = append(wskrule.Annotations, managedAnnotations)
 		}
 
 		rules = append(rules, wskrule)
@@ -1008,8 +1034,9 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 									wski18n.KEY_API:    apiName}))
 					} else {
 						// verify that the action is defined as web action
-						// web-export set to any of [true, yes, raw]
-						if !utils.IsWebAction(pkg.Actions[actionName].Webexport) {
+						// web or web-export set to any of [true, yes, raw]
+						a := pkg.Actions[actionName]
+						if !utils.IsWebAction(a.GetWeb()) {
 							return nil, wskderrors.NewYAMLFileFormatError(manifestPath,
 								wski18n.T(wski18n.ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X,
 									map[string]interface{}{

@@ -205,6 +205,7 @@ const (
 	ID_WARN_DEPLOYMENT_NAME_NOT_FOUND_X_key_X_name_X          = "msg_warn_deployment_name_not_found"
 	ID_WARN_PROJECT_NAME_OVERRIDDEN                           = "msg_warn_project_name_overridden"
 	ID_WARN_PACKAGE_IS_PUBLIC_X_package_X                     = "msg_warn_package_is_public"
+	ID_WARN_ACTION_WEB_X_action_X                             = "msg_warn_action_web_export_ignored"
 
 	// Verbose (Debug/Trace) messages
 	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X                = "msg_dbg_searching_project_directory"

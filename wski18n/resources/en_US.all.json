@@ -400,6 +400,10 @@
     "translation": "[{{.package}}] is marked as public in manifest file, it will be visible and can be accessed by anyone"
   },
   {
+    "id": "msg_warn_action_web_export_ignored",
+    "translation": "[{{.action}}] has both web and web-export specified, only reading web, ignoring web-export."
+  },
+  {
     "id": "DEBUG",
     "translation": "================= DEBUG ==================="
   },

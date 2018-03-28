@@ -19,11 +19,6 @@ package utils
 
 import (
 	"archive/zip"
-	"errors"
-	"fmt"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/hokaccha/go-prettyjson"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -31,8 +26,10 @@ import (
 	"os/user"
 	"path"
 	"path/filepath"
-	"reflect"
 	"strings"
+
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/hokaccha/go-prettyjson"
 )
 
 const (
@@ -100,15 +97,6 @@ func PrettyJSON(j interface{}) (string, error) {
 	return string(bytes), nil
 }
 
-var kindToJSON []string = []string{"", "boolean", "integer", "integer", "integer", "integer", "integer", "integer", "integer", "integer",
-	"integer", "integer", "integer", "number", "number", "number", "number", "array", "", "", "", "object", "", "", "string", "", ""}
-
-// Gets JSON type name
-func GetJSONType(j interface{}) string {
-	fmt.Print(reflect.TypeOf(j).Kind())
-	return kindToJSON[reflect.TypeOf(j).Kind()]
-}
-
 func NewZipWritter(src, des string) *ZipWritter {
 	zw := &ZipWritter{src: src, des: des}
 	return zw
@@ -163,28 +151,6 @@ func (zw *ZipWritter) Zip() error {
 		return err
 	}
 	return nil
-}
-
-func zipKindError() error {
-	errMsg := wski18n.T("creating an action from a .zip artifact requires specifying the action kind explicitly")
-
-	return errors.New(errMsg)
-}
-
-func extensionError(extension string) error {
-	errMsg := wski18n.T(
-		"'{{.name}}' is not a supported action runtime",
-		map[string]interface{}{
-			"name": extension,
-		})
-
-	return errors.New(errMsg)
-}
-
-func javaEntryError() error {
-	errMsg := wski18n.T("Java actions require --main to specify the fully-qualified name of the main class")
-
-	return errors.New(errMsg)
 }
 
 func deleteKey(key string, keyValueArr whisk.KeyValueArr) whisk.KeyValueArr {
@@ -259,7 +225,7 @@ func (localReader *LocalReader) ReadLocal(path string) ([]byte, error) {
 }
 
 func Read(url string) ([]byte, error) {
-	if strings.HasPrefix(url, "http") {
+	if strings.HasPrefix(url, HTTP_FILE_EXTENSION) {
 		return new(ContentReader).URLReader.ReadUrl(url)
 	} else {
 		return new(ContentReader).LocalReader.ReadLocal(url)
