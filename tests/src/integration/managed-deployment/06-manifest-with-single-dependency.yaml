@@ -17,13 +17,13 @@
 project:
     name: MyManagedProjectWithSingleDependency
     packages:
-        Extension2:
+        Extension1:
             dependencies:
                 helloworlds:
                     location: github.com/pritidesai/incubator-openwhisk-test/packages/helloworlds
             triggers:
-                triggerInExtension2:
+                triggerInExtension1:
             rules:
-                ruleInExtension2:
-                    trigger: triggerInExtension2
+                ruleInExtension1:
+                    trigger: triggerInExtension1
                     action: helloworlds/helloworld-js
