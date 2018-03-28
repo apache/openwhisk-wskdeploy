@@ -130,7 +130,7 @@ For convenience, the Actions and Parameters grammar can be found here:
   <tr>
     <td><a href="wskdeploy_triggerrule_basic.md#triggers-and-rules">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-<!--    <td><a href="">next&nbsp;&gt;&gt;</a></td> -->
+    <td><a href="wskdeploy_apigateway_helloworld.md#packages">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>

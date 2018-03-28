@@ -54,6 +54,8 @@ Each example shows the "code", that is the Package Manifest, Deployment file and
 - Trigger and Rule examples
   - [Basic Trigger and Rule](wskdeploy_triggerrule_basic.md#triggers-and-rules) - adding a basic trigger and rule to the advanced Parameter "hello world".
   - [Binding parameters in a Deployment file](wskdeploy_triggerrule_trigger_bindings.md#triggers-and-rules) - using a deployment file to bind values to a Trigger’s parameters and applying them to a compatible manifest file.
+- API Gateway examples
+  - [The "Hello World" API Gateway](wskdeploy_apigateway_helloworld.md#api-gateway) - deploy a "hello world" JavaScript function with associated HTTP API.
 
 ---
 <!--
