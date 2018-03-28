@@ -20,9 +20,9 @@ packages:
   EXT_PACKAGE:
       dependencies:
         ext_lib1_bind:
-          location: /kpavel@il.ibm.com_uspace/lib1_package
+          location: /_/lib1_package
         ext_lib2_bind:
-          location: /kpavel@il.ibm.com_uspace/lib2_package
+          location: /_/lib2_package
       triggers:
         trigger_ext1:
         trigger_ext2:

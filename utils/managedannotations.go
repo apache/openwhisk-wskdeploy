@@ -43,7 +43,6 @@ const (
 	OW_PROJECT_HASH = "projectHash"
 	OW_PROJECT_DEPS = "projectDeps"
 	OW_File         = "file"
-	BINDING         = "binding"
 )
 
 type ManagedAnnotation struct {

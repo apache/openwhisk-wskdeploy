@@ -27,10 +27,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-/* *
- * Please configure BLUEMIX_APIHOST, BLUEMIX_NAMESPACE and BLUEMIX_AUTH on your local machine in order to run this
- * integration test.
- */
 func TestExport(t *testing.T) {
 	projectName := "EXT_PROJECT"
 	wskdeploy := common.NewWskdeploy()

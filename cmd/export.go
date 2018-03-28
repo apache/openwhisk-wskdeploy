@@ -125,7 +125,7 @@ func exportProject(projectName string, targetManifest string) error {
 			if pa[utils.OW_PROJECT_NAME] == projectName {
 
 				// check if the package is dependency
-				if pkg.Annotations.GetValue(utils.BINDING) != nil {
+				if pkg.Annotations.GetValue(wski18n.BINDING) != nil {
 					bindings[pkg.Name] = *pkg.Binding
 					continue
 				}

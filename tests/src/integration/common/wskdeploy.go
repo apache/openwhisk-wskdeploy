@@ -180,7 +180,7 @@ func (Wskdeploy *Wskdeploy) HeadlessManagedDeployment(manifestPath string, deplo
 }
 
 func (wskdeploy *Wskdeploy) ExportProject(projectName string, targetManifestPath string) (string, error) {
-	return wskdeploy.RunCommand("export", "-m", targetManifestPath, "-p", projectName)
+	return wskdeploy.RunCommand("export", "-m", targetManifestPath, "--projectname", projectName)
 }
 
 // This method is only for testing
