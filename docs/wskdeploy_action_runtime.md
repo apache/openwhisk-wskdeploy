@@ -30,14 +30,14 @@ This example shows how to:
 ### Manifest file
 #### _Example: explicit selection of the NodeJS version 6 runtime_
 ```yaml
-package:
-  name: hello_world_package
-  version: 1.0
-  license: Apache-2.0
-  actions:
-    hello_world_runtime:
-      function: src/hello.js
-      runtime: nodejs@6
+packages:
+  hello_world_package:
+    version: 1.0
+    license: Apache-2.0
+    actions:
+      hello_world_runtime:
+        function: src/hello.js
+        runtime: nodejs@6
 ```
 
 ### Deploying

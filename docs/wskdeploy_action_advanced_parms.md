@@ -30,37 +30,37 @@ If we want to do more than declare the type (i.e., ‘string’, ‘integer’, 
 
 #### _Example: input and output parameters with explicit types and descriptions_
 ```yaml
-package:
-  name: hello_world_package
-  ... # Package keys omitted for brevity
-  actions:
-    hello_world_advanced_parms:
-      function: src/hello_plus.js
-      runtime: nodejs@6
-      inputs:
-        name:
-          type: string
-          description: name of person
-          default: unknown person
-        place:
-          type: string
-          description: location of person
-          value: the Shire
-        children:
-          type: integer
-          description: Number of children
-          default: 0
-        height:
-          type: float
-          description: height in meters
-          default: 0.0
-      outputs:
-        greeting:
-          type: string
-          description: greeting string
-        details:
-          type: string
-          description: detailed information about the person
+packages:
+  hello_world_package:
+    ... # Package keys omitted for brevity
+    actions:
+      hello_world_advanced_parms:
+        function: src/hello_plus.js
+        runtime: nodejs@6
+        inputs:
+          name:
+            type: string
+            description: name of person
+            default: unknown person
+          place:
+            type: string
+            description: location of person
+            value: the Shire
+          children:
+            type: integer
+            description: Number of children
+            default: 0
+          height:
+            type: float
+            description: height in meters
+            default: 0.0
+        outputs:
+          greeting:
+            type: string
+            description: greeting string
+          details:
+            type: string
+            description: detailed information about the person
 ```
 
 ### Deploying

@@ -29,16 +29,16 @@ It shows how to:
 ### Manifest File
 #### _Example: “Hello world” with fixed input values for ‘name’ and ‘place’_
 ```yaml
-package:
-  name: hello_world_package
-  version: 1.0
-  license: Apache-2.0
-  actions:
-    hello_world_fixed_parms:
-      function: src/hello.js
-      inputs:
-        name: Sam
-        place: the Shire
+packages:
+  hello_world_package:
+    version: 1.0
+    license: Apache-2.0
+    actions:
+      hello_world_fixed_parms:
+        function: src/hello.js
+        inputs:
+          name: Sam
+          place: the Shire
 ```
 
 ### Deploying
