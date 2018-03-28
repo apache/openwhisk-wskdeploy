@@ -15,7 +15,7 @@
 #
 
 project:
-  package:
+  packages:
     hello_world_package:
       triggers:
         meetPerson:
