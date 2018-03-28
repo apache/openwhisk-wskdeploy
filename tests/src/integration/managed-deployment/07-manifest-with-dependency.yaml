@@ -17,7 +17,7 @@
 project:
     name: MyManagedProjectWithDependency
     packages:
-        Extension1:
+        Extension2:
             dependencies:
                 helloworlds:
                     location: github.com/pritidesai/incubator-openwhisk-test/packages/helloworlds
