@@ -334,7 +334,7 @@ Now, when we try to undeploy `Extension2` using `~/wskdeploy undeploy --projectn
 
 ### Package Binding
 
-When a project has dependency to any utility under `/whisk.system/` like:
+When a project has dependency to any already deployed package/utility, for example, `/whisk.system/utils` or any `/<namespace>/<package>`:
 
 ```
 project:
@@ -352,7 +352,7 @@ project:
                     action: whiskUtility/sort
 ```
 
-Here, `/whisk.system/utils` is part of a catalog and comes pre-installed with the OpenWhisk server and therefore it does not show up on the list of dependencies:
+For these kind of references, dependent package (`/whisk.system/utils` in our example) is not listed as one of the dependencies since the dependent package is part of a catalog and was pre-installed therefore cannot be managed by the current project:
 
 ```
 bx wsk package get Extension3
@@ -377,7 +377,7 @@ ok: got package Extension3
 }
 ```
 
-The only way to determine whether `Extension3` has any dependency is by verifying package binding `whiskUtility`:
+Here, `whiskUtility` is a binding to package `/whisk.system/utils` and part of the current project. This signifies that `Extension3` has a dependency on a pre-installed package `/whisk.system/utils`:
 
 ```
 bx wsk package get whiskUtility
@@ -408,5 +408,5 @@ ok: got package whiskUtility
 ...
 ```
 
-Now, when we undeploy `Extension3` with `~/wskdeploy undeploy --projectname MyManagedProjectWithWhiskSystemDependency`, nothing changes under `/whisk.system`. `utils` package under `/whisk.system` remains undeployed.
+Now, when we undeploy `Extension3` with `~/wskdeploy undeploy --projectname MyManagedProjectWithWhiskSystemDependency`, nothing changes under `/whisk.system`. `utils` package under `/whisk.system` remains undeployed. Similarly, with an undeployment of `Extension3`, `/<namespace>/<package>` is not deleted.
 
