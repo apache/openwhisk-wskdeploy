@@ -55,6 +55,15 @@ func TestExport(t *testing.T) {
 
 	_, err = os.Stat(targetManifestFolder + "dependencies/lib1_package/lib1_greeting1.js")
 	assert.Equal(t, nil, err, "Missing exported dependencies lib1 resources")
+
+	_, err = wskdeploy.UndeployManifestPathOnly(manifestExtPath)
+	assert.Equal(t, nil, err, "Failed to undeploy the ext.")
+
+	_, err = wskdeploy.UndeployManifestPathOnly(manifestLib2Path)
+	assert.Equal(t, nil, err, "Failed to undeploy the lib1.")
+
+	_, err = wskdeploy.UndeployManifestPathOnly(manifestLib1Path)
+	assert.Equal(t, nil, err, "Failed to undeploy the lib2.")
 }
 
 var (
