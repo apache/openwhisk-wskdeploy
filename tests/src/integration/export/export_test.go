@@ -32,29 +32,28 @@ import (
  * integration test.
  */
 func TestExport(t *testing.T) {
-	deploymentPath := ""
 	projectName := "EXT_PROJECT"
 	wskdeploy := common.NewWskdeploy()
 
-	_, err := wskdeploy.ManagedDeployment(manifestLib1Path, deploymentPath)
+	_, err := wskdeploy.ManagedDeployment(manifestLib1Path)
 	assert.Equal(t, nil, err, "Failed to deploy the lib1 manifest file.")
 
-	_, err := wskdeploy.ManagedDeployment(manifestLib2Path, deploymentPath)
+	_, err = wskdeploy.ManagedDeployment(manifestLib2Path)
 	assert.Equal(t, nil, err, "Failed to deploy the lib2 manifest file.")
 
-	_, err := wskdeploy.ManagedDeployment(manifestExtPath, deploymentPath)
-	assert.Equal(t, nil, err, "Failed to deploy the lib2 manifest file.")
+	_, err = wskdeploy.ManagedDeployment(manifestExtPath)
+	assert.Equal(t, nil, err, "Failed to deploy the ext manifest file.")
 
-	_, err := wskdeploy.ExportProject(projectName, targetManifestPath)
+	_, err = wskdeploy.ExportProject(projectName, targetManifestPath)
 	assert.Equal(t, nil, err, "Failed to export project.")
 
-	_, err := os.Stat(targetManifestPath)
+	_, err = os.Stat(targetManifestPath)
 	assert.Equal(t, nil, err, "Missing exported manifest file")
 
-	_, err := os.Stat(targetManifestFolder + "dependencies/lib1.yaml")
+	_, err = os.Stat(targetManifestFolder + "dependencies/lib1.yaml")
 	assert.Equal(t, nil, err, "Missing exported dependencies lib1 manifest")
 
-	_, err := os.Stat(targetManifestFolder + "dependencies/lib1_package/lib1_greeting1.js")
+	_, err = os.Stat(targetManifestFolder + "dependencies/lib1_package/lib1_greeting1.js")
 	assert.Equal(t, nil, err, "Missing exported dependencies lib1 resources")
 }
 
