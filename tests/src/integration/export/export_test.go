@@ -35,13 +35,13 @@ func TestExport(t *testing.T) {
 	projectName := "EXT_PROJECT"
 	wskdeploy := common.NewWskdeploy()
 
-	_, err := wskdeploy.ManagedDeployment(manifestLib1Path)
+	_, err := wskdeploy.ManagedDeploymentOnlyManifest(manifestLib1Path)
 	assert.Equal(t, nil, err, "Failed to deploy the lib1 manifest file.")
 
-	_, err = wskdeploy.ManagedDeployment(manifestLib2Path)
+	_, err = wskdeploy.ManagedDeploymentOnlyManifest(manifestLib2Path)
 	assert.Equal(t, nil, err, "Failed to deploy the lib2 manifest file.")
 
-	_, err = wskdeploy.ManagedDeployment(manifestExtPath)
+	_, err = wskdeploy.ManagedDeploymentOnlyManifest(manifestExtPath)
 	assert.Equal(t, nil, err, "Failed to deploy the ext manifest file.")
 
 	_, err = wskdeploy.ExportProject(projectName, targetManifestPath)
