@@ -19,6 +19,7 @@
 # How to Sync OpenWhisk Projects between Client and Server?
 
 The answer is running Whisk Deploy in `sync` mode.
+
 Whisk Deploy in `sync` mode, deploys all Apache OpenWhisk entities from the manifest file and attaches an annotation called `whisk-managed` to all entities from that manifest file. `whisk-managed` annotation contains following keys:
 
 ```
@@ -329,7 +330,7 @@ Here, on server side, package `Extension2` is showing both dependencies (1) `hel
 
 Now, when we try to undeploy `Extension2` using `~/wskdeploy undeploy --projectname MyManagedProjectWithDependency`, only one dependency `hellowhisk` is deleted and the other dependency `helloworlds` is not deleted as its referred by `Extension1`.
  
-> **Note:** Here the dependent package belong to project `HelloWorlds` which has a single package `helloworlds`. Whisk Deploy does not support having dependencies with multiple packages. The reason behind this limitation is when a dependency is specified in manifest file using label (`custom-hellowhisk`) which is different than the dependent package name (`hellowhisk`), `custome-hellowhisk` is created as a binding to `hellowhisk`. OpenWhisk does not support creating a package which is bound to multiple packages.
+> **Note:** Here the dependent package belongs to project `HelloWorlds` which has a single package `helloworlds`. Whisk Deploy does not support having dependencies with multiple packages. The reason behind this limitation is when a dependency is specified in manifest file using label (`custom-hellowhisk`) which is different than the dependent package name (`hellowhisk`), `custome-hellowhisk` is created as a binding to `hellowhisk`. OpenWhisk does not support creating a package which is bound to multiple packages.
 
 ### Package Binding
 
