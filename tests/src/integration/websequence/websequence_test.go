@@ -38,6 +38,6 @@ func TestWebSequence(t *testing.T) {
 }
 
 var (
-	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/websequence/manifest.yml"
+	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/websequence/manifest.yaml"
 	deploymentPath = ""
 )
