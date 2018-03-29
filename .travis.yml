@@ -67,10 +67,12 @@ before_deploy:
       git tag -d $GIT_TAG;
       git push -q https://$API_KEY@github.com/apache/incubator-openwhisk-wskdeploy :refs/tags/$GIT_TAG;
       GIT_COMMITTER_DATE="$(git show --format=%aD | head -1)" git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
+      git push -f -q https://$API_KEY@github.com/apache/incubator-openwhisk-wskdeploy $GIT_TAG;
   fi
 - if [ ! -z "$TRAVIS_TAG" ] ; then
       export GIT_TAG=$TRAVIS_TAG;
   fi
+- echo "The GIT_TAG of this Travis build is $GIT_TAG."
 
 deploy:
 - provider: releases
