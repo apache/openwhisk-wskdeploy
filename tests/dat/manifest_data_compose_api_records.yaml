@@ -22,19 +22,14 @@ packages:
         web-export: true
       deleteBooks:
         function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
       listMembers:
         function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
       getBooks2:
         function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
       postBooks2:
         function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
       listMembers2:
         function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
     apis:
       book-club:
         club:

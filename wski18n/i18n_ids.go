@@ -175,7 +175,6 @@ const (
 	ID_ERR_RUNTIME_ACTION_SOURCE_NOT_SUPPORTED_X_ext_X_action_X      = "msg_err_runtime_action_source_not_supported"
 	ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X                  = "msg_err_url_invalid"
 	ID_ERR_URL_MALFORMED_X_urltype_X_url_X                           = "msg_err_url_malformed"
-	ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X                   = "msg_err_api_missing_web_action"
 	ID_ERR_API_MISSING_ACTION_X_action_X_api_X                       = "msg_err_api_missing_action"
 	ID_ERR_ACTION_INVALID_X_action_X                                 = "msg_err_action_invalid"
 	ID_ERR_ACTION_MISSING_RUNTIME_WITH_CODE_X_action_X               = "msg_err_action_missing_runtime_with_code"
@@ -207,6 +206,7 @@ const (
 	ID_WARN_PROJECT_NAME_OVERRIDDEN                           = "msg_warn_project_name_overridden"
 	ID_WARN_PACKAGE_IS_PUBLIC_X_package_X                     = "msg_warn_package_is_public"
 	ID_WARN_ACTION_WEB_X_action_X                             = "msg_warn_action_web_export_ignored"
+	ID_WARN_API_MISSING_WEB_ACTION_X_action_X_api_X           = "msg_warn_api_missing_web_action"
 
 	// Verbose (Debug/Trace) messages
 	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X                = "msg_dbg_searching_project_directory"

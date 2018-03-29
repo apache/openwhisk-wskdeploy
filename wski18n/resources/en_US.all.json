@@ -292,10 +292,6 @@
     "translation": "JSON input data Missing 'cmd' key"
   },
   {
-    "id": "msg_err_api_missing_web_action",
-    "translation": "Action [{{.action}}] is not a web action, API [{{.api}}] can only be created using web action. Please update manifest file to convert [{{.action}}] to web action.\n"
-  },
-  {
     "id": "msg_err_api_missing_action",
     "translation": "Action [{{.action}}] is missing from manifest file, API [{{.api}}] can only be created based on the action from manifest file. Please update manifest file to include [{{.action}}] as a web action.\n"
   },
@@ -402,6 +398,10 @@
   {
     "id": "msg_warn_action_web_export_ignored",
     "translation": "[{{.action}}] has both web and web-export specified, only reading web, ignoring web-export."
+  },
+  {
+    "id": "msg_warn_api_missing_web_action",
+    "translation": "Action [{{.action}}] is not a web action, API [{{.api}}] can only be created using web action. Converting [{{.action}}] to a web action.\n"
   },
   {
     "id": "DEBUG",
