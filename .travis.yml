@@ -85,7 +85,6 @@ deploy:
   name: $TRAVIS_TAG
   on:
     repo: apache/incubator-openwhisk-wskdeploy
-    tags: true
     condition: "$DEPLOY_BUILD_READY = true"
 - provider: script
   skip_cleanup: true
