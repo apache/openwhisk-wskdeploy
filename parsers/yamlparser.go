@@ -189,30 +189,25 @@ type Repository struct {
 }
 
 type Package struct {
-	//mapping to wsk.SentPackageNoPublish.Name
-	Packagename string `yaml:"name"`
-	//mapping to wsk.SentPackageNoPublish.Version
-	Version      string                `yaml:"version"` //mandatory
-	License      string                `yaml:"license"` //mandatory
-	Public       bool                  `yaml:"public,omitempty"`
-	Repositories []Repository          `yaml:"repositories,omitempty"`
-	Dependencies map[string]Dependency `yaml:"dependencies"`
-	//mapping to wsk.SentPackageNoPublish.Namespace
-	Namespace        string                 `yaml:"namespace"`
-	Credential       string                 `yaml:"credential"`
-	ApiHost          string                 `yaml:"apiHost"`
-	ApigwAccessToken string                 `yaml:"apigwAccessToken"`
-	Actions          map[string]Action      `yaml:"actions"`
-	Triggers         map[string]Trigger     `yaml:"triggers"`
-	Feeds            map[string]Feed        `yaml:"feeds"`
-	Rules            map[string]Rule        `yaml:"rules"`
-	Inputs           map[string]Parameter   `yaml:"inputs"`
-	Sequences        map[string]Sequence    `yaml:"sequences"`
-	Annotations      map[string]interface{} `yaml:"annotations,omitempty"`
-	// TODO() this is a convenience we want for package-shared vars that would be
-	// propagated to every action within the package.
-	//Parameters  map[string]interface{} `yaml: parameters`
-	Apis map[string]map[string]map[string]map[string]string `yaml:"apis"`
+	Packagename      string                                             `yaml:"name"`
+	Version          string                                             `yaml:"version"` //mandatory
+	License          string                                             `yaml:"license"` //mandatory
+	Public           bool                                               `yaml:"public,omitempty"`
+	Repositories     []Repository                                       `yaml:"repositories,omitempty"`
+	Dependencies     map[string]Dependency                              `yaml:"dependencies"`
+	Namespace        string                                             `yaml:"namespace"`
+	Credential       string                                             `yaml:"credential"`
+	ApiHost          string                                             `yaml:"apiHost"`
+	ApigwAccessToken string                                             `yaml:"apigwAccessToken"`
+	Actions          map[string]Action                                  `yaml:"actions"`
+	Triggers         map[string]Trigger                                 `yaml:"triggers"`
+	Feeds            map[string]Feed                                    `yaml:"feeds"`
+	Rules            map[string]Rule                                    `yaml:"rules"`
+	Inputs           map[string]Parameter                               `yaml:"inputs"`
+	Sequences        map[string]Sequence                                `yaml:"sequences"`
+	Annotations      map[string]interface{}                             `yaml:"annotations,omitempty"`
+	Parameters       map[string]Parameter                               `yaml: parameters`
+	Apis             map[string]map[string]map[string]map[string]string `yaml:"apis"`
 }
 
 type Project struct {
