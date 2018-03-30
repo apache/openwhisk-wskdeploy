@@ -72,7 +72,7 @@ before_deploy:
   fi
 - if [ ! -z "$TRAVIS_TAG" ] ; then
       export GIT_TAG=$TRAVIS_TAG;
-      export TAG=true
+      export TAG=true;
   fi
 - echo "The GIT_TAG of this Travis build is $GIT_TAG."
 
