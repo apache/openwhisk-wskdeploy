@@ -14,20 +14,21 @@
 # specific language governing permissions and limitations under the License.
 #
 
-packages:
-    packageParams:
-        parameters:
-            USER_NAME:
-                type: string
-            	description: "The User Name"
-            	required: true
-            	default: MY_USERNAME
-            PASSWORD:
-                type: string
-            	description: "The Password"
-            	required: true
-            DATABASE:
-                type: string
-            	description: "The Database"
-            	required: true
+project:
+    packages:
+        packageParams:
+            parameters:
+                USER_NAME:
+                    type: string
+                    description: "The User Name"
+                    required: true
+                    default: MY_USERNAME
+                PASSWORD:
+                    type: string
+                    description: "The Password"
+                    required: true
+                DATABASE:
+                    type: string
+                    description: "The Database"
+                    required: true
 
