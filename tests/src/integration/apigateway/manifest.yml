@@ -25,19 +25,14 @@ packages:
                 function: src/greeting.js
                 runtime: nodejs:6
             getBooks:
-                web-export: true
                 function: src/get-books.js
             postBooks:
-                web-export: true
                 function: src/post-books.js
             putBooks:
-                web-export: true
                 function: src/put-books.js
             deleteBooks:
-                web-export: true
                 function: src/delete-books.js
             listMembers:
-                web-export: true
                 function: src/list-members.js
         # new top-level key for defining groups of named APIs
         apis:

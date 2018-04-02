@@ -102,9 +102,11 @@ type Action struct {
 	Credential  string                 `yaml:"credential"`
 	ExposedUrl  string                 `yaml:"exposedUrl"`
 	Webexport   string                 `yaml:"web-export"`
+	Web         string                 `yaml:"web"`
 	Main        string                 `yaml:"main"`
 	Docker      string                 `yaml:"docker,omitempty"`
 	Native      bool                   `yaml:"native,omitempty"`
+	Conductor   bool                   `yaml:"conductor,omitempty"`
 	Limits      *Limits                `yaml:"limits"`
 	Inputs      map[string]Parameter   `yaml:"inputs"`
 	Outputs     map[string]Parameter   `yaml:"outputs"`
@@ -125,6 +127,7 @@ type Limits struct {
 
 type Sequence struct {
 	Actions     string                 `yaml:"actions"`
+	Web         string                 `yaml:"web"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 }
 
@@ -224,6 +227,15 @@ type YAML struct {
 	Project  Project            `yaml:"project"`
 	Packages map[string]Package `yaml:"packages"`
 	Filepath string             //file path of the yaml file
+}
+
+// function to return web-export or web depending on what is specified
+// in manifest and deployment files
+func (action *Action) GetWeb() string {
+	if len(action.Web) == 0 && len(action.Webexport) != 0 {
+		return action.Webexport
+	}
+	return action.Web
 }
 
 // function to return Project or Application depending on what is specified in
