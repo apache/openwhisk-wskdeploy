@@ -266,6 +266,8 @@ task individualArchives(
                 baseName = "${p.zipFileName}-${packageVersion}-${p.owOs}-${p.goArch}"
                 from "./build/${p.goOs}-${p.goArch}/"
                 include "${buildFileName}*"
+                from "./"
+                include "LICENSE.txt", "NOTICE.txt", "README.md", "docs/**"
             }
         })
 
