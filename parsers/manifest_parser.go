@@ -35,6 +35,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -332,6 +333,15 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		wskprint.PrintlnOpenWhiskWarning(warningMsg)
 		pag.Publish = &(pkg.Public)
 	}
+
+	for name, param := range pkg.Parameters {
+		value, err := ResolveParameter(name, &param, filePath)
+		if err != nil {
+			return nil, err
+		}
+		spew.Dump(value)
+	}
+	spew.Dump(pkg.Parameters)
 
 	return pag, nil
 }
