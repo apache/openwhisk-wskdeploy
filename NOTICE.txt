@@ -1,0 +1,78 @@
+Apache OpenWhisk Wskdeploy
+Copyright 2016-2018 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+========================================================================
+BSD 2-Clause "Simplified" License
+========================================================================
+
+The following components are provided under the BSD 2-Clause "Simplified" License. See project link for details.
+
+     (BSD 2-Clause "Simplified" License) properties (magiconair/properties - https://github.com/magiconair/properties)
+
+========================================================================
+BSD 3-Clause "New" or "Revised" License
+========================================================================
+
+The following components are provided under the BSD 3-Clause "New" or "Revised" License. See project link for details.
+
+     (BSD 3-Clause "New" or "Revised" License) fsnotify (fsnotify/fsnotify - https://github.com/fsnotify/fsnotify)
+     (BSD 3-Clause "New" or "Revised" License) go-querystring (google/go-querystring - https://github.com/google/go-querystring)
+     (BSD 3-Clause "New" or "Revised" License) pflag (spf13/pflag - https://github.com/spf13/pflag)
+     (BSD 3-Clause "New" or "Revised" License) sys (golang/sys - https://github.com/golang/sys)
+     (BSD 3-Clause "New" or "Revised" License) text (golang/text - https://github.com/golang/text)
+
+========================================================================
+MIT License
+========================================================================
+
+The following components are provided under the MIT License. See project link for details.
+
+     (MIT License) color (fatih/color - https://github.com/fatih/color)
+     (MIT License) go-colorable (mattn/go-colorable - https://github.com/mattn/go-colorable)
+     (MIT License) go-isatty (mattn/go-isatty - https://github.com/mattn/go-isatty)
+     (MIT License) mapstructure (mitchellh/mapstructure - https://github.com/mitchellh/mapstructure)
+     (MIT License) go-i18n (nicksnyder/go-i18n - https://github.com/nicksnyder/go-i18n)
+     (MIT License) go-toml (pelletier/go-toml - https://github.com/pelletier/go-toml)
+     (MIT License) cast (spf13/cast - https://github.com/spf13/cast)
+     (MIT License) jWalterWeatherman (spf13/jwalterweatherman - https://github.com/spf13/jWalterWeatherman)
+     (MIT License) viper (spf13/viper - https://github.com/spf13/viper)
+     (MIT License) go-md2man (cpuguy83/go-md2man - https://github.com/cpuguy83/go-md2man)
+     (MIT) go-prettyjson (hokaccha/go-prettyjson - https://github.com/hokaccha/go-prettyjson)
+     (MIT) go-buffruneio (pelletier/go-buffruneio - https://github.com/pelletier/go-buffruneio)
+
+========================================================================
+Mozilla Public License 2.0
+========================================================================
+
+The following components are provided under the Mozilla Public License 2.0. See project link for details.
+
+     (Mozilla Public License 2.0) hcl (hashicorp/hcl - https://github.com/hashicorp/hcl)
+
+========================================================================
+NOTICE files
+========================================================================
+
+The following NOTICEs are pertain to software distributed with this project.
+
+
+// ------------------------------------------------------------------
+// NOTICE file corresponding to the section 4d of The Apache License,
+// Version 2.0, in this case for
+// ------------------------------------------------------------------
+
+// ---------------------------------------------------
+// NOTICE file of apache/incubator-openwhisk-client-go
+// ---------------------------------------------------
+Apache OpenWhisk Client Go
+Copyright 2016-2018 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+// ----------------------------
+// NOTICE file of go-yaml/yaml
+// ----------------------------
+Copyright 2011-2016 Canonical Ltd.
