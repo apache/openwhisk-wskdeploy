@@ -121,3 +121,7 @@ func IsWebAction(webexport string) bool {
 	}
 	return false
 }
+
+func IsWebSequence(webexport string) bool {
+	return IsWebAction(webexport)
+}

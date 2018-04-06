@@ -34,6 +34,9 @@ packages:
                 function: src/delete-books.js
             listMembers:
                 function: src/list-members.js
+        sequences:
+            listAllMembers:
+                actions: listMembers
         # new top-level key for defining groups of named APIs
         apis:
             hello-world:
@@ -49,3 +52,4 @@ packages:
                         deleteBooks: DELETE
                     members:
                         listMembers: GET
+                        listAllMembers: GET
