@@ -18,13 +18,13 @@
 package deployers
 
 import (
-	"errors"
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 var clientConfig *whisk.Config
@@ -130,41 +130,6 @@ func (reader *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestPar
 	return nil
 }
 
-func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRecord) error {
-
-	dep := reader.serviceDeployer
-
-	dep.mt.Lock()
-	defer dep.mt.Unlock()
-
-	for name, dependency := range deps {
-		n := strings.Split(name, ":")
-		depName := n[1]
-		if depName == "" {
-			return nil
-		}
-		if !dependency.IsBinding && !reader.IsUndeploy {
-			if _, exists := dep.DependencyMaster[depName]; exists {
-				if !utils.CompareDependencyRecords(dep.DependencyMaster[depName], dependency) {
-					// return error
-					err := errors.New("Dependecies have same name")
-					return wskderrors.NewYAMLFileFormatError(depName, err)
-				}
-			}
-			gitReader := utils.NewGitReader(depName, dependency)
-			err := gitReader.CloneDependency()
-			if err != nil {
-				return wskderrors.NewYAMLFileFormatError(depName, err)
-			}
-		}
-		// store in two places (one local to package to preserve relationship, one in master record to check for conflics
-		dep.Deployment.Packages[dependency.Packagename].Dependencies[depName] = dependency
-		dep.DependencyMaster[depName] = dependency
-	}
-
-	return nil
-}
-
 func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package) error {
 
 	dep := reader.serviceDeployer
@@ -180,6 +145,43 @@ func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package) er
 	return nil
 }
 
+func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRecord) error {
+
+	dep := reader.serviceDeployer
+
+	dep.mt.Lock()
+	defer dep.mt.Unlock()
+
+	for name, dependency := range deps {
+		// name is <packagename>:<dependencylabel>
+		depName := strings.Split(name, ":")[1]
+		if len(depName) == 0 {
+			return nil
+		}
+		if !dependency.IsBinding && !reader.IsUndeploy {
+			if _, exists := dep.DependencyMaster[depName]; exists {
+				if !utils.CompareDependencyRecords(dep.DependencyMaster[depName], dependency) {
+					location := strings.Join([]string{dep.DependencyMaster[depName].Location, dependency.Location}, ",")
+					errmsg := wski18n.T(wski18n.ID_ERR_DEPENDENCIES_WITH_SAME_LABEL_X_dependency_X_location_X,
+						map[string]interface{}{wski18n.KEY_DEPENDENCY: depName,
+							wski18n.KEY_LOCATION: location})
+					return wskderrors.NewYAMLParserErr(dep.ManifestPath, errmsg)
+				}
+			}
+			gitReader := utils.NewGitReader(depName, dependency)
+			err := gitReader.CloneDependency()
+			if err != nil {
+				return err
+			}
+		}
+		// store in two places (one local to package to preserve relationship, one in master record to check for conflics
+		dep.Deployment.Packages[dependency.Packagename].Dependencies[depName] = dependency
+		dep.DependencyMaster[depName] = dependency
+	}
+
+	return nil
+}
+
 func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 
 	dep := reader.serviceDeployer
@@ -188,38 +190,12 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 	defer dep.mt.Unlock()
 
 	for _, manifestAction := range actions {
-		// not a new action so update the action in the package
 		err := reader.checkAction(manifestAction)
 		if err != nil {
-			return wskderrors.NewFileReadError(manifestAction.Filepath, err)
+			return err
 		}
 		dep.Deployment.Packages[manifestAction.Packagename].Actions[manifestAction.Action.Name] = manifestAction
 	}
-	return nil
-}
-
-// TODO create named errors
-// Check action record before deploying it
-// action record is created by reading and composing action elements from manifest file
-// Action.kind is mandatory which is set to
-// (1) action runtime for an action and (2) set to "sequence" for a sequence
-// Also, action executable code should be specified for any action
-func (reader *ManifestReader) checkAction(action utils.ActionRecord) error {
-	if action.Action.Exec.Kind == "" {
-		// TODO(): i18n of error message (or create a new named error)
-		err := errors.New("Action [" + action.Action.Name + "] has no kind set.")
-		return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
-	}
-
-	if action.Action.Exec.Code != nil {
-		code := *action.Action.Exec.Code
-		if code == "" && action.Action.Exec.Kind != parsers.YAML_KEY_SEQUENCE {
-			// TODO(): i18n of error message (or create a new named error)
-			err := errors.New("Action [" + action.Action.Name + "] has no source code.")
-			return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
-		}
-	}
-
 	return nil
 }
 
@@ -232,15 +208,13 @@ func (reader *ManifestReader) SetSequences(sequences []utils.ActionRecord) error
 	for _, sequence := range sequences {
 		// If the sequence name matches with any of the actions defined, return error
 		if _, exists := dep.Deployment.Packages[sequence.Packagename].Actions[sequence.Action.Name]; exists {
-			// TODO(798): i18n of error message (or create a new named error)
-			err := errors.New("Sequence action's name [" +
-				sequence.Action.Name + "] is already used by an action.")
+			err := wski18n.T(wski18n.ID_ERR_SEQUENCE_HAVING_SAME_NAME_AS_ACTION_X_action_X,
+				map[string]interface{}{wski18n.KEY_SEQUENCE: sequence.Action.Name})
 			return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
 		}
 		err := reader.checkAction(sequence)
 		if err != nil {
-			// TODO() Need a better error type here
-			return wskderrors.NewFileReadError(sequence.Filepath, err)
+			return err
 		}
 		dep.Deployment.Packages[sequence.Packagename].Sequences[sequence.Action.Name] = sequence
 	}
@@ -283,5 +257,29 @@ func (reader *ManifestReader) SetApis(ar []*whisk.ApiCreateRequest) error {
 	for _, api := range ar {
 		dep.Deployment.Apis[api.ApiDoc.Action.Name] = api
 	}
+	return nil
+}
+
+// Check action record before deploying it
+// action record is created by reading and composing action elements from manifest file
+// Action.kind is mandatory which is set to
+// (1) action runtime for an action and (2) set to "sequence" for a sequence
+// Also, action executable code should be specified for any action
+func (reader *ManifestReader) checkAction(action utils.ActionRecord) error {
+	if action.Action.Exec.Kind == "" {
+		err := wski18n.T(wski18n.ID_ERR_ACTION_WITHOUT_KIND_X_action_X,
+			map[string]interface{}{wski18n.KEY_ACTION: action.Action.Name})
+		return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
+	}
+
+	if action.Action.Exec.Code != nil {
+		code := *action.Action.Exec.Code
+		if code == "" && action.Action.Exec.Kind != parsers.YAML_KEY_SEQUENCE {
+			err := wski18n.T(wski18n.ID_ERR_ACTION_WITHOUT_SOURCE_X_action_X,
+				map[string]interface{}{wski18n.KEY_ACTION: action.Action.Name})
+			return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
+		}
+	}
+
 	return nil
 }

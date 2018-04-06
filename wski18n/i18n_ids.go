@@ -77,6 +77,7 @@ const (
 	KEY_BINDINGS        = "bindings"
 	KEY_DEPENDENCY      = "dependency"
 	KEY_LOCATION        = "location"
+	KEY_SEQUENCE        = "sequence"
 )
 
 // DO NOT TRANSLATE
@@ -181,6 +182,10 @@ const (
 	ID_ERR_ACTION_FUNCTION_REMOTE_DIR_NOT_SUPPORTED_X_action_X_url_X = "msg_err_action_function_remote_dir_not_supported"
 	ID_ERR_CANT_SAVE_DOCKER_RUNTIME                                  = "msg_err_cant_save_docker"
 	ID_ERR_FILE_ALREADY_EXISTS                                       = "msg_err_file_already_exists"
+	ID_ERR_DEPENDENCIES_WITH_SAME_LABEL_X_dependency_X_location_X    = "msg_err_different_dependencies_with_same_label"
+	ID_ERR_ACTION_WITHOUT_KIND_X_action_X                            = "msg_err_action_without_kind"
+	ID_ERR_ACTION_WITHOUT_SOURCE_X_action_X                          = "msg_err_action_without_source"
+	ID_ERR_SEQUENCE_HAVING_SAME_NAME_AS_ACTION_X_action_X            = "msg_err_sequence_having_same_name_as_action"
 
 	// Server-side Errors (wskdeploy as an Action)
 	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"

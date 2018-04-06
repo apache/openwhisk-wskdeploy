@@ -25,7 +25,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -39,6 +38,7 @@ const (
 	TEST_ERROR_BUILD_SERVICE_DEPLOYER       = "Manifest [%s]: Failed to build service deployer."
 	TEST_ERROR_MANIFEST_PARSE_FAILURE       = "Manifest [%s]: Failed to parse."
 	TEST_ERROR_MANIFEST_SET_PACKAGES        = "Manifest [%s]: Failed to set packages."
+	TEST_ERROR_FAILED_TO_REPORT_ERROR       = "Manifest [%s]: Failed to report parser error."
 	TEST_ERROR_MANIFEST_SET_ANNOTATION      = "Package [%s]: Failed to set Annotation value."
 	TEST_ERROR_MANIFEST_SET_INPUT_PARAMETER = "Package [%s]: Failed to set input Parameter value."
 	TEST_ERROR_MANIFEST_SET_PUBLISH         = "Package [%s]: Failed to set publish."
@@ -227,12 +227,19 @@ func TestManifestReader_SetDependencies(t *testing.T) {
 	}
 }
 
-//Namespace   string      `json:"namespace,omitempty"`
-//Name        string      `json:"name,omitempty"`
-//Version     string      `json:"version,omitempty"`
-//Publish     *bool       `json:"publish,omitempty"`
-//Annotations KeyValueArr `json:"annotations,omitempty"`
-//Parameters  KeyValueArr `json:"parameters,omitempty"`
-//Binding     *Binding    `json:"binding,omitempty"`
-//Actions     []Action    `json:"actions,omitempty"`
-//Feeds       []Action    `json:"feeds,omitempty"`
+func TestManifestReader_SetDependencies_Bogus(t *testing.T) {
+	manifestFile := "../tests/dat/manifest_validate_dependencies_bogus.yaml"
+	deployer, err := buildServiceDeployer(manifestFile)
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_BUILD_SERVICE_DEPLOYER, manifestFile))
+
+	var manifestReader = NewManifestReader(deployer)
+	manifestReader.IsUndeploy = false
+	manifest, manifestParser, err := manifestReader.ParseManifest()
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
+
+	err = manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
+
+	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
+	assert.NotNil(t, err, fmt.Sprintf(TEST_ERROR_FAILED_TO_REPORT_ERROR, manifestFile))
+}
