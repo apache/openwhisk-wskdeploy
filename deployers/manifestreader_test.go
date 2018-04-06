@@ -20,10 +20,12 @@
 package deployers
 
 import (
+	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -32,26 +34,205 @@ var mr *ManifestReader
 var ps *parsers.YAMLParser
 var ms *parsers.YAML
 
-func init() {
+const (
+	// local error messages
+	TEST_ERROR_BUILD_SERVICE_DEPLOYER       = "Manifest [%s]: Failed to build service deployer."
+	TEST_ERROR_MANIFEST_PARSE_FAILURE       = "Manifest [%s]: Failed to parse."
+	TEST_ERROR_MANIFEST_SET_PACKAGES        = "Manifest [%s]: Failed to set packages."
+	TEST_ERROR_MANIFEST_SET_ANNOTATION      = "Package [%s]: Failed to set Annotation value."
+	TEST_ERROR_MANIFEST_SET_INPUT_PARAMETER = "Package [%s]: Failed to set input Parameter value."
+	TEST_ERROR_MANIFEST_SET_PUBLISH         = "Package [%s]: Failed to set publish."
+	TEST_ERROR_MANIFEST_SET_DEPENDENCIES    = "Package [%s]: Failed to set dependencies."
+)
 
+func init() {
 	// Setup "trace" flag for unit tests based upon "go test" -v flag
 	utils.Flags.Trace = wskprint.DetectGoTestVerbose()
-
-	sd = NewServiceDeployer()
-	sd.ManifestPath = manifest_file
-	mr = NewManifestReader(sd)
-	ps = parsers.NewYAMLParser()
-	ms, _ = ps.ParseManifest(manifest_file)
 }
 
-// Test could parse Manifest file successfully
-func TestManifestReader_ParseManifest(t *testing.T) {
-	_, _, err := mr.ParseManifest()
-	assert.Equal(t, err, nil, "New ManifestReader failed")
+func buildServiceDeployer(manifestFile string) (*ServiceDeployer, error) {
+	deploymentFile := ""
+	var deployer = NewServiceDeployer()
+	deployer.ManifestPath = manifestFile
+	deployer.DeploymentPath = deploymentFile
+	deployer.Preview = utils.Flags.Preview
+
+	deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
+
+	clientConfig, error := NewWhiskConfig(
+		utils.Flags.CfgFile,
+		deploymentFile,
+		manifestFile)
+	if error != nil {
+		return nil, error
+	}
+
+	whiskClient, error := CreateNewClient(clientConfig)
+	if error != nil {
+		return nil, error
+	}
+
+	deployer.Client = whiskClient
+	deployer.ClientConfig = clientConfig
+
+	op, error := utils.ParseOpenWhisk(clientConfig.Host)
+	if error == nil {
+		utils.SupportedRunTimes = utils.ConvertToMap(op)
+		utils.DefaultRunTimes = utils.DefaultRuntimes(op)
+		utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
+		utils.FileRuntimeExtensionsMap = utils.FileRuntimeExtensions(op)
+	}
+
+	return deployer, nil
 }
 
-// Test could Init root package successfully.
 func TestManifestReader_InitPackages(t *testing.T) {
-	err := mr.InitPackages(ps, ms, whisk.KeyValue{})
-	assert.Equal(t, err, nil, "Init Root Package failed")
+	manifestFile := "../tests/dat/manifest_validate_package_inputs_and_annotations.yaml"
+	deployer, err := buildServiceDeployer(manifestFile)
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_BUILD_SERVICE_DEPLOYER, manifestFile))
+
+	var manifestReader = NewManifestReader(deployer)
+	manifestReader.IsUndeploy = false
+	manifest, manifestParser, err := manifestReader.ParseManifest()
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
+
+	err = manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
+	assert.Equal(t, 3, len(deployer.Deployment.Packages), fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile, ""))
+
+	expectedParametersAndAnnotations := 0
+
+	for packageName, pack := range deployer.Deployment.Packages {
+		switch packageName {
+		case "helloworld1":
+			expectedParametersAndAnnotations = 0
+			assert.False(t, *pack.Package.Publish, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PUBLISH, packageName))
+		case "helloworld2":
+			expectedParametersAndAnnotations = 1
+			for _, param := range pack.Package.Parameters {
+				switch param.Key {
+				case "helloworld_input1":
+					assert.Equal(t, "value1", param.Value,
+						fmt.Sprintf(TEST_ERROR_MANIFEST_SET_INPUT_PARAMETER, packageName))
+				}
+			}
+			for _, annotation := range pack.Package.Annotations {
+				switch annotation.Key {
+				case "helloworld_annotation1":
+					assert.Equal(t, "value1", annotation.Value,
+						fmt.Sprintf(TEST_ERROR_MANIFEST_SET_ANNOTATION, packageName))
+				}
+			}
+			assert.False(t, *pack.Package.Publish, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PUBLISH, packageName))
+		case "helloworld3":
+			expectedParametersAndAnnotations = 2
+			for _, param := range pack.Package.Parameters {
+				switch param.Key {
+				case "helloworld_input1":
+					assert.Equal(t, "value1", param.Value,
+						fmt.Sprintf(TEST_ERROR_MANIFEST_SET_INPUT_PARAMETER, packageName))
+				case "helloworld_input2":
+					assert.Equal(t, "value2", param.Value,
+						fmt.Sprintf(TEST_ERROR_MANIFEST_SET_INPUT_PARAMETER, packageName))
+				}
+			}
+			for _, annotation := range pack.Package.Annotations {
+				switch annotation.Key {
+				case "helloworld_annotation1":
+					assert.Equal(t, "value1", annotation.Value,
+						fmt.Sprintf(TEST_ERROR_MANIFEST_SET_ANNOTATION, packageName))
+				case "helloworld_annotation2":
+					assert.Equal(t, "value2", annotation.Value,
+						fmt.Sprintf(TEST_ERROR_MANIFEST_SET_ANNOTATION, packageName))
+				}
+			}
+			assert.True(t, *pack.Package.Publish, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PUBLISH, packageName))
+		}
+		assert.Equal(t, expectedParametersAndAnnotations, len(pack.Package.Parameters),
+			fmt.Sprintf(TEST_ERROR_MANIFEST_SET_INPUT_PARAMETER, packageName))
+		assert.Equal(t, expectedParametersAndAnnotations, len(pack.Package.Annotations),
+			fmt.Sprintf(TEST_ERROR_MANIFEST_SET_ANNOTATION, packageName))
+	}
 }
+
+func TestManifestReader_SetActions(t *testing.T) {
+	manifestFile := "../tests/dat/manifest_validate_action.yaml"
+	deployer, err := buildServiceDeployer(manifestFile)
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_BUILD_SERVICE_DEPLOYER, manifestFile))
+
+	var manifestReader = NewManifestReader(deployer)
+	manifestReader.IsUndeploy = false
+	manifest, manifestParser, err := manifestReader.ParseManifest()
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
+
+	err = manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
+}
+
+func TestManifestReader_SetDependencies(t *testing.T) {
+	manifestFile := "../tests/dat/manifest_validate_dependencies.yaml"
+	deployer, err := buildServiceDeployer(manifestFile)
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_BUILD_SERVICE_DEPLOYER, manifestFile))
+
+	var manifestReader = NewManifestReader(deployer)
+	manifestReader.IsUndeploy = false
+	manifest, manifestParser, err := manifestReader.ParseManifest()
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
+
+	err = manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
+
+	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
+
+	expectedLocationHelloWorlds := "github.com/apache/incubator-openwhisk-test/packages/helloworlds"
+	expectedLocationHelloWhisk := " github.com/apache/incubator-openwhisk-test/packages/hellowhisk"
+	expectedLocationUtils := "/whisk.system/utils"
+
+	for pkgName, pkg := range deployer.Deployment.Packages {
+		switch pkgName {
+		case "helloworld1":
+			for depName, dep := range pkg.Dependencies {
+				switch depName {
+				case "dependency1":
+				case "helloworlds":
+					assert.Equal(t, expectedLocationHelloWorlds, dep.Location,
+						fmt.Sprintf(TEST_ERROR_MANIFEST_SET_DEPENDENCIES, pkgName))
+				case "dependency2":
+					assert.Equal(t, expectedLocationHelloWhisk, dep.Location,
+						fmt.Sprintf(TEST_ERROR_MANIFEST_SET_DEPENDENCIES, pkgName))
+				case "dependency3":
+					assert.Equal(t, expectedLocationUtils, dep.Location,
+						fmt.Sprintf(TEST_ERROR_MANIFEST_SET_DEPENDENCIES, pkgName))
+				}
+			}
+
+		case "helloworld2":
+			for depName, dep := range pkg.Dependencies {
+				switch depName {
+				case "helloworlds":
+				case "dependency1":
+				case "dependency4":
+					assert.Equal(t, expectedLocationHelloWorlds, dep.Location,
+						fmt.Sprintf(TEST_ERROR_MANIFEST_SET_DEPENDENCIES, pkgName))
+				case "dependency5":
+					assert.Equal(t, expectedLocationHelloWhisk, dep.Location,
+						fmt.Sprintf(TEST_ERROR_MANIFEST_SET_DEPENDENCIES, pkgName))
+				case "dependency6":
+					assert.Equal(t, expectedLocationUtils, dep.Location,
+						fmt.Sprintf(TEST_ERROR_MANIFEST_SET_DEPENDENCIES, pkgName))
+				}
+			}
+		}
+	}
+}
+
+//Namespace   string      `json:"namespace,omitempty"`
+//Name        string      `json:"name,omitempty"`
+//Version     string      `json:"version,omitempty"`
+//Publish     *bool       `json:"publish,omitempty"`
+//Annotations KeyValueArr `json:"annotations,omitempty"`
+//Parameters  KeyValueArr `json:"parameters,omitempty"`
+//Binding     *Binding    `json:"binding,omitempty"`
+//Actions     []Action    `json:"actions,omitempty"`
+//Feeds       []Action    `json:"feeds,omitempty"`

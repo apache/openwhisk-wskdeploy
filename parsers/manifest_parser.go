@@ -35,6 +35,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -1027,6 +1028,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 				}
 				for actionName, gatewayMethod := range gatewayRelPathMap {
 					// verify that the action is defined under actions sections
+					spew.Dump(pkg)
 					if _, ok := pkg.Actions[actionName]; !ok {
 						return nil, wskderrors.NewYAMLFileFormatError(manifestPath,
 							wski18n.T(wski18n.ID_ERR_API_MISSING_ACTION_X_action_X_api_X,
