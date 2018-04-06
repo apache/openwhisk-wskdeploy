@@ -16,17 +16,13 @@
 
 packages:
     helloworld:
-        version: 1.0.0
-        license: Apache-2.0
         actions:
             helloworld1:
                 function: actions/hello.js
             helloworld2:
                 code: const main = ({ msg }) => { console.log(msg); return {msg}; }
+                runtime: nodejs:6
             helloworld3:
-                function: actions/hello.js
-                code: const main = ({ msg }) => { console.log(msg); return {msg}; }
-            helloworld4:
                 function: actions/hello.js
                 annotations:
                     annotation1: value1
@@ -34,13 +30,13 @@ packages:
                 inputs:
                     parameter1: value1
                     parameter2: value2
-            helloworld5:
+            helloworld4:
                 function: actions/hello.js
                 web: true
-            helloworld6:
+            helloworld5:
                 function: actions/hello.js
                 conductor: true
-            helloworld7:
+            helloworld6:
                 function: actions/hello.js
                 docker: openwhisk/skeleton
 
