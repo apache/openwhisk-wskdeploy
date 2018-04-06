@@ -1027,13 +1027,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 				}
 				for actionName, gatewayMethod := range gatewayRelPathMap {
 					// verify that the action is defined under actions sections
-					if _, ok := pkg.Actions[actionName]; !ok {
-						return nil, wskderrors.NewYAMLFileFormatError(manifestPath,
-							wski18n.T(wski18n.ID_ERR_API_MISSING_ACTION_X_action_X_api_X,
-								map[string]interface{}{
-									wski18n.KEY_ACTION: actionName,
-									wski18n.KEY_API:    apiName}))
-					} else {
+					if _, ok := pkg.Actions[actionName]; ok {
 						// verify that the action is defined as web action
 						// web or web-export set to any of [true, yes, raw]
 						a := pkg.Actions[actionName]
@@ -1049,38 +1043,62 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							a.Annotations[utils.WEB_EXPORT_ANNOT] = true
 							pkg.Actions[actionName] = a
 						}
-						request := new(whisk.ApiCreateRequest)
-						request.ApiDoc = new(whisk.Api)
-						request.ApiDoc.GatewayBasePath = gatewayBasePath
-						// is API verb is valid, it must be one of (GET, PUT, POST, DELETE)
-						request.ApiDoc.GatewayRelPath = gatewayRelPath
-						if _, ok := whisk.ApiVerbs[strings.ToUpper(gatewayMethod)]; !ok {
-							return nil, wskderrors.NewInvalidAPIGatewayMethodError(manifestPath,
-								gatewayBasePath+gatewayRelPath,
-								gatewayMethod,
-								dm.getGatewayMethods())
+						// verify that the sequence is defined under sequences sections
+					} else if _, ok := pkg.Sequences[actionName]; ok {
+						// verify that the sequence is defined as web sequence
+						// web set to any of [true, yes, raw]
+						a := pkg.Sequences[actionName]
+						if !utils.IsWebSequence(a.Web) {
+							warningString := wski18n.T(wski18n.ID_WARN_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X,
+								map[string]interface{}{
+									wski18n.KEY_SEQUENCE: actionName,
+									wski18n.KEY_API:      apiName})
+							wskprint.PrintOpenWhiskWarning(warningString)
+							if a.Annotations == nil {
+								a.Annotations = make(map[string]interface{}, 0)
+							}
+							a.Annotations[utils.WEB_EXPORT_ANNOT] = true
+							pkg.Sequences[actionName] = a
 						}
-						request.ApiDoc.GatewayMethod = strings.ToUpper(gatewayMethod)
-						request.ApiDoc.Namespace = client.Namespace
-						request.ApiDoc.ApiName = apiName
-						request.ApiDoc.Id = strings.Join([]string{API, request.ApiDoc.Namespace, request.ApiDoc.GatewayRelPath}, ":")
-						// set action of an API Doc
-						request.ApiDoc.Action = new(whisk.ApiAction)
-						if packageName == DEFAULT_PACKAGE {
-							request.ApiDoc.Action.Name = actionName
-						} else {
-							request.ApiDoc.Action.Name = packageName + PATH_SEPARATOR + actionName
-						}
-						url := []string{HTTPS + client.Host, strings.ToLower(API),
-							API_VERSION, WEB, client.Namespace, packageName,
-							actionName + "." + utils.HTTP_FILE_EXTENSION}
-						request.ApiDoc.Action.Namespace = client.Namespace
-						request.ApiDoc.Action.BackendUrl = strings.Join(url, PATH_SEPARATOR)
-						request.ApiDoc.Action.BackendMethod = gatewayMethod
-						request.ApiDoc.Action.Auth = client.AuthToken
-						// add a newly created ApiCreateRequest object to a list of requests
-						requests = append(requests, request)
+						// return failure since action or sequence are not defined in the manifest
+					} else {
+						return nil, wskderrors.NewYAMLFileFormatError(manifestPath,
+							wski18n.T(wski18n.ID_ERR_API_MISSING_ACTION_OR_SEQUENCE_X_action_or_sequence_X_api_X,
+								map[string]interface{}{
+									wski18n.KEY_ACTION: actionName,
+									wski18n.KEY_API:    apiName}))
 					}
+					request := new(whisk.ApiCreateRequest)
+					request.ApiDoc = new(whisk.Api)
+					request.ApiDoc.GatewayBasePath = gatewayBasePath
+					// is API verb is valid, it must be one of (GET, PUT, POST, DELETE)
+					request.ApiDoc.GatewayRelPath = gatewayRelPath
+					if _, ok := whisk.ApiVerbs[strings.ToUpper(gatewayMethod)]; !ok {
+						return nil, wskderrors.NewInvalidAPIGatewayMethodError(manifestPath,
+							gatewayBasePath+gatewayRelPath,
+							gatewayMethod,
+							dm.getGatewayMethods())
+					}
+					request.ApiDoc.GatewayMethod = strings.ToUpper(gatewayMethod)
+					request.ApiDoc.Namespace = client.Namespace
+					request.ApiDoc.ApiName = apiName
+					request.ApiDoc.Id = strings.Join([]string{API, request.ApiDoc.Namespace, request.ApiDoc.GatewayRelPath}, ":")
+					// set action of an API Doc
+					request.ApiDoc.Action = new(whisk.ApiAction)
+					if packageName == DEFAULT_PACKAGE {
+						request.ApiDoc.Action.Name = actionName
+					} else {
+						request.ApiDoc.Action.Name = packageName + PATH_SEPARATOR + actionName
+					}
+					url := []string{HTTPS + client.Host, strings.ToLower(API),
+						API_VERSION, WEB, client.Namespace, packageName,
+						actionName + "." + utils.HTTP_FILE_EXTENSION}
+					request.ApiDoc.Action.Namespace = client.Namespace
+					request.ApiDoc.Action.BackendUrl = strings.Join(url, PATH_SEPARATOR)
+					request.ApiDoc.Action.BackendMethod = gatewayMethod
+					request.ApiDoc.Action.Auth = client.AuthToken
+					// add a newly created ApiCreateRequest object to a list of requests
+					requests = append(requests, request)
 				}
 			}
 		}
