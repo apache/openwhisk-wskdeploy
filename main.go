@@ -29,11 +29,8 @@ func main() {
 var (
 	//Version ...The Version of the tool
 	Version = "unset"
-	//Build ...The build tags
-	Build = "unset"
 )
 
 func init() {
 	utils.Flags.CliVersion = Version
-	utils.Flags.CliBuild = Build
 }

@@ -36,9 +36,7 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		wskprint.PrintlnOpenWhiskOutput(
 			// Note: no need to translate the following string
-			// TODO(#767) - Flags.CliBuild and CliVersion are not set during build
-			fmt.Sprintf("wskdeploy build-version: %s--%s",
-				utils.Flags.CliBuild,
-				utils.Flags.CliVersion))
+			// TODO(#767) - Flags.CliVersion are not set during build
+			fmt.Sprintf("wskdeploy version: %s", utils.Flags.CliVersion))
 	},
 }
