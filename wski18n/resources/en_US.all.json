@@ -292,8 +292,8 @@
     "translation": "JSON input data Missing 'cmd' key"
   },
   {
-    "id": "msg_err_api_missing_action",
-    "translation": "Action [{{.action}}] is missing from manifest file, API [{{.api}}] can only be created based on the action from manifest file. Please update manifest file to include [{{.action}}] as a web action.\n"
+    "id": "msg_err_api_missing_action_or_sequence",
+    "translation": "Action/Sequence [{{.action}}] is missing from manifest file, API [{{.api}}] can only be created based on the action/sequence from manifest file. Please update manifest file to include [{{.action}}] as a web action/sequence.\n"
   },
   {
     "id": "msg_err_action_invalid",
@@ -418,6 +418,10 @@
   {
     "id": "msg_warn_api_missing_web_action",
     "translation": "Action [{{.action}}] is not a web action, API [{{.api}}] can only be created using web action. Converting [{{.action}}] to a web action.\n"
+  },
+  {
+    "id": "msg_warn_api_missing_web_sequence",
+    "translation": "Sequence [{{.sequence}}] is not a web sequence, API [{{.api}}] can only be created using web sequence. Converting [{{.sequence}}] to a web sequence.\n"
   },
   {
     "id": "DEBUG",

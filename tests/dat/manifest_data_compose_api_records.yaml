@@ -30,6 +30,10 @@ packages:
         function: ../tests/src/integration/helloworld/actions/hello.js
       listMembers2:
         function: ../tests/src/integration/helloworld/actions/hello.js
+    sequences:
+      listAllMembers:
+        actions: listMembers, listMembers2
+        web: true
     apis:
       book-club:
         club:
@@ -45,3 +49,4 @@ packages:
             postBooks2: post
           members2:
             listMembers2: get
+            listAllMembers: get

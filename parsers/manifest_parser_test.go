@@ -1305,8 +1305,6 @@ func TestComposeRules(t *testing.T) {
 	}
 }
 
-// TODO(752) We SHOULD automatically add "web-export" to each Action referenced in the "apis" section
-// as this is implied.  The user should not have to do this manually
 func TestComposeApiRecords(t *testing.T) {
 
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_api_records.yaml")
@@ -1323,7 +1321,7 @@ func TestComposeApiRecords(t *testing.T) {
 	if err != nil {
 		assert.Fail(t, "Failed to compose api records: "+err.Error())
 	}
-	assert.Equal(t, 6, len(apiList), "Failed to get api records")
+	assert.Equal(t, 7, len(apiList), "Failed to get api records")
 	for _, apiRecord := range apiList {
 		apiDoc := apiRecord.ApiDoc
 		action := apiDoc.Action
@@ -1354,10 +1352,12 @@ func TestComposeApiRecords(t *testing.T) {
 			assert.Equal(t, "/books2", apiDoc.GatewayRelPath, "Failed to set api rel path")
 			assert.Equal(t, "post", action.BackendMethod, "Failed to set api backend method")
 		case "apiTest/listMembers2":
+		case "apiTest/listAllMembers":
 			assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
 			assert.Equal(t, "/club2", apiDoc.GatewayBasePath, "Failed to set api base path")
 			assert.Equal(t, "/members2", apiDoc.GatewayRelPath, "Failed to set api rel path")
 			assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
+
 		default:
 			assert.Fail(t, "Failed to get api action name")
 		}

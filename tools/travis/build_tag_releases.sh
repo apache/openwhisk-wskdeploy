@@ -23,6 +23,7 @@
 declare -a os_list=("linux" "darwin" "windows")
 declare -a arc_list=("amd64" "386")
 build_file_name=${1:-"wskdeploy"}
+build_version=${2:-"$TRAVIS_TAG"}
 
 for os in "${os_list[@]}"
 do
@@ -37,7 +38,7 @@ do
             os_name="mac"
         fi
         cd $TRAVIS_BUILD_DIR
-        GOOS=$os GOARCH=$arc go build -o build/$os/$wskdeploy
+        GOOS=$os GOARCH=$arc go build -ldflags "-X main.Version=$build_version" -o build/$os/$wskdeploy
         cd build/$os
         if [[ "$os" == "linux" ]]; then
             tar -czvf "$TRAVIS_BUILD_DIR/$build_file_name-$TRAVIS_TAG-$os_name-$arc.tgz" $wskdeploy

@@ -212,6 +212,7 @@ const (
 	ID_WARN_PACKAGE_IS_PUBLIC_X_package_X                     = "msg_warn_package_is_public"
 	ID_WARN_ACTION_WEB_X_action_X                             = "msg_warn_action_web_export_ignored"
 	ID_WARN_API_MISSING_WEB_ACTION_X_action_X_api_X           = "msg_warn_api_missing_web_action"
+	ID_WARN_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X       = "msg_warn_api_missing_web_sequence"
 
 	// Verbose (Debug/Trace) messages
 	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X                = "msg_dbg_searching_project_directory"

@@ -19,7 +19,7 @@ SOURCEDIR=.
 SOURCES := $(shell find $(SOURCEDIR) -name '*.go')
 BINARY=wskdeploy
 
-VERSION=1.0.0
+VERSION=latest
 
 BUILD=`git rev-parse HEAD`
 
@@ -27,14 +27,14 @@ deps:
 	@echo "Installing dependencies"
 	godep restore -v
 
-LDFLAGS=-ldflags "-X main.Version=`date -u '+%Y-%m-%dT%H:%M:%S'` -X main.Build=`git rev-parse HEAD` "
+LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.Build=`git rev-parse HEAD` "
 
 test: deps
 	@echo "Testing"
 	go test ./... -tags=unit
 
 # Build the project
-build: test
+build:
 	go build ${LDFLAGS} -o ${BINARY}
 
 # Run the integration test against OpenWhisk
