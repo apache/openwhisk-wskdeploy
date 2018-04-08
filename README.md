@@ -32,6 +32,7 @@ You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses t
 - [Downloading wskdeploy](#downloading-released-binaries) - released binaries for Linux, Mac OS and Windows
 - [Running wskdeploy](#running-wskdeploy) - run wskdeploy as a binary or Go program
 - :eight_spoked_asterisk: [Writing Package Manifests](docs/programming_guide.md#wskdeploy-utility-by-example) - a step-by-step guide on writing Package Manifest files for ```wskdeploy```
+- :eight_spoked_asterisk: [Exporting OpenWhisk assets](/docs/export.md) - how to use `export` feature
 - [Building the project](#building-the-project) - download and build the GoLang source code
 - [Contributing to the project](#contributing-to-the-project) - join us!
 - [Debugging wskdeploy](docs/wskdeploy_debugging.md) - helpful tips for debugging the code and your manifest files
