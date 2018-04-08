@@ -25,7 +25,7 @@ management task.
 
 ## Basic Usage by Example
 
-Consider a simple manifest file [manifest_lib1.yml](https://github.com/davidbreitgand/incubator-openwhisk-wskdeploy/blob/add-export-doc2readme/tests/src/integration/export/manifest_lib1.yaml) for a sample project `lib1`.
+Consider a simple manifest file [manifest_lib1.yml](../../tests/src/integration/export/manifest_lib1.yaml) for a sample project `lib1`.
 The project contains a single `lib1_package` package that comprise three actions (the code of the action in this simple example is the
 same for all three, but the action names are different).
 
