@@ -42,7 +42,8 @@ wskdeploy sync -m manifest_lib1.yaml
 wsk package get lib1_package
 ```
 
-You should see an output similar to the one shown below.
+<details><summary>You should see an output similar to this one (clicable):</summary>
+<p>
 
 ```
 ok: got package lib1_package
@@ -124,5 +125,6 @@ ok: got package lib1_package
     ]
 }
 ```
+</p>
 
 
