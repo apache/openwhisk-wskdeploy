@@ -126,6 +126,7 @@ ok: got package lib1_package
 }
 ```
 </p>
+</details>
 
 ### Step 3: Export the newly deployed `lib1`
 <p>
@@ -235,3 +236,4 @@ packages:
 filepath: ""
 ```
 </p>
+</details>
