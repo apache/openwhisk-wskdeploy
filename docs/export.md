@@ -32,17 +32,20 @@ same for all three, but the action names are different).
 
 ### Step 1: deploy `lib1` as a managed project 
 
-```
-wskdeploy sync -m [manifest_lib1.yml](tests/src/integration/export/manifest_lib1.yml)
+```bash
+wskdeploy sync -m tests/src/integration/export/manifest_lib1.yml
 ```
 
 ### Step 2: validate `lib1` deployment
 
-```
+```bash
 wsk package get lib1_package
 ```
 
 ```
+
+You should see an output similar to the one shown below.
+
 ok: got package lib1_package
 {
     "namespace": "your_namespace",
