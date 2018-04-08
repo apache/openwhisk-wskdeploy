@@ -32,13 +32,13 @@ same for all three, but the action names are different).
 
 ### Step 1: deploy `lib1` as a managed project 
 
-```bash
+```sh
 wskdeploy sync -m manifest_lib1.yaml
 ```
 
 ### Step 2: validate `lib1` deployment
 
-```bash
+```sh
 wsk package get lib1_package
 ```
 
@@ -129,11 +129,11 @@ ok: got package lib1_package
 </details>
 
 ### Step 3: Export the newly deployed `lib1`
-<p>
-```
+
+```sh
 wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
 ```
-</p>
+
 
 ### Step 4: Inspect the newly exported manifest. 
 
@@ -141,14 +141,14 @@ wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
 <p>
 ```
 project:
-  name: lib1
-  namespace: ""
-  credential: ""
-  apiHost: ""
-  apigwAccessToken: ""
-  version: ""
-  packages: {}
-packages:
+  name: lib1\
+  namespace: ""\
+  credential: ""\
+  apiHost: ""\
+  apigwAccessToken: ""\
+  version: ""\
+  packages: {}\
+packages:\
   lib1_package:
     name: lib1_package
     version: 0.0.2
