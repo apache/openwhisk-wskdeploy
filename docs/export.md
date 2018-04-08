@@ -138,11 +138,11 @@ wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
 ### Step 4: Inspect the newly exported manifest. 
 
 <details><summary>You should see something similar to:</summary>
-```
+
 project:<br/>
     name: lib1<br/>
-  namespace: ""<br/>
-  credential: ""<br/>
+    namespace: ""<br/>
+    credential: ""<br/>
   apiHost: ""<br/>
   apigwAccessToken: ""<br/>
   version: ""<br/>
@@ -233,5 +233,4 @@ packages:
     sequences: {}
     apis: {}
 filepath: ""
-```
 </details>
