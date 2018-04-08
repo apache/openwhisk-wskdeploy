@@ -140,14 +140,14 @@ wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
 <details><summary>You should see something similar to:</summary>
 <p>
 ```
-project:
-  name: lib1\
-  namespace: ""\
-  credential: ""\
-  apiHost: ""\
-  apigwAccessToken: ""\
-  version: ""\
-  packages: {}\
+project:<br/>
+  name: lib1<br/>
+  namespace: ""<br/>
+  credential: ""<br/>
+  apiHost: ""<br/>
+  apigwAccessToken: ""<br/>
+  version: ""<br/>
+  packages: {}<br/>
 packages:\
   lib1_package:
     name: lib1_package
