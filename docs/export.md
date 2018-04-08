@@ -1,6 +1,6 @@
 # Using `wsdeploy` for exporting `OpenWhisk` assets
 
-`wskdeploy export` can be used to export `OpenWhisk` assets previously deployed as a *managed project* via `wskdeploy -m manifest.yml`. 
+`wskdeploy export` can be used to export `OpenWhisk` assets previously deployed as a *managed project* via `wskdeploy -m manifest.yaml`. 
 `wskdeploy export` will create a manifest for the managed project assets and separate manifests for each managed project that this managed 
 project depends upon, if such dependencies exist and have been described in `manifest.yml` when the managed project has been initially deployed.
 The manifest(s) resulting from executing `wskdeploy export` can be later used for deploying at a different `OpenWhisk` instance.
@@ -25,7 +25,7 @@ management task.
 
 ## Basic Usage by Example
 
-Consider a simple manifest file [manifest_lib1.yml](../../tests/src/integration/export/manifest_lib1.yaml) for a sample project `lib1`.
+Consider a simple manifest file [manifest_lib1.yml](https://github.com/davidbreitgand/incubator-openwhisk-wskdeploy/blob/add-export-doc2readme/tests/src/integration/export/manifest_lib1.yaml) for a sample project `lib1`.
 The project contains a single `lib1_package` package that comprise three actions (the code of the action in this simple example is the
 same for all three, but the action names are different).
 
@@ -33,7 +33,7 @@ same for all three, but the action names are different).
 ### Step 1: deploy `lib1` as a managed project 
 
 ```bash
-wskdeploy sync -m tests/src/integration/export/manifest_lib1.yml
+wskdeploy sync -m manifest_lib1.yaml
 ```
 
 ### Step 2: validate `lib1` deployment
@@ -42,10 +42,9 @@ wskdeploy sync -m tests/src/integration/export/manifest_lib1.yml
 wsk package get lib1_package
 ```
 
-```
-
 You should see an output similar to the one shown below.
 
+```
 ok: got package lib1_package
 {
     "namespace": "your_namespace",
