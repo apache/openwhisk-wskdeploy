@@ -127,4 +127,111 @@ ok: got package lib1_package
 ```
 </p>
 
+### Step 3: Export the newly deployed `lib1`
+<p>
+```
+wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
+```
+</p>
 
+### Step 4: Inspect the newly exported manifest. 
+
+<details><summary>You should see something similar to:</summary>
+<p>
+```
+project:
+  name: lib1
+  namespace: ""
+  credential: ""
+  apiHost: ""
+  apigwAccessToken: ""
+  version: ""
+  packages: {}
+packages:
+  lib1_package:
+    name: lib1_package
+    version: 0.0.2
+    license: ""
+    dependencies: {}
+    namespace: kpavel@il.ibm.com_uspace
+    credential: ""
+    apiHost: ""
+    apigwAccessToken: ""
+    actions:
+      lib1_greeting1:
+        name: lib1_greeting1
+        location: ""
+        version: 0.0.1
+        function: lib1_package/lib1_greeting1.js
+        code: ""
+        runtime: nodejs:6
+        namespace: kpavel@il.ibm.com_uspace/lib1_package
+        credential: ""
+        exposedUrl: ""
+        web-export: ""
+        main: ""
+        limits: null
+        inputs: {}
+        outputs: {}
+        annotations:
+          exec: nodejs:6
+      lib1_greeting2:
+        name: lib1_greeting2
+        location: ""
+        version: 0.0.1
+        function: lib1_package/lib1_greeting2.js
+        code: ""
+        runtime: nodejs:6
+        namespace: kpavel@il.ibm.com_uspace/lib1_package
+        credential: ""
+        exposedUrl: ""
+        web-export: ""
+         main: ""
+        limits: null
+        inputs: {}
+        outputs: {}
+        annotations:
+          exec: nodejs:6
+      lib1_greeting2:
+        name: lib1_greeting2
+        location: ""
+        version: 0.0.1
+        function: lib1_package/lib1_greeting2.js
+        code: ""
+        runtime: nodejs:6
+        namespace: kpavel@il.ibm.com_uspace/lib1_package
+        credential: ""
+        exposedUrl: ""
+        web-export: ""
+        main: ""
+        limits: null
+        inputs: {}
+        outputs: {}
+        annotations:
+          exec: nodejs:6
+      lib1_greeting3:
+        name: lib1_greeting3
+        location: ""
+        version: 0.0.1
+        function: lib1_package/lib1_greeting3.js
+        code: ""
+        runtime: nodejs:6
+        namespace: kpavel@il.ibm.com_uspace/lib1_package
+        credential: ""
+        exposedUrl: ""
+        web-export: ""
+        main: ""
+        limits: null
+        inputs: {}
+        outputs: {}
+        annotations:
+          exec: nodejs:6
+    triggers: {}
+    feeds: {}
+    rules: {}
+    inputs: {}
+    sequences: {}
+    apis: {}
+filepath: ""
+```
+</p>
