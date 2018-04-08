@@ -138,7 +138,7 @@ wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
 ### Step 4: Inspect the newly exported manifest. 
 
 <details><summary>You should see something similar to:</summary>
-```
+
 project:<br/>
     <p>name: lib1</p><br/>
     namespace: ""<br/>
