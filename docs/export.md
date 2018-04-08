@@ -186,7 +186,7 @@ packages:
         credential: ""
         exposedUrl: ""
         web-export: ""
-         main: ""
+        main: ""
         limits: null
         inputs: {}
         outputs: {}
@@ -233,4 +233,5 @@ packages:
     sequences: {}
     apis: {}
 filepath: ""
+
 </details>
