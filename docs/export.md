@@ -45,7 +45,7 @@ wsk package get lib1_package
 <details><summary>You should see an output similar to this one (clickable):</summary>
 <p>
 
-```
+```json
 ok: got package lib1_package
 {
     "namespace": "your_namespace",
@@ -139,16 +139,16 @@ wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
 
 <details><summary>You should see something similar to:</summary>
 <p>
-```
+
 project:<br/>
-  * name: lib1<br/>
-  * namespace: ""<br/>
-  * credential: ""<br/>
-  * apiHost: ""<br/>
-  * apigwAccessToken: ""<br/>
-  * version: ""<br/>
-  * packages: {}<br/>
-packages:\
+  name: lib1<br/>
+  namespace: ""<br/>
+  credential: ""<br/>
+  apiHost: ""<br/>
+  apigwAccessToken: ""<br/>
+  version: ""<br/>
+  packages: {}<br/>
+packages:
   lib1_package:
     name: lib1_package
     version: 0.0.2
@@ -234,6 +234,5 @@ packages:\
     sequences: {}
     apis: {}
 filepath: ""
-```
 </p>
 </details>
