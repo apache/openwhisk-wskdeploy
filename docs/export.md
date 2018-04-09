@@ -42,7 +42,7 @@ $ ./wskdeploy sync -m manifest_lib1.yaml
 $ ./wsk package get lib1_package
 ```
 
-<details><summary>You should see an output similar to this one (clickable):</summary>
+<details><summary>You should see an output similar to this one (**clickable**):</summary>
 <p>
 
 ```json
@@ -138,7 +138,7 @@ $ ./wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
 
 One can also export a project into a different directory, by specifying a manifest name containing this directory. The directory does not have to exist. `wskdeploy` will automatically create it if needed.
 
-<details><summary>Example (clickable):</summary>
+<details><summary>Example (**clickable**):</summary>
 
 ```sh
 $ ./wskdeploy export --projectname lib1 -m mydirectory/my_new_lib1_manifest.yaml
@@ -147,7 +147,7 @@ $ ./wskdeploy export --projectname lib1 -m mydirectory/my_new_lib1_manifest.yaml
 
 ### Step 4: Inspect the newly exported manifest (`my_new_lib1_manifest.yaml`) 
 
-<details><summary>You should see an output similar to this one (clickable):</summary>
+<details><summary>You should see an output similar to this one (**clickable**):</summary>
 
 ```yaml
 project:
@@ -241,7 +241,7 @@ project is exported. Let's examine the current directory into which `my_new_lib1
 $ ls -al lib1_package
 ```
 
-<details><summary>You should see an output similar to this one (clickable):</summary>
+<details><summary>You should see an output similar to this one (**clickable**):</summary>
 <pre>
 drwxr-xr-x  2 root root 4096 Apr  8 22:52 .
 drwxr-xr-x 26 root root 4096 Apr  8 23:38 ..
@@ -271,8 +271,8 @@ $ ./wskdeploy export --projectname EXT_PROJECT -m ext_test1/ext.yaml
 $ ls -al ./ext1
 ```
 
-You should see an output similar to this (clickable)
-<details><summary>You should see an output similar to this one (clickable):</summary>
+You should see an output similar to this (**clickable**)
+<details><summary>You should see an output similar to this one (**clickable**):</summary>
 <pre>
 drwxr-xr-x  3 root root 4096 Apr  9 19:32 .
 drwxr-xr-x 29 root root 4096 Apr  9 19:33 ..
@@ -287,7 +287,7 @@ drwxr-xr-x  4 root root 4096 Apr  9 19:32 dependencies
 $ ls -al ./ext1/dependencies
 ```
 
-<details><summary>You should see an output similar to this one (clickable):</summary>
+<details><summary>You should see an output similar to this one (**clickable**):</summary>
 <pre>
 drwxr-xr-x 4 root root 4096 Apr  9 19:32 .
 drwxr-xr-x 3 root root 4096 Apr  9 19:32 ..
