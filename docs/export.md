@@ -130,12 +130,20 @@ ok: got package lib1_package
 
 ### Step 3: Export the newly deployed `lib1` project
 
-Exporting into the current directory.
+Exporting `lib1` project into the current directory. Please note that the manifest name should be explicitly specified.
 
 ```sh
 $ ./wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
 ```
 
+One can also export a project into a different directory, by specifying a manifest name containing this directory. The directory does not have to exist. `wskdeploy` will automatically create it if needed.
+
+<details><summary>Example (clickable):</summary>
+
+```sh
+$ ./wskdeploy export --projectname lib1 -m mydirectory/my_new_lib1_manifest.yaml
+```
+</details>
 
 ### Step 4: Inspect the newly exported manifest (`my_new_lib1_manifest.yaml`) 
 
@@ -247,12 +255,54 @@ drwxr-xr-x 26 root root 4096 Apr  8 23:38 ..
 
 The dependencies mechanism allows to express a project structure, in which one project uses another project as a library. Also dependencies can be defined for multiple projects. Consider a project `lib2` with the manifest [manifest_lib2.yml](https://github.com/davidbreitgand/incubator-openwhisk-wskdeploy/blob/add-export-doc2readme/tests/src/integration/export/manifest_lib2.yaml) and a project `EXT_PROJECT` with the manifest [manifest_ext.yml](https://github.com/davidbreitgand/incubator-openwhisk-wskdeploy/blob/add-export-doc2readme/tests/src/integration/export/manifest_ext.yaml). `EXT_PROJECT` (stands for _extending project_) uses actions from both package `lib1_package` (defined in the `lib1` project) and `lib2_package` (defined in the `lib2` project) in order to define rules specific to `EXT_PROJECT`.
 
-`wskdeploy export` will automatically export both `lib1` and `lib2` along with `EXT_PROJECT`. Each exported project will have a manifest and package folder structure as explained [above](#-Basic-Usage-by-Example). 
+`wskdeploy export` will automatically export both `lib1` and `lib2` along with `EXT_PROJECT`. It will not export bindings, because they will be automatically created when re-deploying `lib1`, `lib2`, and `EXT_PROJECT` at another OpenWhisk instance. Each exported project will have a manifest and package folder structure similar to the explained [above](#-Basic-Usage-by-Example). The dependency projects will be placed into `dependencies` folder beneath the folder where the manifest of the top project (`EXT_PROJECT` in our example) is placed.
 
-## Notes
+### Exporting a Project with Dependencies
+
+### Step 1: export `EXT_PROJECT`
+
+```sh
+$ ./wskdeploy export --projectname EXT_PROJECT -m ext_test1/ext.yaml
+```
+
+### Step 2: Inspect the resulting directory structure
+
+```sh
+$ ls -al ./ext1
+```
+
+You should see an output similar to this (clickable)
+<details><summary>You should see an output similar to this one (clickable):</summary>
+<pre>
+drwxr-xr-x  3 root root 4096 Apr  9 19:32 .
+drwxr-xr-x 29 root root 4096 Apr  9 19:33 ..
+drwxr-xr-x  4 root root 4096 Apr  9 19:32 dependencies
+-rw-r--r--  1 root root 1260 Apr  9 19:32 ext.yaml
+</pre>
+</details>
+
+### Step 3 Inspect the dependencies directory
+
+```sh
+$ ls -al ./ext1/dependencies
+```
+
+<details><summary>You should see an output similar to this one (clickable):</summary>
+<pre>
+drwxr-xr-x 4 root root 4096 Apr  9 19:32 .
+drwxr-xr-x 3 root root 4096 Apr  9 19:32 ..
+drwxr-xr-x 2 root root 4096 Apr  9 19:32 lib1_package
+-rw-r--r-- 1 root root 1751 Apr  9 19:32 lib1.yaml
+drwxr-xr-x 2 root root 4096 Apr  9 19:32 lib2_package
+-rw-r--r-- 1 root root 1751 Apr  9 19:32 lib2.yaml
+</pre>
+</details>
+
+### Notes
 
 + Currently, dependencies are not treated recursively when exporting a project. Hence, only the upper level projects defined as a dependency will be exported.
 + To redeploy a project with dependencies, a user should first deploy dependency projects projects (`lib1` and `lib2` in our example) and only after that, `EXT_PROJECT` can be deployed successfully. 
 + `wskdeploy export` does not check for circular dependencies. In case of circular dependencies specified by the user, `wskdeploy`'s behavior is undefined.
++ The manifest name for exporting a top project (`EXT_PROJECT` in our case) should be explicitly specified. 
 
 
