@@ -231,13 +231,13 @@ $ ls -al lib1_package
 ```
 
 <details><summary>You should see an output similar to this one (clickable):</summary>
-```sh
+<pre>
 drwxr-xr-x  2 root root 4096 Apr  8 22:52 .</br>
 drwxr-xr-x 26 root root 4096 Apr  8 23:38 ..</br>
 -rw-r--r--  1 root root  331 Apr  8 22:59 lib1_greeting1.js</br>
 -rw-r--r--  1 root root  331 Apr  8 22:58 lib1_greeting2.js</br>
 -rw-r--r--  1 root root  331 Apr  8 22:58 lib1_greeting3.js</br>
-```
+</pre>
 </details>
 
 ## Advanced Usage 
