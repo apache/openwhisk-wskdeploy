@@ -42,7 +42,7 @@ $ ./wskdeploy sync -m manifest_lib1.yaml
 $ ./wsk package get lib1_package
 ```
 
-<details><summary>You should see an output similar to this one (__clickable__):</summary>
+<details><summary>You should see an output similar to this one (<b>clickable</b>):</summary>
 <p>
 
 ```json
