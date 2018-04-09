@@ -3,7 +3,7 @@
 `wskdeploy export` can be used to export `OpenWhisk` assets previously deployed as a *managed project* via `wskdeploy -m manifest.yaml`. 
 `wskdeploy export` will create a manifest for the managed project assets and separate manifests for each managed project that this managed 
 project depends upon, if such dependencies exist and have been described in `manifest.yml` when the managed project has been initially deployed.
-The manifest(s) resulting from executing `wskdeploy export` can be later used for deploying at a different `OpenWhisk` instance.
+The manifest(s) resulting from executing `wskdeploy export` can be later used for deploying at a different `OpenWhisk` instance. The code of actions, which are defined in the packages of the exported project will be saved into folders with the names being the names of the package, the actions belong to.
 
 ## Use Cases
 
@@ -221,9 +221,27 @@ filepath: ""
 ```
 </details>
 
+### Step 5: Inspect the newly exported package . 
+
+The code of the actions defined in the packages comprising the exported project will be saved into the folders with the names of 
+the respective packages in the folder where the 
+
+```sh
+$ ls -al lib1_package
+```
+
+<details><summary>You should see an output similar to this one (clickable):</summary>
+```sh
+drwxr-xr-x  2 root root 4096 Apr  8 22:52 .
+drwxr-xr-x 26 root root 4096 Apr  8 23:38 ..
+-rw-r--r--  1 root root  331 Apr  8 22:59 lib1_greeting1.js
+-rw-r--r--  1 root root  331 Apr  8 22:58 lib1_greeting2.js
+-rw-r--r--  1 root root  331 Apr  8 22:58 lib1_greeting3.js
+```
+</details>
 
 ## Advanced Usage 
 
 The dependencies mechanism allows to define 
 
-</details>
+
