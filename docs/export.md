@@ -137,6 +137,54 @@ wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
 
 ### Step 4: Inspect the newly exported manifest. 
 
+```
+project:
+  name: lib1
+  namespace: ""
+  credential: ""
+  apiHost: ""
+  apigwAccessToken: ""
+  version: ""
+  packages: {}
+packages:
+  lib1_package:
+    name: lib1_package
+    version: 0.0.2
+    license: ""
+    dependencies: {}
+    namespace: kpavel@il.ibm.com_uspace
+    credential: ""
+    apiHost: ""
+    apigwAccessToken: ""
+    actions:
+      lib1_greeting1:
+        name: lib1_greeting1
+        location: ""
+        version: 0.0.1
+        function: lib1_package/lib1_greeting1.js
+        code: ""
+        runtime: nodejs:6
+        namespace: kpavel@il.ibm.com_uspace/lib1_package
+        credential: ""
+        exposedUrl: ""
+        web-export: ""
+        main: ""
+        limits: null
+        inputs: {}
+        outputs: {}
+        annotations:
+          exec: nodejs:6
+      lib1_greeting2:
+        name: lib1_greeting2
+        location: ""
+        version: 0.0.1
+        function: lib1_package/lib1_greeting2.js
+        code: ""
+        runtime: nodejs:6
+     
+```
+
+
 ## Advanced Usage 
 
 The dependencies mechanism allows to define 
