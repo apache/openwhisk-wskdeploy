@@ -154,7 +154,7 @@ packages:
     version: 0.0.2
     license: ""
     dependencies: {}
-    namespace: kpavel@il.ibm.com_uspace
+    namespace: your_namespace
     credential: ""
     apiHost: ""
     apigwAccessToken: ""
@@ -166,7 +166,7 @@ packages:
         function: lib1_package/lib1_greeting1.js
         code: ""
         runtime: nodejs:6
-        namespace: kpavel@il.ibm.com_uspace/lib1_package
+        namespace: your_namespace/lib1_package
         credential: ""
         exposedUrl: ""
         web-export: ""
@@ -183,6 +183,40 @@ packages:
         function: lib1_package/lib1_greeting2.js
         code: ""
         runtime: nodejs:6
+        namespace: your_namespace/lib1_package
+        credential: ""
+        exposedUrl: ""
+        web-export: ""
+        main: ""
+        limits: null
+        inputs: {}
+        outputs: {}
+        annotations:
+          exec: nodejs:6
+      lib1_greeting3:
+        name: lib1_greeting3
+        location: ""
+        version: 0.0.1
+        function: lib1_package/lib1_greeting3.js
+        code: ""
+        runtime: nodejs:6
+        namespace: your_namespace/lib1_package
+        credential: ""
+        exposedUrl: ""
+        web-export: ""
+        main: ""
+        limits: null
+        inputs: {}
+        outputs: {}
+        annotations:
+          exec: nodejs:6
+    triggers: {}
+    feeds: {}
+    rules: {}
+    inputs: {}
+    sequences: {}
+    apis: {}
+filepath: ""
 
 ```
 </details>
