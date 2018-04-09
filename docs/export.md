@@ -1,4 +1,4 @@
-# Using `wsdeploy` for exporting `OpenWhisk` assets
+# Using `wskdeploy` for exporting `OpenWhisk` assets
 
 `wskdeploy export` can be used to export `OpenWhisk` assets previously deployed as a *managed project* via `wskdeploy -m manifest.yaml`. 
 `wskdeploy export` will create a manifest for the managed project assets and separate manifests for each managed project that this managed 
