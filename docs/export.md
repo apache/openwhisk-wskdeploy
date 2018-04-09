@@ -246,9 +246,9 @@ drwxr-xr-x 26 root root 4096 Apr  8 23:38 ..
 
 ## Advanced Usage 
 
-The dependencies mechanism allows to express a project structure, in which one project uses another project as a library. Also dependencies can be defined for multiple projects. Consider a project `lib2` with the manifest [manifest_lib2.yml](https://github.com/davidbreitgand/incubator-openwhisk-wskdeploy/blob/add-export-doc2readme/tests/src/integration/export/manifest_lib2.yaml) and a project `EXT_PROJECT` with the manifest [manifest_ext.yml](https://github.com/davidbreitgand/incubator-openwhisk-wskdeploy/blob/add-export-doc2readme/tests/src/integration/export/manifest_ext.yaml). `EXT_PROJECT` (stands for _extending project_) uses actions from both package `lib1_package` (defined in the `lib1` project) and `lib2_package` (defined in the `lib2` project) in order to define rules specific to `EXT_PROJECT`.
+The dependencies mechanism allows to express a project structure, in which one project uses another project as a library. Also dependencies can be defined for multiple projects. Consider a project `lib2` with the manifest [manifest_lib2.yml](../tests/src/integration/export/manifest_lib2.yaml) and a project `EXT_PROJECT` with the manifest [manifest_ext.yml](../tests/src/integration/export/manifest_ext.yaml). `EXT_PROJECT` (stands for _extending project_) uses actions from both package `lib1_package` (defined in the `lib1` project) and `lib2_package` (defined in the `lib2` project) in order to define rules specific to `EXT_PROJECT`.
 
-`wskdeploy export` will automatically export both `lib1` and `lib2` along with `EXT_PROJECT`. It will not export bindings, because they will be automatically created when re-deploying `lib1`, `lib2`, and `EXT_PROJECT` at another OpenWhisk instance. Each exported project will have a manifest and package folder structure similar to the explained [above](#-Basic-Usage-by-Example). The dependency projects will be placed into `dependencies` folder beneath the folder where the manifest of the top project (`EXT_PROJECT` in our example) is placed.
+`wskdeploy export` will automatically export both `lib1` and `lib2` along with `EXT_PROJECT`. It will not export bindings, because they will be automatically created when re-deploying `lib1`, `lib2`, and `EXT_PROJECT` at another OpenWhisk instance. Each exported project will have a manifest and package folder structure similar to the explained [above](#Basic-Usage-by-Example). The dependency projects will be placed into `dependencies` folder beneath the folder where the manifest of the top project (`EXT_PROJECT` in our example) is placed.
 
 ### Exporting a Project with Dependencies
 
@@ -292,7 +292,7 @@ drwxr-xr-x 2 root root 4096 Apr  9 19:32 lib2_package
 
 #### Notes
 
-+ Currently, dependencies are not treated recursively when exporting a project. Hence, only the upper level projects defined as a dependency will be exported.
++ Dependencies are recursively exported.
 + To redeploy a project with dependencies, a user should first deploy dependency projects projects (`lib1` and `lib2` in our example) and only after that, `EXT_PROJECT` can be deployed successfully. 
 + `wskdeploy export` does not check for circular dependencies. In case of circular dependencies specified by the user, `wskdeploy`'s behavior is undefined.
 + The manifest name for exporting a top project (`EXT_PROJECT` in our case) should be explicitly specified. 
