@@ -292,7 +292,7 @@ drwxr-xr-x 2 root root 4096 Apr  9 19:32 lib2_package
 
 #### Notes
 
-+ Dependencies are not exported recursively.
++ Recursive dependencies are not supported.
 + To redeploy a project with dependencies, a user should first deploy dependency projects projects (`lib1` and `lib2` in our example) and only after that, `EXT_PROJECT` can be deployed successfully. 
 + `wskdeploy export` does not check for circular dependencies. In case of circular dependencies specified by the user, `wskdeploy`'s behavior is undefined.
 + The manifest name for exporting a top project (`EXT_PROJECT` in our case) should be explicitly specified. 
