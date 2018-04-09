@@ -33,13 +33,13 @@ same for all three, but the action names are different).
 ### Step 1: deploy `lib1` as a managed project 
 
 ```sh
-wskdeploy sync -m manifest_lib1.yaml
+$ wskdeploy sync -m manifest_lib1.yaml
 ```
 
 ### Step 2: validate `lib1` deployment
 
 ```sh
-wsk package get lib1_package
+$ wsk package get lib1_package
 ```
 
 <details><summary>You should see an output similar to this one (clickable):</summary>
@@ -139,5 +139,6 @@ wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
 
 ## Advanced Usage 
 
+The dependencies mechanism allows to define 
 
 </details>
