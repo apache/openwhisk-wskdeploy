@@ -33,13 +33,13 @@ same for all three, but the action names are different).
 ### Step 1: deploy `lib1` as a managed project 
 
 ```sh
-$ wskdeploy sync -m manifest_lib1.yaml
+$ ./wskdeploy sync -m manifest_lib1.yaml
 ```
 
 ### Step 2: validate `lib1` deployment
 
 ```sh
-$ wsk package get lib1_package
+$ ./wsk package get lib1_package
 ```
 
 <details><summary>You should see an output similar to this one (clickable):</summary>
@@ -130,8 +130,10 @@ ok: got package lib1_package
 
 ### Step 3: Export the newly deployed `lib1` project
 
+Exporting into the current directory.
+
 ```sh
-wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
+$ ./wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
 ```
 
 
@@ -225,7 +227,7 @@ filepath: ""
 
 The code of the actions defined in the packages comprising the exported project will be saved into the folders named after
 the respective packages. The packages' folders will be created in the same directory into which the manifest file of the
-project is exported. Let's examine the current directory into which `my_new_lib1_manifest.yaml` was exported in [Step 3](#step-3:-export-the-newly-deployed-lib1-project)
+project is exported. Let's examine the current directory into which `my_new_lib1_manifest.yaml` was exported in Step 3 above.
 
 ```sh
 $ ls -al lib1_package
@@ -243,6 +245,14 @@ drwxr-xr-x 26 root root 4096 Apr  8 23:38 ..
 
 ## Advanced Usage 
 
-The dependencies mechanism allows to define 
+The dependencies mechanism allows to express a project structure, in which one project uses another project as a library. Also dependencies can be defined for multiple projects. Consider a project `lib2` with the manifest [manifest_lib2.yml](https://github.com/davidbreitgand/incubator-openwhisk-wskdeploy/blob/add-export-doc2readme/tests/src/integration/export/manifest_lib2.yaml) and a project `EXT_PROJECT` with the manifest [manifest_ext.yml](https://github.com/davidbreitgand/incubator-openwhisk-wskdeploy/blob/add-export-doc2readme/tests/src/integration/export/manifest_ext.yaml). `EXT_PROJECT` (stands for _extending project_) uses actions from both package `lib1_package` (defined in the `lib1` project) and `lib2_package` (defined in the `lib2` project) in order to define rules specific to `EXT_PROJECT`.
+
+`wskdeploy export` will automatically export both `lib1` and `lib2` along with `EXT_PROJECT`. Each exported project will have a manifest and package folder structure as explained [above](#-Basic-Usage-by-Example). 
+
+## Notes
+
++ Currently, dependencies are not treated recursively when exporting a project. Hence, only the upper level projects defined as a dependency will be exported.
++ To redeploy a project with dependencies, a user should first deploy dependency projects projects (`lib1` and `lib2` in our example) and only after that, `EXT_PROJECT` can be deployed successfully. 
++ `wskdeploy export` does not check for circular dependencies. In case of circular dependencies specified by the user, `wskdeploy`'s behavior is undefined.
 
 
