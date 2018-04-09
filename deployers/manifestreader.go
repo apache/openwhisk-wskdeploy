@@ -25,6 +25,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/davecgh/go-spew/spew"
 )
 
 var clientConfig *whisk.Config
@@ -230,7 +231,27 @@ func (reader *ManifestReader) SetTriggers(triggers []*whisk.Trigger) error {
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
 
+	spew.Dump(triggers)
 	for _, trigger := range triggers {
+		if _, exists := dep.Deployment.Triggers[trigger.Name]; exists {
+			var feed string
+			var existingFeed string
+			for _, a := range dep.Deployment.Triggers[trigger.Name].Annotations {
+				if a.Key == parsers.YAML_KEY_FEED {
+					existingFeed = a.Value.(string)
+				}
+			}
+			for _, a := range trigger.Annotations {
+				if a.Key == parsers.YAML_KEY_FEED {
+					feed = a.Value.(string)
+				}
+			}
+			if feed != existingFeed {
+				err := wski18n.T(wski18n.ID_ERR_SEQUENCE_HAVING_SAME_NAME_AS_ACTION_X_action_X,
+					map[string]interface{}{wski18n.KEY_SEQUENCE: trigger.Name})
+				return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
+			}
+		}
 		dep.Deployment.Triggers[trigger.Name] = trigger
 	}
 	return nil

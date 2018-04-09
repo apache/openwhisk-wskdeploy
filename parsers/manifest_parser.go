@@ -20,14 +20,12 @@ package parsers
 import (
 	"encoding/base64"
 	"errors"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path"
-	"strings"
-
-	"gopkg.in/yaml.v2"
-
 	"path/filepath"
+	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
@@ -35,7 +33,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
 )
 
 const (

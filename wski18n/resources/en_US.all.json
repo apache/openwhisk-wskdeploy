@@ -329,7 +329,7 @@
   },
   {
     "id": "msg_err_sequence_having_same_name_as_action",
-    "translation": "Sequence [{{.action}}] is already defined as an action under the same package. Actions and sequences can not have same name in a single package."
+    "translation": "Sequence [{{.sequence}}] is already defined as an action under the same package. Actions and sequences can not have same name in a single package."
   },
   {
     "id": "WARNINGS",
