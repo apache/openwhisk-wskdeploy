@@ -135,9 +135,11 @@ wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
 ```
 
 
-### Step 4: Inspect the newly exported manifest. 
+### Step 4: Inspect the newly exported manifest (`my_new_lib1_manifest.yaml`). 
 
-```
+<details><summary>You should see an output similar to this one (clickable):</summary>
+
+```yaml
 project:
   name: lib1
   namespace: ""
@@ -181,8 +183,9 @@ packages:
         function: lib1_package/lib1_greeting2.js
         code: ""
         runtime: nodejs:6
-     
+
 ```
+</details>
 
 
 ## Advanced Usage 
