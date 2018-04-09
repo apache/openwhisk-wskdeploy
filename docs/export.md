@@ -259,13 +259,13 @@ The dependencies mechanism allows to express a project structure, in which one p
 
 ### Exporting a Project with Dependencies
 
-### Step 1: export `EXT_PROJECT`
+#### Step 1: export `EXT_PROJECT`
 
 ```sh
 $ ./wskdeploy export --projectname EXT_PROJECT -m ext_test1/ext.yaml
 ```
 
-### Step 2: Inspect the resulting directory structure
+#### Step 2: Inspect the resulting directory structure
 
 ```sh
 $ ls -al ./ext1
@@ -281,7 +281,7 @@ drwxr-xr-x  4 root root 4096 Apr  9 19:32 dependencies
 </pre>
 </details>
 
-### Step 3 Inspect the dependencies directory
+#### Step 3 Inspect the dependencies directory
 
 ```sh
 $ ls -al ./ext1/dependencies
@@ -298,7 +298,7 @@ drwxr-xr-x 2 root root 4096 Apr  9 19:32 lib2_package
 </pre>
 </details>
 
-### Notes
+#### Notes
 
 + Currently, dependencies are not treated recursively when exporting a project. Hence, only the upper level projects defined as a dependency will be exported.
 + To redeploy a project with dependencies, a user should first deploy dependency projects projects (`lib1` and `lib2` in our example) and only after that, `EXT_PROJECT` can be deployed successfully. 
