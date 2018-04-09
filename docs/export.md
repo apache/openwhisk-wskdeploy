@@ -225,7 +225,7 @@ filepath: ""
 
 The code of the actions defined in the packages comprising the exported project will be saved into the folders named after
 the respective packages. The packages' folders will be created in the same directory into which the manifest file of the
-project is exported. Let's examine the current directory into which `my_new_lib1_manifest.yaml` was exported in [Step 3](#Step 3: Export the newly deployed `lib1`)
+project is exported. Let's examine the current directory into which `my_new_lib1_manifest.yaml` was exported in [Step 3](#Step-3:-Export-the-newly-deployed-`lib1`)
 
 ```sh
 $ ls -al lib1_package
