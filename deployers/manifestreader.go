@@ -20,6 +20,7 @@ package deployers
 import (
 	"strings"
 
+	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
@@ -247,8 +248,11 @@ func (reader *ManifestReader) SetTriggers(triggers []*whisk.Trigger) error {
 				}
 			}
 			if feed != existingFeed {
-				err := wski18n.T(wski18n.ID_ERR_SEQUENCE_HAVING_SAME_NAME_AS_ACTION_X_action_X,
-					map[string]interface{}{wski18n.KEY_SEQUENCE: trigger.Name})
+				feed = fmt.Sprintf("%q", feed)
+				existingFeed = fmt.Sprintf("%q", existingFeed)
+				err := wski18n.T(wski18n.ID_ERR_CONFLICTING_TRIGGERS_ACROSS_PACKAGES_X_trigger_X_feed_X,
+					map[string]interface{}{wski18n.KEY_TRIGGER: trigger.Name,
+						wski18n.KEY_TRIGGER_FEED: strings.Join([]string{feed, existingFeed}, ", ")})
 				return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
 			}
 		}
@@ -264,6 +268,15 @@ func (reader *ManifestReader) SetRules(rules []*whisk.Rule) error {
 	defer dep.mt.Unlock()
 
 	for _, rule := range rules {
+		if _, exists := dep.Deployment.Rules[rule.Name]; exists {
+			if rule.Action.(string) != dep.Deployment.Rules[rule.Name].Action.(string) {
+				if rule.Trigger.(string) != dep.Deployment.Rules[rule.Name].Trigger.(string) {
+					err := wski18n.T(wski18n.ID_ERR_SEQUENCE_HAVING_SAME_NAME_AS_ACTION_X_action_X,
+						map[string]interface{}{wski18n.KEY_SEQUENCE: rule.Name})
+					return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
+				}
+			}
+		}
 		dep.Deployment.Rules[rule.Name] = rule
 	}
 	return nil

@@ -35,4 +35,7 @@ packages:
             rule1:
                 trigger: trigger2
                 action: hello
+            rule2:
+                trigger: trigger2
+                action: hello
 

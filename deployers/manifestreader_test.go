@@ -338,3 +338,21 @@ func TestManifestReader_SetTriggers_Bogus(t *testing.T) {
 	spew.Dump(err)
 	assert.NotNil(t, err, fmt.Sprintf(TEST_ERROR_FAILED_TO_REPORT_ERROR, manifestFile))
 }
+
+func TestManifestReader_SetRules_Bogus(t *testing.T) {
+	manifestFile := "../tests/dat/manifest_validate_rules_bogus.yaml"
+	deployer, err := buildServiceDeployer(manifestFile)
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_BUILD_SERVICE_DEPLOYER, manifestFile))
+
+	var manifestReader = NewManifestReader(deployer)
+	manifestReader.IsUndeploy = false
+	manifest, manifestParser, err := manifestReader.ParseManifest()
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
+
+	err = manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
+
+	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
+	spew.Dump(err)
+	assert.NotNil(t, err, fmt.Sprintf(TEST_ERROR_FAILED_TO_REPORT_ERROR, manifestFile))
+}
