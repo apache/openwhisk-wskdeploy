@@ -128,14 +128,14 @@ ok: got package lib1_package
 </p>
 </details>
 
-### Step 3: Export the newly deployed `lib1`
+### Step 3: Export the newly deployed lib1 project
 
 ```sh
 wskdeploy export --projectname lib1 -m my_new_lib1_manifest.yaml
 ```
 
 
-### Step 4: Inspect the newly exported manifest (`my_new_lib1_manifest.yaml`). 
+### Step 4: Inspect the newly exported manifest (`my_new_lib1_manifest.yaml`) 
 
 <details><summary>You should see an output similar to this one (clickable):</summary>
 
@@ -221,11 +221,11 @@ filepath: ""
 ```
 </details>
 
-### Step 5: Inspect the newly exported package . 
+### Step 5: Inspect the newly exported package 
 
 The code of the actions defined in the packages comprising the exported project will be saved into the folders named after
 the respective packages. The packages' folders will be created in the same directory into which the manifest file of the
-project is exported. Let's examine the current directory into which `my_new_lib1_manifest.yaml` was exported in [Step 3](#Step-3:-Export-the-newly-deployed-`lib1`)
+project is exported. Let's examine the current directory into which `my_new_lib1_manifest.yaml` was exported in [Step 3](#Step-3:-Export-the-newly-deployed-lib1-project)
 
 ```sh
 $ ls -al lib1_package
