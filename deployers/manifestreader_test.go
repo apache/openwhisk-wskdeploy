@@ -177,8 +177,8 @@ func TestManifestReader_SetDependencies(t *testing.T) {
 	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
 
-	expectedLocationHelloWorlds := "github.com/apache/incubator-openwhisk-test/packages/helloworlds"
-	expectedLocationHelloWhisk := " github.com/apache/incubator-openwhisk-test/packages/hellowhisk"
+	expectedLocationHelloWorlds := "https://github.com/apache/incubator-openwhisk-test/packages/helloworlds"
+	expectedLocationHelloWhisk := "https://github.com/apache/incubator-openwhisk-test/packages/hellowhisk"
 	expectedLocationUtils := "/whisk.system/utils"
 
 	for pkgName, pkg := range deployer.Deployment.Packages {
