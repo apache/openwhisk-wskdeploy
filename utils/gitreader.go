@@ -129,6 +129,5 @@ func (reader *GitReader) CloneDependency() error {
 	}
 
 	os.Rename(rootDir, depPath)
-
 	return nil
 }

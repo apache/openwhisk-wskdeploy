@@ -150,7 +150,7 @@ func loadDefaultDeploymentFileFromProjectPath(command string, projectPath string
 	} else if _, err := os.Stat(path.Join(projectPath, utils.DeploymentFileNameYml)); err == nil {
 		utils.Flags.DeploymentPath = path.Join(projectPath, utils.DeploymentFileNameYml)
 	}
-	displayCommandUsingFilenameMessage(command, wski18n.DEPLOYMENT_FILE, utils.Flags.ManifestPath)
+	displayCommandUsingFilenameMessage(command, wski18n.DEPLOYMENT_FILE, utils.Flags.DeploymentPath)
 	return nil
 }
 
@@ -167,14 +167,19 @@ func Deploy() error {
 	projectPath, _ := filepath.Abs(project_Path)
 
 	// If manifest filename is not provided, attempt to load default manifests from project path
+	// default manifests are manifest.yaml and manifest.yml
+	// return failure if none of the default manifest files were found
 	if utils.Flags.ManifestPath == "" {
 		if err := loadDefaultManifestFileFromProjectPath(wski18n.CMD_DEPLOY, projectPath); err != nil {
 			return err
 		}
 	}
 
+	// If deployment filename is not provided, attempt to load default deployment files from project path
+	// default deployments are deployment.yaml and deployment.yml
+	// continue processing manifest file, even if none of the default
+	// deployment files were found as deployment files are optional
 	if utils.Flags.DeploymentPath == "" {
-
 		if err := loadDefaultDeploymentFileFromProjectPath(wski18n.CMD_DEPLOY, projectPath); err != nil {
 			return err
 		}
@@ -182,7 +187,9 @@ func Deploy() error {
 
 	if utils.MayExists(utils.Flags.ManifestPath) {
 
+		// Create an instance of ServiceDeployer
 		var deployer = deployers.NewServiceDeployer()
+		// Set Project Path, Manifest Path, and Deployment Path of ServiceDeployer
 		deployer.ProjectPath = projectPath
 		deployer.ManifestPath = utils.Flags.ManifestPath
 		deployer.DeploymentPath = utils.Flags.DeploymentPath
@@ -191,6 +198,7 @@ func Deploy() error {
 		// master record of any dependency that has been downloaded
 		deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
 
+		// Read credentials from Configuration file, manifest file or deployment file
 		clientConfig, error := deployers.NewWhiskConfig(
 			utils.Flags.CfgFile,
 			utils.Flags.DeploymentPath,
@@ -210,14 +218,14 @@ func Deploy() error {
 		// The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
 		setSupportedRuntimes(clientConfig.Host)
 
+		// Construct Deployment Plan
 		err := deployer.ConstructDeploymentPlan()
-
 		if err != nil {
 			return err
 		}
 
+		// Deploy all OW entities
 		err = deployer.Deploy()
-
 		if err != nil {
 			return err
 		} else {

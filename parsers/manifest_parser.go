@@ -20,14 +20,12 @@ package parsers
 import (
 	"encoding/base64"
 	"errors"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path"
-	"strings"
-
-	"gopkg.in/yaml.v2"
-
 	"path/filepath"
+	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"

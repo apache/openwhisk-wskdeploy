@@ -316,6 +316,30 @@
     "translation": "File already exists."
   },
   {
+    "id": "msg_err_different_dependencies_with_same_label",
+    "translation": "One single dependency [{{.dependency}}] has two different locations [{{.location}}]. This kind of specification is not supported. Please update the dependency label [{{.dependency}}] in the manifest file to point to same location or create two separate labels for two different locations."
+  },
+  {
+    "id": "msg_err_action_without_kind",
+    "translation": "Action [{{.action}}] has no kind set."
+  },
+  {
+    "id": "msg_err_action_without_code",
+    "translation": "Action [{{.action}}] has no source code."
+  },
+  {
+    "id": "msg_err_sequence_having_same_name_as_action",
+    "translation": "Sequence [{{.sequence}}] is already defined as an action under the same package. Actions and sequences can not have same name in a single package."
+  },
+  {
+    "id": "msg_err_conflicting_triggers_across_packages",
+    "translation": "One single trigger [{{.trigger}}] is defined with multiple feeds [{{.feed}}]. Triggers are created directly under the namespace, its not possible to have triggers with same name but different feeds. Please update trigger names in manifest file."
+  },
+  {
+    "id": "msg_err_conflicting_rules_across_packages",
+    "translation": "One single rule [{{.rule}}] is defined with different actions [{{.action}}] and/or triggers [{{.trigger}}]. Rules are created directly under the namespace, its not possible to have rules with same name but associated with different actions/triggers. Please update rule names in manifest file."
+  },
+  {
     "id": "WARNINGS",
     "translation": "================= WARNINGS ==================="
   },
