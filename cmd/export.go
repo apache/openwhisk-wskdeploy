@@ -29,7 +29,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/spf13/cobra"
 )
@@ -79,20 +78,27 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML,
 		pkg.Sequences[wskAction.Name] = *seq
 	} else {
 		parsedAction := *maniyaml.ComposeParsersAction(*wskAction)
-		manifestDir := filepath.Dir(targetManifest)
+		runtime := strings.Split(wskAction.Exec.Kind, ":")[0]
+		if strings.ToLower(runtime) == BLACKBOX {
+			// storing blackbox image reference without saving the code as its impossible
+			parsedAction.Docker = wskAction.Exec.Image
+		} else {
+			manifestDir := filepath.Dir(targetManifest)
 
-		// store function file under action package name subdirectory in the specified manifest folder
-		functionDir := filepath.Join(manifestDir, packageName)
-		os.MkdirAll(functionDir, os.ModePerm)
+			// store function file under action package name subdirectory in the specified manifest folder
+			functionDir := filepath.Join(manifestDir, packageName)
+			os.MkdirAll(functionDir, os.ModePerm)
 
-		// save code file at the full path
-		filename, err := saveCode(*wskAction, functionDir)
-		if err != nil {
-			return err
+			// save code file at the full path
+			filename, err := saveCode(*wskAction, functionDir)
+			if err != nil {
+				return err
+			}
+
+			// store function in manifest under path relative to manifest root
+			parsedAction.Function = filepath.Join(packageName, filename)
 		}
 
-		// store function in manifest under path relative to manifest root
-		parsedAction.Function = filepath.Join(packageName, filename)
 		pkg.Actions[wskAction.Name] = parsedAction
 	}
 
@@ -329,11 +335,6 @@ func saveCode(action whisk.Action, directory string) (string, error) {
 
 	exec = *action.Exec
 	runtime = strings.Split(exec.Kind, ":")[0]
-
-	if strings.ToLower(runtime) == BLACKBOX {
-		return "", wskderrors.NewInvalidRuntimeError(wski18n.T(wski18n.ID_ERR_CANT_SAVE_DOCKER_RUNTIME),
-			directory, action.Name, BLACKBOX, utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
-	}
 
 	if exec.Code != nil {
 		code = *exec.Code
