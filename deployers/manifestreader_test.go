@@ -65,21 +65,13 @@ func buildServiceDeployer(manifestFile string) (*ServiceDeployer, error) {
 
 	deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
 
-	clientConfig, error := NewWhiskConfig(
-		utils.Flags.CfgFile,
-		deploymentFile,
-		manifestFile)
-	if error != nil {
-		return nil, error
+	config := whisk.Config{
+		Namespace:        "test",
+		AuthToken:        "user:pass",
+		Host:             "host",
+		ApigwAccessToken: "token",
 	}
-
-	whiskClient, error := CreateNewClient(clientConfig)
-	if error != nil {
-		return nil, error
-	}
-
-	deployer.Client = whiskClient
-	deployer.ClientConfig = clientConfig
+	deployer.ClientConfig = &config
 
 	op, error := utils.ParseOpenWhisk(clientConfig.Host)
 	if error == nil {
