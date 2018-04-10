@@ -26,7 +26,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/davecgh/go-spew/spew"
 )
 
 var clientConfig *whisk.Config
@@ -232,7 +231,6 @@ func (reader *ManifestReader) SetTriggers(triggers []*whisk.Trigger) error {
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
 
-	spew.Dump(triggers)
 	for _, trigger := range triggers {
 		if _, exists := dep.Deployment.Triggers[trigger.Name]; exists {
 			var feed string
@@ -269,12 +267,20 @@ func (reader *ManifestReader) SetRules(rules []*whisk.Rule) error {
 
 	for _, rule := range rules {
 		if _, exists := dep.Deployment.Rules[rule.Name]; exists {
-			if rule.Action.(string) != dep.Deployment.Rules[rule.Name].Action.(string) {
-				if rule.Trigger.(string) != dep.Deployment.Rules[rule.Name].Trigger.(string) {
-					err := wski18n.T(wski18n.ID_ERR_SEQUENCE_HAVING_SAME_NAME_AS_ACTION_X_action_X,
-						map[string]interface{}{wski18n.KEY_SEQUENCE: rule.Name})
-					return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
-				}
+			action := rule.Action.(string)
+			existingAction := dep.Deployment.Rules[rule.Name].Action.(string)
+			trigger := rule.Trigger.(string)
+			existingTrigger := dep.Deployment.Rules[rule.Name].Trigger.(string)
+			if action != existingAction || trigger != existingTrigger {
+				action = fmt.Sprintf("%q", action)
+				existingAction = fmt.Sprintf("%q", existingAction)
+				trigger = fmt.Sprintf("%q", trigger)
+				existingTrigger = fmt.Sprintf("%q", existingTrigger)
+				err := wski18n.T(wski18n.ID_ERR_CONFLICTING_RULES_ACROSS_PACKAGES_X_rule_X_action_X_trigger_X,
+					map[string]interface{}{wski18n.KEY_RULE: rule.Name,
+						wski18n.KEY_TRIGGER: strings.Join([]string{trigger, existingTrigger}, ", "),
+						wski18n.KEY_ACTION:  strings.Join([]string{action, existingAction}, ", ")})
+				return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
 			}
 		}
 		dep.Deployment.Rules[rule.Name] = rule

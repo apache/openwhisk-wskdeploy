@@ -80,6 +80,7 @@ const (
 	KEY_SEQUENCE        = "sequence"
 	KEY_TRIGGER         = "trigger"
 	KEY_TRIGGER_FEED    = "feed"
+	KEY_RULE            = "rule"
 )
 
 // DO NOT TRANSLATE

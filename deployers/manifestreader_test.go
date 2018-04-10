@@ -27,7 +27,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -317,7 +316,6 @@ func TestManifestReader_SetSequences_Bogus(t *testing.T) {
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
 
 	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
-	spew.Dump(err)
 	assert.NotNil(t, err, fmt.Sprintf(TEST_ERROR_FAILED_TO_REPORT_ERROR, manifestFile))
 }
 
@@ -335,7 +333,6 @@ func TestManifestReader_SetTriggers_Bogus(t *testing.T) {
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
 
 	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
-	spew.Dump(err)
 	assert.NotNil(t, err, fmt.Sprintf(TEST_ERROR_FAILED_TO_REPORT_ERROR, manifestFile))
 }
 
@@ -353,6 +350,5 @@ func TestManifestReader_SetRules_Bogus(t *testing.T) {
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
 
 	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
-	spew.Dump(err)
 	assert.NotNil(t, err, fmt.Sprintf(TEST_ERROR_FAILED_TO_REPORT_ERROR, manifestFile))
 }
