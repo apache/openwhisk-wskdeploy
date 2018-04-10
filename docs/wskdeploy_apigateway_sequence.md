@@ -16,27 +16,32 @@
 #
 -->
 
-# API Gateway
+# API Gateway sequence
 
-## The "Hello World" API
+## Sequencing actions
 
-This example builds on the ["Hello World" Action](wskdeploy_action_helloworld.md#actions) example by adding an API definition on top of that action so that I can be queried via an HTTP call.
+This example builds on the ["Hello World" API Gateway](wskdeploy_apigateway_helloworld.md#api-gateway) example by combining multiple actions in a sequence to create a complex result and making this sequence available through the API Gateway.
 
 It shows how to:
-- update the Action named ‘hello_world’ to expose it to the gateway.
-- specify the API's endpoint that will trigger the action.
+- create a sequence that chains multiple actions.
+- export the sequence via the gateway.
 
 ### Manifest file
-#### _Example: “Hello world” action with API_
+#### _Example: “Hello world” sequence with API_
 ```yaml
 packages:
   hello_world_package:
     version: 1.0
     license: Apache-2.0
     actions:
-      hello_world:
+      hello_basic:
         function: src/hello.js
-        web-export: true
+      hello_goodday:
+        function: src/hello_goodday.js
+    sequences:
+      hello_world:
+        actions: hello_basic, hello_goodday
+        web: true
     apis:
       hello-world:
         hello:
@@ -45,17 +50,16 @@ packages:
 ```
 
 There are two key changes to this file:
-- the `hello_world` action now has the `web-export` flag set to `true`.
-- a new `apis` block has been created.
-
-The `apis` block contains a number of groups of API endpoint. Each endpoint is then defined by the hierarchy. In this case, we are creating the `hello/world` endpoint. The leaf in the structure specifies the action to trigger when the given HTTP verb is sent to that endpoint, in this case, when the HTTP verb `GET` is used on the `hello/world` endpoint, trigger the `hello_world` action.
+- we now have two actions define and neither of them is web available.
+- we have a new sequence that is web available.
+- the `apis` block now refers to the sequence rather than the action.
 
 ### Deploying
 
-You can actually deploy the "hello world API gateway" manifest from the incubator-openwhisk-wskdeploy project directory if you have downloaded it from GitHub:
+You can actually deploy the "API Gateway sequence" manifest from the incubator-openwhisk-wskdeploy project directory if you have downloaded it from GitHub:
 
 ```sh
-$ wskdeploy -m docs/examples/manifest_hello_world_apigateway.yaml
+$ wskdeploy -m docs/examples/manifest_hello_world_apigateway_sequence.yaml
 ```
 
 ### Invoking
@@ -77,7 +81,7 @@ The invocation should return a JSON response that includes this result:
 
 ```json
 {
-    "greeting": "Hello, undefined from undefined"
+    "greeting": "Hello, undefined from undefined, have a good day!"
 }
 ```
 
@@ -89,12 +93,13 @@ $ curl <url>?name=World&place=Earth
 
 ### Discussion
 
-This "hello world" example represents the minimum valid Manifest file which includes only the required parts of the Package, Action and API descriptors.
+This example is very basic but it shows the power of OpenWhisk in creating complex processes by chaining together simple actions and making the resulting sequence available via the API Gateway. This allows you to build small modular actions rather than big bulky ones. And because OpenWhisk allows actions to be written with different programming languages, you can mix and match, for example chaining a combination of JavaScript and Python actions in the same sequence.
 
 ### Source code
 The source code for the manifest and JavaScript files can be found here:
-- [manifest_hello_world_apigateway.yaml](examples/manifest_hello_world_apigateway.yaml)
+- [manifest_hello_world_apigateway_sequence.yaml](examples/manifest_hello_world_apigateway_sequence.yaml)
 - [hello.js](examples/src/hello.js)
+- [hello_goodday.js](examples/src/hello_goodday.js)
 
 ### Specification
 For convenience, the Packages and Actions grammar can be found here:
@@ -109,9 +114,9 @@ For convenience, the Packages and Actions grammar can be found here:
 <div align="center">
 <table align="center">
   <tr>
-    <td><a href="wskdeploy_triggerrule_trigger_bindings.md#triggers-and-rules">&lt;&lt;&nbsp;previous</a></td>
+    <td><a href="wskdeploy_apigateway_helloworld.md#packages">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <td><a href="wskdeploy_apigateway_sequence.md#api-gateway-sequence">next&nbsp;&gt;&gt;</a></td>
+    <!--<td><a href="">next&nbsp;&gt;&gt;</a></td>-->
   </tr>
 </table>
 </div>
