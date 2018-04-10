@@ -73,7 +73,7 @@ func buildServiceDeployer(manifestFile string) (*ServiceDeployer, error) {
 	}
 	deployer.ClientConfig = &config
 
-	op, error := utils.ParseOpenWhisk(clientConfig.Host)
+	op, error := utils.ParseOpenWhisk(deployer.ClientConfig.Host)
 	if error == nil {
 		utils.SupportedRunTimes = utils.ConvertToMap(op)
 		utils.DefaultRunTimes = utils.DefaultRuntimes(op)
