@@ -14,16 +14,17 @@
 # specific language governing permissions and limitations under the License.
 #
 
-project:
-    name: MyManagedProjectWithSingleDependency
-    packages:
-        Extension2:
-            dependencies:
-                helloworlds:
-                    location: github.com/pritidesai/incubator-openwhisk-test/packages/helloworlds
-            triggers:
-                triggerInExtension2:
-            rules:
-                ruleInExtension2:
-                    trigger: triggerInExtension2
-                    action: helloworlds/helloworld-js
+# Example: Basic Hello World action with API
+packages:
+  hello_world_package:
+    version: 1.0
+    license: Apache-2.0
+    actions:
+      hello_world:
+        function: src/hello.js
+        web-export: true
+    apis:
+      hello-world:
+        hello:
+          world:
+            hello_world: GET

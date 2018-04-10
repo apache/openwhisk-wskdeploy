@@ -15,10 +15,10 @@
 #
 
 # Example: Basic Hello World using a NodeJS (JavaScript) action
-package:
-  name: hello_world_package
-  version: 1.0
-  license: Apache-2.0
-  actions:
-    hello_world:
-      function: src/hello.js
+packages:
+  hello_world_package:
+    version: 1.0
+    license: Apache-2.0
+    actions:
+      hello_world:
+        function: src/hello.js

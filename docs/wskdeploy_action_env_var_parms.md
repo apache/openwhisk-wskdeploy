@@ -31,16 +31,16 @@ It shows how to:
 ### Manifest File
 #### _Example: “Hello world” with input values set from environment variables_
 ```yaml
-package:
-  name: hello_world_package
-  version: 1.0
-  license: Apache-2.0
-  actions:
-    hello_world_env_var_parms:
-      function: src/hello.js
-      inputs:
-        name: $FIRSTNAME
-        place: ${TOWN}, ${COUNTRY}
+packages:
+  hello_world_package:
+    version: 1.0
+    license: Apache-2.0
+    actions:
+      hello_world_env_var_parms:
+        function: src/hello.js
+        inputs:
+          name: $FIRSTNAME
+          place: ${TOWN}, ${COUNTRY}
 ```
 
 ### Deploying

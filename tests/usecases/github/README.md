@@ -18,7 +18,7 @@
 
 # Using GitHub Package with `wskdeploy`
 
-The [GitHub usecase](https://github.com/pritidesai/incubator-openwhisk-wskdeploy/tree/master/tests/usecases/github) demonstrates how to build an OpenWhisk app to display github commit messages using `wskdeploy`.
+The [GitHub usecase](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/tests/usecases/github) demonstrates how to build an OpenWhisk app to display github commit messages using `wskdeploy`.
 
 OpenWhisk comes with a [GitHub package](https://github.com/apache/incubator-openwhisk-catalog/blob/master/packages/github/README.md) which can be used to run GitHub APIs. For our app to display github commits, we need:
 

@@ -14,13 +14,26 @@
 # specific language governing permissions and limitations under the License.
 #
 
-project:
-  packages:
-    hello_world_package:
-      triggers:
-        meetPerson:
-          inputs:
-            name: string
-            place: string
-            children: integer
-            height: float
+packages:
+  helloworld:
+    actions:
+      hello1:
+        function: ../src/integration/helloworld/actions/hello.js
+        runtime: nodejs
+        web: true
+        web-export: true
+      hello2:
+        function: ../src/integration/helloworld/actions/hello.js
+        runtime: nodejs
+        web: true
+        web-export: false
+      hello3:
+        function: ../src/integration/helloworld/actions/hello.js
+        runtime: nodejs
+        web: false
+        web-export: true
+      hello4:
+        function: ../src/integration/helloworld/actions/hello.js
+        runtime: nodejs
+        web: raw
+        web-export: true

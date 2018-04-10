@@ -18,7 +18,7 @@
 
 # Using Slack Package with `wskdeploy`
 
-The [Slack usecase](https://github.com/pritidesai/incubator-openwhisk-wskdeploy/tree/master/tests/usecases/slack) demonstrates how to build an OpenWhisk app to post a sample message to slack every hour using `wskdeploy`.
+The [Slack usecase](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/tests/usecases/slack) demonstrates how to build an OpenWhisk app to post a sample message to slack every hour using `wskdeploy`.
 
 OpenWhisk comes with a [Slack package](https://github.com/apache/incubator-openwhisk-catalog/blob/master/packages/slack/README.md) which can be used to post messages to slack. For our app to post hourly messages, we need:
 

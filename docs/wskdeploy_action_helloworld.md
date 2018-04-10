@@ -29,13 +29,13 @@ It shows how to:
 ### Manifest file
 #### _Example: “Hello world” using a NodeJS (JavaScript) action_
 ```yaml
-package:
-  name: hello_world_package
-  version: 1.0
-  license: Apache-2.0
-  actions:
-    hello_world:
-      function: src/hello.js
+packages:
+  hello_world_package:
+    version: 1.0
+    license: Apache-2.0
+    actions:
+      hello_world:
+        function: src/hello.js
 ```
 
 where "hello.js", within the package-relative subdirectory named ‘src’, contains the following JavaScript code:

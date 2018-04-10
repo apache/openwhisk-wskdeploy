@@ -15,28 +15,7 @@
  * limitations under the License.
  */
 
-package cmd
-
-import (
-	"fmt"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/spf13/cobra"
-)
-
-func init() {
-	RootCmd.AddCommand(versionCmd)
-}
-
-var versionCmd = &cobra.Command{
-	Use:        "version",
-	SuggestFor: []string{"edition", "release"},
-	Short:      wski18n.T(wski18n.ID_CMD_DESC_SHORT_VERSION),
-	Run: func(cmd *cobra.Command, args []string) {
-		wskprint.PrintlnOpenWhiskOutput(
-			// Note: no need to translate the following string
-			// TODO(#767) - Flags.CliVersion are not set during build
-			fmt.Sprintf("wskdeploy version: %s", utils.Flags.CliVersion))
-	},
-}
+/*
+ * Increment input value by 1
+ */
+function main({ value }) { return { value: value + 1 } }

@@ -1,3 +1,5 @@
+// +build unit
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,28 +17,21 @@
  * limitations under the License.
  */
 
-package cmd
+package utils
 
 import (
-	"fmt"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/spf13/cobra"
+	"testing"
+
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	RootCmd.AddCommand(versionCmd)
-}
+const MSG_ERR_CONDUCTOR_ACTION_INVALID = "Conductor action does not create conductor annotation"
 
-var versionCmd = &cobra.Command{
-	Use:        "version",
-	SuggestFor: []string{"edition", "release"},
-	Short:      wski18n.T(wski18n.ID_CMD_DESC_SHORT_VERSION),
-	Run: func(cmd *cobra.Command, args []string) {
-		wskprint.PrintlnOpenWhiskOutput(
-			// Note: no need to translate the following string
-			// TODO(#767) - Flags.CliVersion are not set during build
-			fmt.Sprintf("wskdeploy version: %s", utils.Flags.CliVersion))
-	},
+func TestConductorAction(t *testing.T) {
+	conductor := ConductorAction()
+	annotation := whisk.KeyValue{Key: CONDUCTOR_ANNOTATION, Value: true}
+	assert.NotNil(t, conductor, MSG_ERR_CONDUCTOR_ACTION_INVALID)
+	assert.NotEqual(t, whisk.KeyValue{}, conductor, MSG_ERR_CONDUCTOR_ACTION_INVALID)
+	assert.Equal(t, annotation, conductor, MSG_ERR_CONDUCTOR_ACTION_INVALID)
 }

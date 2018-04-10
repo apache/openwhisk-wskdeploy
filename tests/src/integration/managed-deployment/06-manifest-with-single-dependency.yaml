@@ -15,26 +15,15 @@
 #
 
 project:
-    name: MyManagedProjectWithDependency
+    name: MyManagedProjectWithSingleDependency
     packages:
         Extension1:
             dependencies:
                 helloworlds:
-                    location: github.com/pritidesai/incubator-openwhisk-test/packages/helloworlds
-                custom-hellowhisk:
-                    location: github.com/pritidesai/incubator-openwhisk-test/packages/hellowhisk
-                custom-helloworlds:
-                    location: github.com/pritidesai/incubator-openwhisk-test/packages/helloworlds
-            sequences:
-                helloworld-sequence:
-                   actions: custom-helloworlds/hello-js, custom-hellowhisk/greeting, helloworlds/hello-js
+                    location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
             triggers:
-                trigger1:
-                trigger2:
+                triggerInExtension1:
             rules:
-                rule1:
-                    trigger: trigger1
-                    action: helloworld-sequence
-                rule2:
-                    trigger: trigger2
-                    action: custom-helloworlds/helloworld-js
+                ruleInExtension1:
+                    trigger: triggerInExtension1
+                    action: helloworlds/helloworld-js

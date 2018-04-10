@@ -1,3 +1,5 @@
+// +build integration
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,28 +17,27 @@
  * limitations under the License.
  */
 
-package cmd
+package tests
 
 import (
-	"fmt"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/spf13/cobra"
+	"os"
+	"testing"
+
+	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	RootCmd.AddCommand(versionCmd)
+var wskprops = common.GetWskprops()
+
+func TestWebSequence(t *testing.T) {
+	wskdeploy := common.NewWskdeploy()
+	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
+	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest file.")
 }
 
-var versionCmd = &cobra.Command{
-	Use:        "version",
-	SuggestFor: []string{"edition", "release"},
-	Short:      wski18n.T(wski18n.ID_CMD_DESC_SHORT_VERSION),
-	Run: func(cmd *cobra.Command, args []string) {
-		wskprint.PrintlnOpenWhiskOutput(
-			// Note: no need to translate the following string
-			// TODO(#767) - Flags.CliVersion are not set during build
-			fmt.Sprintf("wskdeploy version: %s", utils.Flags.CliVersion))
-	},
-}
+var (
+	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/websequence/manifest.yaml"
+	deploymentPath = ""
+)

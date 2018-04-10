@@ -32,20 +32,20 @@ It shows how to:
 ### Manifest File
 #### _Example: 'Hello world' with typed input and output parameter declarations_
 ```yaml
-package:
-  name: hello_world_package
-  ... # Package keys omitted for brevity
-  actions:
-    hello_world_typed_parms:
-      function: src/hello_plus.js
-      inputs:
-        name: string
-        place: string
-        children: integer
-        height: float
-      outputs:
-        greeting: string
-        details: string
+packages:
+  hello_world_package:
+    ... # Package keys omitted for brevity
+    actions:
+      hello_world_typed_parms:
+        function: src/hello_plus.js
+        inputs:
+          name: string
+          place: string
+          children: integer
+          height: float
+        outputs:
+          greeting: string
+          details: string
 ```
 where the function '```hello_plus.js```', within the package-relative subdirectory named ‘```src```’, is updated to use the new parameters:
 ```javascript

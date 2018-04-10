@@ -15,28 +15,13 @@
  * limitations under the License.
  */
 
-package cmd
-
-import (
-	"fmt"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/spf13/cobra"
-)
-
-func init() {
-	RootCmd.AddCommand(versionCmd)
-}
-
-var versionCmd = &cobra.Command{
-	Use:        "version",
-	SuggestFor: []string{"edition", "release"},
-	Short:      wski18n.T(wski18n.ID_CMD_DESC_SHORT_VERSION),
-	Run: func(cmd *cobra.Command, args []string) {
-		wskprint.PrintlnOpenWhiskOutput(
-			// Note: no need to translate the following string
-			// TODO(#767) - Flags.CliVersion are not set during build
-			fmt.Sprintf("wskdeploy version: %s", utils.Flags.CliVersion))
-	},
+function main(params) {
+    let step = params.$step || 0
+    delete params.$step
+    package_name = "conductorPackage1"
+    switch (step) {
+        case 0: return { action: package_name+'/triple', params, state: { $step: 1 } }
+        case 1: return { action: package_name+'/increment', params, state: { $step: 2 } }
+        case 2: return { params }
+    }
 }

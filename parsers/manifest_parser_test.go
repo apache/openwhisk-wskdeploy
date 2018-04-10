@@ -1033,6 +1033,41 @@ func TestComposeActionsForInvalidWebActions(t *testing.T) {
 	assert.NotNil(t, err, "Expected error for invalid web-export.")
 }
 
+func TestComposeActionsForWebAndWebExport(t *testing.T) {
+	file := "../tests/dat/manifest_data_compose_actions_for_web_and_web_export.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
+
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
+
+	for _, action := range actions {
+		if action.Action.Name == "hello1" || action.Action.Name == "hello2" {
+			for _, a := range action.Action.Annotations {
+				switch a.Key {
+				case "web-export":
+					assert.True(t, a.Value.(bool), "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+				}
+			}
+		} else if action.Action.Name == "hello3" {
+			for _, a := range action.Action.Annotations {
+				switch a.Key {
+				case "web-export":
+					assert.False(t, a.Value.(bool), "Expected false for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+				}
+			}
+		} else if action.Action.Name == "hello4" {
+			for _, a := range action.Action.Annotations {
+				switch a.Key {
+				case "web-export":
+					assert.True(t, a.Value.(bool), "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
+				case "raw-http":
+					assert.True(t, a.Value.(bool), "Expected true for raw but got "+strconv.FormatBool(a.Value.(bool)))
+				}
+			}
+		}
+	}
+}
+
 // Test 16: validate manifest_parser.ResolveParameter() method
 func TestResolveParameterForMultiLineParams(t *testing.T) {
 	paramName := "name"
@@ -1192,10 +1227,11 @@ func TestComposePackage(t *testing.T) {
 
 func TestComposeSequences(t *testing.T) {
 
-	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_sequences.yaml")
+	file := "../tests/dat/manifest_data_compose_sequences.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
 
 	// Note: set first param (namespace) to empty string
-	seqList, err := p.ComposeSequencesFromAllPackages("", m, whisk.KeyValue{})
+	seqList, err := p.ComposeSequencesFromAllPackages("", m, file, whisk.KeyValue{})
 	if err != nil {
 		assert.Fail(t, "Failed to compose sequences")
 	}
@@ -1269,8 +1305,6 @@ func TestComposeRules(t *testing.T) {
 	}
 }
 
-// TODO(752) We SHOULD automatically add "web-export" to each Action referenced in the "apis" section
-// as this is implied.  The user should not have to do this manually
 func TestComposeApiRecords(t *testing.T) {
 
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_api_records.yaml")
@@ -1287,7 +1321,7 @@ func TestComposeApiRecords(t *testing.T) {
 	if err != nil {
 		assert.Fail(t, "Failed to compose api records: "+err.Error())
 	}
-	assert.Equal(t, 6, len(apiList), "Failed to get api records")
+	assert.Equal(t, 7, len(apiList), "Failed to get api records")
 	for _, apiRecord := range apiList {
 		apiDoc := apiRecord.ApiDoc
 		action := apiDoc.Action
@@ -1318,10 +1352,12 @@ func TestComposeApiRecords(t *testing.T) {
 			assert.Equal(t, "/books2", apiDoc.GatewayRelPath, "Failed to set api rel path")
 			assert.Equal(t, "post", action.BackendMethod, "Failed to set api backend method")
 		case "apiTest/listMembers2":
+		case "apiTest/listAllMembers":
 			assert.Equal(t, "book-club2", apiDoc.ApiName, "Failed to set api name")
 			assert.Equal(t, "/club2", apiDoc.GatewayBasePath, "Failed to set api base path")
 			assert.Equal(t, "/members2", apiDoc.GatewayRelPath, "Failed to set api rel path")
 			assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
+
 		default:
 			assert.Fail(t, "Failed to get api action name")
 		}

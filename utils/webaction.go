@@ -24,9 +24,12 @@ import (
 )
 
 //for web action support, code from wsk cli with tiny adjustments
-const WEB_EXPORT_ANNOT = "web-export"
-const RAW_HTTP_ANNOT = "raw-http"
-const FINAL_ANNOT = "final"
+const (
+	WEB_EXPORT_ANNOT = "web-export"
+	RAW_HTTP_ANNOT   = "raw-http"
+	FINAL_ANNOT      = "final"
+	TRUE             = "true"
+)
 
 var webExport map[string]string = map[string]string{
 	"TRUE":  "true",
@@ -117,4 +120,8 @@ func IsWebAction(webexport string) bool {
 		}
 	}
 	return false
+}
+
+func IsWebSequence(webexport string) bool {
+	return IsWebAction(webexport)
 }
