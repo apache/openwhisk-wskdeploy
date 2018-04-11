@@ -78,24 +78,19 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML,
 		pkg.Sequences[wskAction.Name] = *seq
 	} else {
 		parsedAction := *maniyaml.ComposeParsersAction(*wskAction)
-		runtime := strings.Split(wskAction.Exec.Kind, ":")[0]
-		if strings.ToLower(runtime) == BLACKBOX {
-			// storing blackbox image reference without saving the code as its impossible
-			parsedAction.Docker = wskAction.Exec.Image
-		} else {
-			manifestDir := filepath.Dir(targetManifest)
+		manifestDir := filepath.Dir(targetManifest)
 
-			// store function file under action package name subdirectory in the specified manifest folder
-			functionDir := filepath.Join(manifestDir, packageName)
-			os.MkdirAll(functionDir, os.ModePerm)
+		// store function file under action package name subdirectory in the specified manifest folder
+		functionDir := filepath.Join(manifestDir, packageName)
 
-			// save code file at the full path
-			filename, err := saveCode(*wskAction, functionDir)
-			if err != nil {
-				return err
-			}
+		// save the code in file
+		filename, err := saveCode(*wskAction, functionDir)
+		if err != nil {
+			return err
+		}
 
-			// store function in manifest under path relative to manifest root
+		if filename != "" {
+			// store function in manifest if action has code section
 			parsedAction.Function = filepath.Join(packageName, filename)
 		}
 
@@ -313,7 +308,6 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 const (
 	JAVA_EXT = ".jar"
 	ZIP_EXT  = ".zip"
-	BLACKBOX = "blackbox"
 	JAVA     = "java"
 )
 
@@ -338,6 +332,8 @@ func saveCode(action whisk.Action, directory string) (string, error) {
 
 	if exec.Code != nil {
 		code = *exec.Code
+	} else {
+		return "", nil
 	}
 
 	var filename = ""
@@ -349,6 +345,8 @@ func saveCode(action whisk.Action, directory string) (string, error) {
 	} else {
 		filename = action.Name + "." + utils.FileRuntimeExtensionsMap[action.Exec.Kind]
 	}
+
+	os.MkdirAll(directory, os.ModePerm)
 
 	path := filepath.Join(directory, filename)
 
