@@ -1570,8 +1570,6 @@ func (deployer *ServiceDeployer) getDependentDeployer(depName string, depRecord 
 	depServiceDeployer.Client = deployer.Client
 	depServiceDeployer.ClientConfig = deployer.ClientConfig
 
-	depServiceDeployer.DependencyMaster = deployer.DependencyMaster
-
 	// share the master dependency list
 	depServiceDeployer.DependencyMaster = deployer.DependencyMaster
 

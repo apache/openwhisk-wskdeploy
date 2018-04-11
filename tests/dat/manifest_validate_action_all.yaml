@@ -1,0 +1,43 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements.  See the NOTICE file distributed with this work for additional
+# information regarding copyright ownership.  The ASF licenses this file to you
+# under the Apache License, Version 2.0 (the # "License"); you may not use this
+# file except in compliance with the License.  You may obtain a copy of the License
+# at:
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations under the License.
+#
+
+packages:
+    helloworld:
+        actions:
+            helloworld1:
+                function: actions/hello.js
+            helloworld2:
+                code: const main = ({ msg }) => { console.log(msg); return {msg}; }
+                runtime: nodejs:6
+            helloworld3:
+                function: actions/hello.js
+                annotations:
+                    annotation1: value1
+                    annotation2: value2
+                inputs:
+                    parameter1: value1
+                    parameter2: value2
+            helloworld4:
+                function: actions/hello.js
+                web: true
+            helloworld5:
+                function: actions/hello.js
+                conductor: true
+            helloworld6:
+                function: actions/hello.js
+                docker: openwhisk/skeleton
+
+

@@ -18,13 +18,14 @@
 package deployers
 
 import (
-	"errors"
 	"strings"
 
+	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
 
 var clientConfig *whisk.Config
@@ -58,32 +59,31 @@ func (reader *ManifestReader) InitPackages(manifestParser *parsers.YAMLParser, m
 		return err
 	}
 	reader.SetPackages(packages)
-
 	return nil
 }
 
 // Wrapper parser to handle yaml dir
-func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.YAML, managedAnnotations whisk.KeyValue) error {
+func (reader *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.YAML, managedAnnotations whisk.KeyValue) error {
 
 	var err error
 	var manifestName = manifest.Filepath
 
-	deps, err := manifestParser.ComposeDependenciesFromAllPackages(manifest, deployer.serviceDeployer.ProjectPath, deployer.serviceDeployer.ManifestPath, managedAnnotations)
+	deps, err := manifestParser.ComposeDependenciesFromAllPackages(manifest, reader.serviceDeployer.ProjectPath, reader.serviceDeployer.ManifestPath, managedAnnotations)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	actions, err := manifestParser.ComposeActionsFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath, managedAnnotations)
+	actions, err := manifestParser.ComposeActionsFromAllPackages(manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	sequences, err := manifestParser.ComposeSequencesFromAllPackages(deployer.serviceDeployer.ClientConfig.Namespace, manifest, deployer.serviceDeployer.ManifestPath, managedAnnotations)
+	sequences, err := manifestParser.ComposeSequencesFromAllPackages(reader.serviceDeployer.ClientConfig.Namespace, manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	triggers, err := manifestParser.ComposeTriggersFromAllPackages(manifest, deployer.serviceDeployer.ManifestPath, managedAnnotations)
+	triggers, err := manifestParser.ComposeTriggersFromAllPackages(manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
@@ -93,69 +93,39 @@ func (deployer *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestP
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	apis, err := manifestParser.ComposeApiRecordsFromAllPackages(deployer.serviceDeployer.ClientConfig, manifest)
+	apis, err := manifestParser.ComposeApiRecordsFromAllPackages(reader.serviceDeployer.ClientConfig, manifest)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	err = deployer.SetDependencies(deps)
+	err = reader.SetDependencies(deps)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	err = deployer.SetActions(actions)
+	err = reader.SetActions(actions)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	err = deployer.SetSequences(sequences)
+	err = reader.SetSequences(sequences)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	err = deployer.SetTriggers(triggers)
+	err = reader.SetTriggers(triggers)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	err = deployer.SetRules(rules)
+	err = reader.SetRules(rules)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	err = deployer.SetApis(apis)
+	err = reader.SetApis(apis)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
-	}
-
-	return nil
-}
-
-func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRecord) error {
-	for name, dep := range deps {
-		n := strings.Split(name, ":")
-		depName := n[1]
-		if depName == "" {
-			return nil
-		}
-		if !dep.IsBinding && !reader.IsUndeploy {
-			if _, exists := reader.serviceDeployer.DependencyMaster[depName]; !exists {
-				// dependency
-				gitReader := utils.NewGitReader(depName, dep)
-				err := gitReader.CloneDependency()
-				if err != nil {
-					return wskderrors.NewYAMLFileFormatError(depName, err)
-				}
-			} else {
-				// TODO: we should do a check to make sure this dependency is compatible with an already installed one.
-				// If not, we should throw dependency mismatch error.
-			}
-		}
-
-		// store in two places (one local to package to preserve relationship, one in master record to check for conflics
-		reader.serviceDeployer.Deployment.Packages[dep.Packagename].Dependencies[depName] = dep
-		reader.serviceDeployer.DependencyMaster[depName] = dep
-
 	}
 
 	return nil
@@ -169,17 +139,47 @@ func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package) er
 	defer dep.mt.Unlock()
 
 	for _, pkg := range packages {
-		_, exist := dep.Deployment.Packages[pkg.Name]
-		if exist {
-			// TODO(): i18n of error message (or create a new named error)
-			// TODO(): Is there a better way to handle an existing dependency of same name?
-			err := errors.New("Package [" + pkg.Name + "] exists already.")
-			return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
-		}
 		newPack := NewDeploymentPackage()
 		newPack.Package = pkg
 		dep.Deployment.Packages[pkg.Name] = newPack
 	}
+	return nil
+}
+
+func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRecord) error {
+
+	dep := reader.serviceDeployer
+
+	dep.mt.Lock()
+	defer dep.mt.Unlock()
+
+	for name, dependency := range deps {
+		// name is <packagename>:<dependencylabel>
+		depName := strings.Split(name, ":")[1]
+		if len(depName) == 0 {
+			return nil
+		}
+		if !dependency.IsBinding && !reader.IsUndeploy {
+			if _, exists := dep.DependencyMaster[depName]; exists {
+				if !utils.CompareDependencyRecords(dep.DependencyMaster[depName], dependency) {
+					location := strings.Join([]string{dep.DependencyMaster[depName].Location, dependency.Location}, ",")
+					errmsg := wski18n.T(wski18n.ID_ERR_DEPENDENCIES_WITH_SAME_LABEL_X_dependency_X_location_X,
+						map[string]interface{}{wski18n.KEY_DEPENDENCY: depName,
+							wski18n.KEY_LOCATION: location})
+					return wskderrors.NewYAMLParserErr(dep.ManifestPath, errmsg)
+				}
+			}
+			gitReader := utils.NewGitReader(depName, dependency)
+			err := gitReader.CloneDependency()
+			if err != nil {
+				return err
+			}
+		}
+		// store in two places (one local to package to preserve relationship, one in master record to check for conflics
+		dep.Deployment.Packages[dependency.Packagename].Dependencies[depName] = dependency
+		dep.DependencyMaster[depName] = dependency
+	}
+
 	return nil
 }
 
@@ -191,118 +191,33 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 	defer dep.mt.Unlock()
 
 	for _, manifestAction := range actions {
-		existAction, exists := reader.serviceDeployer.Deployment.Packages[manifestAction.Packagename].Actions[manifestAction.Action.Name]
-
-		if exists == true {
-			if existAction.Filepath == manifestAction.Filepath || manifestAction.Filepath == "" {
-				// we're adding a filesystem detected action so just updated code and filepath if needed
-				if manifestAction.Action.Exec.Kind != "" {
-					existAction.Action.Exec.Kind = manifestAction.Action.Exec.Kind
-				}
-
-				if manifestAction.Action.Exec.Code != nil {
-					code := *manifestAction.Action.Exec.Code
-					if code != "" {
-						existAction.Action.Exec.Code = manifestAction.Action.Exec.Code
-					}
-				}
-
-				existAction.Action.Annotations = manifestAction.Action.Annotations
-				existAction.Action.Limits = manifestAction.Action.Limits
-				existAction.Action.Parameters = manifestAction.Action.Parameters
-				existAction.Action.Version = manifestAction.Action.Version
-
-				if manifestAction.Filepath != "" {
-					existAction.Filepath = manifestAction.Filepath
-				}
-
-				err := reader.checkAction(existAction)
-				if err != nil {
-					return wskderrors.NewFileReadError(manifestAction.Filepath, err)
-				}
-
-			} else {
-				// Action exists, but references two different sources
-				// TODO(): i18n of error message (or create a new named error)
-				err := errors.New("Conflict detected for action named [" +
-					existAction.Action.Name + "].\nFound two locations for source file: [" +
-					existAction.Filepath + "] and [" + manifestAction.Filepath + "]")
-				return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
-			}
-		} else {
-			// not a new action so update the action in the package
-			err := reader.checkAction(manifestAction)
-			if err != nil {
-				return wskderrors.NewFileReadError(manifestAction.Filepath, err)
-			}
-			reader.serviceDeployer.Deployment.Packages[manifestAction.Packagename].Actions[manifestAction.Action.Name] = manifestAction
+		err := reader.checkAction(manifestAction)
+		if err != nil {
+			return err
 		}
+		dep.Deployment.Packages[manifestAction.Packagename].Actions[manifestAction.Action.Name] = manifestAction
 	}
-
 	return nil
 }
 
-// TODO create named errors
-// Check action record before deploying it
-// action record is created by reading and composing action elements from manifest file
-// Action.kind is mandatory which is set to
-// (1) action runtime for an action and (2) set to "sequence" for a sequence
-// Also, action executable code should be specified for any action
-func (reader *ManifestReader) checkAction(action utils.ActionRecord) error {
-	if action.Action.Exec.Kind == "" {
-		// TODO(): i18n of error message (or create a new named error)
-		err := errors.New("Action [" + action.Action.Name + "] has no kind set.")
-		return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
-	}
-
-	if action.Action.Exec.Code != nil {
-		code := *action.Action.Exec.Code
-		if code == "" && action.Action.Exec.Kind != parsers.YAML_KEY_SEQUENCE {
-			// TODO(): i18n of error message (or create a new named error)
-			err := errors.New("Action [" + action.Action.Name + "] has no source code.")
-			return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
-		}
-	}
-
-	return nil
-}
-
-func (reader *ManifestReader) SetSequences(actions []utils.ActionRecord) error {
+func (reader *ManifestReader) SetSequences(sequences []utils.ActionRecord) error {
 	dep := reader.serviceDeployer
 
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
 
-	for _, seqAction := range actions {
-		// check if the sequence action is exist in actions
-		// If the sequence action exists in actions, return error
-		_, exists := reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Actions[seqAction.Action.Name]
-		if exists == true {
-			// TODO(798): i18n of error message (or create a new named error)
-			err := errors.New("Sequence action's name [" +
-				seqAction.Action.Name + "] is already used by an action.")
+	for _, sequence := range sequences {
+		// If the sequence name matches with any of the actions defined, return error
+		if _, exists := dep.Deployment.Packages[sequence.Packagename].Actions[sequence.Action.Name]; exists {
+			err := wski18n.T(wski18n.ID_ERR_SEQUENCE_HAVING_SAME_NAME_AS_ACTION_X_action_X,
+				map[string]interface{}{wski18n.KEY_SEQUENCE: sequence.Action.Name})
 			return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
 		}
-		existAction, exists := reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Sequences[seqAction.Action.Name]
-
-		if exists == true {
-			existAction.Action.Annotations = seqAction.Action.Annotations
-			existAction.Action.Exec.Kind = "sequence"
-			existAction.Action.Exec.Components = seqAction.Action.Exec.Components
-			existAction.Action.Publish = seqAction.Action.Publish
-			existAction.Action.Namespace = seqAction.Action.Namespace
-			existAction.Action.Limits = seqAction.Action.Limits
-			existAction.Action.Parameters = seqAction.Action.Parameters
-			existAction.Action.Version = seqAction.Action.Version
-		} else {
-			// not a new action so update the action in the package
-			err := reader.checkAction(seqAction)
-			if err != nil {
-				// TODO() Need a better error type here
-				return wskderrors.NewFileReadError(seqAction.Filepath, err)
-			}
-			reader.serviceDeployer.Deployment.Packages[seqAction.Packagename].Sequences[seqAction.Action.Name] = seqAction
+		err := reader.checkAction(sequence)
+		if err != nil {
+			return err
 		}
+		dep.Deployment.Packages[sequence.Packagename].Sequences[sequence.Action.Name] = sequence
 	}
 
 	return nil
@@ -317,19 +232,29 @@ func (reader *ManifestReader) SetTriggers(triggers []*whisk.Trigger) error {
 	defer dep.mt.Unlock()
 
 	for _, trigger := range triggers {
-		existTrigger, exist := dep.Deployment.Triggers[trigger.Name]
-		if exist {
-			existTrigger.Name = trigger.Name
-			existTrigger.ActivationId = trigger.ActivationId
-			existTrigger.Namespace = trigger.Namespace
-			existTrigger.Annotations = trigger.Annotations
-			existTrigger.Version = trigger.Version
-			existTrigger.Parameters = trigger.Parameters
-			existTrigger.Publish = trigger.Publish
-		} else {
-			dep.Deployment.Triggers[trigger.Name] = trigger
+		if _, exists := dep.Deployment.Triggers[trigger.Name]; exists {
+			var feed string
+			var existingFeed string
+			for _, a := range dep.Deployment.Triggers[trigger.Name].Annotations {
+				if a.Key == parsers.YAML_KEY_FEED {
+					existingFeed = a.Value.(string)
+				}
+			}
+			for _, a := range trigger.Annotations {
+				if a.Key == parsers.YAML_KEY_FEED {
+					feed = a.Value.(string)
+				}
+			}
+			if feed != existingFeed {
+				feed = fmt.Sprintf("%q", feed)
+				existingFeed = fmt.Sprintf("%q", existingFeed)
+				err := wski18n.T(wski18n.ID_ERR_CONFLICTING_TRIGGERS_ACROSS_PACKAGES_X_trigger_X_feed_X,
+					map[string]interface{}{wski18n.KEY_TRIGGER: trigger.Name,
+						wski18n.KEY_TRIGGER_FEED: strings.Join([]string{feed, existingFeed}, ", ")})
+				return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
+			}
 		}
-
+		dep.Deployment.Triggers[trigger.Name] = trigger
 	}
 	return nil
 }
@@ -341,19 +266,24 @@ func (reader *ManifestReader) SetRules(rules []*whisk.Rule) error {
 	defer dep.mt.Unlock()
 
 	for _, rule := range rules {
-		existRule, exist := dep.Deployment.Rules[rule.Name]
-		if exist {
-			existRule.Name = rule.Name
-			existRule.Publish = rule.Publish
-			existRule.Version = rule.Version
-			existRule.Namespace = rule.Namespace
-			existRule.Action = rule.Action
-			existRule.Trigger = rule.Trigger
-			existRule.Status = rule.Status
-		} else {
-			dep.Deployment.Rules[rule.Name] = rule
+		if _, exists := dep.Deployment.Rules[rule.Name]; exists {
+			action := rule.Action.(string)
+			existingAction := dep.Deployment.Rules[rule.Name].Action.(string)
+			trigger := rule.Trigger.(string)
+			existingTrigger := dep.Deployment.Rules[rule.Name].Trigger.(string)
+			if action != existingAction || trigger != existingTrigger {
+				action = fmt.Sprintf("%q", action)
+				existingAction = fmt.Sprintf("%q", existingAction)
+				trigger = fmt.Sprintf("%q", trigger)
+				existingTrigger = fmt.Sprintf("%q", existingTrigger)
+				err := wski18n.T(wski18n.ID_ERR_CONFLICTING_RULES_ACROSS_PACKAGES_X_rule_X_action_X_trigger_X,
+					map[string]interface{}{wski18n.KEY_RULE: rule.Name,
+						wski18n.KEY_TRIGGER: strings.Join([]string{trigger, existingTrigger}, ", "),
+						wski18n.KEY_ACTION:  strings.Join([]string{action, existingAction}, ", ")})
+				return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
+			}
 		}
-
+		dep.Deployment.Rules[rule.Name] = rule
 	}
 	return nil
 }
@@ -365,13 +295,31 @@ func (reader *ManifestReader) SetApis(ar []*whisk.ApiCreateRequest) error {
 	defer dep.mt.Unlock()
 
 	for _, api := range ar {
-		existApi, exist := dep.Deployment.Apis[api.ApiDoc.Action.Name]
-		if exist {
-			existApi.ApiDoc.ApiName = api.ApiDoc.ApiName
-		} else {
-			dep.Deployment.Apis[api.ApiDoc.Action.Name] = api
-		}
-
+		dep.Deployment.Apis[api.ApiDoc.Action.Name] = api
 	}
+	return nil
+}
+
+// Check action record before deploying it
+// action record is created by reading and composing action elements from manifest file
+// Action.kind is mandatory which is set to
+// (1) action runtime for an action and (2) set to "sequence" for a sequence
+// Also, action executable code should be specified for any action
+func (reader *ManifestReader) checkAction(action utils.ActionRecord) error {
+	if action.Action.Exec.Kind == "" {
+		err := wski18n.T(wski18n.ID_ERR_ACTION_WITHOUT_KIND_X_action_X,
+			map[string]interface{}{wski18n.KEY_ACTION: action.Action.Name})
+		return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
+	}
+
+	if action.Action.Exec.Code != nil {
+		code := *action.Action.Exec.Code
+		if code == "" && action.Action.Exec.Kind != parsers.YAML_KEY_SEQUENCE {
+			err := wski18n.T(wski18n.ID_ERR_ACTION_WITHOUT_SOURCE_X_action_X,
+				map[string]interface{}{wski18n.KEY_ACTION: action.Action.Name})
+			return wskderrors.NewYAMLParserErr(reader.serviceDeployer.ManifestPath, err)
+		}
+	}
+
 	return nil
 }

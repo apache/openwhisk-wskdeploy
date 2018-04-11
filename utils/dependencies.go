@@ -88,3 +88,13 @@ func LocationIsGithub(location string) bool {
 	paths := strings.SplitN(removeProtocol(location), "/", 2)
 	return strings.Contains(paths[0], GITHUB)
 }
+
+func CompareDependencyRecords(d1 DependencyRecord, d2 DependencyRecord) bool {
+	if (d1.Location == d2.Location) && (d1.Version == d2.Version) {
+		return true
+	}
+	if (d1.BaseRepo == d2.BaseRepo) && (d1.SubFolder == d2.SubFolder) && (d1.Version == d2.Version) {
+		return true
+	}
+	return false
+}

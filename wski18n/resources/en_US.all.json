@@ -292,8 +292,8 @@
     "translation": "JSON input data Missing 'cmd' key"
   },
   {
-    "id": "msg_err_api_missing_action",
-    "translation": "Action [{{.action}}] is missing from manifest file, API [{{.api}}] can only be created based on the action from manifest file. Please update manifest file to include [{{.action}}] as a web action.\n"
+    "id": "msg_err_api_missing_action_or_sequence",
+    "translation": "Action/Sequence [{{.action}}] is missing from manifest file, API [{{.api}}] can only be created based on the action/sequence from manifest file. Please update manifest file to include [{{.action}}] as a web action/sequence.\n"
   },
   {
     "id": "msg_err_action_invalid",
@@ -314,6 +314,30 @@
   {
     "id": "msg_err_file_already_exists",
     "translation": "File already exists."
+  },
+  {
+    "id": "msg_err_different_dependencies_with_same_label",
+    "translation": "One single dependency [{{.dependency}}] has two different locations [{{.location}}]. This kind of specification is not supported. Please update the dependency label [{{.dependency}}] in the manifest file to point to same location or create two separate labels for two different locations."
+  },
+  {
+    "id": "msg_err_action_without_kind",
+    "translation": "Action [{{.action}}] has no kind set."
+  },
+  {
+    "id": "msg_err_action_without_code",
+    "translation": "Action [{{.action}}] has no source code."
+  },
+  {
+    "id": "msg_err_sequence_having_same_name_as_action",
+    "translation": "Sequence [{{.sequence}}] is already defined as an action under the same package. Actions and sequences can not have same name in a single package."
+  },
+  {
+    "id": "msg_err_conflicting_triggers_across_packages",
+    "translation": "One single trigger [{{.trigger}}] is defined with multiple feeds [{{.feed}}]. Triggers are created directly under the namespace, its not possible to have triggers with same name but different feeds. Please update trigger names in manifest file."
+  },
+  {
+    "id": "msg_err_conflicting_rules_across_packages",
+    "translation": "One single rule [{{.rule}}] is defined with different actions [{{.action}}] and/or triggers [{{.trigger}}]. Rules are created directly under the namespace, its not possible to have rules with same name but associated with different actions/triggers. Please update rule names in manifest file."
   },
   {
     "id": "WARNINGS",
@@ -402,6 +426,10 @@
   {
     "id": "msg_warn_api_missing_web_action",
     "translation": "Action [{{.action}}] is not a web action, API [{{.api}}] can only be created using web action. Converting [{{.action}}] to a web action.\n"
+  },
+  {
+    "id": "msg_warn_api_missing_web_sequence",
+    "translation": "Sequence [{{.sequence}}] is not a web sequence, API [{{.api}}] can only be created using web sequence. Converting [{{.sequence}}] to a web sequence.\n"
   },
   {
     "id": "DEBUG",

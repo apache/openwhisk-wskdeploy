@@ -18,12 +18,12 @@ packages:
   IntegrationTestDocker:
       actions:
           OpenWhiskSkeleton:
-              docker: openwhisk/skeleton
+              docker: openwhisk/dockerskeleton
           OpenWhiskSkeletonWithNative:
               native: true
           CustomDockerAction1:
               function: actions/exec.zip
-              docker: openwhisk/skeleton
+              docker: openwhisk/dockerskeleton
           CustomDockerAction2:
               function: actions/exec.zip
               native: true

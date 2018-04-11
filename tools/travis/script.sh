@@ -28,7 +28,12 @@ ROOTDIR="$SCRIPTDIR/../.."
 cd $TRAVIS_BUILD_DIR
 ./tools/travis/scancode.sh
 make lint
-make build
+make test
+BUILD_VERSION="latest"
+if [ ! -z "$TRAVIS_TAG" ] ; then
+    BUILD_VERSION=$TRAVIS_TAG
+fi
+make build VERSION=$BUILD_VERSION
 export PATH=$PATH:$TRAVIS_BUILD_DIR
 
 HOMEDIR="$(dirname "$TRAVIS_BUILD_DIR")"
