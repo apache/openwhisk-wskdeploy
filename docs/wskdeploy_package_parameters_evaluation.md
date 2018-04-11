@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations under the License.
 #
 -->
-# Generate Report of Package Parameters
+# Package Parameters Evaluation
 
 A package is generally defined as a collection of actions, sequences, triggers, rules, and apis in manifest/deployment file.
 These OpenWhisk entities in manifest/deployment files generally need data from users/environment for their successful deployment.
