@@ -42,6 +42,7 @@ type WskDeployFlags struct {
 	Verbose          bool
 	Trace            bool
 	Sync             bool
+	Report           bool
 }
 
 func (flags *WskDeployFlags) Format() string {
