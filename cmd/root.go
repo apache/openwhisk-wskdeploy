@@ -84,6 +84,7 @@ func init() {
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Managed, "managed", "", false, wski18n.T(wski18n.ID_CMD_FLAG_MANAGED))
 	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ProjectName, "projectname", "", "", wski18n.T(wski18n.ID_CMD_FLAG_PROJECTNAME))
 	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Trace, "trace", "t", false, wski18n.T(wski18n.ID_CMD_FLAG_TRACE))
+	//RootCmd.PersistentFlags().
 	RootCmd.PersistentFlags().MarkHidden("trace")
 }
 

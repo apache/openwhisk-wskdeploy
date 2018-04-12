@@ -332,14 +332,16 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		pag.Publish = &(pkg.Public)
 	}
 
-	for name, param := range pkg.Parameters {
-		value, err := ResolveParameter(name, &param, filePath)
-		if err != nil {
-			return nil, err
-		}
-		spew.Dump(value)
+	// read all package parameters, interpolate values using env. variables
+	// append package parameters with the interpolated values
+	params, err := dm.composeInputsOrOutputs(pkg.Parameters, filePath)
+	if err != nil {
+		return nil, err
 	}
-	spew.Dump(pkg.Parameters)
+	if len(params) > 0 {
+		pag.Parameters = append(pag.Parameters, params...)
+	}
+	spew.Dump(pag.Parameters)
 
 	return pag, nil
 }

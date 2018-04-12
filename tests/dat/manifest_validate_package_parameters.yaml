@@ -15,20 +15,27 @@
 #
 
 project:
+    name: myproject
     packages:
-        packageParams:
+        mypackage:
             parameters:
-                USER_NAME:
+                USERNAME:
                     type: string
                     description: "The User Name"
                     required: true
-                    default: MY_USERNAME
+                    default: test 
                 PASSWORD:
                     type: string
                     description: "The Password"
                     required: true
+                    default: ${PASSWORD}
                 DATABASE:
                     type: string
                     description: "The Database"
                     required: true
+                OPENWHISK_DATABASE_FEED:
+                    type: string
+                    description: "The Database feed instance"
+                    required: true
+                    default: ${DATABASE_HOST}_instance
 
