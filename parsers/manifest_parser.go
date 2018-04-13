@@ -20,11 +20,13 @@ package parsers
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
@@ -135,6 +137,22 @@ func (dm *YAMLParser) composeAnnotations(annotations map[string]interface{}) whi
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
 		keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
+		if reflect.ValueOf(keyVal.Value).Kind() == reflect.Map {
+			mapString := make(map[string]interface{})
+			for k, v := range keyVal.Value.(map[interface{}]interface{}) {
+				strKey := fmt.Sprintf("%v", k)
+				var strValue interface{}
+				if reflect.ValueOf(v).Kind() == reflect.Slice {
+					strValue = v.([]interface{})
+				} else if reflect.ValueOf(v).Kind() == reflect.String {
+					strValue = fmt.Sprintf("%v", v)
+				} else {
+					strValue = v
+				}
+				mapString[strKey] = strValue
+			}
+			keyVal.Value = mapString
+		}
 		listOfAnnotations = append(listOfAnnotations, keyVal)
 	}
 	return listOfAnnotations
