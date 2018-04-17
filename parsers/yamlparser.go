@@ -18,6 +18,8 @@
 package parsers
 
 import (
+	"strings"
+
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
@@ -39,6 +41,7 @@ const (
 	YAML_KEY_SEQUENCE   = "sequence"
 	YAML_KEY_TRIGGER    = "trigger"
 	YAML_KEY_SOURCE     = "source"
+	YAML_KEY_BLACKBOX   = "blackbox"
 )
 
 // YAML schema key values
@@ -400,7 +403,6 @@ func (yaml *YAML) ComposeParsersAction(wskact whisk.Action) *Action {
 	action.Name = wskact.Name
 	action.Namespace = wskact.Namespace
 	action.Version = wskact.Version
-	action.Runtime = wskact.Exec.Kind
 
 	action.Inputs = make(map[string]Parameter)
 	for _, keyval := range wskact.Parameters {
@@ -410,6 +412,15 @@ func (yaml *YAML) ComposeParsersAction(wskact whisk.Action) *Action {
 	}
 
 	action.Annotations = filterAnnotations(wskact.Annotations)
+
+	runtime := strings.Split(wskact.Exec.Kind, ":")[0]
+	if strings.ToLower(runtime) == YAML_KEY_BLACKBOX {
+		// storing blackbox image reference without saving the code as its impossible
+		action.Docker = wskact.Exec.Image
+	} else {
+		action.Runtime = wskact.Exec.Kind
+	}
+
 	return action
 }
 
