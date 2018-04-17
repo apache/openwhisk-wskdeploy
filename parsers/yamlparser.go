@@ -417,9 +417,9 @@ func (yaml *YAML) ComposeParsersAction(wskact whisk.Action) *Action {
 	if strings.ToLower(runtime) == YAML_KEY_BLACKBOX {
 		// storing blackbox image reference without saving the code as its impossible
 		action.Docker = wskact.Exec.Image
-	}else{
-        action.Runtime = wskact.Exec.Kind
-    }
+	} else {
+		action.Runtime = wskact.Exec.Kind
+	}
 
 	return action
 }
