@@ -131,27 +131,34 @@ func (dm *YAMLParser) composeInputsOrOutputs(inputs map[string]Parameter, manife
 	return keyValArr, nil
 }
 
+func (dm *YAMLParser) encodeJSONAnnotations(annotation interface{}) interface{} {
+	mapString := make(map[string]interface{})
+	if reflect.ValueOf(annotation).Kind() == reflect.Map {
+		for k, v := range annotation.(map[interface{}]interface{}) {
+			strKey := fmt.Sprintf("%v", k)
+			var strValue interface{}
+			if reflect.ValueOf(v).Kind() == reflect.Slice {
+				strValue = v.([]interface{})
+			} else if reflect.ValueOf(v).Kind() == reflect.String {
+				strValue = fmt.Sprintf("%v", v)
+			} else if reflect.ValueOf(v).Kind() == reflect.Map {
+				strValue = dm.encodeJSONAnnotations(v)
+			}
+			mapString[strKey] = strValue
+		}
+	}
+	return mapString
+}
+
 func (dm *YAMLParser) composeAnnotations(annotations map[string]interface{}) whisk.KeyValueArr {
 	listOfAnnotations := make(whisk.KeyValueArr, 0)
 	for name, value := range annotations {
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
-		keyVal.Value = wskenv.InterpolateStringWithEnvVar(value)
-		if reflect.ValueOf(keyVal.Value).Kind() == reflect.Map {
-			mapString := make(map[string]interface{})
-			for k, v := range keyVal.Value.(map[interface{}]interface{}) {
-				strKey := fmt.Sprintf("%v", k)
-				var strValue interface{}
-				if reflect.ValueOf(v).Kind() == reflect.Slice {
-					strValue = v.([]interface{})
-				} else if reflect.ValueOf(v).Kind() == reflect.String {
-					strValue = fmt.Sprintf("%v", v)
-				} else {
-					strValue = v
-				}
-				mapString[strKey] = strValue
-			}
-			keyVal.Value = mapString
+		if reflect.ValueOf(value).Kind() == reflect.String {
+			keyVal.Value = fmt.Sprintf("%v", value)
+		} else {
+			keyVal.Value = dm.encodeJSONAnnotations(value)
 		}
 		listOfAnnotations = append(listOfAnnotations, keyVal)
 	}
