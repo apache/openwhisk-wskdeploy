@@ -29,10 +29,10 @@ The ```wskdeploy``` utility mainly uses a single YAML file, called a "Package Ma
 
 The minimal manifest file would include only a package declaration, a version number and a license for the package:
 ```
-package:
-  name: hello_world_package
-  version: 1.0
-  license: Apache-2.0
+packages:
+  hello_world_package:
+    version: 1.0
+    license: Apache-2.0
 ```
 
 Save this into a file called ```"manifest.yaml"``` in a directory of your choice.

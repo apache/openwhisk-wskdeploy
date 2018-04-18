@@ -14,8 +14,8 @@
 # specific language governing permissions and limitations under the License.
 #
 
-# Example 1: Minimum valid Package manifest file
-package:
-  name: hello_world_package
-  version: 1.0
-  license: Apache-2.0
+# Example 1: Minimum valid package manifest file
+packages:
+  hello_world_package:
+    version: 1.0
+    license: Apache-2.0
