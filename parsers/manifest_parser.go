@@ -134,6 +134,7 @@ func (dm *YAMLParser) composeAnnotations(annotations map[string]interface{}) whi
 	for name, value := range annotations {
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
+		value = wskenv.InterpolateStringWithEnvVar(value)
 		keyVal.Value = EncodeAnnotations(value)
 		listOfAnnotations = append(listOfAnnotations, keyVal)
 	}
