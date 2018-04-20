@@ -49,23 +49,8 @@ project:
             description: "Slack Token"
             required: true
             default: ${SLACK_TOKEN}
-        GITHUB_USERNAME:
-            type: string
-            description: "GitHub Username"
-            required: true
-            default: ${GITHUB_USERNAME}
-        GITHUB_REPOSITORY:
-            type: string
-            description: "GitHub Repository"
-            required: true
-            default: ${GITHUB_REPOSITORY}
-        GITHUB_ACCESS_TOKEN:
-            type: string
-            description: "GitHub Access Token"
-            required: true
-            default: ${GITHUB_ACCESS_TOKEN}
         packages:
-            github-slack-trigger:
+            slack-text-notifications:
                 parameters:
                     SLACK_CHANNEL:
                         type: string
@@ -82,7 +67,7 @@ project:
                         description: "Trigger Name"
                         required: true
                         default: ${TRIGGER_NAME}
-            slack-notifications:
+            slack-email-notifications:
                 ...
 ```
 
@@ -91,7 +76,7 @@ Now, when you run `wskdeploy` to generate a report of these parameters with:
 ```
 wskdeploy report -m manifest.yaml
 {
-    "github-slack-trigger": [
+    "slack-text-notifications": [
         {
             "name": "SLACK_USERNAME",
             "type": "string",
@@ -121,27 +106,6 @@ wskdeploy report -m manifest.yaml
             "required": true,
         },
         {
-            "name": "GITHUB_USERNAME",
-            "type": string,
-            "value": "",
-            "description": "GitHub Username",
-            "required": true,
-        },
-        {
-            "name": "GITHUB_REPOSITORY",
-            "type": string
-            "value": "",
-            "description": "GitHub Repository"
-            "required": true,
-        },
-        {
-            "name": "GITHUB_ACCESS_TOKEN",
-            "type": string,
-            "value": "",
-            "description": "GitHub Access Token",
-            "required": true,
-        },
-        {
             "name": "RULE_NAME",
             "type": string,
             "value": "",
@@ -156,7 +120,7 @@ wskdeploy report -m manifest.yaml
             "required": true
         }
     ]
-    "slack-notifications": [
+    "slack-email-notifications": [
         {
             "name": "SLACK_USERNAME",
             "type": "string",
@@ -185,41 +149,6 @@ wskdeploy report -m manifest.yaml
             "description": "Slack Token",
             "required": true,
         },
-        {
-            "name": "GITHUB_USERNAME",
-            "type": string,
-            "value": "",
-            "description": "GitHub Username",
-            "required": true,
-        },
-        {
-            "name": "GITHUB_REPOSITORY",
-            "type": string
-            "value": "",
-            "description": "GitHub Repository"
-            "required": true,
-        },
-        {
-            "name": "GITHUB_ACCESS_TOKEN",
-            "type": string,
-            "value": "",
-            "description": "GitHub Access Token",
-            "required": true,
-        },
-        {
-            "name": "RULE_NAME",
-            "type": string,
-            "value": "",
-            "description": "Rule Name"
-            "required": true,
-        },
-        {
-            "name": "TRIGGER_NAME"
-            "type": string
-            "value": "",
-            "description": "Trigger Name"
-            "required": true
-        }
     ]
 }
 ```
@@ -230,8 +159,8 @@ and those packages have common parameters which are shared among those packages.
 Package parameters are a collection of project parameters and parameters defined in that package.
 Package parameters always takes higher precedence over project parameters i.e. package parameters
 also defined at the project level takes value specified in the package. In the above example, `SLACK_CHANNEL`
-is defined in `github-slack-trigger` and also listed at the project level. In this case, `SLACK_CHANNEL` is
-assigned `#dev` which is specified in `github-slack-trigger` vs `#general` at the project level.
+is defined in `slack-text-notifications` and also listed at the project level. In this case, `SLACK_CHANNEL` is
+assigned `#dev` which is specified in `slack-text-notifications` vs `#general` at the project level.
 
 
 `wskdeploy report` mode interpolates parameter values in the manifest file and produces
@@ -243,14 +172,11 @@ Let's look at how the values are calculated with environment variables set:
 export SLACK_USERNAME=slack_username
 export SLACK_WEBHOOK_URL=slack_webhook_url
 export SLACK_TOKEN=slack_token
-export GITHUB_USERNAME=github_username
-export GITHUB_REPOSITORY=github_repository
-export GITHUB_ACCESS_TOKEN=github_access_token
 export RULE_NAME=rule_name
 export TRIGGER_NAME=trigger_name
 wskdeploy report -m manifest.yaml
 {
-    "github-slack-trigger": [
+    "slack-text-notifications": [
         {
             "name": "SLACK_USERNAME",
             "type": "string",
@@ -280,27 +206,6 @@ wskdeploy report -m manifest.yaml
             "required": true,
         },
         {
-            "name": "GITHUB_USERNAME",
-            "type": string,
-            "value": "github_username",
-            "description": "GitHub Username",
-            "required": true,
-        },
-        {
-            "name": "GITHUB_REPOSITORY",
-            "type": string
-            "value": "github_repository",
-            "description": "GitHub Repository"
-            "required": true,
-        },
-        {
-            "name": "GITHUB_ACCESS_TOKEN",
-            "type": string,
-            "value": "github_access_token",
-            "description": "GitHub Access Token",
-            "required": true,
-        },
-        {
             "name": "RULE_NAME",
             "type": string,
             "value": "rule_name",
@@ -315,7 +220,7 @@ wskdeploy report -m manifest.yaml
             "required": true
         }
     ]
-    "slack-notifications": [
+    "slack-email-notifications": [
         {
             "name": "SLACK_USERNAME",
             "type": "string",
@@ -344,41 +249,6 @@ wskdeploy report -m manifest.yaml
             "description": "Slack Token",
             "required": true,
         },
-        {
-            "name": "GITHUB_USERNAME",
-            "type": string,
-            "value": "github_username",
-            "description": "GitHub Username",
-            "required": true,
-        },
-        {
-            "name": "GITHUB_REPOSITORY",
-            "type": string
-            "value": "github_repository",
-            "description": "GitHub Repository"
-            "required": true,
-        },
-        {
-            "name": "GITHUB_ACCESS_TOKEN",
-            "type": string,
-            "value": "github_access_token",
-            "description": "GitHub Access Token",
-            "required": true,
-        },
-        {
-            "name": "RULE_NAME",
-            "type": string,
-            "value": "rule_name",
-            "description": "Rule Name"
-            "required": true,
-        },
-        {
-            "name": "TRIGGER_NAME"
-            "type": string
-            "value": "trigger_name",
-            "description": "Trigger Name"
-            "required": true
-        }
     ]
 }
 ```
@@ -391,7 +261,7 @@ Deployment file:
 project:
     name: myproject
     packages:
-       github-slack-trigger:
+       slack-text-notifications:
             parameters:
                 SLACK_CHANNEL:
                     type: string
@@ -436,9 +306,9 @@ In the end, `wskdeploy` supports a flag `--param` which takes the highest preced
 ```
 export SLACK_USERNAME=slack_username
 ...
-wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev-push" --param GITHUB_REPOSITORY https://github.com
+wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev-push" --param SLACK_WEBHOOK_URL abcd 
 {
-    "github-slack-trigger": [
+    "slack-text-notifications": [
         ...
         {
             "name": "SLACK_CHANNEL",
@@ -448,10 +318,10 @@ wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev
             "required": true,
         },
         {
-            "name": "GITHUB_REPOSITORY",
+            "name": "SLACK_WEBHOOK_URL",
             "type": string
-            "value": "https://github.com",
-            "description": "GitHub Repository"
+            "value": "abcd",
+            "description": "Slack Webhook URL"
             "required": true,
         },
         ...
@@ -466,10 +336,10 @@ wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev
             "required": true,
         },
         {
-            "name": "GITHUB_REPOSITORY",
+            "name": "SLACK_WEBHOOK_URL",
             "type": string
-            "value": "https://github.com",
-            "description": "GitHub Repository"
+            "value": "abcd",
+            "description": "Slack Webhook URL"
             "required": true,
         },
         ...
@@ -482,9 +352,9 @@ wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev
 ```
 export SLACK_USERNAME=slack_username
 export SLACK_CHANNEL=#wskdeploy
-export GITHUB_REPOSITORY=https://github.com
+export SLACK_WEBHOOK_URL=abcd 
 ...
-wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev-push" --param GITHUB_REPOSITORY $GITHUB_REPOSITORY 
+wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev-push" --param SLACK_WEBHOOK_URL $SLACK_WEBHOOK_URL 
 {
     "github-slack-trigger": [
         ...
@@ -496,10 +366,10 @@ wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev
             "required": true,
         },
         {
-            "name": "GITHUB_REPOSITORY",
+            "name": "SLACK_WEBHOOK_URL",
             "type": string
-            "value": "https://github.com",
-            "description": "GitHub Repository"
+            "value": "abcd",
+            "description": "Slack Webhook URL"
             "required": true,
         },
         ...
@@ -514,10 +384,10 @@ wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev
             "required": true,
         },
         {
-            "name": "GITHUB_REPOSITORY",
+            "name": "SLACK_WEBHOOK_URL",
             "type": string
-            "value": "https://github.com",
-            "description": "GitHub Repository"
+            "value": "abcd",
+            "description": "Slack Webhook URL"
             "required": true,
         },
         ...
