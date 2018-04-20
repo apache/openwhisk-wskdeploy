@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations under the License.
 #
 -->
-# Project Parameters Evaluation
+# Whisk Deploy Parameters Evaluation
 
 A project is generally defined as a collection of packages. A package is generally defined as a collection of OpenWhisk entities such as
 actions, sequences, triggers, rules, and apis in manifest/deployment file. These OpenWhisk entities in manifest/deployment files
