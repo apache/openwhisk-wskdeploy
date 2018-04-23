@@ -19,6 +19,26 @@ project:
     packages:
         mypackage:
             parameters:
+                SLACK_USERNAME:
+                    type: string
+                    description: "Slack User Name"
+                    required: true
+                    default: ${SLACK_USERNAME}
+                SLACK_WEBHOOK_URL:
+                    type: string
+                    description: "Slack Webhook URL"
+                    required: true
+                    default: https://hooks.slack.com/services/${SLACK_WEBHOOK_URL}
+                SLACK_CHANNEL:
+                    type: string
+                    description: "Slack Channel"
+                    required: true
+                    default: #general
+                SLACK_TOKEN:
+                    type: string
+                    description: "Slack Token"
+                    required: true
+                    default: ${SLACK_TOKEN}
                 USERNAME:
                     type: string
                     description: "The User Name"
