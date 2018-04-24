@@ -25,7 +25,7 @@ import (
 func convertInterfaceArray(in []interface{}) []interface{} {
 	res := make([]interface{}, len(in))
 	for i, v := range in {
-		res[i] = convertMapValue(v)
+		res[i] = ConvertInterfaceValue(v)
 	}
 	return res
 }
@@ -33,22 +33,32 @@ func convertInterfaceArray(in []interface{}) []interface{} {
 func ConvertInterfaceMap(mapIn map[interface{}]interface{}) map[string]interface{} {
 	mapOut := make(map[string]interface{})
 	for k, v := range mapIn {
-		mapOut[fmt.Sprintf("%v", k)] = convertMapValue(v)
+		mapOut[fmt.Sprintf("%v", k)] = ConvertInterfaceValue(v)
 	}
 	return mapOut
 }
 
-func convertMapValue(value interface{}) interface{} {
+func ConvertInterfaceValue(value interface{}) interface{} {
 	switch typedVal := value.(type) {
 	case []interface{}:
 		return convertInterfaceArray(typedVal)
+	case map[string]interface{}:
 	case map[interface{}]interface{}:
 		return ConvertInterfaceMap(typedVal)
+	case bool:
+	case int:
+	case int8:
+	case int16:
+	case int32:
+	case int64:
+	case float32:
+	case float64:
 	case string:
 		return typedVal
 	default:
 		return fmt.Sprintf("%v", typedVal)
 	}
+	return value
 }
 
 // TODO() add a Print function to wskprint that calls this and adds the label
