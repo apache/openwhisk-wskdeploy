@@ -20,7 +20,7 @@ package utils
 import (
 	"testing"
 
-	"github.com/magiconair/properties/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 const TEST_MSG_INVALID_CONVERSION_VALUE = "Invalid conversion value"
