@@ -50,6 +50,9 @@ script:
 - "./tools/travis/script.sh"
 after_success:
 - DEPLOY_BUILD_READY=true
+- if [ "$TRAVIS_EVENT_TYPE" == "cron" ] ; then
+    export DEPLOY_BUILD_READY=false;
+  fi
 
 after_script:
 - make clean
@@ -58,10 +61,6 @@ before_deploy:
 - go get github.com/inconshreveable/mousetrap
 - export GIT_TAG="latest"
 - export TAG=false
-- if [ ! -z "$TRAVIS_TAG" ] ; then
-      export GIT_TAG=$TRAVIS_TAG;
-      export TAG=true;
-  fi
 - "./tools/travis/build_tag_releases.sh $build_file_name $GIT_TAG"
 - ./gradlew --console=plain releaseBinaries -PpackageVersion=$GIT_TAG
 - export RELEASE_PKG_FILE="$(cd "$TRAVIS_BUILD_DIR/release" && ls ${zip_file_name}-*.tgz ${zip_file_name}-*.zip)"
@@ -73,6 +72,10 @@ before_deploy:
       git push -q https://$API_KEY@github.com/apache/incubator-openwhisk-wskdeploy :refs/tags/$GIT_TAG;
       GIT_COMMITTER_DATE="$(git show --format=%aD | head -1)" git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
       git push -f -q https://$API_KEY@github.com/apache/incubator-openwhisk-wskdeploy $GIT_TAG;
+  fi
+- if [ ! -z "$TRAVIS_TAG" ] ; then
+      export GIT_TAG=$TRAVIS_TAG;
+      export TAG=true;
   fi
 - echo "The event type is $TRAVIS_EVENT_TYPE."
 - echo "The GIT_TAG of this Travis build is $GIT_TAG."

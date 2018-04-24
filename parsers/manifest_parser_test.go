@@ -52,6 +52,7 @@ const (
 	TEST_MSG_ACTION_DOCKER_KIND_MISMATCH            = "Docker action kind is set to [%s] instead of " + utils.BLACKBOX
 	TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH           = "Docker action image had a value mismatch."
 	TEST_MSG_ACTION_CODE_MISSING                    = "Action code is missing."
+	TEST_MSG_INVALID_ACTION_ANNOTATION              = "Action annotations are invalid"
 
 	// local error messages
 	TEST_ERROR_MANIFEST_PARSE_FAILURE     = "Manifest [%s]: Failed to parse."
@@ -1062,6 +1063,88 @@ func TestComposeActionsForWebAndWebExport(t *testing.T) {
 					assert.True(t, a.Value.(bool), "Expected true for web-export but got "+strconv.FormatBool(a.Value.(bool)))
 				case "raw-http":
 					assert.True(t, a.Value.(bool), "Expected true for raw but got "+strconv.FormatBool(a.Value.(bool)))
+				}
+			}
+		}
+	}
+}
+
+func TestYAMLParser_ComposeActionsForAnnotations(t *testing.T) {
+	file := "../tests/dat/manifest_data_compose_actions_for_annotations.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
+
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
+
+	for _, action := range actions {
+		if action.Action.Name == "hello" {
+			for _, a := range action.Action.Annotations {
+				switch a.Key {
+				// annotation_string: this is a string annotations
+				case "annotation_string":
+					assert.Equal(t, "this is a string annotations",
+						a.Value.(string), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				//annotation_int: 100
+				case "annotation_int":
+					assert.Equal(t, 100,
+						a.Value.(int), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				//annotation_float: 99.99
+				case "annotation_float":
+					assert.Equal(t, 99.99,
+						a.Value.(float64), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				//annotation_bool: true
+				case "annotation_bool":
+					assert.Equal(t, true,
+						a.Value.(bool), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				// annotation_list_1: [1, 2, 3, 4]
+				case "annotation_list_1":
+					assert.Equal(t, []interface{}{1, 2, 3, 4},
+						a.Value.([]interface{}), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				//annotation_list_2: [{ "payload": "one,two,three" }, { "payload": "one,two,three", "separator": "," }]
+				case "annotation_list_2":
+					assert.Equal(t, []interface{}{map[string]interface{}{"payload": "one,two,three"}, map[string]interface{}{"payload": "one,two,three", "separator": ","}},
+						a.Value.([]interface{}), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				// annotation_json_1: { "payload": "one,two,three" }
+				case "annotation_json_1":
+					assert.Equal(t, map[string]interface{}{"payload": "one,two,three"},
+						a.Value.(map[string]interface{}), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				// annotation_json_2: { "payload": "one,two,three", "separator": "," }
+				case "annotation_json_2":
+					assert.Equal(t, map[string]interface{}{"payload": "one,two,three", "separator": ","},
+						a.Value.(map[string]interface{}), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				// annotation_json_3: { "payload": "one,two,three", "lines": ["one", "two", "three"] }
+				case "annotation_json_3":
+					assert.Equal(t, map[string]interface{}{"payload": "one,two,three", "lines": []interface{}{"one", "two", "three"}},
+						a.Value.(map[string]interface{}), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				//annotation_json_4: { "p": { "a": 1 } }
+				case "annotation_json_4":
+					assert.Equal(t, map[string]interface{}{"p": map[string]interface{}{"a": 1}},
+						a.Value.(map[string]interface{}), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				//annotation_json_5: { "p": { "a": 1, "b": 2 } }
+				case "annotation_json_5":
+					assert.Equal(t, map[string]interface{}{"p": map[string]interface{}{"a": 1, "b": 2}},
+						a.Value.(map[string]interface{}), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				//annotation_json_6: { "p": { "a": 1, "b": { "c": 2 } } }
+				case "annotation_json_6":
+					assert.Equal(t, map[string]interface{}{"p": map[string]interface{}{"a": 1, "b": map[string]interface{}{"c": 2}}},
+						a.Value.(map[string]interface{}), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				//annotation_json_7: { "p": { "a": 1, "b": { "c": 2, "d": 3 } } }
+				case "annotation_json_7":
+					assert.Equal(t, map[string]interface{}{"p": map[string]interface{}{"a": 1, "b": map[string]interface{}{"c": 2, "d": 3}}},
+						a.Value.(map[string]interface{}), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				//annotation_json_8: { "p": { "a": 1, "b": { "c": 2, "d": [3, 4] } } }
+				case "annotation_json_8":
+					assert.Equal(t, map[string]interface{}{"p": map[string]interface{}{"a": 1, "b": map[string]interface{}{"c": 2, "d": []interface{}{3, 4}}}},
+						a.Value.(map[string]interface{}), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				//annotation_json_9: { "p": { "a": 99.99 } }
+				case "annotation_json_9":
+					assert.Equal(t, map[string]interface{}{"p": map[string]interface{}{"a": 99.99}},
+						a.Value.(map[string]interface{}), TEST_MSG_INVALID_ACTION_ANNOTATION)
+				//annotation_json_10: { "p": { "a": true } }
+				case "annotation_json_10":
+					assert.Equal(t, map[string]interface{}{"p": map[string]interface{}{"a": true}},
+						a.Value.(map[string]interface{}), TEST_MSG_INVALID_ACTION_ANNOTATION)
+
 				}
 			}
 		}

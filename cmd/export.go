@@ -29,7 +29,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/spf13/cobra"
 )
@@ -85,16 +84,18 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML,
 
 		// store function file under action package name subdirectory in the specified manifest folder
 		functionDir := filepath.Join(manifestDir, packageName)
-		os.MkdirAll(functionDir, os.ModePerm)
 
-		// save code file at the full path
+		// save the code in file
 		filename, err := saveCode(*wskAction, functionDir)
 		if err != nil {
 			return err
 		}
 
-		// store function in manifest under path relative to manifest root
-		parsedAction.Function = filepath.Join(packageName, filename)
+		if filename != "" {
+			// store function in manifest if action has code section
+			parsedAction.Function = filepath.Join(packageName, filename)
+		}
+
 		pkg.Actions[wskAction.Name] = parsedAction
 	}
 
@@ -309,7 +310,6 @@ func ExportCmdImp(cmd *cobra.Command, args []string) error {
 const (
 	JAVA_EXT = ".jar"
 	ZIP_EXT  = ".zip"
-	BLACKBOX = "blackbox"
 	JAVA     = "java"
 )
 
@@ -332,13 +332,10 @@ func saveCode(action whisk.Action, directory string) (string, error) {
 	exec = *action.Exec
 	runtime = strings.Split(exec.Kind, ":")[0]
 
-	if strings.ToLower(runtime) == BLACKBOX {
-		return "", wskderrors.NewInvalidRuntimeError(wski18n.T(wski18n.ID_ERR_CANT_SAVE_DOCKER_RUNTIME),
-			directory, action.Name, BLACKBOX, utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
-	}
-
 	if exec.Code != nil {
 		code = *exec.Code
+	} else {
+		return "", nil
 	}
 
 	var filename = ""
@@ -350,6 +347,8 @@ func saveCode(action whisk.Action, directory string) (string, error) {
 	} else {
 		filename = action.Name + "." + utils.FileRuntimeExtensionsMap[action.Exec.Kind]
 	}
+
+	os.MkdirAll(directory, os.ModePerm)
 
 	path := filepath.Join(directory, filename)
 
