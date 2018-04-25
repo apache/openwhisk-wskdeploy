@@ -213,10 +213,10 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 	return depMap, nil
 }
 
-func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, managedAnnotations whisk.KeyValue) (map[string]*whisk.Package, map[string]map[string]Parameter, error) {
+func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, managedAnnotations whisk.KeyValue) (map[string]*whisk.Package, []PackageParameter, error) {
 	packages := map[string]*whisk.Package{}
 	manifestPackages := make(map[string]Package)
-	parameters := make(map[string]map[string]Parameter, 0)
+	parameters := make([]PackageParameter, 0)
 
 	if len(manifest.Packages) != 0 {
 		manifestPackages = manifest.Packages
@@ -234,14 +234,12 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, manage
 
 	// Compose each package found in manifest
 	for n, p := range manifestPackages {
-		s, p, err := dm.ComposePackage(p, n, filePath, managedAnnotations)
-
+		s, params, err := dm.ComposePackage(p, n, filePath, managedAnnotations)
 		if err != nil {
 			return nil, parameters, err
 		}
-
 		packages[n] = s
-		parameters[s.Name] = p
+		parameters = append(parameters, PackageParameter{PackageName: n, Parameters: params})
 	}
 
 	return packages, parameters, nil
@@ -347,7 +345,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 
 	for _, p := range params {
 		param := pkg.Parameters[p.Key]
-		parameters[p.Key] = Parameter{
+		parameter := Parameter{
 			Type:        param.Type,
 			Description: param.Description,
 			Value:       p.Value,
@@ -357,6 +355,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 			Schema:      param.Schema,
 			multiline:   param.multiline,
 		}
+		parameters[p.Key] = parameter
 	}
 
 	return pag, parameters, nil

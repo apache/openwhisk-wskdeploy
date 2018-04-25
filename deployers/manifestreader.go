@@ -131,7 +131,7 @@ func (reader *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestPar
 	return nil
 }
 
-func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package, parameters map[string]map[string]parsers.Parameter) error {
+func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package, parameters []parsers.PackageParameter) error {
 
 	dep := reader.serviceDeployer
 
@@ -141,7 +141,7 @@ func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package, pa
 	for _, pkg := range packages {
 		newPack := NewDeploymentPackage()
 		newPack.Package = pkg
-		newPack.Parameters = parameters[pkg.Name]
+		newPack.Parameters = parameters
 		dep.Deployment.Packages[pkg.Name] = newPack
 	}
 	return nil

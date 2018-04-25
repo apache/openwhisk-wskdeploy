@@ -18,6 +18,7 @@
 package deployers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"path"
@@ -63,7 +64,7 @@ type DeploymentPackage struct {
 	Dependencies map[string]utils.DependencyRecord
 	Actions      map[string]utils.ActionRecord
 	Sequences    map[string]utils.ActionRecord
-	Parameters   map[string]parsers.Parameter
+	Parameters   []parsers.PackageParameter
 }
 
 func NewDeploymentPackage() *DeploymentPackage {
@@ -71,7 +72,7 @@ func NewDeploymentPackage() *DeploymentPackage {
 	dep.Dependencies = make(map[string]utils.DependencyRecord)
 	dep.Actions = make(map[string]utils.ActionRecord)
 	dep.Sequences = make(map[string]utils.ActionRecord)
-	dep.Parameters = make(map[string]parsers.Parameter)
+	dep.Parameters = make([]parsers.PackageParameter, 0)
 	return &dep
 }
 
@@ -272,9 +273,13 @@ func (deployer *ServiceDeployer) Deploy() error {
 	}
 
 	if deployer.Report {
-		//for _ := range deployer.Deployment.Packages {
-		//	 Print parameters
-		//}
+		for _, pkg := range deployer.Deployment.Packages {
+			json, err := json.MarshalIndent(pkg.Parameters, "", "  ")
+			if err != nil {
+				return err
+			}
+			wskprint.PrintlnOpenWhiskOutput(string(json))
+		}
 		return nil
 	}
 

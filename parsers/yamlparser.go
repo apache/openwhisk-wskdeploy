@@ -233,6 +233,11 @@ type YAML struct {
 	Filepath string             //file path of the yaml file
 }
 
+type PackageParameter struct {
+	PackageName string
+	Parameters  map[string]Parameter
+}
+
 // function to return web-export or web depending on what is specified
 // in manifest and deployment files
 func (action *Action) GetWeb() string {
