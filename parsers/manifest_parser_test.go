@@ -1293,7 +1293,7 @@ func TestComposePackage(t *testing.T) {
 	file := "../tests/dat/manifest_data_compose_packages.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
 
-	pkg, err := p.ComposeAllPackages(m, m.Filepath, whisk.KeyValue{})
+	pkg, _, err := p.ComposeAllPackages(m, m.Filepath, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_PACKAGE_FAILURE, file))
 
 	n := "helloworld"
