@@ -33,7 +33,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -214,9 +213,10 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 	return depMap, nil
 }
 
-func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, managedAnnotations whisk.KeyValue) (map[string]*whisk.Package, error) {
+func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, managedAnnotations whisk.KeyValue) (map[string]*whisk.Package, map[string]map[string]Parameter, error) {
 	packages := map[string]*whisk.Package{}
 	manifestPackages := make(map[string]Package)
+	parameters := make(map[string]map[string]Parameter, 0)
 
 	if len(manifest.Packages) != 0 {
 		manifestPackages = manifest.Packages
@@ -234,20 +234,22 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, manage
 
 	// Compose each package found in manifest
 	for n, p := range manifestPackages {
-		s, err := dm.ComposePackage(p, n, filePath, managedAnnotations)
+		s, p, err := dm.ComposePackage(p, n, filePath, managedAnnotations)
 
-		if err == nil {
-			packages[n] = s
-		} else {
-			return nil, err
+		if err != nil {
+			return nil, parameters, err
 		}
+
+		packages[n] = s
+		parameters[s.Name] = p
 	}
 
-	return packages, nil
+	return packages, parameters, nil
 }
 
-func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath string, managedAnnotations whisk.KeyValue) (*whisk.Package, error) {
+func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath string, managedAnnotations whisk.KeyValue) (*whisk.Package, map[string]Parameter, error) {
 	pag := &whisk.Package{}
+	parameters := make(map[string]Parameter, 0)
 	pag.Name = packageName
 	//The namespace for this package is absent, so we use default guest here.
 	pag.Namespace = pkg.Namespace
@@ -300,7 +302,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	//set parameters
 	inputs, err := dm.composeInputsOrOutputs(pkg.Inputs, filePath)
 	if err != nil {
-		return nil, err
+		return nil, parameters, err
 	}
 	if len(inputs) > 0 {
 		pag.Parameters = inputs
@@ -337,14 +339,27 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	// append package parameters with the interpolated values
 	params, err := dm.composeInputsOrOutputs(pkg.Parameters, filePath)
 	if err != nil {
-		return nil, err
+		return nil, parameters, err
 	}
 	if len(params) > 0 {
 		pag.Parameters = append(pag.Parameters, params...)
 	}
-	spew.Dump(pag.Parameters)
 
-	return pag, nil
+	for _, p := range params {
+		param := pkg.Parameters[p.Key]
+		parameters[p.Key] = Parameter{
+			Type:        param.Type,
+			Description: param.Description,
+			Value:       p.Value,
+			Required:    param.Required,
+			Default:     param.Default,
+			Status:      param.Status,
+			Schema:      param.Schema,
+			multiline:   param.multiline,
+		}
+	}
+
+	return pag, parameters, nil
 }
 
 func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YAML, manifestFilePath string, managedAnnotations whisk.KeyValue) ([]utils.ActionRecord, error) {

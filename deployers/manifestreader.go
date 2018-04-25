@@ -54,11 +54,11 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 }
 
 func (reader *ManifestReader) InitPackages(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, managedAnnotations whisk.KeyValue) error {
-	packages, err := manifestParser.ComposeAllPackages(manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
+	packages, parameters, err := manifestParser.ComposeAllPackages(manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
 	if err != nil {
 		return err
 	}
-	reader.SetPackages(packages)
+	reader.SetPackages(packages, parameters)
 	return nil
 }
 
@@ -131,7 +131,7 @@ func (reader *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestPar
 	return nil
 }
 
-func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package) error {
+func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package, parameters map[string]map[string]parsers.Parameter) error {
 
 	dep := reader.serviceDeployer
 
@@ -141,6 +141,7 @@ func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package) er
 	for _, pkg := range packages {
 		newPack := NewDeploymentPackage()
 		newPack.Package = pkg
+		newPack.Parameters = parameters[pkg.Name]
 		dep.Deployment.Packages[pkg.Name] = newPack
 	}
 	return nil

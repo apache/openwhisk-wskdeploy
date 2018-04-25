@@ -195,6 +195,7 @@ func Deploy() error {
 		deployer.ManifestPath = utils.Flags.ManifestPath
 		deployer.DeploymentPath = utils.Flags.DeploymentPath
 		deployer.Preview = utils.Flags.Preview
+		deployer.Report = utils.Flags.Report
 
 		// master record of any dependency that has been downloaded
 		deployer.DependencyMaster = make(map[string]utils.DependencyRecord)

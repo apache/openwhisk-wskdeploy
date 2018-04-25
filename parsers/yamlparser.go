@@ -217,13 +217,14 @@ type Package struct {
 }
 
 type Project struct {
-	Name             string             `yaml:"name"`
-	Namespace        string             `yaml:"namespace"`
-	Credential       string             `yaml:"credential"`
-	ApiHost          string             `yaml:"apiHost"`
-	ApigwAccessToken string             `yaml:"apigwAccessToken"`
-	Version          string             `yaml:"version"`
-	Packages         map[string]Package `yaml:"packages"`
+	Name             string               `yaml:"name"`
+	Namespace        string               `yaml:"namespace"`
+	Credential       string               `yaml:"credential"`
+	ApiHost          string               `yaml:"apiHost"`
+	ApigwAccessToken string               `yaml:"apigwAccessToken"`
+	Version          string               `yaml:"version"`
+	Packages         map[string]Package   `yaml:"packages"`
+	Parameters       map[string]Parameter `yaml: parameters`
 }
 
 type YAML struct {

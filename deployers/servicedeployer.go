@@ -63,6 +63,7 @@ type DeploymentPackage struct {
 	Dependencies map[string]utils.DependencyRecord
 	Actions      map[string]utils.ActionRecord
 	Sequences    map[string]utils.ActionRecord
+	Parameters   map[string]parsers.Parameter
 }
 
 func NewDeploymentPackage() *DeploymentPackage {
@@ -70,6 +71,7 @@ func NewDeploymentPackage() *DeploymentPackage {
 	dep.Dependencies = make(map[string]utils.DependencyRecord)
 	dep.Actions = make(map[string]utils.ActionRecord)
 	dep.Sequences = make(map[string]utils.ActionRecord)
+	dep.Parameters = make(map[string]parsers.Parameter)
 	return &dep
 }
 
@@ -85,6 +87,7 @@ type ServiceDeployer struct {
 	Client            *whisk.Client
 	mt                sync.RWMutex
 	Preview           bool
+	Report            bool
 	ManifestPath      string
 	ProjectPath       string
 	DeploymentPath    string
@@ -156,7 +159,10 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		}
 	}
 
-	manifestReader.InitPackages(manifestParser, manifest, deployer.ManagedAnnotation)
+	err = manifestReader.InitPackages(manifestParser, manifest, deployer.ManagedAnnotation)
+	if err != nil {
+		return err
+	}
 
 	// process manifest file
 	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, deployer.ManagedAnnotation)
@@ -262,6 +268,13 @@ func (deployer *ServiceDeployer) Deploy() error {
 
 	if deployer.Preview {
 		deployer.printDeploymentAssets(deployer.Deployment)
+		return nil
+	}
+
+	if deployer.Report {
+		//for _ := range deployer.Deployment.Packages {
+		//	 Print parameters
+		//}
 		return nil
 	}
 

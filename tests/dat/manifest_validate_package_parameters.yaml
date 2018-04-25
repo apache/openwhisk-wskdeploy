@@ -33,29 +33,20 @@ project:
                     type: string
                     description: "Slack Channel"
                     required: true
-                    default: #general
+                    default: "#general"
                 SLACK_TOKEN:
                     type: string
                     description: "Slack Token"
                     required: true
                     default: ${SLACK_TOKEN}
-                USERNAME:
+                RULE_NAME:
                     type: string
-                    description: "The User Name"
+                    description: "Rule Name"
                     required: true
-                    default: test 
-                PASSWORD:
+                    default: ${RULE_NAME}
+                TRIGGER_NAME:
                     type: string
-                    description: "The Password"
+                    description: "Trigger Name"
                     required: true
-                    default: ${PASSWORD}
-                DATABASE:
-                    type: string
-                    description: "The Database"
-                    required: true
-                OPENWHISK_DATABASE_FEED:
-                    type: string
-                    description: "The Database feed instance"
-                    required: true
-                    default: ${DATABASE_HOST}_instance
+                    default: ${TRIGGER_NAME}
 
