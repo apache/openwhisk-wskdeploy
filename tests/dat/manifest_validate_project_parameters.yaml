@@ -31,30 +31,29 @@ project:
             type: string
             description: "Slack Channel"
             required: true
-            default: #general
+            default: "#general"
         SLACK_TOKEN:
             type: string
             description: "Slack Token"
             required: true
             default: ${SLACK_TOKEN}
-        packages:
-            slack-text-notifications:
-                parameters:
-                    SLACK_CHANNEL:
-                        type: string
-                        description: "Slack Channel"
-                        required: true
-                        default: #dev
-                    RULE_NAME:
-                        type: string
-                        description: "Rule Name"
-                        required: true
-                        default: ${RULE_NAME}
-                    TRIGGER_NAME:
-                        type: string
-                        description: "Trigger Name"
-                        required: true
-                        default: ${TRIGGER_NAME}
-                actions:
-
-            slack-email-notifications:
+    packages:
+        slack-text-notifications:
+            parameters:
+                SLACK_CHANNEL:
+                    type: string
+                    description: "Slack Channel"
+                    required: true
+                    default: "#dev"
+                RULE_NAME:
+                    type: string
+                    description: "Rule Name"
+                    required: true
+                    default: ${RULE_NAME}
+                TRIGGER_NAME:
+                    type: string
+                    description: "Trigger Name"
+                    required: true
+                    default: ${TRIGGER_NAME}
+            actions:
+        slack-email-notifications:

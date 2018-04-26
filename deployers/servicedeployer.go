@@ -64,7 +64,7 @@ type DeploymentPackage struct {
 	Dependencies map[string]utils.DependencyRecord
 	Actions      map[string]utils.ActionRecord
 	Sequences    map[string]utils.ActionRecord
-	Parameters   []parsers.PackageParameter
+	Parameters   parsers.PackageParameter
 }
 
 func NewDeploymentPackage() *DeploymentPackage {
@@ -72,7 +72,7 @@ func NewDeploymentPackage() *DeploymentPackage {
 	dep.Dependencies = make(map[string]utils.DependencyRecord)
 	dep.Actions = make(map[string]utils.ActionRecord)
 	dep.Sequences = make(map[string]utils.ActionRecord)
-	dep.Parameters = make([]parsers.PackageParameter, 0)
+	dep.Parameters = parsers.PackageParameter{}
 	return &dep
 }
 
@@ -84,6 +84,7 @@ func NewDeploymentPackage() *DeploymentPackage {
 //   4. Create a deployment plan to create OpenWhisk service
 type ServiceDeployer struct {
 	ProjectName       string
+	ProjectParameters map[string]parsers.Parameter
 	Deployment        *DeploymentProject
 	Client            *whisk.Client
 	mt                sync.RWMutex
@@ -103,6 +104,7 @@ func NewServiceDeployer() *ServiceDeployer {
 	dep.Deployment = NewDeploymentProject()
 	dep.Preview = true
 	dep.DependencyMaster = make(map[string]utils.DependencyRecord)
+	dep.ProjectParameters = make(map[string]parsers.Parameter, 0)
 
 	return &dep
 }
@@ -117,6 +119,25 @@ func (deployer *ServiceDeployer) Check() {
 	ps.ParseManifest(deployer.ManifestPath)
 	// add more schema check or manifest/deployment consistency checks here if
 	// necessary
+}
+
+func (deployer *ServiceDeployer) setProjectParameters(manifest *parsers.YAML) error {
+	for parameterName, param := range manifest.Project.Parameters {
+		p, err := parsers.ResolveParameter(parameterName, &param, manifest.Filepath)
+		if err != nil {
+			return err
+		}
+		deployer.ProjectParameters[parameterName] = parsers.Parameter{
+			Type:        param.Type,
+			Required:    param.Required,
+			Default:     param.Default,
+			Status:      param.Status,
+			Schema:      param.Schema,
+			Description: param.Description,
+			Value:       p,
+		}
+	}
+	return nil
 }
 
 func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
@@ -138,6 +159,11 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 			map[string]interface{}{
 				wski18n.KEY_PROJECT: deployer.ProjectName})
 		wskprint.PrintOpenWhiskWarning(warningString)
+	}
+
+	err = deployer.setProjectParameters(manifest)
+	if err != nil {
+		return err
 	}
 
 	// Generate Managed Annotations if its marked as a Managed Deployment
@@ -166,7 +192,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	}
 
 	// process manifest file
-	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, deployer.ManagedAnnotation)
+	err = manifestReader.HandleYaml(manifestParser, manifest, deployer.ManagedAnnotation)
 	if err != nil {
 		return err
 	}
@@ -220,7 +246,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 	manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
 
 	// process manifest file
-	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
+	err = manifestReader.HandleYaml(manifestParser, manifest, whisk.KeyValue{})
 	if err != nil {
 		return deployer.Deployment, err
 	}

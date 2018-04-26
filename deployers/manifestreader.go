@@ -54,7 +54,7 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 }
 
 func (reader *ManifestReader) InitPackages(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, managedAnnotations whisk.KeyValue) error {
-	packages, parameters, err := manifestParser.ComposeAllPackages(manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
+	packages, parameters, err := manifestParser.ComposeAllPackages(reader.serviceDeployer.ProjectParameters, manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (reader *ManifestReader) InitPackages(manifestParser *parsers.YAMLParser, m
 }
 
 // Wrapper parser to handle yaml dir
-func (reader *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.YAML, managedAnnotations whisk.KeyValue) error {
+func (reader *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, managedAnnotations whisk.KeyValue) error {
 
 	var err error
 	var manifestName = manifest.Filepath
@@ -131,7 +131,7 @@ func (reader *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestPar
 	return nil
 }
 
-func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package, parameters []parsers.PackageParameter) error {
+func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package, parameters map[string]parsers.PackageParameter) error {
 
 	dep := reader.serviceDeployer
 
@@ -141,7 +141,7 @@ func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package, pa
 	for _, pkg := range packages {
 		newPack := NewDeploymentPackage()
 		newPack.Package = pkg
-		newPack.Parameters = parameters
+		newPack.Parameters = parameters[pkg.Name]
 		dep.Deployment.Packages[pkg.Name] = newPack
 	}
 	return nil
