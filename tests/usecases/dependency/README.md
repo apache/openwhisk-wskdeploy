@@ -16,7 +16,7 @@
 #
 -->
 
-# Dependent Packages with `wskdeploy` 
+# Dependent Packages with `wskdeploy`
 
 `wskdeploy` supports dependencies where it allows you to declare other OpenWhisk
 packages that your application or project (manifest) is dependent on. With declaring
