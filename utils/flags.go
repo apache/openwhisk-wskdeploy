@@ -43,6 +43,8 @@ type WskDeployFlags struct {
 	Trace            bool
 	Sync             bool
 	Report           bool
+	Param            []string
+	ParamFile        string
 }
 
 func (flags *WskDeployFlags) Format() string {

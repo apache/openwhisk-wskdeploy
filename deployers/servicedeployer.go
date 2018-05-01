@@ -105,7 +105,6 @@ func NewServiceDeployer() *ServiceDeployer {
 	dep.Preview = true
 	dep.DependencyMaster = make(map[string]utils.DependencyRecord)
 	dep.ProjectParameters = make(map[string]parsers.Parameter, 0)
-
 	return &dep
 }
 

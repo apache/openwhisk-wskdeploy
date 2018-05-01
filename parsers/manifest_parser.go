@@ -19,6 +19,7 @@ package parsers
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -245,19 +246,75 @@ func (dm *YAMLParser) ComposeAllPackages(projectParameters map[string]Parameter,
 	return packages, parameters, nil
 }
 
+func getJSONFromStrings(content []string, keyValueFormat bool) (interface{}, error) {
+	var data map[string]interface{}
+	var res interface{}
+
+	whisk.Debug(whisk.DbgInfo, "Convert content to JSON: %#v\n", content)
+
+	for i := 0; i < len(content); i++ {
+		dc := json.NewDecoder(strings.NewReader(content[i]))
+		dc.UseNumber()
+		if err := dc.Decode(&data); err != nil {
+			whisk.Debug(whisk.DbgError, "Invalid JSON detected for '%s' \n", content[i])
+			return whisk.KeyValueArr{}, err
+		}
+
+		whisk.Debug(whisk.DbgInfo, "Created map '%v' from '%v'\n", data, content[i])
+	}
+
+	if keyValueFormat {
+		res = getKeyValueFormattedJSON(data)
+	} else {
+		res = data
+	}
+
+	return res, nil
+}
+
+func getKeyValueFormattedJSON(data map[string]interface{}) whisk.KeyValueArr {
+	var keyValueArr whisk.KeyValueArr
+
+	for key, value := range data {
+		keyValue := whisk.KeyValue{
+			Key:   key,
+			Value: value,
+		}
+		keyValueArr = append(keyValueArr, keyValue)
+	}
+
+	whisk.Debug(whisk.DbgInfo, "Created key/value format '%v' from '%v'\n", keyValueArr, data)
+
+	return keyValueArr
+}
+
 func (dm *YAMLParser) composePackageParameters(projectParameters map[string]Parameter, unresolvedParams map[string]Parameter, resolvedParams whisk.KeyValueArr) map[string]Parameter {
 	parameters := make(map[string]Parameter, 0)
+	var paramsCLI interface{}
+	var err error
 
 	for parameterName, param := range projectParameters {
 		parameters[parameterName] = param
 	}
 
+	if len(utils.Flags.Param) > 0 {
+		if paramsCLI, err = getJSONFromStrings(utils.Flags.Param, false); err != nil {
+			return parameters
+		}
+	}
+
 	for _, p := range resolvedParams {
 		param := unresolvedParams[p.Key]
+		paramValue := p.Value
+
+		if v, ok := paramsCLI.(map[string]interface{})[p.Key]; ok {
+			paramValue = wskenv.InterpolateStringWithEnvVar(v)
+		}
+
 		parameter := Parameter{
 			Type:        param.Type,
 			Description: param.Description,
-			Value:       p.Value,
+			Value:       paramValue,
 			Required:    param.Required,
 			Default:     param.Default,
 			Status:      param.Status,
@@ -266,6 +323,7 @@ func (dm *YAMLParser) composePackageParameters(projectParameters map[string]Para
 		}
 		parameters[p.Key] = parameter
 	}
+
 	return parameters
 }
 
