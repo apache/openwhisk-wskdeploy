@@ -229,6 +229,11 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		}
 	}
 
+	// overwrite package parameters based on project parameters and command line parameters
+	// inherit project parameters if a package doesn't have any parameters specified
+	// overwrite package parameters with the values from command line --param and/or --param-file in order
+	// overall precedence order of
+
 	return err
 }
 
