@@ -43,6 +43,7 @@ dependencies {
         build(['name':'github.com/fatih/color', 'version':'570b54cabe6b8eb0bc2dfce68d964677d63b5260', 'transitive':false])
         build(['name':'github.com/fsnotify/fsnotify', 'version':'fd9ec7deca8bf46ecd2a795baaacf2b3a9be1197', 'transitive':false])
         build(['name':'github.com/google/go-querystring/query', 'version':'9235644dd9e52eeae6fa48efd539fdc351a0af53', 'transitive':false])
+        build(['name':'github.com/hashicorp/hcl', 'version':'973f376f0e7cf09c96e445b44712416c0cb22ec4', 'transitive':false])
         build(['name':'github.com/hokaccha/go-prettyjson', 'version':'f75235bd99dad4e98ff360db8372d5c0ef1d054a', 'transitive':false])
         build(['name':'github.com/inconshreveable/mousetrap', 'version':'76626ae9c91c4f2a10f34cad8ce83ea42c93bb75', 'transitive':false])
         build(['name':'github.com/mattn/go-colorable', 'version':'d228849504861217f796da67fae4f6e347643f15', 'transitive':false])
@@ -54,7 +55,9 @@ dependencies {
         build(['name':'github.com/apache/incubator-openwhisk-client-go/whisk', 'version':'defaf9776014c3d9edbffb2671ed166855d0ee60', 'transitive':false])
         build(['name':'github.com/apache/incubator-openwhisk-client-go/wski18n', 'version':'defaf9776014c3d9edbffb2671ed166855d0ee60', 'transitive':false])
         build(['name':'github.com/spf13/cobra', 'version':'6e91dded25d73176bf7f60b40dd7aa1f0bf9be8d', 'transitive':false])
+        build(['name':'github.com/spf13/pflag', 'version':'5ccb023bc27df288a957c5e994cd44fd19619465', 'transitive':false])
         build(['name':'github.com/spf13/viper', 'version':'651d9d916abc3c3d6a91a12549495caba5edffd2', 'transitive':false])
+        build(['name':'golang.org/x/sys/unix', 'version':'9a2e24c3733eddc63871eda99f253e2db29bd3b9', 'transitive':false])
         build(['name':'gopkg.in/yaml.v2', 'version':'eb3733d160e74a9c7e442f435eb3bea458e1d19f', 'transitive':false])
 
         test(['name':'github.com/stretchr/testify', 'version':'b91bfb9ebec76498946beb6af7c0230c7cc7ba6c', 'transitive':false])
