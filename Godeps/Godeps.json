@@ -93,6 +93,10 @@
 			"Rev": "06b7e5f50606ecd49148a01a6008942d9b669217"
 		},
 		{
+			"ImportPath": "github.com/spf13/cast",
+			"Rev": "2580bc98dc0e62908119e4737030cc2fdfc45e4c"
+		},
+		{
 			"ImportPath": "github.com/spf13/cobra",
 			"Rev": "6e91dded25d73176bf7f60b40dd7aa1f0bf9be8d"
 		},
@@ -107,6 +111,10 @@
 		{
 			"ImportPath": "golang.org/x/sys/unix",
 			"Rev": "9a2e24c3733eddc63871eda99f253e2db29bd3b9"
+		},
+		{
+			"ImportPath": "golang.org/x/text/transform",
+			"Rev": "a8b38433e35b65ba247bb267317037dee1b70cea"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
