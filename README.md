@@ -23,7 +23,7 @@
 
 `wskdeploy` is a utility to help you describe and deploy any part of the OpenWhisk programming model using a Manifest file written in YAML. Use it to deploy all your OpenWhisk [Packages](https://github.com/apache/incubator-openwhisk/blob/master/docs/packages.md), [Actions](https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md), [Triggers, and Rules](https://github.com/apache/incubator-openwhisk/blob/master/docs/triggers_rules.md) using a single command!
 
-`wskdeploy export --projectname managed_project_name` allows to "export" a specified managed project into a local file system. Namely, a `managed_project_name.yml` Manifest file will be created automatically. This Manifest file can be used with `wskdeploy` to redeploy the managed project at a different OpenWhisk instance. If the managed project contains dependencies on other managed projects, then these projects will be exported automatically into their respective manifests.  
+`wskdeploy export --projectname managed_project_name` allows to "export" a specified managed project into a local file system. Namely, a `managed_project_name.yml` Manifest file will be created automatically. This Manifest file can be used with `wskdeploy` to redeploy the managed project at a different OpenWhisk instance. If the managed project contains dependencies on other managed projects, then these projects will be exported automatically into their respective manifests.
 
 You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses the [OpenWhisk "Go" Client](https://github.com/apache/incubator-openwhisk-client-go) to create its HTTP REST calls for deploying and undeploying your packages.
 
@@ -223,7 +223,7 @@ while there, you can verify that your upstream repository is set correctly:
 
 #### Git clone RPC failed: HTTP 301
 
-This sometimes occurs using "go get" the wskdeploy code (which indirectly invokes "git clone"). 
+This sometimes occurs using "go get" the wskdeploy code (which indirectly invokes "git clone").
 
 <b>Note: Using "go get" for development is unsupported; instead, please use "go deps" for dependency management.</b>
 

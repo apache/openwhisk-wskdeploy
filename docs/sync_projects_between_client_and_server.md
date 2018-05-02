@@ -26,7 +26,7 @@ Whisk Deploy in `sync` mode, deploys all Apache OpenWhisk entities from the mani
 whisk-managed:
     projectName: <project-name>
     projectHash: SHA1("OpenWhisk " + <size_of_manifest_file> + "\0" + <contents_of_manifest_file>)
-    projectDeps: <list of dependent packages> 
+    projectDeps: <list of dependent packages>
     file: Relative path of manifest file on the file system
 ```
 
@@ -42,7 +42,7 @@ Project name in the manifest file is mandatory to sync that project between the 
 
 ```
 project:
-    name: <project-name> 
+    name: <project-name>
     packages:
         package1:
             ....
@@ -55,7 +55,7 @@ OpenWhisk entities which are deployed using some other tool or automation and we
 Undeployment of such project can be driven by `wskdeploy` with:
 
 ```
-wskdeploy undeploy --projectname <project-name> 
+wskdeploy undeploy --projectname <project-name>
 ```
 
 Lets look at a sample project to understand sync mode. Whisk Deploy GitHub repo has a sample project with many different manifest files to demonstrate sync mode.
@@ -63,7 +63,7 @@ Lets look at a sample project to understand sync mode. Whisk Deploy GitHub repo 
 #### Step 1: Deploy MyFirstManagedProject using `sync`:
 
 ```
-~/wskdeploy sync -m manifest.yaml 
+~/wskdeploy sync -m manifest.yaml
 Success: Deployment completed successfully.
 ```
 
@@ -113,7 +113,7 @@ bx wsk package get ManagedPackage-1
 #### Step 2: Sync Client and Server — Deleting ManagedPackage-2
 
 ```
-~/wskdeploy sync -m 00-manifest-minus-second-package.yaml 
+~/wskdeploy sync -m 00-manifest-minus-second-package.yaml
 Deployment completed successfully.
 ```
 
@@ -140,7 +140,7 @@ rules
 #### Step 3: Sync Client and Server — Deleting Sequence ManagedSequence-2
 
 ```
-~/wskdeploy sync -m 01-manifest-minus-sequence-2.yaml 
+~/wskdeploy sync -m 01-manifest-minus-sequence-2.yaml
 Deployment completed successfully.
 ```
 
@@ -329,7 +329,7 @@ ok: got package Extension2
 Here, on server side, package `Extension2` is showing both dependencies (1) `helloworlds` and (2) `hellowhisk`.
 
 Now, when we try to undeploy `Extension2` using `~/wskdeploy undeploy --projectname MyManagedProjectWithDependency`, only one dependency `hellowhisk` is deleted and the other dependency `helloworlds` is not deleted as its referred by `Extension1`.
- 
+
 > **Note:** Here the dependent package belongs to project `HelloWorlds` which has a single package `helloworlds`. Whisk Deploy does not support having dependencies with multiple packages. The reason behind this limitation is when a dependency is specified in manifest file using label (`custom-hellowhisk`) which is different than the dependent package name (`hellowhisk`), `custome-hellowhisk` is created as a binding to `hellowhisk`. OpenWhisk does not support creating a package which is bound to multiple packages.
 
 ### Package Binding
@@ -409,4 +409,3 @@ ok: got package whiskUtility
 ```
 
 Now, when we undeploy `Extension3` with `~/wskdeploy undeploy --projectname MyManagedProjectWithWhiskSystemDependency`, nothing changes under `/whisk.system`. `utils` package under `/whisk.system` remains undeployed. Similarly, with an undeployment of `Extension3`, `/<namespace>/<package>` is not deleted.
-
