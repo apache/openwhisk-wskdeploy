@@ -41,9 +41,12 @@ dependencies {
     golang {
         build(['name':'github.com/cloudfoundry/jibber_jabber', 'version':'bcc4c8345a21301bf47c032ff42dd1aae2fe3027', 'transitive':false])
         build(['name':'github.com/fatih/color', 'version':'570b54cabe6b8eb0bc2dfce68d964677d63b5260', 'transitive':false])
+        build(['name':'github.com/fsnotify/fsnotify', 'version':'fd9ec7deca8bf46ecd2a795baaacf2b3a9be1197', 'transitive':false])
         build(['name':'github.com/google/go-querystring/query', 'version':'9235644dd9e52eeae6fa48efd539fdc351a0af53', 'transitive':false])
         build(['name':'github.com/hokaccha/go-prettyjson', 'version':'f75235bd99dad4e98ff360db8372d5c0ef1d054a', 'transitive':false])
+        build(['name':'github.com/inconshreveable/mousetrap', 'version':'76626ae9c91c4f2a10f34cad8ce83ea42c93bb75', 'transitive':false])
         build(['name':'github.com/mattn/go-colorable', 'version':'d228849504861217f796da67fae4f6e347643f15', 'transitive':false])
+        build(['name':'github.com/mattn/go-isatty', 'version':'a5cdd64afdee435007ee3e9f6ed4684af949d568', 'transitive':false])
         build(['name':'github.com/nicksnyder/go-i18n/i18n', 'version':'991e81cc94f6c54209edb3192cb98e3995ad71c1', 'transitive':false])
         build(['name':'github.com/nicksnyder/go-i18n/i18n/bundle', 'version':'991e81cc94f6c54209edb3192cb98e3995ad71c1', 'transitive':false])
         build(['name':'github.com/nicksnyder/go-i18n/i18n/language', 'version':'991e81cc94f6c54209edb3192cb98e3995ad71c1', 'transitive':false])
