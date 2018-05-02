@@ -80,9 +80,17 @@
 			"Rev": "defaf9776014c3d9edbffb2671ed166855d0ee60"
 		},
 		{
+			"ImportPath": "github.com/pelletier/go-buffruneio",
+			"Rev": "df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d"
+		},
+		{
 			"ImportPath": "github.com/pelletier/go-toml",
 			"Comment": "v0.3.5-16-g45932ad",
 			"Rev": "45932ad32dfdd20826f5671da37a5f3ce9f26a8d"
+		},
+		{
+			"ImportPath": "github.com/spf13/afero",
+			"Rev": "06b7e5f50606ecd49148a01a6008942d9b669217"
 		},
 		{
 			"ImportPath": "github.com/spf13/cobra",
