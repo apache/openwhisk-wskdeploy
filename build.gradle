@@ -49,6 +49,7 @@ dependencies {
         build(['name':'github.com/magiconair/properties', 'version':'0723e352fa358f9322c938cc2dadda874e9151a9', 'transitive':false])
         build(['name':'github.com/mattn/go-colorable', 'version':'d228849504861217f796da67fae4f6e347643f15', 'transitive':false])
         build(['name':'github.com/mattn/go-isatty', 'version':'a5cdd64afdee435007ee3e9f6ed4684af949d568', 'transitive':false])
+        build(['name':'github.com/mitchellh/mapstructure', 'version':'f3009df150dadf309fdee4a54ed65c124afad715', 'transitive':false])
         build(['name':'github.com/nicksnyder/go-i18n/i18n', 'version':'991e81cc94f6c54209edb3192cb98e3995ad71c1', 'transitive':false])
         build(['name':'github.com/nicksnyder/go-i18n/i18n/bundle', 'version':'991e81cc94f6c54209edb3192cb98e3995ad71c1', 'transitive':false])
         build(['name':'github.com/nicksnyder/go-i18n/i18n/language', 'version':'991e81cc94f6c54209edb3192cb98e3995ad71c1', 'transitive':false])
