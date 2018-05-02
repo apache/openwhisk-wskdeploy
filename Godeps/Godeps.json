@@ -34,6 +34,11 @@
 			"Rev": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
 		},
 		{
+			"ImportPath": "github.com/magiconair/properties",
+			"Comment": "v1.7.0-5-g0723e35",
+			"Rev": "0723e352fa358f9322c938cc2dadda874e9151a9"
+		},
+		{
 			"ImportPath": "github.com/mattn/go-colorable",
 			"Comment": "v0.0.6-9-gd228849",
 			"Rev": "d228849504861217f796da67fae4f6e347643f15"
