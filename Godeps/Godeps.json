@@ -26,38 +26,6 @@
 			"Rev": "973f376f0e7cf09c96e445b44712416c0cb22ec4"
 		},
 		{
-			"ImportPath": "github.com/hashicorp/hcl/hcl/ast",
-			"Rev": "973f376f0e7cf09c96e445b44712416c0cb22ec4"
-		},
-		{
-			"ImportPath": "github.com/hashicorp/hcl/hcl/parser",
-			"Rev": "973f376f0e7cf09c96e445b44712416c0cb22ec4"
-		},
-		{
-			"ImportPath": "github.com/hashicorp/hcl/hcl/scanner",
-			"Rev": "973f376f0e7cf09c96e445b44712416c0cb22ec4"
-		},
-		{
-			"ImportPath": "github.com/hashicorp/hcl/hcl/strconv",
-			"Rev": "973f376f0e7cf09c96e445b44712416c0cb22ec4"
-		},
-		{
-			"ImportPath": "github.com/hashicorp/hcl/hcl/token",
-			"Rev": "973f376f0e7cf09c96e445b44712416c0cb22ec4"
-		},
-		{
-			"ImportPath": "github.com/hashicorp/hcl/json/parser",
-			"Rev": "973f376f0e7cf09c96e445b44712416c0cb22ec4"
-		},
-		{
-			"ImportPath": "github.com/hashicorp/hcl/json/scanner",
-			"Rev": "973f376f0e7cf09c96e445b44712416c0cb22ec4"
-		},
-		{
-			"ImportPath": "github.com/hashicorp/hcl/json/token",
-			"Rev": "973f376f0e7cf09c96e445b44712416c0cb22ec4"
-		},
-		{
 			"ImportPath": "github.com/hokaccha/go-prettyjson",
 			"Rev": "f75235bd99dad4e98ff360db8372d5c0ef1d054a"
 		},
@@ -125,20 +93,12 @@
 			"Rev": "06b7e5f50606ecd49148a01a6008942d9b669217"
 		},
 		{
-			"ImportPath": "github.com/spf13/afero/mem",
-			"Rev": "06b7e5f50606ecd49148a01a6008942d9b669217"
-		},
-		{
 			"ImportPath": "github.com/spf13/cast",
 			"Rev": "2580bc98dc0e62908119e4737030cc2fdfc45e4c"
 		},
 		{
 			"ImportPath": "github.com/spf13/cobra",
 			"Rev": "6e91dded25d73176bf7f60b40dd7aa1f0bf9be8d"
-		},
-		{
-			"ImportPath": "github.com/spf13/jwalterweatherman",
-			"Rev": "33c24e77fb80341fe7130ee7c594256ff08ccc46"
 		},
 		{
 			"ImportPath": "github.com/spf13/pflag",
@@ -157,16 +117,8 @@
 			"Rev": "a8b38433e35b65ba247bb267317037dee1b70cea"
 		},
 		{
-			"ImportPath": "golang.org/x/text/unicode/norm",
-			"Rev": "a8b38433e35b65ba247bb267317037dee1b70cea"
-		},
-		{
 			"ImportPath": "gopkg.in/yaml.v2",
 			"Rev": "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
-		},
-        {
-            "ImportPath": "github.com/palantir/stacktrace",
-            "Rev": "78658fd2d1772b755720ed8c44367d11ee5380d6"
-        }
+		}
 	]
 }
