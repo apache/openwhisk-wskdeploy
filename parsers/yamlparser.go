@@ -450,7 +450,10 @@ func (yaml *YAML) ComposeParsersRule(wskrule whisk.Rule) *Rule {
 	rule := new(Rule)
 	rule.Name = wskrule.Name
 
-	rule.Action = wskrule.Action.(map[string]interface{})["name"].(string)
+	pa := wskrule.Action.(map[string]interface{})["path"].(string)
+	pa = strings.SplitN(pa, "/", 2)[1]
+
+	rule.Action = pa + "/" + wskrule.Action.(map[string]interface{})["name"].(string)
 	rule.Trigger = wskrule.Trigger.(map[string]interface{})["name"].(string)
 
 	rule.Annotations = filterAnnotations(wskrule.Annotations)

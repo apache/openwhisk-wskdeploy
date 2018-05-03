@@ -268,6 +268,9 @@ func exportProject(projectName string, targetManifest string) error {
 
 	// now export dependencies to their own manifests
 	for _, binding := range bindings {
+		ns := client.Config.Namespace
+		client.Config.Namespace = binding.Namespace
+
 		pkg, _, err := client.Packages.Get(binding.Name)
 		if err != nil {
 			return err
@@ -289,6 +292,7 @@ func exportProject(projectName string, targetManifest string) error {
 			// showing warning to notify user that exported manifest dependent on unmanaged library which can't be exported
 			fmt.Println("Warning! Dependency package " + binding.Name + " currently unmanaged by any project. Unable to export this package")
 		}
+		client.Config.Namespace = ns
 	}
 
 	return nil
