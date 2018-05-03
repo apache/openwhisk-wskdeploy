@@ -513,21 +513,23 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 	var actionFilePath string
 	var zipFileName string
 	exec := new(whisk.Exec)
+	f := wskenv.InterpolateStringWithEnvVar(action.Function)
+	interpolatedActionFunction := f.(string)
 
 	// check if action function is pointing to an URL
 	// we do not support if function is pointing to remote directory
 	// therefore error out if there is a combination of http/https ending in a directory
-	if strings.HasPrefix(action.Function, HTTP) || strings.HasPrefix(action.Function, HTTPS) {
-		if len(path.Ext(action.Function)) == 0 {
+	if strings.HasPrefix(interpolatedActionFunction, HTTP) || strings.HasPrefix(interpolatedActionFunction, HTTPS) {
+		if len(path.Ext(interpolatedActionFunction)) == 0 {
 			err := wski18n.T(wski18n.ID_ERR_ACTION_FUNCTION_REMOTE_DIR_NOT_SUPPORTED_X_action_X_url_X,
 				map[string]interface{}{
 					wski18n.KEY_ACTION: action.Name,
-					wski18n.KEY_URL:    action.Function})
+					wski18n.KEY_URL:    interpolatedActionFunction})
 			return actionFilePath, nil, wskderrors.NewYAMLFileFormatError(manifestFilePath, err)
 		}
-		actionFilePath = action.Function
+		actionFilePath = interpolatedActionFunction
 	} else {
-		actionFilePath = strings.TrimRight(manifestFilePath, manifestFileName) + action.Function
+		actionFilePath = strings.TrimRight(manifestFilePath, manifestFileName) + interpolatedActionFunction
 	}
 
 	if utils.IsDirectory(actionFilePath) {
