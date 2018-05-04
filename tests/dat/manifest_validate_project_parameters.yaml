@@ -15,7 +15,7 @@
 #
 
 project:
-    name: myproject
+    name: projectWithParameters
     parameters:
         SLACK_USERNAME:
             type: string
