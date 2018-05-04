@@ -53,6 +53,7 @@ const (
 	TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH           = "Docker action image had a value mismatch."
 	TEST_MSG_ACTION_CODE_MISSING                    = "Action code is missing."
 	TEST_MSG_INVALID_ACTION_ANNOTATION              = "Action annotations are invalid"
+	TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH       = "Package parameter value mismatched."
 
 	// local error messages
 	TEST_ERROR_MANIFEST_PARSE_FAILURE     = "Manifest [%s]: Failed to parse."
@@ -1307,6 +1308,49 @@ func TestComposePackage(t *testing.T) {
 
 	n = "default"
 	assert.False(t, *(pkg[n].Publish), "Default package should not be maked as public.")
+}
+
+func TestYAMLParser_ComposePackage_Parameters(t *testing.T) {
+	os.Setenv("SLACK_USERNAME", "slack_username")
+	os.Setenv("SLACK_WEBHOOK_URL", "slack_webhook_url")
+	os.Setenv("SLACK_TOKEN", "slack_token")
+	os.Setenv("RULE_NAME", "rule")
+	os.Setenv("TRIGGER_NAME", "trigger")
+
+	file := "../tests/dat/manifest_validate_package_parameters.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
+
+	pm := make(map[string]Parameter, 0)
+	_, parameters, err := p.ComposeAllPackages(pm, m, m.Filepath, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_PACKAGE_FAILURE, file))
+
+	//packageName := "packageWithParameters"
+	for packageName, packageParameters := range parameters {
+		if packageName == "packageWithParameters" {
+			for paramName, param := range packageParameters.Parameters {
+				switch paramName {
+				case "SLACK_USERNAME":
+					assert.Equal(t, "slack_username", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+					assert.Equal(t, "${SLACK_USERNAME}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+				case "SLACK_WEBHOOK_URL":
+					assert.Equal(t, "https://hooks.slack.com/services/slack_webhook_url", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+					assert.Equal(t, "https://hooks.slack.com/services/${SLACK_WEBHOOK_URL}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+				case "SLACK_CHANNEL":
+					assert.Equal(t, "#general", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+					assert.Equal(t, "#general", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+				case "SLACK_TOKEN":
+					assert.Equal(t, "slack_token", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+					assert.Equal(t, "${SLACK_TOKEN}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+				case "RULE_NAME":
+					assert.Equal(t, "rule", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+					assert.Equal(t, "${RULE_NAME}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+				case "TRIGGER_NAME":
+					assert.Equal(t, "trigger", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+					assert.Equal(t, "${TRIGGER_NAME}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+				}
+			}
+		}
+	}
 }
 
 func TestComposeSequences(t *testing.T) {
