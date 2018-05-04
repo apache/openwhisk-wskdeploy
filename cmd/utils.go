@@ -57,6 +57,8 @@ const (
 	FLAG_PARAM            = "param"
 	FLAG_PARAMFILE        = "param-file"
 	FLAG_PARAMFILE_SHORT  = "P"
+	SHORT_CMD             = "-"
+	LONG_CMD              = SHORT_CMD + SHORT_CMD
 )
 
 // parse key value pairs from --param
@@ -72,8 +74,7 @@ func parseArgsForParams(args []string) ([]string, []string, error) {
 	// in case of --param-file, read parameter file, append each JSON "key: value" pair as a string
 	for i < len(args) {
 		// when arg is -P or --param-file, open and read the specified JSON file
-		if args[i] == FLAG_PARAMFILE_SHORT || args[i] == FLAG_PARAMFILE {
-			fmt.Println("print param file from parser args")
+		if args[i] == SHORT_CMD+FLAG_PARAMFILE_SHORT || args[i] == LONG_CMD+FLAG_PARAMFILE {
 			// Command line parser library Cobra, assigns value of --param-file to utils.Flags.ParamFile
 			// but at this point of execution, we still don't have utils.Flags.ParamFile assigned any value
 			// and that's the reason, we have to explicitly parse the argument list to get the file name
@@ -100,7 +101,7 @@ func parseArgsForParams(args []string) ([]string, []string, error) {
 			// parse key value map for each --param from the argument list
 			// drop each --param and key value map from the argument list after reading the map
 			// append key value as a string to the list of params
-		} else if args[i] == FLAG_PARAM {
+		} else if args[i] == LONG_CMD+FLAG_PARAM {
 			paramArgs, args, err = getKeyValueArgs(args, i, paramArgs)
 			if err != nil {
 				return nil, nil, err

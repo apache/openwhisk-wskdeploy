@@ -18,14 +18,81 @@
 package deployers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
+
+func getJSONFromStrings(content []string, keyValueFormat bool) (interface{}, error) {
+	var data map[string]interface{}
+	var res interface{}
+
+	for i := 0; i < len(content); i++ {
+		dc := json.NewDecoder(strings.NewReader(content[i]))
+		dc.UseNumber()
+		if err := dc.Decode(&data); err != nil {
+			return whisk.KeyValueArr{}, err
+		}
+	}
+
+	if keyValueFormat {
+		res = getKeyValueFormattedJSON(data)
+	} else {
+		res = data
+	}
+
+	return res, nil
+}
+
+func getKeyValueFormattedJSON(data map[string]interface{}) whisk.KeyValueArr {
+	var keyValueArr whisk.KeyValueArr
+	for key, value := range data {
+		keyValue := whisk.KeyValue{
+			Key:   key,
+			Value: value,
+		}
+		keyValueArr = append(keyValueArr, keyValue)
+	}
+	return keyValueArr
+}
+
+func (deployer *ServiceDeployer) UpdatePackageParameters() error {
+	var paramsCLI interface{}
+	var err error
+
+	if len(utils.Flags.Param) > 0 {
+		if paramsCLI, err = getJSONFromStrings(utils.Flags.Param, false); err != nil {
+			return err
+		}
+	}
+	if paramsCLI != nil {
+		for _, pkg := range deployer.Deployment.Packages {
+			for paramName, param := range pkg.Parameters.Parameters {
+				paramValue := param.Value
+				if v, ok := paramsCLI.(map[string]interface{})[paramName]; ok {
+					paramValue = wskenv.InterpolateStringWithEnvVar(v)
+				}
+				parameter := parsers.Parameter{
+					Type:        param.Type,
+					Description: param.Description,
+					Value:       paramValue,
+					Required:    param.Required,
+					Default:     param.Default,
+					Status:      param.Status,
+					Schema:      param.Schema,
+				}
+				pkg.Parameters.Parameters[paramName] = parameter
+			}
+		}
+	}
+	return nil
+}
 
 func (deployer *ServiceDeployer) UnDeployProjectAssets() error {
 
