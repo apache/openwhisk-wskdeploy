@@ -306,7 +306,7 @@ In the end, `wskdeploy` supports a flag `--param` which takes the highest preced
 ```
 export SLACK_USERNAME=slack_username
 ...
-wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev-push" --param SLACK_WEBHOOK_URL abcd 
+wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev-push" --param SLACK_WEBHOOK_URL abcd
 {
     "slack-text-notifications": [
         ...
@@ -352,9 +352,9 @@ wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev
 ```
 export SLACK_USERNAME=slack_username
 export SLACK_CHANNEL=#wskdeploy
-export SLACK_WEBHOOK_URL=abcd 
+export SLACK_WEBHOOK_URL=abcd
 ...
-wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev-push" --param SLACK_WEBHOOK_URL $SLACK_WEBHOOK_URL 
+wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev-push" --param SLACK_WEBHOOK_URL $SLACK_WEBHOOK_URL
 {
     "github-slack-trigger": [
         ...
