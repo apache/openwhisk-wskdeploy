@@ -52,11 +52,12 @@ const (
 	TEST_MSG_ACTION_DOCKER_KIND_MISMATCH            = "Docker action kind is set to [%s] instead of " + utils.BLACKBOX
 	TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH           = "Docker action image had a value mismatch."
 	TEST_MSG_ACTION_CODE_MISSING                    = "Action code is missing."
+	TEST_MSG_ACTION_FUNCTION_PATH_MISSING           = "Action function path missing"
 	TEST_MSG_INVALID_ACTION_ANNOTATION              = "Action annotations are invalid"
 	TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH       = "Package parameter value mismatched."
 
 	// local error messages
-	TEST_ERROR_MANIFEST_PARSE_FAILURE     = "Manifest [%s]: Failed to parse."
+	TEST_ERROR_MANIFEST_PARSE_FAILURE     = "Manifest [%s]: Failed to parse. Error: %s"
 	TEST_ERROR_MANIFEST_READ_FAILURE      = "Manifest [%s]: Failed to ReadFile()."
 	TEST_ERROR_MANIFEST_DATA_UNMARSHALL   = "Manifest [%s]: Failed to Unmarshall manifest."
 	TEST_ERROR_COMPOSE_ACTION_FAILURE     = "Manifest [%s]: Failed to compose actions."
@@ -78,7 +79,7 @@ func testLoadParseManifest(t *testing.T, manifestFile string) (*YAMLParser, *YAM
 	p := NewYAMLParser()
 	m, err := p.ParseManifest(manifestFile)
 	if err != nil {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
+		assert.Fail(t, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile, err.Error()))
 	}
 	return p, m, err
 }
@@ -935,6 +936,25 @@ func TestComposeActionsForDocker(t *testing.T) {
 			assert.Equal(t, "mydockerhub/myimage", action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
 		}
 	}
+}
+
+func TestComposeActionsForEnvVariableInFunction(t *testing.T) {
+	os.Setenv("OPENWHISK_FUNCTION_FILE", "../src/integration/helloworld/actions/hello.js")
+	os.Setenv("OPENWHISK_FUNCTION_PYTHON", "../src/integration/helloworld/actions/hello")
+	os.Setenv("OPENWHISK_FUNCTION_GITHUB", "raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/src/integration/helloworld/actions/hello")
+
+	file := "../tests/dat/manifest_data_compose_actions_for_function_with_env_variable.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
+
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
+
+	for _, action := range actions {
+		assert.NotNil(t, action.Action.Code, fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_PATH_MISSING))
+	}
+	os.Unsetenv("OPENWHISK_FUNCTION_FILE")
+	os.Unsetenv("OPENWHISK_FUNCTION_PYTHON")
+	os.Unsetenv("OPENWHISK_FUNCTION_GITHUB")
 }
 
 // Test 14: validate manifest_parser.ComposeActions() method

@@ -1,0 +1,10 @@
+project:
+  name: .
+  namespace: ""
+  credential: ""
+  apiHost: ""
+  apigwAccessToken: ""
+  version: ""
+  packages: {}
+packages: {}
+filepath: ""

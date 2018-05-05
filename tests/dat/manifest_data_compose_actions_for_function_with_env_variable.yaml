@@ -1,0 +1,18 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+#
+
+packages:
+    helloworld:
+        actions:
+            hello1:
+                function: ${OPENWHISK_FUNCTION_FILE}
+                runtime: nodejs:6
+            hello2:
+                function: $OPENWHISK_FUNCTION_FILE
+                runtime: nodejs:6
+            hello3:
+                function: ${OPENWHISK_FUNCTION_PYTHON}.py
+            hello4:
+                function: https://${OPENWHISK_FUNCTION_GITHUB}.js

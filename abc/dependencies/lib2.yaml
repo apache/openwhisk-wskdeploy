@@ -1,0 +1,77 @@
+project:
+  name: lib2
+  namespace: ""
+  credential: ""
+  apiHost: ""
+  apigwAccessToken: ""
+  version: ""
+  packages: {}
+packages:
+  lib2_package:
+    name: lib2_package
+    version: 0.0.2
+    license: ""
+    dependencies: {}
+    namespace: guest
+    credential: ""
+    apiHost: ""
+    apigwAccessToken: ""
+    actions:
+      lib2_greeting1:
+        name: lib2_greeting1
+        location: ""
+        version: 0.0.1
+        function: lib2_package/lib2_greeting1.js
+        code: ""
+        runtime: nodejs:6
+        namespace: guest/lib2_package
+        credential: ""
+        exposedUrl: ""
+        web-export: ""
+        main: ""
+        limits: null
+        inputs: {}
+        outputs: {}
+        annotations:
+          exec: nodejs:6
+      lib2_greeting2:
+        name: lib2_greeting2
+        location: ""
+        version: 0.0.1
+        function: lib2_package/lib2_greeting2.js
+        code: ""
+        runtime: nodejs:6
+        namespace: guest/lib2_package
+        credential: ""
+        exposedUrl: ""
+        web-export: ""
+        main: ""
+        limits: null
+        inputs: {}
+        outputs: {}
+        annotations:
+          exec: nodejs:6
+      lib2_greeting3:
+        name: lib2_greeting3
+        location: ""
+        version: 0.0.1
+        function: lib2_package/lib2_greeting3.js
+        code: ""
+        runtime: nodejs:6
+        namespace: guest/lib2_package
+        credential: ""
+        exposedUrl: ""
+        web-export: ""
+        main: ""
+        limits: null
+        inputs: {}
+        outputs: {}
+        annotations:
+          exec: nodejs:6
+    triggers: {}
+    feeds: {}
+    rules: {}
+    inputs: {}
+    sequences: {}
+    apis: {}
+filepath: ""

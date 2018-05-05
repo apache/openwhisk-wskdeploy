@@ -1,0 +1,40 @@
+project:
+  name: BBB
+  namespace: ""
+  credential: ""
+  apiHost: ""
+  apigwAccessToken: ""
+  version: ""
+  packages: {}
+packages:
+  packageB:
+    name: packageB
+    version: 0.0.1
+    license: ""
+    dependencies: {}
+    namespace: pdesai@us.ibm.com_dev
+    credential: ""
+    apiHost: ""
+    apigwAccessToken: ""
+    actions:
+      greetingB:
+        version: 0.0.1
+        location: ""
+        function: packageB/greetingB.zip
+        code: ""
+        runtime: nodejs:6
+        namespace: pdesai@us.ibm.com_dev/packageB
+        credential: ""
+        inputs: {}
+        outputs: {}
+        name: greetingB
+        exposedUrl: ""
+        web-export: ""
+        main: ""
+        limits: null
+    triggers: {}
+    feeds: {}
+    rules: {}
+    inputs: {}
+    sequences: {}
+filepath: ""

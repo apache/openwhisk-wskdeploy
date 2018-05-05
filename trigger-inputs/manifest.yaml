@@ -1,0 +1,21 @@
+project:
+  namespace: _
+  packages:
+    my-test-package:
+      triggers:
+          # Creating trigger to fire events on alarm schedule
+          my-alarm-trigger:
+              feed: /whisk.system/alarms/alarm
+              inputs:
+                  cron: '* * * * *'
+                  test_input: this_is_an_input
+      actions:
+          # Creating action that is sending message to slack post action
+          print-params:
+              function: hello.js
+              runtime: nodejs:8
+      rules:
+          # Creating rule that maps alarm trigger to sequence
+          my-test-rule:
+              trigger: my-alarm-trigger
+              action: print-params

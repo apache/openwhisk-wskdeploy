@@ -1,3 +1,21 @@
+<!--
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements.  See the NOTICE file distributed with this work for additional
+# information regarding copyright ownership.  The ASF licenses this file to you
+# under the Apache License, Version 2.0 (the # "License"); you may not use this
+# file except in compliance with the License.  You may obtain a copy of the License
+# at:
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations under the License.
+#
+-->
+
 # Using `wskdeploy` for exporting `OpenWhisk` assets
 
 `wskdeploy export` can be used to export `OpenWhisk` assets previously deployed as a *managed project* via `wskdeploy sync -m manifest.yaml`. `wskdeploy export` will create a manifest for the managed project assets and separate manifests for each managed project that this managed project depends upon, if such dependencies exist and have been described in `manifest.yml` when the managed project has been initially deployed.
@@ -7,13 +25,13 @@ The manifest(s) resulting from executing `wskdeploy export` can be later used fo
 
 ### Copy `OpenWhisk` Assets
 
-One common scenario, in which the export feature is useful, is populating a newly installed `OpenWhisk` instance with assets from 
+One common scenario, in which the export feature is useful, is populating a newly installed `OpenWhisk` instance with assets from
 another `OpenWhisk` instance. One might consider a scenario, in which an `OpenWhisk` instance is installed on premises with another `OpenWhisk` instance residing in the cloud. Consider, for example using one `OpenWhisk` instance on premises and another one in the cloud (e.g., the second `OpenWhisk` instance can be [IBM Cloud Functions](https://console.bluemix.net/openwhisk/)). A fairly common scenario is that a developer
-will need to deploy assets from the cloud `OpenWhisk` instance on the on premises one and vice-versa. 
+will need to deploy assets from the cloud `OpenWhisk` instance on the on premises one and vice-versa.
 
 ### `OpenWhisk` at the Edge
 
-In a variety of IoT and other edge computing scenarios, such as running Virtual Network Functions (VNF) as `OpenWhisk` actions in "edge Data Centers" 
+In a variety of IoT and other edge computing scenarios, such as running Virtual Network Functions (VNF) as `OpenWhisk` actions in "edge Data Centers"
 embedded with 5G-MEDIA infrastructure (as pioneered in [5G-MEDIA EU H2020 project](http://www.5gmedia.eu/)), there is a need to distribute `OpenWhisk` assets developed centrally in the cloud (e.g., [IBM Cloud Functions](https://console.bluemix.net/openwhisk/)) to multiple `OpenWhisk` instances running at the edge Data Centers. Again, `wskdeploy export` is handy as a basic tool that allows to automate this management task.
 
 ## Basic Usage by Example
@@ -23,7 +41,7 @@ The project contains a single `lib1_package` package that comprise three actions
 same for all three, but the action names are different).
 
 
-### Step 1: deploy `lib1` as a managed project 
+### Step 1: deploy `lib1` as a managed project
 
 ```sh
 $ ./wskdeploy sync -m manifest_lib1.yaml
@@ -138,7 +156,7 @@ $ ./wskdeploy export --projectname lib1 -m mydirectory/my_new_lib1_manifest.yaml
 ```
 </details>
 
-### Step 4: Inspect the newly exported manifest (`my_new_lib1_manifest.yaml`) 
+### Step 4: Inspect the newly exported manifest (`my_new_lib1_manifest.yaml`)
 
 <details><summary>(<b>clickable</b>) You should see an output similar to this:</summary>
 
@@ -224,7 +242,7 @@ filepath: ""
 ```
 </details>
 
-### Step 5: Inspect the newly exported package 
+### Step 5: Inspect the newly exported package
 
 The code of the actions defined in the packages comprising the exported project will be saved into the folders named after
 the respective packages. The packages' folders will be created in the same directory into which the manifest file of the
@@ -244,7 +262,7 @@ drwxr-xr-x 26 root root 4096 Apr  8 23:38 ..
 </pre>
 </details>
 
-## Advanced Usage 
+## Advanced Usage
 
 The dependencies mechanism allows to express a project structure, in which one project uses another project as a library. Also dependencies can be defined for multiple projects. Consider a project `lib2` with the manifest [manifest_lib2.yml](../tests/src/integration/export/manifest_lib2.yaml) and a project `EXT_PROJECT` with the manifest [manifest_ext.yml](../tests/src/integration/export/manifest_ext.yaml). `EXT_PROJECT` (stands for _extending project_) uses actions from both package `lib1_package` (defined in the `lib1` project) and `lib2_package` (defined in the `lib2` project) in order to define rules specific to `EXT_PROJECT`.
 
@@ -293,8 +311,6 @@ drwxr-xr-x 2 root root 4096 Apr  9 19:32 lib2_package
 #### Important Notes
 
 + Recursive dependencies are not supported.
-+ To redeploy a project with dependencies, a user should first deploy dependency projects projects (`lib1` and `lib2` in our example) and only after that, `EXT_PROJECT` can be deployed successfully. 
++ To redeploy a project with dependencies, a user should first deploy dependency projects projects (`lib1` and `lib2` in our example) and only after that, `EXT_PROJECT` can be deployed successfully.
 + `wskdeploy export` does not check for circular dependencies. In case of circular dependencies specified by the user, `wskdeploy`'s behavior is undefined.
-+ The manifest name for exporting a top project (`EXT_PROJECT` in our case) should be explicitly specified. 
-
-
++ The manifest name for exporting a top project (`EXT_PROJECT` in our case) should be explicitly specified.
