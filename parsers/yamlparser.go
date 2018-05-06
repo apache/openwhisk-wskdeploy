@@ -428,21 +428,30 @@ func (yaml *YAML) ComposeParsersTrigger(wsktrg whisk.Trigger) *Trigger {
 	trigger := new(Trigger)
 	trigger.Name = wsktrg.Name
 	trigger.Namespace = wsktrg.Namespace
-
+	trigger.Inputs = make(map[string]Parameter)
 	for _, keyval := range wsktrg.Parameters {
 		param := new(Parameter)
 		param.Value = keyval.Value
 		trigger.Inputs[keyval.Key] = *param
 	}
 
+	if feedname, isFeed := utils.IsFeedAction(&wsktrg); isFeed {
+		trigger.Source = feedname
+	}
 	trigger.Annotations = filterAnnotations(wsktrg.Annotations)
 	return trigger
 }
 
-func (yaml *YAML) ComposeParsersDependency(binding whisk.Binding) *Dependency {
+func (yaml *YAML) ComposeParsersDependency(binding whisk.Binding, bPkg whisk.Package) *Dependency {
 	dependency := new(Dependency)
 	dependency.Location = "/" + binding.Namespace + "/" + binding.Name
 
+	dependency.Inputs = make(map[string]Parameter)
+	for _, keyval := range bPkg.Parameters {
+		param := new(Parameter)
+		param.Value = keyval.Value
+		dependency.Inputs[keyval.Key] = *param
+	}
 	return dependency
 }
 
