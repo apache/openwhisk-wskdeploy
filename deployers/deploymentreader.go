@@ -24,7 +24,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
 )
 
 type DeploymentReader struct {
@@ -282,13 +281,9 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 
 			if len(trigger.Annotations) > 0 {
 
-				spew.Dump(trigger.Annotations)
-
 				keyValArr := reader.getListOfAnnotations(trigger.Annotations)
 
 				if wskTrigger, exists := serviceDeployment.Triggers[triggerName]; exists {
-
-					spew.Dump(wskTrigger.Annotations)
 
 					displayEntityFoundInDeploymentTrace(parsers.YAML_KEY_TRIGGER, triggerName)
 
@@ -297,6 +292,7 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 							keyValArr = append(keyValArr, keyVal)
 						}
 					}
+					wskTrigger.Annotations = keyValArr
 				}
 			} else {
 				displayEntityNotFoundInDeploymentWarning(parsers.YAML_KEY_TRIGGER, triggerName)
