@@ -24,6 +24,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -161,6 +162,7 @@ func TestDeploymentReader_ProjectBindTrigger(t *testing.T) {
 
 	// test that Annotations from dReader.DeploymentDescriptor wore "bound" onto sDeployer.Deployment
 	for _, annos := range trigger.Annotations {
+		spew.Dump(annos)
 		switch annos.Key {
 		case TEST_ANNOTATION_KEY:
 			// Manifest's value should be overwritten

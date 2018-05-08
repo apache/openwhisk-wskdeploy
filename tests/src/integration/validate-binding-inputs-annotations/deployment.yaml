@@ -34,6 +34,7 @@ project:
         packageBindingFromDeployment:
             annotations:
                 package_annotation_1: this is a package annotation 1 from deployment
+                package_annotation_3: this is a package annotation 3 from deployment
             actions:
                 helloworld:
                     annotations:
