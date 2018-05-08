@@ -39,7 +39,9 @@ project:
                 helloworld:
                     annotations:
                         action_annotation_1: this is an action annotation 1 from deployment
+                        action_annotation_3: this is an action annotation 3 from deployment
             triggers:
                 dbtrigger1:
                     annotations:
                         trigger_annotation_1: this is a trigger annotation 1 from deployment
+                        trigger_annotation_3: this is a trigger annotation 3 from deployment

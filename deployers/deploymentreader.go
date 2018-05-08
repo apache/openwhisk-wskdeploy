@@ -225,11 +225,11 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 					displayEntityFoundInDeploymentTrace(parsers.YAML_KEY_ACTION, actionName)
 
 					for _, keyVal := range wskAction.Action.Annotations {
-						if _, exists := action.Annotations[keyVal.Key]; exists {
+						if _, exists := action.Annotations[keyVal.Key]; !exists {
 							keyValArr = append(keyValArr, keyVal)
 						}
 					}
-					wskAction.Action.Parameters = keyValArr
+					wskAction.Action.Annotations = keyValArr
 				}
 			} else {
 				displayEntityNotFoundInDeploymentWarning(parsers.YAML_KEY_ACTION, actionName)

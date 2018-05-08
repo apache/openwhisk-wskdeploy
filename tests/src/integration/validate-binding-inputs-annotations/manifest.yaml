@@ -17,8 +17,6 @@
 packages:
     packagebinding:
         inputs:
-            name: Priti
-            palce: Home
         annotations:
             package_annotation_1: this is a package annotation 1
             package_annotation_2: this is a package annotation 2
