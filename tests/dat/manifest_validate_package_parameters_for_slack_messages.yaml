@@ -3,21 +3,21 @@ packages:
     SlackPackage:
         # inputs for deployment
         inputs:
-            SLACK_USERNAME:
+            slack_username:
                 type: string
                 description: "Slack User Name"
                 required: true
-                default: ${SLACK_USERNAME}
-            SLACK_URL:
+                value: ${SLACK_USERNAME}
+            slack_url:
                 type: string
                 description: "Slack Webhook URL"
                 required: true
-                default: ${SLACK_URL}
-            SLACK_CHANNEL:
+                value: ${SLACK_URL}
+            slack_channel:
                 type: string
                 description: "Slack Channel"
                 required: true
-                default: ${SLACK_CHANNEL}
+                value: ${SLACK_CHANNEL}
             message:
                 type: string
                 description: "Slack Message"
@@ -32,12 +32,12 @@ packages:
             slack-package-to-post-messages:
                 location: /whisk.system/slack
                 inputs:
-                    username: $SLACK_USERNAME
-                    url: $SLACK_URL
-                    channel: $SLACK_CHANNEL
+                    username: ${SLACK_USERNAME}
+                    url: ${SLACK_URL}
+                    channel: ${SLACK_CHANNEL}
         actions:
             post-to-slack:
-                function: actions/post-to-slack.js
+                function: ../usecases/slack/actions/post-to-slack.js
                 runtime: nodejs:6
                 inputs:
                     message:

@@ -92,9 +92,17 @@ func (deployer *ServiceDeployer) UpdatePackageParameters() error {
 		}
 	}
 	for _, pkg := range deployer.Deployment.Packages {
+		keyValArr := make([]whisk.KeyValue, 0)
 		if pkg.Parameters.Parameters != nil || len(pkg.Parameters.Parameters) != 0 {
-			pkg.Package.Parameters = pkg.Parameters.Parameters
+			for k, v := range pkg.Parameters.Parameters {
+				keyVal := whisk.KeyValue{
+					Key:   k,
+					Value: v.Value,
+				}
+				keyValArr = append(keyValArr, keyVal)
+			}
 		}
+		pkg.Package.Parameters = keyValArr
 	}
 
 	return nil
