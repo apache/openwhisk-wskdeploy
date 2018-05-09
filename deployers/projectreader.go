@@ -91,6 +91,12 @@ func (deployer *ServiceDeployer) UpdatePackageParameters() error {
 			}
 		}
 	}
+	for _, pkg := range deployer.Deployment.Packages {
+		if pkg.Parameters.Parameters != nil || len(pkg.Parameters.Parameters) != 0 {
+			pkg.Package.Parameters = pkg.Parameters.Parameters
+		}
+	}
+
 	return nil
 }
 
