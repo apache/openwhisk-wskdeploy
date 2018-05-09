@@ -1,0 +1,55 @@
+
+packages:
+    SlackPackage:
+        # inputs for deployment
+        inputs:
+            SLACK_USERNAME:
+                type: string
+                description: "Slack User Name"
+                required: true
+                default: ${SLACK_USERNAME}
+            SLACK_URL:
+                type: string
+                description: "Slack Webhook URL"
+                required: true
+                default: ${SLACK_URL}
+            SLACK_CHANNEL:
+                type: string
+                description: "Slack Channel"
+                required: true
+                default: ${SLACK_CHANNEL}
+            message:
+                type: string
+                description: "Slack Message"
+                required: false
+                default: "Hello Whiskers"
+            slack_package:
+                type: string
+                description: "Slack Package"
+                required: true
+                default: "slack-package-to-post-messages"
+        dependencies:
+            slack-package-to-post-messages:
+                location: /whisk.system/slack
+                inputs:
+                    username: $SLACK_USERNAME
+                    url: $SLACK_URL
+                    channel: $SLACK_CHANNEL
+        actions:
+            post-to-slack:
+                function: actions/post-to-slack.js
+                runtime: nodejs:6
+                inputs:
+                    message:
+                        type: string
+                        description: message to post on slack
+                    slack_package:
+                        type: string
+                        description: slack package name
+        triggers:
+            everyhour:
+                feed: /whisk.system/alarms/alarm
+        rules:
+            post-to-slack-every-hour:
+                action: post-to-slack
+                trigger: everyhour
