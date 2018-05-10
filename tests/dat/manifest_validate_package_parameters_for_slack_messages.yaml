@@ -2,32 +2,21 @@
 packages:
     SlackPackage:
         # inputs for deployment
-        inputs:
-            slack_username:
+        parameters:
+            SLACK_USERNAME:
                 type: string
                 description: "Slack User Name"
                 required: true
-                value: ${SLACK_USERNAME}
-            slack_url:
+                value: "wskdeploy"
+            SLACK_URL:
                 type: string
                 description: "Slack Webhook URL"
                 required: true
-                value: ${SLACK_URL}
-            slack_channel:
+            SLACK_CHANNEL:
                 type: string
                 description: "Slack Channel"
                 required: true
-                value: ${SLACK_CHANNEL}
-            message:
-                type: string
-                description: "Slack Message"
-                required: false
-                default: "Hello Whiskers"
-            slack_package:
-                type: string
-                description: "Slack Package"
-                required: true
-                default: "slack-package-to-post-messages"
+                value: "#dev"
         dependencies:
             slack-package-to-post-messages:
                 location: /whisk.system/slack

@@ -233,9 +233,9 @@ type YAML struct {
 	Filepath string             //file path of the yaml file
 }
 
-type PackageParameter struct {
+type PackageInputs struct {
 	PackageName string
-	Parameters  map[string]Parameter
+	Inputs      map[string]Parameter
 }
 
 // function to return web-export or web depending on what is specified

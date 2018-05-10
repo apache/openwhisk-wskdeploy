@@ -112,7 +112,7 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
 	return manifest, nil
 }
 
-func (dm *YAMLParser) composeInputsOrOutputs(inputs map[string]Parameter, manifestFilePath string) (whisk.KeyValueArr, error) {
+func (dm *YAMLParser) composeInputs(inputs map[string]Parameter, manifestFilePath string) (whisk.KeyValueArr, error) {
 	var errorParser error
 	keyValArr := make(whisk.KeyValueArr, 0)
 	for name, param := range inputs {
@@ -194,7 +194,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 			return nil, errors.New(wski18n.T(wski18n.ID_ERR_DEPENDENCY_UNKNOWN_TYPE))
 		}
 
-		inputs, err := dm.composeInputsOrOutputs(dependency.Inputs, filePath)
+		inputs, err := dm.composeInputs(dependency.Inputs, filePath)
 		if err != nil {
 			return nil, err
 		}
@@ -213,10 +213,10 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 	return depMap, nil
 }
 
-func (dm *YAMLParser) ComposeAllPackages(projectParameters map[string]Parameter, manifest *YAML, filePath string, managedAnnotations whisk.KeyValue) (map[string]*whisk.Package, map[string]PackageParameter, error) {
+func (dm *YAMLParser) ComposeAllPackages(projectInputs map[string]Parameter, manifest *YAML, filePath string, managedAnnotations whisk.KeyValue) (map[string]*whisk.Package, map[string]PackageInputs, error) {
 	packages := map[string]*whisk.Package{}
 	manifestPackages := make(map[string]Package)
-	parameters := make(map[string]PackageParameter, 0)
+	inputs := make(map[string]PackageInputs, 0)
 
 	if len(manifest.Packages) != 0 {
 		manifestPackages = manifest.Packages
@@ -234,46 +234,71 @@ func (dm *YAMLParser) ComposeAllPackages(projectParameters map[string]Parameter,
 
 	// Compose each package found in manifest
 	for n, p := range manifestPackages {
-		s, params, err := dm.ComposePackage(p, n, filePath, managedAnnotations, projectParameters)
+		s, params, err := dm.ComposePackage(p, n, filePath, managedAnnotations, projectInputs)
 		if err != nil {
-			return nil, parameters, err
+			return nil, inputs, err
 		}
 		packages[n] = s
-		parameters[n] = PackageParameter{PackageName: n, Parameters: params}
+		inputs[n] = PackageInputs{PackageName: n, Inputs: params}
 	}
 
-	return packages, parameters, nil
+	return packages, inputs, nil
 }
 
-func (dm *YAMLParser) composePackageParameters(projectParameters map[string]Parameter, unresolvedParams map[string]Parameter, resolvedParams whisk.KeyValueArr) map[string]Parameter {
-	parameters := make(map[string]Parameter, 0)
+func (dm *YAMLParser) composePackageInputs(projectInputs map[string]Parameter, rawInputs map[string]Parameter, filepath string) (map[string]Parameter, whisk.KeyValueArr, error) {
+	inputs := make(map[string]Parameter, 0)
 
-	for parameterName, param := range projectParameters {
-		parameters[parameterName] = param
-	}
+	// package inherits all project inputs
+	inputs = projectInputs
 
-	for _, p := range resolvedParams {
-		param := unresolvedParams[p.Key]
-
-		parameter := Parameter{
-			Type:        param.Type,
-			Description: param.Description,
-			Value:       p.Value,
-			Required:    param.Required,
-			Default:     param.Default,
-			Status:      param.Status,
-			Schema:      param.Schema,
-			multiline:   param.multiline,
+	// iterate over package inputs
+	for name, i := range rawInputs {
+		value, err := ResolveParameter(name, &i, filepath)
+		if err != nil {
+			return nil, nil, err
 		}
-		parameters[p.Key] = parameter
+		// if value is set to default value for its type,
+		// check for input key being an env. variable itself
+		if value == typeDefaultValueMap[i.Type] {
+			value = wskenv.InterpolateStringWithEnvVar(name)
+		}
+		// create a Parameter object based on the package inputs
+		// resolve the value using env. variables
+		// if value is not specified, treat input key as an env. variable
+		// check if input key is defined in environment
+		// else set it to its default value based on the type for now
+		// the input value will be updated if its specified in deployment
+		// or on CLI using --param or --param-file
+		p := Parameter{
+			Type:        i.Type,
+			Description: i.Description,
+			Value:       value,
+			Required:    i.Required,
+			Default:     i.Default,
+			Status:      i.Status,
+			Schema:      i.Schema,
+			multiline:   i.multiline,
+		}
+		inputs[name] = p
 	}
 
-	return parameters
+	// create an array of Key/Value pair with inputs
+	// inputs name as key and with its value if its not nil
+	keyValArr := make(whisk.KeyValueArr, 0)
+	for name, param := range inputs {
+		var keyVal whisk.KeyValue
+		keyVal.Key = name
+		keyVal.Value = param.Value
+		if keyVal.Value != nil {
+			keyValArr = append(keyValArr, keyVal)
+		}
+	}
+
+	return inputs, keyValArr, nil
 }
 
-func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath string, managedAnnotations whisk.KeyValue, projectParameters map[string]Parameter) (*whisk.Package, map[string]Parameter, error) {
+func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath string, managedAnnotations whisk.KeyValue, projectInputs map[string]Parameter) (*whisk.Package, map[string]Parameter, error) {
 	pag := &whisk.Package{}
-	parameters := make(map[string]Parameter, 0)
 	pag.Name = packageName
 	//The namespace for this package is absent, so we use default guest here.
 	pag.Namespace = pkg.Namespace
@@ -323,10 +348,12 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		utils.CheckLicense(pkg.License)
 	}
 
-	//set parameters
-	inputs, err := dm.composeInputsOrOutputs(pkg.Inputs, filePath)
+	// package inputs are set as package inputs of type Parameter{}
+	// read all package inputs, interpolate their values using env. variables
+	// check if input variable itself is an env. variable
+	packageInputs, inputs, err := dm.composePackageInputs(projectInputs, pkg.Inputs, filePath)
 	if err != nil {
-		return nil, parameters, err
+		return nil, nil, err
 	}
 	if len(inputs) > 0 {
 		pag.Parameters = inputs
@@ -359,19 +386,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		pag.Publish = &(pkg.Public)
 	}
 
-	// read all package parameters, interpolate values using env. variables
-	// append package parameters with the interpolated values
-	params, err := dm.composeInputsOrOutputs(pkg.Parameters, filePath)
-	if err != nil {
-		return nil, parameters, err
-	}
-	if len(params) > 0 {
-		pag.Parameters = append(pag.Parameters, params...)
-	}
-
-	parameters = dm.composePackageParameters(projectParameters, pkg.Parameters, params)
-
-	return pag, parameters, nil
+	return pag, packageInputs, nil
 }
 
 func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YAML, manifestFilePath string, managedAnnotations whisk.KeyValue) ([]utils.ActionRecord, error) {
@@ -798,7 +813,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		}
 
 		// Action.Inputs
-		listOfInputs, err := dm.composeInputsOrOutputs(action.Inputs, manifestFilePath)
+		listOfInputs, err := dm.composeInputs(action.Inputs, manifestFilePath)
 		if err != nil {
 			return nil, err
 		}
@@ -808,13 +823,13 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 
 		// Action.Outputs
 		// TODO{} add outputs as annotations (work to discuss officially supporting for compositions)
-		listOfOutputs, err := dm.composeInputsOrOutputs(action.Outputs, manifestFilePath)
-		if err != nil {
-			return nil, err
-		}
-		if len(listOfOutputs) > 0 {
-			//wskaction.Annotations = listOfOutputs
-		}
+		//listOfOutputs, err := dm.composeOutputs(action.Outputs, manifestFilePath)
+		//if err != nil {
+		//	return nil, err
+		//}
+		//if len(listOfOutputs) > 0 {
+		//	wskaction.Annotations = listOfOutputs
+		//}
 
 		// Action.Annotations
 		if listOfAnnotations := dm.composeAnnotations(action.Annotations); len(listOfAnnotations) > 0 {
@@ -921,7 +936,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, managedAnnot
 			wsktrigger.Annotations = keyValArr
 		}
 
-		inputs, err := dm.composeInputsOrOutputs(trigger.Inputs, filePath)
+		inputs, err := dm.composeInputs(trigger.Inputs, filePath)
 		if err != nil {
 			return nil, errorParser
 		}

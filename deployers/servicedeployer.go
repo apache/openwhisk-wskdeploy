@@ -64,7 +64,7 @@ type DeploymentPackage struct {
 	Dependencies map[string]utils.DependencyRecord
 	Actions      map[string]utils.ActionRecord
 	Sequences    map[string]utils.ActionRecord
-	Parameters   parsers.PackageParameter
+	Inputs       parsers.PackageInputs
 }
 
 func NewDeploymentPackage() *DeploymentPackage {
@@ -72,7 +72,7 @@ func NewDeploymentPackage() *DeploymentPackage {
 	dep.Dependencies = make(map[string]utils.DependencyRecord)
 	dep.Actions = make(map[string]utils.ActionRecord)
 	dep.Sequences = make(map[string]utils.ActionRecord)
-	dep.Parameters = parsers.PackageParameter{}
+	dep.Inputs = parsers.PackageInputs{}
 	return &dep
 }
 
@@ -84,7 +84,7 @@ func NewDeploymentPackage() *DeploymentPackage {
 //   4. Create a deployment plan to create OpenWhisk service
 type ServiceDeployer struct {
 	ProjectName       string
-	ProjectParameters map[string]parsers.Parameter
+	ProjectInputs     map[string]parsers.Parameter
 	Deployment        *DeploymentProject
 	Client            *whisk.Client
 	mt                sync.RWMutex
@@ -104,7 +104,7 @@ func NewServiceDeployer() *ServiceDeployer {
 	dep.Deployment = NewDeploymentProject()
 	dep.Preview = true
 	dep.DependencyMaster = make(map[string]utils.DependencyRecord)
-	dep.ProjectParameters = make(map[string]parsers.Parameter, 0)
+	dep.ProjectInputs = make(map[string]parsers.Parameter, 0)
 	return &dep
 }
 
@@ -120,13 +120,13 @@ func (deployer *ServiceDeployer) Check() {
 	// necessary
 }
 
-func (deployer *ServiceDeployer) setProjectParameters(manifest *parsers.YAML) error {
+func (deployer *ServiceDeployer) setProjectInputs(manifest *parsers.YAML) error {
 	for parameterName, param := range manifest.Project.Parameters {
 		p, err := parsers.ResolveParameter(parameterName, &param, manifest.Filepath)
 		if err != nil {
 			return err
 		}
-		deployer.ProjectParameters[parameterName] = parsers.Parameter{
+		deployer.ProjectInputs[parameterName] = parsers.Parameter{
 			Type:        param.Type,
 			Required:    param.Required,
 			Default:     param.Default,
@@ -160,7 +160,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		wskprint.PrintOpenWhiskWarning(warningString)
 	}
 
-	err = deployer.setProjectParameters(manifest)
+	err = deployer.setProjectInputs(manifest)
 	if err != nil {
 		return err
 	}
@@ -306,7 +306,7 @@ func (deployer *ServiceDeployer) Deploy() error {
 
 	if deployer.Report {
 		for _, pkg := range deployer.Deployment.Packages {
-			json, err := json.MarshalIndent(pkg.Parameters, "", "  ")
+			json, err := json.MarshalIndent(pkg.Inputs, "", "  ")
 			if err != nil {
 				return err
 			}

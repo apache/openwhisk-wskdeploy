@@ -54,7 +54,7 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 }
 
 func (reader *ManifestReader) InitPackages(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, managedAnnotations whisk.KeyValue) error {
-	packages, parameters, err := manifestParser.ComposeAllPackages(reader.serviceDeployer.ProjectParameters, manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
+	packages, parameters, err := manifestParser.ComposeAllPackages(reader.serviceDeployer.ProjectInputs, manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
 	if err != nil {
 		return err
 	}
