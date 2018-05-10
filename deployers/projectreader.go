@@ -62,7 +62,7 @@ func getKeyValueFormattedJSON(data map[string]interface{}) whisk.KeyValueArr {
 	return keyValueArr
 }
 
-func (deployer *ServiceDeployer) UpdatePackageParameters() error {
+func (deployer *ServiceDeployer) UpdatePackageInputs() error {
 	var paramsCLI interface{}
 	var err error
 
@@ -73,7 +73,7 @@ func (deployer *ServiceDeployer) UpdatePackageParameters() error {
 	}
 	if paramsCLI != nil {
 		for _, pkg := range deployer.Deployment.Packages {
-			for paramName, param := range pkg.Parameters.Parameters {
+			for paramName, param := range pkg.Inputs.Inputs {
 				paramValue := param.Value
 				if v, ok := paramsCLI.(map[string]interface{})[paramName]; ok {
 					paramValue = wskenv.InterpolateStringWithEnvVar(v)
@@ -87,14 +87,14 @@ func (deployer *ServiceDeployer) UpdatePackageParameters() error {
 					Status:      param.Status,
 					Schema:      param.Schema,
 				}
-				pkg.Parameters.Parameters[paramName] = parameter
+				pkg.Inputs.Inputs[paramName] = parameter
 			}
 		}
 	}
 	for _, pkg := range deployer.Deployment.Packages {
 		keyValArr := make([]whisk.KeyValue, 0)
-		if pkg.Parameters.Parameters != nil || len(pkg.Parameters.Parameters) != 0 {
-			for k, v := range pkg.Parameters.Parameters {
+		if pkg.Inputs.Inputs != nil || len(pkg.Inputs.Inputs) != 0 {
+			for k, v := range pkg.Inputs.Inputs {
 				keyVal := whisk.KeyValue{
 					Key:   k,
 					Value: v.Value,

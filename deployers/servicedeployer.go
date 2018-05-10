@@ -229,9 +229,9 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		}
 	}
 
-	// overwrite package parameters based on command line parameters
-	// overwrite package parameters with the values from command line --param and/or --param-file in order
-	err = deployer.UpdatePackageParameters()
+	// overwrite package inputs based on command line parameters
+	// overwrite package inputs with the values from command line --param and/or --param-file in order
+	err = deployer.UpdatePackageInputs()
 	if err != nil {
 		return err
 	}
