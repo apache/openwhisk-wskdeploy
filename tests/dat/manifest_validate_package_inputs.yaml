@@ -23,12 +23,10 @@ project:
                     type: string
                     description: "Slack User Name"
                     required: true
-                    value: "wskdeploy"
                 SLACK_URL:
                     type: string
                     description: "Slack Webhook URL"
                     required: true
-                    value: "https://hooks.slack.com/services/openwhisk"
                 SLACK_CHANNEL:
                     type: string
                     description: "Slack Channel"

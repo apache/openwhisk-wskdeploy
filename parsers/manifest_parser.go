@@ -249,7 +249,9 @@ func (dm *YAMLParser) composePackageInputs(projectInputs map[string]Parameter, r
 	inputs := make(map[string]Parameter, 0)
 
 	// package inherits all project inputs
-	inputs = projectInputs
+	for n, param := range projectInputs {
+		inputs[n] = param
+	}
 
 	// iterate over package inputs
 	for name, i := range rawInputs {
@@ -260,7 +262,7 @@ func (dm *YAMLParser) composePackageInputs(projectInputs map[string]Parameter, r
 		// if value is set to default value for its type,
 		// check for input key being an env. variable itself
 		if value == typeDefaultValueMap[i.Type] {
-			value = wskenv.InterpolateStringWithEnvVar(name)
+			value = wskenv.InterpolateStringWithEnvVar("${" + name + "}")
 		}
 		// create a Parameter object based on the package inputs
 		// resolve the value using env. variables

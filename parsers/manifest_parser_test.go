@@ -1330,104 +1330,77 @@ func TestComposePackage(t *testing.T) {
 	assert.False(t, *(pkg[n].Publish), "Default package should not be maked as public.")
 }
 
-func TestYAMLParser_ComposePackage_Parameters(t *testing.T) {
+func TestYAMLParser_ComposePackage_Inputs(t *testing.T) {
 	os.Setenv("SLACK_USERNAME", "slack_username")
-	os.Setenv("SLACK_WEBHOOK_URL", "slack_webhook_url")
-	os.Setenv("SLACK_TOKEN", "slack_token")
-	os.Setenv("RULE_NAME", "rule")
-	os.Setenv("TRIGGER_NAME", "trigger")
+	os.Setenv("SLACK_URL", "https://hooks.slack.com/services/slack_webhook_url")
 
-	file := "../tests/dat/manifest_validate_package_parameters.yaml"
+	file := "../tests/dat/manifest_validate_package_inputs.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
 
 	pm := make(map[string]Parameter, 0)
-	_, parameters, err := p.ComposeAllPackages(pm, m, m.Filepath, whisk.KeyValue{})
+	_, inputs, err := p.ComposeAllPackages(pm, m, m.Filepath, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_PACKAGE_FAILURE, file))
 
-	//packageName := "packageWithParameters"
-	for packageName, packageParameters := range parameters {
+	for packageName, packageInputs := range inputs {
 		if packageName == "packageWithParameters" {
-			for paramName, param := range packageParameters.Parameters {
-				switch paramName {
+			for name, param := range packageInputs.Inputs {
+				switch name {
 				case "SLACK_USERNAME":
 					assert.Equal(t, "slack_username", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "${SLACK_USERNAME}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-				case "SLACK_WEBHOOK_URL":
+				case "SLACK_URL":
 					assert.Equal(t, "https://hooks.slack.com/services/slack_webhook_url", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "https://hooks.slack.com/services/${SLACK_WEBHOOK_URL}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
 				case "SLACK_CHANNEL":
-					assert.Equal(t, "#general", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
 					assert.Equal(t, "#general", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-				case "SLACK_TOKEN":
-					assert.Equal(t, "slack_token", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "${SLACK_TOKEN}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
 				case "RULE_NAME":
-					assert.Equal(t, "rule", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "${RULE_NAME}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+					assert.Equal(t, "post-to-slack-every-hour", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
 				case "TRIGGER_NAME":
-					assert.Equal(t, "trigger", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "${TRIGGER_NAME}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+					assert.Equal(t, "everyhour", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
 				}
 			}
 		}
 	}
+	os.Unsetenv("SLACK_USERNAME")
+	os.Unsetenv("SLACK_URL")
 }
 
-func TestYAMLParser_ComposePackage_ProjectParameters(t *testing.T) {
+func TestYAMLParser_ComposePackage_ProjectInputs(t *testing.T) {
 	os.Setenv("SLACK_USERNAME", "slack_username")
-	os.Setenv("SLACK_WEBHOOK_URL", "slack_webhook_url")
-	os.Setenv("SLACK_TOKEN", "slack_token")
-	os.Setenv("RULE_NAME", "rule")
-	os.Setenv("TRIGGER_NAME", "trigger")
+	os.Setenv("SLACK_URL", "https://hooks.slack.com/services/slack_webhook_url")
 
-	file := "../tests/dat/manifest_validate_project_parameters.yaml"
+	file := "../tests/dat/manifest_validate_project_inputs.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
 
 	pm := make(map[string]Parameter, 0)
-	_, parameters, err := p.ComposeAllPackages(pm, m, m.Filepath, whisk.KeyValue{})
+	_, inputs, err := p.ComposeAllPackages(pm, m, m.Filepath, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_PACKAGE_FAILURE, file))
 
 	//packageName := "packageWithParameters"
-	for packageName, packageParameters := range parameters {
+	for packageName, packageInputs := range inputs {
 		switch packageName {
 		case "slack-text-notifications":
-			for paramName, param := range packageParameters.Parameters {
-				switch paramName {
+			for name, param := range packageInputs.Inputs {
+				switch name {
 				case "SLACK_USERNAME":
 					assert.Equal(t, "slack_username", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "${SLACK_USERNAME}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-				case "SLACK_WEBHOOK_URL":
+				case "SLACK_URL":
 					assert.Equal(t, "https://hooks.slack.com/services/slack_webhook_url", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "https://hooks.slack.com/services/${SLACK_WEBHOOK_URL}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
 				case "SLACK_CHANNEL":
 					assert.Equal(t, "#dev", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "#dev", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-				case "SLACK_TOKEN":
-					assert.Equal(t, "slack_token", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "${SLACK_TOKEN}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
 				case "RULE_NAME":
-					assert.Equal(t, "rule", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "${RULE_NAME}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+					assert.Equal(t, "post-to-slack-every-hour", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
 				case "TRIGGER_NAME":
-					assert.Equal(t, "trigger", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "${TRIGGER_NAME}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
+					assert.Equal(t, "everyhour", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
 				}
 			}
 		case "slack-email-notifications":
-			for paramName, param := range packageParameters.Parameters {
-				switch paramName {
+			for name, param := range packageInputs.Inputs {
+				switch name {
 				case "SLACK_USERNAME":
 					assert.Equal(t, "slack_username", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "${SLACK_USERNAME}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-				case "SLACK_WEBHOOK_URL":
+				case "SLACK_URL":
 					assert.Equal(t, "https://hooks.slack.com/services/slack_webhook_url", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "https://hooks.slack.com/services/${SLACK_WEBHOOK_URL}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
 				case "SLACK_CHANNEL":
 					assert.Equal(t, "#general", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "#general", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-				case "SLACK_TOKEN":
-					assert.Equal(t, "slack_token", param.Value, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
-					assert.Equal(t, "${SLACK_TOKEN}", param.Default, TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH)
 				}
 			}
 		}

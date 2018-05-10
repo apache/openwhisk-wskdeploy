@@ -121,7 +121,7 @@ func (deployer *ServiceDeployer) Check() {
 }
 
 func (deployer *ServiceDeployer) setProjectInputs(manifest *parsers.YAML) error {
-	for parameterName, param := range manifest.Project.Parameters {
+	for parameterName, param := range manifest.Project.Inputs {
 		p, err := parsers.ResolveParameter(parameterName, &param, manifest.Filepath)
 		if err != nil {
 			return err

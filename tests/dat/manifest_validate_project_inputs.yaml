@@ -16,44 +16,36 @@
 
 project:
     name: projectWithParameters
-    parameters:
+    inputs:
         SLACK_USERNAME:
             type: string
             description: "Slack User Name"
             required: true
-            default: ${SLACK_USERNAME}
-        SLACK_WEBHOOK_URL:
+        SLACK_URL:
             type: string
             description: "Slack Webhook URL"
             required: true
-            default: https://hooks.slack.com/services/${SLACK_WEBHOOK_URL}
         SLACK_CHANNEL:
             type: string
             description: "Slack Channel"
             required: true
-            default: "#general"
-        SLACK_TOKEN:
-            type: string
-            description: "Slack Token"
-            required: true
-            default: ${SLACK_TOKEN}
+            value: "#general"
     packages:
         slack-text-notifications:
-            parameters:
+            inputs:
                 SLACK_CHANNEL:
                     type: string
                     description: "Slack Channel"
                     required: true
-                    default: "#dev"
+                    value: "#dev"
                 RULE_NAME:
                     type: string
                     description: "Rule Name"
                     required: true
-                    default: ${RULE_NAME}
+                    value: "post-to-slack-every-hour"
                 TRIGGER_NAME:
                     type: string
                     description: "Trigger Name"
                     required: true
-                    default: ${TRIGGER_NAME}
-            actions:
+                    value: "everyhour"
         slack-email-notifications:

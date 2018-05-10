@@ -212,7 +212,6 @@ type Package struct {
 	Inputs           map[string]Parameter                               `yaml:"inputs"`
 	Sequences        map[string]Sequence                                `yaml:"sequences"`
 	Annotations      map[string]interface{}                             `yaml:"annotations,omitempty"`
-	Parameters       map[string]Parameter                               `yaml: parameters`
 	Apis             map[string]map[string]map[string]map[string]string `yaml:"apis"`
 }
 
@@ -224,7 +223,7 @@ type Project struct {
 	ApigwAccessToken string               `yaml:"apigwAccessToken"`
 	Version          string               `yaml:"version"`
 	Packages         map[string]Package   `yaml:"packages"`
-	Parameters       map[string]Parameter `yaml: parameters`
+	Inputs           map[string]Parameter `yaml: parameters`
 }
 
 type YAML struct {
