@@ -45,7 +45,7 @@ var config *whisk.Config
 var wskpropsPath string
 var client *whisk.Client
 
-func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML, targetManifest string) error {
+func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML, targetManifest string, projectName string) error {
 
 	pkg := maniyaml.Packages[packageName]
 	if pkg.Actions == nil {
@@ -57,19 +57,30 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML,
 	if err != nil {
 		return err
 	}
+
+	if a := wskAction.Annotations.GetValue(utils.MANAGED); a != nil {
+		// decode the JSON blob and retrieve __OW_PROJECT_NAME
+		pa := a.(map[string]interface{})
+
+		// we have found a package which is part of the current project
+		if pa[utils.OW_PROJECT_NAME] != projectName {
+			return nil
+		}
+	} else {
+		return nil
+	}
+
 	if wskAction.Exec.Kind == "sequence" {
 		seq := new(parsers.Sequence)
 		for _, component := range wskAction.Exec.Components {
 			// must ommit namespace from seq component name
-			ExportAction(strings.SplitN(component, "/", 3)[2], packageName, maniyaml, targetManifest)
-			slices := strings.Split(component, "/")
+			ExportAction(strings.SplitN(component, "/", 3)[2], packageName, maniyaml, targetManifest, projectName)
 
-			// save in the seq list only action names
 			if len(seq.Actions) > 0 {
 				seq.Actions += ","
 			}
-
-			seq.Actions += slices[len(slices)-1]
+			// save action in the seq list as package/action
+			seq.Actions += strings.SplitN(component, "/", 3)[2]
 		}
 
 		pkg = maniyaml.Packages[packageName]
@@ -93,7 +104,7 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML,
 
 		if filename != "" {
 			// store function in manifest if action has code section
-			parsedAction.Function = filepath.Join(packageName, filename)
+			parsedAction.Function = packageName + "/" + filename
 		}
 
 		pkg.Actions[wskAction.Name] = parsedAction
@@ -164,7 +175,7 @@ func exportProject(projectName string, targetManifest string) error {
 						if aa[utils.OW_PROJECT_NAME] == projectName {
 							actionName := strings.Join([]string{pkg.Name, action.Name}, "/")
 							// export action to file system
-							err = ExportAction(actionName, pkg.Name, maniyaml, targetManifest)
+							err = ExportAction(actionName, pkg.Name, maniyaml, targetManifest, projectName)
 							if err != nil {
 								return err
 							}
@@ -189,7 +200,6 @@ func exportProject(projectName string, targetManifest string) error {
 			ta := a.(map[string]interface{})
 			if ta[utils.OW_PROJECT_NAME] == projectName {
 
-				//				for i := 0; i < len(maniyaml.Packages); i++ {
 				for pkgName := range maniyaml.Packages {
 					if maniyaml.Packages[pkgName].Namespace == trg.Namespace {
 						if maniyaml.Packages[pkgName].Triggers == nil {
@@ -199,6 +209,31 @@ func exportProject(projectName string, targetManifest string) error {
 						}
 
 						// export trigger to manifest
+
+						if feedname, isFeed := utils.IsFeedAction(&trg); isFeed {
+							// export feed input parameters
+							feedAction, _, _ := client.Actions.Get(feedname, true)
+							if err != nil {
+								return err
+							}
+
+							params := make(map[string]interface{})
+							params["authKey"] = client.Config.AuthToken
+							params["lifecycleEvent"] = "READ"
+							params["triggerName"] = "/" + client.Namespace + "/" + trg.Name
+							res, _, err := client.Actions.Invoke(feedname, params, true, true)
+							if err != nil {
+								return err
+							}
+							feedConfig := res["config"]
+							for key, val := range feedConfig.(map[string]interface{}) {
+
+								if i := feedAction.Parameters.FindKeyValue(key); i >= 0 {
+									trg.Parameters = trg.Parameters.AddOrReplace(&whisk.KeyValue{Key: key, Value: val})
+								}
+							}
+						}
+
 						maniyaml.Packages[pkgName].Triggers[trg.Name] = *maniyaml.ComposeParsersTrigger(trg)
 					}
 				}
@@ -247,7 +282,13 @@ func exportProject(projectName string, targetManifest string) error {
 				pkg.Dependencies = make(map[string]parsers.Dependency)
 				maniyaml.Packages[pkgName] = pkg
 			}
-			maniyaml.Packages[pkgName].Dependencies[bPkg] = *maniyaml.ComposeParsersDependency(binding)
+
+			bPkgData, _, err := client.Packages.Get(bPkg)
+			if err != nil {
+				return err
+			}
+
+			maniyaml.Packages[pkgName].Dependencies[bPkg] = *maniyaml.ComposeParsersDependency(binding, *bPkgData)
 		}
 
 		break
@@ -270,6 +311,9 @@ func exportProject(projectName string, targetManifest string) error {
 
 	// now export dependencies to their own manifests
 	for _, binding := range bindings {
+		ns := client.Config.Namespace
+		client.Config.Namespace = binding.Namespace
+
 		pkg, _, err := client.Packages.Get(binding.Name)
 		if err != nil {
 			return err
@@ -291,6 +335,7 @@ func exportProject(projectName string, targetManifest string) error {
 			// showing warning to notify user that exported manifest dependent on unmanaged library which can't be exported
 			fmt.Println("Warning! Dependency package " + binding.Name + " currently unmanaged by any project. Unable to export this package")
 		}
+		client.Config.Namespace = ns
 	}
 
 	return nil
