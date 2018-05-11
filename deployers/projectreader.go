@@ -25,6 +25,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 )
@@ -65,29 +66,37 @@ func getKeyValueFormattedJSON(data map[string]interface{}) whisk.KeyValueArr {
 func (deployer *ServiceDeployer) UpdatePackageInputs() error {
 	var paramsCLI interface{}
 	var err error
+	var inputsWithoutValue []string
 
+	// check if any inputs/parameters are specified in CLI using --param or --param-file
+	// store params in Key/value pairs
 	if len(utils.Flags.Param) > 0 {
-		if paramsCLI, err = getJSONFromStrings(utils.Flags.Param, false); err != nil {
+		paramsCLI, err = getJSONFromStrings(utils.Flags.Param, false)
+		if err != nil {
 			return err
 		}
 	}
+
 	if paramsCLI != nil {
+		// iterate over each package to update its set of inputs with CLI
 		for _, pkg := range deployer.Deployment.Packages {
-			for paramName, param := range pkg.Inputs.Inputs {
-				paramValue := param.Value
-				if v, ok := paramsCLI.(map[string]interface{})[paramName]; ok {
-					paramValue = wskenv.InterpolateStringWithEnvVar(v)
+			// iterate over each input of type Parameter
+			for name, param := range pkg.Inputs.Inputs {
+				inputValue := param.Value
+				// check if this particular input is specified on CLI
+				if v, ok := paramsCLI.(map[string]interface{})[name]; ok {
+					inputValue = wskenv.InterpolateStringWithEnvVar(v)
 				}
 				parameter := parsers.Parameter{
 					Type:        param.Type,
 					Description: param.Description,
-					Value:       paramValue,
+					Value:       inputValue,
 					Required:    param.Required,
 					Default:     param.Default,
 					Status:      param.Status,
 					Schema:      param.Schema,
 				}
-				pkg.Inputs.Inputs[paramName] = parameter
+				pkg.Inputs.Inputs[name] = parameter
 			}
 		}
 	}
@@ -95,6 +104,11 @@ func (deployer *ServiceDeployer) UpdatePackageInputs() error {
 		keyValArr := make([]whisk.KeyValue, 0)
 		if pkg.Inputs.Inputs != nil || len(pkg.Inputs.Inputs) != 0 {
 			for k, v := range pkg.Inputs.Inputs {
+				if v.Required {
+					if parsers.IsTypeDefaultValue(v.Type, v.Value) {
+						inputsWithoutValue = append(inputsWithoutValue, k)
+					}
+				}
 				keyVal := whisk.KeyValue{
 					Key:   k,
 					Value: v.Value,
@@ -103,6 +117,13 @@ func (deployer *ServiceDeployer) UpdatePackageInputs() error {
 			}
 		}
 		pkg.Package.Parameters = keyValArr
+	}
+
+	if len(inputsWithoutValue) > 0 {
+		return wskderrors.NewYAMLFileFormatError(deployer.ManifestPath,
+			wski18n.T(wski18n.ID_ERR_REQUIRED_INPUTS_MISSING_VALUE_X_inputs_X,
+				map[string]interface{}{
+					wski18n.KEY_INPUTS: strings.Join(inputsWithoutValue, ", ")}))
 	}
 
 	return nil

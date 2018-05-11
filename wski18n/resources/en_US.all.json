@@ -360,6 +360,11 @@
     "translation": "A command line argument ({{.arg}}) has invalid param file {{.path}}, ERROR: {{.err}}. Please specify a valid JSON param file."
   },
   {
+    "id": "msg_err_required_inputs_missing_value",
+    "translation": "Required inputs are missing values even after applying interpolation using env. variables. Please set missing env. variables and/or input values in manifest/deployment file or on CLI for following inputs: {{.inputs}}"
+  },
+
+  {
     "id": "WARNINGS",
     "translation": "================= WARNINGS ==================="
   },

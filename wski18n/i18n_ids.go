@@ -82,6 +82,7 @@ const (
 	KEY_TRIGGER_FEED    = "feed"
 	KEY_RULE            = "rule"
 	KEY_ARG             = "arg"
+	KEY_INPUTS          = "inputs"
 )
 
 // DO NOT TRANSLATE
@@ -197,6 +198,7 @@ const (
 	ID_ERR_ARG_MISSING_VALUE_X_arg_X                                     = "msg_err_arg_missing_value"
 	ID_ERR_ARG_MISSING_KEY_VALUE_X_arg_X                                 = "msg_err_arg_missing_key_value"
 	ID_ERR_INVALID_PARAM_FILE_X_file_X                                   = "msg_err_invalid_param_file"
+	ID_ERR_REQUIRED_INPUTS_MISSING_VALUE_X_inputs_X                      = "msg_err_required_inputs_missing_value"
 
 	// Server-side Errors (wskdeploy as an Action)
 	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"

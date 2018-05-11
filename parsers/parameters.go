@@ -88,6 +88,16 @@ func getTypeDefaultValue(typeName string) interface{} {
 	return nil
 }
 
+func IsTypeDefaultValue(typeName string, value interface{}) bool {
+	defaultValue := getTypeDefaultValue(typeName)
+	if defaultValue == nil {
+		return false
+	} else if defaultValue == value {
+		return true
+	}
+	return false
+}
+
 /*
    ResolveParamTypeFromValue Resolves the Parameter's data type from its actual value.
 
