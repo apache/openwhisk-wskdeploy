@@ -28,6 +28,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 func getJSONFromStrings(content []string, keyValueFormat bool) (interface{}, error) {
@@ -120,10 +121,14 @@ func (deployer *ServiceDeployer) UpdatePackageInputs() error {
 	}
 
 	if len(inputsWithoutValue) > 0 {
-		return wskderrors.NewYAMLFileFormatError(deployer.ManifestPath,
-			wski18n.T(wski18n.ID_ERR_REQUIRED_INPUTS_MISSING_VALUE_X_inputs_X,
-				map[string]interface{}{
-					wski18n.KEY_INPUTS: strings.Join(inputsWithoutValue, ", ")}))
+		errMessage := wski18n.T(wski18n.ID_ERR_REQUIRED_INPUTS_MISSING_VALUE_X_inputs_X,
+			map[string]interface{}{
+				wski18n.KEY_INPUTS: strings.Join(inputsWithoutValue, ", ")})
+		if utils.Flags.Report {
+			wskprint.PrintOpenWhiskError(errMessage)
+		} else {
+			return wskderrors.NewYAMLFileFormatError(deployer.ManifestPath, errMessage)
+		}
 	}
 
 	return nil
