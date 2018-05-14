@@ -252,13 +252,22 @@ func (yaml *YAML) GetProject() Project {
 	return yaml.Project
 }
 
-func convertPackageName(packageMap map[string]Package) map[string]Package {
+func convertPackageName(packageMap map[string]Package, inputs map[string]Parameter) map[string]Package {
 	packages := make(map[string]Package)
 	for packName, depPacks := range packageMap {
 		name := packName
 		packageName := wskenv.InterpolateStringWithEnvVar(packName)
 		if str, ok := packageName.(string); ok {
 			name = str
+		}
+		if inputs != nil {
+			if len(name) == 0 {
+				packName = wskenv.GetEnvVarName(packName)
+				packageName = wskenv.InterpolateStringWithEnvVar(inputs[packName].Value)
+				if str, ok := packageName.(string); ok {
+					name = str
+				}
+			}
 		}
 		depPacks.Packagename = wskenv.ConvertSingleName(depPacks.Packagename)
 		packages[name] = depPacks
@@ -267,8 +276,8 @@ func convertPackageName(packageMap map[string]Package) map[string]Package {
 }
 
 func ReadEnvVariable(yaml *YAML) *YAML {
-	yaml.Project.Packages = convertPackageName(yaml.Project.Packages)
-	yaml.Packages = convertPackageName(yaml.Packages)
+	yaml.Project.Packages = convertPackageName(yaml.Project.Packages, yaml.Project.Inputs)
+	yaml.Packages = convertPackageName(yaml.Packages, nil)
 	return yaml
 }
 

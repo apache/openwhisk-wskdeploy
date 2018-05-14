@@ -109,3 +109,11 @@ func ConvertSingleName(theName string) string {
 	}
 	return theName
 }
+
+func GetEnvVarName(name string) string {
+	name = strings.Replace(name, "$", "", 1)
+	name = strings.Replace(name, "{", "", -1)
+	name = strings.Replace(name, "}", "", -1)
+	return name
+
+}
