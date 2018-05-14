@@ -78,11 +78,12 @@ func TestExportHelloWorld(t *testing.T) {
 	_, err = wskdeploy.UndeployManifestPathOnly(manifestHelloWorldPath)
 	assert.Equal(t, nil, err, "Failed to undeploy")
 
-	_, err := wskdeploy.ManagedDeploymentManifestAndProject(targetManifestHelloWorldPath, projectName)
+	_, err = wskdeploy.ManagedDeploymentManifestAndProject(targetManifestHelloWorldPath, projectName)
 	assert.Equal(t, nil, err, "Failed to redeploy exported project.")
 
 	_, err = wskdeploy.UndeployManifestPathOnly(targetManifestHelloWorldPath)
 	assert.Equal(t, nil, err, "Failed to undeploy exported project")
+}
 
 func TestExport2Pack(t *testing.T) {
 	projectName := "2pack"
@@ -117,6 +118,6 @@ var (
 
 	manifestHelloWorldPath       = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/helloworld/manifest.yaml"
 	targetManifestHelloWorldPath = targetManifestFolder + "manifest.yaml"
-	manifest2PackPath       = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_2pack.yaml"
-	target2PackManifestPath = targetManifestFolder + "exported2packmanifest.yaml"
+	manifest2PackPath            = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_2pack.yaml"
+	target2PackManifestPath      = targetManifestFolder + "exported2packmanifest.yaml"
 )

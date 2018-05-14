@@ -171,7 +171,7 @@ func (Wskdeploy *Wskdeploy) ManagedDeploymentOnlyManifest(manifestPath string) (
 	return Wskdeploy.RunCommand("sync", "-m", manifestPath)
 }
 
-func (Wskdeploy *Wskdeploy) ManagedDeploymentManifestAndProject(manifestPath string, projectname string) (string, error) {
+func (Wskdeploy *Wskdeploy) ManagedDeploymentManifestAndProject(manifestPath string, projectName string) (string, error) {
 	return Wskdeploy.RunCommand("sync", "-m", manifestPath, "--projectname", projectName)
 }
 
