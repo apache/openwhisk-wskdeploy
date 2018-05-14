@@ -62,6 +62,29 @@ func TestExport(t *testing.T) {
 	assert.Equal(t, nil, err, "Failed to undeploy the lib2.")
 }
 
+func TestExportHelloWorld(t *testing.T) {
+	projectName := "HELLO_WORLD"
+	wskdeploy := common.NewWskdeploy()
+
+	_, err := wskdeploy.ManagedDeploymentManifestAndProject(manifestHelloWorldPath, projectName)
+	assert.Equal(t, nil, err, "Failed to deploy manifest file.")
+
+	_, err = wskdeploy.ExportProject(projectName, targetManifestHelloWorldPath)
+	assert.Equal(t, nil, err, "Failed to export project.")
+
+	_, err = os.Stat(targetManifestHelloWorldPath)
+	assert.Equal(t, nil, err, "Missing exported manifest file")
+
+	_, err = wskdeploy.UndeployManifestPathOnly(manifestHelloWorldPath)
+	assert.Equal(t, nil, err, "Failed to undeploy")
+
+	_, err := wskdeploy.ManagedDeploymentManifestAndProject(targetManifestHelloWorldPath, projectName)
+	assert.Equal(t, nil, err, "Failed to redeploy exported project.")
+
+	_, err = wskdeploy.UndeployManifestPathOnly(targetManifestHelloWorldPath)
+	assert.Equal(t, nil, err, "Failed to undeploy exported project")
+}
+
 var (
 	manifestLib1Path = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_lib1.yaml"
 	manifestLib2Path = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_lib2.yaml"
@@ -69,4 +92,7 @@ var (
 
 	targetManifestFolder = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/tmp/"
 	targetManifestPath   = targetManifestFolder + "manifest.yaml"
+
+	manifestHelloWorldPath       = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/helloworld/manifest.yaml"
+	targetManifestHelloWorldPath = targetManifestFolder + "manifest.yaml"
 )
