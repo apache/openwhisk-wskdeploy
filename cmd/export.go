@@ -19,7 +19,6 @@ package cmd
 
 import (
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -150,9 +149,9 @@ func exportProject(projectName string, targetManifest string) error {
 				// TODO: throw if there more than single package managed by project
 				// currently will be a mess because triggers and rules managed under packages
 				// instead of the top level (similar to OW model)
-				if len(maniyaml.Packages) > 1 {
-					return errors.New("currently can't work with more than one package managed by one project")
-				}
+				//				if len(maniyaml.Packages) > 1 {
+				//					return errors.New("currently can't work with more than one package managed by one project")
+				//				}
 
 				// perform the similar check on the list of actions from this package
 				// get a list of actions in your namespace
