@@ -502,7 +502,7 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
 func TestComposeActionsForImplicitRuntimes(t *testing.T) {
 	file := "../tests/dat/manifest_data_compose_runtimes_implicit.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
-	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 	var expectedResult string
 	for i := 0; i < len(actions); i++ {
@@ -531,7 +531,7 @@ func TestComposeActionsForInvalidRuntime_1(t *testing.T) {
             helloInvalidRuntime:
                 function: ../tests/src/integration/common/wskdeploy.go`
 	p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
-	_, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+	_, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED, tmpfile))
 }
 
@@ -545,7 +545,7 @@ func TestComposeActionsForInvalidRuntime_2(t *testing.T) {
             helloInvalidRuntime:
                 function: ../tests/src/integration/runtimetests/src/helloworld/`
 	p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
-	_, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+	_, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED, tmpfile))
 }
 
@@ -559,7 +559,7 @@ func TestComposeActionsForInvalidRuntime_3(t *testing.T) {
             helloInvalidRuntime:
                 function: ../tests/src/integration/runtimetests/src/helloworld/helloworld.zip`
 	p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
-	_, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+	_, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED, tmpfile))
 }
 
@@ -574,7 +574,7 @@ func TestComposeActionsForValidRuntime_ZipAction(t *testing.T) {
                 function: ../tests/src/integration/runtimetests/src/helloworld/helloworld.zip
                 runtime: nodejs:6`
 	p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
-	actions, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, tmpfile))
 	for _, action := range actions {
 		if action.Action.Name == "hello" {
@@ -591,7 +591,7 @@ func TestComposeActionsForSingleLineParams(t *testing.T) {
 	p, m, _ := testLoadParseManifest(t, file)
 
 	// Call the method we are testing
-	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 
 	// test # actions
@@ -771,7 +771,7 @@ func TestComposeActionsForMultiLineParams(t *testing.T) {
 	p, m, _ := testLoadParseManifest(t, file)
 
 	// call the method we are testing
-	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 
 	// test # actions
@@ -864,7 +864,7 @@ func TestComposeActionsForFunction(t *testing.T) {
 	file := "../tests/dat/manifest_data_compose_actions_for_function.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
 
-	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 
 	var expectedResult, actualResult string
@@ -882,21 +882,21 @@ func TestComposeActionsForFunction(t *testing.T) {
 // validate manifest_parser.ComposeActions() method
 func TestComposeActionsForFunctionAndCode(t *testing.T) {
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_function_and_code.yaml")
-	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.NotNil(t, err, "Compose actions should have exited with error when code and function both exist.")
 }
 
 // validate manifest_parser.ComposeActions() method
 func TestComposeActionsForCodeWithMissingRuntime(t *testing.T) {
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_missing_runtime_with_code.yaml")
-	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.NotNil(t, err, "Compose actions should have exited with error when code is specified but runtime is missing.")
 }
 
 // validate manifest_parser.ComposeActions() method
 func TestComposeActionsForFunctionWithRemoteDir(t *testing.T) {
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_function_with_remote_dir.yaml")
-	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.NotNil(t, err, "Compose actions should have exited with error when code is specified but runtime is missing.")
 }
 
@@ -908,7 +908,7 @@ func TestComposeActionsForDocker(t *testing.T) {
 
 	p, m, _ := testLoadParseManifest(t, file)
 
-	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 
 	var expectedResult, actualResult string
@@ -946,7 +946,7 @@ func TestComposeActionsForEnvVariableInFunction(t *testing.T) {
 	file := "../tests/dat/manifest_data_compose_actions_for_function_with_env_variable.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
 
-	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 
 	for _, action := range actions {
@@ -963,7 +963,7 @@ func TestComposeActionsForLimits(t *testing.T) {
 	file := "../tests/dat/manifest_data_compose_actions_for_limits.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
 
-	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 
 	for i := 0; i < len(actions); i++ {
@@ -984,7 +984,7 @@ func TestComposeActionsForWebActions(t *testing.T) {
 	file := "../tests/dat/manifest_data_compose_actions_for_web.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
 
-	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 
 	for i := 0; i < len(actions); i++ {
@@ -1051,7 +1051,7 @@ func TestComposeActionsForWebActions(t *testing.T) {
 // Test 15-1: validate manifest_parser.ComposeActions() method
 func TestComposeActionsForInvalidWebActions(t *testing.T) {
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_actions_for_invalid_web.yaml")
-	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	_, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.NotNil(t, err, "Expected error for invalid web-export.")
 }
 
@@ -1059,7 +1059,7 @@ func TestComposeActionsForWebAndWebExport(t *testing.T) {
 	file := "../tests/dat/manifest_data_compose_actions_for_web_and_web_export.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
 
-	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 
 	for _, action := range actions {
@@ -1094,7 +1094,7 @@ func TestYAMLParser_ComposeActionsForAnnotations(t *testing.T) {
 	file := "../tests/dat/manifest_data_compose_actions_for_annotations.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
 
-	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 
 	for _, action := range actions {
@@ -1413,7 +1413,7 @@ func TestComposeSequences(t *testing.T) {
 	p, m, _ := testLoadParseManifest(t, file)
 
 	// Note: set first param (namespace) to empty string
-	seqList, err := p.ComposeSequencesFromAllPackages("", m, file, whisk.KeyValue{})
+	seqList, err := p.ComposeSequencesFromAllPackages("", m, file, whisk.KeyValue{}, map[string]PackageInputs{})
 	if err != nil {
 		assert.Fail(t, "Failed to compose sequences")
 	}
@@ -1443,7 +1443,7 @@ func TestComposeTriggers(t *testing.T) {
 
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_triggers.yaml")
 
-	triggerList, err := p.ComposeTriggersFromAllPackages(m, m.Filepath, whisk.KeyValue{})
+	triggerList, err := p.ComposeTriggersFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 
 	if err != nil {
 		assert.Fail(t, "Failed to compose trigger")
@@ -1470,7 +1470,7 @@ func TestComposeRules(t *testing.T) {
 
 	p, m, _ := testLoadParseManifest(t, "../tests/dat/manifest_data_compose_rules.yaml")
 
-	ruleList, err := p.ComposeRulesFromAllPackages(m, whisk.KeyValue{})
+	ruleList, err := p.ComposeRulesFromAllPackages(m, whisk.KeyValue{}, map[string]PackageInputs{})
 	if err != nil {
 		assert.Fail(t, "Failed to compose rules")
 	}
@@ -1551,7 +1551,7 @@ func TestComposeDependencies(t *testing.T) {
 	file := "../tests/dat/manifest_data_compose_dependencies.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
 
-	depdList, err := p.ComposeDependenciesFromAllPackages(m, "/project_folder", m.Filepath, whisk.KeyValue{})
+	depdList, err := p.ComposeDependenciesFromAllPackages(m, "/project_folder", m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_DEPENDENCY_FAILURE, file))
 
 	assert.Equal(t, 3, len(depdList), "Failed to get rules")
@@ -1873,7 +1873,7 @@ func TestRuleName_Env_Var(t *testing.T) {
 	mm := NewYAMLParser()
 	manifestfile := "../tests/dat/manifest_data_rule_env_var.yaml"
 	manifest, _ := mm.ParseManifest(manifestfile)
-	rules, err := mm.ComposeRulesFromAllPackages(manifest, whisk.KeyValue{})
+	rules, err := mm.ComposeRulesFromAllPackages(manifest, whisk.KeyValue{}, map[string]PackageInputs{})
 	if err != nil {
 		assert.Fail(t, "Failed to compose rules")
 	}

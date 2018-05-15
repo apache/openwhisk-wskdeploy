@@ -190,22 +190,15 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		return err
 	}
 
-	// process manifest file
-	err = manifestReader.HandleYaml(manifestParser, manifest, deployer.ManagedAnnotation)
-	if err != nil {
-		return err
-	}
-
 	projectName := ""
 	if len(manifest.GetProject().Packages) != 0 {
 		projectName = manifest.GetProject().Name
 	}
 
 	// process deployment file
+	var deploymentReader = NewDeploymentReader(deployer)
 	if utils.FileExists(deployer.DeploymentPath) {
-		var deploymentReader = NewDeploymentReader(deployer)
 		err = deploymentReader.HandleYaml()
-
 		if err != nil {
 			return err
 		}
@@ -224,9 +217,6 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 				return wskderrors.NewYAMLFileFormatError(manifest.Filepath, errorString)
 			}
 		}
-		if err := deploymentReader.BindAssets(); err != nil {
-			return err
-		}
 	}
 
 	// overwrite package inputs based on command line parameters
@@ -234,6 +224,19 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	err = deployer.UpdatePackageInputs()
 	if err != nil {
 		return err
+	}
+
+	// process manifest file
+	err = manifestReader.HandleYaml(manifestParser, manifest, deployer.ManagedAnnotation)
+	if err != nil {
+		return err
+	}
+
+	// process deployment file
+	if utils.FileExists(deployer.DeploymentPath) {
+		if err := deploymentReader.BindAssets(); err != nil {
+			return err
+		}
 	}
 
 	return err

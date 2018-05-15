@@ -263,10 +263,7 @@ func convertPackageName(packageMap map[string]Package, inputs map[string]Paramet
 		if inputs != nil {
 			if len(name) == 0 {
 				packName = wskenv.GetEnvVarName(packName)
-				packageName = wskenv.InterpolateStringWithEnvVar(inputs[packName].Value)
-				if str, ok := packageName.(string); ok {
-					name = str
-				}
+				name = wskenv.ConvertSingleName(inputs[packName].Value.(string))
 			}
 		}
 		depPacks.Packagename = wskenv.ConvertSingleName(depPacks.Packagename)
