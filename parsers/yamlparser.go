@@ -409,6 +409,7 @@ func (yaml *YAML) ComposeParsersAction(wskact whisk.Action) *Action {
 	action.Name = wskact.Name
 	action.Namespace = wskact.Namespace
 	action.Version = wskact.Version
+	action.Main = wskact.Exec.Main
 
 	action.Inputs = make(map[string]Parameter)
 	for _, keyval := range wskact.Parameters {
