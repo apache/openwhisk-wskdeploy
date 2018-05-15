@@ -101,8 +101,12 @@ For convenience, the Packages and Actions grammar can be found here:
 
 ### Notes
 
-- If you use the following curl command, you can see the latest runtimes and version supported by the IBM Cloud Functions platform:
-  - ```curl -k https://openwhisk.ng.bluemix.net```
+- If you use the following curl command, you can see the latest runtimes and version supported by the target OpenWhisk platform:
+  - ```curl -k <OpenWhisk API_HOST>```
+      - Simply replace the _API Host_ value with the API endpoint address for your provider's OpenWhisk platform.
+
+  - For example, you can test this against the IBM Cloud Functions platform:
+      - ```curl -k https://openwhisk.ng.bluemix.net```
 
 ---
 <!--
