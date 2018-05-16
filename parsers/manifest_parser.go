@@ -118,9 +118,11 @@ func (dm *YAMLParser) composeInputs(inputs map[string]Parameter, packageInputs P
 	for name, param := range inputs {
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
-		if param.Type == STRING && packageInputs.Inputs != nil {
-			if v, ok := packageInputs.Inputs[wskenv.GetEnvVarName(param.Value.(string))]; ok {
-				keyVal.Value = v.Value.(string)
+		if packageInputs.Inputs != nil {
+			if param.Type == STRING && param.Value != nil {
+				if v, ok := packageInputs.Inputs[wskenv.GetEnvVarName(param.Value.(string))]; ok {
+					keyVal.Value = v.Value.(string)
+				}
 			}
 		} else {
 			keyVal.Value, errorParser = ResolveParameter(name, &param, manifestFilePath)
