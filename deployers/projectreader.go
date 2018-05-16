@@ -110,11 +110,13 @@ func (deployer *ServiceDeployer) UpdatePackageInputs() error {
 						inputsWithoutValue = append(inputsWithoutValue, k)
 					}
 				}
-				keyVal := whisk.KeyValue{
-					Key:   k,
-					Value: v.Value,
+				if _, ok := deployer.ProjectInputs[k]; !ok {
+					keyVal := whisk.KeyValue{
+						Key:   k,
+						Value: v.Value,
+					}
+					keyValArr = append(keyValArr, keyVal)
 				}
-				keyValArr = append(keyValArr, keyVal)
 			}
 		}
 		pkg.Package.Parameters = keyValArr

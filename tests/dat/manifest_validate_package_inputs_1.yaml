@@ -1,0 +1,27 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+#
+
+packages:
+    helloworldapp:
+        actions:
+            hello:
+                inputs:
+                    name:
+                        type: string
+                        description: "your first name"
+                        required: false
+                        value: Amy
+                    place:
+                        type: string
+                        description: "The city name"
+                        required: false
+                        value: Paris
+                code: |
+                          function main(params) {
+                              return {payload:  'Hello, ' + params.name + ' from ' + params.place};
+                          }
+                runtime: nodejs:6
+
+

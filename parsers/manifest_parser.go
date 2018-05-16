@@ -118,17 +118,17 @@ func (dm *YAMLParser) composeInputs(inputs map[string]Parameter, packageInputs P
 	for name, param := range inputs {
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
-		if packageInputs.Inputs != nil {
-			if param.Type == STRING && param.Value != nil {
-				if v, ok := packageInputs.Inputs[wskenv.GetEnvVarName(param.Value.(string))]; ok {
+		keyVal.Value, errorParser = ResolveParameter(name, &param, manifestFilePath)
+		if errorParser != nil {
+			return nil, errorParser
+		}
+		if keyVal.Value == getTypeDefaultValue(param.Type) {
+			if packageInputs.Inputs != nil && param.Type == STRING && param.Value != nil {
+				n := wskenv.GetEnvVarName(param.Value.(string))
+				if v, ok := packageInputs.Inputs[n]; ok {
 					keyVal.Value = v.Value.(string)
 				}
 			}
-		} else {
-			keyVal.Value, errorParser = ResolveParameter(name, &param, manifestFilePath)
-		}
-		if errorParser != nil {
-			return nil, errorParser
 		}
 		if keyVal.Value != nil {
 			keyValArr = append(keyValArr, keyVal)
@@ -269,9 +269,21 @@ func (dm *YAMLParser) composePackageInputs(projectInputs map[string]Parameter, r
 		}
 		// if value is set to default value for its type,
 		// check for input key being an env. variable itself
-		if value == typeDefaultValueMap[i.Type] {
+		if value == getTypeDefaultValue(i.Type) {
 			value = wskenv.InterpolateStringWithEnvVar("${" + name + "}")
 		}
+
+		// if at this point, still value is set to default value of its type
+		// check if input key is defined under Project Inputs
+		if value == getTypeDefaultValue(i.Type) {
+			if i.Type == STRING && i.Value != nil {
+				n := wskenv.GetEnvVarName(i.Value.(string))
+				if v, ok := projectInputs[n]; ok {
+					value = v.Value.(string)
+				}
+			}
+		}
+
 		// create a Parameter object based on the package inputs
 		// resolve the value using env. variables
 		// if value is not specified, treat input key as an env. variable
