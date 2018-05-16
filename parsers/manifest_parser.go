@@ -122,11 +122,13 @@ func (dm *YAMLParser) composeInputs(inputs map[string]Parameter, packageInputs P
 		if errorParser != nil {
 			return nil, errorParser
 		}
-		if keyVal.Value == getTypeDefaultValue(param.Type) {
-			if packageInputs.Inputs != nil && param.Type == STRING && param.Value != nil {
-				n := wskenv.GetEnvVarName(param.Value.(string))
-				if v, ok := packageInputs.Inputs[n]; ok {
-					keyVal.Value = v.Value.(string)
+		if param.Type == STRING && param.Value != nil {
+			if keyVal.Value == getTypeDefaultValue(param.Type) {
+				if packageInputs.Inputs != nil {
+					n := wskenv.GetEnvVarName(param.Value.(string))
+					if v, ok := packageInputs.Inputs[n]; ok {
+						keyVal.Value = v.Value.(string)
+					}
 				}
 			}
 		}
