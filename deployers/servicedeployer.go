@@ -126,15 +126,8 @@ func (deployer *ServiceDeployer) setProjectInputs(manifest *parsers.YAML) error 
 		if err != nil {
 			return err
 		}
-		deployer.ProjectInputs[parameterName] = parsers.Parameter{
-			Type:        param.Type,
-			Required:    param.Required,
-			Default:     param.Default,
-			Status:      param.Status,
-			Schema:      param.Schema,
-			Description: param.Description,
-			Value:       p,
-		}
+		param.Value = p
+		deployer.ProjectInputs[parameterName] = param
 	}
 	return nil
 }

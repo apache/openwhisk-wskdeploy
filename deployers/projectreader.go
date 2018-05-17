@@ -88,16 +88,8 @@ func (deployer *ServiceDeployer) UpdatePackageInputs() error {
 				if v, ok := paramsCLI.(map[string]interface{})[name]; ok {
 					inputValue = wskenv.InterpolateStringWithEnvVar(v)
 				}
-				parameter := parsers.Parameter{
-					Type:        param.Type,
-					Description: param.Description,
-					Value:       inputValue,
-					Required:    param.Required,
-					Default:     param.Default,
-					Status:      param.Status,
-					Schema:      param.Schema,
-				}
-				pkg.Inputs.Inputs[name] = parameter
+				param.Value = inputValue
+				pkg.Inputs.Inputs[name] = param
 			}
 		}
 	}

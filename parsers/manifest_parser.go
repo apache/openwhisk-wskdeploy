@@ -115,6 +115,8 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
 func (dm *YAMLParser) composeInputs(inputs map[string]Parameter, packageInputs PackageInputs, manifestFilePath string) (whisk.KeyValueArr, error) {
 	var errorParser error
 	keyValArr := make(whisk.KeyValueArr, 0)
+	var inputsWithoutValue []string
+
 	for name, param := range inputs {
 		var keyVal whisk.KeyValue
 		keyVal.Key = name
@@ -135,7 +137,17 @@ func (dm *YAMLParser) composeInputs(inputs map[string]Parameter, packageInputs P
 		if keyVal.Value != nil {
 			keyValArr = append(keyValArr, keyVal)
 		}
+		if param.Required && keyVal.Value == getTypeDefaultValue(param.Type) {
+			inputsWithoutValue = append(inputsWithoutValue, name)
+		}
 	}
+	if len(inputsWithoutValue) > 0 {
+		errMessage := wski18n.T(wski18n.ID_ERR_REQUIRED_INPUTS_MISSING_VALUE_X_inputs_X,
+			map[string]interface{}{
+				wski18n.KEY_INPUTS: strings.Join(inputsWithoutValue, ", ")})
+		return nil, wskderrors.NewYAMLFileFormatError(manifestFilePath, errMessage)
+	}
+
 	return keyValArr, nil
 }
 
@@ -293,17 +305,8 @@ func (dm *YAMLParser) composePackageInputs(projectInputs map[string]Parameter, r
 		// else set it to its default value based on the type for now
 		// the input value will be updated if its specified in deployment
 		// or on CLI using --param or --param-file
-		p := Parameter{
-			Type:        i.Type,
-			Description: i.Description,
-			Value:       value,
-			Required:    i.Required,
-			Default:     i.Default,
-			Status:      i.Status,
-			Schema:      i.Schema,
-			multiline:   i.multiline,
-		}
-		inputs[name] = p
+		i.Value = value
+		inputs[name] = i
 	}
 
 	// create an array of Key/Value pair with inputs

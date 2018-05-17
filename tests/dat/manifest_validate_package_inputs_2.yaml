@@ -11,12 +11,12 @@ packages:
                     name:
                         type: string
                         description: "your first name"
-                        required: false
+                        required: true
                         value: $FIRST_NAME
                     place:
                         type: string
                         description: "The city name"
-                        required: false
+                        required: true
                         value: $CITY_NAME
                 code: |
                           function main(params) {

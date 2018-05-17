@@ -26,29 +26,29 @@ project:
             description: "Slack User Name"
             required: false
             value: periodic-slack-reminder
+        SLACK_WEBHOOK_URL:
+            type: string
+            description: "Slack Webhook URL"
+            required: true
+            value: $SLACK_WEBHOOK_URL
+        ALARM_CRON:
+            type: string
+            description: "Alarm Cron Frequency"
+            required: true
+            # every day 8 AM
+            value: "0 8 * * *"
+        TRIGGER_NAME:
+            type: string
+            description: "Trigger Name"
+            required: false
+            value: "periodic-slack-reminder-trgr"
+        RULE_NAME:
+            type: string
+            description: "Rule Name"
+            required: false
+            value: "post-to-slack-every-day"
     packages:
         $PACKAGE_NAME:
-            inputs:
-                SLACK_WEBHOOK_URL:
-                    type: string
-                    description: "Slack Webhook URL"
-                    required: true
-                ALARM_CRON:
-                    type: string
-                    description: "Alarm Cron Frequency"
-                    required: true
-                    # every day 8 AM
-                    value: "0 8 * * *"
-                TRIGGER_NAME:
-                    type: string
-                    description: "Trigger Name"
-                    required: false
-                    value: "periodic-slack-reminder-trgr"
-                RULE_NAME:
-                    type: string
-                    description: "Rule Name"
-                    required: false
-                    value: "post-to-slack-every-day"
             dependencies:
                 # binding alarms package named openwhisk-alarms and slack package openwhisk-slack
                 openwhisk-slack:
