@@ -17,13 +17,78 @@
 #
 -->
 
-# Whisk Deploy Parameters Evaluation
+# Whisk Deploy Inputs
+ 
+In this programming guide, we are going to discuss `inputs` section of manifest and deployment file and command line options such as `--param` and `--param-file`. Let's start with some background.
 
-A project is generally defined as a collection of packages. A package is generally defined as a collection of OpenWhisk entities such as
-actions, sequences, triggers, rules, and apis in manifest/deployment file. These OpenWhisk entities in manifest/deployment files
-generally need data from users/environment for their successful deployment. This data includes (1) default values of action parameters
-specially sensitive information such as passwords, (2) package bindings which are created outside of an existing deployment,
-(3) GitHub credentials in case of deploying private GitHub repo, and many more.
+We define a project in manifest/deployment file which is a collection of packages. A package in turn is a collection of OpenWhisk entities such as
+actions, sequences, triggers, rules, and apis. These OpenWhisk entities in manifest/deployment files
+generally need data from users/environment for its successful deployment. This data includes:
+
+* Default values of action parameters specially sensitive information such as passwords, etc.
+* Package bindings which are created outside of an existing deployment, for example, Cloudant, Slack package bindings, etc.
+* GitHub credentials in case of deploying private GitHub repo, and many more.
+
+Let's start with a simple example of a `helloworld` action which has two inputs `name` and `place`. These inputs are defined at action level.
+
+```yaml
+packages:
+    helloworldapp:
+        actions:
+            hello:
+                inputs:
+                    name:
+                        type: string
+                        description: "your first name"
+                        required: false
+                        value: Amy
+                    place:
+                        type: string
+                        description: "The city name"
+                        required: false
+                        value: Paris
+                code: |
+                          function main(params) {
+                              return {payload:  'Hello, ' + params.name + ' from ' + params.place};
+                          }
+                runtime: nodejs:6
+```
+
+Whisk deploy creates two bindings at the action level, setting two parameters `name` and `place`:
+
+```bash
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_1.yaml 
+
+Packages:
+Name: helloworldapp
+    bindings: 
+    annotation: 
+
+  * action: hello
+    bindings: 
+        - name : "Amy"
+        - place : "Paris"
+    annotation: 
+```
+
+This is how two inputs `name` and `place` are stored in `hello` action on OpenWhisk server: 
+
+```
+"parameters": [
+        {
+            "key": "name",
+            "value": "Amy"
+        }
+        {
+            "key": "place",
+            "value": "Paris"
+        },
+    ],
+```
+
+
+
+
 
 We have designed functionality where a user can provide a list of such parameters needed per project and per package, such as:
 
