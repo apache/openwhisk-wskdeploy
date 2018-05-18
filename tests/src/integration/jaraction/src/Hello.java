@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 import com.google.gson.JsonObject;
 public class Hello {
     public static JsonObject main(JsonObject args) {
