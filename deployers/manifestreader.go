@@ -295,8 +295,13 @@ func (reader *ManifestReader) SetApis(ar []*whisk.ApiCreateRequest) error {
 	defer dep.mt.Unlock()
 
 	for _, api := range ar {
-		dep.Deployment.Apis[api.ApiDoc.Action.Name] = api
+		apiPath := api.ApiDoc.ApiName + api.ApiDoc.GatewayBasePath + api.ApiDoc.GatewayRelPath + api.ApiDoc.GatewayMethod
+
+		// uniqueness issue when using action name as key as there can be multiple APIs pointing to same action.
+		// using apiPath instead as it is uniqueue
+		dep.Deployment.Apis[apiPath] = api
 	}
+
 	return nil
 }
 
