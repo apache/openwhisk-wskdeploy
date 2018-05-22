@@ -105,7 +105,8 @@ func testLoadAndBindDeploymentYAML(t *testing.T, path string, triggerName string
 	}
 
 	// Test that we can bind Triggers and Annotations
-	err = dReader.bindTriggerInputsAndAnnotations()
+	var inputs interface{}
+	err = dReader.bindTriggerInputsAndAnnotations(inputs)
 
 	// test load of deployment YAML
 	if err != nil {
@@ -221,7 +222,8 @@ func TestDeploymentReader_BindAssets_ActionAnnotations(t *testing.T) {
 	//parse deployment and bind triggers input and annotation
 	dReader := NewDeploymentReader(sDeployer)
 	dReader.HandleYaml()
-	err := dReader.bindActionInputsAndAnnotations()
+	var inputs interface{}
+	err := dReader.bindActionInputsAndAnnotations(inputs)
 
 	assert.Nil(t, err, "Failed to bind action annotations")
 
