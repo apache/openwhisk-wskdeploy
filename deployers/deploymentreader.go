@@ -53,13 +53,25 @@ func (reader *DeploymentReader) HandleYaml() error {
 // Update entities with deployment settings
 func (reader *DeploymentReader) BindAssets() error {
 
-	if err := reader.bindPackageInputsAndAnnotations(); err != nil {
+	var paramsCLI interface{}
+	var err error
+
+	// check if any inputs/parameters are specified in CLI using --param or --param-file
+	// store params in Key/value pairs
+	if len(utils.Flags.Param) > 0 {
+		paramsCLI, err = utils.GetJSONFromStrings(utils.Flags.Param, false)
+		if err != nil {
+			return err
+		}
+	}
+
+	if err := reader.bindPackageInputsAndAnnotations(paramsCLI); err != nil {
 		return err
 	}
-	if err := reader.bindActionInputsAndAnnotations(); err != nil {
+	if err := reader.bindActionInputsAndAnnotations(paramsCLI); err != nil {
 		return err
 	}
-	if err := reader.bindTriggerInputsAndAnnotations(); err != nil {
+	if err := reader.bindTriggerInputsAndAnnotations(paramsCLI); err != nil {
 		return err
 	}
 
@@ -124,7 +136,7 @@ func (reader *DeploymentReader) getListOfAnnotations(inputs map[string]interface
 	return keyValArr
 }
 
-func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
+func (reader *DeploymentReader) bindPackageInputsAndAnnotations(paramsCLI interface{}) error {
 
 	// retrieve "packages" list from depl. file; either at top-level or under "Project" schema
 	packMap := reader.getPackageMap()
@@ -155,7 +167,19 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 				}
 			}
 
-			serviceDeployPack.Package.Parameters = keyValArr
+			packageInputs := make(whisk.KeyValueArr, 0)
+
+			if paramsCLI != nil {
+				for _, kv := range keyValArr {
+					// check if this particular input is specified on CLI
+					if v, ok := paramsCLI.(map[string]interface{})[kv.Key]; ok {
+						kv.Value = wskenv.ConvertSingleName(v.(string))
+					}
+					packageInputs = append(packageInputs, kv)
+				}
+			}
+
+			serviceDeployPack.Package.Parameters = packageInputs
 		}
 
 		if len(pack.Annotations) > 0 {
@@ -175,7 +199,7 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations() error {
 	return nil
 }
 
-func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
+func (reader *DeploymentReader) bindActionInputsAndAnnotations(paramsCLI interface{}) error {
 
 	// retrieve "packages" list from depl. file; either at top-level or under "Project" schema
 	packMap := reader.getPackageMap()
@@ -210,7 +234,20 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 							keyValArr = append(keyValArr, keyVal)
 						}
 					}
-					wskAction.Action.Parameters = keyValArr
+
+					actionInputs := make(whisk.KeyValueArr, 0)
+
+					if paramsCLI != nil {
+						for _, kv := range keyValArr {
+							// check if this particular input is specified on CLI
+							if v, ok := paramsCLI.(map[string]interface{})[kv.Key]; ok {
+								kv.Value = wskenv.ConvertSingleName(v.(string))
+							}
+							actionInputs = append(actionInputs, kv)
+						}
+					}
+
+					wskAction.Action.Parameters = actionInputs
 				} else {
 					displayEntityNotFoundInDeploymentWarning(parsers.YAML_KEY_ACTION, actionName)
 				}
@@ -239,7 +276,7 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations() error {
 	return nil
 }
 
-func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
+func (reader *DeploymentReader) bindTriggerInputsAndAnnotations(paramsCLI interface{}) error {
 
 	// retrieve "packages" list from depl. file; either at top-level or under "Project" schema
 	packMap := reader.getPackageMap()
@@ -273,7 +310,20 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations() error {
 							keyValArr = append(keyValArr, keyVal)
 						}
 					}
-					wskTrigger.Parameters = keyValArr
+
+					triggerInputs := make(whisk.KeyValueArr, 0)
+
+					if paramsCLI != nil {
+						for _, kv := range keyValArr {
+							// check if this particular input is specified on CLI
+							if v, ok := paramsCLI.(map[string]interface{})[kv.Key]; ok {
+								kv.Value = wskenv.ConvertSingleName(v.(string))
+							}
+							triggerInputs = append(triggerInputs, kv)
+						}
+					}
+
+					wskTrigger.Parameters = triggerInputs
 				} else {
 					displayEntityNotFoundInDeploymentWarning(parsers.YAML_KEY_TRIGGER, triggerName)
 				}

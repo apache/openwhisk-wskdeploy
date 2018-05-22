@@ -18,7 +18,6 @@
 package deployers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -31,39 +30,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
-func getJSONFromStrings(content []string, keyValueFormat bool) (interface{}, error) {
-	var data map[string]interface{}
-	var res interface{}
-
-	for i := 0; i < len(content); i++ {
-		dc := json.NewDecoder(strings.NewReader(content[i]))
-		dc.UseNumber()
-		if err := dc.Decode(&data); err != nil {
-			return whisk.KeyValueArr{}, err
-		}
-	}
-
-	if keyValueFormat {
-		res = getKeyValueFormattedJSON(data)
-	} else {
-		res = data
-	}
-
-	return res, nil
-}
-
-func getKeyValueFormattedJSON(data map[string]interface{}) whisk.KeyValueArr {
-	var keyValueArr whisk.KeyValueArr
-	for key, value := range data {
-		keyValue := whisk.KeyValue{
-			Key:   key,
-			Value: value,
-		}
-		keyValueArr = append(keyValueArr, keyValue)
-	}
-	return keyValueArr
-}
-
 func (deployer *ServiceDeployer) UpdatePackageInputs() error {
 	var paramsCLI interface{}
 	var err error
@@ -72,7 +38,7 @@ func (deployer *ServiceDeployer) UpdatePackageInputs() error {
 	// check if any inputs/parameters are specified in CLI using --param or --param-file
 	// store params in Key/value pairs
 	if len(utils.Flags.Param) > 0 {
-		paramsCLI, err = getJSONFromStrings(utils.Flags.Param, false)
+		paramsCLI, err = utils.GetJSONFromStrings(utils.Flags.Param, false)
 		if err != nil {
 			return err
 		}

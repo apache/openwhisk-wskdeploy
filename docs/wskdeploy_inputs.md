@@ -19,17 +19,40 @@
 
 # Whisk Deploy Inputs
  
-In this programming guide, we are going to discuss `inputs` section of manifest and deployment file and command line options such as `--param` and `--param-file`. Let's start with some background.
+In this programming guide, we are going to discuss `inputs` section of manifest and
+deployment file along with command line options `--param` and `--param-file`. First some background.
 
-We define a project in manifest/deployment file which is a collection of packages. A package in turn is a collection of OpenWhisk entities such as
-actions, sequences, triggers, rules, and apis. These OpenWhisk entities in manifest/deployment files
+We define a project in manifest/deployment file which is a collection of packages.
+A package in turn is a collection of OpenWhisk entities such as actions, sequences,
+triggers, rules, apis, etc. These OpenWhisk entities in manifest/deployment files
 generally need data from users/environment for its successful deployment. This data includes:
 
-* Default values of action parameters specially sensitive information such as passwords, etc.
-* Package bindings which are created outside of an existing deployment, for example, Cloudant, Slack package bindings, etc.
-* GitHub credentials in case of deploying private GitHub repo, and many more.
+* Default values of action parameters including sensitive information such as credentials.
+* Shared package bindings which are created outside of an existing deployment, for example, Cloudant, Slack, etc.
+* Service credentials, for example, cloudant credentials, slack token, etc
+ 
+Inputs can be specified at different levels:
+ 
+ * Action Inputs
+ * Trigger Inputs
+ * Package Inputs
+ * Project Inputs
+ 
+And can be specified in multiple different ways:
 
-Let's start with a simple example of a `helloworld` action which has two inputs `name` and `place`. These inputs are defined at action level.
+* Manifest file
+* Deployment file
+* CLI using `--param` and `--param-file`
+
+Before we dive into details of each level of inputs with all different ways, `wskdeploy` follows a particular order in which the values are read:
+ 
+* Input values specified using `--param` and/or `--param-file` takes the highest precedence order. The values specified on CLI are taken to the server.
+* Next, input values are read from deployment file
+* Last, input values are read from manifest file
+
+### Action Inputs:
+
+Let's start with a simple example of a `helloworld` action which has two inputs `name` and `place`.
 
 ```yaml
 packages:
@@ -54,7 +77,23 @@ packages:
                 runtime: nodejs:6
 ```
 
-Whisk deploy creates two bindings at the action level, setting two parameters `name` and `place`:
+Or (Single Line Inputs):
+
+```yaml
+packages:
+    helloworldapp:
+        actions:
+            hello:
+                inputs:
+                    name: Amy
+                    place: Paris
+                code: |
+                          function main(params) {
+                              return {payload:  'Hello, ' + params.name + ' from ' + params.place};
+                          }
+                runtime: nodejs:6
+```
+Whisk deploy creates bindings at the action level with two parameters `name` and `place`:
 
 ```bash
 ./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_1.yaml 
@@ -86,390 +125,358 @@ This is how two inputs `name` and `place` are stored in `hello` action on OpenWh
     ],
 ```
 
+### Action Inputs with Env. Variables
 
+```yaml
+packages:
+    helloworldapp:
+        actions:
+            hello:
+                inputs:
+                    name:
+                        type: string
+                        description: "your first name"
+                        required: true
+                        value: $FIRST_NAME
+                    place:
+                        type: string
+                        description: "The city name"
+                        required: true
+                        value: $CITY_NAME
+                code: |
+                          function main(params) {
+                              return {payload:  'Hello, ' + params.name + ' from ' + params.place};
+                          }
+                runtime: nodejs:6
+```
 
+Deployment of this kind of manifest file results in following failure as inputs
+`name` and `place` are marked `required` but their values `$FIRST_NAME` and `$CITY_NAME` could not be determined.
 
+```bash
+Error: manifestreader.go [92]: [ERROR_YAML_FILE_FORMAT_ERROR]: File: [manifest_validate_package_inputs_2.yaml]: 
+==> manifest_parser.go [148]: [ERROR_YAML_FILE_FORMAT_ERROR]: File: [manifest_validate_package_inputs_2.yaml]: Required inputs are missing values even after applying interpolation using env. variables. Please set missing env. variables and/or input values in manifest/deployment file or on CLI for following inputs: name, place
+```
 
-We have designed functionality where a user can provide a list of such parameters needed per project and per package, such as:
+On the other side, single line inputs does not support this kind of validation as
+they are not marked as `required` by default.
+
+```yaml
+packages:
+    helloworldapp:
+        actions:
+            hello:
+                inputs:
+                    name: $FIRST_NAME
+                    place: $CITY_NAME
+                code: |
+                          function main(params) {
+                              return {payload:  'Hello, ' + params.name + ' from ' + params.place};
+                          }
+                runtime: nodejs:6
+```
+
+Action is created with two bindings `name` and `place` set to `""`:
+
+```bash
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_2.yaml 
+Packages:
+Name: helloworldapp
+    bindings: 
+    annotation: 
+
+  * action: hello
+    bindings: 
+        - name : ""
+        - place : ""
+    annotation: 
+```
+
+Now, after setting env. variables, `wskdeploy` creates an action with bindings similar to previous example:
+
+```bash
+export FIRST_NAME=Amy
+export CITY_NAME=Paris
+
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_2.yaml 
+
+Packages:
+Name: helloworldapp
+    bindings: 
+    annotation: 
+
+  * action: hello
+    bindings: 
+        - name : "Amy"
+        - place : "Paris"
+    annotation: 
+```
+
+### Action Inputs with `--param`
+
+The input values can be overwritten using `--param` on CLI. Sample manifest in [Action Inputs](#Action Inputs) can be deployed using:
+
+```bash
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_1.yaml --param name Bob
+
+Packages:
+Name: helloworldapp
+    bindings: 
+    annotation: 
+
+  * action: hello
+    bindings: 
+        - name : "Bob"
+        - place : "Paris"
+    annotation: 
+```
+
+### Project Inputs:
+
+This example shows how env. variables `FIRST_NAME` and `CITY_NAME` are defined under project.
+These two variables are needed for deployment and need not be propagated to OpenWhisk server.
+This is the best and common practice of specifying inputs at the action level and env.
+variables at the project level. Here, both `FIRST_NAME` and `CITY_NAME` have default
+values but reads from environment if they are specified.
 
 ```yaml
 project:
-    name: myproject
-    parameters:
-        SLACK_USERNAME:
+    name: helloworld
+    inputs:
+        FIRST_NAME:
             type: string
-            description: "Slack User Name"
+            description: "your first name"
             required: true
-            default: ${SLACK_USERNAME}
-        SLACK_WEBHOOK_URL:
+            value: Amy
+        CITY_NAME:
             type: string
-            description: "Slack Webhook URL"
+            description: "The city name"
             required: true
-            default: https://hooks.slack.com/services/${SLACK_WEBHOOK_URL}
-        SLACK_CHANNEL:
-            type: string
-            description: "Slack Channel"
-            required: true
-            default: #general
-        SLACK_TOKEN:
-            type: string
-            description: "Slack Token"
-            required: true
-            default: ${SLACK_TOKEN}
-        packages:
-            slack-text-notifications:
-                parameters:
-                    SLACK_CHANNEL:
-                        type: string
-                        description: "Slack Channel"
-                        required: true
-                        default: #dev
-                    RULE_NAME:
-                        type: string
-                        description: "Rule Name"
-                        required: true
-                        default: ${RULE_NAME}
-                    TRIGGER_NAME:
-                        type: string
-                        description: "Trigger Name"
-                        required: true
-                        default: ${TRIGGER_NAME}
-            slack-email-notifications:
-                ...
-```
-
-Now, when you run `wskdeploy` to generate a report of these parameters with:
-
-```
-wskdeploy report -m manifest.yaml
-{
-    "slack-text-notifications": [
-        {
-            "name": "SLACK_USERNAME",
-            "type": "string",
-            "value": ""
-            "description": "Slack User Name",
-            "required": true,
-        },
-        {
-            "name": "SLACK_WEBHOOK_URL",
-            "type": "string",
-            "value": " https://hooks.slack.com/services/"
-            "description": "Slack Webhook URL",
-            "required": true,
-        },
-        {
-            "name": "SLACK_CHANNEL",
-            "type": "string",
-            "value": "#dev"
-            "description": "Slack Channel",
-            "required": true,
-        },
-        {
-            "name": "SLACK_TOKEN",
-            "type": "string",
-            "value": ""
-            "description": "Slack Token",
-            "required": true,
-        },
-        {
-            "name": "RULE_NAME",
-            "type": string,
-            "value": "",
-            "description": "Rule Name"
-            "required": true,
-        },
-        {
-            "name": "TRIGGER_NAME"
-            "type": string
-            "value": "",
-            "description": "Trigger Name"
-            "required": true
-        }
-    ]
-    "slack-email-notifications": [
-        {
-            "name": "SLACK_USERNAME",
-            "type": "string",
-            "value": ""
-            "description": "Slack User Name",
-            "required": true,
-        },
-        {
-            "name": "SLACK_WEBHOOK_URL",
-            "type": "string",
-            "value": " https://hooks.slack.com/services/"
-            "description": "Slack Webhook URL",
-            "required": true,
-        },
-        {
-            "name": "SLACK_CHANNEL",
-            "type": "string",
-            "value": "#general"
-            "description": "Slack Channel",
-            "required": true,
-        },
-        {
-            "name": "SLACK_TOKEN",
-            "type": "string",
-            "value": ""
-            "description": "Slack Token",
-            "required": true,
-        },
-    ]
-}
-```
-
-We can define parameters at the project level and also at the package level.
-Project parameters are generally defined for a project which has multiple packages
-and those packages have common parameters which are shared among those packages.
-Package parameters are a collection of project parameters and parameters defined in that package.
-Package parameters always takes higher precedence over project parameters i.e. package parameters
-also defined at the project level takes value specified in the package. In the above example, `SLACK_CHANNEL`
-is defined in `slack-text-notifications` and also listed at the project level. In this case, `SLACK_CHANNEL` is
-assigned `#dev` which is specified in `slack-text-notifications` vs `#general` at the project level.
-
-
-`wskdeploy report` mode interpolates parameter values in the manifest file and produces
-the list of package parameters. In the above example, none of the referenced environment
-variables were set and therefore it returned empty values for missing environment variables.
-Let's look at how the values are calculated with environment variables set:
-
-```
-export SLACK_USERNAME=slack_username
-export SLACK_WEBHOOK_URL=slack_webhook_url
-export SLACK_TOKEN=slack_token
-export RULE_NAME=rule_name
-export TRIGGER_NAME=trigger_name
-wskdeploy report -m manifest.yaml
-{
-    "slack-text-notifications": [
-        {
-            "name": "SLACK_USERNAME",
-            "type": "string",
-            "value": "slack_username"
-            "description": "Slack User Name",
-            "required": true,
-        },
-        {
-            "name": "SLACK_WEBHOOK_URL",
-            "type": "string",
-            "value": " https://hooks.slack.com/services/slack_webhook_url"
-            "description": "Slack Webhook URL",
-            "required": true,
-        },
-        {
-            "name": "SLACK_CHANNEL",
-            "type": "string",
-            "value": "#dev"
-            "description": "Slack Channel",
-            "required": true,
-        },
-        {
-            "name": "SLACK_TOKEN",
-            "type": "string",
-            "value": "slack_token"
-            "description": "Slack Token",
-            "required": true,
-        },
-        {
-            "name": "RULE_NAME",
-            "type": string,
-            "value": "rule_name",
-            "description": "Rule Name"
-            "required": true,
-        },
-        {
-            "name": "TRIGGER_NAME"
-            "type": string
-            "value": "trigger_name",
-            "description": "Trigger Name"
-            "required": true
-        }
-    ]
-    "slack-email-notifications": [
-        {
-            "name": "SLACK_USERNAME",
-            "type": "string",
-            "value": "slack_username"
-            "description": "Slack User Name",
-            "required": true,
-        },
-        {
-            "name": "SLACK_WEBHOOK_URL",
-            "type": "string",
-            "value": " https://hooks.slack.com/services/slack_webhook_url"
-            "description": "Slack Webhook URL",
-            "required": true,
-        },
-        {
-            "name": "SLACK_CHANNEL",
-            "type": "string",
-            "value": "#general"
-            "description": "Slack Channel",
-            "required": true,
-        },
-        {
-            "name": "SLACK_TOKEN",
-            "type": "string",
-            "value": "slack_token"
-            "description": "Slack Token",
-            "required": true,
-        },
-    ]
-}
-```
-
-Now, project/package parameters can also be specified in deployment file and takes precedence over manifest file. For example:
-
-Deployment file:
-
-```yaml
-project:
-    name: myproject
+            value: Paris
     packages:
-       slack-text-notifications:
-            parameters:
-                SLACK_CHANNEL:
+        helloworldapp:
+            actions:
+                hello:
+                    inputs:
+                        name:
+                            type: string
+                            description: "your first name"
+                            required: true
+                            value: $FIRST_NAME
+                        place:
+                            type: string
+                            description: "The city name"
+                            required: true
+                            value: $CITY_NAME
+                    code: |
+                          function main(params) {
+                              return {payload:  'Hello, ' + params.name + ' from ' + params.place};
+                          }
+                    runtime: nodejs:6
+```
+
+This is how bindings are created only under action:
+
+```bash
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_3.yaml 
+Packages:
+Name: helloworldapp
+    bindings: 
+    annotation: 
+
+  * action: hello
+    bindings: 
+        - name : "Amy"
+        - place : "Paris"
+    annotation: 
+```
+
+With env. variables:
+
+```bash
+export FIRST_NAME=Bob
+export CITY_NAME=San Francisco
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_3.yaml 
+Packages:
+Name: helloworldapp
+    bindings: 
+    annotation: 
+
+  * action: hello
+    bindings: 
+        - name : "Bob"
+        - place : "San Francisco"
+    annotation: 
+```
+
+### Package Inputs
+
+```yaml
+project:
+    name: helloworld
+    inputs:
+        FIRST_NAME:
+            type: string
+            description: "your first name"
+            required: true
+            value: Amy
+        CITY_NAME:
+            type: string
+            description: "The city name"
+            required: true
+            value: Paris
+    packages:
+        helloworldapp:
+            inputs:
+                name:
                     type: string
-                    description: "Slack Channel"
+                    description: "your first name"
                     required: true
-                    value: #dev-pr
+                    value: $FIRST_NAME
+                place:
+                    type: string
+                    description: "The city name"
+                    required: true
+                    value: $CITY_NAME
+            actions:
+                hello:
+                    code: |
+                          function main(params) {
+                              return {payload:  'Hello, ' + params.name + ' from ' + params.place};
+                          }
+                    runtime: nodejs:6
 ```
 
-Running `wskdeploy` with deployment file:
+Now, bindings are created under Package:
 
-```
-export SLACK_USERNAME=slack_username
-...
-wskdeploy report -m manifest.yaml -d deployment.yaml
-{
-    "github-slack-trigger": [
-        ...
-        {
-            "name": "SLACK_CHANNEL",
-            "type": "string",
-            "value": "#dev-pr"
-            "description": "Slack Channel",
-            "required": true,
-        },
-        ...
-    ]
-    "slack-notifications": [
-        ...
-        {
-            "name": "SLACK_CHANNEL",
-            "type": "string",
-            "value": "#dev-pr"
-            "description": "Slack Channel",
-            "required": true,
-        },
-        ...
-    ]
-}
-```
-In the end, `wskdeploy` supports a flag `--param` which takes the highest precedence over values specified in manifest/deployment file, for example:
+```bash
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_4.yaml 
+Packages:
+Name: helloworldapp
+    bindings: 
+        - name : "Amy"
+        - place : "Paris"
+    annotation: 
 
-```
-export SLACK_USERNAME=slack_username
-...
-wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev-push" --param SLACK_WEBHOOK_URL abcd
-{
-    "slack-text-notifications": [
-        ...
-        {
-            "name": "SLACK_CHANNEL",
-            "type": "string",
-            "value": "#dev-push"
-            "description": "Slack Channel",
-            "required": true,
-        },
-        {
-            "name": "SLACK_WEBHOOK_URL",
-            "type": string
-            "value": "abcd",
-            "description": "Slack Webhook URL"
-            "required": true,
-        },
-        ...
-    ]
-    "slack-notifications": [
-        ...
-        {
-            "name": "SLACK_CHANNEL",
-            "type": "string",
-            "value": "#dev-push"
-            "description": "Slack Channel",
-            "required": true,
-        },
-        {
-            "name": "SLACK_WEBHOOK_URL",
-            "type": string
-            "value": "abcd",
-            "description": "Slack Webhook URL"
-            "required": true,
-        },
-        ...
-    ]
-}
+  * action: hello
+    bindings: 
+    annotation: 
 ```
 
-`--param` also supports specifying environment variables:
+And can be overwritten using env. variables:
 
-```
-export SLACK_USERNAME=slack_username
-export SLACK_CHANNEL=#wskdeploy
-export SLACK_WEBHOOK_URL=abcd
-...
-wskdeploy report -m manifest.yaml -d deployment.yaml --param SLACK_CHANNEL "#dev-push" --param SLACK_WEBHOOK_URL $SLACK_WEBHOOK_URL
-{
-    "github-slack-trigger": [
-        ...
-        {
-            "name": "SLACK_CHANNEL",
-            "type": "string",
-            "value": "#wskdeploy"
-            "description": "Slack Channel",
-            "required": true,
-        },
-        {
-            "name": "SLACK_WEBHOOK_URL",
-            "type": string
-            "value": "abcd",
-            "description": "Slack Webhook URL"
-            "required": true,
-        },
-        ...
-    ]
-    "slack-notifications": [
-        ...
-        {
-            "name": "SLACK_CHANNEL",
-            "type": "string",
-            "value": "#wskdeploy"
-            "description": "Slack Channel",
-            "required": true,
-        },
-        {
-            "name": "SLACK_WEBHOOK_URL",
-            "type": string
-            "value": "abcd",
-            "description": "Slack Webhook URL"
-            "required": true,
-        },
-        ...
-    ]
-}
+```bash
+export FIRST_NAME=Bob
+export CITY_NAME=San Francisco
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_4.yaml 
+Packages:
+Name: helloworldapp
+    bindings: 
+        - name : "Bob"
+        - place : "San Francisco"
+    annotation: 
+
+  * action: hello
+    bindings: 
+    annotation: 
 ```
 
-Note that, the precedence order of reading and evaluating parameter values is:
 
-1. `wskdeploy` CLI with `--param` with string interpolated using environment variables.
-2. Deployment file with string interpolated using environment variables.
-3. Manifest file with string interpolated using environment variables.
+#### Package Inputs with Action Inputs:
 
+Here, package `helloworldapp` has three inputs defined which are available to all
+three actions `helloWithMorning`, `helloWithEvening`, and `helloWithNight` during
+invocation. But two of the actions have redefined the same input `message` which
+is created as an action binding on the server. 
 
+```yaml
+project:
+    name: helloworld
+    inputs:
+        FIRST_NAME:
+            type: string
+            description: "your first name"
+            required: true
+            value: Amy
+        CITY_NAME:
+            type: string
+            description: "The city name"
+            required: true
+            value: Paris
+    packages:
+        helloworldapp:
+            inputs:
+                name:
+                    type: string
+                    description: "your first name"
+                    required: true
+                    value: $FIRST_NAME
+                place:
+                    type: string
+                    description: "The city name"
+                    required: true
+                    value: $CITY_NAME
+                message:
+                    type: string
+                    description: "The Message"
+                    required: true
+                    value: "Good Night"
+            actions:
+                helloWithMorning:
+                    inputs:
+                        message:
+                            type: string
+                            description: "The Message"
+                            required: true
+                            value: "Good Morning"
+                    code: |
+                          function main(params) {
+                              return {payload:  'Hello, ' + params.message + ' ' + params.name + ' from ' + params.place};
+                          }
+                    runtime: nodejs:6
+                helloWithEvening:
+                    inputs:
+                        message:
+                            type: string
+                            description: "The Message"
+                            required: true
+                            value: "Good Evening"
+                    code: |
+                          function main(params) {
+                              return {payload:  'Hello, ' + params.message + ' ' + params.name + ' from ' + params.place};
+                          }
+                    runtime: nodejs:6
+                helloWithNight:
+                    code: |
+                          function main(params) {
+                              return {payload:  'Hello, ' + params.message + ' ' + params.name + ' from ' + params.place};
+                          }
+                    runtime: nodejs:6
+```
 
+Now, invoking `helloWithMorning` returns `Good Morning` and invoking `helloWithEvening`
+returns `Good Evening` whereas invoking `helloWithNight` returns `Good Night` which
+is stored as the package binding.
 
+```bash
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_5.yaml 
+Packages:
+Name: helloworldapp
+    bindings: 
+        - name : "Amy"
+        - place : "Paris"
+        - message : "Good Night"
+    annotation: 
 
-
+  * action: helloWithMorning
+    bindings: 
+        - message : "Good Morning"
+    annotation: 
+  * action: helloWithEvening
+    bindings: 
+        - message : "Good Evening"
+    annotation: 
+  * action: helloWithNight
+    bindings: 
+    annotation: 
+```

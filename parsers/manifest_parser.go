@@ -116,20 +116,41 @@ func (dm *YAMLParser) composeInputs(inputs map[string]Parameter, packageInputs P
 	var errorParser error
 	keyValArr := make(whisk.KeyValueArr, 0)
 	var inputsWithoutValue []string
+	var paramsCLI interface{}
 
-	for name, param := range inputs {
-		var keyVal whisk.KeyValue
-		keyVal.Key = name
-		keyVal.Value, errorParser = ResolveParameter(name, &param, manifestFilePath)
+	if len(utils.Flags.Param) > 0 {
+		paramsCLI, errorParser = utils.GetJSONFromStrings(utils.Flags.Param, false)
 		if errorParser != nil {
 			return nil, errorParser
 		}
-		if param.Type == STRING && param.Value != nil {
-			if keyVal.Value == getTypeDefaultValue(param.Type) {
-				if packageInputs.Inputs != nil {
-					n := wskenv.GetEnvVarName(param.Value.(string))
-					if v, ok := packageInputs.Inputs[n]; ok {
-						keyVal.Value = v.Value.(string)
+	}
+
+	for name, param := range inputs {
+		var keyVal whisk.KeyValue
+		// keyvalue key is set to parameter name
+		keyVal.Key = name
+		// parameter on CLI takes the highest precedence such that
+		// input variables gets values from CLI first
+		if paramsCLI != nil {
+			// check if this particular input is specified on CLI
+			if v, ok := paramsCLI.(map[string]interface{})[name]; ok {
+				keyVal.Value = wskenv.ConvertSingleName(v.(string))
+			}
+		}
+		// if those inputs are not specified on CLI,
+		// read their values from the manifest file
+		if keyVal.Value == nil {
+			keyVal.Value, errorParser = ResolveParameter(name, &param, manifestFilePath)
+			if errorParser != nil {
+				return nil, errorParser
+			}
+			if param.Type == STRING && param.Value != nil {
+				if keyVal.Value == getTypeDefaultValue(param.Type) {
+					if packageInputs.Inputs != nil {
+						n := wskenv.GetEnvVarName(param.Value.(string))
+						if v, ok := packageInputs.Inputs[n]; ok {
+							keyVal.Value = v.Value.(string)
+						}
 					}
 				}
 			}
