@@ -18,7 +18,7 @@
 -->
 
 # Whisk Deploy Inputs
- 
+
 In this programming guide, we are going to discuss `inputs` section of manifest and
 deployment file along with command line options `--param` and `--param-file`. First some background.
 
@@ -30,14 +30,14 @@ generally need data from users/environment for its successful deployment. This d
 * Default values of action parameters including sensitive information such as credentials.
 * Shared package bindings which are created outside of an existing deployment, for example, Cloudant, Slack, etc.
 * Service credentials, for example, cloudant credentials, slack token, etc
- 
+
 Inputs can be specified at different levels:
- 
+
  * Action Inputs
  * Trigger Inputs
  * Package Inputs
  * Project Inputs
- 
+
 And can be specified in multiple different ways:
 
 * Manifest file
@@ -45,7 +45,7 @@ And can be specified in multiple different ways:
 * CLI using `--param` and `--param-file`
 
 Before we dive into details of each level of inputs with all different ways, `wskdeploy` follows a particular order in which the values are read:
- 
+
 * Input values specified using `--param` and/or `--param-file` takes the highest precedence order. The values specified on CLI are taken to the server.
 * Next, input values are read from deployment file
 * Last, input values are read from manifest file
@@ -96,21 +96,21 @@ packages:
 Whisk deploy creates bindings at the action level with two parameters `name` and `place`:
 
 ```bash
-./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_1.yaml 
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_1.yaml
 
 Packages:
 Name: helloworldapp
-    bindings: 
-    annotation: 
+    bindings:
+    annotation:
 
   * action: hello
-    bindings: 
+    bindings:
         - name : "Amy"
         - place : "Paris"
-    annotation: 
+    annotation:
 ```
 
-This is how two inputs `name` and `place` are stored in `hello` action on OpenWhisk server: 
+This is how two inputs `name` and `place` are stored in `hello` action on OpenWhisk server:
 
 ```
 "parameters": [
@@ -154,7 +154,7 @@ Deployment of this kind of manifest file results in following failure as inputs
 `name` and `place` are marked `required` but their values `$FIRST_NAME` and `$CITY_NAME` could not be determined.
 
 ```bash
-Error: manifestreader.go [92]: [ERROR_YAML_FILE_FORMAT_ERROR]: File: [manifest_validate_package_inputs_2.yaml]: 
+Error: manifestreader.go [92]: [ERROR_YAML_FILE_FORMAT_ERROR]: File: [manifest_validate_package_inputs_2.yaml]:
 ==> manifest_parser.go [148]: [ERROR_YAML_FILE_FORMAT_ERROR]: File: [manifest_validate_package_inputs_2.yaml]: Required inputs are missing values even after applying interpolation using env. variables. Please set missing env. variables and/or input values in manifest/deployment file or on CLI for following inputs: name, place
 ```
 
@@ -179,17 +179,17 @@ packages:
 Action is created with two bindings `name` and `place` set to `""`:
 
 ```bash
-./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_2.yaml 
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_2.yaml
 Packages:
 Name: helloworldapp
-    bindings: 
-    annotation: 
+    bindings:
+    annotation:
 
   * action: hello
-    bindings: 
+    bindings:
         - name : ""
         - place : ""
-    annotation: 
+    annotation:
 ```
 
 Now, after setting env. variables, `wskdeploy` creates an action with bindings similar to previous example:
@@ -198,18 +198,18 @@ Now, after setting env. variables, `wskdeploy` creates an action with bindings s
 export FIRST_NAME=Amy
 export CITY_NAME=Paris
 
-./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_2.yaml 
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_2.yaml
 
 Packages:
 Name: helloworldapp
-    bindings: 
-    annotation: 
+    bindings:
+    annotation:
 
   * action: hello
-    bindings: 
+    bindings:
         - name : "Amy"
         - place : "Paris"
-    annotation: 
+    annotation:
 ```
 
 ### Action Inputs with `--param`
@@ -221,14 +221,14 @@ The input values can be overwritten using `--param` on CLI. Sample manifest in [
 
 Packages:
 Name: helloworldapp
-    bindings: 
-    annotation: 
+    bindings:
+    annotation:
 
   * action: hello
-    bindings: 
+    bindings:
         - name : "Bob"
         - place : "Paris"
-    annotation: 
+    annotation:
 ```
 
 ### Project Inputs:
@@ -278,17 +278,17 @@ project:
 This is how bindings are created only under action:
 
 ```bash
-./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_3.yaml 
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_3.yaml
 Packages:
 Name: helloworldapp
-    bindings: 
-    annotation: 
+    bindings:
+    annotation:
 
   * action: hello
-    bindings: 
+    bindings:
         - name : "Amy"
         - place : "Paris"
-    annotation: 
+    annotation:
 ```
 
 With env. variables:
@@ -296,17 +296,17 @@ With env. variables:
 ```bash
 export FIRST_NAME=Bob
 export CITY_NAME=San Francisco
-./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_3.yaml 
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_3.yaml
 Packages:
 Name: helloworldapp
-    bindings: 
-    annotation: 
+    bindings:
+    annotation:
 
   * action: hello
-    bindings: 
+    bindings:
         - name : "Bob"
         - place : "San Francisco"
-    annotation: 
+    annotation:
 ```
 
 ### Package Inputs
@@ -350,17 +350,17 @@ project:
 Now, bindings are created under Package:
 
 ```bash
-./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_4.yaml 
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_4.yaml
 Packages:
 Name: helloworldapp
-    bindings: 
+    bindings:
         - name : "Amy"
         - place : "Paris"
-    annotation: 
+    annotation:
 
   * action: hello
-    bindings: 
-    annotation: 
+    bindings:
+    annotation:
 ```
 
 And can be overwritten using env. variables:
@@ -368,17 +368,17 @@ And can be overwritten using env. variables:
 ```bash
 export FIRST_NAME=Bob
 export CITY_NAME=San Francisco
-./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_4.yaml 
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_4.yaml
 Packages:
 Name: helloworldapp
-    bindings: 
+    bindings:
         - name : "Bob"
         - place : "San Francisco"
-    annotation: 
+    annotation:
 
   * action: hello
-    bindings: 
-    annotation: 
+    bindings:
+    annotation:
 ```
 
 
@@ -387,7 +387,7 @@ Name: helloworldapp
 Here, package `helloworldapp` has three inputs defined which are available to all
 three actions `helloWithMorning`, `helloWithEvening`, and `helloWithNight` during
 invocation. But two of the actions have redefined the same input `message` which
-is created as an action binding on the server. 
+is created as an action binding on the server.
 
 ```yaml
 project:
@@ -459,24 +459,24 @@ returns `Good Evening` whereas invoking `helloWithNight` returns `Good Night` wh
 is stored as the package binding.
 
 ```bash
-./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_5.yaml 
+./wskdeploy --preview -m tests/dat/manifest_validate_package_inputs_5.yaml
 Packages:
 Name: helloworldapp
-    bindings: 
+    bindings:
         - name : "Amy"
         - place : "Paris"
         - message : "Good Night"
-    annotation: 
+    annotation:
 
   * action: helloWithMorning
-    bindings: 
+    bindings:
         - message : "Good Morning"
-    annotation: 
+    annotation:
   * action: helloWithEvening
-    bindings: 
+    bindings:
         - message : "Good Evening"
-    annotation: 
+    annotation:
   * action: helloWithNight
-    bindings: 
-    annotation: 
+    bindings:
+    annotation:
 ```
