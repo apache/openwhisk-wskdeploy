@@ -232,6 +232,11 @@ type YAML struct {
 	Filepath string             //file path of the yaml file
 }
 
+type DisplayInputs struct {
+	Name   string
+	Inputs map[string]interface{}
+}
+
 type PackageInputs struct {
 	PackageName string
 	Inputs      map[string]Parameter
