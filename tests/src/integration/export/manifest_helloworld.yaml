@@ -145,9 +145,9 @@ packages:
           actions: helloNodejs, helloNodejsWithCode, helloJava, helloPython, helloPythonWithCode, helloSwift, helloSwiftWithCode
       triggers:
         # trigger to activate helloworld sequence
-        triggerHelloworld:
+        triggerExportHelloworld:
       rules:
         # rule associating trigger with sequence of helloworld actions
-        ruleMappingHelloworld:
-          trigger: triggerHelloworld
+        ruleMappingExportHelloworld:
+          trigger: triggerExportHelloworld
           action: hello-world-series
