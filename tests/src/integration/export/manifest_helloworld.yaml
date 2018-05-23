@@ -1,0 +1,153 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+packages:
+  IntegrationTestExportHelloWorld:
+      actions:
+        # helloworld action in NodeJS
+        helloNodejs:
+          function: ../helloworld/actions/hello.js
+          runtime: nodejs:6
+          inputs:
+            name:
+              type: string
+              description: name of a person
+            place:
+              type: string
+              description: location of a person
+          outputs:
+            payload:
+              type: string
+              description: a simple greeting message, Hello World!
+        helloNodejsWithCode:
+          code: |
+                function main(params) {
+                    msg = "Hello, " + params.name + " from " + params.place;
+                    console.log(msg)
+                    return { payload:  msg };
+                }
+          runtime: nodejs:6
+          inputs:
+            name:
+              type: string
+              description: name of a person
+            place:
+              type: string
+              description: location of a person
+          outputs:
+            payload:
+              type: string
+              description: a simple greeting message, Hello World!
+        # helloworld action in Java
+        helloJava:
+          function: ../helloworld/actions/hello.jar
+          main: Hello
+          runtime: java
+          inputs:
+            name:
+              type: string
+              description: name of a person
+          outputs:
+            payload:
+              type: string
+              description: a simple greeting message, Hello Bob!
+# Uncomment Java With Code once action creation is fixed.
+# this is failing with internal server application problem.
+#        helloJavaWithCode:
+#          code: |
+#                import com.google.gson.JsonObject;
+#                public class Hello {
+#                    private JsonObject response;
+#                    public static JsonObject main(JsonObject args) {
+#                        String name = "stranger";
+#                        if (args.has("name"))
+#                            name = args.getAsJsonPrimitive("name").getAsString();
+#                        JsonObject response = new JsonObject();
+#                        response.addProperty("greeting", "Hello " + name + "!");
+#                        System.out.println(response);
+#                        return response;
+#                    }
+#                }
+#          main: Hello
+#          runtime: java
+#          inputs:
+#            name:
+#              type: string
+#              description: name of a person
+#          outputs:
+#            payload:
+#              type: string
+#              description: a simple greeting message, Hello Bob!
+        # helloworld action in python
+        helloPython:
+          function: ../helloworld/actions/hello.py
+          runtime: python
+          inputs:
+            name:
+              type: string
+              description: name of a person
+          outputs:
+            payload:
+              type: string
+              description: a simple greeting message, Hello Henry!
+        helloPythonWithCode:
+          code: |
+                def main(args):
+                    name = args.get("name", "stranger")
+                    greeting = "Hello " + name + "!"
+                    print(greeting)
+                    return {"greeting": greeting}
+          runtime: python
+          inputs:
+            name:
+              type: string
+              description: name of a person
+          outputs:
+            payload:
+              type: string
+              description: a simple greeting message, Hello Henry!
+        # helloworld action in swift
+        helloSwift:
+          function: ../helloworld/actions/hello.swift
+          runtime: swift:3.1.1
+          inputs:
+            name:
+              type: string
+              description: name of a person
+          outputs:
+            payload:
+              type: string
+              description: a simple greeting message, Hello stranger!
+        helloSwiftWithCode:
+          code: |
+                func main(args: [String:Any]) -> [String:Any] {
+                    var msg = ["greeting": "Hello stranger!"]
+                    if let name = args["name"] as? String {
+                        if !name.isEmpty {
+                            msg["greeting"] = "Hello \(name)!"
+                        }
+                    }
+                    print (msg)
+                    return msg
+                }
+          runtime: swift:3.1.1
+          inputs:
+            name:
+              type: string
+              description: name of a person
+          outputs:
+            payload:
+              type: string
+              description: a simple greeting message, Hello stranger!
+      sequences:
+        # sequence of helloworld in all four runtimes
+        hello-world-series:
+          actions: helloNodejs, helloNodejsWithCode, helloJava, helloPython, helloPythonWithCode, helloSwift, helloSwiftWithCode
+      triggers:
+        # trigger to activate helloworld sequence
+        triggerExportHelloworld:
+      rules:
+        # rule associating trigger with sequence of helloworld actions
+        ruleMappingExportHelloworld:
+          trigger: triggerExportHelloworld
+          action: hello-world-series
