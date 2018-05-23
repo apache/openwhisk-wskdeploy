@@ -39,4 +39,5 @@ packages:
                         deleteBooks: DELETE
                     members:
                         listMembers: GET
+                    allMembers:
                         listAllMembers: GET
