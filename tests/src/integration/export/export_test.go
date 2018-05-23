@@ -116,7 +116,7 @@ var (
 	targetManifestFolder = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/tmp/"
 	targetManifestPath   = targetManifestFolder + "manifest.yaml"
 
-	manifestHelloWorldPath       = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/helloworld/manifest.yaml"
+	manifestHelloWorldPath       = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_helloworld.yaml"
 	targetManifestHelloWorldPath = targetManifestFolder + "manifest.yaml"
 	manifest2PackPath            = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_2pack.yaml"
 	target2PackManifestPath      = targetManifestFolder + "exported2packmanifest.yaml"
