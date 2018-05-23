@@ -177,6 +177,8 @@ func (reader *DeploymentReader) bindPackageInputsAndAnnotations(paramsCLI interf
 					}
 					packageInputs = append(packageInputs, kv)
 				}
+			} else {
+				packageInputs = keyValArr
 			}
 
 			serviceDeployPack.Package.Parameters = packageInputs
@@ -245,6 +247,8 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations(paramsCLI interfa
 							}
 							actionInputs = append(actionInputs, kv)
 						}
+					} else {
+						actionInputs = keyValArr
 					}
 
 					wskAction.Action.Parameters = actionInputs
@@ -267,9 +271,9 @@ func (reader *DeploymentReader) bindActionInputsAndAnnotations(paramsCLI interfa
 						}
 					}
 					wskAction.Action.Annotations = keyValArr
+				} else {
+					displayEntityNotFoundInDeploymentWarning(parsers.YAML_KEY_ACTION, actionName)
 				}
-			} else {
-				displayEntityNotFoundInDeploymentWarning(parsers.YAML_KEY_ACTION, actionName)
 			}
 		}
 	}
@@ -321,6 +325,8 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations(paramsCLI interf
 							}
 							triggerInputs = append(triggerInputs, kv)
 						}
+					} else {
+						triggerInputs = keyValArr
 					}
 
 					wskTrigger.Parameters = triggerInputs
@@ -343,9 +349,9 @@ func (reader *DeploymentReader) bindTriggerInputsAndAnnotations(paramsCLI interf
 						}
 					}
 					wskTrigger.Annotations = keyValArr
+				} else {
+					displayEntityNotFoundInDeploymentWarning(parsers.YAML_KEY_TRIGGER, triggerName)
 				}
-			} else {
-				displayEntityNotFoundInDeploymentWarning(parsers.YAML_KEY_TRIGGER, triggerName)
 			}
 
 		}
