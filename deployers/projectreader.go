@@ -24,8 +24,75 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
+
+func (deployer *ServiceDeployer) UpdatePackageInputs() error {
+	var paramsCLI interface{}
+	var err error
+	var inputsWithoutValue []string
+
+	// check if any inputs/parameters are specified in CLI using --param or --param-file
+	// store params in Key/value pairs
+	if len(utils.Flags.Param) > 0 {
+		paramsCLI, err = utils.GetJSONFromStrings(utils.Flags.Param, false)
+		if err != nil {
+			return err
+		}
+	}
+
+	if paramsCLI != nil {
+		// iterate over each package to update its set of inputs with CLI
+		for _, pkg := range deployer.Deployment.Packages {
+			// iterate over each input of type Parameter
+			for name, param := range pkg.Inputs.Inputs {
+				inputValue := param.Value
+				// check if this particular input is specified on CLI
+				if v, ok := paramsCLI.(map[string]interface{})[name]; ok {
+					inputValue = wskenv.InterpolateStringWithEnvVar(v)
+				}
+				param.Value = inputValue
+				pkg.Inputs.Inputs[name] = param
+			}
+		}
+	}
+	for _, pkg := range deployer.Deployment.Packages {
+		keyValArr := make([]whisk.KeyValue, 0)
+		if pkg.Inputs.Inputs != nil || len(pkg.Inputs.Inputs) != 0 {
+			for k, v := range pkg.Inputs.Inputs {
+				if v.Required {
+					if parsers.IsTypeDefaultValue(v.Type, v.Value) {
+						inputsWithoutValue = append(inputsWithoutValue, k)
+					}
+				}
+				if _, ok := deployer.ProjectInputs[k]; !ok {
+					keyVal := whisk.KeyValue{
+						Key:   k,
+						Value: v.Value,
+					}
+					keyValArr = append(keyValArr, keyVal)
+				}
+			}
+		}
+		pkg.Package.Parameters = keyValArr
+	}
+
+	if len(inputsWithoutValue) > 0 {
+		errMessage := wski18n.T(wski18n.ID_ERR_REQUIRED_INPUTS_MISSING_VALUE_X_inputs_X,
+			map[string]interface{}{
+				wski18n.KEY_INPUTS: strings.Join(inputsWithoutValue, ", ")})
+		if utils.Flags.Report {
+			wskprint.PrintOpenWhiskError(errMessage)
+		} else {
+			return wskderrors.NewYAMLFileFormatError(deployer.ManifestPath, errMessage)
+		}
+	}
+
+	return nil
+}
 
 func (deployer *ServiceDeployer) UnDeployProjectAssets() error {
 

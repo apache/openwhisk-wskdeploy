@@ -18,6 +18,7 @@
 package deployers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"path"
@@ -63,6 +64,7 @@ type DeploymentPackage struct {
 	Dependencies map[string]utils.DependencyRecord
 	Actions      map[string]utils.ActionRecord
 	Sequences    map[string]utils.ActionRecord
+	Inputs       parsers.PackageInputs
 }
 
 func NewDeploymentPackage() *DeploymentPackage {
@@ -70,6 +72,7 @@ func NewDeploymentPackage() *DeploymentPackage {
 	dep.Dependencies = make(map[string]utils.DependencyRecord)
 	dep.Actions = make(map[string]utils.ActionRecord)
 	dep.Sequences = make(map[string]utils.ActionRecord)
+	dep.Inputs = parsers.PackageInputs{}
 	return &dep
 }
 
@@ -81,10 +84,12 @@ func NewDeploymentPackage() *DeploymentPackage {
 //   4. Create a deployment plan to create OpenWhisk service
 type ServiceDeployer struct {
 	ProjectName       string
+	ProjectInputs     map[string]parsers.Parameter
 	Deployment        *DeploymentProject
 	Client            *whisk.Client
 	mt                sync.RWMutex
 	Preview           bool
+	Report            bool
 	ManifestPath      string
 	ProjectPath       string
 	DeploymentPath    string
@@ -99,7 +104,7 @@ func NewServiceDeployer() *ServiceDeployer {
 	dep.Deployment = NewDeploymentProject()
 	dep.Preview = true
 	dep.DependencyMaster = make(map[string]utils.DependencyRecord)
-
+	dep.ProjectInputs = make(map[string]parsers.Parameter, 0)
 	return &dep
 }
 
@@ -113,6 +118,18 @@ func (deployer *ServiceDeployer) Check() {
 	ps.ParseManifest(deployer.ManifestPath)
 	// add more schema check or manifest/deployment consistency checks here if
 	// necessary
+}
+
+func (deployer *ServiceDeployer) setProjectInputs(manifest *parsers.YAML) error {
+	for parameterName, param := range manifest.Project.Inputs {
+		p, err := parsers.ResolveParameter(parameterName, &param, manifest.Filepath)
+		if err != nil {
+			return err
+		}
+		param.Value = p
+		deployer.ProjectInputs[parameterName] = param
+	}
+	return nil
 }
 
 func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
@@ -136,6 +153,11 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		wskprint.PrintOpenWhiskWarning(warningString)
 	}
 
+	err = deployer.setProjectInputs(manifest)
+	if err != nil {
+		return err
+	}
+
 	// Generate Managed Annotations if its marked as a Managed Deployment
 	// Managed deployments are the ones when OpenWhisk entities are deployed with command line flag --managed.
 	// Which results in a hidden annotation in every OpenWhisk entity in manifest file.
@@ -156,10 +178,7 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 		}
 	}
 
-	manifestReader.InitPackages(manifestParser, manifest, deployer.ManagedAnnotation)
-
-	// process manifest file
-	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, deployer.ManagedAnnotation)
+	err = manifestReader.InitPackages(manifestParser, manifest, deployer.ManagedAnnotation)
 	if err != nil {
 		return err
 	}
@@ -170,10 +189,9 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 	}
 
 	// process deployment file
+	var deploymentReader = NewDeploymentReader(deployer)
 	if utils.FileExists(deployer.DeploymentPath) {
-		var deploymentReader = NewDeploymentReader(deployer)
 		err = deploymentReader.HandleYaml()
-
 		if err != nil {
 			return err
 		}
@@ -192,6 +210,23 @@ func (deployer *ServiceDeployer) ConstructDeploymentPlan() error {
 				return wskderrors.NewYAMLFileFormatError(manifest.Filepath, errorString)
 			}
 		}
+	}
+
+	// overwrite package inputs based on command line parameters
+	// overwrite package inputs with the values from command line --param and/or --param-file in order
+	err = deployer.UpdatePackageInputs()
+	if err != nil {
+		return err
+	}
+
+	// process manifest file
+	err = manifestReader.HandleYaml(manifestParser, manifest, deployer.ManagedAnnotation)
+	if err != nil {
+		return err
+	}
+
+	// process deployment file
+	if utils.FileExists(deployer.DeploymentPath) {
 		if err := deploymentReader.BindAssets(); err != nil {
 			return err
 		}
@@ -213,7 +248,7 @@ func (deployer *ServiceDeployer) ConstructUnDeploymentPlan() (*DeploymentProject
 	manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
 
 	// process manifest file
-	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
+	err = manifestReader.HandleYaml(manifestParser, manifest, whisk.KeyValue{})
 	if err != nil {
 		return deployer.Deployment, err
 	}
@@ -262,6 +297,11 @@ func (deployer *ServiceDeployer) Deploy() error {
 
 	if deployer.Preview {
 		deployer.printDeploymentAssets(deployer.Deployment)
+		return nil
+	}
+
+	if deployer.Report {
+		deployer.reportInputs()
 		return nil
 	}
 
@@ -1623,4 +1663,89 @@ func createWhiskClientError(err *whisk.WskError, response *http.Response, entity
 
 	// TODO() add errString as an AppendDetail() to WhiskClientError
 	return wskderrors.NewWhiskClientError(err.Error(), err.ExitCode, response)
+}
+
+func (deployer *ServiceDeployer) reportInputs() error {
+	// display project level inputs
+	i := make(map[string]interface{}, 0)
+	for name, param := range deployer.ProjectInputs {
+		i[name] = param.Value
+	}
+	projectInputs := parsers.DisplayInputs{Name: deployer.ProjectName, Inputs: i}
+	j, err := json.MarshalIndent(projectInputs, "", " ")
+	if err != nil {
+		return err
+	}
+	wskprint.PrintlnOpenWhiskOutput(string(j))
+
+	// display package level inputs
+	// iterate over each package and print inputs section of each package
+	for _, pkg := range deployer.Deployment.Packages {
+		i := make(map[string]interface{}, 0)
+		for name, param := range pkg.Inputs.Inputs {
+			if _, ok := deployer.ProjectInputs[name]; !ok {
+				i[name] = param.Value
+			}
+		}
+		packageInputs := parsers.DisplayInputs{Name: pkg.Package.Name, Inputs: i}
+		j, err := json.MarshalIndent(packageInputs, "", "  ")
+		if err != nil {
+			return err
+		}
+		wskprint.PrintlnOpenWhiskOutput(string(j))
+
+		for _, d := range pkg.Dependencies {
+			i := make(map[string]interface{}, 0)
+			for _, param := range d.Parameters {
+				i[param.Key] = param.Value
+			}
+			depInputs := parsers.DisplayInputs{Name: d.Location, Inputs: i}
+			j, err := json.MarshalIndent(depInputs, "", " ")
+			if err != nil {
+				return err
+			}
+			wskprint.PrintlnOpenWhiskOutput(string(j))
+		}
+
+		for _, a := range pkg.Actions {
+			i := make(map[string]interface{}, 0)
+			for _, param := range a.Action.Parameters {
+				i[param.Key] = param.Value
+			}
+
+			actionInputs := parsers.DisplayInputs{Name: a.Action.Name, Inputs: i}
+			j, err := json.MarshalIndent(actionInputs, "", " ")
+			if err != nil {
+				return err
+			}
+			wskprint.PrintlnOpenWhiskOutput(string(j))
+		}
+
+		for _, s := range pkg.Sequences {
+			i := make(map[string]interface{}, 0)
+			for _, param := range s.Action.Parameters {
+				i[param.Key] = param.Value
+			}
+			seqInputs := parsers.DisplayInputs{Name: s.Action.Name, Inputs: i}
+			j, err := json.MarshalIndent(seqInputs, "", " ")
+			if err != nil {
+				return err
+			}
+			wskprint.PrintlnOpenWhiskOutput(string(j))
+		}
+	}
+
+	for _, trigger := range deployer.Deployment.Triggers {
+		i := make(map[string]interface{}, 0)
+		for _, param := range trigger.Parameters {
+			i[param.Key] = param.Value
+		}
+		triggerInputs := parsers.DisplayInputs{Name: trigger.Name, Inputs: i}
+		j, err := json.MarshalIndent(triggerInputs, "", " ")
+		if err != nil {
+			return err
+		}
+		wskprint.PrintlnOpenWhiskOutput(string(j))
+	}
+	return nil
 }

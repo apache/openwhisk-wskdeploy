@@ -54,41 +54,55 @@ func (deployer *ManifestReader) ParseManifest() (*parsers.YAML, *parsers.YAMLPar
 }
 
 func (reader *ManifestReader) InitPackages(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, managedAnnotations whisk.KeyValue) error {
-	packages, err := manifestParser.ComposeAllPackages(manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
+	packages, inputs, err := manifestParser.ComposeAllPackages(reader.serviceDeployer.ProjectInputs, manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
 	if err != nil {
 		return err
 	}
-	reader.SetPackages(packages)
+	reader.SetPackages(packages, inputs)
 	return nil
 }
 
 // Wrapper parser to handle yaml dir
-func (reader *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestParser *parsers.YAMLParser, manifest *parsers.YAML, managedAnnotations whisk.KeyValue) error {
+func (reader *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, manifest *parsers.YAML, managedAnnotations whisk.KeyValue) error {
 
 	var err error
 	var manifestName = manifest.Filepath
 
-	deps, err := manifestParser.ComposeDependenciesFromAllPackages(manifest, reader.serviceDeployer.ProjectPath, reader.serviceDeployer.ManifestPath, managedAnnotations)
+	// pull the package inputs out of Deployment.Packages
+	// so that they can be sent to all OW entities while they are being parsed and constructed
+	// the main reason for sending Package inputs (normalized) to parser is
+	// manifest file can have $TRIGGER_NAME as a trigger name, $RULE_NAME as a rule name, etc
+	// which are being read by the parser and the way it works is, these variables are
+	// treated as environment variables and tried to interpolate them but when these
+	// variables are not defined in env., they are returned as an empty string and we
+	// loose the env. variable name(TRIGGER_NAME), so before we loose that label,
+	// we need to substitute it with its corresponding value from the inputs section
+	inputs := make(map[string]parsers.PackageInputs, 0)
+	for _, pkg := range reader.serviceDeployer.Deployment.Packages {
+		inputs[pkg.Package.Name] = pkg.Inputs
+	}
+
+	deps, err := manifestParser.ComposeDependenciesFromAllPackages(manifest, reader.serviceDeployer.ProjectPath, reader.serviceDeployer.ManifestPath, managedAnnotations, inputs)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	actions, err := manifestParser.ComposeActionsFromAllPackages(manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
+	actions, err := manifestParser.ComposeActionsFromAllPackages(manifest, reader.serviceDeployer.ManifestPath, managedAnnotations, inputs)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	sequences, err := manifestParser.ComposeSequencesFromAllPackages(reader.serviceDeployer.ClientConfig.Namespace, manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
+	sequences, err := manifestParser.ComposeSequencesFromAllPackages(reader.serviceDeployer.ClientConfig.Namespace, manifest, reader.serviceDeployer.ManifestPath, managedAnnotations, inputs)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	triggers, err := manifestParser.ComposeTriggersFromAllPackages(manifest, reader.serviceDeployer.ManifestPath, managedAnnotations)
+	triggers, err := manifestParser.ComposeTriggersFromAllPackages(manifest, reader.serviceDeployer.ManifestPath, managedAnnotations, inputs)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	rules, err := manifestParser.ComposeRulesFromAllPackages(manifest, managedAnnotations)
+	rules, err := manifestParser.ComposeRulesFromAllPackages(manifest, managedAnnotations, inputs)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
@@ -131,7 +145,7 @@ func (reader *ManifestReader) HandleYaml(sdeployer *ServiceDeployer, manifestPar
 	return nil
 }
 
-func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package) error {
+func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package, inputs map[string]parsers.PackageInputs) error {
 
 	dep := reader.serviceDeployer
 
@@ -141,6 +155,7 @@ func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package) er
 	for _, pkg := range packages {
 		newPack := NewDeploymentPackage()
 		newPack.Package = pkg
+		newPack.Inputs = inputs[pkg.Name]
 		dep.Deployment.Packages[pkg.Name] = newPack
 	}
 	return nil

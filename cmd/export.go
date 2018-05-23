@@ -41,6 +41,8 @@ var exportCmd = &cobra.Command{
 }
 
 var config *whisk.Config
+var wskpropsPath string
+var client *whisk.Client
 
 func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML, targetManifest string, projectName string) error {
 

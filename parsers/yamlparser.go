@@ -195,46 +195,51 @@ type Repository struct {
 }
 
 type Package struct {
-	//mapping to wsk.SentPackageNoPublish.Name
-	Packagename string `yaml:"name"`
-	//mapping to wsk.SentPackageNoPublish.Version
-	Version      string                `yaml:"version"` //mandatory
-	License      string                `yaml:"license"` //mandatory
-	Public       bool                  `yaml:"public,omitempty"`
-	Repositories []Repository          `yaml:"repositories,omitempty"`
-	Dependencies map[string]Dependency `yaml:"dependencies"`
-	//mapping to wsk.SentPackageNoPublish.Namespace
-	Namespace        string                 `yaml:"namespace"`
-	Credential       string                 `yaml:"credential"`
-	ApiHost          string                 `yaml:"apiHost"`
-	ApigwAccessToken string                 `yaml:"apigwAccessToken"`
-	Actions          map[string]Action      `yaml:"actions"`
-	Triggers         map[string]Trigger     `yaml:"triggers"`
-	Feeds            map[string]Feed        `yaml:"feeds"`
-	Rules            map[string]Rule        `yaml:"rules"`
-	Inputs           map[string]Parameter   `yaml:"inputs"`
-	Sequences        map[string]Sequence    `yaml:"sequences"`
-	Annotations      map[string]interface{} `yaml:"annotations,omitempty"`
-	// TODO() this is a convenience we want for package-shared vars that would be
-	// propagated to every action within the package.
-	//Parameters  map[string]interface{} `yaml: parameters`
-	Apis map[string]map[string]map[string]map[string]string `yaml:"apis"`
+	Packagename      string                                             `yaml:"name"`
+	Version          string                                             `yaml:"version"` //mandatory
+	License          string                                             `yaml:"license"` //mandatory
+	Public           bool                                               `yaml:"public,omitempty"`
+	Repositories     []Repository                                       `yaml:"repositories,omitempty"`
+	Dependencies     map[string]Dependency                              `yaml:"dependencies"`
+	Namespace        string                                             `yaml:"namespace"`
+	Credential       string                                             `yaml:"credential"`
+	ApiHost          string                                             `yaml:"apiHost"`
+	ApigwAccessToken string                                             `yaml:"apigwAccessToken"`
+	Actions          map[string]Action                                  `yaml:"actions"`
+	Triggers         map[string]Trigger                                 `yaml:"triggers"`
+	Feeds            map[string]Feed                                    `yaml:"feeds"`
+	Rules            map[string]Rule                                    `yaml:"rules"`
+	Inputs           map[string]Parameter                               `yaml:"inputs"`
+	Sequences        map[string]Sequence                                `yaml:"sequences"`
+	Annotations      map[string]interface{}                             `yaml:"annotations,omitempty"`
+	Apis             map[string]map[string]map[string]map[string]string `yaml:"apis"`
 }
 
 type Project struct {
-	Name             string             `yaml:"name"`
-	Namespace        string             `yaml:"namespace"`
-	Credential       string             `yaml:"credential"`
-	ApiHost          string             `yaml:"apiHost"`
-	ApigwAccessToken string             `yaml:"apigwAccessToken"`
-	Version          string             `yaml:"version"`
-	Packages         map[string]Package `yaml:"packages"`
+	Name             string               `yaml:"name"`
+	Namespace        string               `yaml:"namespace"`
+	Credential       string               `yaml:"credential"`
+	ApiHost          string               `yaml:"apiHost"`
+	ApigwAccessToken string               `yaml:"apigwAccessToken"`
+	Version          string               `yaml:"version"`
+	Packages         map[string]Package   `yaml:"packages"`
+	Inputs           map[string]Parameter `yaml: parameters`
 }
 
 type YAML struct {
 	Project  Project            `yaml:"project"`
 	Packages map[string]Package `yaml:"packages"`
 	Filepath string             //file path of the yaml file
+}
+
+type DisplayInputs struct {
+	Name   string
+	Inputs map[string]interface{}
+}
+
+type PackageInputs struct {
+	PackageName string
+	Inputs      map[string]Parameter
 }
 
 // function to return web-export or web depending on what is specified
@@ -252,13 +257,19 @@ func (yaml *YAML) GetProject() Project {
 	return yaml.Project
 }
 
-func convertPackageName(packageMap map[string]Package) map[string]Package {
+func convertPackageName(packageMap map[string]Package, inputs map[string]Parameter) map[string]Package {
 	packages := make(map[string]Package)
 	for packName, depPacks := range packageMap {
 		name := packName
 		packageName := wskenv.InterpolateStringWithEnvVar(packName)
 		if str, ok := packageName.(string); ok {
 			name = str
+		}
+		if inputs != nil {
+			if len(name) == 0 {
+				packName = wskenv.GetEnvVarName(packName)
+				name = wskenv.ConvertSingleName(inputs[packName].Value.(string))
+			}
 		}
 		depPacks.Packagename = wskenv.ConvertSingleName(depPacks.Packagename)
 		packages[name] = depPacks
@@ -267,8 +278,8 @@ func convertPackageName(packageMap map[string]Package) map[string]Package {
 }
 
 func ReadEnvVariable(yaml *YAML) *YAML {
-	yaml.Project.Packages = convertPackageName(yaml.Project.Packages)
-	yaml.Packages = convertPackageName(yaml.Packages)
+	yaml.Project.Packages = convertPackageName(yaml.Project.Packages, yaml.Project.Inputs)
+	yaml.Packages = convertPackageName(yaml.Packages, nil)
 	return yaml
 }
 

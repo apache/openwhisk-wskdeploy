@@ -19,6 +19,7 @@ package utils
 
 import (
 	"archive/zip"
+	"encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -230,4 +231,37 @@ func Read(url string) ([]byte, error) {
 	} else {
 		return new(ContentReader).LocalReader.ReadLocal(url)
 	}
+}
+
+func GetJSONFromStrings(content []string, keyValueFormat bool) (interface{}, error) {
+	var data map[string]interface{}
+	var res interface{}
+
+	for i := 0; i < len(content); i++ {
+		dc := json.NewDecoder(strings.NewReader(content[i]))
+		dc.UseNumber()
+		if err := dc.Decode(&data); err != nil {
+			return whisk.KeyValueArr{}, err
+		}
+	}
+
+	if keyValueFormat {
+		res = getKeyValueFormattedJSON(data)
+	} else {
+		res = data
+	}
+
+	return res, nil
+}
+
+func getKeyValueFormattedJSON(data map[string]interface{}) whisk.KeyValueArr {
+	var keyValueArr whisk.KeyValueArr
+	for key, value := range data {
+		keyValue := whisk.KeyValue{
+			Key:   key,
+			Value: value,
+		}
+		keyValueArr = append(keyValueArr, keyValue)
+	}
+	return keyValueArr
 }

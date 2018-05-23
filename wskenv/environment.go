@@ -18,7 +18,6 @@
 package wskenv
 
 import (
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"os"
 	"reflect"
 	"strings"
@@ -71,19 +70,23 @@ func InterpolateStringWithEnvVar(key interface{}) interface{} {
 					// return interpolated string using env. variable
 				} else if strings.Contains(keystr, "$"+substr) {
 					thisValue = os.Getenv(substr)
-					if thisValue == "" {
-						// TODO(797) i18n
-						wskprint.PrintlnOpenWhiskWarning("Missing Environment Variable " + substr + ".")
-					}
+					// TODO(920) disabling the warning for now, since we want to get rid of it eventually
+					// TODO(920) please add/remove this based on what we decide in issue #920
+					//if thisValue == "" {
+					// TODO(797) i18n
+					//wskprint.PrintlnOpenWhiskWarning("Missing Environment Variable " + substr + ".")
+					//}
 					keystr = strings.Replace(keystr, "$"+substr, thisValue, -1)
 					//if the substr is a ${ENV_VAR}
 					// return interpolated string using env. variable
 				} else if strings.Contains(keystr, "${"+substr+"}") {
 					thisValue = os.Getenv(substr)
-					if thisValue == "" {
-						// TODO(797) i18n
-						wskprint.PrintlnOpenWhiskWarning("Missing Environment Variable " + substr + ".")
-					}
+					// TODO(920) disabling the warning for now, since we want to get rid of it eventually
+					// TODO(920) please add/remove this based on what we decide in issue #920
+					//if thisValue == "" {
+					// TODO(797) i18n
+					//wskprint.PrintlnOpenWhiskWarning("Missing Environment Variable " + substr + ".")
+					//}
 					keystr = strings.Replace(keystr, "${"+substr+"}", thisValue, -1)
 				}
 			}
@@ -108,4 +111,12 @@ func ConvertSingleName(theName string) string {
 		}
 	}
 	return theName
+}
+
+func GetEnvVarName(name string) string {
+	name = strings.Replace(name, "$", "", 1)
+	name = strings.Replace(name, "{", "", -1)
+	name = strings.Replace(name, "}", "", -1)
+	return name
+
 }

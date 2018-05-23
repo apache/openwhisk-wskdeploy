@@ -33,7 +33,6 @@ import (
 )
 
 var stderr = ""
-var stdout = ""
 
 // Whisk Deploy has root command: wskdeploy
 // wskdeploy is being created using Cobra Library
@@ -53,7 +52,15 @@ func RootCmdImp(cmd *cobra.Command, args []string) error {
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	if err := RootCmd.Execute(); err != nil {
+	var err error
+
+	os.Args, utils.Flags.Param, err = parseArgsForParams(os.Args)
+	if err != nil {
+		wskprint.PrintOpenWhiskError(err.Error())
+		os.Exit(-1)
+	}
+
+	if err = RootCmd.Execute(); err != nil {
 		wskprint.PrintOpenWhiskFromError(err)
 		os.Exit(-1)
 	}
@@ -68,23 +75,25 @@ func init() {
 	// TODO() Publish command, not completed
 	// TODO() Report command, not completed
 	// TODO() have a single function that conditionally (i.e., Trace=true) prints ALL Flags
-	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, "config", "", wski18n.T(wski18n.ID_CMD_FLAG_CONFIG))
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ProjectPath, "project", "p", ".", wski18n.T(wski18n.ID_CMD_FLAG_PROJECT))
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ManifestPath, "manifest", "m", "", wski18n.T(wski18n.ID_CMD_FLAG_MANIFEST))
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.DeploymentPath, "deployment", "d", "", wski18n.T(wski18n.ID_CMD_FLAG_DEPLOYMENT))
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Strict, "strict", "s", false, wski18n.T(wski18n.ID_CMD_FLAG_STRICT))
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Preview, "preview", "", false, wski18n.T(wski18n.ID_CMD_FLAG_PREVIEW))
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Verbose, "verbose", "v", false, wski18n.T(wski18n.ID_CMD_FLAG_VERBOSE))
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ApiHost, "apihost", "", "", wski18n.T(wski18n.ID_CMD_FLAG_API_HOST))
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Namespace, "namespace", "n", "", wski18n.T(wski18n.ID_CMD_FLAG_NAMESPACE))
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Auth, "auth", "u", "", wski18n.T(wski18n.ID_CMD_FLAG_AUTH_KEY))
-	RootCmd.PersistentFlags().StringVar(&utils.Flags.ApiVersion, "apiversion", "", wski18n.T(wski18n.ID_CMD_FLAG_API_VERSION))
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Key, "key", "k", "", wski18n.T(wski18n.ID_CMD_FLAG_KEY_FILE))
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Cert, "cert", "c", "", wski18n.T(wski18n.ID_CMD_FLAG_CERT_FILE))
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Managed, "managed", "", false, wski18n.T(wski18n.ID_CMD_FLAG_MANAGED))
-	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ProjectName, "projectname", "", "", wski18n.T(wski18n.ID_CMD_FLAG_PROJECTNAME))
-	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Trace, "trace", "t", false, wski18n.T(wski18n.ID_CMD_FLAG_TRACE))
-	RootCmd.PersistentFlags().MarkHidden("trace")
+	RootCmd.PersistentFlags().StringVar(&utils.Flags.CfgFile, FLAG_CONFIG, "", wski18n.T(wski18n.ID_CMD_FLAG_CONFIG))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ProjectPath, FLAG_PROJECT, FLAG_PROJECT_SHORT, ".", wski18n.T(wski18n.ID_CMD_FLAG_PROJECT))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ManifestPath, FLAG_MANIFEST, FLAG_MANIFEST_SHORT, "", wski18n.T(wski18n.ID_CMD_FLAG_MANIFEST))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.DeploymentPath, FLAG_DEPLOYMENT, FLAG_DEPLOYMENT_SHORT, "", wski18n.T(wski18n.ID_CMD_FLAG_DEPLOYMENT))
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Strict, FLAG_STRICT, FLAG_STRICT_SHORT, false, wski18n.T(wski18n.ID_CMD_FLAG_STRICT))
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Preview, FLAG_PREVIEW, "", false, wski18n.T(wski18n.ID_CMD_FLAG_PREVIEW))
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Verbose, FLAG_VERBOSE, FLAG_VERBOSE_SHORT, false, wski18n.T(wski18n.ID_CMD_FLAG_VERBOSE))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ApiHost, FLAG_API_HOST, "", "", wski18n.T(wski18n.ID_CMD_FLAG_API_HOST))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Namespace, FLAG_NAMESPACE, FLAG_NAMESPACE_SHORT, "", wski18n.T(wski18n.ID_CMD_FLAG_NAMESPACE))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Auth, FLAG_AUTH, FLAG_AUTH_SHORT, "", wski18n.T(wski18n.ID_CMD_FLAG_AUTH_KEY))
+	RootCmd.PersistentFlags().StringVar(&utils.Flags.ApiVersion, FLAG_APIVERSION, "", wski18n.T(wski18n.ID_CMD_FLAG_API_VERSION))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Key, FLAG_KEY, FLAG_KEY_SHORT, "", wski18n.T(wski18n.ID_CMD_FLAG_KEY_FILE))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.Cert, FLAG_CERT, FLAG_CERT_SHORT, "", wski18n.T(wski18n.ID_CMD_FLAG_CERT_FILE))
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Managed, FLAG_MANAGED, "", false, wski18n.T(wski18n.ID_CMD_FLAG_MANAGED))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ProjectName, FLAG_PROJECTNAME, "", "", wski18n.T(wski18n.ID_CMD_FLAG_PROJECTNAME))
+	RootCmd.PersistentFlags().BoolVarP(&utils.Flags.Trace, FLAG_TRACE, FLAG_TRACE_SHORT, false, wski18n.T(wski18n.ID_CMD_FLAG_TRACE))
+	RootCmd.PersistentFlags().StringSliceVarP(&utils.Flags.Param, FLAG_PARAM, "", []string{}, wski18n.T(wski18n.ID_CMD_FLAG_PARAM))
+	RootCmd.PersistentFlags().StringVarP(&utils.Flags.ParamFile, FLAG_PARAMFILE, FLAG_PARAMFILE_SHORT, "", wski18n.T(wski18n.ID_CMD_FLAG_PARAM_FILE))
+	RootCmd.PersistentFlags().MarkHidden(FLAG_TRACE)
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -194,6 +203,7 @@ func Deploy() error {
 		deployer.ManifestPath = utils.Flags.ManifestPath
 		deployer.DeploymentPath = utils.Flags.DeploymentPath
 		deployer.Preview = utils.Flags.Preview
+		deployer.Report = utils.Flags.Report
 
 		// master record of any dependency that has been downloaded
 		deployer.DependencyMaster = make(map[string]utils.DependencyRecord)

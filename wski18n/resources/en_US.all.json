@@ -112,6 +112,14 @@
     "translation": "verbose output"
   },
   {
+    "id": "msg_cmd_flag_allow_param",
+    "translation": "parameter values in `KEY VALUE` format"
+  },
+  {
+    "id": "msg_cmd_flag_allow_param_file",
+    "translation": "`FILE` containing parameter values in JSON format"
+  },
+  {
     "id": "msg_config_missing_authkey",
     "translation": "The authentication key is not configured.\n"
   },
@@ -339,6 +347,23 @@
     "id": "msg_err_conflicting_rules_across_packages",
     "translation": "One single rule [{{.rule}}] is defined with different actions [{{.action}}] and/or triggers [{{.trigger}}]. Rules are created directly under the namespace, its not possible to have rules with same name but associated with different actions/triggers. Please update rule names in manifest file."
   },
+  {
+    "id": "msg_err_arg_missing_value",
+    "translation": "A command line argument {{.arg}} is missing value, please specify its value."
+  },
+  {
+    "id": "msg_err_arg_missing_key_value",
+    "translation": "A command line argument {{.arg}} is missing key/value pair, please specify key/value pair for example, {{.arg}} key value."
+  },
+  {
+    "id": "msg_err_invalid_param_file",
+    "translation": "A command line argument ({{.arg}}) has invalid param file {{.path}}, ERROR: {{.err}}. Please specify a valid JSON param file."
+  },
+  {
+    "id": "msg_err_required_inputs_missing_value",
+    "translation": "Required inputs are missing values even after applying interpolation using env. variables. Please set missing env. variables and/or input values in manifest/deployment file or on CLI for following inputs: {{.inputs}}"
+  },
+
   {
     "id": "WARNINGS",
     "translation": "================= WARNINGS ==================="

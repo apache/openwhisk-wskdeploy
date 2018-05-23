@@ -81,6 +81,8 @@ const (
 	KEY_TRIGGER         = "trigger"
 	KEY_TRIGGER_FEED    = "feed"
 	KEY_RULE            = "rule"
+	KEY_ARG             = "arg"
+	KEY_INPUTS          = "inputs"
 )
 
 // DO NOT TRANSLATE
@@ -119,6 +121,8 @@ const (
 	ID_CMD_FLAG_STRICT      = "msg_cmd_flag_strict"
 	ID_CMD_FLAG_TRACE       = "msg_cmd_flag_trace"
 	ID_CMD_FLAG_VERBOSE     = "msg_cmd_flag_allow_verbose"
+	ID_CMD_FLAG_PARAM       = "msg_cmd_flag_allow_param"
+	ID_CMD_FLAG_PARAM_FILE  = "msg_cmd_flag_allow_param_file"
 
 	// Root <command> using <manifest | deployment> file
 	ID_MSG_COMMAND_USING_X_cmd_X_filetype_X_path_X = "msg_command_using_filename_at_path"
@@ -191,6 +195,10 @@ const (
 	ID_ERR_SEQUENCE_HAVING_SAME_NAME_AS_ACTION_X_action_X                = "msg_err_sequence_having_same_name_as_action"
 	ID_ERR_CONFLICTING_TRIGGERS_ACROSS_PACKAGES_X_trigger_X_feed_X       = "msg_err_conflicting_triggers_across_packages"
 	ID_ERR_CONFLICTING_RULES_ACROSS_PACKAGES_X_rule_X_action_X_trigger_X = "msg_err_conflicting_rules_across_packages"
+	ID_ERR_ARG_MISSING_VALUE_X_arg_X                                     = "msg_err_arg_missing_value"
+	ID_ERR_ARG_MISSING_KEY_VALUE_X_arg_X                                 = "msg_err_arg_missing_key_value"
+	ID_ERR_INVALID_PARAM_FILE_X_file_X                                   = "msg_err_invalid_param_file"
+	ID_ERR_REQUIRED_INPUTS_MISSING_VALUE_X_inputs_X                      = "msg_err_required_inputs_missing_value"
 
 	// Server-side Errors (wskdeploy as an Action)
 	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"

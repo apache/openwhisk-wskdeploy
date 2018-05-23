@@ -112,20 +112,63 @@ func (dm *YAMLParser) ParseManifest(manifestPath string) (*YAML, error) {
 	return manifest, nil
 }
 
-func (dm *YAMLParser) composeInputsOrOutputs(inputs map[string]Parameter, manifestFilePath string) (whisk.KeyValueArr, error) {
+func (dm *YAMLParser) composeInputs(inputs map[string]Parameter, packageInputs PackageInputs, manifestFilePath string) (whisk.KeyValueArr, error) {
 	var errorParser error
 	keyValArr := make(whisk.KeyValueArr, 0)
-	for name, param := range inputs {
-		var keyVal whisk.KeyValue
-		keyVal.Key = name
-		keyVal.Value, errorParser = ResolveParameter(name, &param, manifestFilePath)
+	var inputsWithoutValue []string
+	var paramsCLI interface{}
+
+	if len(utils.Flags.Param) > 0 {
+		paramsCLI, errorParser = utils.GetJSONFromStrings(utils.Flags.Param, false)
 		if errorParser != nil {
 			return nil, errorParser
+		}
+	}
+
+	for name, param := range inputs {
+		var keyVal whisk.KeyValue
+		// keyvalue key is set to parameter name
+		keyVal.Key = name
+		// parameter on CLI takes the highest precedence such that
+		// input variables gets values from CLI first
+		if paramsCLI != nil {
+			// check if this particular input is specified on CLI
+			if v, ok := paramsCLI.(map[string]interface{})[name]; ok {
+				keyVal.Value = wskenv.ConvertSingleName(v.(string))
+			}
+		}
+		// if those inputs are not specified on CLI,
+		// read their values from the manifest file
+		if keyVal.Value == nil {
+			keyVal.Value, errorParser = ResolveParameter(name, &param, manifestFilePath)
+			if errorParser != nil {
+				return nil, errorParser
+			}
+			if param.Type == STRING && param.Value != nil {
+				if keyVal.Value == getTypeDefaultValue(param.Type) {
+					if packageInputs.Inputs != nil {
+						n := wskenv.GetEnvVarName(param.Value.(string))
+						if v, ok := packageInputs.Inputs[n]; ok {
+							keyVal.Value = v.Value.(string)
+						}
+					}
+				}
+			}
 		}
 		if keyVal.Value != nil {
 			keyValArr = append(keyValArr, keyVal)
 		}
+		if param.Required && keyVal.Value == getTypeDefaultValue(param.Type) {
+			inputsWithoutValue = append(inputsWithoutValue, name)
+		}
 	}
+	if len(inputsWithoutValue) > 0 {
+		errMessage := wski18n.T(wski18n.ID_ERR_REQUIRED_INPUTS_MISSING_VALUE_X_inputs_X,
+			map[string]interface{}{
+				wski18n.KEY_INPUTS: strings.Join(inputsWithoutValue, ", ")})
+		return nil, wskderrors.NewYAMLFileFormatError(manifestFilePath, errMessage)
+	}
+
 	return keyValArr, nil
 }
 
@@ -141,7 +184,7 @@ func (dm *YAMLParser) composeAnnotations(annotations map[string]interface{}) whi
 	return listOfAnnotations
 }
 
-func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string, managedAnnotations whisk.KeyValue) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string, managedAnnotations whisk.KeyValue, packageInputs map[string]PackageInputs) (map[string]utils.DependencyRecord, error) {
 	dependencies := make(map[string]utils.DependencyRecord)
 	packages := make(map[string]Package)
 
@@ -152,7 +195,7 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 	}
 
 	for n, p := range packages {
-		d, err := dm.ComposeDependencies(p, projectPath, filePath, n, managedAnnotations)
+		d, err := dm.ComposeDependencies(p, projectPath, filePath, n, managedAnnotations, packageInputs[n])
 		if err == nil {
 			for k, v := range d {
 				dependencies[k] = v
@@ -164,7 +207,7 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 	return dependencies, nil
 }
 
-func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string, managedAnnotations whisk.KeyValue) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string, managedAnnotations whisk.KeyValue, packageInputs PackageInputs) (map[string]utils.DependencyRecord, error) {
 
 	depMap := make(map[string]utils.DependencyRecord)
 	for key, dependency := range pkg.Dependencies {
@@ -194,7 +237,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 			return nil, errors.New(wski18n.T(wski18n.ID_ERR_DEPENDENCY_UNKNOWN_TYPE))
 		}
 
-		inputs, err := dm.composeInputsOrOutputs(dependency.Inputs, filePath)
+		inputs, err := dm.composeInputs(dependency.Inputs, packageInputs, filePath)
 		if err != nil {
 			return nil, err
 		}
@@ -213,9 +256,10 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 	return depMap, nil
 }
 
-func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, managedAnnotations whisk.KeyValue) (map[string]*whisk.Package, error) {
+func (dm *YAMLParser) ComposeAllPackages(projectInputs map[string]Parameter, manifest *YAML, filePath string, managedAnnotations whisk.KeyValue) (map[string]*whisk.Package, map[string]PackageInputs, error) {
 	packages := map[string]*whisk.Package{}
 	manifestPackages := make(map[string]Package)
+	inputs := make(map[string]PackageInputs, 0)
 
 	if len(manifest.Packages) != 0 {
 		manifestPackages = manifest.Packages
@@ -233,19 +277,75 @@ func (dm *YAMLParser) ComposeAllPackages(manifest *YAML, filePath string, manage
 
 	// Compose each package found in manifest
 	for n, p := range manifestPackages {
-		s, err := dm.ComposePackage(p, n, filePath, managedAnnotations)
+		s, params, err := dm.ComposePackage(p, n, filePath, managedAnnotations, projectInputs)
+		if err != nil {
+			return nil, inputs, err
+		}
+		packages[n] = s
+		inputs[n] = PackageInputs{PackageName: n, Inputs: params}
+	}
 
-		if err == nil {
-			packages[n] = s
-		} else {
-			return nil, err
+	return packages, inputs, nil
+}
+
+func (dm *YAMLParser) composePackageInputs(projectInputs map[string]Parameter, rawInputs map[string]Parameter, filepath string) (map[string]Parameter, whisk.KeyValueArr, error) {
+	inputs := make(map[string]Parameter, 0)
+
+	// package inherits all project inputs
+	for n, param := range projectInputs {
+		inputs[n] = param
+	}
+
+	// iterate over package inputs
+	for name, i := range rawInputs {
+		value, err := ResolveParameter(name, &i, filepath)
+		if err != nil {
+			return nil, nil, err
+		}
+		// if value is set to default value for its type,
+		// check for input key being an env. variable itself
+		if value == getTypeDefaultValue(i.Type) {
+			value = wskenv.InterpolateStringWithEnvVar("${" + name + "}")
+		}
+
+		// if at this point, still value is set to default value of its type
+		// check if input key is defined under Project Inputs
+		if value == getTypeDefaultValue(i.Type) {
+			if i.Type == STRING && i.Value != nil {
+				n := wskenv.GetEnvVarName(i.Value.(string))
+				if v, ok := projectInputs[n]; ok {
+					value = v.Value.(string)
+				}
+			}
+		}
+
+		// create a Parameter object based on the package inputs
+		// resolve the value using env. variables
+		// if value is not specified, treat input key as an env. variable
+		// check if input key is defined in environment
+		// else set it to its default value based on the type for now
+		// the input value will be updated if its specified in deployment
+		// or on CLI using --param or --param-file
+		i.Value = value
+		inputs[name] = i
+	}
+
+	// create an array of Key/Value pair with inputs
+	// inputs name as key and with its value if its not nil
+	keyValArr := make(whisk.KeyValueArr, 0)
+	for name, param := range inputs {
+		var keyVal whisk.KeyValue
+		keyVal.Key = name
+		keyVal.Value = param.Value
+		if keyVal.Value != nil {
+			keyValArr = append(keyValArr, keyVal)
 		}
 	}
 
-	return packages, nil
+	return inputs, keyValArr, nil
 }
 
-func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath string, managedAnnotations whisk.KeyValue) (*whisk.Package, error) {
+func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath string, managedAnnotations whisk.KeyValue, projectInputs map[string]Parameter) (*whisk.Package, map[string]Parameter, error) {
 	pag := &whisk.Package{}
 	pag.Name = packageName
 	//The namespace for this package is absent, so we use default guest here.
@@ -296,10 +396,12 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		utils.CheckLicense(pkg.License)
 	}
 
-	//set parameters
-	inputs, err := dm.composeInputsOrOutputs(pkg.Inputs, filePath)
+	// package inputs are set as package inputs of type Parameter{}
+	// read all package inputs, interpolate their values using env. variables
+	// check if input variable itself is an env. variable
+	packageInputs, inputs, err := dm.composePackageInputs(projectInputs, pkg.Inputs, filePath)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if len(inputs) > 0 {
 		pag.Parameters = inputs
@@ -332,10 +434,10 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		pag.Publish = &(pkg.Public)
 	}
 
-	return pag, nil
+	return pag, packageInputs, nil
 }
 
-func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YAML, manifestFilePath string, managedAnnotations whisk.KeyValue) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YAML, manifestFilePath string, managedAnnotations whisk.KeyValue, packageInputs map[string]PackageInputs) ([]utils.ActionRecord, error) {
 	var sequences []utils.ActionRecord = make([]utils.ActionRecord, 0)
 	manifestPackages := make(map[string]Package)
 
@@ -346,7 +448,7 @@ func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YA
 	}
 
 	for n, p := range manifestPackages {
-		s, err := dm.ComposeSequences(namespace, p.Sequences, n, manifestFilePath, managedAnnotations)
+		s, err := dm.ComposeSequences(namespace, p.Sequences, n, manifestFilePath, managedAnnotations, packageInputs[n])
 		if err == nil {
 			sequences = append(sequences, s...)
 		} else {
@@ -356,7 +458,7 @@ func (dm *YAMLParser) ComposeSequencesFromAllPackages(namespace string, mani *YA
 	return sequences, nil
 }
 
-func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Sequence, packageName string, manifestFilePath string, managedAnnotations whisk.KeyValue) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Sequence, packageName string, manifestFilePath string, managedAnnotations whisk.KeyValue, packageInputs PackageInputs) ([]utils.ActionRecord, error) {
 	var listOfSequences []utils.ActionRecord = make([]utils.ActionRecord, 0)
 	var errorParser error
 
@@ -377,7 +479,11 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		}
 
 		wskaction.Exec.Components = components
-		wskaction.Name = key
+		if i, ok := packageInputs.Inputs[wskenv.GetEnvVarName(key)]; ok {
+			wskaction.Name = i.Value.(string)
+		} else {
+			wskaction.Name = wskenv.ConvertSingleName(key)
+		}
 		pub := false
 		wskaction.Publish = &pub
 		wskaction.Namespace = namespace
@@ -410,7 +516,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 	return listOfSequences, nil
 }
 
-func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath string, managedAnnotations whisk.KeyValue) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath string, managedAnnotations whisk.KeyValue, packageInputs map[string]PackageInputs) ([]utils.ActionRecord, error) {
 	var actions []utils.ActionRecord = make([]utils.ActionRecord, 0)
 	manifestPackages := make(map[string]Package)
 
@@ -421,7 +527,7 @@ func (dm *YAMLParser) ComposeActionsFromAllPackages(manifest *YAML, filePath str
 	}
 
 	for n, p := range manifestPackages {
-		a, err := dm.ComposeActions(filePath, p.Actions, n, managedAnnotations)
+		a, err := dm.ComposeActions(filePath, p.Actions, n, managedAnnotations, packageInputs[n])
 		if err == nil {
 			actions = append(actions, a...)
 		} else {
@@ -730,7 +836,7 @@ func (dm *YAMLParser) validateActionWebFlag(action Action) {
 	}
 }
 
-func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string]Action, packageName string, managedAnnotations whisk.KeyValue) ([]utils.ActionRecord, error) {
+func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string]Action, packageName string, managedAnnotations whisk.KeyValue, packageInputs PackageInputs) ([]utils.ActionRecord, error) {
 
 	var errorParser error
 	var listOfActions []utils.ActionRecord = make([]utils.ActionRecord, 0)
@@ -759,7 +865,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		}
 
 		// Action.Inputs
-		listOfInputs, err := dm.composeInputsOrOutputs(action.Inputs, manifestFilePath)
+		listOfInputs, err := dm.composeInputs(action.Inputs, packageInputs, manifestFilePath)
 		if err != nil {
 			return nil, err
 		}
@@ -769,13 +875,13 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 
 		// Action.Outputs
 		// TODO{} add outputs as annotations (work to discuss officially supporting for compositions)
-		listOfOutputs, err := dm.composeInputsOrOutputs(action.Outputs, manifestFilePath)
-		if err != nil {
-			return nil, err
-		}
-		if len(listOfOutputs) > 0 {
-			//wskaction.Annotations = listOfOutputs
-		}
+		//listOfOutputs, err := dm.composeOutputs(action.Outputs, manifestFilePath)
+		//if err != nil {
+		//	return nil, err
+		//}
+		//if len(listOfOutputs) > 0 {
+		//	wskaction.Annotations = listOfOutputs
+		//}
 
 		// Action.Annotations
 		if listOfAnnotations := dm.composeAnnotations(action.Annotations); len(listOfAnnotations) > 0 {
@@ -823,7 +929,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 
 }
 
-func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath string, managedAnnotations whisk.KeyValue) ([]*whisk.Trigger, error) {
+func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath string, managedAnnotations whisk.KeyValue, inputs map[string]PackageInputs) ([]*whisk.Trigger, error) {
 	var triggers []*whisk.Trigger = make([]*whisk.Trigger, 0)
 	manifestPackages := make(map[string]Package)
 
@@ -833,8 +939,8 @@ func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath st
 		manifestPackages = manifest.GetProject().Packages
 	}
 
-	for _, p := range manifestPackages {
-		t, err := dm.ComposeTriggers(filePath, p, managedAnnotations)
+	for packageName, pkg := range manifestPackages {
+		t, err := dm.ComposeTriggers(filePath, pkg, managedAnnotations, inputs[packageName])
 		if err == nil {
 			triggers = append(triggers, t...)
 		} else {
@@ -844,13 +950,17 @@ func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath st
 	return triggers, nil
 }
 
-func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, managedAnnotations whisk.KeyValue) ([]*whisk.Trigger, error) {
+func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, managedAnnotations whisk.KeyValue, packageInputs PackageInputs) ([]*whisk.Trigger, error) {
 	var errorParser error
 	var listOfTriggers []*whisk.Trigger = make([]*whisk.Trigger, 0)
 
 	for _, trigger := range pkg.GetTriggerList() {
 		wsktrigger := new(whisk.Trigger)
-		wsktrigger.Name = wskenv.ConvertSingleName(trigger.Name)
+		if i, ok := packageInputs.Inputs[wskenv.GetEnvVarName(trigger.Name)]; ok {
+			wsktrigger.Name = i.Value.(string)
+		} else {
+			wsktrigger.Name = wskenv.ConvertSingleName(trigger.Name)
+		}
 		wsktrigger.Namespace = trigger.Namespace
 		pub := false
 		wsktrigger.Publish = &pub
@@ -871,7 +981,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, managedAnnot
 
 		// replacing env. variables here in the trigger feed name
 		// to support trigger feed with $READ_FROM_ENV_TRIGGER_FEED
-		trigger.Feed = wskenv.InterpolateStringWithEnvVar(trigger.Feed).(string)
+		trigger.Feed = wskenv.ConvertSingleName(trigger.Feed)
 
 		keyValArr := make(whisk.KeyValueArr, 0)
 		if len(trigger.Feed) != 0 {
@@ -882,7 +992,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, managedAnnot
 			wsktrigger.Annotations = keyValArr
 		}
 
-		inputs, err := dm.composeInputsOrOutputs(trigger.Inputs, filePath)
+		inputs, err := dm.composeInputs(trigger.Inputs, packageInputs, filePath)
 		if err != nil {
 			return nil, errorParser
 		}
@@ -905,7 +1015,7 @@ func (dm *YAMLParser) ComposeTriggers(filePath string, pkg Package, managedAnnot
 	return listOfTriggers, nil
 }
 
-func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML, managedAnnotations whisk.KeyValue) ([]*whisk.Rule, error) {
+func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML, managedAnnotations whisk.KeyValue, packageInputs map[string]PackageInputs) ([]*whisk.Rule, error) {
 	var rules []*whisk.Rule = make([]*whisk.Rule, 0)
 	manifestPackages := make(map[string]Package)
 
@@ -916,7 +1026,7 @@ func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML, managedAnnotat
 	}
 
 	for n, p := range manifestPackages {
-		r, err := dm.ComposeRules(p, n, managedAnnotations)
+		r, err := dm.ComposeRules(p, n, managedAnnotations, packageInputs[n])
 		if err == nil {
 			rules = append(rules, r...)
 		} else {
@@ -926,17 +1036,29 @@ func (dm *YAMLParser) ComposeRulesFromAllPackages(manifest *YAML, managedAnnotat
 	return rules, nil
 }
 
-func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, managedAnnotations whisk.KeyValue) ([]*whisk.Rule, error) {
+func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, managedAnnotations whisk.KeyValue, packageInputs PackageInputs) ([]*whisk.Rule, error) {
 	var rules []*whisk.Rule = make([]*whisk.Rule, 0)
 
 	for _, rule := range pkg.GetRuleList() {
 		wskrule := new(whisk.Rule)
-		wskrule.Name = wskenv.ConvertSingleName(rule.Name)
+		if i, ok := packageInputs.Inputs[wskenv.GetEnvVarName(rule.Name)]; ok {
+			wskrule.Name = i.Value.(string)
+		} else {
+			wskrule.Name = wskenv.ConvertSingleName(rule.Name)
+		}
 		//wskrule.Namespace = rule.Namespace
 		pub := false
 		wskrule.Publish = &pub
-		wskrule.Trigger = wskenv.ConvertSingleName(rule.Trigger)
-		wskrule.Action = wskenv.ConvertSingleName(rule.Action)
+		if i, ok := packageInputs.Inputs[wskenv.GetEnvVarName(rule.Trigger)]; ok {
+			wskrule.Trigger = i.Value.(string)
+		} else {
+			wskrule.Trigger = wskenv.ConvertSingleName(rule.Trigger)
+		}
+		if i, ok := packageInputs.Inputs[wskenv.GetEnvVarName(rule.Action)]; ok {
+			wskrule.Action = i.Value.(string)
+		} else {
+			wskrule.Action = wskenv.ConvertSingleName(rule.Action)
+		}
 		act := strings.TrimSpace(wskrule.Action.(string))
 		if !strings.ContainsRune(act, []rune(PATH_SEPARATOR)[0]) && !strings.HasPrefix(act, packageName+PATH_SEPARATOR) &&
 			strings.ToLower(packageName) != DEFAULT_PACKAGE {

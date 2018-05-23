@@ -1,0 +1,38 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+project:
+    name: projectWithParameters
+    inputs:
+        SLACK_USERNAME:
+            type: string
+            description: "Slack User Name"
+            required: true
+        SLACK_URL:
+            type: string
+            description: "Slack Webhook URL"
+            required: true
+        SLACK_CHANNEL:
+            type: string
+            description: "Slack Channel"
+            required: true
+            value: "#general"
+    packages:
+        slack-text-notifications:
+            inputs:
+                SLACK_CHANNEL:
+                    type: string
+                    description: "Slack Channel"
+                    required: true
+                    value: "#dev"
+                RULE_NAME:
+                    type: string
+                    description: "Rule Name"
+                    required: true
+                    value: "post-to-slack-every-hour"
+                TRIGGER_NAME:
+                    type: string
+                    description: "Trigger Name"
+                    required: true
+                    value: "everyhour"
+        slack-email-notifications:

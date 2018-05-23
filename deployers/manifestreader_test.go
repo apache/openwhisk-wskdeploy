@@ -166,7 +166,7 @@ func TestManifestReader_SetDependencies(t *testing.T) {
 	err = manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
 
-	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
+	err = manifestReader.HandleYaml(manifestParser, manifest, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
 
 	expectedLocationHelloWorlds := "https://github.com/apache/incubator-openwhisk-test/packages/helloworlds"
@@ -224,7 +224,7 @@ func TestManifestReader_SetDependencies_Bogus(t *testing.T) {
 	err = manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
 
-	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
+	err = manifestReader.HandleYaml(manifestParser, manifest, whisk.KeyValue{})
 	assert.NotNil(t, err, fmt.Sprintf(TEST_ERROR_FAILED_TO_REPORT_ERROR, manifestFile))
 }
 
@@ -241,7 +241,7 @@ func TestManifestReader_SetActions(t *testing.T) {
 	err = manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
 
-	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
+	err = manifestReader.HandleYaml(manifestParser, manifest, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
 
 	expectedRuntime := "nodejs:6"
@@ -307,7 +307,7 @@ func TestManifestReader_SetSequences_Bogus(t *testing.T) {
 	err = manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
 
-	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
+	err = manifestReader.HandleYaml(manifestParser, manifest, whisk.KeyValue{})
 	assert.NotNil(t, err, fmt.Sprintf(TEST_ERROR_FAILED_TO_REPORT_ERROR, manifestFile))
 }
 
@@ -324,7 +324,7 @@ func TestManifestReader_SetTriggers_Bogus(t *testing.T) {
 	err = manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
 
-	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
+	err = manifestReader.HandleYaml(manifestParser, manifest, whisk.KeyValue{})
 	assert.NotNil(t, err, fmt.Sprintf(TEST_ERROR_FAILED_TO_REPORT_ERROR, manifestFile))
 }
 
@@ -341,6 +341,6 @@ func TestManifestReader_SetRules_Bogus(t *testing.T) {
 	err = manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
 
-	err = manifestReader.HandleYaml(deployer, manifestParser, manifest, whisk.KeyValue{})
+	err = manifestReader.HandleYaml(manifestParser, manifest, whisk.KeyValue{})
 	assert.NotNil(t, err, fmt.Sprintf(TEST_ERROR_FAILED_TO_REPORT_ERROR, manifestFile))
 }
