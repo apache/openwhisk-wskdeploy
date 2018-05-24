@@ -48,7 +48,6 @@ before_deploy:
 - go get github.com/inconshreveable/mousetrap
 - export GIT_TAG="latest"
 - export TAG=false
-- "./tools/travis/build_tag_releases.sh $build_file_name $GIT_TAG"
 - ./gradlew --console=plain releaseBinaries -PpackageVersion=$GIT_TAG
 - export RELEASE_PKG_FILE="$(cd "$TRAVIS_BUILD_DIR/release" && ls ${zip_file_name}-*.tgz ${zip_file_name}-*.zip)"
 - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."
