@@ -8,7 +8,7 @@ packages:
       actions:
         cat:
           version: 1.0
-          function: actions/cat
+          function: actions/greeting
           runtime: nodejs:6
           inputs:
             name: string
