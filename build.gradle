@@ -264,10 +264,14 @@ task individualArchives(
                 if (p.goOs == 'linux') { compression = Compression.GZIP }
                 destinationDir = file('./release')
                 baseName = "${p.zipFileName}-${packageVersion}-${p.owOs}-${p.goArch}"
-                from "./build/${p.goOs}-${p.goArch}/"
-                include "${buildFileName}*"
-                from "./"
-                include "LICENSE.txt", "NOTICE.txt", "README.md", "docs/**"
+
+                from("./build/${p.goOs}-${p.goArch}/") {
+                    include "${buildFileName}*"
+                }
+
+                from("./") {
+                    include "LICENSE.txt", "NOTICE.txt", "README.md", "docs/**"
+                }
             }
         })
 
