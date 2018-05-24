@@ -12,4 +12,5 @@ function main(params) {
     var place = params.place || 'somewhere';
     return {payload:  'Hello, ' + name + ' from ' + place + '!'};
 }
+exports.main = main;
 
