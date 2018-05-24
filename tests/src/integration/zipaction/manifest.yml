@@ -2,16 +2,16 @@
 # license agreements; and to You under the Apache License, Version 2.0.
 
 packages:
-  zipaction:
-      version: 1.0
-      license: Apache-2.0
-      actions:
-        cat:
-          version: 1.0
-          function: actions/greeting
-          runtime: nodejs:6
-          inputs:
-            name: string
-            place: string
-          outputs:
-            payload: string
+    zipaction:
+        version: 1.0
+        license: Apache-2.0
+        actions:
+            greeting:
+                version: 1.0
+                function: actions/greeting
+                runtime: nodejs:6
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
