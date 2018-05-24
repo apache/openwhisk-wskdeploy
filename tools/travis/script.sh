@@ -61,3 +61,4 @@ export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/openwhisk"
 
 cd $TRAVIS_BUILD_DIR
 make integration_test
+
