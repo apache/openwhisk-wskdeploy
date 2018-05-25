@@ -63,7 +63,7 @@ func TestExport(t *testing.T) {
 	assert.Equal(t, nil, err, "Failed to undeploy the lib2.")
 }
 
-func TestExportHelloWorld(t *testing.T) {
+func SkipTestExportHelloWorld(t *testing.T) {
 	projectName := "HELLO_WORLD"
 	wskdeploy := common.NewWskdeploy()
 
