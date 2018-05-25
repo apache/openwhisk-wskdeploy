@@ -728,11 +728,15 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 					action.Runtime,
 					utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
 			} else {
-				warnStr := wski18n.T(wski18n.ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
-					map[string]interface{}{
-						wski18n.KEY_RUNTIME: exec.Kind,
-						wski18n.KEY_ACTION:  action.Name})
-				wskprint.PrintOpenWhiskWarning(warnStr)
+				if utils.Flags.Strict {
+					exec.Kind = action.Runtime
+				} else {
+					warnStr := wski18n.T(wski18n.ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
+						map[string]interface{}{
+							wski18n.KEY_RUNTIME: exec.Kind,
+							wski18n.KEY_ACTION:  action.Name})
+					wskprint.PrintOpenWhiskWarning(warnStr)
+				}
 			}
 
 		}

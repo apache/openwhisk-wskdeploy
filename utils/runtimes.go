@@ -21,6 +21,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"io/ioutil"
@@ -324,3 +325,16 @@ var RUNTIME_DETAILS = []byte(`{
 	}
 	}
 `)
+
+func readRuntimes() {
+	//ioutil.ReadFile("runtimes/runtimes.json")
+	//	if readErr != nil {
+	//		err = wskderrors.NewCommandError(FLAG_PARAMFILE + "/" + FLAG_PARAMFILE_SHORT,
+	//			wski18n.T(wski18n.ID_ERR_INVALID_PARAM_FILE_X_file_X,
+	//				map[string]interface{}{
+	//					wski18n.KEY_PATH: filename,
+	//					wski18n.KEY_ARG:  FLAG_PARAMFILE + "/" + FLAG_PARAMFILE_SHORT,
+	//					wski18n.KEY_ERR:  readErr}))
+	//		return nil, nil, err
+	//	}
+}
