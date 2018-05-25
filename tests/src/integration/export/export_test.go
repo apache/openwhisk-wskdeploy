@@ -20,6 +20,7 @@
 package tests
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -78,11 +79,19 @@ func TestExportHelloWorld(t *testing.T) {
 	_, err = wskdeploy.UndeployManifestPathOnly(manifestHelloWorldPath)
 	assert.Equal(t, nil, err, "Failed to undeploy")
 
-	_, err = wskdeploy.ManagedDeploymentManifestAndProject(targetManifestHelloWorldPath, projectName)
-	assert.Equal(t, nil, err, "Failed to redeploy exported project.")
+	wskprops := common.GetWskpropsFromEnvVars(common.BLUEMIX_APIHOST, common.BLUEMIX_NAMESPACE, common.BLUEMIX_AUTH)
+	err = common.ValidateWskprops(wskprops)
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Println("Wsk properties are not properly configured, so tests are skipped.")
+	} else {
+		wskdeploy := common.NewWskdeploy()
+		_, err = wskdeploy.ManagedDeploymentManifestAndProject(targetManifestHelloWorldPath, projectName)
+		assert.Equal(t, nil, err, "Failed to redeploy exported project.")
 
-	_, err = wskdeploy.UndeployManifestPathOnly(targetManifestHelloWorldPath)
-	assert.Equal(t, nil, err, "Failed to undeploy exported project")
+		_, err = wskdeploy.UndeployManifestPathOnly(targetManifestHelloWorldPath)
+		assert.Equal(t, nil, err, "Failed to undeploy exported project")
+	}
 }
 
 func TestExport2Pack(t *testing.T) {
