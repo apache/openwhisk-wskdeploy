@@ -66,4 +66,4 @@ The named error **NewInputYamlFormatError** provides direct indication of both w
 
 
 All current named errors supported by the utility can be found in the latest ```wskdeployerror.go``` source file:
-[wskdeployerror.go](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/utils/wskdeployerror.go)
+[wskdeployerror.go](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/wskderrors/wskdeployerror.go)
