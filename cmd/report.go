@@ -33,7 +33,7 @@ var reportCmd = &cobra.Command{
 
 func ReportCmdImp(cmd *cobra.Command, args []string) error {
 	utils.Flags.Report = true
-	return Deploy()
+	return Deploy(cmd)
 }
 
 func init() {

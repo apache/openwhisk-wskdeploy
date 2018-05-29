@@ -34,7 +34,7 @@ var syncCmd = &cobra.Command{
 
 func SyncCmdImp(cmd *cobra.Command, args []string) error {
 	utils.Flags.Sync = true
-	return Deploy()
+	return Deploy(cmd)
 }
 
 func init() {
