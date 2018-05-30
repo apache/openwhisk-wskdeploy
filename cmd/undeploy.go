@@ -32,7 +32,7 @@ var undeployCmd = &cobra.Command{
 }
 
 func UndeployCmdImp(cmd *cobra.Command, args []string) error {
-	return Undeploy()
+	return Undeploy(cmd)
 }
 
 func init() {

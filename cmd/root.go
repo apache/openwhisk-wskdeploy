@@ -46,7 +46,7 @@ var RootCmd = &cobra.Command{
 }
 
 func RootCmdImp(cmd *cobra.Command, args []string) error {
-	return Deploy()
+	return Deploy(cmd)
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
@@ -137,7 +137,7 @@ func displayCommandUsingFilenameMessage(command string, filetype string, path st
 	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, msg)
 }
 
-func loadDefaultManifestFileFromProjectPath(command string, projectPath string) error {
+func loadDefaultManifestFileFromProjectPath(command string, projectPath string, cmd *cobra.Command) (error, bool) {
 
 	if _, err := os.Stat(path.Join(projectPath, utils.ManifestFileNameYaml)); err == nil {
 		utils.Flags.ManifestPath = path.Join(projectPath, utils.ManifestFileNameYaml)
@@ -146,10 +146,15 @@ func loadDefaultManifestFileFromProjectPath(command string, projectPath string) 
 	} else {
 		stderr = wski18n.T(wski18n.ID_ERR_MANIFEST_FILE_NOT_FOUND_X_path_X,
 			map[string]interface{}{wski18n.KEY_PATH: projectPath})
-		return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr)
+		if cmd != nil {
+			stdout := stderr + wski18n.T(cmd.UsageString())
+			wskprint.PrintlnOpenWhiskOutput(stdout)
+			return nil, true
+		}
+		return wskderrors.NewErrorManifestFileNotFound(projectPath, stderr), false
 	}
 	displayCommandUsingFilenameMessage(command, wski18n.MANIFEST_FILE, utils.Flags.ManifestPath)
-	return nil
+	return nil, false
 }
 
 func loadDefaultDeploymentFileFromProjectPath(command string, projectPath string) error {
@@ -163,7 +168,7 @@ func loadDefaultDeploymentFileFromProjectPath(command string, projectPath string
 	return nil
 }
 
-func Deploy() error {
+func Deploy(cmd *cobra.Command) error {
 
 	// Convey flags for verbose and trace to Go client
 	whisk.SetVerbose(utils.Flags.Verbose)
@@ -179,8 +184,10 @@ func Deploy() error {
 	// default manifests are manifest.yaml and manifest.yml
 	// return failure if none of the default manifest files were found
 	if utils.Flags.ManifestPath == "" {
-		if err := loadDefaultManifestFileFromProjectPath(wski18n.CMD_DEPLOY, projectPath); err != nil {
+		if err, returnRoot := loadDefaultManifestFileFromProjectPath(wski18n.CMD_DEPLOY, projectPath, cmd); err != nil {
 			return err
+		} else if returnRoot == true {
+			return nil
 		}
 	}
 
@@ -251,7 +258,7 @@ func Deploy() error {
 
 }
 
-func Undeploy() error {
+func Undeploy(cmd *cobra.Command) error {
 
 	// Convey flags for verbose and trace to Go client
 	whisk.SetVerbose(utils.Flags.Verbose)
@@ -293,8 +300,10 @@ func Undeploy() error {
 
 	// If manifest filename is not provided, attempt to load default manifests from project path
 	if utils.Flags.ManifestPath == "" {
-		if err := loadDefaultManifestFileFromProjectPath(wski18n.CMD_UNDEPLOY, projectPath); err != nil {
+		if err, returnRoot := loadDefaultManifestFileFromProjectPath(wski18n.CMD_UNDEPLOY, projectPath, cmd); err != nil {
 			return err
+		} else if returnRoot == true {
+			return nil
 		}
 	}
 
