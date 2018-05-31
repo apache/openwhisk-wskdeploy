@@ -51,9 +51,9 @@ const (
 
 // Structs used to denote the OpenWhisk Runtime information
 type Limit struct {
-	Apm       uint16 `json:"actions_per_minute"`
-	Tpm       uint16 `json:"triggers_per_minute"`
-	ConAction uint16 `json:"concurrent_actions"`
+	Apm       uint `json:"actions_per_minute"`
+	Tpm       uint `json:"triggers_per_minute"`
+	ConAction uint `json:"concurrent_actions"`
 }
 
 type Runtime struct {
