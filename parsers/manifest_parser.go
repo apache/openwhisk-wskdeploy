@@ -29,6 +29,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
 	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
@@ -186,8 +187,8 @@ func (dm *YAMLParser) composeAnnotations(annotations map[string]interface{}) whi
 	return listOfAnnotations
 }
 
-func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string, managedAnnotations whisk.KeyValue, packageInputs map[string]PackageInputs) (map[string]utils.DependencyRecord, error) {
-	dependencies := make(map[string]utils.DependencyRecord)
+func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string, managedAnnotations whisk.KeyValue, packageInputs map[string]PackageInputs) (map[string]dependencies.DependencyRecord, error) {
+	dependencies := make(map[string]dependencies.DependencyRecord)
 	packages := make(map[string]Package)
 
 	if len(manifest.Packages) != 0 {
@@ -209,9 +210,9 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 	return dependencies, nil
 }
 
-func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string, managedAnnotations whisk.KeyValue, packageInputs PackageInputs) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string, managedAnnotations whisk.KeyValue, packageInputs PackageInputs) (map[string]dependencies.DependencyRecord, error) {
 
-	depMap := make(map[string]utils.DependencyRecord)
+	depMap := make(map[string]dependencies.DependencyRecord)
 	for key, dependency := range pkg.Dependencies {
 		version := dependency.Version
 		if len(version) == 0 {
@@ -221,12 +222,12 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 		location := dependency.Location
 
 		isBinding := false
-		if utils.LocationIsBinding(location) {
+		if dependencies.LocationIsBinding(location) {
 			if !strings.HasPrefix(location, PATH_SEPARATOR) {
 				location = PATH_SEPARATOR + dependency.Location
 			}
 			isBinding = true
-		} else if utils.LocationIsGithub(location) {
+		} else if dependencies.LocationIsGithub(location) {
 
 			// TODO() define const for the protocol prefix, etc.
 			if !strings.HasPrefix(location, HTTPS) && !strings.HasPrefix(location, HTTP) {
@@ -252,7 +253,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 
 		packDir := path.Join(projectPath, strings.Title(YAML_KEY_PACKAGES))
 		depName := packageName + ":" + key
-		depMap[depName] = utils.NewDependencyRecord(packDir, packageName, location, version, inputs, annotations, isBinding)
+		depMap[depName] = dependencies.NewDependencyRecord(packDir, packageName, location, version, inputs, annotations, isBinding)
 	}
 
 	return depMap, nil

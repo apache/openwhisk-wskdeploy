@@ -24,6 +24,7 @@ import (
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
@@ -207,7 +208,7 @@ func Deploy() error {
 		deployer.Report = utils.Flags.Report
 
 		// master record of any dependency that has been downloaded
-		deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
+		deployer.DependencyMaster = make(map[string]dependencies.DependencyRecord)
 
 		// Read credentials from Configuration file, manifest file or deployment file
 		clientConfig, error := deployers.NewWhiskConfig(
