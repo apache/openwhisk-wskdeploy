@@ -22,13 +22,6 @@ import (
 	"testing"
 )
 
-func TestConvertToMap(t *testing.T) {
-	op, err := ParseOpenWhisk("")
-	if err == nil {
-		ConvertToMap(op)
-	}
-}
-
 func TestParseOpenWhisk(t *testing.T) {
 	openwhiskHost := "https://openwhisk.ng.bluemix.net"
 	openwhisk, err := ParseOpenWhisk(openwhiskHost)
