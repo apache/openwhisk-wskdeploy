@@ -120,14 +120,16 @@ func initConfig() {
 }
 
 // TODO() add Trace of runtimes found at apihost
-func setSupportedRuntimes(apiHost string) {
-	op, error := runtimes.ParseOpenWhisk(apiHost)
-	if error == nil {
-		runtimes.SupportedRunTimes = runtimes.ConvertToMap(op)
-		runtimes.DefaultRunTimes = runtimes.DefaultRuntimes(op)
-		runtimes.FileExtensionRuntimeKindMap = runtimes.FileExtensionRuntimes(op)
-		runtimes.FileRuntimeExtensionsMap = runtimes.FileRuntimeExtensions(op)
+func setSupportedRuntimes(apiHost string) error {
+	op, err := runtimes.ParseOpenWhisk(apiHost)
+	if err != nil {
+		return err
 	}
+	runtimes.SupportedRunTimes = runtimes.ConvertToMap(op)
+	runtimes.DefaultRunTimes = runtimes.DefaultRuntimes(op)
+	runtimes.FileExtensionRuntimeKindMap = runtimes.FileExtensionRuntimes(op)
+	runtimes.FileRuntimeExtensionsMap = runtimes.FileRuntimeExtensions(op)
+	return nil
 }
 
 func displayCommandUsingFilenameMessage(command string, filetype string, path string) {
@@ -228,10 +230,13 @@ func Deploy() error {
 		deployer.ClientConfig = clientConfig
 
 		// The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
-		setSupportedRuntimes(clientConfig.Host)
+		err := setSupportedRuntimes(clientConfig.Host)
+		if err != nil {
+			return err
+		}
 
 		// Construct Deployment Plan
-		err := deployer.ConstructDeploymentPlan()
+		err = deployer.ConstructDeploymentPlan()
 		if err != nil {
 			return err
 		}
@@ -277,9 +282,12 @@ func Undeploy() error {
 		deployer.ClientConfig = clientConfig
 
 		// The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
-		setSupportedRuntimes(clientConfig.Host)
+		err := setSupportedRuntimes(clientConfig.Host)
+		if err != nil {
+			return err
+		}
 
-		err := deployer.UnDeployProject()
+		err = deployer.UnDeployProject()
 		if err != nil {
 			return err
 		}
@@ -329,7 +337,10 @@ func Undeploy() error {
 		deployer.ClientConfig = clientConfig
 
 		// The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
-		setSupportedRuntimes(clientConfig.Host)
+		err := setSupportedRuntimes(clientConfig.Host)
+		if err != nil {
+			return err
+		}
 
 		verifiedPlan, err := deployer.ConstructUnDeploymentPlan()
 		if err != nil {
