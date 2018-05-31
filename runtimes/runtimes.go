@@ -29,6 +29,8 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"path/filepath"
+	"runtime"
 )
 
 const (
@@ -44,7 +46,7 @@ const (
 	RUNTIME_NOT_SPECIFIED   = "NOT SPECIFIED"
 	BLACKBOX                = "blackbox"
 	HTTP_FILE_EXTENSION     = "http"
-	RUNTIMES_FILE           = "runtimes/runtimes.json"
+	RUNTIMES_FILE_NAME      = "runtimes.json"
 )
 
 // Structs used to denote the OpenWhisk Runtime information
@@ -233,7 +235,10 @@ func ListOfSupportedRuntimes(runtimes map[string][]string) (rt []string) {
 }
 
 func readRuntimes() []byte {
-	file, readErr := ioutil.ReadFile(RUNTIMES_FILE)
+	_, b, _, _ := runtime.Caller(0)
+	basepath := filepath.Dir(b)
+	runtimesFileWithPath := filepath.Join(basepath, RUNTIMES_FILE_NAME)
+	file, readErr := ioutil.ReadFile(runtimesFileWithPath)
 	if readErr != nil {
 		wskprint.PrintlnOpenWhiskWarning(readErr.Error())
 		return nil
