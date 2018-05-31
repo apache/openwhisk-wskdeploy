@@ -24,4 +24,4 @@ UTILDIR="$ROOTDIR/../incubator-openwhisk-utilities"
 
 # run scancode using the ASF Release configuration
 cd $UTILDIR
-scancode/scanCode.py --config scancode/ASF-Release-v2.cfg $ROOTDIR
+scancode/scanCode.py --config scancode/ASF-Release.cfg $ROOTDIR
