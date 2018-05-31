@@ -29,6 +29,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/conductor"
 	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
 	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
@@ -921,7 +922,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		}
 		// Conductor Action
 		if action.Conductor {
-			wskaction.Annotations = append(wskaction.Annotations, utils.ConductorAction())
+			wskaction.Annotations = append(wskaction.Annotations, conductor.ConductorAction())
 		}
 
 		wskaction.Name = actionName

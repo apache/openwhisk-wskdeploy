@@ -1,3 +1,5 @@
+// +build unit
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,15 +17,21 @@
  * limitations under the License.
  */
 
-package utils
+package conductor
 
-import "github.com/apache/incubator-openwhisk-client-go/whisk"
+import (
+	"testing"
 
-const CONDUCTOR_ANNOTATION = "conductor"
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/stretchr/testify/assert"
+)
 
-func ConductorAction() whisk.KeyValue {
-	return whisk.KeyValue{
-		Key:   CONDUCTOR_ANNOTATION,
-		Value: true,
-	}
+const MSG_ERR_CONDUCTOR_ACTION_INVALID = "Conductor action does not create conductor annotation"
+
+func TestConductorAction(t *testing.T) {
+	conductor := ConductorAction()
+	annotation := whisk.KeyValue{Key: CONDUCTOR_ANNOTATION, Value: true}
+	assert.NotNil(t, conductor, MSG_ERR_CONDUCTOR_ACTION_INVALID)
+	assert.NotEqual(t, whisk.KeyValue{}, conductor, MSG_ERR_CONDUCTOR_ACTION_INVALID)
+	assert.Equal(t, annotation, conductor, MSG_ERR_CONDUCTOR_ACTION_INVALID)
 }
