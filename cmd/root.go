@@ -25,6 +25,7 @@ import (
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
@@ -119,12 +120,12 @@ func initConfig() {
 
 // TODO() add Trace of runtimes found at apihost
 func setSupportedRuntimes(apiHost string) {
-	op, error := utils.ParseOpenWhisk(apiHost)
+	op, error := runtimes.ParseOpenWhisk(apiHost)
 	if error == nil {
-		utils.SupportedRunTimes = utils.ConvertToMap(op)
-		utils.DefaultRunTimes = utils.DefaultRuntimes(op)
-		utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
-		utils.FileRuntimeExtensionsMap = utils.FileRuntimeExtensions(op)
+		runtimes.SupportedRunTimes = runtimes.ConvertToMap(op)
+		runtimes.DefaultRunTimes = runtimes.DefaultRuntimes(op)
+		runtimes.FileExtensionRuntimeKindMap = runtimes.FileExtensionRuntimes(op)
+		runtimes.FileRuntimeExtensionsMap = runtimes.FileRuntimeExtensions(op)
 	}
 }
 

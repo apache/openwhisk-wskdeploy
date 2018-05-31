@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package utils
+package runtimes
 
 import (
 	"crypto/tls"
 	"encoding/json"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 const (
@@ -95,7 +97,7 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	}
 
 	var netClient = &http.Client{
-		Timeout:   time.Second * DEFAULT_HTTP_TIMEOUT,
+		Timeout:   time.Second * utils.DEFAULT_HTTP_TIMEOUT,
 		Transport: netTransport,
 	}
 

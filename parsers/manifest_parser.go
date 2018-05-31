@@ -20,14 +20,16 @@ package parsers
 import (
 	"encoding/base64"
 	"errors"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
+	"gopkg.in/yaml.v2"
+
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
@@ -566,10 +568,10 @@ func (dm *YAMLParser) readActionCode(manifestFilePath string, action Action) (*w
 	// even if runtime is invalid, deploy action with specified runtime in strict mode
 	if utils.Flags.Strict {
 		exec.Kind = action.Runtime
-	} else if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {
+	} else if runtimes.CheckExistRuntime(action.Runtime, runtimes.SupportedRunTimes) {
 		exec.Kind = action.Runtime
-	} else if len(utils.DefaultRunTimes[action.Runtime]) != 0 {
-		exec.Kind = utils.DefaultRunTimes[action.Runtime]
+	} else if len(runtimes.DefaultRunTimes[action.Runtime]) != 0 {
+		exec.Kind = runtimes.DefaultRunTimes[action.Runtime]
 	} else {
 		err := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
 			map[string]interface{}{
@@ -590,16 +592,16 @@ func (dm *YAMLParser) validateActionFunction(manifestFileName string, action Act
 	// and its not explicitly specified in the manifest YAML file
 	// and action source is not a zip file
 	if len(action.Runtime) == 0 && len(action.Docker) == 0 && !action.Native {
-		if ext == utils.ZIP_FILE_EXTENSION {
+		if ext == runtimes.ZIP_FILE_EXTENSION {
 			errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
 				map[string]interface{}{
-					wski18n.KEY_RUNTIME: utils.RUNTIME_NOT_SPECIFIED,
+					wski18n.KEY_RUNTIME: runtimes.RUNTIME_NOT_SPECIFIED,
 					wski18n.KEY_ACTION:  action.Name})
 			return wskderrors.NewInvalidRuntimeError(errMessage,
 				manifestFileName,
 				action.Name,
-				utils.RUNTIME_NOT_SPECIFIED,
-				utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+				runtimes.RUNTIME_NOT_SPECIFIED,
+				runtimes.ListOfSupportedRuntimes(runtimes.SupportedRunTimes))
 		} else if len(kind) == 0 {
 			errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_ACTION_SOURCE_NOT_SUPPORTED_X_ext_X_action_X,
 				map[string]interface{}{
@@ -608,8 +610,8 @@ func (dm *YAMLParser) validateActionFunction(manifestFileName string, action Act
 			return wskderrors.NewInvalidRuntimeError(errMessage,
 				manifestFileName,
 				action.Name,
-				utils.RUNTIME_NOT_SPECIFIED,
-				utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+				runtimes.RUNTIME_NOT_SPECIFIED,
+				runtimes.ListOfSupportedRuntimes(runtimes.SupportedRunTimes))
 		}
 	}
 	return nil
@@ -639,7 +641,7 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 	}
 
 	if utils.IsDirectory(actionFilePath) {
-		zipFileName = actionFilePath + "." + utils.ZIP_FILE_EXTENSION
+		zipFileName = actionFilePath + "." + runtimes.ZIP_FILE_EXTENSION
 		err := utils.NewZipWritter(actionFilePath, zipFileName).Zip()
 		if err != nil {
 			return actionFilePath, nil, err
@@ -659,8 +661,8 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 
 	// determine default runtime for the given file extension
 	var kind string
-	r := utils.FileExtensionRuntimeKindMap[ext]
-	kind = utils.DefaultRunTimes[r]
+	r := runtimes.FileExtensionRuntimeKindMap[ext]
+	kind = runtimes.DefaultRunTimes[r]
 	if err := dm.validateActionFunction(manifestFileName, action, ext, kind); err != nil {
 		return actionFilePath, nil, err
 	}
@@ -671,7 +673,7 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 		return actionFilePath, nil, err
 	}
 	code := string(dat)
-	if ext == utils.ZIP_FILE_EXTENSION || ext == utils.JAR_FILE_EXTENSION {
+	if ext == runtimes.ZIP_FILE_EXTENSION || ext == runtimes.JAR_FILE_EXTENSION {
 		code = base64.StdEncoding.EncodeToString([]byte(dat))
 	}
 	exec.Code = &code
@@ -684,13 +686,13 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 	*  Set the action runtime to match with the source file extension, if wskdeploy is not invoked in strict mode
 	 */
 	if len(action.Runtime) != 0 {
-		if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {
+		if runtimes.CheckExistRuntime(action.Runtime, runtimes.SupportedRunTimes) {
 			// for zip actions, rely on the runtimes from the manifest file as it can not be derived from the action source file extension
 			// pick runtime from manifest file if its supported by OpenWhisk server
-			if ext == utils.ZIP_FILE_EXTENSION {
+			if ext == runtimes.ZIP_FILE_EXTENSION {
 				exec.Kind = action.Runtime
 			} else {
-				if utils.CheckRuntimeConsistencyWithFileExtension(ext, action.Runtime) {
+				if runtimes.CheckRuntimeConsistencyWithFileExtension(ext, action.Runtime) {
 					exec.Kind = action.Runtime
 				} else {
 					warnStr := wski18n.T(wski18n.ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
@@ -719,14 +721,14 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 					wski18n.KEY_ACTION:  action.Name})
 			wskprint.PrintOpenWhiskWarning(warnStr)
 
-			if ext == utils.ZIP_FILE_EXTENSION {
+			if ext == runtimes.ZIP_FILE_EXTENSION {
 				// for zip action, error out if specified runtime is not supported by
 				// OpenWhisk server
 				return actionFilePath, nil, wskderrors.NewInvalidRuntimeError(warnStr,
 					manifestFileName,
 					action.Name,
 					action.Runtime,
-					utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+					runtimes.ListOfSupportedRuntimes(runtimes.SupportedRunTimes))
 			} else {
 				if utils.Flags.Strict {
 					exec.Kind = action.Runtime
@@ -773,7 +775,7 @@ func (dm *YAMLParser) composeActionExec(manifestFilePath string, manifestFileNam
 	// when an action Native is set to true,
 	// set exec.Image to openwhisk/skeleton
 	if len(action.Docker) != 0 || action.Native {
-		exec.Kind = utils.BLACKBOX
+		exec.Kind = runtimes.BLACKBOX
 		if action.Native {
 			exec.Image = NATIVE_DOCKER_IMAGE
 		} else {
