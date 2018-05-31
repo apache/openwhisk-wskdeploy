@@ -45,8 +45,8 @@ const (
 	HTTP_CONTENT_TYPE_VALUE = "application/json; charset=UTF-8"
 	RUNTIME_NOT_SPECIFIED   = "NOT SPECIFIED"
 	BLACKBOX                = "blackbox"
-	HTTP_FILE_EXTENSION     = "http"
 	RUNTIMES_FILE_NAME      = "runtimes.json"
+	HTTPS                   = "https"
 )
 
 // Structs used to denote the OpenWhisk Runtime information
@@ -87,7 +87,7 @@ var FileRuntimeExtensionsMap map[string]string
 // `curl -k https://openwhisk.ng.bluemix.net`
 // hard coding it here in case of network unavailable or failure.
 func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
-	url := "https://" + apiHost
+	url := HTTPS + "://" + apiHost
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set(HTTP_CONTENT_TYPE_KEY, HTTP_CONTENT_TYPE_VALUE)
 	tlsConfig := &tls.Config{
@@ -109,6 +109,9 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 		errString := wski18n.T(wski18n.ID_ERR_RUNTIMES_GET_X_err_X,
 			map[string]interface{}{"err": err.Error()})
 		whisk.Debug(whisk.DbgWarn, errString)
+		if utils.Flags.Strict {
+			return
+		}
 	}
 
 	if res != nil {
