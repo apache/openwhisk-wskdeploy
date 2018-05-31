@@ -24,7 +24,9 @@ import (
 	"testing"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
@@ -63,7 +65,7 @@ func buildServiceDeployer(manifestFile string) (*ServiceDeployer, error) {
 	deployer.DeploymentPath = deploymentFile
 	deployer.Preview = utils.Flags.Preview
 
-	deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
+	deployer.DependencyMaster = make(map[string]dependencies.DependencyRecord)
 
 	config := whisk.Config{
 		Namespace:        "test",
@@ -73,12 +75,12 @@ func buildServiceDeployer(manifestFile string) (*ServiceDeployer, error) {
 	}
 	deployer.ClientConfig = &config
 
-	op, error := utils.ParseOpenWhisk(deployer.ClientConfig.Host)
+	op, error := runtimes.ParseOpenWhisk(deployer.ClientConfig.Host)
 	if error == nil {
-		utils.SupportedRunTimes = utils.ConvertToMap(op)
-		utils.DefaultRunTimes = utils.DefaultRuntimes(op)
-		utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
-		utils.FileRuntimeExtensionsMap = utils.FileRuntimeExtensions(op)
+		runtimes.SupportedRunTimes = runtimes.ConvertToMap(op)
+		runtimes.DefaultRunTimes = runtimes.DefaultRuntimes(op)
+		runtimes.FileExtensionRuntimeKindMap = runtimes.FileExtensionRuntimes(op)
+		runtimes.FileRuntimeExtensionsMap = runtimes.FileRuntimeExtensions(op)
 	}
 
 	return deployer, nil

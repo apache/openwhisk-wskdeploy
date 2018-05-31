@@ -17,11 +17,26 @@
 
 package runtimes
 
-import "testing"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
 func TestConvertToMap(t *testing.T) {
 	op, err := ParseOpenWhisk("")
 	if err == nil {
 		ConvertToMap(op)
 	}
+}
+
+func TestParseOpenWhisk(t *testing.T) {
+	openwhiskHost := "https://openwhisk.ng.bluemix.net"
+	openwhisk, err := ParseOpenWhisk(openwhiskHost)
+	assert.Equal(t, nil, err, "parse openwhisk info error happened.")
+	converted := ConvertToMap(openwhisk)
+	assert.Equal(t, 2, len(converted["nodejs"]), "not expected length")
+	assert.Equal(t, 1, len(converted["php"]), "not expected length")
+	assert.Equal(t, 1, len(converted["java"]), "not expected length")
+	assert.Equal(t, 3, len(converted["python"]), "not expected length")
+	assert.Equal(t, 1, len(converted["swift"]), "not expected length")
 }

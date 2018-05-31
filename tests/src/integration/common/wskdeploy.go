@@ -28,7 +28,9 @@ import (
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/fatih/color"
@@ -197,7 +199,7 @@ func (wskdeploy *Wskdeploy) GetDeploymentObjects(manifestPath string, deployment
 	deployer.ProjectPath = filepath.Dir(manifestPath)
 	deployer.ManifestPath = manifestPath
 	deployer.DeploymentPath = deploymentPath
-	deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
+	deployer.DependencyMaster = make(map[string]dependencies.DependencyRecord)
 
 	//create client config with namespace, apihost, authkey and etc.
 	//these values might be mock values because it's only for testing
@@ -211,11 +213,11 @@ func (wskdeploy *Wskdeploy) GetDeploymentObjects(manifestPath string, deployment
 
 	//setSupportedRuntimes(apiHost string)
 	//only for testing, mock values
-	op, err := utils.ParseOpenWhisk(clientConfig.Host)
+	op, err := runtimes.ParseOpenWhisk(clientConfig.Host)
 	if err == nil {
-		utils.SupportedRunTimes = utils.ConvertToMap(op)
-		utils.DefaultRunTimes = utils.DefaultRuntimes(op)
-		utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
+		runtimes.SupportedRunTimes = runtimes.ConvertToMap(op)
+		runtimes.DefaultRunTimes = runtimes.DefaultRuntimes(op)
+		runtimes.FileExtensionRuntimeKindMap = runtimes.FileExtensionRuntimes(op)
 	}
 
 	//invoke ConstructDeploymentPlan to create the in memory objects for deployment
