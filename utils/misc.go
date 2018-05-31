@@ -155,26 +155,6 @@ func (zw *ZipWritter) Zip() error {
 	return nil
 }
 
-func deleteKey(key string, keyValueArr whisk.KeyValueArr) whisk.KeyValueArr {
-	for i := 0; i < len(keyValueArr); i++ {
-		if keyValueArr[i].Key == key {
-			keyValueArr = append(keyValueArr[:i], keyValueArr[i+1:]...)
-			break
-		}
-	}
-
-	return keyValueArr
-}
-
-func addKeyValue(key string, value interface{}, keyValueArr whisk.KeyValueArr) whisk.KeyValueArr {
-	keyValue := whisk.KeyValue{
-		Key:   key,
-		Value: value,
-	}
-
-	return append(keyValueArr, keyValue)
-}
-
 func GetManifestFilePath(projectPath string) string {
 	if _, err := os.Stat(path.Join(projectPath, ManifestFileNameYaml)); err == nil {
 		return path.Join(projectPath, ManifestFileNameYaml)

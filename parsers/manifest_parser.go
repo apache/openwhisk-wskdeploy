@@ -33,6 +33,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
 	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/webaction"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
@@ -508,7 +509,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		// when web-export is set to raw, treat sequence as a raw HTTP web action,
 		// when web-export is set to no | false, treat sequence as a standard action
 		if len(sequence.Web) != 0 {
-			wskaction.Annotations, errorParser = utils.WebAction(manifestFilePath, wskaction.Name, sequence.Web, wskaction.Annotations, false)
+			wskaction.Annotations, errorParser = webaction.WebAction(manifestFilePath, wskaction.Name, sequence.Web, wskaction.Annotations, false)
 			if errorParser != nil {
 				return nil, errorParser
 			}
@@ -908,7 +909,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		// when web-export is set to no | false, treat action as a standard action
 		dm.validateActionWebFlag(action)
 		if len(action.GetWeb()) != 0 {
-			wskaction.Annotations, errorParser = utils.WebAction(manifestFilePath, action.Name, action.GetWeb(), wskaction.Annotations, false)
+			wskaction.Annotations, errorParser = webaction.WebAction(manifestFilePath, action.Name, action.GetWeb(), wskaction.Annotations, false)
 			if errorParser != nil {
 				return listOfActions, errorParser
 			}
@@ -1162,7 +1163,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						// verify that the action is defined as web action
 						// web or web-export set to any of [true, yes, raw]
 						a := pkg.Actions[actionName]
-						if !utils.IsWebAction(a.GetWeb()) {
+						if !webaction.IsWebAction(a.GetWeb()) {
 							warningString := wski18n.T(wski18n.ID_WARN_API_MISSING_WEB_ACTION_X_action_X_api_X,
 								map[string]interface{}{
 									wski18n.KEY_ACTION: actionName,
@@ -1171,7 +1172,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							if a.Annotations == nil {
 								a.Annotations = make(map[string]interface{}, 0)
 							}
-							a.Annotations[utils.WEB_EXPORT_ANNOT] = true
+							a.Annotations[webaction.WEB_EXPORT_ANNOT] = true
 							pkg.Actions[actionName] = a
 						}
 						// verify that the sequence is defined under sequences sections
@@ -1179,7 +1180,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						// verify that the sequence is defined as web sequence
 						// web set to any of [true, yes, raw]
 						a := pkg.Sequences[actionName]
-						if !utils.IsWebSequence(a.Web) {
+						if !webaction.IsWebSequence(a.Web) {
 							warningString := wski18n.T(wski18n.ID_WARN_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X,
 								map[string]interface{}{
 									wski18n.KEY_SEQUENCE: actionName,
@@ -1188,7 +1189,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							if a.Annotations == nil {
 								a.Annotations = make(map[string]interface{}, 0)
 							}
-							a.Annotations[utils.WEB_EXPORT_ANNOT] = true
+							a.Annotations[webaction.WEB_EXPORT_ANNOT] = true
 							pkg.Sequences[actionName] = a
 						}
 						// return failure since action or sequence are not defined in the manifest
