@@ -36,7 +36,7 @@ If you want to learn how to write Packages and Applications by example using the
 
 # Package Specification
 
-Portions of the OpenWhisk Packaging Specification, for convenience, are made available here in Markdown/HTML format. The canonical source for the specification is in PDF format and can be found within the [archive](archive) directory.
+The majority of the OpenWhisk Packaging Specification, for convenience, is made available here in Markdown/HTML format. The canonical source for all versions of the specification is in PDF format and can be found within the [archive](archive) directory.
 
 #### Notational Conventions
 
