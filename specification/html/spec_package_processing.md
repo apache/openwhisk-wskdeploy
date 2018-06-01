@@ -39,14 +39,14 @@ The following diagram illustrates how a developer would create OpenWhisk
 code artifacts and associate a Package Manifest file that describes them
 for deployment and reuse.
 
-![Manifest file creation](images/OpenWhisk%20-%20Conceptual%20Manifest%20File%20Creation.png "image manifest creation")
+![Manifest file creation](images/conceptual_manifest_file_creation.png "image manifest creation")
 
 ### Conceptual tooling integration and deployment
 
 The following diagram illustrates how Package manifests can be leveraged
 by developer tooling to integrate OpenWhisk Serverless functions.
 
-![Manifest file deployment](images/OpenWhisk%20-%20Conceptual%20Manifest%20File%20Deployment.png "image manifest deployment")
+![Manifest file deployment](images/conceptual_manifest_file_deployment.png "image manifest deployment")
 
 #### Notes
 

@@ -64,8 +64,8 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 - [Sequences](html/spec_sequences.md#sequences) - shema to compose multiple Actions into a sequence.
 
 #### References
-- [Definitions](html/spec_definitions.md#definitions) - defines terms that are used in the specification.
 - [Normative & Non-normative References](html/spec_normative_refs.md)
+- [Definitions](html/spec_definitions.md#definitions) - defines terms that are used in the specification.
 - [Revision History](html/spec_history.md#revision-history) - lists changes to specification by version/revision.
 
 #### License
