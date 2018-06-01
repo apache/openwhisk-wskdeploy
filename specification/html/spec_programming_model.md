@@ -66,6 +66,19 @@ associated package managers, installers, etc.*
 *Note: Not all actions must belong to packages, but can exist under a
 namespace.*
 
+### Action Composition
+
+#### Action Sequence
+
+An Action that is a sequenced composition of 2 or more existing Actions.
+The Action Sequence can be viewed as a named pipe where OpenWhisk can
+automatically take the output of a first Action ‘A’ in a declared
+sequence and provides it as input to the next Action ‘B’ in the sequence
+and so on until the sequence completes.
+
+*Note: This composition technique allows the reuse of existing action
+implementations treating them as “building blocks” for other Actions.*
+
 ### Cardinality
 
 #### Trigger to Action

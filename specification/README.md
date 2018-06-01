@@ -56,6 +56,7 @@ Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
     - [Revision History](html/spec_history.md#revision-history) - lists changes to specification by version/revision.
 - [Programming Model](html/spec_programming_model.md#programming-model) - an overview of the OpenWhisk programming model.
 - [Package Processing](html/spec_package_processing.md#package-processing) - an overview of the OpenWhisk programming model.
+- [Entity Naming & Namespacing](html/spec_entity_naming_and_namespacing.md#naming-and-namespacing) - an overview of the OpenWhisk programming model.
 
 #### Schema
 - [Parameters](html/spec_parameters.md#parameters) - grammar, schema and examples for input and output parameters.
