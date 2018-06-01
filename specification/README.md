@@ -46,7 +46,7 @@ document are to be interpreted as described in [RFC
 The OpenWhisk packaging specification is licensed under [The Apache License,
 Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
 
-## Index
+### Index
 
 - [Introduction](html/spec_intro.md#introduction) - an overview of the goals for the packaging specification.
     - [Compatibility](html/spec_intro.md#compatibility) - describes intent to be compatible with other standards.
