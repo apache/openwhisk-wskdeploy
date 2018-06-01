@@ -38,8 +38,6 @@ If you want to learn how to write Packages and Applications by example using the
 
 Portions of the OpenWhisk Packaging Specification, for convenience, are made available here in Markdown/HTML format. The canonical source for the specification is in PDF format and can be found within the [archive](archive) directory.
 
-- Current version (link): [openwhisk_v0.9.2.pdf](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/archive/openwhisk_v0.9.2.pdf)
-
 #### Notational Conventions
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
