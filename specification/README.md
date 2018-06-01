@@ -65,20 +65,3 @@ Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
 
 ### Note
 This specification is under development and in draft status; therefore, it is subject to change during this development period.  We are posting drafts seeking review, comments, suggestions and use cases from the OpenWhisk and greater Serverless community.
-
----
-
-## Package Manifest and Deployment files
-
-- **Package Manifest file**: Contains the Package definition along with any included Action, Trigger or Rule definitions that comprise the package.  This file includes the schema of input and output data to each entity for validation purposes.
-- **Deployment file**: Contains the values and bindings used configure a Package to a target OpenWhisk platform provider’s environment and supply input parameter values for Packages, Actions and Triggers.  This can include Namespace bindings, security and policy information.
-
-### Conceptual Manifest and Deployment file usage
-
-The following images outline the basic process for creating and using both Manifest and Deployment files against a typical developer workstream:
-
-#### Conceptual Manifest file creation
-![Manifest file creation](images/OpenWhisk%20-%20Conceptual%20Manifest%20File%20Creation.png "image 1")
-
-### Conceptual Manifest file deployment
-![Manifest file deployment](images/OpenWhisk%20-%20Conceptual%20Manifest%20File%20Deployment.png "image 1")
