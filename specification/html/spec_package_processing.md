@@ -17,7 +17,7 @@
 #
 -->
 
-## Package Processing
+## Package processing
 
 This document defines two file artifacts that are used to deploy
 Packages to a target OpenWhisk platform; these include:

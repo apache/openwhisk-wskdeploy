@@ -50,8 +50,8 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 #### Overview
 - [Introduction](html/spec_intro.md#introduction) - an overview of the goals for the packaging specification.
 - [Compatibility](html/spec_intro.md#compatibility) - describes intent to be compatible with other standards.
-- [Programming Model](html/spec_programming_model.md#programming-model) - an overview of the OpenWhisk programming model.
-- [Package Processing](html/spec_package_processing.md#package-processing) - describes how the developers can use Package Manifests and Deployment files with the ```wskdeploy``` utility.
+- [Programming model](html/spec_programming_model.md#programming-model) - an overview of the OpenWhisk programming model.
+- [Package processing](html/spec_package_processing.md#package-processing) - describes how the developers can use Package Manifests and Deployment files with the ```wskdeploy``` utility.
 
 #### Schema
 - [Entity Naming & Namespacing](html/spec_entity_naming_and_namespacing.md#naming-and-namespacing) - describes what characters can be used to name Packages, Actions, Triggers and Rules and how to manage them with namespaces.
