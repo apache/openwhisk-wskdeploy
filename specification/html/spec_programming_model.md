@@ -89,4 +89,4 @@ response to events from multiple Triggers.
 
 ### Conceptual representation
 
-![TBD](media/image1.png "TBD")
+![Conceptual representation of the OpenWhisk programming model](images/conceptual_programming_model.png "image showing conceptual programming model")
