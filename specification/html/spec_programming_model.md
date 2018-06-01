@@ -17,7 +17,7 @@
 #
 -->
 
-## Programming model
+## Programming Model
 
 ### OpenWhisk Entities
 
