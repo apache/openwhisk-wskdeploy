@@ -53,6 +53,8 @@ Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
     - [Revision History](html/spec_history.md#revision-history) - lists changes to specification by version/revision.
 - [Programming Model](html/spec_programming_model.md#programming-model) - an overview of the OpenWhisk programming model.
 - [Package Processing](html/spec_package_processing.md#package-processing) - an overview of the OpenWhisk programming model.
+
+- **Schema**
 - [Parameters](html/spec_parameters.md#parameters) - grammar, schema and examples for input and output parameters.
 - [Parameter Types](html/spec_types.md#parameter-types) - supported YAML and OpenWhisk Types.
 - [Shared Entity Schema](html/spec_shared_entity_schema.md#shared-entity-schema) - fields that are common among entities in the programming model.
