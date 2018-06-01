@@ -76,5 +76,4 @@ response to events from multiple Triggers.
 
 ### Conceptual representation
 
-![TBD](media/image1.png){width="4.310255905511811in"
-height="3.502083333333333in"}
+![TBD](media/image1.png "TBD")
