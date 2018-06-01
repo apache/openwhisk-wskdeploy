@@ -21,8 +21,6 @@
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-Current version (link):  [openwhisk_v0.9.1.pdf](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/openwhisk_v0.9.1.pdf)
-
 ## Purpose
 
 In general, the goal of this specification is to evolve a simple grammar to describe and deploy a complete OpenWhisk package without having to use any APIs.  Primarily, it is accomplished by coding a Package Manifest file and optionally a Deployment file using YAML.
@@ -34,7 +32,9 @@ If you want to learn how to write Packages and Applications by example using the
 
 # OpenWhisk Package Specification (HTML)
 
-Portions of the OpenWhisk Packaging Specification, for convenience, are made available here in HTML format. The canonical source for the specification is in PDF format and can be found within this directory.
+Portions of the OpenWhisk Packaging Specification, for convenience, are made available here in HTML format. The canonical source for the specification is in PDF format and can be found within the [archive](archive) directory.
+
+- Current version (link): [openwhisk_v0.9.1.pdf](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/archive/openwhisk_v0.9.1.pdf)
 
 ## Index
 
