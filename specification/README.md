@@ -55,7 +55,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 - [Grammar](html/spec_grammar.md#grammar) - describes the YAML grammar the specification builds upon.
 
 #### Schema
-- [Parameter Types](html/spec_types.md#parameter-types) - supported YAML and OpenWhisk Types.
+- [Parameter Types](html/spec_parameter_types.md#parameter-types) - supported YAML and OpenWhisk Types.
 - [Parameters](html/spec_parameters.md#parameters) - grammar, schema and examples for input and output parameters.
 - [Entity Schema](html/spec_shared_entity_schema.md#shared-entity-schema) - keys that are common to all entities in the programming model.
 - [Entity Naming & Namespacing](html/spec_entity_naming_and_namespacing.md#naming-and-namespacing) - describes what characters can be used to name Packages, Actions, Triggers and Rules and how to manage them with namespaces.
