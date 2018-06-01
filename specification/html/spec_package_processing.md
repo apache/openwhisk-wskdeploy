@@ -27,11 +27,17 @@ Packages to a target OpenWhisk platform; these include:
     the package. This file includes the schema of input and output data
     to each entity for validation purposes.
 
--   ***Deployment file***: Contains the values and bindings used
+-   ***Deployment file*** (optional): Contains the values and bindings used
     configure a Package to a target OpenWhisk platform provider’s
     environment and supply input parameter values for Packages, Actions
     and Triggers. This can include Namespace bindings, security and
     policy information.
+
+#### Notes
+
+-   _Deployment files are optional_. Deployment can be fully accomplished
+    with simply a Manifest File.
+
 
 ### Conceptual Package creation and publishing
 
@@ -47,8 +53,3 @@ The following diagram illustrates how Package manifests can be leveraged
 by developer tooling to integrate OpenWhisk Serverless functions.
 
 ![Manifest file deployment](images/conceptual_manifest_file_deployment.png "image showing manifest deployment")
-
-#### Notes
-
--   Deployment Files are optional. Deployment can be fully accomplished
-    with simply a Manifest File.
