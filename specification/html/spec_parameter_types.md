@@ -35,7 +35,7 @@ The following table declares the valid YAML type URIs and aliases that SHALL be 
 | integer   | tag:yaml.org,2002:int | Signed. Includes large integers (i.e., long type) |
 | float     | tag:yaml.org,2002:float | Signed. Includes large floating point values (i.e., double type) |
 | boolean   | tag:yaml.org,2002:bool | This specification uses lowercase ‘true’ and lowercase ‘false’ |
-| timestamp | tag:yaml.org,2002:timestamp | ISO 8601 compatible timestamp.(see [YAML-TS-1.1](spec_normative_refs.md) |
+| timestamp | tag:yaml.org,2002:timestamp | ISO 8601 compatible timestamp. See [YAML-TS-1.1](spec_normative_refs.md) |
 | null      | tag:yaml.org,2002:null | Different meaning than an empty string, map, list, etc. |
 
 #### Requirements
@@ -54,7 +54,7 @@ In addition to the YAML built-in types, OpenWhisk supports the types listed in t
 | string256 | long length strings (e.g., descriptions) | A string type limited to 256 characters. |
 | string64  | medium length strings (e.g., abstracts, hover text) | A string type limited to 64 characters. |
 | string16  | short length strings (e.g., small form-factor list displays) | A string type limited to 16 characters. |
-| json      | The parameter value represents a JavaScript Object Notation (JSON) data object. The deploy tool will validate the corresponding parameter value against JSON schema.</br></br>Note: The implied schema for JSON the JSON Schema (see http://json-schema.org/). |
+| json      | The parameter value represents a JavaScript Object Notation (JSON) data object. | The deploy tool will validate the corresponding parameter value against JSON schema.</br></br>Note: The implied schema for JSON the JSON Schema (see http://json-schema.org/). |
 | scalar-unit | Convenience type for declaring common scalars that have an associated unit. For example, “10 msec.”, “2 Gb”, etc.) | Currently, the following scalar-unit subtypes are supported: ```scalar-unit.size```, ```scalar-unit.time```. |
 | schema    | The parameter itself is an OpenAPI Specification v2.0 **Schema Object** (in YAML format) with self-defining schema. | The schema declaration follows the [OpenAPI](spec_normative_refs.md#normative-references") v2.0 specification for Schema Objects (YAML format). |
 | object   | The parameter itself is an object with the associated defined Parameters (schemas). |  Parameters of this type would include a declaration of its constituting Parameter schema. |
