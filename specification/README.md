@@ -25,6 +25,8 @@
 
 In general, the goal of this specification is to evolve a simple grammar to describe and deploy a complete OpenWhisk package without having to use any APIs.  Primarily, it is accomplished by coding a Package Manifest file and optionally a Deployment file using YAML.
 
+The ```wskdeploy``` utility is the reference implementation of this specification for the Apache OpenWhisk project.
+
 ---
 
 # Programming Guide
