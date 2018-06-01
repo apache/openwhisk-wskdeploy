@@ -42,23 +42,19 @@ The majority of the OpenWhisk Packaging Specification, for convenience, is made 
 
 #### Notational Conventions
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-document are to be interpreted as described in [RFC
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC
 2119](http://www.ietf.org/rfc/rfc2119.txt).
 
-The OpenWhisk packaging specification is licensed under [The Apache License,
-Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
+### Index
 
 #### Overview
 - [Introduction](html/spec_intro.md#introduction) - an overview of the goals for the packaging specification.
-    - [Compatibility](html/spec_intro.md#compatibility) - describes intent to be compatible with other standards.
-    - [Revision History](html/spec_history.md#revision-history) - lists changes to specification by version/revision.
+- [Compatibility](html/spec_intro.md#compatibility) - describes intent to be compatible with other standards.
 - [Programming Model](html/spec_programming_model.md#programming-model) - an overview of the OpenWhisk programming model.
 - [Package Processing](html/spec_package_processing.md#package-processing) - describes how the developers can use Package Manifests and Deployment files with the ```wskdeploy``` utility.
-- [Entity Naming & Namespacing](html/spec_entity_naming_and_namespacing.md#naming-and-namespacing) -describes what characters can be used to name Packages, Actions, Triggers and Rules and how to manage them with namespaces.
 
 #### Schema
+- [Entity Naming & Namespacing](html/spec_entity_naming_and_namespacing.md#naming-and-namespacing) - describes what characters can be used to name Packages, Actions, Triggers and Rules and how to manage them with namespaces.
 - [Parameters](html/spec_parameters.md#parameters) - grammar, schema and examples for input and output parameters.
 - [Parameter Types](html/spec_types.md#parameter-types) - supported YAML and OpenWhisk Types.
 - [Shared Entity Schema](html/spec_shared_entity_schema.md#shared-entity-schema) - fields that are common among entities in the programming model.
@@ -66,7 +62,15 @@ Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
 - [Actions](html/spec_actions.md#actions) - grammar, schema and examples for Actions.
 - [Triggers and Rules](html/spec_trigger_rule.md#triggers-and-rules) - grammar, schema and examples for Triggers and Rules.
 - [Sequences](html/spec_sequences.md#sequences) - shema to compose multiple Actions into a sequence.
+
+#### References
+- [Definitions](html/spec_definitions.md#definitions) - defines terms that are used in the specification.
 - [Normative & Non-normative References](html/spec_normative_refs.md)
+- [Revision History](html/spec_history.md#revision-history) - lists changes to specification by version/revision.
+
+#### License
+The OpenWhisk packaging specification is licensed under [The Apache License,
+Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
 
 ---
 
