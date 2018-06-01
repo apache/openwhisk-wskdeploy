@@ -23,6 +23,8 @@
 - [OpenWhisk Types](#openwhisk-types)
   - [scalar-unit Types](#scalar-unit-types)
 
+---
+
 #### YAML Types
 
 Many of the types we use in this profile are *built-in* types from the [YAML 1.2 specification](http://www.yaml.org/spec/1.2/spec.html) (i.e., those identified by the “tag:yaml.org,2002” version tag).
