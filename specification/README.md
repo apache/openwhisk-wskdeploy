@@ -75,5 +75,5 @@ Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
 
 ---
 
-### Note
+### Disclaimer
 This specification is under development and in draft status; therefore, it is subject to change during this development period.  We are posting drafts seeking review, comments, suggestions and use cases from the OpenWhisk and greater Serverless community.
