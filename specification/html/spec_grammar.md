@@ -17,9 +17,7 @@
 #
 -->
 
-## Grammar and datatypes
-
-### Grammar
+## Grammar
 
 This specification utilizes the [YAML language](#REF_YAML_1_2), a superset of JSON, which supports key features for packaging descriptors and configuration information such as built-in data types, complex data types, anchors (relational information), files, comments and can embed other data formats such as JSON and XML easily.
 

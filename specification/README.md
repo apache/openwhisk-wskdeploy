@@ -52,12 +52,13 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 - [Compatibility](html/spec_intro.md#compatibility) - describes intent to be compatible with other standards.
 - [Programming model](html/spec_programming_model.md#programming-model) - an overview of the OpenWhisk programming model.
 - [Package processing](html/spec_package_processing.md#package-processing) - describes how the developers can use Package Manifests and Deployment files with the ```wskdeploy``` utility.
+- [Grammar](html/spec_grammar.md#grammar) - describes the YAML grammar the specification builds upon.
 
 #### Schema
-- [Entity Naming & Namespacing](html/spec_entity_naming_and_namespacing.md#naming-and-namespacing) - describes what characters can be used to name Packages, Actions, Triggers and Rules and how to manage them with namespaces.
-- [Parameters](html/spec_parameters.md#parameters) - grammar, schema and examples for input and output parameters.
 - [Parameter Types](html/spec_types.md#parameter-types) - supported YAML and OpenWhisk Types.
-- [Shared Entity Schema](html/spec_shared_entity_schema.md#shared-entity-schema) - fields that are common among entities in the programming model.
+- [Parameters](html/spec_parameters.md#parameters) - grammar, schema and examples for input and output parameters.
+- [Entity Schema](html/spec_shared_entity_schema.md#shared-entity-schema) - keys that are common to all entities in the programming model.
+- [Entity Naming & Namespacing](html/spec_entity_naming_and_namespacing.md#naming-and-namespacing) - describes what characters can be used to name Packages, Actions, Triggers and Rules and how to manage them with namespaces.
 - [Packages](html/spec_packages.md#packages) - grammar, schema and examples for Packages.
 - [Actions](html/spec_actions.md#actions) - grammar, schema and examples for Actions.
 - [Triggers and Rules](html/spec_trigger_rule.md#triggers-and-rules) - grammar, schema and examples for Triggers and Rules.
