@@ -30,6 +30,8 @@ In general, the goal of this specification is to evolve a simple grammar to desc
 If you want to learn how to write Packages and Applications by example using the specification and deploy them using the ```wskdeploy``` utility, please read the step-by-step guide:
 - "[wskdeploy utility by example](../docs/programming_guide.md#wskdeploy-utility-by-example)"
 
+---
+
 # Package Specification
 
 Portions of the OpenWhisk Packaging Specification, for convenience, are made available here in Markdown/HTML format. The canonical source for the specification is in PDF format and can be found within the [archive](archive) directory.
@@ -45,8 +47,6 @@ document are to be interpreted as described in [RFC
 
 The OpenWhisk packaging specification is licensed under [The Apache License,
 Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
-
-### Index
 
 #### Overview
 - [Introduction](html/spec_intro.md#introduction) - an overview of the goals for the packaging specification.
