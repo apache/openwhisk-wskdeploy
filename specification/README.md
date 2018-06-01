@@ -32,12 +32,30 @@ If you want to learn how to write Packages and Applications by example using the
 
 # OpenWhisk Package Specification (HTML)
 
-Portions of the OpenWhisk Packaging Specification, for convenience, are made available here in HTML format. The canonical source for the specification is in PDF format and can be found within the [archive](archive) directory.
+Portions of the OpenWhisk Packaging Specification, for convenience, are made available here in Markdown/HTML format. The canonical source for the specification is in PDF format and can be found within the [archive](archive) directory.
 
-- Current version (link): [openwhisk_v0.9.1.pdf](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/archive/openwhisk_v0.9.1.pdf)
+- Current version (link): [openwhisk_v0.9.2.pdf](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/archive/openwhisk_v0.9.2.pdf)
+
+Apache OpenWhisk Package Specification
+======================================
+
+#### Notational Conventions
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+document are to be interpreted as described in [RFC
+2119](http://www.ietf.org/rfc/rfc2119.txt).
+
+The OpenWhisk packaging specification is licensed under [The Apache License,
+Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
 
 ## Index
 
+- [Introduction](html/spec_intro.md#introduction) - an overview of the goals for the packaging specification.
+    - [Compatibility](html/spec_intro.md#compatibility) - describes intent to be compatible with other standards.
+    - [Revision History](html/spec_history.md#revision-history) - lists changes to specification by version/revision.
+
+- [Programming model](html.spec_programming_model.md#programming-model) - an overview of the OpenWhisk programming model.
 - [Parameters](html/spec_parameters.md#parameters) - grammar, schema and examples for input and output parameters.
 - [Parameter Types](html/spec_types.md#parameter-types) - supported YAML and OpenWhisk Types.
 - [Shared Entity Schema](html/spec_shared_entity_schema.md#shared-entity-schema) - fields that are common among entities in the programming model.
