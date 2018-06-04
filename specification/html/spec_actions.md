@@ -81,7 +81,7 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
   limits:
     <list of limit key-values>
   feed: <boolean> # default: false
-  web \| web-export: <boolean> | yes | no | raw
+  web | web-export: <boolean> | yes | no | raw
   raw-http: <boolean>
 ```
 _**Note**: the optional [.<type>] grammar is used for naming Web Actions._
