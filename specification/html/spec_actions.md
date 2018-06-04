@@ -46,7 +46,7 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 | docker | no | string | N/A | The optional key that references a Docker image (e.g., openwhisk/skeleton). |
 | native | no | boolean | false | The optional key (flag) that indicates the Action is should use the Docker skeleton image for OpenWhisk (i.e., short-form for docker: openwhisk/skeleton). |
 | final | no | boolean | false | The optional flag (annotation) which makes all of the action parameters that are already defined immutable.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
-| web-custom-options | no | boolean | false | The optional flag (annotation) enables a web action to respond to OPTIONS requests with customized headers, otherwise a default CORS response applies. |
+| web-custom-options | no | boolean | false | The optional flag (annotation) enables a web action to respond to OPTIONS requests with customized headers, otherwise a [default CORS response](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#options-requests) applies. |
 | require-whisk-auth | no | boolean | false | The optional flag (annotation) protects the web action so that it is only accessible to an authenticated subject. |
 | main | no | string | N/A | The optional name of the function to be aliased as a function named “main”.<p><em><b>Note</b>: by convention, Action functions are required to be called “main”; this field allows existing functions not named “main” to be aliased and accessed as if they were named “main”.</em></p>|
 
