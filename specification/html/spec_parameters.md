@@ -108,7 +108,7 @@ In a Manifest or Deployment file, a parameter value may be set from the local ex
 
 ### Syntax
 ```yaml
-&lt;parameter&gt;: $&lt;_local environment variable name_&gt;
+<parameter>: $<_local environment variable name_>
 ```
 
 ### Example
