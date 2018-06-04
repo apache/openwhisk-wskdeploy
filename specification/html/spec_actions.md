@@ -32,84 +32,16 @@
 The Action entity schema contains the necessary information to deploy an OpenWhisk function and define its deployment configurations, inputs and outputs.
 
 ### Fields
-<html>
-<table>
-  <tr>
-   <th width="80">Key Name</th>
-   <th>Required</th>
-   <th>Value Type</th>
-   <th>Default</th>
-   <th>Description</th>
-  </tr>
- <tr>
-  <td>version</td>
-  <td>no</td>
-  <td>version</td>
-  <td>N/A</td>
-  <td>The optional user-controlled version for the Action.</td>
- </tr>
- <tr>
-  <td>function</td>
-  <td>yes</td>
-  <td>string</td>
-  <td>N/A</td>
-  <td>Required source location (path inclusive) of the Action code either:
-    <ul>
-      <li>Relative to the Package manifest file.</li>
-      <li>Relative to the specified Repository.</li>
-    </ul>
-  </td>
- </tr>
- <tr>
-  <td>runtime</td>
-  <td>no</td>
-  <td>string</td>
-  <td>N/A</td>
-  <td>The required runtime name (and optional version) that the Action code requires for an execution environment.
-  <p><i>Note: May be optional if tooling allowed to make assumptions about file extensions.</i></p>
-  </td>
- </tr>
- <tr>
-  <td>inputs</td>
-  <td>no</td>
-  <td>list of parameter</td>
-  <td>N/A</td>
-  <td>The optional ordered list inputs to the Action.</td>
- </tr>
- <tr>
-  <td>outputs</td>
-  <td>no</td>
-  <td>list of parameter</td>
-  <td>N/A</td>
-  <td>The optional outputs from the Action.</td>
- </tr>
- <tr>
-  <td>limits</td>
-  <td>no</td>
-  <td>map of limit keys and values</a></td>
-  <td>N/A</td>
-  <td>Optional map of limit keys and their values.
-  <p><i>See section '</i><a href="#TABLE_LIMIT_KEYS"><i>Valid limit keys</i></a><i>' below for a listing of recognized keys and values.</i></p>
-  </td>
- </tr>
- <tr>
-  <td>feed</td>
-  <td>no</td>
-  <td>boolean</td>
-  <td>false</td>
-  <td>Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action.</td>
- </tr>
- <tr>
-  <td>web-export</td>
-  <td>no</td>
-  <td>boolean</td>
-  <td>false</td>
-  <td>Optionally, turns the Action into a <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md">&quot;<em><u>web actions</u></em>&quot;</a>
-  causing it to return HTTP content without use of an API Gateway.
-  </td>
- </tr>
-</table>
-</html>
+| Key Name | Required | Value Type | Default | Description |
+|:---|:---|:---|:---|:---|
+| version | no | version | The optional user-controlled version for the Action. |
+| function | yes | string | N/A | Required source location (path inclusive) of the Action code either:<ul><li>Relative to the Package manifest file.</li><li>Relative to the specified Repository.</li></ul> |
+| runtime | no | string | N/A | he required runtime name (and optional version) that the Action code requires for an execution environment.<p><i>Note: May be optional if tooling allowed to make assumptions about file extensions.</i></p> |
+| inputs | no | list of parameter | N/A | The optional ordered list inputs to the Action. |
+| outputs | no | list of parameter | N/A | The optional outputs from the Action. |
+| limits | no | map of [limit keys and values](#valid-limit-keys) | Optional map of limit keys and their values.</br>See section "[Valid limit keys](#valid-limit-keys)"" (below) for a listing of recognized keys and values. |
+| feed | no | boolen | false | Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action. |
+| web \| web-export | no | boolean | false | Optionally, turns the Action into a <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md">&quot;<em><u>web actions</u></em>&quot;</a> causing it to return HTTP content without use of an API Gateway. |
 
 ### Requirements
 
