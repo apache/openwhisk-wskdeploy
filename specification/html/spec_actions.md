@@ -371,9 +371,8 @@ Return values from the Action's function are used to construct the HTTP response
  Bottom Navigation
 -->
 ---
-
 <html>
 <div align="center">
-[Index](../README.md#Index)
+[Index](../README.md#index)
 </div>
 </html>

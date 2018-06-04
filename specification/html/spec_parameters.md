@@ -260,7 +260,7 @@ In a Manifest or Deployment file, a parameter value may be set from the local ex
 ### Notes
 
 - Processors or tooling that encounter ($) Dollar notation for values should attempt to locate the corresponding named variables set into the local execution environment (e.g., where the tool was invoked) and assign its value to the named input parameter for the OpenWhisk entity.
-- This specification does not currently consider using this notation for other than simple data types (i.e., we support this mechanism for values such as strings, integers, floats, etc.) at this time.
+- This specification does not currently consider using this notation for other than simple data types (i.e., we support this mechanism for values such as `strings`, `integers`, `floats`, etc.) at this time.
 
 
 <!--
@@ -269,12 +269,6 @@ In a Manifest or Deployment file, a parameter value may be set from the local ex
 ---
 <html>
 <div align="center">
-<table align="center">
-  <tr>
-    <!-- <td><a href="">&lt;&lt;&nbsp;previous</a></td> -->
-    <td><a href="spec_index.md#openwhisk-package-specification-html">Specification Index</a></td>
-    <!-- <td><a href="">next&nbsp;&gt;&gt;</a></td> -->
-  </tr>
-</table>
+[Index](../README.md#index)
 </div>
 </html>
