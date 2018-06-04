@@ -78,14 +78,14 @@ OpenWhisk entities (e.g., Actions, Triggers, Rules, etc.).
 |:---|:---|:---|:---|:---|
 | description | no | string256 | N/A | The optional description for the Entity. |
 | displayName | no | string16 | N/A | This is the optional name that will be displayed on small form-factor devices. |
-| annotations | no | map of <string> | N/A | he optional annotations for the Entity. |
+| annotations | no | map of _&lt;string>&gt;_ | N/A | he optional annotations for the Entity. |
 
 ##### Grammar
 
 ```yaml
-description: <string256>
-displayName: <string16>
-annotations: <map of <string>>
+description: &lt;string256&gt;
+displayName: &lt;string16&gt;
+annotations: &lt;map of &lt;string&gt;&gt;
 ```
 
 ##### Requirements
@@ -108,7 +108,7 @@ In a Manifest or Deployment file, a parameter value may be set from the local ex
 
 ### Syntax
 ```yaml
-<parameter>: $<local environment variable name>
+&lt;parameter&gt;: $&lt;_local environment variable name_&gt;
 ```
 
 ### Example
