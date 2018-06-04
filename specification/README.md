@@ -61,8 +61,9 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 - [Entity Schema](html/spec_shared_entity_schema.md#shared-entity-schema) - keys that are common to all entities in the programming model.
 - [Packages](html/spec_packages.md#packages) - grammar, schema and examples for Packages.
 - [Actions](html/spec_actions.md#actions) - grammar, schema and examples for Actions.
-- [Triggers and Rules](html/spec_trigger_rule.md#triggers-and-rules) - grammar, schema and examples for Triggers and Rules.
-- [Sequences](html/spec_sequences.md#sequences) - schema to compose multiple Actions into a sequence.
+- [Triggers](html/spec_trigger.md#triggers) - grammar, schema and examples for Triggers.
+- [Rules](html/spec_rule.md#rules) - grammar, schema and examples for Rules.
+- [Sequences](html/spec_sequences.md#sequences) - schema to compose multiple Actions into a single, named Action sequence.
 - [Entity Naming & Namespacing](html/spec_entity_naming_and_namespacing.md#naming-and-namespacing) - describes what characters can be used to name Packages, Actions, Triggers and Rules and how to manage them with namespaces.
 
 #### References

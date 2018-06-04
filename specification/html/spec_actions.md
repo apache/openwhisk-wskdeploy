@@ -19,6 +19,16 @@
 
 ## Actions
 
+#### Subsections
+- [Fields](#fields)
+- [Requirements](#requirements)
+- [Notes](#notes)
+- [Grammar](#grammar)
+- [Example](#example)
+- [Valid Runtime names](#valid-runtime-names)
+- [Recognized File extensions](#recognized-file-extensions)
+- [Valid Limit keys](#valid-limit-keys)
+
 The Action entity schema contains the necessary information to deploy an OpenWhisk function and define its deployment configurations, inputs and outputs.
 
 ### Fields
