@@ -28,14 +28,14 @@ The Parameter schema is used to define input and/or output data to be used by Op
 ### Fields
 | Key Name | Required | Value Type | Default | Description |
 |:---|:---|:---|:---|:---|
-| type       | no | <any>      | string | Optional valid type name or the parameter’s value for alidation purposes. By default, the type is string. |
+| type       | no | _&lt;any&gt;_ | string | Optional valid type name or the parameter’s value for alidation purposes. By default, the type is string. |
 | description | no | string256 | N/A | Optional description of the Parameter. |
-| value      | no | <any>      | N/A | The optional user supplied value for the parameter.</br> Note: this is not the default value, but an explicit declaration which allows simple usage of the Manifest file without a Deployment file. |
+| value      | no | _&lt;any&gt;_ | N/A | The optional user supplied value for the parameter.</br> Note: this is not the default value, but an explicit declaration which allows simple usage of the Manifest file without a Deployment file. |
 | required   | no | boolean    | true | Optional indicator to declare the parameter as required (i.e., true) or optional (i.e., false). |
-|  default   | no | <any>      | N/A | Optional default value for the optional parameters. This value **MUST** be type compatible with the value declared on the parameter’s type field. |
+|  default   | no | _&lt;any&gt;_ | N/A | Optional default value for the optional parameters. This value **MUST** be type compatible with the value declared on the parameter’s type field. |
 | status     | no | string     | supported | Optional status of the parameter (e.g., deprecated, experimental). By default a parameter is without a declared status is considered supported. |
-| schema     | no | <schema>   | N/A | The optional schema if the ‘type‘ key has the value ‘schema‘. The value would include a **Schema** **Object** (in YAML) as defined by the [OpenAPI Specification v2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#schemaObject). This object is based upon the [JSON Schema Specification.](http://json-schema.org/) |
-| properties | no | <list of parameter> | N/A | The optional properties if the ‘type‘ key has the value ‘object‘. Its value is a listing of Parameter schema from this specification. |
+| schema     | no | _&lt;schema&gt;_ | N/A | The optional schema if the ‘type‘ key has the value ‘schema‘. The value would include a **Schema** **Object** (in YAML) as defined by the [OpenAPI Specification v2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#schemaObject). This object is based upon the [JSON Schema Specification.](http://json-schema.org/) |
+| properties | no |  _&lt;list of parameter&gt;_ | N/A | The optional properties if the ‘type‘ key has the value ‘object‘. Its value is a listing of Parameter schema from this specification. |
 
 ### Requirements
 
