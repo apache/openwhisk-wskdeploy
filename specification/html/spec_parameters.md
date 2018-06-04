@@ -132,4 +132,8 @@ In a Manifest or Deployment file, a parameter value may be set from the local ex
  Bottom Navigation
 -->
 ---
-[Index](../README.md#index)
+<html>
+<div align="center">
+<a href="../README.md#index">Index</a>
+</div>
+</html>

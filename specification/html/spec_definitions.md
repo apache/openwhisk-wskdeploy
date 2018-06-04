@@ -45,3 +45,13 @@ tasks, or activities to achieve some result or user benefit.
 Any resource, including a functional task, that is provided over the
 Internet. This includes delivery models such as *Platform as a Service*
 (PaaS), *Infrastructure as a* Service (IaaS), as well as *Serverless*.
+
+<!--
+ Bottom Navigation
+-->
+---
+<html>
+<div align="center">
+<a href="../README.md#index">Index</a>
+</div>
+</html>

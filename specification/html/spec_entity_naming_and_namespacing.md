@@ -26,9 +26,9 @@ packages, belongs in a *namespace.*
 
 The fully qualified name of any entity has the format:
 
-  -------------------------------------------------------------------
-  /&lt;namespaceName&gt;\[/&lt;packageName&gt;\]/&lt;entityName&gt;
-  -------------------------------------------------------------------
+```
+/<namespaceName>[/<packageName>]/<entityName>
+```
 
 The namespace is typically provided at bind-time by the user deploying
 the package to their chosen OpenWhisk platform provider.
@@ -60,6 +60,16 @@ format:
 Valid entity names are described with the following regular expression
 (Java metacharacter syntax):
 
-  -------------------------------------------------------------------------------------
-  "\\A(\[\\w\]|\[\\w\]\[\\w@ .-\]{0,\${ENTITY\_NAME\_MAX\_LENGTH - 2}}\[\\w@.-\])\\z"
-  -------------------------------------------------------------------------------------
+```
+"\A([\w]|[\w][\w@ .-]{0,${ENTITY_NAME_MAX_LENGTH - 2}}[\w@.-])\z"
+```
+
+<!--
+ Bottom Navigation
+-->
+---
+<html>
+<div align="center">
+<a href="../README.md#index">Index</a>
+</div>
+</html>

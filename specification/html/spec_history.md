@@ -73,5 +73,8 @@ Clarify use of Parameter single-line grammar and inferred types.</br>Add support
  Bottom Navigation
 -->
 ---
-[Index](../README.md#index)
-
+<html>
+<div align="center">
+<a href="../README.md#index">Index</a>
+</div>
+</html>

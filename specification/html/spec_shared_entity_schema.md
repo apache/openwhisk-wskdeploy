@@ -111,4 +111,8 @@ annotations: <map of <string>>
  Bottom Navigation
 -->
 ---
-[Index](../README.md#index)
+<html>
+<div align="center">
+<a href="../README.md#index">Index</a>
+</div>
+</html>
