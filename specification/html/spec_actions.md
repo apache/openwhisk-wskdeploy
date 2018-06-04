@@ -373,6 +373,6 @@ Return values from the Action's function are used to construct the HTTP response
 ---
 <html>
 <div align="center">
-[Index](../README.md#index)
+<a href="../README.md#index">Index</a>
 </div>
 </html>

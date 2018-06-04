@@ -36,7 +36,7 @@ of full, event-driven services and applications providing the necessary informat
 This specification is intended to be compatible with the following specifications:
 
 -   *OpenWhisk API which is defined as an OpenAPI document: *
-    -   <https://raw.githubusercontent.com/openwhisk/openwhisk/master/core/controller/src/main/resources/whiskswagger.json>
+    -   <https://github.com/apache/openwhisk/blob/master/core/controller/src/main/resources/apiv1swagger.json>
 
 -   *OpenAPI Specification when defining REST APIs and parameters:*
     -   <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md>
