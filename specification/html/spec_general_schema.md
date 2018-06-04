@@ -1,0 +1,135 @@
+### Schema
+
+This section defines all the essential schema used to describe OpenWhisk packages within a manifest.
+
+#### General Requirements
+
+-   All field names in this specification SHALL be case sensitive.
+
+#### map schema
+
+The Map schema is used to define maps of key values within OpenWhisk
+entities.
+
+##### Single-line grammar
+
+```yaml
+{ <key_1>: <value_1>, ..., <key_n>: <value_n> }
+```
+
+##### Multi-line grammar
+```yaml
+# Where ‘key_n’ is a type <string> and ‘value_n’ is type <any>.
+<key_1>: <value_1>
+...
+<key_n>: <value_n>
+
+```
+
+##### Examples
+
+###### Single-line
+
+```yaml
+alert_levels: { “high”: “red”, “medium”: “yellow”, “low”: green }
+```
+
+###### Multi-line
+
+```yaml
+alert_levels:
+  “high”: “red”
+  “medium”: “yellow”
+  “low”: green
+```
+
+#### Parameter schema
+
+The Parameter schema is used to define input and/or output data to be used by OpenWhisk entities for the purposes of validation.
+
+##### Fields
+
+| Key Name | Required | Value Type | Default | Description |
+|:---|:---|:---|:---|:---|
+| type       | no | <any>      | string | Optional valid type name or the parameter’s value for alidation purposes. By default, the type is string. |
+| description | no | string256 | N/A | Optional description of the Parameter. |
+| value      | no | <any>      | N/A | The optional user supplied value for the parameter.</br> Note: this is not the default value, but an explicit declaration which allows simple usage of the Manifest file without a Deployment file. |
+| required   | no | boolean    | true | Optional indicator to declare the parameter as required (i.e., true) or optional (i.e., false). |
+|  default   | no | <any>      | N/A | Optional default value for the optional parameters. This value **MUST** be type compatible with the value declared on the parameter’s type field. |
+| status     | no | string     | supported | Optional status of the parameter (e.g., deprecated, experimental). By default a parameter is without a declared status is considered supported. |
+| schema     | no | <schema>   | N/A | The optional schema if the ‘type‘ key has the value ‘schema‘. The value would include a **Schema** **Object** (in YAML) as defined by the [OpenAPI Specification v2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#schemaObject). This object is based upon the [JSON Schema Specification.](http://json-schema.org/) |
+| properties | no | <list of parameter> | N/A | The optional properties if the ‘type‘ key has the value ‘object‘. Its value is a listing of Parameter schema from this specification. |
+
+##### Requirements
+
+- The “schema” key’s value MUST be compatible with the value provided on both the “type” and “value” keys; otherwise, it is considered an error.
+
+##### Notes
+
+- The “type” key acknowledges some popular schema (e.g., JSON) to use when validating the value of the parameter. In the future additional (schema) types may be added for convenience.
+
+##### Grammar
+
+###### Single-line
+
+```yaml
+<parameterName>: <YAML type> | scalar-unit | json
+```
+
+- Where <YAML type> is inferred to be a YAML type as shown in the YAML Types section above (e.g., string, integer, float, boolean, etc.).
+
+- If you wish the parser to validate against a different schema, then the multi-line grammar MUST be used where the value would be supplied on the keyname “value” and the type (e.g., ‘json’) and/or schema (e.g., OpenAPI) can be supplied.
+
+###### Multi-line
+
+```yaml
+<parameterName>:
+  type: <any>
+  description: <string>
+  required: <boolean>
+  default: <any>
+  status: <string>
+  schema: <OpenAPI Schema Object>
+```
+
+##### Status values
+
+| Status Value | Description |
+|:---|:---|
+| supported (default) | Indicates the parameter is supported. This is the implied default status value for all parameters. |
+| experimental | Indicates the parameter MAY be removed or changed in future versions. |
+| deprecated | Indicates the parameter is no longer supported in the current version and MAY be ignored. |
+
+#### Shared Entity Schema
+
+The Entity Schema contains fields that are common (shared) to all
+OpenWhisk entities (e.g., Actions, Triggers, Rules, etc.).
+
+##### Fields
+
+|  Key Name | Required | Value Type | Default | Description
+|:---|:---|:---|:---|:---|
+| description | no | string256 | N/A | The optional description for the Entity. |
+| displayName | no | string16 | N/A | This is the optional name that will be displayed on small form-factor devices. |
+| annotations | no | map of <string> | N/A | he optional annotations for the Entity. |
+
+##### Grammar
+
+```yaml
+description: <string256>
+displayName: <string16>
+annotations: <map of <string>>
+```
+
+##### Requirements
+
+- Non-required fields MAY be stored as “annotations” within the OpenWhisk framework after they have been used for processing.
+- "description" string values SHALL be limited to 256 characters.
+- "displayName" string values SHALL be limited to 16 characters.
+- "annotations" MAY be ignored by target consumers of the Manifest file as they are considered data non-essential to the deployment of management of OpenWhisk entities themselves.
+    - Target consumers MAY preserve (persist) these values, but are not required to.
+- For any OpenWhisk Entity, the maximum size of all "annotations" (values) SHALL be 256 characters.
+
+##### Notes
+
+- Several, non-normative "annotations" keynames and allowed values (principally for User Interface (UI) design and tooling information) may be defined below for optional usage.
