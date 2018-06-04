@@ -29,8 +29,4 @@ This section defines all the essential schema used to describe OpenWhisk package
  Bottom Navigation
 -->
 ---
-<html>
-<div align="center">
 [Index](../README.md#index)
-</div>
-</html>

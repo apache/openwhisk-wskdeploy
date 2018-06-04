@@ -152,8 +152,4 @@ inputs:
  Bottom Navigation
 -->
 ---
-<html>
-<div align="center">
 [Index](../README.md#index)
-</div>
-</html>

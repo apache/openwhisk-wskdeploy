@@ -53,3 +53,9 @@ The following diagram illustrates how Package manifests can be leveraged
 by developer tooling to integrate OpenWhisk Serverless functions.
 
 ![Manifest file deployment](images/conceptual_manifest_file_deployment.png "image showing manifest deployment")
+
+<!--
+ Bottom Navigation
+-->
+---
+[Index](../README.md#index)

@@ -19,6 +19,7 @@
 
 # Parameters
 
+- [Parameter schema](#parameter-schema)
 - [Dollar Notation ($)](#dollar-notation--schema-for-values)
 
 ## Parameter schema
@@ -131,8 +132,4 @@ In a Manifest or Deployment file, a parameter value may be set from the local ex
  Bottom Navigation
 -->
 ---
-<html>
-<div align="center">
 [Index](../README.md#index)
-</div>
-</html>

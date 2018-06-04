@@ -53,12 +53,9 @@ alert_levels:
   “medium”: “yellow”
   “low”: green
 ```
+
 <!--
  Bottom Navigation
 -->
 ---
-<html>
-<div align="center">
 [Index](../README.md#index)
-</div>
-</html>
