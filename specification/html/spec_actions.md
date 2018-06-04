@@ -135,78 +135,19 @@ Each of these runtimes also include additional built-in packages (or libraries) 
 
 These packages may vary by OpenWhisk release; examples of supported runtimes as of this specification version include:
 
-<html>
-<table>
-
-  <tr>
-   <th>Runtime value</th>
-   <th>OpenWhisk kind</th>
-   <th>image name</th>
-   <th>Description</th>
-  </tr>
-
- <tr>
-  <td>nodejs</td>
-  <td>nodejs</td>
-  <td>nodejsaction:latest</td>
-  <td>Latest NodeJS runtime</td>
- </tr>
- <tr>
-  <td>nodejs@6</td>
-  <td>nodejs:6</td>
-  <td>nodejs6action:latest</td>
-  <td>Latest NodeJS 6 runtime</td>
- </tr>
- <tr>
-  <td>java, java@8</td>
-  <td>java</td>
-  <td>java8action:latest</td>
-  <td>Latest Java language runtime</td>
- </tr>
- <tr>
-  <td>python, python@2</td>
-  <td>python:2</td>
-  <td>python2action:latest</td>
-  <td>Latest Python 2 language runtime</td>
- </tr>
- <tr>
-  <td>python@3</td>
-  <td>python:3</td>
-  <td>python3action:latest</td>
-  <td>Latest Python 3 language runtime</td>
- </tr>
- <tr>
-  <td>swift, swift@2</td>
-  <td>swift</td>
-  <td>swiftaction:latest</td>
-  <td>Latest Swift 2 language runtime</td>
- </tr>
- <tr>
-  <td>swift@3</td>
-  <td>swift:3</td>
-  <td>swift3action:latest</td>
-  <td>Latest Swift 3 language runtime</td>
- </tr>
- <tr>
-  <td>swift@3.1.1</td>
-  <td>swift:3.1.1</td>
-  <td>action-swift-v3.1.1:latest</td>
-  <td>Latest Swift 3.1.1 language runtime</td>
- </tr>
- <tr>
-  <td>php</td>
-  <td>php:7.1</td>
-  <td>action-php-v7.1:latest</td>
-  <td>Latest PHP language runtime</td>
- </tr>
- <tr>
-  <td>language:default</td>
-  <td>N/A</td>
-  <td>N/A</td>
-  <td>Permit the OpenWhisk platform to select the correct default language runtime.</td>
- </tr>
-</table>
-</html>
+| Runtime value | OpenWhisk kind | Docker image name | Description |
+|:---|:---|:---|:---|
+| nodejs | nodejs | openwhisk/nodejsaction:latest | Latest NodeJS runtime |
+| nodejs@6 | nodejs:6 | openwhisk/nodejs6action:latest | Latest NodeJS 6 runtime |
+| nodejs@8 | nodejs:8 | openwhisk/action-nodejs-v8:latest | Latest NodeJS 8 runtime |
+| java, java@8 | java | openwhisk/java8action:latest | Latest Java (8) language runtime |
+| php, php@7.1 | php:7.1 | openwhisk/action-php-v7.1:latest | Latest PHP (7.1) language runtime |
+| python, python@2 | python:2 | openwhisk/python2action:latest | Latest Python 2 language runtime |
+| python@3 | python:3 | openwhisk/python3action:latest | Latest Python 3 language runtime |
+| swift | swift | openwhisk/swiftaction:latest | Latest Swift language runtime |
+| swift@3 | swift | openwhisk/swift3action:latest | Latest Swift 3 language runtime |
+| swift@3.1.1 | swift | openwhisk/action-swift-v3.1.1:latest | Latest Swift 3.1.1 language runtime |
+| language:default | N/A | N/A | Permit the OpenWhisk platform to select the correct default language runtime. |
 
 #### Notes
 - If no value for runtime is supplied, the value 'language:default' will be assumed.
@@ -223,7 +164,6 @@ following file extensions are recognized and will be run on the latest version o
    <th>Runtime used</th>
    <th>Description</th>
   </tr>
-
  <tr>
   <td>.js</td>
   <td>nodejs</td>
@@ -263,7 +203,6 @@ following file extensions are recognized and will be run on the latest version o
    <th>Valid Range</th>
    <th>Description</th>
   </tr>
-
  <tr>
   <td>timeout</td>
   <td>scalar-unit.time</td>
