@@ -44,6 +44,15 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 | web \| web-export | no | boolean | yes | no | raw | false | Optionally, turns the Action into a <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md">&quot;<em><u>web actions</u></em>&quot;</a> causing it to return HTTP content without use of an API Gateway. |
 | raw-http | no | boolean | false | The optional flag (annotation) to indicate if a Web Action is able to consume the raw contents within the body of an HTTP request.<p><b>Note</b>: this option is ONLY valid if the <em>web-export</em> field is set to <em>‘true’</em>.</p> |
 
+
+### Deprecated Fields
+
+The following fields are considered deprecated as of the current specification version.
+
+| Key Name | Required | Value Type | Default | Description |
+|:---|:---|:---|:---|:---|
+| code | no | string | N/A | This optional field is now replaced by the <em>“function”</em> field. |
+
 ### Requirements
 
 - The Action name (i.e., &lt;actionName&gt; MUST be less than or equal to 256 characters.
