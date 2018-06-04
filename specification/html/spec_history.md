@@ -24,7 +24,7 @@
 | 0.8.1 | 2016-11-03 | Initial public point draft, Working Draft 01 |
 | 0.8.2 | 2016-12-12 | Working Draft 02, Add. Use cases, examples |
 | 0.8.3 | 2017-02-02 | Working Draft 03, Add use cases, examples, "$" (dollar) notation |
-| 0.8.4 | 2017-04-18 | Working Draft 04</br>Support JSON parameter type;</br>Clarify use of Parameter single-line grammar and inferred types.</br>Add support for API Gateway mappings.</br>Add support for Web Actions |
+| 0.8.4 | 2017-04-18 | Working Draft 04</br><ul><li>Support JSON parameter type;</br>Clarify use of Parameter single-line grammar and inferred types.<li>Add support for API Gateway mappings.<li>Add support for Web Actions</ul> |
 | 0.8.5 | 2017-04-21 | Add support for “dependencies”, that is allow automatic deployment of other OpenWhisk packages (from GitHub) that the current package declares as a dependency. |
 | 0.8.6 | 2017-07-25 | Clarified requirements for \$ dollar notation.
                       -   Updated conceptual Manifest/Deployment File processing images. |
