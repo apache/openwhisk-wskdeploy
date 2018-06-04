@@ -21,16 +21,16 @@
 
 | Version | Date | Notes |
 |:---|:---|:---|
-| 0.8.1 | 2016-11-03 | </br><ul><li>Initial public point draft</ul> |
-| 0.8.2 | 2016-12-12 | </br><ul><li>Begin adding use cases, examples to all sections.</ul> |
-| 0.8.3 | 2017-02-02 | </br><ul><li>Add more use cases, examples<li> Add description of "$" (dollar) notation</ul> |
-| 0.8.4 | 2017-04-18 | </br><li>Support JSON parameter type;</br>Clarify use of Parameter single-line grammar and inferred types.<li>Add support for API Gateway mappings.<li>Add support for Web Actions</ul> |
-| 0.8.5 | 2017-04-21 | </br><ul><li>Add support for “dependencies”, that is allow automatic deployment of other OpenWhisk packages (from GitHub) that the current package declares as a dependency.</ul> |
-| 0.8.6 | 2017-07-25 | </br><ul><li>Clarified requirements for \$ dollar notation.<li>Updated conceptual Manifest/Deployment File processing images. |
-| 0.8.7 | 2017-08-24 | </br><ul><li>Added explicit Application entity and grammar.<li>Added API listing to Package entity.<li>Cleaned up pseudo-grammar which contained various uses of credentials in places not intended.<li>Fixed Polygon Tracking example (indentation incorrect).</ul> |
-| 0.8.8 | 2017-08-29 | </br><ul><li>Created a simplified API entity (i.e., “api”) grammar that allows multiple sets of named APIs for the same basepath.<li>Acknowledge PHP as supported runtime (kind).<li>Added “sequences” entity as a convenient way to declare action sequences in the manifest. Updated supported runtime values.</ul> |
-| 0.8.9 | 2017-09-22 | Clarified “version” key requirements for Package (required) and Action (optional); removed from shared entity schema.</ul> |
-| 0.8.9.1 | 2017-09-29 | </br><ul><li>Made “license” key optional for package.<li>keyword “package” (singular) and “packages” (plural) both allowed.<li>Adjusted use case examples to reflect these changes.<li>Rework of schema use cases into full, step-by-step examples.<li>Spellcheck, fixed bugs, update examples to match web-based version.</ul> |
+| 0.8.1 | 2016-11-03 | <ul><li>Initial public point draft</ul> |
+| 0.8.2 | 2016-12-12 | <ul><li>Begin adding use cases, examples to all sections.</ul> |
+| 0.8.3 | 2017-02-02 | <ul><li>Add more use cases, examples<li> Add description of "$" (dollar) notation</ul> |
+| 0.8.4 | 2017-04-18 | <ul><li>Support JSON parameter type;</br>Clarify use of Parameter single-line grammar and inferred types.<li>Add support for API Gateway mappings.<li>Add support for Web Actions</ul> |
+| 0.8.5 | 2017-04-21 | <ul><li>Add support for “dependencies”, that is allow automatic deployment of other OpenWhisk packages (from GitHub) that the current package declares as a dependency.</ul> |
+| 0.8.6 | 2017-07-25 | <ul><li>Clarified requirements for \$ dollar notation.<li>Updated conceptual Manifest/Deployment File processing images. |
+| 0.8.7 | 2017-08-24 | <ul><li>Added explicit Application entity and grammar.<li>Added API listing to Package entity.<li>Cleaned up pseudo-grammar which contained various uses of credentials in places not intended.<li>Fixed Polygon Tracking example (indentation incorrect).</ul> |
+| 0.8.8 | 2017-08-29 | <ul><li>Created a simplified API entity (i.e., “api”) grammar that allows multiple sets of named APIs for the same basepath.<li>Acknowledge PHP as supported runtime (kind).<li>Added “sequences” entity as a convenient way to declare action sequences in the manifest. Updated supported runtime values.</ul> |
+| 0.8.9 | 2017-09-22 | <ul><li>Clarified “version” key requirements for Package (required) and Action (optional); removed from shared entity schema.</ul> |
+| 0.8.9.1 | 2017-09-29 | <ul><li>Made “license” key optional for package.<li>keyword “package” (singular) and “packages” (plural) both allowed.<li>Adjusted use case examples to reflect these changes.<li>Rework of schema use cases into full, step-by-step examples.<li>Spellcheck, fixed bugs, update examples to match web-based version.</ul> |
 | 0.8.9.1 | 2017-10-06 | </br><ul><li>Added grammar and example for concatenating string values on input parameters using environment variables.</ul> |
 | 0.9.0 | 2017-11-23 | </br><ul><li>Identified new user scenarios including: clean, refresh, sync, pre/post processing</ul> |
 | 0.9.1 | 2017-11-30 | </br><ul><li>Clarified “runtime” field on Action is equivalent to “kind” parameter used on the Apache OpenWhisk CLI for Actions.<li>Added “project” key as an synonym name for “application”.” key, moving application to become deprecated. Project name made required.<li>Support “public” (i.e., publish) key on Package.<li>Documented support for the “raw-http” annotation under Action.<li>Documented support for the “final” annotation under Action.<li>Documented support for the “main” field under Action.<li>Dollar Notation section becomes Interpolation / updates<li><ul><li>Supported beyond Parameter values<li>Package names can be interpolated<li>Annotations values can be interpolated<li>Multiple replacements supported in same value</ul><li>Usage scenarios 6-8 added, i.e., Clean, Project Sync, Tool chain support. |
