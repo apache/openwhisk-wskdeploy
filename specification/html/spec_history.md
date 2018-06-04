@@ -23,7 +23,7 @@
 |:---|:---|:---|
 | 0.8.1 | 2016-11-03 | </br><ul><li>Initial public point draft</ul> |
 | 0.8.2 | 2016-12-12 | </br><ul><li>Begin adding use cases, examples to all sections.</ul> |
-| 0.8.3 | 2017-02-02 | </br><ul><.i>Add more use cases, examples<li> Add description of "$" (dollar) notation</ul> |
+| 0.8.3 | 2017-02-02 | </br><ul><li>Add more use cases, examples<li> Add description of "$" (dollar) notation</ul> |
 | 0.8.4 | 2017-04-18 | </br><li>Support JSON parameter type;</br>Clarify use of Parameter single-line grammar and inferred types.<li>Add support for API Gateway mappings.<li>Add support for Web Actions</ul> |
 | 0.8.5 | 2017-04-21 | </br><ul><li>Add support for “dependencies”, that is allow automatic deployment of other OpenWhisk packages (from GitHub) that the current package declares as a dependency.</ul> |
 | 0.8.6 | 2017-07-25 | </br><ul><li>Clarified requirements for \$ dollar notation.<li>Updated conceptual Manifest/Deployment File processing images. |
