@@ -154,6 +154,6 @@ inputs:
 ---
 <html>
 <div align="center">
-[Index](../README.md#Index)
+[Index](../README.md#index)
 </div>
 </html>
