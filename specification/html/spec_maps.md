@@ -17,19 +17,7 @@
 #
 -->
 
-# General schema
-
-- [Dollar Notation ($)](#dollar-notation--schema-for-values)
-
-### Schema
-
-This section defines all the essential schema used to describe OpenWhisk packages within a manifest.
-
-#### General Requirements
-
--   All field names in this specification SHALL be case sensitive.
-
-#### map schema
+#### Map schema
 
 The Map schema is used to define maps of key values within OpenWhisk
 entities.

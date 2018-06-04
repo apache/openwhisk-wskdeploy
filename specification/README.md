@@ -54,9 +54,10 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 - [Package processing](html/spec_package_processing.md#package-processing) - describes how the developers can use Package Manifests and Deployment files with the ```wskdeploy``` utility.
 - [Grammar](html/spec_grammar.md#grammar) - describes the YAML grammar the specification builds upon.
 
-#### Schema
+#### [Schema](html/spec_schema.md#schema)
 - [Parameter Types](html/spec_parameter_types.md#parameter-types) - supported YAML and OpenWhisk Types.
 - [Parameters](html/spec_parameters.md#parameters) - grammar, schema and examples for input and output parameters.
+- [Maps](html/spec_maps.md#map-schema) - schema for using the Map parameter type.
 - [Entity Schema](html/spec_shared_entity_schema.md#shared-entity-schema) - keys that are common to all entities in the programming model.
 - [Entity Naming & Namespacing](html/spec_entity_naming_and_namespacing.md#naming-and-namespacing) - describes what characters can be used to name Packages, Actions, Triggers and Rules and how to manage them with namespaces.
 - [Packages](html/spec_packages.md#packages) - grammar, schema and examples for Packages.
