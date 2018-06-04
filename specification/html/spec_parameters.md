@@ -85,7 +85,7 @@ OpenWhisk entities (e.g., Actions, Triggers, Rules, etc.).
 ```yaml
 description: <string256>
 displayName: <string16>
-annotations: <map of &lt;string&gt;&gt;
+annotations: <map of <string>>
 ```
 
 ##### Requirements
