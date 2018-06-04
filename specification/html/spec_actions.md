@@ -41,15 +41,20 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 | outputs | no | list of [parameter](spec_parameters.md) | N/A | The optional outputs from the Action. |
 | limits | no | map of [limit keys and values](#valid-limit-keys) | N/A | Optional map of limit keys and their values.</br>See section "[Valid limit keys](#valid-limit-keys)" (below) for a listing of recognized keys and values. |
 | feed | no | boolen | false | Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action. |
-| web \| web-export | no | boolean | yes | no | raw | false | Optionally, turns the Action into a <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md">&quot;<em><u>web actions</u></em>&quot;</a> causing it to return HTTP content without use of an API Gateway. |
-| raw-http | no | boolean | false | The optional flag (annotation) to indicate if a Web Action is able to consume the raw contents within the body of an HTTP request.<p><b>Note</b>: this option is ONLY valid if the <em>web-export</em> field is set to <em>‘true’</em>.</p> |
-
+| web \| web-export | no | boolean | yes \| no \| raw \| false | Optionally, turns the Action into a <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md">&quot;<em><u>web action</u></em>&quot;</a> causing it to return HTTP content without use of an API Gateway. |
+| raw-http | no | boolean | false | The optional flag (annotation) to indicate if a Web Action is able to consume the raw contents within the body of an HTTP request.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
+| docker | no | string | N/A | The optional key that references a Docker image (e.g., openwhisk/skeleton). |
+| native | no | boolean | false | The optional key (flag) that indicates the Action is should use the Docker skeleton image for OpenWhisk (i.e., short-form for docker: openwhisk/skeleton). |
+| final | no | boolean | false | The optional flag (annotation) which makes all of the action parameters that are already defined immutable.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
+| web-custom-options | no | | | |
+| require-whisk-auth | no | | | |
+| main | no | | | |
 
 ### Deprecated Fields
 
 The following fields are considered deprecated as of the current specification version.
 
-| Key Name | Required | Value Type | Default | Description |
+| Key Name | Required | Value Type | Default | Reason / Notes |
 |:---|:---|:---|:---|:---|
 | code | no | string | N/A | This optional field is now replaced by the <em>“function”</em> field. |
 
