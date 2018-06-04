@@ -37,8 +37,8 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 | version | no | version | N/A | The optional user-controlled version for the Action. |
 | function | yes | string | N/A | Required source location (path inclusive) of the Action code either:<ul><li>Relative to the Package manifest file.</li><li>Relative to the specified Repository.</li></ul> |
 | runtime | no | string | N/A | he required runtime name (and optional version) that the Action code requires for an execution environment.<p><i>Note: May be optional if tooling allowed to make assumptions about file extensions.</i></p> |
-| inputs | no | list of parameter | N/A | The optional ordered list inputs to the Action. |
-| outputs | no | list of parameter | N/A | The optional outputs from the Action. |
+| inputs | no | list of [parameter](spec_parameters.md) | N/A | The optional ordered list inputs to the Action. |
+| outputs | no | list of [parameter](spec_parameters.md) | N/A | The optional outputs from the Action. |
 | limits | no | map of [limit keys and values](#valid-limit-keys) | N/A | Optional map of limit keys and their values.</br>See section "[Valid limit keys](#valid-limit-keys)"" (below) for a listing of recognized keys and values. |
 | feed | no | boolen | false | Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action. |
 | web \| web-export | no | boolean | false | Optionally, turns the Action into a <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md">&quot;<em><u>web actions</u></em>&quot;</a> causing it to return HTTP content without use of an API Gateway. |
