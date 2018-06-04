@@ -42,7 +42,7 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 | limits | no | map of [limit keys and values](#valid-limit-keys) | N/A | Optional map of limit keys and their values.</br>See section "[Valid limit keys](#valid-limit-keys)" (below) for a listing of recognized keys and values. |
 | feed | no | boolen | false | Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action. |
 | web \| web-export | no | &lt;boolean&gt; | yes | no | raw | false | Optionally, turns the Action into a <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md">&quot;<em><u>web actions</u></em>&quot;</a> causing it to return HTTP content without use of an API Gateway. |
-| raw-http | no | boolean | false | The optional flag (annotation) to indicate if a Web Action is able to consume the raw contents within the body of an HTTP request.</br><em>Note</em>: this option is ONLY valid if the <em>web-export</em> field is set to <em>‘true’</em>. |
+| raw-http | no | boolean | false | The optional flag (annotation) to indicate if a Web Action is able to consume the raw contents within the body of an HTTP request.<p><b>Note</b>: this option is ONLY valid if the <em>web-export</em> field is set to <em>‘true’</em>.</p> |
 
 ### Requirements
 
