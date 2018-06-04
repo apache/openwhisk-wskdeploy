@@ -28,7 +28,7 @@
 Support JSON parameter type;</br>
 Clarify use of Parameter single-line grammar and inferred types.</br>Add support for API Gateway mappings.</br>Add support for Web Actions |
 | 0.8.5 | 2017-04-21 | Add support for “dependencies”, that is allow automatic deployment of other OpenWhisk packages (from GitHub) that the current package declares as a dependency. |
-| 0.8.6 | 2017-07-25 | Clarified requirements for \$ dollar notation.
+| 0.8.6 | 2017-07-25 | Clarified requirements for \$ dollar notation. |
                       -   Updated conceptual Manifest/Deployment File processing images.
 | 0.8.7 | 2017-08-24 | Added explicit Application entity and grammar.
                       -   Added API listing to Package entity.
