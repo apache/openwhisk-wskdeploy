@@ -64,6 +64,7 @@ const (
 	ERROR_YAML_INVALID_RUNTIME            = "ERROR_YAML_INVALID_RUNTIME"
 	ERROR_YAML_INVALID_WEB_EXPORT         = "ERROR_YAML_INVALID_WEB_EXPORT"
 	ERROR_YAML_INVALID_API_GATEWAY_METHOD = "ERROR_YAML_INVALID_API_GATEWAY_METHOD"
+	ERROR_RUNTIME_ERROR                   = "ERROR_RUNTIME_ERROR"
 )
 
 /*
@@ -433,6 +434,21 @@ func NewInvalidAPIGatewayMethodError(fpath string, api string, method string, su
 		STR_API_METHOD, method,
 		STR_API_SUPPORTED_METHODS, strings.Join(supportedMethods, ", "))
 	err.SetMessage(str)
+	return err
+}
+
+/*
+ * Failed to Retrieve/Parse Runtime
+ */
+type RuntimeParserError struct {
+	WskDeployBaseErr
+}
+
+func NewRuntimeParserError(errorMsg string) *RuntimeParserError {
+	var err = &RuntimeParserError{}
+	err.SetErrorType(ERROR_RUNTIME_ERROR)
+	err.SetCallerByStackFrameSkip(2)
+	err.SetMessage(errorMsg)
 	return err
 }
 

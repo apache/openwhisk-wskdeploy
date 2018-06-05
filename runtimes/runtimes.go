@@ -27,6 +27,7 @@ import (
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"path/filepath"
@@ -87,7 +88,7 @@ var FileRuntimeExtensionsMap map[string]string
 // `curl -k https://openwhisk.ng.bluemix.net`
 // hard coding it here in case of network unavailable or failure.
 func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
-	url := HTTPS + apiHost + "foo"
+	url := HTTPS + apiHost
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set(HTTP_CONTENT_TYPE_KEY, HTTP_CONTENT_TYPE_VALUE)
 	tlsConfig := &tls.Config{
@@ -110,6 +111,9 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 			map[string]interface{}{"err": err.Error()})
 		whisk.Debug(whisk.DbgWarn, errString)
 		if utils.Flags.Strict {
+			errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_PARSER_ERROR,
+				map[string]interface{}{wski18n.KEY_ERR: err.Error()})
+			err = wskderrors.NewRuntimeParserError(errMessage)
 			return
 		}
 	}
@@ -125,6 +129,11 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 		runtimeDetails := readRuntimes()
 		if runtimeDetails != nil {
 			err = json.Unmarshal(runtimeDetails, &op)
+			if err != nil {
+				errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_PARSER_ERROR,
+					map[string]interface{}{wski18n.KEY_ERR: err.Error()})
+				err = wskderrors.NewRuntimeParserError(errMessage)
+			}
 		}
 	} else {
 		b, _ := ioutil.ReadAll(res.Body)
@@ -133,6 +142,11 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 				map[string]interface{}{"url": url})
 			wskprint.PrintOpenWhiskInfo(stdout)
 			err = json.Unmarshal(b, &op)
+			if err != nil {
+				errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_PARSER_ERROR,
+					map[string]interface{}{wski18n.KEY_ERR: err.Error()})
+				err = wskderrors.NewRuntimeParserError(errMessage)
+			}
 		}
 	}
 	return

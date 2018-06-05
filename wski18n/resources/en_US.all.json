@@ -363,6 +363,10 @@
     "id": "msg_err_required_inputs_missing_value",
     "translation": "Required inputs are missing values even after applying interpolation using env. variables. Please set missing env. variables and/or input values in manifest/deployment file or on CLI for following inputs: {{.inputs}}"
   },
+  {
+    "id": "msg_err_runtime_parser_error",
+    "translation": "Failed to retrieve runtimes {{.err}}."
+  },
 
   {
     "id": "WARNINGS",
