@@ -64,6 +64,9 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 'delete', 'pause', etc.).
   - **triggerName**: the fully-qualified name of the trigger which contains events produced from this feed.
   - **authKey**: the Basic auth. credentials of the OpenWhisk user who owns the trigger.
+- The keyname ‘kind’ is currently supported as a synonym for the key named ‘runtime’; in the future it MAY be deprecated.
+- When a code is specified, runtime SHALL be a required field.
+
 
 ### Notes
 
