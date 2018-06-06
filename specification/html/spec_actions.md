@@ -36,7 +36,8 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 |:---|:---|:---|:---|:---|
 | version | no | [version](spec_parameter_types.md#openwhisk-types) | N/A | The optional user-controlled version for the Action. |
 | function | yes | string | N/A | Required source location (path inclusive) of the Action code either:<ul><li>Relative to the Package manifest file.</li><li>Relative to the specified Repository.</li></ul> |
-| runtime | no | string | N/A | he required runtime name (and optional version) that the Action code requires for an execution environment.<p><i>Note: May be optional if tooling allowed to make assumptions about file extensions.</i></p> |
+| code | no | string | N/A | This optional field is now replaced by the <em>“function”</em> field. |
+| runtime | maybe | string | N/A | he required runtime name (and optional version) that the Action code requires for an execution environment.<p><i>Note: May be optional if tooling is allowed to make assumptions about file extensions or infer from functional code.</i></p> |
 | inputs | no | list of [parameter](spec_parameters.md) | N/A | The optional ordered list inputs to the Action. |
 | outputs | no | list of [parameter](spec_parameters.md) | N/A | The optional outputs from the Action. |
 | limits | no | map of [limit keys and values](#valid-limit-keys) | N/A | Optional map of limit keys and their values.</br>See section "[Valid limit keys](#valid-limit-keys)" (below) for a listing of recognized keys and values. |
@@ -49,14 +50,6 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 | web-custom-options | no | boolean | false | The optional flag (annotation) enables a web action to respond to OPTIONS requests with customized headers, otherwise a [default CORS response](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#options-requests) applies. |
 | require-whisk-auth | no | boolean | false | The optional flag (annotation) protects the web action so that it is only accessible to an authenticated subject. |
 | main | no | string | N/A | The optional name of the function to be aliased as a function named “main”.<p><em><b>Note</b>: by convention, Action functions are required to be called “main”; this field allows existing functions not named “main” to be aliased and accessed as if they were named “main”.</em></p>|
-
-### Deprecated Fields
-
-The following fields are considered deprecated as of the current specification version.
-
-| Key Name | Required | Value Type | Default | Reason / Notes |
-|:---|:---|:---|:---|:---|
-| code | no | string | N/A | This optional field is now replaced by the <em>“function”</em> field. |
 
 ### Requirements
 
@@ -87,6 +80,7 @@ The following fields are considered deprecated as of the current specification v
   <Entity schema>
   version: <version>
   function: <string>
+  code: <string>
   runtime: <name>[@<[range of ]version>]
   inputs:
     <list of parameter>
