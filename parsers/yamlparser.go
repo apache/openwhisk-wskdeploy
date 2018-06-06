@@ -194,25 +194,30 @@ type Repository struct {
 	Credential  string `yaml:"credential,omitempty"`
 }
 
+type APIMethod struct {
+	Method   string `yaml:"method"`
+	Response string `yaml:"response"`
+}
+
 type Package struct {
-	Packagename      string                                             `yaml:"name"`
-	Version          string                                             `yaml:"version"` //mandatory
-	License          string                                             `yaml:"license"` //mandatory
-	Public           bool                                               `yaml:"public,omitempty"`
-	Repositories     []Repository                                       `yaml:"repositories,omitempty"`
-	Dependencies     map[string]Dependency                              `yaml:"dependencies"`
-	Namespace        string                                             `yaml:"namespace"`
-	Credential       string                                             `yaml:"credential"`
-	ApiHost          string                                             `yaml:"apiHost"`
-	ApigwAccessToken string                                             `yaml:"apigwAccessToken"`
-	Actions          map[string]Action                                  `yaml:"actions"`
-	Triggers         map[string]Trigger                                 `yaml:"triggers"`
-	Feeds            map[string]Feed                                    `yaml:"feeds"`
-	Rules            map[string]Rule                                    `yaml:"rules"`
-	Inputs           map[string]Parameter                               `yaml:"inputs"`
-	Sequences        map[string]Sequence                                `yaml:"sequences"`
-	Annotations      map[string]interface{}                             `yaml:"annotations,omitempty"`
-	Apis             map[string]map[string]map[string]map[string]string `yaml:"apis"`
+	Packagename      string                                                `yaml:"name"`
+	Version          string                                                `yaml:"version"` //mandatory
+	License          string                                                `yaml:"license"` //mandatory
+	Public           bool                                                  `yaml:"public,omitempty"`
+	Repositories     []Repository                                          `yaml:"repositories,omitempty"`
+	Dependencies     map[string]Dependency                                 `yaml:"dependencies"`
+	Namespace        string                                                `yaml:"namespace"`
+	Credential       string                                                `yaml:"credential"`
+	ApiHost          string                                                `yaml:"apiHost"`
+	ApigwAccessToken string                                                `yaml:"apigwAccessToken"`
+	Actions          map[string]Action                                     `yaml:"actions"`
+	Triggers         map[string]Trigger                                    `yaml:"triggers"`
+	Feeds            map[string]Feed                                       `yaml:"feeds"`
+	Rules            map[string]Rule                                       `yaml:"rules"`
+	Inputs           map[string]Parameter                                  `yaml:"inputs"`
+	Sequences        map[string]Sequence                                   `yaml:"sequences"`
+	Annotations      map[string]interface{}                                `yaml:"annotations,omitempty"`
+	Apis             map[string]map[string]map[string]map[string]APIMethod `yaml:"apis"`
 }
 
 type Project struct {
@@ -371,7 +376,7 @@ func (pkg *Package) GetApis() []*whisk.Api {
 					api.GatewayRelPath = gatewayRelPath
 					action := &whisk.ApiAction{}
 					action.Name = k
-					action.BackendMethod = v
+					action.BackendMethod = v.Method
 					api.Action = action
 					apis = append(apis, api)
 				}

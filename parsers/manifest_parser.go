@@ -1080,8 +1080,9 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, managedAnnot
 	return rules, nil
 }
 
-func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, manifest *YAML) ([]*whisk.ApiCreateRequest, error) {
-	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
+func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, manifest *YAML) ([]*whisk.ApiCreateRequest, map[string]*whisk.ApiCreateRequestOptions, error) {
+	var requests = make([]*whisk.ApiCreateRequest, 0)
+	var responses = make(map[string]*whisk.ApiCreateRequestOptions, 0)
 	manifestPackages := make(map[string]Package)
 
 	if len(manifest.Packages) != 0 {
@@ -1091,14 +1092,17 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, man
 	}
 
 	for packageName, p := range manifestPackages {
-		r, err := dm.ComposeApiRecords(client, packageName, p, manifest.Filepath)
+		r, response, err := dm.ComposeApiRecords(client, packageName, p, manifest.Filepath)
 		if err == nil {
 			requests = append(requests, r...)
+			for k, v := range response {
+				responses[k] = v
+			}
 		} else {
-			return nil, err
+			return nil, nil, err
 		}
 	}
-	return requests, nil
+	return requests, responses, nil
 }
 
 /*
@@ -1126,16 +1130,18 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, man
  * 	}
  * }
  */
-func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string, pkg Package, manifestPath string) ([]*whisk.ApiCreateRequest, error) {
-	var requests []*whisk.ApiCreateRequest = make([]*whisk.ApiCreateRequest, 0)
+func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string, pkg Package, manifestPath string) ([]*whisk.ApiCreateRequest, map[string]*whisk.ApiCreateRequestOptions, error) {
+	var requests = make([]*whisk.ApiCreateRequest, 0)
 
 	if pkg.Apis != nil && len(pkg.Apis) != 0 {
 		// verify APIGW_ACCESS_TOKEN is set before composing APIs
 		// until this point, we dont know whether APIs are specified in manifest or not
 		if len(client.ApigwAccessToken) == 0 {
-			return nil, wskderrors.NewWhiskClientInvalidConfigError(wski18n.ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN)
+			return nil, nil, wskderrors.NewWhiskClientInvalidConfigError(wski18n.ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN)
 		}
 	}
+
+	actionNameWithResponse := make(map[string]*whisk.ApiCreateRequestOptions, 0)
 
 	for apiName, apiDoc := range pkg.Apis {
 		for gatewayBasePath, gatewayBasePathMap := range apiDoc {
@@ -1149,6 +1155,14 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 					gatewayRelPath = PATH_SEPARATOR + gatewayRelPath
 				}
 				for actionName, gatewayMethod := range gatewayRelPathMap {
+					// check if action name has path parameters in it
+					splitAction := strings.Split(actionName, PATH_SEPARATOR)
+					if len(splitAction) == 2 {
+						actionName = splitAction[0]
+						if gatewayMethod.Response != "http" {
+							return nil, nil, nil
+						}
+					}
 					// verify that the action is defined under actions sections
 					if _, ok := pkg.Actions[actionName]; ok {
 						// verify that the action is defined as web action
@@ -1185,7 +1199,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						}
 						// return failure since action or sequence are not defined in the manifest
 					} else {
-						return nil, wskderrors.NewYAMLFileFormatError(manifestPath,
+						return nil, nil, wskderrors.NewYAMLFileFormatError(manifestPath,
 							wski18n.T(wski18n.ID_ERR_API_MISSING_ACTION_OR_SEQUENCE_X_action_or_sequence_X_api_X,
 								map[string]interface{}{
 									wski18n.KEY_ACTION: actionName,
@@ -1196,13 +1210,13 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 					request.ApiDoc.GatewayBasePath = gatewayBasePath
 					// is API verb is valid, it must be one of (GET, PUT, POST, DELETE)
 					request.ApiDoc.GatewayRelPath = gatewayRelPath
-					if _, ok := whisk.ApiVerbs[strings.ToUpper(gatewayMethod)]; !ok {
-						return nil, wskderrors.NewInvalidAPIGatewayMethodError(manifestPath,
+					if _, ok := whisk.ApiVerbs[strings.ToUpper(gatewayMethod.Method)]; !ok {
+						return nil, nil, wskderrors.NewInvalidAPIGatewayMethodError(manifestPath,
 							gatewayBasePath+gatewayRelPath,
-							gatewayMethod,
+							gatewayMethod.Method,
 							dm.getGatewayMethods())
 					}
-					request.ApiDoc.GatewayMethod = strings.ToUpper(gatewayMethod)
+					request.ApiDoc.GatewayMethod = strings.ToUpper(gatewayMethod.Method)
 					request.ApiDoc.Namespace = client.Namespace
 					request.ApiDoc.ApiName = apiName
 					request.ApiDoc.Id = strings.Join([]string{API, request.ApiDoc.Namespace, request.ApiDoc.GatewayRelPath}, ":")
@@ -1218,15 +1232,28 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						actionName + "." + utils.HTTP_FILE_EXTENSION}
 					request.ApiDoc.Action.Namespace = client.Namespace
 					request.ApiDoc.Action.BackendUrl = strings.Join(url, PATH_SEPARATOR)
-					request.ApiDoc.Action.BackendMethod = gatewayMethod
+					request.ApiDoc.Action.BackendMethod = gatewayMethod.Method
 					request.ApiDoc.Action.Auth = client.AuthToken
+					// append each path parameter
+					apiParams := make([]whisk.ApiParameter, 0)
+					for _, param := range splitAction[1:] {
+						apiParam := new(whisk.ApiParameter)
+						apiParam.Name = param
+						apiParams = append(apiParams, *apiParam)
+					}
+					request.ApiDoc.PathParameters = apiParams
 					// add a newly created ApiCreateRequest object to a list of requests
 					requests = append(requests, request)
+					options := new(whisk.ApiCreateRequestOptions)
+					options.ResponseType = gatewayMethod.Response
+					apiPath := request.ApiDoc.ApiName + " " + request.ApiDoc.GatewayBasePath +
+						request.ApiDoc.GatewayRelPath + " " + request.ApiDoc.GatewayMethod
+					actionNameWithResponse[apiPath] = options
 				}
 			}
 		}
 	}
-	return requests, nil
+	return requests, actionNameWithResponse, nil
 }
 
 func (dm *YAMLParser) getGatewayMethods() []string {

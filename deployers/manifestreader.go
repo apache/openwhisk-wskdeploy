@@ -107,7 +107,7 @@ func (reader *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, man
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	apis, err := manifestParser.ComposeApiRecordsFromAllPackages(reader.serviceDeployer.ClientConfig, manifest)
+	apis, responses, err := manifestParser.ComposeApiRecordsFromAllPackages(reader.serviceDeployer.ClientConfig, manifest)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
@@ -137,7 +137,7 @@ func (reader *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, man
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	err = reader.SetApis(apis)
+	err = reader.SetApis(apis, responses)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
@@ -303,18 +303,19 @@ func (reader *ManifestReader) SetRules(rules []*whisk.Rule) error {
 	return nil
 }
 
-func (reader *ManifestReader) SetApis(ar []*whisk.ApiCreateRequest) error {
+func (reader *ManifestReader) SetApis(ar []*whisk.ApiCreateRequest, responses map[string]*whisk.ApiCreateRequestOptions) error {
 	dep := reader.serviceDeployer
 
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
 
 	for _, api := range ar {
-		apiPath := api.ApiDoc.ApiName + api.ApiDoc.GatewayBasePath + api.ApiDoc.GatewayRelPath + api.ApiDoc.GatewayMethod
-
-		// uniqueness issue when using action name as key as there can be multiple APIs pointing to same action.
-		// using apiPath instead as it is uniqueue
+		apiPath := api.ApiDoc.ApiName + " " + api.ApiDoc.GatewayBasePath +
+			api.ApiDoc.GatewayRelPath + " " + api.ApiDoc.GatewayMethod
 		dep.Deployment.Apis[apiPath] = api
+	}
+	for apiPath, response := range responses {
+		dep.Deployment.ApiOptions[apiPath] = response
 	}
 
 	return nil
