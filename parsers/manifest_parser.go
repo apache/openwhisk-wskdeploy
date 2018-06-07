@@ -20,15 +20,20 @@ package parsers
 import (
 	"encoding/base64"
 	"errors"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
+	"gopkg.in/yaml.v2"
+
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/conductor"
+	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
+	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/webaction"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
@@ -184,8 +189,8 @@ func (dm *YAMLParser) composeAnnotations(annotations map[string]interface{}) whi
 	return listOfAnnotations
 }
 
-func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string, managedAnnotations whisk.KeyValue, packageInputs map[string]PackageInputs) (map[string]utils.DependencyRecord, error) {
-	dependencies := make(map[string]utils.DependencyRecord)
+func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, projectPath string, filePath string, managedAnnotations whisk.KeyValue, packageInputs map[string]PackageInputs) (map[string]dependencies.DependencyRecord, error) {
+	dependencies := make(map[string]dependencies.DependencyRecord)
 	packages := make(map[string]Package)
 
 	if len(manifest.Packages) != 0 {
@@ -207,9 +212,9 @@ func (dm *YAMLParser) ComposeDependenciesFromAllPackages(manifest *YAML, project
 	return dependencies, nil
 }
 
-func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string, managedAnnotations whisk.KeyValue, packageInputs PackageInputs) (map[string]utils.DependencyRecord, error) {
+func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, filePath string, packageName string, managedAnnotations whisk.KeyValue, packageInputs PackageInputs) (map[string]dependencies.DependencyRecord, error) {
 
-	depMap := make(map[string]utils.DependencyRecord)
+	depMap := make(map[string]dependencies.DependencyRecord)
 	for key, dependency := range pkg.Dependencies {
 		version := dependency.Version
 		if len(version) == 0 {
@@ -219,12 +224,12 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 		location := dependency.Location
 
 		isBinding := false
-		if utils.LocationIsBinding(location) {
+		if dependencies.LocationIsBinding(location) {
 			if !strings.HasPrefix(location, PATH_SEPARATOR) {
 				location = PATH_SEPARATOR + dependency.Location
 			}
 			isBinding = true
-		} else if utils.LocationIsGithub(location) {
+		} else if dependencies.LocationIsGithub(location) {
 
 			// TODO() define const for the protocol prefix, etc.
 			if !strings.HasPrefix(location, HTTPS) && !strings.HasPrefix(location, HTTP) {
@@ -250,7 +255,7 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 
 		packDir := path.Join(projectPath, strings.Title(YAML_KEY_PACKAGES))
 		depName := packageName + ":" + key
-		depMap[depName] = utils.NewDependencyRecord(packDir, packageName, location, version, inputs, annotations, isBinding)
+		depMap[depName] = dependencies.NewDependencyRecord(packDir, packageName, location, version, inputs, annotations, isBinding)
 	}
 
 	return depMap, nil
@@ -504,7 +509,7 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		// when web-export is set to raw, treat sequence as a raw HTTP web action,
 		// when web-export is set to no | false, treat sequence as a standard action
 		if len(sequence.Web) != 0 {
-			wskaction.Annotations, errorParser = utils.WebAction(manifestFilePath, wskaction.Name, sequence.Web, wskaction.Annotations, false)
+			wskaction.Annotations, errorParser = webaction.WebAction(manifestFilePath, wskaction.Name, sequence.Web, wskaction.Annotations, false)
 			if errorParser != nil {
 				return nil, errorParser
 			}
@@ -566,10 +571,10 @@ func (dm *YAMLParser) readActionCode(manifestFilePath string, action Action) (*w
 	// even if runtime is invalid, deploy action with specified runtime in strict mode
 	if utils.Flags.Strict {
 		exec.Kind = action.Runtime
-	} else if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {
+	} else if runtimes.CheckExistRuntime(action.Runtime, runtimes.SupportedRunTimes) {
 		exec.Kind = action.Runtime
-	} else if len(utils.DefaultRunTimes[action.Runtime]) != 0 {
-		exec.Kind = utils.DefaultRunTimes[action.Runtime]
+	} else if len(runtimes.DefaultRunTimes[action.Runtime]) != 0 {
+		exec.Kind = runtimes.DefaultRunTimes[action.Runtime]
 	} else {
 		err := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
 			map[string]interface{}{
@@ -590,16 +595,16 @@ func (dm *YAMLParser) validateActionFunction(manifestFileName string, action Act
 	// and its not explicitly specified in the manifest YAML file
 	// and action source is not a zip file
 	if len(action.Runtime) == 0 && len(action.Docker) == 0 && !action.Native {
-		if ext == utils.ZIP_FILE_EXTENSION {
+		if ext == runtimes.ZIP_FILE_EXTENSION {
 			errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_INVALID_X_runtime_X_action_X,
 				map[string]interface{}{
-					wski18n.KEY_RUNTIME: utils.RUNTIME_NOT_SPECIFIED,
+					wski18n.KEY_RUNTIME: runtimes.RUNTIME_NOT_SPECIFIED,
 					wski18n.KEY_ACTION:  action.Name})
 			return wskderrors.NewInvalidRuntimeError(errMessage,
 				manifestFileName,
 				action.Name,
-				utils.RUNTIME_NOT_SPECIFIED,
-				utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+				runtimes.RUNTIME_NOT_SPECIFIED,
+				runtimes.ListOfSupportedRuntimes(runtimes.SupportedRunTimes))
 		} else if len(kind) == 0 {
 			errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_ACTION_SOURCE_NOT_SUPPORTED_X_ext_X_action_X,
 				map[string]interface{}{
@@ -608,8 +613,8 @@ func (dm *YAMLParser) validateActionFunction(manifestFileName string, action Act
 			return wskderrors.NewInvalidRuntimeError(errMessage,
 				manifestFileName,
 				action.Name,
-				utils.RUNTIME_NOT_SPECIFIED,
-				utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+				runtimes.RUNTIME_NOT_SPECIFIED,
+				runtimes.ListOfSupportedRuntimes(runtimes.SupportedRunTimes))
 		}
 	}
 	return nil
@@ -639,7 +644,7 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 	}
 
 	if utils.IsDirectory(actionFilePath) {
-		zipFileName = actionFilePath + "." + utils.ZIP_FILE_EXTENSION
+		zipFileName = actionFilePath + "." + runtimes.ZIP_FILE_EXTENSION
 		err := utils.NewZipWritter(actionFilePath, zipFileName).Zip()
 		if err != nil {
 			return actionFilePath, nil, err
@@ -659,8 +664,8 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 
 	// determine default runtime for the given file extension
 	var kind string
-	r := utils.FileExtensionRuntimeKindMap[ext]
-	kind = utils.DefaultRunTimes[r]
+	r := runtimes.FileExtensionRuntimeKindMap[ext]
+	kind = runtimes.DefaultRunTimes[r]
 	if err := dm.validateActionFunction(manifestFileName, action, ext, kind); err != nil {
 		return actionFilePath, nil, err
 	}
@@ -671,7 +676,7 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 		return actionFilePath, nil, err
 	}
 	code := string(dat)
-	if ext == utils.ZIP_FILE_EXTENSION || ext == utils.JAR_FILE_EXTENSION {
+	if ext == runtimes.ZIP_FILE_EXTENSION || ext == runtimes.JAR_FILE_EXTENSION {
 		code = base64.StdEncoding.EncodeToString([]byte(dat))
 	}
 	exec.Code = &code
@@ -684,13 +689,13 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 	*  Set the action runtime to match with the source file extension, if wskdeploy is not invoked in strict mode
 	 */
 	if len(action.Runtime) != 0 {
-		if utils.CheckExistRuntime(action.Runtime, utils.SupportedRunTimes) {
+		if runtimes.CheckExistRuntime(action.Runtime, runtimes.SupportedRunTimes) {
 			// for zip actions, rely on the runtimes from the manifest file as it can not be derived from the action source file extension
 			// pick runtime from manifest file if its supported by OpenWhisk server
-			if ext == utils.ZIP_FILE_EXTENSION {
+			if ext == runtimes.ZIP_FILE_EXTENSION {
 				exec.Kind = action.Runtime
 			} else {
-				if utils.CheckRuntimeConsistencyWithFileExtension(ext, action.Runtime) {
+				if runtimes.CheckRuntimeConsistencyWithFileExtension(ext, action.Runtime) {
 					exec.Kind = action.Runtime
 				} else {
 					warnStr := wski18n.T(wski18n.ID_ERR_RUNTIME_MISMATCH_X_runtime_X_ext_X_action_X,
@@ -719,20 +724,24 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 					wski18n.KEY_ACTION:  action.Name})
 			wskprint.PrintOpenWhiskWarning(warnStr)
 
-			if ext == utils.ZIP_FILE_EXTENSION {
+			if ext == runtimes.ZIP_FILE_EXTENSION {
 				// for zip action, error out if specified runtime is not supported by
 				// OpenWhisk server
 				return actionFilePath, nil, wskderrors.NewInvalidRuntimeError(warnStr,
 					manifestFileName,
 					action.Name,
 					action.Runtime,
-					utils.ListOfSupportedRuntimes(utils.SupportedRunTimes))
+					runtimes.ListOfSupportedRuntimes(runtimes.SupportedRunTimes))
 			} else {
-				warnStr := wski18n.T(wski18n.ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
-					map[string]interface{}{
-						wski18n.KEY_RUNTIME: exec.Kind,
-						wski18n.KEY_ACTION:  action.Name})
-				wskprint.PrintOpenWhiskWarning(warnStr)
+				if utils.Flags.Strict {
+					exec.Kind = action.Runtime
+				} else {
+					warnStr := wski18n.T(wski18n.ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
+						map[string]interface{}{
+							wski18n.KEY_RUNTIME: exec.Kind,
+							wski18n.KEY_ACTION:  action.Name})
+					wskprint.PrintOpenWhiskWarning(warnStr)
+				}
 			}
 
 		}
@@ -769,7 +778,7 @@ func (dm *YAMLParser) composeActionExec(manifestFilePath string, manifestFileNam
 	// when an action Native is set to true,
 	// set exec.Image to openwhisk/skeleton
 	if len(action.Docker) != 0 || action.Native {
-		exec.Kind = utils.BLACKBOX
+		exec.Kind = runtimes.BLACKBOX
 		if action.Native {
 			exec.Image = NATIVE_DOCKER_IMAGE
 		} else {
@@ -900,7 +909,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		// when web-export is set to no | false, treat action as a standard action
 		dm.validateActionWebFlag(action)
 		if len(action.GetWeb()) != 0 {
-			wskaction.Annotations, errorParser = utils.WebAction(manifestFilePath, action.Name, action.GetWeb(), wskaction.Annotations, false)
+			wskaction.Annotations, errorParser = webaction.WebAction(manifestFilePath, action.Name, action.GetWeb(), wskaction.Annotations, false)
 			if errorParser != nil {
 				return listOfActions, errorParser
 			}
@@ -914,7 +923,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		}
 		// Conductor Action
 		if action.Conductor {
-			wskaction.Annotations = append(wskaction.Annotations, utils.ConductorAction())
+			wskaction.Annotations = append(wskaction.Annotations, conductor.ConductorAction())
 		}
 
 		wskaction.Name = actionName
@@ -1154,7 +1163,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						// verify that the action is defined as web action
 						// web or web-export set to any of [true, yes, raw]
 						a := pkg.Actions[actionName]
-						if !utils.IsWebAction(a.GetWeb()) {
+						if !webaction.IsWebAction(a.GetWeb()) {
 							warningString := wski18n.T(wski18n.ID_WARN_API_MISSING_WEB_ACTION_X_action_X_api_X,
 								map[string]interface{}{
 									wski18n.KEY_ACTION: actionName,
@@ -1163,7 +1172,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							if a.Annotations == nil {
 								a.Annotations = make(map[string]interface{}, 0)
 							}
-							a.Annotations[utils.WEB_EXPORT_ANNOT] = true
+							a.Annotations[webaction.WEB_EXPORT_ANNOT] = true
 							pkg.Actions[actionName] = a
 						}
 						// verify that the sequence is defined under sequences sections
@@ -1171,7 +1180,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						// verify that the sequence is defined as web sequence
 						// web set to any of [true, yes, raw]
 						a := pkg.Sequences[actionName]
-						if !utils.IsWebSequence(a.Web) {
+						if !webaction.IsWebSequence(a.Web) {
 							warningString := wski18n.T(wski18n.ID_WARN_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X,
 								map[string]interface{}{
 									wski18n.KEY_SEQUENCE: actionName,
@@ -1180,7 +1189,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							if a.Annotations == nil {
 								a.Annotations = make(map[string]interface{}, 0)
 							}
-							a.Annotations[utils.WEB_EXPORT_ANNOT] = true
+							a.Annotations[webaction.WEB_EXPORT_ANNOT] = true
 							pkg.Sequences[actionName] = a
 						}
 						// return failure since action or sequence are not defined in the manifest

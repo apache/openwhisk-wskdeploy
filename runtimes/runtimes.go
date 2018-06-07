@@ -15,18 +15,23 @@
  * limitations under the License.
  */
 
-package utils
+package runtimes
 
 import (
 	"crypto/tls"
 	"encoding/json"
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"path/filepath"
+	"runtime"
 )
 
 const (
@@ -41,14 +46,15 @@ const (
 	HTTP_CONTENT_TYPE_VALUE = "application/json; charset=UTF-8"
 	RUNTIME_NOT_SPECIFIED   = "NOT SPECIFIED"
 	BLACKBOX                = "blackbox"
-	HTTP_FILE_EXTENSION     = "http"
+	RUNTIMES_FILE_NAME      = "runtimes.json"
+	HTTPS                   = "https://"
 )
 
 // Structs used to denote the OpenWhisk Runtime information
 type Limit struct {
-	Apm       uint16 `json:"actions_per_minute"`
-	Tpm       uint16 `json:"triggers_per_minute"`
-	ConAction uint16 `json:"concurrent_actions"`
+	Apm       uint `json:"actions_per_minute"`
+	Tpm       uint `json:"triggers_per_minute"`
+	ConAction uint `json:"concurrent_actions"`
 }
 
 type Runtime struct {
@@ -82,7 +88,7 @@ var FileRuntimeExtensionsMap map[string]string
 // `curl -k https://openwhisk.ng.bluemix.net`
 // hard coding it here in case of network unavailable or failure.
 func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
-	url := "https://" + apiHost
+	url := HTTPS + apiHost
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set(HTTP_CONTENT_TYPE_KEY, HTTP_CONTENT_TYPE_VALUE)
 	tlsConfig := &tls.Config{
@@ -94,7 +100,7 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	}
 
 	var netClient = &http.Client{
-		Timeout:   time.Second * DEFAULT_HTTP_TIMEOUT,
+		Timeout:   time.Second * utils.DEFAULT_HTTP_TIMEOUT,
 		Transport: netTransport,
 	}
 
@@ -104,6 +110,12 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 		errString := wski18n.T(wski18n.ID_ERR_RUNTIMES_GET_X_err_X,
 			map[string]interface{}{"err": err.Error()})
 		whisk.Debug(whisk.DbgWarn, errString)
+		if utils.Flags.Strict {
+			errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_PARSER_ERROR,
+				map[string]interface{}{wski18n.KEY_ERR: err.Error()})
+			err = wskderrors.NewRuntimeParserError(errMessage)
+			return
+		}
 	}
 
 	if res != nil {
@@ -114,7 +126,15 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	if err != nil || !strings.Contains(HTTP_CONTENT_TYPE_VALUE, res.Header.Get(HTTP_CONTENT_TYPE_KEY)) {
 		stdout := wski18n.T(wski18n.ID_MSG_UNMARSHAL_LOCAL)
 		wskprint.PrintOpenWhiskInfo(stdout)
-		err = json.Unmarshal(RUNTIME_DETAILS, &op)
+		runtimeDetails := readRuntimes()
+		if runtimeDetails != nil {
+			err = json.Unmarshal(runtimeDetails, &op)
+			if err != nil {
+				errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_PARSER_ERROR,
+					map[string]interface{}{wski18n.KEY_ERR: err.Error()})
+				err = wskderrors.NewRuntimeParserError(errMessage)
+			}
+		}
 	} else {
 		b, _ := ioutil.ReadAll(res.Body)
 		if b != nil && len(b) > 0 {
@@ -122,6 +142,11 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 				map[string]interface{}{"url": url})
 			wskprint.PrintOpenWhiskInfo(stdout)
 			err = json.Unmarshal(b, &op)
+			if err != nil {
+				errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_PARSER_ERROR,
+					map[string]interface{}{wski18n.KEY_ERR: err.Error()})
+				err = wskderrors.NewRuntimeParserError(errMessage)
+			}
 		}
 	}
 	return
@@ -226,101 +251,14 @@ func ListOfSupportedRuntimes(runtimes map[string][]string) (rt []string) {
 	return
 }
 
-var RUNTIME_DETAILS = []byte(`{
-	"support":{
-		"github":"https://github.com/apache/incubator-openwhisk/issues",
-		"slack":"http://slack.openwhisk.org"
-	},
-	"description":"OpenWhisk",
-	"api_paths":["/api/v1"],
-	"runtimes":{
-		"nodejs":[{
-			"image":"openwhisk/nodejsaction:latest",
-			"deprecated":true,
-			"requireMain":false,
-			"default":false,
-			"attached":false,
-			"kind":"nodejs"
-		},{
-			"image":"openwhisk/nodejs6action:latest",
-			"deprecated":false,
-			"requireMain":false,
-			"default":true,
-			"attached":false,
-			"kind":"nodejs:6"
-		},{
-			"image":"openwhisk/action-nodejs-v8:latest",
-			"deprecated":false,
-			"requireMain":false,
-			"default":false,
-			"attached":false,
-			"kind":"nodejs:8"
-		}],
-		"java":[{
-			"image":"openwhisk/java8action:latest",
-			"deprecated":false,
-			"requireMain":true,
-			"default":true,
-			"attached":true,
-			"kind":"java"
-		}],
-		"php":[{
-			"image":"openwhisk/action-php-v7.1:latest",
-			"deprecated":false,
-			"requireMain":false,
-			"default":true,
-			"attached":false,
-			"kind":"php:7.1"
-		}],
-		"python":[{
-			"image":"openwhisk/python2action:latest",
-			"deprecated":false,
-			"requireMain":false,
-			"default":false,
-			"attached":false,
-			"kind":"python"
-		},{
-			"image":"openwhisk/python2action:latest",
-			"deprecated":false,
-			"requireMain":false,
-			"default":true,
-			"attached":false,
-			"kind":"python:2"
-		},{
-			"image":"openwhisk/python3action:latest",
-			"deprecated":false,
-			"requireMain":false,
-			"default":false,
-			"attached":false,
-			"kind":"python:3"
-		}],
-		"swift":[{
-			"image":"openwhisk/swiftaction:latest",
-			"deprecated":true,
-			"requireMain":false,
-			"default":false,
-			"attached":false,
-			"kind":"swift"
-		},{
-			"image":"openwhisk/swift3action:latest",
-			"deprecated":true,
-			"requireMain":false,
-			"default":false,
-			"attached":false,
-			"kind":"swift:3"
-		},{
-			"image":"openwhisk/action-swift-v3.1.1:latest",
-			"deprecated":false,
-			"requireMain":false,
-			"default":true,
-			"attached":false,
-			"kind":"swift:3.1.1"
-		}]
-	},
-	"limits":{
-		"actions_per_minute":5000,
-		"triggers_per_minute":5000,
-		"concurrent_actions":1000
+func readRuntimes() []byte {
+	_, b, _, _ := runtime.Caller(0)
+	basepath := filepath.Dir(b)
+	runtimesFileWithPath := filepath.Join(basepath, RUNTIMES_FILE_NAME)
+	file, readErr := ioutil.ReadFile(runtimesFileWithPath)
+	if readErr != nil {
+		wskprint.PrintlnOpenWhiskWarning(readErr.Error())
+		return nil
 	}
-	}
-`)
+	return file
+}

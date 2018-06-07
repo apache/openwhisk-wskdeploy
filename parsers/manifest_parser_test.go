@@ -30,7 +30,7 @@ import (
 	"testing"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
@@ -49,7 +49,7 @@ const (
 	TEST_MSG_PARAMETER_NUMBER_MISMATCH              = "Number of Paramaters mismatched."
 	TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED     = "Manifest [%s]: Expected Unmarshal error."
 	TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED = "Manifest [%s]: Expected runtime error."
-	TEST_MSG_ACTION_DOCKER_KIND_MISMATCH            = "Docker action kind is set to [%s] instead of " + utils.BLACKBOX
+	TEST_MSG_ACTION_DOCKER_KIND_MISMATCH            = "Docker action kind is set to [%s] instead of " + runtimes.BLACKBOX
 	TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH           = "Docker action image had a value mismatch."
 	TEST_MSG_ACTION_CODE_MISSING                    = "Action code is missing."
 	TEST_MSG_ACTION_FUNCTION_PATH_MISSING           = "Action function path missing"
@@ -66,11 +66,11 @@ const (
 )
 
 func init() {
-	op, error := utils.ParseOpenWhisk("")
+	op, error := runtimes.ParseOpenWhisk("")
 	if error == nil {
-		utils.SupportedRunTimes = utils.ConvertToMap(op)
-		utils.DefaultRunTimes = utils.DefaultRuntimes(op)
-		utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
+		runtimes.SupportedRunTimes = runtimes.ConvertToMap(op)
+		runtimes.DefaultRunTimes = runtimes.DefaultRuntimes(op)
+		runtimes.FileExtensionRuntimeKindMap = runtimes.FileExtensionRuntimes(op)
 	}
 }
 
@@ -507,13 +507,13 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
 	var expectedResult string
 	for i := 0; i < len(actions); i++ {
 		if actions[i].Action.Name == "helloNodejs" {
-			expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["js"]]
+			expectedResult = runtimes.DefaultRunTimes[runtimes.FileExtensionRuntimeKindMap["js"]]
 		} else if actions[i].Action.Name == "helloJava" {
-			expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["jar"]]
+			expectedResult = runtimes.DefaultRunTimes[runtimes.FileExtensionRuntimeKindMap["jar"]]
 		} else if actions[i].Action.Name == "helloPython" {
-			expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["py"]]
+			expectedResult = runtimes.DefaultRunTimes[runtimes.FileExtensionRuntimeKindMap["py"]]
 		} else if actions[i].Action.Name == "helloSwift" {
-			expectedResult = utils.DefaultRunTimes[utils.FileExtensionRuntimeKindMap["swift"]]
+			expectedResult = runtimes.DefaultRunTimes[runtimes.FileExtensionRuntimeKindMap["swift"]]
 		}
 		actualResult := actions[i].Action.Exec.Kind
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
@@ -916,23 +916,23 @@ func TestComposeActionsForDocker(t *testing.T) {
 		switch action.Action.Name {
 		case "OpenWhiskSkeleton":
 		case "OpenWhiskSkeletonWithNative":
-			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
+			assert.Equal(t, runtimes.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
 			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
 		case "CustomDockerAction1":
 		case "CustomDockerAction2":
 			expectedResult, _ = filepath.Abs(actionFile)
 			actualResult, _ = filepath.Abs(action.Filepath)
 			assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
-			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
+			assert.Equal(t, runtimes.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
 			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
 		case "CustomDockerAction3":
 		case "CustomDockerAction4":
 			assert.NotNil(t, action.Action.Exec.Code, TEST_MSG_ACTION_CODE_MISSING)
-			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
+			assert.Equal(t, runtimes.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
 			assert.Equal(t, NATIVE_DOCKER_IMAGE, action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
 		case "CustomDockerAction5":
 			assert.NotNil(t, action.Action.Exec.Code, TEST_MSG_ACTION_CODE_MISSING)
-			assert.Equal(t, utils.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
+			assert.Equal(t, runtimes.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
 			assert.Equal(t, "mydockerhub/myimage", action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
 		}
 	}

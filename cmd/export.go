@@ -27,6 +27,7 @@ import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/spf13/cobra"
@@ -389,7 +390,7 @@ func saveCode(action whisk.Action, directory string) (string, error) {
 
 		filename = action.Name + getBinaryKindExtension(runtime)
 	} else {
-		filename = action.Name + "." + utils.FileRuntimeExtensionsMap[action.Exec.Kind]
+		filename = action.Name + "." + runtimes.FileRuntimeExtensionsMap[action.Exec.Kind]
 	}
 
 	os.MkdirAll(directory, os.ModePerm)

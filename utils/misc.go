@@ -36,6 +36,7 @@ import (
 const (
 	DEFAULT_HTTP_TIMEOUT = 30
 	DEFAULT_PROJECT_PATH = "."
+	HTTP_FILE_EXTENSION  = "http"
 	// name of manifest and deployment files
 	ManifestFileNameYaml   = "manifest.yaml"
 	ManifestFileNameYml    = "manifest.yml"
@@ -152,26 +153,6 @@ func (zw *ZipWritter) Zip() error {
 		return err
 	}
 	return nil
-}
-
-func deleteKey(key string, keyValueArr whisk.KeyValueArr) whisk.KeyValueArr {
-	for i := 0; i < len(keyValueArr); i++ {
-		if keyValueArr[i].Key == key {
-			keyValueArr = append(keyValueArr[:i], keyValueArr[i+1:]...)
-			break
-		}
-	}
-
-	return keyValueArr
-}
-
-func addKeyValue(key string, value interface{}, keyValueArr whisk.KeyValueArr) whisk.KeyValueArr {
-	keyValue := whisk.KeyValue{
-		Key:   key,
-		Value: value,
-	}
-
-	return append(keyValueArr, keyValue)
 }
 
 func GetManifestFilePath(projectPath string) string {
