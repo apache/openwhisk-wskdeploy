@@ -32,7 +32,7 @@ packages:
                         greeting:
                             method: GET
             book-club:
-                club/{isbn}:
+                club:
                     books:
                         getBooks:
                             method: GET
@@ -54,7 +54,7 @@ packages:
                         listAllMembers:
                             method: GET
                             response: http
-                    booksByISBN/{isbn}:
+                    booksWithISBN/{isbn}:
                         getBooks:
                             method: GET
                             response: http
