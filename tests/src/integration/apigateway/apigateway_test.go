@@ -27,7 +27,7 @@ import (
 )
 
 // TODO: write the integration against openwhisk
-func TestTriggerRule(t *testing.T) {
+func TestApiGateway(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/apigateway/manifest.yml"
 	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
