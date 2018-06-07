@@ -1,0 +1,131 @@
+{
+    "support": {
+        "github": "https://github.com/apache/incubator-openwhisk/issues",
+        "slack": "http://slack.openwhisk.org"
+    },
+    "description": "OpenWhisk",
+    "api_paths": [
+        "/api/v1"
+    ],
+    "runtimes": {
+        "nodejs": [
+            {
+                "image": "openwhisk/nodejsaction:latest",
+                "deprecated": true,
+                "requireMain": false,
+                "default": false,
+                "attached": false,
+                "kind": "nodejs"
+            },
+            {
+                "image": "openwhisk/nodejs6action:latest",
+                "deprecated": false,
+                "requireMain": false,
+                "default": true,
+                "attached": false,
+                "kind": "nodejs:6"
+            },
+            {
+                "image": "ibmfunctions/action-nodejs-v8:1.13.0",
+                "deprecated": false,
+                "requireMain": false,
+                "default": false,
+                "attached": false,
+                "kind": "nodejs:8"
+            }
+        ],
+        "java": [
+            {
+                "image": "openwhisk/java8action:latest",
+                "deprecated": false,
+                "requireMain": true,
+                "default": true,
+                "attached": true,
+                "kind": "java"
+            }
+        ],
+        "php": [
+            {
+                "image": "openwhisk/action-php-v7.1:latest",
+                "deprecated": false,
+                "requireMain": false,
+                "default": true,
+                "attached": false,
+                "kind": "php:7.1"
+            }
+        ],
+        "python": [
+            {
+                "image": "openwhisk/python2action:latest",
+                "deprecated": false,
+                "requireMain": false,
+                "default": false,
+                "attached": false,
+                "kind": "python"
+            },
+            {
+                "image": "openwhisk/python2action:latest",
+                "deprecated": false,
+                "requireMain": false,
+                "default": true,
+                "attached": false,
+                "kind": "python:2"
+            },
+            {
+                "image": "openwhisk/python3action:latest",
+                "deprecated": false,
+                "requireMain": false,
+                "default": false,
+                "attached": false,
+                "kind": "python:3"
+            },
+            {
+                "image": "ibmfunctions/action-python-v3:1.6.0",
+                "deprecated": false,
+                "requireMain": false,
+                "default": false,
+                "attached": false,
+                "kind": "python-jessie:3"
+            }
+        ],
+        "swift": [
+            {
+                "image": "openwhisk/swiftaction:latest",
+                "deprecated": true,
+                "requireMain": false,
+                "default": false,
+                "attached": false,
+                "kind": "swift"
+            },
+            {
+                "image": "openwhisk/swift3action:latest",
+                "deprecated": true,
+                "requireMain": false,
+                "default": false,
+                "attached": false,
+                "kind": "swift:3"
+            },
+            {
+                "image": "openwhisk/action-swift-v3.1.1:latest",
+                "deprecated": false,
+                "requireMain": false,
+                "default": true,
+                "attached": false,
+                "kind": "swift:3.1.1"
+            },
+            {
+                "image": "ibmfunctions/action-swift-v4.1:1.5.0",
+                "deprecated": false,
+                "requireMain": false,
+                "default": false,
+                "attached": false,
+                "kind": "swift:4.1"
+            }
+        ]
+    },
+    "limits": {
+        "actions_per_minute": 5000,
+        "triggers_per_minute": 5000,
+        "concurrent_actions": 1000
+    }
+}

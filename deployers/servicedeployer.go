@@ -29,6 +29,7 @@ import (
 	"time"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
@@ -63,7 +64,7 @@ func NewDeploymentProject() *DeploymentProject {
 
 type DeploymentPackage struct {
 	Package      *whisk.Package
-	Dependencies map[string]utils.DependencyRecord
+	Dependencies map[string]dependencies.DependencyRecord
 	Actions      map[string]utils.ActionRecord
 	Sequences    map[string]utils.ActionRecord
 	Inputs       parsers.PackageInputs
@@ -71,7 +72,7 @@ type DeploymentPackage struct {
 
 func NewDeploymentPackage() *DeploymentPackage {
 	var dep DeploymentPackage
-	dep.Dependencies = make(map[string]utils.DependencyRecord)
+	dep.Dependencies = make(map[string]dependencies.DependencyRecord)
 	dep.Actions = make(map[string]utils.ActionRecord)
 	dep.Sequences = make(map[string]utils.ActionRecord)
 	dep.Inputs = parsers.PackageInputs{}
@@ -96,7 +97,7 @@ type ServiceDeployer struct {
 	ProjectPath       string
 	DeploymentPath    string
 	ClientConfig      *whisk.Config
-	DependencyMaster  map[string]utils.DependencyRecord
+	DependencyMaster  map[string]dependencies.DependencyRecord
 	ManagedAnnotation whisk.KeyValue
 }
 
@@ -105,7 +106,7 @@ func NewServiceDeployer() *ServiceDeployer {
 	var dep ServiceDeployer
 	dep.Deployment = NewDeploymentProject()
 	dep.Preview = true
-	dep.DependencyMaster = make(map[string]utils.DependencyRecord)
+	dep.DependencyMaster = make(map[string]dependencies.DependencyRecord)
 	dep.ProjectInputs = make(map[string]parsers.Parameter, 0)
 	return &dep
 }
@@ -1595,7 +1596,7 @@ func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject
 
 }
 
-func (deployer *ServiceDeployer) getDependentDeployer(depName string, depRecord utils.DependencyRecord) (*ServiceDeployer, error) {
+func (deployer *ServiceDeployer) getDependentDeployer(depName string, depRecord dependencies.DependencyRecord) (*ServiceDeployer, error) {
 	depServiceDeployer := NewServiceDeployer()
 	projectPath := path.Join(depRecord.ProjectPath, depName+"-"+depRecord.Version)
 	if len(depRecord.SubFolder) > 0 {

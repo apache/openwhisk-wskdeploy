@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package utils
+package webaction
 
 import (
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
@@ -37,6 +37,26 @@ var webExport map[string]string = map[string]string{
 	"NO":    "no",
 	"YES":   "yes",
 	"RAW":   "raw",
+}
+
+func deleteKey(key string, keyValueArr whisk.KeyValueArr) whisk.KeyValueArr {
+	for i := 0; i < len(keyValueArr); i++ {
+		if keyValueArr[i].Key == key {
+			keyValueArr = append(keyValueArr[:i], keyValueArr[i+1:]...)
+			break
+		}
+	}
+
+	return keyValueArr
+}
+
+func addKeyValue(key string, value interface{}, keyValueArr whisk.KeyValueArr) whisk.KeyValueArr {
+	keyValue := whisk.KeyValue{
+		Key:   key,
+		Value: value,
+	}
+
+	return append(keyValueArr, keyValue)
 }
 
 func WebAction(filePath string, action string, webMode string, annotations whisk.KeyValueArr, fetch bool) (whisk.KeyValueArr, error) {

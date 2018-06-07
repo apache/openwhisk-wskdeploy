@@ -367,6 +367,10 @@
     "id": "msg_err_api_gateway_base_path_invalid",
     "translation": "API Gateway base path [{{.apibasepath}}] is invalid. It has path parameters which is not supported, only relative path supports path parameters."
   },
+  {
+    "id": "msg_err_runtime_parser_error",
+    "translation": "Failed to retrieve runtimes {{.err}}."
+  },
 
   {
     "id": "WARNINGS",

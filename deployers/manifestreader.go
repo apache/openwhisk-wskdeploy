@@ -22,6 +22,7 @@ import (
 
 	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
 	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
@@ -161,7 +162,7 @@ func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package, in
 	return nil
 }
 
-func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRecord) error {
+func (reader *ManifestReader) SetDependencies(deps map[string]dependencies.DependencyRecord) error {
 
 	dep := reader.serviceDeployer
 
@@ -176,7 +177,7 @@ func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRe
 		}
 		if !dependency.IsBinding && !reader.IsUndeploy {
 			if _, exists := dep.DependencyMaster[depName]; exists {
-				if !utils.CompareDependencyRecords(dep.DependencyMaster[depName], dependency) {
+				if !dependencies.CompareDependencyRecords(dep.DependencyMaster[depName], dependency) {
 					location := strings.Join([]string{dep.DependencyMaster[depName].Location, dependency.Location}, ",")
 					errmsg := wski18n.T(wski18n.ID_ERR_DEPENDENCIES_WITH_SAME_LABEL_X_dependency_X_location_X,
 						map[string]interface{}{wski18n.KEY_DEPENDENCY: depName,
@@ -184,7 +185,7 @@ func (reader *ManifestReader) SetDependencies(deps map[string]utils.DependencyRe
 					return wskderrors.NewYAMLParserErr(dep.ManifestPath, errmsg)
 				}
 			}
-			gitReader := utils.NewGitReader(depName, dependency)
+			gitReader := dependencies.NewGitReader(depName, dependency)
 			err := gitReader.CloneDependency()
 			if err != nil {
 				return err

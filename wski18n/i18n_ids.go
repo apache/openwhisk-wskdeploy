@@ -203,6 +203,7 @@ const (
 	ID_ERR_INVALID_PARAM_FILE_X_file_X                                   = "msg_err_invalid_param_file"
 	ID_ERR_REQUIRED_INPUTS_MISSING_VALUE_X_inputs_X                      = "msg_err_required_inputs_missing_value"
 	ID_ERR_API_GATEWAY_BASE_PATH_INVALID_X_api_X                         = "msg_err_api_gateway_base_path_invalid"
+	ID_ERR_RUNTIME_PARSER_ERROR                                          = "msg_err_runtime_parser_error"
 
 	// Server-side Errors (wskdeploy as an Action)
 	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"

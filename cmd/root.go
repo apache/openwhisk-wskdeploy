@@ -24,7 +24,9 @@ import (
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
 	"github.com/apache/incubator-openwhisk-wskdeploy/deployers"
+	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
@@ -118,14 +120,16 @@ func initConfig() {
 }
 
 // TODO() add Trace of runtimes found at apihost
-func setSupportedRuntimes(apiHost string) {
-	op, error := utils.ParseOpenWhisk(apiHost)
-	if error == nil {
-		utils.SupportedRunTimes = utils.ConvertToMap(op)
-		utils.DefaultRunTimes = utils.DefaultRuntimes(op)
-		utils.FileExtensionRuntimeKindMap = utils.FileExtensionRuntimes(op)
-		utils.FileRuntimeExtensionsMap = utils.FileRuntimeExtensions(op)
+func setSupportedRuntimes(apiHost string) error {
+	op, err := runtimes.ParseOpenWhisk(apiHost)
+	if err != nil {
+		return err
 	}
+	runtimes.SupportedRunTimes = runtimes.ConvertToMap(op)
+	runtimes.DefaultRunTimes = runtimes.DefaultRuntimes(op)
+	runtimes.FileExtensionRuntimeKindMap = runtimes.FileExtensionRuntimes(op)
+	runtimes.FileRuntimeExtensionsMap = runtimes.FileRuntimeExtensions(op)
+	return nil
 }
 
 func displayCommandUsingFilenameMessage(command string, filetype string, path string) {
@@ -213,7 +217,7 @@ func Deploy(cmd *cobra.Command) error {
 		deployer.Report = utils.Flags.Report
 
 		// master record of any dependency that has been downloaded
-		deployer.DependencyMaster = make(map[string]utils.DependencyRecord)
+		deployer.DependencyMaster = make(map[string]dependencies.DependencyRecord)
 
 		// Read credentials from Configuration file, manifest file or deployment file
 		clientConfig, error := deployers.NewWhiskConfig(
@@ -233,10 +237,13 @@ func Deploy(cmd *cobra.Command) error {
 		deployer.ClientConfig = clientConfig
 
 		// The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
-		setSupportedRuntimes(clientConfig.Host)
+		err := setSupportedRuntimes(clientConfig.Host)
+		if err != nil {
+			return err
+		}
 
 		// Construct Deployment Plan
-		err := deployer.ConstructDeploymentPlan()
+		err = deployer.ConstructDeploymentPlan()
 		if err != nil {
 			return err
 		}
@@ -282,9 +289,12 @@ func Undeploy(cmd *cobra.Command) error {
 		deployer.ClientConfig = clientConfig
 
 		// The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
-		setSupportedRuntimes(clientConfig.Host)
+		err := setSupportedRuntimes(clientConfig.Host)
+		if err != nil {
+			return err
+		}
 
-		err := deployer.UnDeployProject()
+		err = deployer.UnDeployProject()
 		if err != nil {
 			return err
 		}
@@ -336,7 +346,10 @@ func Undeploy(cmd *cobra.Command) error {
 		deployer.ClientConfig = clientConfig
 
 		// The auth, apihost and namespace have been chosen, so that we can check the supported runtimes here.
-		setSupportedRuntimes(clientConfig.Host)
+		err := setSupportedRuntimes(clientConfig.Host)
+		if err != nil {
+			return err
+		}
 
 		verifiedPlan, err := deployer.ConstructUnDeploymentPlan()
 		if err != nil {
