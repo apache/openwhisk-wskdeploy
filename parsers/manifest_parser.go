@@ -36,14 +36,16 @@ import (
 )
 
 const (
-	API                 = "API"
-	HTTPS               = "https://"
-	HTTP                = "http://"
-	API_VERSION         = "v1"
-	WEB                 = "web"
-	PATH_SEPARATOR      = "/"
-	DEFAULT_PACKAGE     = "default"
-	NATIVE_DOCKER_IMAGE = "openwhisk/dockerskeleton"
+	API                   = "API"
+	HTTPS                 = "https://"
+	HTTP                  = "http://"
+	API_VERSION           = "v1"
+	WEB                   = "web"
+	PATH_SEPARATOR        = "/"
+	DEFAULT_PACKAGE       = "default"
+	NATIVE_DOCKER_IMAGE   = "openwhisk/dockerskeleton"
+	PARAM_OPENING_BRACKET = "{"
+	PARAM_CLOSING_BRACKET = "}"
 )
 
 // Read existing manifest file or create new if none exists
@@ -1108,10 +1110,10 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, man
 /*
  * read API section from manifest file:
  * apis: # List of APIs
- *     hello-world: #API name
- *	/hello: #gateway base path
- *	    /world:   #gateway rel path
- *		greeting: get #action name: gateway method
+ * 		hello-world: #API name
+ *			/hello: #gateway base path
+ *	    		/world:   #gateway rel path
+ *					greeting: get #action name: gateway method
  *
  * compose APIDoc structure from the manifest:
  * {
@@ -1133,36 +1135,38 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, man
 func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string, pkg Package, manifestPath string) ([]*whisk.ApiCreateRequest, map[string]*whisk.ApiCreateRequestOptions, error) {
 	var requests = make([]*whisk.ApiCreateRequest, 0)
 
+	// verify APIGW_ACCESS_TOKEN is set before composing APIs
+	// until this point, we dont know whether APIs are specified in manifest or not
 	if pkg.Apis != nil && len(pkg.Apis) != 0 {
-		// verify APIGW_ACCESS_TOKEN is set before composing APIs
-		// until this point, we dont know whether APIs are specified in manifest or not
 		if len(client.ApigwAccessToken) == 0 {
-			return nil, nil, wskderrors.NewWhiskClientInvalidConfigError(wski18n.ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN)
+			return nil, nil, wskderrors.NewWhiskClientInvalidConfigError(
+				wski18n.ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN)
 		}
 	}
 
-	actionNameWithResponse := make(map[string]*whisk.ApiCreateRequestOptions, 0)
+	requestOptions := make(map[string]*whisk.ApiCreateRequestOptions, 0)
 
 	for apiName, apiDoc := range pkg.Apis {
 		for gatewayBasePath, gatewayBasePathMap := range apiDoc {
+			// Base Path
+			// validate base path should not have any path parameters
+			if !isGatewayBasePathValid(gatewayBasePath) {
+				err := wskderrors.NewYAMLParserErr(manifestPath,
+					wski18n.T(wski18n.ID_ERR_API_GATEWAY_BASE_PATH_INVALID_X_api_X,
+						map[string]interface{}{wski18n.KEY_API_BASE_PATH: gatewayBasePath}))
+				return requests, requestOptions, err
+			}
 			// append "/" to the gateway base path if its missing
 			if !strings.HasPrefix(gatewayBasePath, PATH_SEPARATOR) {
 				gatewayBasePath = PATH_SEPARATOR + gatewayBasePath
 			}
 			for gatewayRelPath, gatewayRelPathMap := range gatewayBasePathMap {
+				// Relative Path
 				// append "/" to the gateway relative path if its missing
 				if !strings.HasPrefix(gatewayRelPath, PATH_SEPARATOR) {
 					gatewayRelPath = PATH_SEPARATOR + gatewayRelPath
 				}
-				for actionName, gatewayMethod := range gatewayRelPathMap {
-					// check if action name has path parameters in it
-					splitAction := strings.Split(actionName, PATH_SEPARATOR)
-					if len(splitAction) == 2 {
-						actionName = splitAction[0]
-						if gatewayMethod.Response != "http" {
-							return nil, nil, nil
-						}
-					}
+				for actionName, gatewayMethodResponse := range gatewayRelPathMap {
 					// verify that the action is defined under actions sections
 					if _, ok := pkg.Actions[actionName]; ok {
 						// verify that the action is defined as web action
@@ -1205,55 +1209,78 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 									wski18n.KEY_ACTION: actionName,
 									wski18n.KEY_API:    apiName}))
 					}
-					request := new(whisk.ApiCreateRequest)
-					request.ApiDoc = new(whisk.Api)
-					request.ApiDoc.GatewayBasePath = gatewayBasePath
-					// is API verb is valid, it must be one of (GET, PUT, POST, DELETE)
-					request.ApiDoc.GatewayRelPath = gatewayRelPath
-					if _, ok := whisk.ApiVerbs[strings.ToUpper(gatewayMethod.Method)]; !ok {
+
+					// get the list of path parameters from relative path
+					pathParameters := generatePathParameters(gatewayRelPath)
+
+					// Check if response type is set to http for API using path parameters
+					if strings.ToLower(gatewayMethodResponse.Method) != utils.HTTP_FILE_EXTENSION &&
+						len(pathParameters) > 0 {
+						warningString := wski18n.T(wski18n.ID_WARN_API_INVALID_RESPONSE_TYPE,
+							map[string]interface{}{
+								wski18n.KEY_API:               apiName,
+								wski18n.KEY_API_RELATIVE_PATH: gatewayRelPath,
+								wski18n.KEY_RESPONSE:          gatewayMethodResponse.Response})
+						wskprint.PrintlnOpenWhiskWarning(warningString)
+						gatewayMethodResponse.Response = utils.HTTP_FILE_EXTENSION
+					}
+
+					// Chekc if API verb is valid, it must be one of (GET, PUT, POST, DELETE)
+					if _, ok := whisk.ApiVerbs[strings.ToUpper(gatewayMethodResponse.Method)]; !ok {
 						return nil, nil, wskderrors.NewInvalidAPIGatewayMethodError(manifestPath,
 							gatewayBasePath+gatewayRelPath,
-							gatewayMethod.Method,
+							gatewayMethodResponse.Method,
 							dm.getGatewayMethods())
 					}
-					request.ApiDoc.GatewayMethod = strings.ToUpper(gatewayMethod.Method)
-					request.ApiDoc.Namespace = client.Namespace
-					request.ApiDoc.ApiName = apiName
-					request.ApiDoc.Id = strings.Join([]string{API, request.ApiDoc.Namespace, request.ApiDoc.GatewayRelPath}, ":")
+
+					apiDocActionName := actionName
+					if strings.ToLower(packageName) != DEFAULT_PACKAGE {
+						apiDocActionName = packageName + PATH_SEPARATOR + actionName
+					}
+
 					// set action of an API Doc
-					request.ApiDoc.Action = new(whisk.ApiAction)
-					if packageName == DEFAULT_PACKAGE {
-						request.ApiDoc.Action.Name = actionName
-					} else {
-						request.ApiDoc.Action.Name = packageName + PATH_SEPARATOR + actionName
+					apiDocAction := whisk.ApiAction{
+						Name:      apiDocActionName,
+						Namespace: client.Namespace,
+						BackendUrl: strings.Join([]string{HTTPS +
+							client.Host, strings.ToLower(API),
+							API_VERSION, WEB, client.Namespace, packageName,
+							actionName + "." + utils.HTTP_FILE_EXTENSION},
+							PATH_SEPARATOR),
+						BackendMethod: gatewayMethodResponse.Method,
+						Auth:          client.AuthToken,
 					}
-					url := []string{HTTPS + client.Host, strings.ToLower(API),
-						API_VERSION, WEB, client.Namespace, packageName,
-						actionName + "." + utils.HTTP_FILE_EXTENSION}
-					request.ApiDoc.Action.Namespace = client.Namespace
-					request.ApiDoc.Action.BackendUrl = strings.Join(url, PATH_SEPARATOR)
-					request.ApiDoc.Action.BackendMethod = gatewayMethod.Method
-					request.ApiDoc.Action.Auth = client.AuthToken
-					// append each path parameter
-					apiParams := make([]whisk.ApiParameter, 0)
-					for _, param := range splitAction[1:] {
-						apiParam := new(whisk.ApiParameter)
-						apiParam.Name = param
-						apiParams = append(apiParams, *apiParam)
+
+					requestApiDoc := whisk.Api{
+						GatewayBasePath: gatewayBasePath,
+						PathParameters:  pathParameters,
+						GatewayRelPath:  gatewayRelPath,
+						GatewayMethod:   strings.ToUpper(gatewayMethodResponse.Method),
+						Namespace:       client.Namespace,
+						ApiName:         apiName,
+						Id:              strings.Join([]string{API, client.Namespace, gatewayRelPath}, ":"),
+						Action:          &apiDocAction,
 					}
-					request.ApiDoc.PathParameters = apiParams
+
+					request := whisk.ApiCreateRequest{
+						ApiDoc: &requestApiDoc,
+					}
+
 					// add a newly created ApiCreateRequest object to a list of requests
-					requests = append(requests, request)
-					options := new(whisk.ApiCreateRequestOptions)
-					options.ResponseType = gatewayMethod.Response
+					requests = append(requests, &request)
+
+					// Create an instance of ApiCreateRequestOptions
+					options := whisk.ApiCreateRequestOptions{
+						ResponseType: gatewayMethodResponse.Response,
+					}
 					apiPath := request.ApiDoc.ApiName + " " + request.ApiDoc.GatewayBasePath +
 						request.ApiDoc.GatewayRelPath + " " + request.ApiDoc.GatewayMethod
-					actionNameWithResponse[apiPath] = options
+					requestOptions[apiPath] = &options
 				}
 			}
 		}
 	}
-	return requests, actionNameWithResponse, nil
+	return requests, requestOptions, nil
 }
 
 func (dm *YAMLParser) getGatewayMethods() []string {
@@ -1262,4 +1289,75 @@ func (dm *YAMLParser) getGatewayMethods() []string {
 		methods = append(methods, k)
 	}
 	return methods
+}
+
+func doesPathParamExist(params []string, param string) bool {
+	for _, e := range params {
+		if e == param {
+			return true
+		}
+	}
+	return false
+}
+
+func getPathParameterNames(path string) []string {
+	var pathParameters []string
+	pathElements := strings.Split(path, PATH_SEPARATOR)
+	for _, e := range pathElements {
+		paramName := getParamName(e)
+		if len(paramName) > 0 {
+			if !doesPathParamExist(pathParameters, paramName) {
+				pathParameters = append(pathParameters, paramName)
+			}
+		}
+	}
+	return pathParameters
+}
+
+func generatePathParameters(relativePath string) []whisk.ApiParameter {
+	pathParams := []whisk.ApiParameter{}
+
+	pathParamNames := getPathParameterNames(relativePath)
+	for _, paramName := range pathParamNames {
+		param := whisk.ApiParameter{Name: paramName, In: "path", Required: true, Type: "string",
+			Description: wski18n.T("Default description for '{{.name}}'", map[string]interface{}{"name": paramName})}
+		pathParams = append(pathParams, param)
+	}
+
+	return pathParams
+}
+
+func isParam(param string) bool {
+	if strings.HasPrefix(param, PARAM_OPENING_BRACKET) &&
+		strings.HasSuffix(param, PARAM_CLOSING_BRACKET) {
+		return true
+	}
+	return false
+}
+
+func getParamName(param string) string {
+	paramName := ""
+	if isParam(param) {
+		paramName = param[1 : len(param)-1]
+	}
+	return paramName
+}
+
+func isGatewayBasePathValid(basePath string) bool {
+	// return false if base path is empty string
+	if len(basePath) == 0 {
+		return false
+	}
+	// drop preceding "/" if exists
+	if strings.HasPrefix(basePath, PATH_SEPARATOR) {
+		basePath = basePath[1:]
+	}
+	// slice base path into substrings seperated by "/"
+	// if there are more than one substrings, basePath has path parameters
+	// basePath will have path parameters if substrings count is more than 1
+	basePathElements := strings.Split(basePath, PATH_SEPARATOR)
+	if len(basePathElements) > 1 {
+		return false
+	}
+	return true
 }
