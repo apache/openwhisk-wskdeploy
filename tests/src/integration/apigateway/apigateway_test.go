@@ -39,7 +39,7 @@ func TestApiGateway(t *testing.T) {
 
 func TestApiGatewayWithParams(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
-	manifestPath := os.Getenv("GOPATH") + PATH + "manifest-apis-with-params.yml"
+	manifestPath := os.Getenv("GOPATH") + PATH + "manifest-apis-with-params.yaml"
 	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
 	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
