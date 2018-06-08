@@ -17,34 +17,42 @@
 #
 -->
 
-### Definitions
+#### Map schema
 
-#### Activation
+The Map schema is used to define maps of key values within OpenWhisk
+entities.
 
-An invocation or “run” of an action results in an activation record that
-is identified by a unique activation ID. The term Activation is
-short-hand for the creation of this record and its information.
+##### Single-line grammar
 
-#### Repository
+```yaml
+{ <key_1>: <value_1>, ..., <key_n>: <value_n> }
+```
 
-A location that provides storage for sets of files, as well as the
-history of changes made to those files.
+##### Multi-line grammar
+```yaml
+# Where ‘key_n’ is a type <string> and ‘value_n’ is type <any>.
+<key_1>: <value_1>
+...
+<key_n>: <value_n>
 
-#### Project
+```
 
-A description of a software application which enables management of its
-design, implementation, source control, monitoring and testing.
+##### Examples
 
-#### Application
+###### Single-line
 
-A computer program designed to perform a group of coordinated functions,
-tasks, or activities to achieve some result or user benefit.
+```yaml
+alert_levels: { “high”: “red”, “medium”: “yellow”, “low”: green }
+```
 
-#### \[Cloud\] Service
+###### Multi-line
 
-Any resource, including a functional task, that is provided over the
-Internet. This includes delivery models such as *Platform as a Service*
-(PaaS), *Infrastructure as a* Service (IaaS), as well as *Serverless*.
+```yaml
+alert_levels:
+  “high”: “red”
+  “medium”: “yellow”
+  “low”: green
+```
 
 <!--
  Bottom Navigation

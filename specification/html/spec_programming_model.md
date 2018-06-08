@@ -19,6 +19,10 @@
 
 ## Programming model
 
+- [OpenWhisk Entities](#openWhisk-entities)
+- [Action Composition](#action-composition)
+- [Cardinality](#cardinality)
+
 ### OpenWhisk Entities
 
 OpenWhisk uses the following entities to describe its programming model:
@@ -90,3 +94,13 @@ response to events from multiple Triggers.
 ### Conceptual representation
 
 ![Conceptual representation of the OpenWhisk programming model](images/conceptual_programming_model.png "image showing conceptual programming model")
+
+<!--
+ Bottom Navigation
+-->
+---
+<html>
+<div align="center">
+<a href="../README.md#index">Index</a>
+</div>
+</html>

@@ -17,34 +17,13 @@
 #
 -->
 
-### Definitions
+# Schema
 
-#### Activation
+This section defines all the essential schema used to describe OpenWhisk packages and programming model entities within a manifest.
 
-An invocation or “run” of an action results in an activation record that
-is identified by a unique activation ID. The term Activation is
-short-hand for the creation of this record and its information.
+### General Requirements
 
-#### Repository
-
-A location that provides storage for sets of files, as well as the
-history of changes made to those files.
-
-#### Project
-
-A description of a software application which enables management of its
-design, implementation, source control, monitoring and testing.
-
-#### Application
-
-A computer program designed to perform a group of coordinated functions,
-tasks, or activities to achieve some result or user benefit.
-
-#### \[Cloud\] Service
-
-Any resource, including a functional task, that is provided over the
-Internet. This includes delivery models such as *Platform as a Service*
-(PaaS), *Infrastructure as a* Service (IaaS), as well as *Serverless*.
+- All key and field names in this specification SHALL be case sensitive.
 
 <!--
  Bottom Navigation

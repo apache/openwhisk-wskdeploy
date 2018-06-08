@@ -19,87 +19,37 @@
 
 ## Actions
 
+#### Subsections
+- [Fields](#fields)
+- [Requirements](#requirements)
+- [Notes](#notes)
+- [Grammar](#grammar)
+- [Example](#example)
+- [Valid Runtime names](#valid-runtime-names)
+- [Recognized File extensions](#recognized-file-extensions)
+- [Valid Limit keys](#valid-limit-keys)
+
 The Action entity schema contains the necessary information to deploy an OpenWhisk function and define its deployment configurations, inputs and outputs.
 
 ### Fields
-<html>
-<table>
-  <tr>
-   <th width="80">Key Name</th>
-   <th>Required</th>
-   <th>Value Type</th>
-   <th>Default</th>
-   <th>Description</th>
-  </tr>
- <tr>
-  <td>version</td>
-  <td>no</td>
-  <td>version</td>
-  <td>N/A</td>
-  <td>The optional user-controlled version for the Action.</td>
- </tr>
- <tr>
-  <td>function</td>
-  <td>yes</td>
-  <td>string</td>
-  <td>N/A</td>
-  <td>Required source location (path inclusive) of the Action code either:
-    <ul>
-      <li>Relative to the Package manifest file.</li>
-      <li>Relative to the specified Repository.</li>
-    </ul>
-  </td>
- </tr>
- <tr>
-  <td>runtime</td>
-  <td>no</td>
-  <td>string</td>
-  <td>N/A</td>
-  <td>The required runtime name (and optional version) that the Action code requires for an execution environment.
-  <p><i>Note: May be optional if tooling allowed to make assumptions about file extensions.</i></p>
-  </td>
- </tr>
- <tr>
-  <td>inputs</td>
-  <td>no</td>
-  <td>list of parameter</td>
-  <td>N/A</td>
-  <td>The optional ordered list inputs to the Action.</td>
- </tr>
- <tr>
-  <td>outputs</td>
-  <td>no</td>
-  <td>list of parameter</td>
-  <td>N/A</td>
-  <td>The optional outputs from the Action.</td>
- </tr>
- <tr>
-  <td>limits</td>
-  <td>no</td>
-  <td>map of limit keys and values</a></td>
-  <td>N/A</td>
-  <td>Optional map of limit keys and their values.
-  <p><i>See section '</i><a href="#TABLE_LIMIT_KEYS"><i>Valid limit keys</i></a><i>' below for a listing of recognized keys and values.</i></p>
-  </td>
- </tr>
- <tr>
-  <td>feed</td>
-  <td>no</td>
-  <td>boolean</td>
-  <td>false</td>
-  <td>Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action.</td>
- </tr>
- <tr>
-  <td>web-export</td>
-  <td>no</td>
-  <td>boolean</td>
-  <td>false</td>
-  <td>Optionally, turns the Action into a <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md">&quot;<em><u>web actions</u></em>&quot;</a>
-  causing it to return HTTP content without use of an API Gateway.
-  </td>
- </tr>
-</table>
-</html>
+| Key Name | Required | Value Type | Default | Description |
+|:---|:---|:---|:---|:---|
+| version | no | [version](spec_parameter_types.md#openwhisk-types) | N/A | The optional user-controlled version for the Action. |
+| function | yes | string | N/A | Required source location (path inclusive) of the Action code either:<ul><li>Relative to the Package manifest file.</li><li>Relative to the specified Repository.</li></ul> |
+| code | no | string | N/A | This optional field is now replaced by the <em>“function”</em> field. |
+| runtime | maybe | string | N/A | he required runtime name (and optional version) that the Action code requires for an execution environment.<p><i>Note: May be optional if tooling is allowed to make assumptions about file extensions or infer from functional code.</i></p> |
+| inputs | no | list of [parameter](spec_parameters.md) | N/A | The optional ordered list inputs to the Action. |
+| outputs | no | list of [parameter](spec_parameters.md) | N/A | The optional outputs from the Action. |
+| limits | no | map of [limit keys and values](#valid-limit-keys) | N/A | Optional map of limit keys and their values.</br>See section "[Valid limit keys](#valid-limit-keys)" (below) for a listing of recognized keys and values. |
+| feed | no | boolen | false | Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action. |
+| web \| web-export | no | boolean | yes \| no \| raw \| false | The optional flag (annotation) that makes the action accessible to REST calls without authentication.<p>For details on all types of Web Actions, see: [Web Actions](https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md).</p>|
+| raw-http | no | boolean | false | The optional flag (annotation) to indicate if a Web Action is able to consume the raw contents within the body of an HTTP request.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
+| docker | no | string | N/A | The optional key that references a Docker image (e.g., openwhisk/skeleton). |
+| native | no | boolean | false | The optional key (flag) that indicates the Action is should use the Docker skeleton image for OpenWhisk (i.e., short-form for docker: openwhisk/skeleton). |
+| final | no | boolean | false | The optional flag (annotation) which makes all of the action parameters that are already defined immutable.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
+| web-custom-options | no | boolean | false | The optional flag (annotation) enables a web action to respond to OPTIONS requests with customized headers, otherwise a [default CORS response](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#options-requests) applies. |
+| require-whisk-auth | no | boolean | false | The optional flag (annotation) protects the web action so that it is only accessible to an authenticated subject. |
+| main | no | string | N/A | The optional name of the function to be aliased as a function named “main”.<p><em><b>Note</b>: by convention, Action functions are required to be called “main”; this field allows existing functions not named “main” to be aliased and accessed as if they were named “main”.</em></p>|
 
 ### Requirements
 
@@ -114,6 +64,9 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 'delete', 'pause', etc.).
   - **triggerName**: the fully-qualified name of the trigger which contains events produced from this feed.
   - **authKey**: the Basic auth. credentials of the OpenWhisk user who owns the trigger.
+- The keyname ‘kind’ is currently supported as a synonym for the key named ‘runtime’; in the future it MAY be deprecated.
+- When a code is specified, runtime SHALL be a required field.
+
 
 ### Notes
 
@@ -130,6 +83,7 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
   <Entity schema>
   version: <version>
   function: <string>
+  code: <string>
   runtime: <name>[@<[range of ]version>]
   inputs:
     <list of parameter>
@@ -138,7 +92,14 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
   limits:
     <list of limit key-values>
   feed: <boolean> # default: false
-  web-export: <boolean>
+  web | web-export: <boolean> | yes | no | raw
+  raw-http: <boolean>
+  docker: <string>
+  native: <boolean>
+  final: <boolean>
+  web-custom-options: <boolean>
+  require-whisk-auth: <boolean>
+  main: <string>
 ```
 _**Note**: the optional [.<type>] grammar is used for naming Web Actions._
 
@@ -171,78 +132,19 @@ Each of these runtimes also include additional built-in packages (or libraries) 
 
 These packages may vary by OpenWhisk release; examples of supported runtimes as of this specification version include:
 
-<html>
-<table>
-
-  <tr>
-   <th>Runtime value</th>
-   <th>OpenWhisk kind</th>
-   <th>image name</th>
-   <th>Description</th>
-  </tr>
-
- <tr>
-  <td>nodejs</td>
-  <td>nodejs</td>
-  <td>nodejsaction:latest</td>
-  <td>Latest NodeJS runtime</td>
- </tr>
- <tr>
-  <td>nodejs@6</td>
-  <td>nodejs:6</td>
-  <td>nodejs6action:latest</td>
-  <td>Latest NodeJS 6 runtime</td>
- </tr>
- <tr>
-  <td>java, java@8</td>
-  <td>java</td>
-  <td>java8action:latest</td>
-  <td>Latest Java language runtime</td>
- </tr>
- <tr>
-  <td>python, python@2</td>
-  <td>python:2</td>
-  <td>python2action:latest</td>
-  <td>Latest Python 2 language runtime</td>
- </tr>
- <tr>
-  <td>python@3</td>
-  <td>python:3</td>
-  <td>python3action:latest</td>
-  <td>Latest Python 3 language runtime</td>
- </tr>
- <tr>
-  <td>swift, swift@2</td>
-  <td>swift</td>
-  <td>swiftaction:latest</td>
-  <td>Latest Swift 2 language runtime</td>
- </tr>
- <tr>
-  <td>swift@3</td>
-  <td>swift:3</td>
-  <td>swift3action:latest</td>
-  <td>Latest Swift 3 language runtime</td>
- </tr>
- <tr>
-  <td>swift@3.1.1</td>
-  <td>swift:3.1.1</td>
-  <td>action-swift-v3.1.1:latest</td>
-  <td>Latest Swift 3.1.1 language runtime</td>
- </tr>
- <tr>
-  <td>php</td>
-  <td>php:7.1</td>
-  <td>action-php-v7.1:latest</td>
-  <td>Latest PHP language runtime</td>
- </tr>
- <tr>
-  <td>language:default</td>
-  <td>N/A</td>
-  <td>N/A</td>
-  <td>Permit the OpenWhisk platform to select the correct default language runtime.</td>
- </tr>
-</table>
-</html>
+| Runtime value | OpenWhisk kind | Docker image name | Description |
+|:---|:---|:---|:---|
+| nodejs | nodejs | openwhisk/nodejsaction:latest | Latest NodeJS runtime |
+| nodejs@6 | nodejs:6 | openwhisk/nodejs6action:latest | Latest NodeJS 6 runtime |
+| nodejs@8 | nodejs:8 | openwhisk/action-nodejs-v8:latest | Latest NodeJS 8 runtime |
+| java, java@8 | java | openwhisk/java8action:latest | Latest Java (8) language runtime |
+| php, php@7.1 | php:7.1 | openwhisk/action-php-v7.1:latest | Latest PHP (7.1) language runtime |
+| python, python@2 | python:2 | openwhisk/python2action:latest | Latest Python 2 language runtime |
+| python@3 | python:3 | openwhisk/python3action:latest | Latest Python 3 language runtime |
+| swift | swift | openwhisk/swiftaction:latest | Latest Swift language runtime |
+| swift@3 | swift | openwhisk/swift3action:latest | Latest Swift 3 language runtime |
+| swift@3.1.1 | swift | openwhisk/action-swift-v3.1.1:latest | Latest Swift 3.1.1 language runtime |
+| language:default | N/A | N/A | Permit the OpenWhisk platform to select the correct default language runtime. |
 
 #### Notes
 - If no value for runtime is supplied, the value 'language:default' will be assumed.
@@ -259,7 +161,6 @@ following file extensions are recognized and will be run on the latest version o
    <th>Runtime used</th>
    <th>Description</th>
   </tr>
-
  <tr>
   <td>.js</td>
   <td>nodejs</td>
@@ -299,7 +200,6 @@ following file extensions are recognized and will be run on the latest version o
    <th>Valid Range</th>
    <th>Description</th>
   </tr>
-
  <tr>
   <td>timeout</td>
   <td>scalar-unit.time</td>
@@ -373,12 +273,6 @@ Return values from the Action's function are used to construct the HTTP response
 ---
 <html>
 <div align="center">
-<table align="center">
-  <tr>
-    <!-- <td><a href="">&lt;&lt;&nbsp;previous</a></td> -->
-    <td><a href="spec_index.md#openwhisk-package-specification-html">Specification Index</a></td>
-    <!-- <td><a href="">next&nbsp;&gt;&gt;</a></td> -->
-  </tr>
-</table>
+<a href="../README.md#index">Index</a>
 </div>
 </html>

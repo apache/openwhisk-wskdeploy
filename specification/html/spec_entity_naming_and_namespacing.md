@@ -26,17 +26,15 @@ packages, belongs in a *namespace.*
 
 The fully qualified name of any entity has the format:
 
-  -------------------------------------------------------------------
-  /&lt;namespaceName&gt;\[/&lt;packageName&gt;\]/&lt;entityName&gt;
-  -------------------------------------------------------------------
+```
+/<namespaceName>[/<packageName>]/<entityName>
+```
 
-The namespace is typically provided at bind-time by the user deploying
-the package to their chosen OpenWhisk platform provider.
+The namespace is typically provided at bind-time by the user deploying the package to their chosen OpenWhisk platform provider.
 
 #### Requirements
 
--   The “/whisk.system“ namespace is reserved for entities that are
-    distributed with the OpenWhisk system.
+-   The “/whisk.system“ namespace is reserved for entities that are distributed with the OpenWhisk system.
 
 ### Entity Names
 
@@ -44,22 +42,26 @@ The names of all entities, including actions, triggers, rules, packages,
 and namespaces, are a sequence of characters that follow the following
 format:
 
--   The first character SHALL be an alphanumeric character, a digit, or
-    an underscore.
+-   The first character SHALL be an alphanumeric character, a digit, or an underscore.
+-   The subsequent characters MAY be alphanumeric, digits, spaces, or any of the following:
+```
+_, @, ., -
+```
+- The last character SHALL NOT be a space.
+- The maximum name length of any entity name is 256 characters (i.e., ENTITY_NAME_MAX_LENGTH = 256).
 
--   The subsequent characters MAY be alphanumeric, digits, spaces, or
-    any of the following:
+Valid entity names are described with the following regular expression (Java metacharacter syntax):
 
-> \_, @, ., -
+```
+"\A([\w]|[\w][\w@ .-]{0,${ENTITY_NAME_MAX_LENGTH - 2}}[\w@.-])\z"
+```
 
--   The last character SHALL NOT be a space.
-
--   The maximum name length of any entity name is 256 characters (i.e.,
-    ENTITY\_NAME\_MAX\_LENGTH = 256).
-
-Valid entity names are described with the following regular expression
-(Java metacharacter syntax):
-
-  -------------------------------------------------------------------------------------
-  "\\A(\[\\w\]|\[\\w\]\[\\w@ .-\]{0,\${ENTITY\_NAME\_MAX\_LENGTH - 2}}\[\\w@.-\])\\z"
-  -------------------------------------------------------------------------------------
+<!--
+ Bottom Navigation
+-->
+---
+<html>
+<div align="center">
+<a href="../README.md#index">Index</a>
+</div>
+</html>
