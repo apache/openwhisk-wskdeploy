@@ -54,14 +54,4 @@ packages:
                         listAllMembers:
                             method: GET
                             response: http
-                    booksWithISBN/{isbn}:
-                        getBooks:
-                            method: GET
-                            response: http
-                    booksWithParams/path/{params}/more/{params1}/:
-                        getBooks:
-                            method: GET
-                    booksWithDuplicateParams/path/{params}/more/{params}/:
-                        getBooks:
-                            method: GET
 

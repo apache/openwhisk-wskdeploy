@@ -26,10 +26,20 @@ import (
 	"testing"
 )
 
-// TODO: write the integration against openwhisk
+const PATH = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/apigateway/"
+
 func TestApiGateway(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
-	manifestPath := os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/apigateway/manifest.yml"
+	manifestPath := os.Getenv("GOPATH") + "manifest.yml"
+	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
+	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
+	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
+	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest file.")
+}
+
+func TestApiGatewayWithParams(t *testing.T) {
+	wskdeploy := common.NewWskdeploy()
+	manifestPath := os.Getenv("GOPATH") + "manifest-apis-with-params.yml"
 	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
 	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
