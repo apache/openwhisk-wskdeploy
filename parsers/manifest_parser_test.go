@@ -31,6 +31,7 @@ import (
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
+	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
@@ -1499,11 +1500,11 @@ func TestComposeApiRecords(t *testing.T) {
 		ApigwAccessToken: "token",
 	}
 
-	apiList, err := p.ComposeApiRecordsFromAllPackages(&config, m)
+	apiList, apiRequestOptions, err := p.ComposeApiRecordsFromAllPackages(&config, m)
 	if err != nil {
 		assert.Fail(t, "Failed to compose api records: "+err.Error())
 	}
-	assert.Equal(t, 7, len(apiList), "Failed to get api records")
+	assert.Equal(t, 10, len(apiList), "Failed to get api records")
 	for _, apiRecord := range apiList {
 		apiDoc := apiRecord.ApiDoc
 		action := apiDoc.Action
@@ -1539,7 +1540,30 @@ func TestComposeApiRecords(t *testing.T) {
 			assert.Equal(t, "/club2", apiDoc.GatewayBasePath, "Failed to set api base path")
 			assert.Equal(t, "/members2", apiDoc.GatewayRelPath, "Failed to set api rel path")
 			assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
-
+		case "apiTest/getBooks3":
+			assert.Equal(t, "book-club3", apiDoc.ApiName, "Failed to set api name")
+			assert.Equal(t, "/club3", apiDoc.GatewayBasePath, "Failed to set api base path")
+			assert.Equal(t, "/booksByISBN/{isbn}", apiDoc.GatewayRelPath, "Failed to set api rel path")
+			assert.Equal(t, "get", action.BackendMethod, "Failed to set api backend method")
+			assert.Equal(t, 1, len(apiDoc.PathParameters), "Failed to set api path parameters")
+			apiPath := apiDoc.ApiName + " " + apiDoc.GatewayBasePath + apiDoc.GatewayRelPath + " " + apiDoc.GatewayMethod
+			assert.Equal(t, utils.HTTP_FILE_EXTENSION, apiRequestOptions[apiPath].ResponseType, "Failed to set response type")
+		case "apiTest/putBooks3":
+			assert.Equal(t, "book-club3", apiDoc.ApiName, "Failed to set api name")
+			assert.Equal(t, "/club3", apiDoc.GatewayBasePath, "Failed to set api base path")
+			assert.Equal(t, "/booksWithParams/path/{params}/more/{params1}/", apiDoc.GatewayRelPath, "Failed to set api rel path")
+			assert.Equal(t, "put", action.BackendMethod, "Failed to set api backend method")
+			assert.Equal(t, 2, len(apiDoc.PathParameters), "Failed to set api path parameters")
+			apiPath := apiDoc.ApiName + " " + apiDoc.GatewayBasePath + apiDoc.GatewayRelPath + " " + apiDoc.GatewayMethod
+			assert.Equal(t, utils.HTTP_FILE_EXTENSION, apiRequestOptions[apiPath].ResponseType, "Failed to set response type")
+		case "apiTest/deleteBooks3":
+			assert.Equal(t, "book-club3", apiDoc.ApiName, "Failed to set api name")
+			assert.Equal(t, "/club3", apiDoc.GatewayBasePath, "Failed to set api base path")
+			assert.Equal(t, "/booksWithDuplicateParams/path/{params}/more/{params}/", apiDoc.GatewayRelPath, "Failed to set api rel path")
+			assert.Equal(t, "delete", action.BackendMethod, "Failed to set api backend method")
+			assert.Equal(t, 1, len(apiDoc.PathParameters), "Failed to set api path parameters")
+			apiPath := apiDoc.ApiName + " " + apiDoc.GatewayBasePath + apiDoc.GatewayRelPath + " " + apiDoc.GatewayMethod
+			assert.Equal(t, utils.HTTP_FILE_EXTENSION, apiRequestOptions[apiPath].ResponseType, "Failed to set response type")
 		default:
 			assert.Fail(t, "Failed to get api action name")
 		}

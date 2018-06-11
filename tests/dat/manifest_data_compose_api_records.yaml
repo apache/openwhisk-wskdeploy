@@ -2,38 +2,65 @@
 # license agreements; and to You under the Apache License, Version 2.0.
 
 packages:
-  apiTest:
-    actions:
-      putBooks:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-        web-export: true
-      deleteBooks:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-      listMembers:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-      getBooks2:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-      postBooks2:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-      listMembers2:
-        function: ../tests/src/integration/helloworld/actions/hello.js
-    sequences:
-      listAllMembers:
-        actions: listMembers, listMembers2
-        web: true
-    apis:
-      book-club:
-        club:
-          books:
-            putBooks: put
-            deleteBooks: delete
-          members:
-            listMembers: get
-      book-club2:
-        club2:
-          books2:
-            getBooks2: get
-            postBooks2: post
-          members2:
-            listMembers2: get
-            listAllMembers: get
+    apiTest:
+        actions:
+            putBooks:
+                function: ../tests/src/integration/helloworld/actions/hello.js
+                web-export: true
+            deleteBooks:
+                function: ../tests/src/integration/helloworld/actions/hello.js
+            listMembers:
+                function: ../tests/src/integration/helloworld/actions/hello.js
+            getBooks2:
+                function: ../tests/src/integration/helloworld/actions/hello.js
+            postBooks2:
+                function: ../tests/src/integration/helloworld/actions/hello.js
+            listMembers2:
+                function: ../tests/src/integration/helloworld/actions/hello.js
+            getBooks3:
+                function: ../tests/src/integration/helloworld/actions/hello.js
+            putBooks3:
+                function: ../tests/src/integration/helloworld/actions/hello.js
+            deleteBooks3:
+                function: ../tests/src/integration/helloworld/actions/hello.js
+        sequences:
+            listAllMembers:
+                actions: listMembers, listMembers2
+                web: true
+        apis:
+            book-club:
+                club:
+                    books:
+                        putBooks:
+                            method: put
+                        deleteBooks:
+                            method: delete
+                    members:
+                        listMembers:
+                            method: get
+            book-club2:
+                club2:
+                    books2:
+                        getBooks2:
+                            method: get
+                        postBooks2:
+                            method: post
+                    members2:
+                        listMembers2:
+                            method: get
+                        listAllMembers:
+                            method: get
+            book-club3:
+                club3:
+                    booksByISBN/{isbn}:
+                        getBooks3:
+                            method: get
+                            response: http
+                    booksWithParams/path/{params}/more/{params1}/:
+                        putBooks3:
+                            method: put
+                            response: json
+                    booksWithDuplicateParams/path/{params}/more/{params}/:
+                        deleteBooks3:
+                            method: delete
+

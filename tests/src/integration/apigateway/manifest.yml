@@ -29,15 +29,29 @@ packages:
             hello-world:
                 hello:
                     world:
-                        greeting: GET
+                        greeting:
+                            method: GET
             book-club:
                 club:
                     books:
-                        getBooks: GET
-                        postBooks: POST
-                        putBooks: PUT
-                        deleteBooks: DELETE
+                        getBooks:
+                            method: GET
+                            response: http
+                        postBooks:
+                            method: POST
+                            response: http
+                        putBooks:
+                            method: PUT
+                            response: http
+                        deleteBooks:
+                            method: DELETE
+                            response: http
                     members:
-                        listMembers: GET
+                        listMembers:
+                            method: GET
+                            response: http
                     allMembers:
-                        listAllMembers: GET
+                        listAllMembers:
+                            method: GET
+                            response: http
+

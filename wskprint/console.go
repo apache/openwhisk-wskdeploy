@@ -51,13 +51,17 @@ func PrintOpenWhiskFromError(err error) {
 }
 
 func PrintOpenWhiskWarning(message string) {
-	outputStream := colorable.NewColorableStdout()
-	fmt.Fprintf(outputStream, clrWarning.Sprintf(STR_PREFIXED_MESSAGE,
-		wski18n.T(wski18n.ID_MSG_PREFIX_WARNING), message))
+	if DetectVerbose() {
+		outputStream := colorable.NewColorableStdout()
+		fmt.Fprintf(outputStream, clrWarning.Sprintf(STR_PREFIXED_MESSAGE,
+			wski18n.T(wski18n.ID_MSG_PREFIX_WARNING), message))
+	}
 }
 
 func PrintlnOpenWhiskWarning(message string) {
-	PrintOpenWhiskWarning(message + "\n")
+	if DetectVerbose() {
+		PrintOpenWhiskWarning(message + "\n")
+	}
 }
 
 func PrintOpenWhiskSuccess(message string) {
@@ -124,6 +128,17 @@ func DetectGoTestVerbose() bool {
 	arguments := os.Args
 	for i := range arguments {
 		if strings.HasPrefix(arguments[i], "-test.v=true") {
+			return true
+		}
+	}
+	return false
+}
+
+func DetectVerbose() bool {
+	arguments := os.Args
+	for i := range arguments {
+		if strings.HasPrefix(arguments[i], "-v") ||
+			strings.HasPrefix(arguments[i], "--verbose") {
 			return true
 		}
 	}

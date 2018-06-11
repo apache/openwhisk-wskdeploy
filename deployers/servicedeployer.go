@@ -45,10 +45,11 @@ const (
 )
 
 type DeploymentProject struct {
-	Packages map[string]*DeploymentPackage
-	Triggers map[string]*whisk.Trigger
-	Rules    map[string]*whisk.Rule
-	Apis     map[string]*whisk.ApiCreateRequest
+	Packages   map[string]*DeploymentPackage
+	Triggers   map[string]*whisk.Trigger
+	Rules      map[string]*whisk.Rule
+	Apis       map[string]*whisk.ApiCreateRequest
+	ApiOptions map[string]*whisk.ApiCreateRequestOptions
 }
 
 func NewDeploymentProject() *DeploymentProject {
@@ -57,6 +58,7 @@ func NewDeploymentProject() *DeploymentProject {
 	dep.Triggers = make(map[string]*whisk.Trigger)
 	dep.Rules = make(map[string]*whisk.Rule)
 	dep.Apis = make(map[string]*whisk.ApiCreateRequest)
+	dep.ApiOptions = make(map[string]*whisk.ApiCreateRequestOptions)
 	return &dep
 }
 
@@ -1014,10 +1016,9 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 	var err error
 	var response *http.Response
 
-	apiCreateReqOptions := new(whisk.ApiCreateRequestOptions)
+	apiCreateReqOptions := deployer.Deployment.ApiOptions[apiPath]
 	apiCreateReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
 	apiCreateReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
-	// TODO() Add Response type apiCreateReqOptions.ResponseType
 
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 		_, response, err = deployer.Client.Apis.Insert(api, apiCreateReqOptions, true)

@@ -364,6 +364,10 @@
     "translation": "Required inputs are missing values even after applying interpolation using env. variables. Please set missing env. variables and/or input values in manifest/deployment file or on CLI for following inputs: {{.inputs}}"
   },
   {
+    "id": "msg_err_api_gateway_base_path_invalid",
+    "translation": "API Gateway base path [{{.apibasepath}}] is invalid. It has path parameters which is not supported, only relative path supports path parameters."
+  },
+  {
     "id": "msg_err_runtime_parser_error",
     "translation": "Failed to retrieve runtimes {{.err}}."
   },
@@ -459,6 +463,10 @@
   {
     "id": "msg_warn_api_missing_web_sequence",
     "translation": "Sequence [{{.sequence}}] is not a web sequence, API [{{.api}}] can only be created using web sequence. Converting [{{.sequence}}] to a web sequence.\n"
+  },
+  {
+    "id": "msg_warn_api_invalid_response_type",
+    "translation": "API [{{.api}}] with path parameters [{{.apirelativepath}}] is required to have http as response type. Changing response type from [{{.response}}] to http for [{{.api}}]."
   },
   {
     "id": "DEBUG",

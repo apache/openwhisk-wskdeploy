@@ -1,0 +1,29 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+packages:
+    api-gateway-test-with-params:
+        version: 1.0
+        license: Apache-2.0
+        actions:
+            getBooksWithISBN:
+                function: src/get-books.js
+            putBooksWithParams:
+                function: src/put-books.js
+            deleteBooksWithDuplicateParams:
+                function: src/delete-books.js
+        # new top-level key for defining groups of named APIs
+        apis:
+            book-club-with-params:
+                club-with-params:
+                    booksWithISBN/{isbn}:
+                        getBooksWithISBN:
+                            method: GET
+                            response: http
+                    booksWithParams/path/{params}/more/{params1}/:
+                        putBooksWithParams:
+                            method: PUT
+                    booksWithDuplicateParams/path/{params}/more/{params}/:
+                        deleteBooksWithDuplicateParams:
+                            method: DELETE
+
