@@ -42,7 +42,7 @@ func TestExport(t *testing.T) {
 
 	wskdeploy := common.NewWskdeploy()
 
-    defer os.RemoveAll(targetManifestFolder) 
+	defer os.RemoveAll(targetManifestFolder)
 
 	_, err := wskdeploy.ManagedDeploymentOnlyManifest(manifestLib1Path)
 	assert.Equal(t, nil, err, "Failed to deploy the lib1 manifest file.")
@@ -81,7 +81,7 @@ func SkipTestExportHelloWorld(t *testing.T) {
 	targetManifestFolder := os.Getenv("GOPATH") + EXPORT_TEST_PATH + "tmp-" + strconv.Itoa(rand.Intn(1000)) + "/"
 	targetManifestHelloWorldPath := targetManifestFolder + "manifest-" + projectName + ".yaml"
 
-    defer os.RemoveAll(targetManifestFolder)
+	defer os.RemoveAll(targetManifestFolder)
 
 	wskdeploy := common.NewWskdeploy()
 
@@ -117,7 +117,7 @@ func TestExport2Pack(t *testing.T) {
 	targetManifestFolder := os.Getenv("GOPATH") + EXPORT_TEST_PATH + "tmp-" + strconv.Itoa(rand.Intn(1000)) + "/"
 	target2PackManifestPath := targetManifestFolder + "exported2packmanifest.yaml"
 
-    defer os.RemoveAll(targetManifestFolder)
+	defer os.RemoveAll(targetManifestFolder)
 
 	projectName := "2pack"
 	wskdeploy := common.NewWskdeploy()
@@ -145,7 +145,7 @@ func ExportApi(t *testing.T) {
 	projectName := "ApiExp"
 	wskdeploy := common.NewWskdeploy()
 
-    defer os.RemoveAll(targetManifestFolder)
+	defer os.RemoveAll(targetManifestFolder)
 
 	_, err := wskdeploy.ManagedDeploymentManifestAndProject(manifestApiExpPath, projectName)
 	assert.Equal(t, nil, err, "Failed to deploy the ApiExp manifest file.")
