@@ -143,7 +143,7 @@ func TestExport2Pack(t *testing.T) {
 	assert.Equal(t, nil, err, "Failed to undeploy")
 }
 
-func ExportApi(t *testing.T) {
+func TestExportApi(t *testing.T) {
 	projectName := "ApiExp"
 	wskdeploy := common.NewWskdeploy()
 
