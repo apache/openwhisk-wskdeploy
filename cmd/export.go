@@ -152,9 +152,9 @@ func exportProject(projectName string, targetManifest string) error {
 				// TODO: throw if there more than single package managed by project
 				// currently will be a mess because triggers and rules managed under packages
 				// instead of the top level (similar to OW model)
-				//				if len(maniyaml.Packages) > 1 {
-				//					return errors.New("currently can't work with more than one package managed by one project")
-				//				}
+				//              if len(maniyaml.Packages) > 1 {
+				//                  return errors.New("currently can't work with more than one package managed by one project")
+				//              }
 
 				// perform the similar check on the list of actions from this package
 				// get a list of actions in your namespace
@@ -272,6 +272,75 @@ func exportProject(projectName string, targetManifest string) error {
 			}
 		}
 
+	}
+
+	// List API request query parameters
+	apiListReqOptions := new(whisk.ApiListRequestOptions)
+	apiListReqOptions.SpaceGuid = strings.Split(client.Config.AuthToken, ":")[0]
+	apiListReqOptions.AccessToken = client.Config.ApigwAccessToken
+
+	// Get list of APIs from OW
+	retApiList, _, err := client.Apis.List(apiListReqOptions)
+	if err != nil {
+		return err
+	}
+
+	// iterate over the list of APIs to determine whether any of them part of the managed project
+	retApiArray := (*whisk.RetApiArray)(retApiList)
+	for _, api := range retApiArray.Apis {
+
+		apiName := api.ApiValue.Swagger.Info.Title
+		apiBasePath := strings.TrimPrefix(api.ApiValue.Swagger.BasePath, "/")
+
+		// run over api paths looking for one pointing to an action belonging to the given project
+		for path := range api.ApiValue.Swagger.Paths {
+			for op, opv := range api.ApiValue.Swagger.Paths[path].MakeOperationMap() {
+				if len(opv.XOpenWhisk.Package) > 0 {
+					pkgName := opv.XOpenWhisk.Package
+
+					if pkg, ok := maniyaml.Packages[pkgName]; ok {
+						if pkg.Namespace == opv.XOpenWhisk.Namespace {
+
+							// now adding the api to the maniyaml
+							if pkg.Apis == nil {
+								pkg.Apis = make(map[string]map[string]map[string]map[string]parsers.APIMethodResponse)
+							}
+
+							path = strings.TrimPrefix(path, "/")
+
+							apiMethodResponse := *new(parsers.APIMethodResponse)
+							splitApiUrl := strings.Split(opv.XOpenWhisk.ApiUrl, ".")
+							responseType := splitApiUrl[len(splitApiUrl)-1]
+
+							apiMethodResponse.Method = op
+							apiMethodResponse.Response = responseType
+
+							if pkgApi, ok := pkg.Apis[apiName]; ok {
+								if pkgApiBasePath, ok := pkgApi[apiBasePath]; ok {
+									if _, ok := pkgApiBasePath[path]; ok {
+										pkg.Apis[apiName][apiBasePath][path][opv.XOpenWhisk.ActionName] = apiMethodResponse
+									} else {
+										pkg.Apis[apiName][apiBasePath][path] = map[string]parsers.APIMethodResponse{}
+										pkg.Apis[apiName][apiBasePath][path][opv.XOpenWhisk.ActionName] = apiMethodResponse
+									}
+								} else {
+									pkg.Apis[apiName][apiBasePath] = map[string]map[string]parsers.APIMethodResponse{}
+									pkg.Apis[apiName][apiBasePath][path] = map[string]parsers.APIMethodResponse{}
+									pkg.Apis[apiName][apiBasePath][path][opv.XOpenWhisk.ActionName] = apiMethodResponse
+								}
+							} else {
+								pkg.Apis[apiName] = map[string]map[string]map[string]parsers.APIMethodResponse{}
+								pkg.Apis[apiName][apiBasePath] = map[string]map[string]parsers.APIMethodResponse{}
+								pkg.Apis[apiName][apiBasePath][path] = map[string]parsers.APIMethodResponse{}
+								pkg.Apis[apiName][apiBasePath][path][opv.XOpenWhisk.ActionName] = apiMethodResponse
+							}
+
+							maniyaml.Packages[pkgName] = pkg
+						}
+					}
+				}
+			}
+		}
 	}
 
 	// adding dependencies to the first package

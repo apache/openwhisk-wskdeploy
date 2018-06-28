@@ -1,0 +1,21 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+packages:
+    api-gateway-test:
+        version: 1.0
+        license: Apache-2.0
+        actions:
+            greeting:
+                web-export: true
+                version: 1.0
+                function: src/greeting.js
+                runtime: nodejs:6
+        # new top-level key for defining groups of named APIs
+        apis:
+            hello-world:
+                hello:
+                    world:
+                        greeting:
+                            method: GET
+                            response: http

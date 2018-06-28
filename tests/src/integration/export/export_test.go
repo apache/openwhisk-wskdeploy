@@ -1,4 +1,4 @@
-// +build skip_integration
+// +build integration
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -44,6 +44,8 @@ func TestExport(t *testing.T) {
 
 	wskdeploy := common.NewWskdeploy()
 
+	defer os.RemoveAll(targetManifestFolder)
+
 	_, err := wskdeploy.ManagedDeploymentOnlyManifest(manifestLib1Path)
 	assert.Equal(t, nil, err, "Failed to deploy the lib1 manifest file.")
 
@@ -81,6 +83,8 @@ func SkipTestExportHelloWorld(t *testing.T) {
 	targetManifestFolder := os.Getenv("GOPATH") + EXPORT_TEST_PATH + "tmp-" + strconv.Itoa(rand.Intn(1000)) + "/"
 	targetManifestHelloWorldPath := targetManifestFolder + "manifest-" + projectName + ".yaml"
 
+	defer os.RemoveAll(targetManifestFolder)
+
 	wskdeploy := common.NewWskdeploy()
 
 	_, err := wskdeploy.ManagedDeploymentManifestAndProject(manifestHelloWorldPath, projectName)
@@ -114,6 +118,9 @@ func TestExport2Pack(t *testing.T) {
 	manifest2PackPath := os.Getenv("GOPATH") + EXPORT_TEST_PATH + "manifest_2pack.yaml"
 	targetManifestFolder := os.Getenv("GOPATH") + EXPORT_TEST_PATH + "tmp-" + strconv.Itoa(rand.Intn(1000)) + "/"
 	target2PackManifestPath := targetManifestFolder + "exported2packmanifest.yaml"
+
+	defer os.RemoveAll(targetManifestFolder)
+
 	projectName := "2pack"
 	wskdeploy := common.NewWskdeploy()
 
@@ -135,3 +142,46 @@ func TestExport2Pack(t *testing.T) {
 	_, err = wskdeploy.UndeployManifestPathOnly(manifest2PackPath)
 	assert.Equal(t, nil, err, "Failed to undeploy")
 }
+
+func TestExportApi(t *testing.T) {
+	projectName := "ApiExp"
+	wskdeploy := common.NewWskdeploy()
+
+	defer os.RemoveAll(targetManifestFolder)
+
+	_, err := wskdeploy.ManagedDeploymentManifestAndProject(manifestApiExpPath, projectName)
+	assert.Equal(t, nil, err, "Failed to deploy the ApiExp manifest file.")
+
+	_, err = wskdeploy.ExportProject(projectName, targetApiExpManifestPath)
+	assert.Equal(t, nil, err, "Failed to export project.")
+
+	_, err = os.Stat(manifestApiExpPath)
+	assert.Equal(t, nil, err, "Missing exported manifest file")
+
+	_, err = os.Stat(targetManifestFolder + "api-gateway-test/greeting.js")
+	assert.Equal(t, nil, err, "Missing exported api-gateway-test/greeting.js")
+
+	_, err = wskdeploy.UndeployManifestPathOnly(manifestApiExpPath)
+	assert.Equal(t, nil, err, "Failed to undeploy")
+
+	_, err = wskdeploy.ManagedDeploymentOnlyManifest(targetApiExpManifestPath)
+	assert.Equal(t, nil, err, "Failed to redeploy the exported manifest file.")
+
+	_, err = wskdeploy.UndeployManifestPathOnly(targetApiExpManifestPath)
+	assert.Equal(t, nil, err, "Failed to undeploy the exported manifest file")
+}
+
+var (
+	manifestLib1Path = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_lib1.yaml"
+	manifestLib2Path = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_lib2.yaml"
+	manifestExtPath  = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_ext.yaml"
+
+	targetManifestFolder = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/tmp/"
+	targetManifestPath   = targetManifestFolder + "manifest.yaml"
+
+	manifest2PackPath       = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_2pack.yaml"
+	target2PackManifestPath = targetManifestFolder + "exported2packmanifest.yaml"
+
+	manifestApiExpPath       = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_apiexp.yaml"
+	targetApiExpManifestPath = targetManifestFolder + "exportedapimanifest.yaml"
+)
