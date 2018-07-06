@@ -51,11 +51,10 @@ $ANSIBLE_CMD setup.yml
 $ANSIBLE_CMD prereq.yml
 $ANSIBLE_CMD couchdb.yml
 $ANSIBLE_CMD initdb.yml
-
 $ANSIBLE_CMD wipe.yml
-$ANSIBLE_CMD apigateway.yml
 $ANSIBLE_CMD openwhisk.yml -e '{"openwhisk_cli":{"installation_mode":"remote","remote":{"name":"OpenWhisk_CLI","dest_name":"OpenWhisk_CLI","location":"https://github.com/apache/incubator-openwhisk-cli/releases/download/latest"}}}'
-
+$ANSIBLE_CMD apigateway.yml
+$ANSIBLE_CMD routemgmt.yml
 
 export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/openwhisk"
 
