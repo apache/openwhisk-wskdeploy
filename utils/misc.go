@@ -34,7 +34,7 @@ import (
 )
 
 const (
-	DEFAULT_HTTP_TIMEOUT = 30
+	DEFAULT_HTTP_TIMEOUT = 60
 	DEFAULT_PROJECT_PATH = "."
 	HTTP_FILE_EXTENSION  = "http"
 	// name of manifest and deployment files

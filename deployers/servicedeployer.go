@@ -910,38 +910,32 @@ func (deployer *ServiceDeployer) createFeedAction(trigger *whisk.Trigger, feedNa
 
 	var err error
 	var response *http.Response
+	if err = deployer.createTrigger(t); err != nil {
+		return err
+	}
+	qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
+	if err != nil {
+		return err
+	}
+
+	namespace := deployer.Client.Namespace
+	deployer.Client.Namespace = qName.Namespace
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-		_, response, err = deployer.Client.Triggers.Insert(t, true)
+		_, response, err = deployer.Client.Actions.Invoke(qName.EntityName, params, true, false)
 		return err
 	})
+	deployer.Client.Namespace = namespace
+
 	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, wski18n.TRIGGER_FEED, true)
-	} else {
+		// Remove the created trigger
+		deployer.Client.Triggers.Delete(trigger.Name)
 
-		qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
-		if err != nil {
-			return err
-		}
-
-		namespace := deployer.Client.Namespace
-		deployer.Client.Namespace = qName.Namespace
-		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-			_, response, err = deployer.Client.Actions.Invoke(qName.EntityName, params, true, false)
+		retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+			_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
 			return err
 		})
-		deployer.Client.Namespace = namespace
 
-		if err != nil {
-			// Remove the created trigger
-			deployer.Client.Triggers.Delete(trigger.Name)
-
-			retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-				_, _, err := deployer.Client.Triggers.Delete(trigger.Name)
-				return err
-			})
-
-			return createWhiskClientError(err.(*whisk.WskError), response, wski18n.TRIGGER_FEED, false)
-		}
+		return createWhiskClientError(err.(*whisk.WskError), response, wski18n.TRIGGER_FEED, false)
 	}
 
 	displayPostprocessingInfo(wski18n.TRIGGER_FEED, trigger.Name, true)
@@ -1203,11 +1197,10 @@ func (deployer *ServiceDeployer) UnDeployTriggers(deployment *DeploymentProject)
 			if err != nil {
 				return err
 			}
-		} else {
-			err := deployer.deleteTrigger(trigger)
-			if err != nil {
-				return err
-			}
+		}
+		err := deployer.deleteTrigger(trigger)
+		if err != nil {
+			return err
 		}
 	}
 
@@ -1262,15 +1255,17 @@ func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
 
 	displayPreprocessingInfo(parsers.YAML_KEY_TRIGGER, trigger.Name, false)
 
-	var err error
-	var response *http.Response
-	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-		_, response, err = deployer.Client.Triggers.Delete(trigger.Name)
-		return err
-	})
+	if _, _, ok := deployer.Client.Triggers.Get(trigger.Name); ok == nil {
+		var err error
+		var response *http.Response
+		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+			_, response, err = deployer.Client.Triggers.Delete(trigger.Name)
+			return err
+		})
 
-	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, false)
+		if err != nil {
+			return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, false)
+		}
 	}
 
 	displayPostprocessingInfo(parsers.YAML_KEY_TRIGGER, trigger.Name, false)
@@ -1278,6 +1273,8 @@ func (deployer *ServiceDeployer) deleteTrigger(trigger *whisk.Trigger) error {
 }
 
 func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedName string) error {
+
+	displayPreprocessingInfo(parsers.YAML_KEY_FEED, trigger.Name, false)
 
 	params := make(whisk.KeyValueArr, 0)
 	// TODO() define keys and operations as const
@@ -1293,6 +1290,11 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 	qName, err := utils.ParseQualifiedName(feedName, deployer.ClientConfig.Namespace)
 	if err != nil {
 		return err
+	}
+
+	if _, _, ok := deployer.Client.Triggers.Get(trigger.Name); ok != nil {
+		displayPostprocessingInfo(parsers.YAML_KEY_FEED, trigger.Name, false)
+		return nil
 	}
 
 	namespace := deployer.Client.Namespace
@@ -1312,19 +1314,8 @@ func (deployer *ServiceDeployer) deleteFeedAction(trigger *whisk.Trigger, feedNa
 		whisk.Debug(whisk.DbgError, errString)
 		return wskderrors.NewWhiskClientError(wskErr.Error(), wskErr.ExitCode, response)
 
-	} else {
-		trigger.Parameters = nil
-		var err error
-		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-			_, response, err = deployer.Client.Triggers.Delete(trigger.Name)
-			return err
-		})
-
-		if err != nil {
-			return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_TRIGGER, false)
-		}
 	}
-
+	displayPostprocessingInfo(parsers.YAML_KEY_FEED, trigger.Name, false)
 	return nil
 }
 
@@ -1332,15 +1323,17 @@ func (deployer *ServiceDeployer) deleteRule(rule *whisk.Rule) error {
 
 	displayPreprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, false)
 
-	var err error
-	var response *http.Response
-	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
-		response, err = deployer.Client.Rules.Delete(rule.Name)
-		return err
-	})
+	if _, _, ok := deployer.Client.Rules.Get(rule.Name); ok == nil {
+		var err error
+		var response *http.Response
+		err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+			response, err = deployer.Client.Rules.Delete(rule.Name)
+			return err
+		})
 
-	if err != nil {
-		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, false)
+		if err != nil {
+			return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_RULE, false)
+		}
 	}
 	displayPostprocessingInfo(parsers.YAML_KEY_RULE, rule.Name, false)
 	return nil
