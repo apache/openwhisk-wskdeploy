@@ -21,7 +21,7 @@
   },
   {
     "id": "msg_cmd_desc_long_root",
-    "translation": "A tool to deploy, undeploy and sync openwhisk packages using a manifest and optional deployment files using YAML."
+    "translation": "The OpenWhisk Deployment Tool\n\nTo begin working with wskdeploy, run the 'wskdeploy' command:\n\n\t./wskdeploy\n\nThis will deploy OpenWhisk assets specified in manifest.yaml or manifest.yml\n"
   },
   {
     "id": "msg_cmd_desc_short_report",
