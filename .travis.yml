@@ -48,6 +48,10 @@ before_deploy:
 - go get github.com/inconshreveable/mousetrap
 - export GIT_TAG="latest"
 - export TAG=false
+- if [ ! -z "$TRAVIS_TAG" ] ; then
+      export GIT_TAG=$TRAVIS_TAG;
+      export TAG=true;
+  fi
 - ./gradlew --console=plain releaseBinaries -PpackageVersion=$GIT_TAG
 - "./tools/travis/build_tag_releases.sh $build_file_name $GIT_TAG"
 - export RELEASE_PKG_FILE="$(cd "$TRAVIS_BUILD_DIR/release" && ls ${zip_file_name}-*.tgz ${zip_file_name}-*.zip)"
@@ -60,12 +64,10 @@ before_deploy:
       GIT_COMMITTER_DATE="$(git show --format=%aD | head -1)" git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
       git push -f -q https://$API_KEY@github.com/apache/incubator-openwhisk-wskdeploy $GIT_TAG;
   fi
-- if [ ! -z "$TRAVIS_TAG" ] ; then
-      export GIT_TAG=$TRAVIS_TAG;
-      export TAG=true;
-  fi
-- echo "The event type is $TRAVIS_EVENT_TYPE."
-- echo "The GIT_TAG of this Travis build is $GIT_TAG."
+- echo "TRAVIS_EVENT_TYPE is "
+- echo $TRAVIS_EVENT_TYPE
+- echo "GIT_TAG is "
+- echo $GIT_TAG
 
 deploy:
 - provider: releases
