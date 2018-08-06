@@ -105,11 +105,11 @@
 		},
 		{
 			"ImportPath": "github.com/apache/incubator-openwhisk-client-go/whisk",
-			"Rev": "1e505228d7bb7f16c3077af2b0311ff4cf6e84a3"
+			"Rev": "d7cee96e83a1f38413a1f5286bd524dac72686c9"
 		},
 		{
 			"ImportPath": "github.com/apache/incubator-openwhisk-client-go/wski18n",
-			"Rev": "1e505228d7bb7f16c3077af2b0311ff4cf6e84a3"
+			"Rev": "d7cee96e83a1f38413a1f5286bd524dac72686c9"
 		},
 		{
 			"ImportPath": "github.com/pelletier/go-buffruneio",
