@@ -64,6 +64,7 @@ $ go get github.com/apache/incubator-openwhisk-wskdeploy  # see known issues bel
 Use the Go utility to build the ```wskdeploy``` binary as follows:
 ```sh
 $ cd src/github.com/apache/incubator-openwhisk-wskdeploy/
+$ go get
 $ go build -o wskdeploy
 ```
 
