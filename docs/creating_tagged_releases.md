@@ -43,3 +43,17 @@ If the travis build passed, binaries will be pushed into releases page.
 If we modify the tag by pointing to a different commit, use ```git push -f upstream 0.8.9<tag>``` to overwrite the old tag. New binaries from travis build will overwrite the old binaries as well.
 
 You can download the binaries, and delete them from the releases page in GitHub if we do not want them to be public.
+
+# Publishing Tagged Release to Homebrew
+
+[Homebrew](https://brew.sh) is used to install `wskdeploy` locally. Once we release a new version of `wskdeploy` we should update its version in homebrew.
+
+Get the new release SHA256 checksum by downloading the Source Code (tar.gz) from the [releases page](https://github.com/apache/incubator-openwhisk-wskdeploy/releases) and running `shasum -a 256 X.Y.Z.tar.gz` on the tarball.
+
+Update brew formula with the automation command `brew bump-formula-pr`:
+```bash
+$ brew bump-formula-pr \
+  --url='https://github.com/apache/incubator-openwhisk-wskdeploy/archive/X.Y.Z.tar.gz' \
+  --sha256='PASTE THE SHA256 CHECKSUM HERE' \
+  wskdeploy
+```
