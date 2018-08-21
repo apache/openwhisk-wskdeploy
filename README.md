@@ -57,6 +57,7 @@ Once your environment is setup, download `wskdeploy` and its dependencies:
 ```sh
 $ cd $GOPATH
 $ go get github.com/apache/incubator-openwhisk-wskdeploy  # see known issues below if you get an error
+$ go get github.com/tools/godep # get the dependency manager
 ```
 
 ### Build the binary
@@ -64,7 +65,7 @@ $ go get github.com/apache/incubator-openwhisk-wskdeploy  # see known issues bel
 Use the Go utility to build the ```wskdeploy``` binary as follows:
 ```sh
 $ cd src/github.com/apache/incubator-openwhisk-wskdeploy/
-$ go get
+$ godep restore
 $ go build -o wskdeploy
 ```
 
