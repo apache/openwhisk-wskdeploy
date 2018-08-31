@@ -36,8 +36,8 @@ import (
 var exportCmd = &cobra.Command{
 	Use:        "export",
 	SuggestFor: []string{"capture"},
-	Short:      "Export project assets from OpenWhisk",
-	Long:       `Exports managed project assets from OpenWhisk to manifest and function files`,
+	Short:      wski18n.T(wski18n.ID_CMD_DESC_SHORT_EXPORT),
+	Long:       wski18n.T(wski18n.ID_CMD_DESC_LONG_EXPORT),
 	RunE:       ExportCmdImp,
 }
 

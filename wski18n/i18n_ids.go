@@ -98,13 +98,17 @@ const (
 	ID_MSG_PREFIX_WARNING = "msg_prefix_warning" // "Warning"
 
 	// Cobra command descriptions
-	ID_CMD_DESC_LONG_REPORT   = "msg_cmd_desc_long_report"
-	ID_CMD_DESC_LONG_ROOT     = "msg_cmd_desc_long_root"
-	ID_CMD_DESC_LONG_SYNC     = "msg_cmd_desc_long_sync"
-	ID_CMD_DESC_SHORT_REPORT  = "msg_cmd_desc_short_report"
-	ID_CMD_DESC_SHORT_ROOT    = "msg_cmd_desc_short_root"
-	ID_CMD_DESC_SHORT_VERSION = "msg_cmd_desc_short_version"
-	ID_CMD_DESC_SHORT_SYNC    = "msg_cmd_desc_short_sync"
+	ID_CMD_DESC_LONG_REPORT    = "msg_cmd_desc_long_report"
+	ID_CMD_DESC_LONG_ROOT      = "msg_cmd_desc_long_root"
+	ID_CMD_DESC_LONG_SYNC      = "msg_cmd_desc_long_sync"
+	ID_CMD_DESC_LONG_UNDEPLOY  = "msg_cmd_desc_long_undeploy"
+	ID_CMD_DESC_LONG_EXPORT    = "msg_cmd_desc_long_export"
+	ID_CMD_DESC_SHORT_REPORT   = "msg_cmd_desc_short_report"
+	ID_CMD_DESC_SHORT_ROOT     = "msg_cmd_desc_short_root"
+	ID_CMD_DESC_SHORT_VERSION  = "msg_cmd_desc_short_version"
+	ID_CMD_DESC_SHORT_SYNC     = "msg_cmd_desc_short_sync"
+	ID_CMD_DESC_SHORT_UNDEPLOY = "msg_cmd_desc_short_undeploy"
+	ID_CMD_DESC_SHORT_EXPORT   = "msg_cmd_desc_short_export"
 
 	// Cobra Flag messages
 	ID_CMD_FLAG_API_HOST    = "msg_cmd_flag_api_host"

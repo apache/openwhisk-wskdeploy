@@ -21,11 +21,11 @@
   },
   {
     "id": "msg_cmd_desc_long_root",
-    "translation": "A tool to deploy, undeploy and sync openwhisk packages using a manifest and optional deployment files using YAML."
+    "translation": "The OpenWhisk Deployment Tool\n\nTo begin working with wskdeploy, run the 'wskdeploy' command:\n\n\t$ wskdeploy\n\nThis will deploy OpenWhisk assets specified in manifest.yaml or manifest.yml\nIf current directory doesnt have any manifest file, wskdeploy prints this help message.\n\nThe most common ways of using wskdeploy to deploy and/or undeploy OpenWhisk assets are:\n\n$ wskdeploy\n$ wskdeploy -m path/to/manifest.yaml\n$ wskdeploy -m path/to/manifest.yaml -d path/to/deployment.yaml\n$ wskdeploy undeploy\n$ wskdeploy undeploy -m path/to/manifest.yaml\n$ wskdeploy undeploy -m path/to/manifest.yaml -d path/to/deployment.yaml\n\nAunthentication:\nwskdeploy reads credentials from $HOME/.wskprops by default\nOverwrite default config file on CLI:\n  $ wskdeploy --config <config file> -m path/to/manifest.yaml\nOr specify all three on CLI:\n  $ wskdeploy --apihost HOST --auth KEY --namespace NAMESPACE -m path/to/manifest.yaml"
   },
   {
     "id": "msg_cmd_desc_short_report",
-    "translation": "Provides a summary report of what's been deployed in the specified namespace."
+    "translation": "Provides a summary report of OpenWhisk assets being deployed/undeployed based on manifest/deployment YAML."
   },
   {
     "id": "msg_cmd_desc_short_root",
@@ -41,7 +41,23 @@
   },
   {
     "id": "msg_cmd_desc_long_sync",
-    "translation": "A tool to sync deployment and undeployment of openwhisk packages using a manifest and optional deployment files using YAML."
+    "translation": "A tool to sync deployment and undeployment of OpenWhisk packages using a manifest and optional deployment files using YAML.\n\nDifferent ways of running sync:\n$ wskdeploy sync\n$ wskdeploy sync -m path/to/manifest.yaml\n$ wskdeploy sync -m path/to/manifest.yaml -d path/to/manifest.yaml\n$ wskdeploy sync -m path/to/manifest.yaml --projectname PROJECT"
+  },
+  {
+    "id": "msg_cmd_desc_short_undeploy",
+    "translation": "Undeploy OpenWhisk assets from server"
+  },
+  {
+    "id": "msg_cmd_desc_long_undeploy",
+    "translation": "Undeploy removes OpenWhisk assets which were deployed from the manifest and deployment YAML.\n\nTo begin deleting OpenWhisk assets from the manifest file, run:\n$ wskdeploy undeploy\n$ wskdeploy undeploy -m path/to/manifest.yaml\n$ wskdeploy undeploy -m path/to/manifest.yaml -d path/to/deployment.yaml\n$ wskdeploy undeploy --projectname PROJECT (only works for deployments in sync mode)"
+  },
+  {
+    "id": "msg_cmd_desc_short_export",
+    "translation": "Export project assets from OpenWhisk"
+  },
+  {
+    "id": "msg_cmd_desc_long_export",
+    "translation": "Exports managed project assets from OpenWhisk to manifest and function files\n\nThe most common way to run export:\n$ wskdeploy export --projectname PROJECT -m path/to/exported-manifest.yaml"
   },
   {
     "id": "msg_cmd_flag_api_host",

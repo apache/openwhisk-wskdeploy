@@ -18,6 +18,7 @@
 package cmd
 
 import (
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/spf13/cobra"
 )
 
@@ -26,8 +27,8 @@ import (
 var undeployCmd = &cobra.Command{
 	Use:        "undeploy",
 	SuggestFor: []string{"remove"},
-	Short:      "Undeploy assets from OpenWhisk",
-	Long:       `Undeploy removes deployed assets from the manifest and deployment files`,
+	Short:      wski18n.T(wski18n.ID_CMD_DESC_SHORT_UNDEPLOY),
+	Long:       wski18n.T(wski18n.ID_CMD_DESC_LONG_UNDEPLOY),
 	RunE:       UndeployCmdImp,
 }
 
