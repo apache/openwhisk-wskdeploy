@@ -1,0 +1,26 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+# Example: Hello World sequence with API and HTTP response
+packages:
+  hello_world_package:
+    version: 1.0
+    license: Apache-2.0
+    actions:
+      hello_validate:
+        function: src/hello_http_validate.js
+      hello:
+        function: src/hello.js
+      hello_wrap:
+        function: src/hello_http_wrap.js
+    sequences:
+      hello_world:
+        actions: hello_validate, hello, hello_wrap
+        web: true
+    apis:
+      hello-world:
+        hello:
+          world:
+            hello_world:
+              method: GET
+              response: http
