@@ -187,7 +187,7 @@ For convenience, the Packages and Actions grammar can be found here:
   <tr>
     <td><a href="wskdeploy_apigateway_sequence.md#api-gateway-sequence">&lt;&lt;&nbsp;previous</a></td>
     <td><a href="programming_guide.md#guided-examples">Example Index</a></td>
-    <!--<td><a href="">next&nbsp;&gt;&gt;</a></td>-->
+    <td><a href="wskdeploy_apigateway_http_sequence.md#api-gateway-http-response-and-sequence">next&nbsp;&gt;&gt;</a></td>
   </tr>
 </table>
 </div>
