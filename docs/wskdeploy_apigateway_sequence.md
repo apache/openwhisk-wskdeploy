@@ -47,7 +47,8 @@ packages:
       hello-world:
         hello:
           world:
-            hello_world: GET
+            hello_world:
+              method: GET
 ```
 
 There are two key changes to this file:
