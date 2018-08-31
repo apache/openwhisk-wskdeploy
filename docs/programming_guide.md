@@ -58,7 +58,7 @@ Each example shows the "code", that is the Package Manifest, Deployment file and
 - API Gateway examples
   - [The "Hello World" API Gateway](wskdeploy_apigateway_helloworld.md#api-gateway) - deploy a "hello world" JavaScript function with associated HTTP API.
   - [API Gateway sequence](wskdeploy_apigateway_sequence.md#api-gateway-sequence) - deploy JavaScript sequence with associated HTTP API.
-- [API Gateway HTTP response](wskdeploy_apigateway_http.md#api-gateway-http-response) - deploy JavaScript actions that return custom HTTP responses.
+  - [API Gateway HTTP response](wskdeploy_apigateway_http.md#api-gateway-http-response) - deploy JavaScript actions that return custom HTTP responses.
 
 ---
 <!--
