@@ -7,7 +7,7 @@
  * HTTP error response when any attribute is missing. It uses Promise.resolve
  * and Promise.reject to handle the response.
  */
- function main(params) {
+function main(params) {
     if(params.name && params.place) {
         return Promise.resolve({
             body: {
