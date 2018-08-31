@@ -1,0 +1,26 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+# Example: Basic Hello World action with API
+packages:
+  hello_world_package:
+    version: 1.0
+    license: Apache-2.0
+    actions:
+      hello_world:
+        function: src/hello_http.js
+        web-export: true
+      hello_world_promise:
+        function: src/hello_http_promise.js
+        web-export: true
+    apis:
+      hello-world:
+        hello:
+          world:
+            hello_world:
+              method: GET
+              response: http
+          world2:
+            hello_world_promise:
+              method: GET
+              response: http
