@@ -63,7 +63,7 @@ function main(params) {
     if(params.name && params.place) {
         return {
             body: {
-                message: `Hello ${params.name} from ${params.place}`
+                greeting: `Hello ${params.name} from ${params.place}`
             },
             statusCode: 200,
             headers: {'Content-Type': 'application/json'}
@@ -100,7 +100,7 @@ function main(params) {
     if(params.name && params.place) {
         return Promise.resolve({
             body: {
-                message: `Hello ${params.name} from ${params.place}`
+                greeting: `Hello ${params.name} from ${params.place}`
             },
             statusCode: 200,
             headers: {'Content-Type': 'application/json'}
@@ -158,7 +158,7 @@ You should then see a JSON response with status code `200` and the following res
 
 ```json
 {
-    "message": "Hello World from Earth!"
+    "greeting": "Hello World from Earth!"
 }
 ```
 

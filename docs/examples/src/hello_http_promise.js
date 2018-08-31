@@ -2,7 +2,7 @@ function main(params) {
     if(params.name && params.place) {
         return Promise.resolve({
             body: {
-                message: `Hello ${params.name} from ${params.place}!`
+                greeting: `Hello ${params.name} from ${params.place}!`
             },
             statusCode: 200,
             headers: {'Content-Type': 'application/json'}
