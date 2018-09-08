@@ -30,6 +30,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/spf13/cobra"
 )
 
@@ -274,68 +275,75 @@ func exportProject(projectName string, targetManifest string) error {
 
 	}
 
-	// List API request query parameters
-	apiListReqOptions := new(whisk.ApiListRequestOptions)
-	apiListReqOptions.SpaceGuid = strings.Split(client.Config.AuthToken, ":")[0]
-	apiListReqOptions.AccessToken = client.Config.ApigwAccessToken
+	// API Gateway is an optional component. Export APIs only when ApigwAccessToken is configured
+	if len(client.ApigwAccessToken) == 0 {
+		warningString := wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN)
+		wskprint.PrintOpenWhiskWarning(warningString)
+	} else {
 
-	// Get list of APIs from OW
-	retApiList, _, err := client.Apis.List(apiListReqOptions)
-	if err != nil {
-		return err
-	}
+		// List API request query parameters
+		apiListReqOptions := new(whisk.ApiListRequestOptions)
+		apiListReqOptions.SpaceGuid = strings.Split(client.Config.AuthToken, ":")[0]
+		apiListReqOptions.AccessToken = client.Config.ApigwAccessToken
 
-	// iterate over the list of APIs to determine whether any of them part of the managed project
-	retApiArray := (*whisk.RetApiArray)(retApiList)
-	for _, api := range retApiArray.Apis {
+		// Get list of APIs from OW
+		retApiList, _, err := client.Apis.List(apiListReqOptions)
+		if err != nil {
+			return err
+		}
 
-		apiName := api.ApiValue.Swagger.Info.Title
-		apiBasePath := strings.TrimPrefix(api.ApiValue.Swagger.BasePath, "/")
+		// iterate over the list of APIs to determine whether any of them part of the managed project
+		retApiArray := (*whisk.RetApiArray)(retApiList)
+		for _, api := range retApiArray.Apis {
 
-		// run over api paths looking for one pointing to an action belonging to the given project
-		for path := range api.ApiValue.Swagger.Paths {
-			for op, opv := range api.ApiValue.Swagger.Paths[path].MakeOperationMap() {
-				if len(opv.XOpenWhisk.Package) > 0 {
-					pkgName := opv.XOpenWhisk.Package
+			apiName := api.ApiValue.Swagger.Info.Title
+			apiBasePath := strings.TrimPrefix(api.ApiValue.Swagger.BasePath, "/")
 
-					if pkg, ok := maniyaml.Packages[pkgName]; ok {
-						if pkg.Namespace == opv.XOpenWhisk.Namespace {
+			// run over api paths looking for one pointing to an action belonging to the given project
+			for path := range api.ApiValue.Swagger.Paths {
+				for op, opv := range api.ApiValue.Swagger.Paths[path].MakeOperationMap() {
+					if len(opv.XOpenWhisk.Package) > 0 {
+						pkgName := opv.XOpenWhisk.Package
 
-							// now adding the api to the maniyaml
-							if pkg.Apis == nil {
-								pkg.Apis = make(map[string]map[string]map[string]map[string]parsers.APIMethodResponse)
-							}
+						if pkg, ok := maniyaml.Packages[pkgName]; ok {
+							if pkg.Namespace == opv.XOpenWhisk.Namespace {
 
-							path = strings.TrimPrefix(path, "/")
+								// now adding the api to the maniyaml
+								if pkg.Apis == nil {
+									pkg.Apis = make(map[string]map[string]map[string]map[string]parsers.APIMethodResponse)
+								}
 
-							apiMethodResponse := *new(parsers.APIMethodResponse)
-							splitApiUrl := strings.Split(opv.XOpenWhisk.ApiUrl, ".")
-							responseType := splitApiUrl[len(splitApiUrl)-1]
+								path = strings.TrimPrefix(path, "/")
 
-							apiMethodResponse.Method = op
-							apiMethodResponse.Response = responseType
+								apiMethodResponse := *new(parsers.APIMethodResponse)
+								splitApiUrl := strings.Split(opv.XOpenWhisk.ApiUrl, ".")
+								responseType := splitApiUrl[len(splitApiUrl)-1]
 
-							if pkgApi, ok := pkg.Apis[apiName]; ok {
-								if pkgApiBasePath, ok := pkgApi[apiBasePath]; ok {
-									if _, ok := pkgApiBasePath[path]; ok {
-										pkg.Apis[apiName][apiBasePath][path][opv.XOpenWhisk.ActionName] = apiMethodResponse
+								apiMethodResponse.Method = op
+								apiMethodResponse.Response = responseType
+
+								if pkgApi, ok := pkg.Apis[apiName]; ok {
+									if pkgApiBasePath, ok := pkgApi[apiBasePath]; ok {
+										if _, ok := pkgApiBasePath[path]; ok {
+											pkg.Apis[apiName][apiBasePath][path][opv.XOpenWhisk.ActionName] = apiMethodResponse
+										} else {
+											pkg.Apis[apiName][apiBasePath][path] = map[string]parsers.APIMethodResponse{}
+											pkg.Apis[apiName][apiBasePath][path][opv.XOpenWhisk.ActionName] = apiMethodResponse
+										}
 									} else {
+										pkg.Apis[apiName][apiBasePath] = map[string]map[string]parsers.APIMethodResponse{}
 										pkg.Apis[apiName][apiBasePath][path] = map[string]parsers.APIMethodResponse{}
 										pkg.Apis[apiName][apiBasePath][path][opv.XOpenWhisk.ActionName] = apiMethodResponse
 									}
 								} else {
+									pkg.Apis[apiName] = map[string]map[string]map[string]parsers.APIMethodResponse{}
 									pkg.Apis[apiName][apiBasePath] = map[string]map[string]parsers.APIMethodResponse{}
 									pkg.Apis[apiName][apiBasePath][path] = map[string]parsers.APIMethodResponse{}
 									pkg.Apis[apiName][apiBasePath][path][opv.XOpenWhisk.ActionName] = apiMethodResponse
 								}
-							} else {
-								pkg.Apis[apiName] = map[string]map[string]map[string]parsers.APIMethodResponse{}
-								pkg.Apis[apiName][apiBasePath] = map[string]map[string]parsers.APIMethodResponse{}
-								pkg.Apis[apiName][apiBasePath][path] = map[string]parsers.APIMethodResponse{}
-								pkg.Apis[apiName][apiBasePath][path][opv.XOpenWhisk.ActionName] = apiMethodResponse
-							}
 
-							maniyaml.Packages[pkgName] = pkg
+								maniyaml.Packages[pkgName] = pkg
+							}
 						}
 					}
 				}
