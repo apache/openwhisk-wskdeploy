@@ -503,5 +503,9 @@
   {
     "id": "msg_dbg_packages_found_project",
     "translation": "Deployment file [{{.path}}]: Found packages under project [{{.name}}].\n"
+  },
+  {
+    "id": "msg_config_missing_apigw_access_token",
+    "translation": "The apigw access token is not configured.\n"
   }
 ]
