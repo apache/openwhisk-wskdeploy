@@ -37,6 +37,37 @@ packages:
           member8:
             type: json
             value: { "name": "$${USERNAME}", "password": "$${PASSWORD}" }
+          member9:
+            type: json
+            value: {
+              "data": {
+                "name": "$USERNAME",
+              }
+            }
+          member10:
+            type: json
+            value: {
+              "data": {
+                "auth": {
+                  "username": "$USERNAME",
+                  "password": "$PASSWORD"
+                }
+              }
+            }
+          member11:
+            type: json
+            value: {
+              "data": {
+                "auth": {
+                  "username": "$${USERNAME}",
+                  "password": "$${PASSWORD}"
+                }
+              }
+            }
+          member12: { "name": "${USERNAME}", "password": "${PASSWORD}" }
+          member13: { "data": { "name": "$USERNAME" } }
+          member14: { "data": { "name": { "username": "$USERNAME" } } }
+          member15: { "data": { "name": { "username": "$${USERNAME}" } } }
         outputs:
             fellowship:
               type: json

@@ -230,6 +230,16 @@ func resolveMultiLineParameter(filePath string, paramName string, param *Paramet
 
 	return param.Value, errorParser
 }
+func interpolateJSON(data map[string]interface{}) map[string]interface{} {
+	for key, value := range data {
+		if reflect.TypeOf(value).Kind() == reflect.String {
+			data[key] = wskenv.InterpolateStringWithEnvVar(value)
+		} else if reflect.TypeOf(value).Kind() == reflect.Map {
+			data[key] = interpolateJSON(value.(map[string]interface{}))
+		}
+	}
+	return data
+}
 
 /*
    resolveJSONParameter assure JSON data is converted to a map[string]{interface*} type.
@@ -268,9 +278,7 @@ func resolveJSONParameter(filePath string, paramName string, param *Parameter, v
 		if param.Value != nil && reflect.TypeOf(param.Value).Kind() == reflect.Map {
 			if _, ok := param.Value.(map[interface{}]interface{}); ok {
 				var temp map[string]interface{} = utils.ConvertInterfaceMap(param.Value.(map[interface{}]interface{}))
-				for name, val := range temp {
-					temp[name] = wskenv.InterpolateStringWithEnvVar(val)
-				}
+				temp = interpolateJSON(temp)
 				//fmt.Printf("EXIT: Parameter [%s] type=[%v] value=[%v]\n", paramName, param.Type, temp)
 				return temp, errorParser
 			}
