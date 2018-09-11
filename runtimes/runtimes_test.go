@@ -28,7 +28,7 @@ func TestParseOpenWhisk(t *testing.T) {
 	assert.Equal(t, nil, err, "parse openwhisk info error happened.")
 	converted := ConvertToMap(openwhisk)
 	assert.Equal(t, 2, len(converted["nodejs"]), "not expected length")
-	assert.Equal(t, 1, len(converted["php"]), "not expected length")
+	assert.Equal(t, 2, len(converted["php"]), "not expected length")
 	assert.Equal(t, 1, len(converted["java"]), "not expected length")
 	assert.Equal(t, 4, len(converted["python"]), "not expected length")
 	assert.Equal(t, 2, len(converted["swift"]), "not expected length")
