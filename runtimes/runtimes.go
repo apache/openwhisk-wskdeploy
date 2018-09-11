@@ -96,7 +96,7 @@ var FileRuntimeExtensionsMap map[string]string
 // hard coding it here in case of network unavailable or failure.
 func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	url := apiHost
-	if !strings.HasPrefix(apiHost, HTTPS) {
+	if !strings.HasPrefix(apiHost, utils.HTTP_FILE_EXTENSION) {
 		url = HTTPS + apiHost
 	}
 	req, _ := http.NewRequest("GET", url, nil)
