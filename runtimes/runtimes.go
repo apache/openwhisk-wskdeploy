@@ -30,7 +30,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
 	"path/filepath"
 	"runtime"
 )
@@ -205,7 +204,6 @@ func FileExtensionRuntimes(op OpenWhiskInfo) (ext map[string]string) {
 			ext[RUBY_FILE_EXTENSION] = k
 		}
 	}
-	spew.Dump(ext)
 	return
 }
 
@@ -231,7 +229,6 @@ func FileRuntimeExtensions(op OpenWhiskInfo) (rte map[string]string) {
 			}
 		}
 	}
-	spew.Dump(rte)
 	return
 }
 
