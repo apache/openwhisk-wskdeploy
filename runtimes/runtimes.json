@@ -1,4 +1,12 @@
 {
+    "support": {
+        "github": "https://github.com/apache/incubator-openwhisk/issues",
+        "slack": "http://slack.openwhisk.org"
+    },
+    "description": "OpenWhisk",
+    "api_paths": [
+        "/api/v1"
+    ],
     "runtimes": {
         "nodejs": [
             {

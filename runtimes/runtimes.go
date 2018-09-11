@@ -66,11 +66,8 @@ type Limit struct {
 }
 
 type Runtime struct {
-	Image      string `json:"image"`
 	Deprecated bool   `json:"deprecated"`
-	ReMain     bool   `json:"requireMain"`
 	Default    bool   `json:"default"`
-	Attach     bool   `json:"attached"`
 	Kind       string `json:"kind"`
 }
 
@@ -98,7 +95,7 @@ var FileRuntimeExtensionsMap map[string]string
 func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	url := apiHost
 	if !strings.HasPrefix(apiHost, utils.HTTP_FILE_EXTENSION) {
-		url = HTTPS + apiHost
+		url = HTTPS + url
 	}
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set(HTTP_CONTENT_TYPE_KEY, HTTP_CONTENT_TYPE_VALUE)
