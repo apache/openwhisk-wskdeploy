@@ -196,7 +196,14 @@ func NewWhiskClientError(errorMessage string, code int, response *http.Response)
 	if response != nil {
 		responseData, _ := ioutil.ReadAll(response.Body)
 		err.SetMessageFormat("%s: %d: %s: %s: %s %s: %s")
-		str = fmt.Sprintf(err.MessageFormat, STR_ERROR_CODE, code, errorMessage, STR_HTTP_STATUS, response.Status, STR_HTTP_BODY, string(responseData))
+		// do not add body in case of a success
+		// when response.Status is 200, response.Body contains the entire action source code
+		// we should not expose the action source when the HTTP request was successful
+		if strings.Contains(response.Status, "200 OK") {
+			str = fmt.Sprintf(err.MessageFormat, STR_ERROR_CODE, code, errorMessage, STR_HTTP_STATUS, response.Status, "", "")
+		} else {
+			str = fmt.Sprintf(err.MessageFormat, STR_ERROR_CODE, code, errorMessage, STR_HTTP_STATUS, response.Status, STR_HTTP_BODY, string(responseData))
+		}
 	}
 	err.SetMessage(str)
 	return err

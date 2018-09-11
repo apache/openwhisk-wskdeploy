@@ -38,7 +38,8 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 	packageName := filepath.Base(fn)
 	const TEST_DEFAULT_ERROR_MESSAGE = "Some bad error"
 	const TEST_COMMAND string = "test"
-	const TEST_ERROR_CODE = 400 // Bad request
+	const TEST_ERROR_CODE = 400   // Bad request
+	const TEST_SUCCESS_CODE = 200 // Good request
 	const TEST_EXISTANT_MANIFEST_FILE = "tests/dat/manifest_validate_multiline_params.yaml"
 	const TEST_NONEXISTANT_MANIFEST_FILE = "tests/dat/missing_manifest.yaml"
 	const TEST_INVALID_YAML_MANIFEST_FILE = "tests/dat/manifest_bad_yaml_invalid_comment.yaml"
@@ -73,6 +74,19 @@ func TestCustomErrorOutputFormat(t *testing.T) {
 		STR_ERROR_CODE,
 		TEST_ERROR_CODE,
 		TEST_DEFAULT_ERROR_MESSAGE)
+	assert.Equal(t, expectedResult, actualResult)
+
+	/*
+	 * WhiskClientError
+	 */
+	err21 := NewWhiskClientError("", TEST_SUCCESS_CODE, nil)
+	actualResult = strings.TrimSpace(err21.Error())
+	expectedResult = fmt.Sprintf("%s [%d]: [%s]: %s: %d:",
+		packageName,
+		err21.LineNum,
+		ERROR_WHISK_CLIENT_ERROR,
+		STR_ERROR_CODE,
+		TEST_SUCCESS_CODE)
 	assert.Equal(t, expectedResult, actualResult)
 
 	/*
