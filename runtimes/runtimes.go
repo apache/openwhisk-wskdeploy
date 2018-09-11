@@ -42,6 +42,13 @@ const (
 	JAR_FILE_EXTENSION      = "jar"
 	PHP_FILE_EXTENSION      = "php"
 	ZIP_FILE_EXTENSION      = "zip"
+	RUBY_FILE_EXTENSION     = "rb"
+	NODEJS_RUNTIME          = "nodejs"
+	SWIFT_RUNTIME           = SWIFT_FILE_EXTENSION
+	PYTHON_RUNTIME          = "python"
+	JAVA_RUNTIME            = JAVA_FILE_EXTENSION
+	PHP_RUNTIME             = PHP_FILE_EXTENSION
+	RUBY_RUNTIME            = "ruby"
 	HTTP_CONTENT_TYPE_KEY   = "Content-Type"
 	HTTP_CONTENT_TYPE_VALUE = "application/json; charset=UTF-8"
 	RUNTIME_NOT_SPECIFIED   = "NOT SPECIFIED"
@@ -88,7 +95,10 @@ var FileRuntimeExtensionsMap map[string]string
 // `curl -k https://openwhisk.ng.bluemix.net`
 // hard coding it here in case of network unavailable or failure.
 func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
-	url := HTTPS + apiHost
+	url := apiHost
+	if !strings.HasPrefix(apiHost, HTTPS) {
+		url = HTTPS + apiHost
+	}
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set(HTTP_CONTENT_TYPE_KEY, HTTP_CONTENT_TYPE_VALUE)
 	tlsConfig := &tls.Config{
@@ -182,17 +192,19 @@ func DefaultRuntimes(op OpenWhiskInfo) (rt map[string]string) {
 func FileExtensionRuntimes(op OpenWhiskInfo) (ext map[string]string) {
 	ext = make(map[string]string)
 	for k := range op.Runtimes {
-		if strings.Contains(k, NODEJS_FILE_EXTENSION) {
+		if strings.Contains(k, NODEJS_RUNTIME) {
 			ext[NODEJS_FILE_EXTENSION] = k
-		} else if strings.Contains(k, PYTHON_FILE_EXTENSION) {
+		} else if strings.Contains(k, PYTHON_RUNTIME) {
 			ext[PYTHON_FILE_EXTENSION] = k
-		} else if strings.Contains(k, SWIFT_FILE_EXTENSION) {
+		} else if strings.Contains(k, SWIFT_RUNTIME) {
 			ext[SWIFT_FILE_EXTENSION] = k
-		} else if strings.Contains(k, PHP_FILE_EXTENSION) {
+		} else if strings.Contains(k, PHP_RUNTIME) {
 			ext[PHP_FILE_EXTENSION] = k
-		} else if strings.Contains(k, JAVA_FILE_EXTENSION) {
+		} else if strings.Contains(k, JAVA_RUNTIME) {
 			ext[JAVA_FILE_EXTENSION] = k
 			ext[JAR_FILE_EXTENSION] = k
+		} else if strings.Contains(k, RUBY_RUNTIME) {
+			ext[RUBY_FILE_EXTENSION] = k
 		}
 	}
 	return
@@ -204,16 +216,18 @@ func FileRuntimeExtensions(op OpenWhiskInfo) (rte map[string]string) {
 	for k, v := range op.Runtimes {
 		for i := range v {
 			if !v[i].Deprecated {
-				if strings.Contains(k, NODEJS_FILE_EXTENSION) {
+				if strings.Contains(k, NODEJS_RUNTIME) {
 					rte[v[i].Kind] = NODEJS_FILE_EXTENSION
-				} else if strings.Contains(k, PYTHON_FILE_EXTENSION) {
+				} else if strings.Contains(k, PYTHON_RUNTIME) {
 					rte[v[i].Kind] = PYTHON_FILE_EXTENSION
-				} else if strings.Contains(k, SWIFT_FILE_EXTENSION) {
+				} else if strings.Contains(k, SWIFT_RUNTIME) {
 					rte[v[i].Kind] = SWIFT_FILE_EXTENSION
-				} else if strings.Contains(k, PHP_FILE_EXTENSION) {
+				} else if strings.Contains(k, PHP_RUNTIME) {
 					rte[v[i].Kind] = PHP_FILE_EXTENSION
-				} else if strings.Contains(k, JAVA_FILE_EXTENSION) {
+				} else if strings.Contains(k, JAVA_RUNTIME) {
 					rte[v[i].Kind] = JAVA_FILE_EXTENSION
+				} else if strings.Contains(k, RUBY_RUNTIME) {
+					rte[v[i].Kind] = RUBY_FILE_EXTENSION
 				}
 			}
 		}
