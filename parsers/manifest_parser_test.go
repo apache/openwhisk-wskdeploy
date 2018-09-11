@@ -34,7 +34,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -505,7 +504,6 @@ func TestComposeActionsForImplicitRuntimes(t *testing.T) {
 	file := "../tests/dat/manifest_data_compose_runtimes_implicit.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
 	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
-	spew.Dump(err)
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 	var expectedResult string
 	for i := 0; i < len(actions); i++ {
