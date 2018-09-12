@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -92,11 +93,12 @@ var FileRuntimeExtensionsMap map[string]string
 // `curl -k https://openwhisk.ng.bluemix.net`
 // hard coding it here in case of network unavailable or failure.
 func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
-	url := apiHost
-	if !strings.HasPrefix(apiHost, utils.HTTP_FILE_EXTENSION) {
-		url = HTTPS + url
+	opURL := apiHost
+	_, err = url.ParseRequestURI(opURL)
+	if err != nil {
+		opURL = HTTPS + opURL
 	}
-	req, _ := http.NewRequest("GET", url, nil)
+	req, _ := http.NewRequest("GET", opURL, nil)
 	req.Header.Set(HTTP_CONTENT_TYPE_KEY, HTTP_CONTENT_TYPE_VALUE)
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: true,
@@ -146,7 +148,7 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 		b, _ := ioutil.ReadAll(res.Body)
 		if b != nil && len(b) > 0 {
 			stdout := wski18n.T(wski18n.ID_MSG_UNMARSHAL_NETWORK_X_url_X,
-				map[string]interface{}{"url": url})
+				map[string]interface{}{"url": opURL})
 			wskprint.PrintOpenWhiskInfo(stdout)
 			err = json.Unmarshal(b, &op)
 			if err != nil {
