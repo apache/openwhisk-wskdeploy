@@ -1254,7 +1254,7 @@ func TestParseManifestForJSONParams(t *testing.T) {
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
 
 		// validate the number of inputs to this action
-		expectedResult = strconv.FormatInt(8, 10)
+		expectedResult = strconv.FormatInt(15, 10)
 		actualResult = strconv.FormatInt(int64(len(action.Inputs)), 10)
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_PARAMETER_NUMBER_MISMATCH)
 
@@ -1295,6 +1295,34 @@ func TestParseManifestForJSONParams(t *testing.T) {
 				actualResult8 := param.Value.(map[interface{}]interface{})
 				expectedResult8 := map[interface{}]interface{}{"name": "$${USERNAME}", "password": "$${PASSWORD}"}
 				assert.Equal(t, expectedResult8, actualResult8, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
+			case "member9":
+				actualResult9 := param.Value.(map[interface{}]interface{})
+				expectedResult9 := map[interface{}]interface{}{"data": map[interface{}]interface{}{"name": "$USERNAME"}}
+				assert.Equal(t, expectedResult9, actualResult9, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
+			case "member10":
+				actualResult10 := param.Value.(map[interface{}]interface{})
+				expectedResult10 := map[interface{}]interface{}{"data": map[interface{}]interface{}{"auth": map[interface{}]interface{}{"username": "$USERNAME", "password": "$PASSWORD"}}}
+				assert.Equal(t, expectedResult10, actualResult10, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
+			case "member11":
+				actualResult11 := param.Value.(map[interface{}]interface{})
+				expectedResult11 := map[interface{}]interface{}{"data": map[interface{}]interface{}{"auth": map[interface{}]interface{}{"username": "$${USERNAME}", "password": "$${PASSWORD}"}}}
+				assert.Equal(t, expectedResult11, actualResult11, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
+			case "member12":
+				actualResult12 := param.Value.(map[interface{}]interface{})
+				expectedResult12 := map[interface{}]interface{}{"name": "${USERNAME}", "password": "${PASSWORD}"}
+				assert.Equal(t, expectedResult12, actualResult12, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
+			case "member13":
+				actualResult13 := param.Value.(map[interface{}]interface{})
+				expectedResult13 := map[interface{}]interface{}{"data": map[interface{}]interface{}{"name": "$USERNAME"}}
+				assert.Equal(t, expectedResult13, actualResult13, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
+			case "member14":
+				actualResult14 := param.Value.(map[interface{}]interface{})
+				expectedResult14 := map[interface{}]interface{}{"data": map[interface{}]interface{}{"name": map[interface{}]interface{}{"username": "$USERNAME"}}}
+				assert.Equal(t, expectedResult14, actualResult14, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
+			case "member15":
+				actualResult15 := param.Value.(map[interface{}]interface{})
+				expectedResult15 := map[interface{}]interface{}{"data": map[interface{}]interface{}{"name": map[interface{}]interface{}{"username": "$${USERNAME}"}}}
+				assert.Equal(t, expectedResult15, actualResult15, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH, input))
 			}
 		}
 
