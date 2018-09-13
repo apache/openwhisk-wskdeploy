@@ -2,26 +2,24 @@
 # license agreements; and to You under the Apache License, Version 2.0.
 
 project:
-    name: MyManagedProjectWithDependency
+    name: MyManagedProjectWithMultipleDependency
     packages:
         Extension2:
             dependencies:
-                helloworlds:
-                    location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
-                custom-hellowhisk:
+                hellowhisk-with-managed-project:
                     location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
-                custom-helloworlds:
+                helloworlds-with-managed-project:
                     location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
             sequences:
                 helloworld-sequence:
-                   actions: custom-helloworlds/hello-js, custom-hellowhisk/greeting, helloworlds/hello-js
+                   actions: helloworlds-with-managed-project/hello-js, hellowhisk-with-managed-project/greeting
             triggers:
-                trigger1:
-                trigger2:
+                trigger1InMultipleDep:
+                trigger2InMultipleDep:
             rules:
                 rule1:
-                    trigger: trigger1
+                    trigger: trigger1InMultipleDep
                     action: helloworld-sequence
                 rule2:
-                    trigger: trigger2
-                    action: custom-helloworlds/helloworld-js
+                    trigger: trigger2InMultipleDep
+                    action: helloworlds-with-managed-project/helloworld-js
