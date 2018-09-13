@@ -38,6 +38,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"net/url"
 )
 
 const (
@@ -234,7 +235,8 @@ func (dm *YAMLParser) ComposeDependencies(pkg Package, projectPath string, fileP
 		} else if dependencies.LocationIsGithub(location) {
 
 			// TODO() define const for the protocol prefix, etc.
-			if !strings.HasPrefix(location, HTTPS) && !strings.HasPrefix(location, HTTP) {
+			_, err := url.ParseRequestURI(location)
+			if err != nil {
 				location = HTTPS + dependency.Location
 				location = wskenv.InterpolateStringWithEnvVar(location).(string)
 			}

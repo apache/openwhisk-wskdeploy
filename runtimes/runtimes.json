@@ -10,122 +10,217 @@
     "runtimes": {
         "nodejs": [
             {
-                "image": "openwhisk/nodejsaction:latest",
+                "kind": "nodejs",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "nodejsaction",
+                    "tag": "latest"
+                },
                 "deprecated": true,
-                "requireMain": false,
-                "default": false,
-                "attached": false,
-                "kind": "nodejs"
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             },
             {
-                "image": "openwhisk/nodejs6action:latest",
-                "deprecated": false,
-                "requireMain": false,
+                "kind": "nodejs:6",
                 "default": true,
-                "attached": false,
-                "kind": "nodejs:6"
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "nodejs6action",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "stemCells": [{
+                    "count": 2,
+                    "memory": "256 MB"
+                }]
             },
             {
-                "image": "ibmfunctions/action-nodejs-v8:1.13.0",
-                "deprecated": false,
-                "requireMain": false,
+                "kind": "nodejs:8",
                 "default": false,
-                "attached": false,
-                "kind": "nodejs:8"
-            }
-        ],
-        "java": [
-            {
-                "image": "openwhisk/java8action:latest",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-nodejs-v8",
+                    "tag": "latest"
+                },
                 "deprecated": false,
-                "requireMain": true,
-                "default": true,
-                "attached": true,
-                "kind": "java"
-            }
-        ],
-        "php": [
-            {
-                "image": "openwhisk/action-php-v7.1:latest",
-                "deprecated": false,
-                "requireMain": false,
-                "default": true,
-                "attached": false,
-                "kind": "php:7.1"
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             }
         ],
         "python": [
             {
-                "image": "openwhisk/python2action:latest",
+                "kind": "python",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "python2action",
+                    "tag": "latest"
+                },
                 "deprecated": false,
-                "requireMain": false,
-                "default": false,
-                "attached": false,
-                "kind": "python"
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             },
             {
-                "image": "openwhisk/python2action:latest",
-                "deprecated": false,
-                "requireMain": false,
+                "kind": "python:2",
                 "default": true,
-                "attached": false,
-                "kind": "python:2"
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "python2action",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             },
             {
-                "image": "openwhisk/python3action:latest",
+                "kind": "python:3",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "python3action",
+                    "tag": "latest"
+                },
                 "deprecated": false,
-                "requireMain": false,
-                "default": false,
-                "attached": false,
-                "kind": "python:3"
-            },
-            {
-                "image": "ibmfunctions/action-python-v3:1.6.0",
-                "deprecated": false,
-                "requireMain": false,
-                "default": false,
-                "attached": false,
-                "kind": "python-jessie:3"
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             }
         ],
         "swift": [
             {
-                "image": "openwhisk/swiftaction:latest",
+                "kind": "swift",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "swiftaction",
+                    "tag": "latest"
+                },
                 "deprecated": true,
-                "requireMain": false,
-                "default": false,
-                "attached": false,
-                "kind": "swift"
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             },
             {
-                "image": "openwhisk/swift3action:latest",
+                "kind": "swift:3",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "swift3action",
+                    "tag": "latest"
+                },
                 "deprecated": true,
-                "requireMain": false,
-                "default": false,
-                "attached": false,
-                "kind": "swift:3"
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             },
             {
-                "image": "openwhisk/action-swift-v3.1.1:latest",
+                "kind": "swift:3.1.1",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-swift-v3.1.1",
+                    "tag": "latest"
+                },
                 "deprecated": false,
-                "requireMain": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "swift:4.1",
                 "default": true,
-                "attached": false,
-                "kind": "swift:3.1.1"
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-swift-v4.1",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            }
+        ],
+        "java": [
+            {
+                "kind": "java",
+                "default": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "java8action",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "requireMain": true
+            }
+        ],
+        "php": [
+            {
+                "kind": "php:7.1",
+                "default": false,
+                "deprecated": false,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-php-v7.1",
+                    "tag": "latest"
+                },
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             },
             {
-                "image": "ibmfunctions/action-swift-v4.1:1.5.0",
+                "kind": "php:7.2",
+                "default": true,
                 "deprecated": false,
-                "requireMain": false,
-                "default": false,
-                "attached": false,
-                "kind": "swift:4.1"
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-php-v7.2",
+                    "tag": "latest"
+                },
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            }
+        ],
+        "ruby": [
+            {
+                "kind": "ruby:2.5",
+                "default": true,
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-ruby-v2.5",
+                    "tag": "latest"
+                }
             }
         ]
     },
-    "limits": {
-        "actions_per_minute": 5000,
-        "triggers_per_minute": 5000,
-        "concurrent_actions": 1000
-    }
+    "blackboxes": [
+        {
+            "prefix": "openwhisk",
+            "name": "dockerskeleton",
+            "tag": "latest"
+        }
+    ]
 }

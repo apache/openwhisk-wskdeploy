@@ -139,10 +139,21 @@ packages:
             payload:
               type: string
               description: a simple greeting message, Hello stranger!
+        helloRuby:
+          function: actions/hello.rb
+        helloRubyWithCode:
+          code: |
+                def main(args)
+                  name = args["name"] || "stranger"
+                  greeting = "Hello #{name}!"
+                  puts greeting
+                  { "greeting" => greeting }
+                end
+          runtime: ruby:2.5
       sequences:
         # sequence of helloworld in all four runtimes
         hello-world-series:
-          actions: helloNodejs, helloNodejsWithCode, helloJava, helloPython, helloPythonWithCode, helloSwift, helloSwiftWithCode
+          actions: helloNodejs, helloNodejsWithCode, helloJava, helloPython, helloPythonWithCode, helloSwift, helloSwiftWithCode, helloRuby, helloRubyWithCode
       triggers:
         # trigger to activate helloworld sequence
         triggerHelloworld:
