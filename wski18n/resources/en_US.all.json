@@ -387,7 +387,6 @@
     "id": "msg_err_runtime_parser_error",
     "translation": "Failed to retrieve runtimes {{.err}}."
   },
-
   {
     "id": "WARNINGS",
     "translation": "================= WARNINGS ==================="
@@ -483,6 +482,10 @@
   {
     "id": "msg_warn_api_invalid_response_type",
     "translation": "API [{{.api}}] with path parameters [{{.apirelativepath}}] is required to have http as response type. Changing response type from [{{.response}}] to http for [{{.api}}]."
+  },
+  {
+    "id": "msg_warn_missing_environment_variable",
+    "translation": "Missing Environment Variable [{{.value}}]."
   },
   {
     "id": "DEBUG",

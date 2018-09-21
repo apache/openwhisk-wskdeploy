@@ -21,7 +21,10 @@ import (
 	"os"
 	"reflect"
 	"strings"
-)
+	/** Fixes #797
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	**/)
 
 // Test if a string
 func isValidEnvironmentVar(value string) bool {
@@ -72,10 +75,17 @@ func InterpolateStringWithEnvVar(key interface{}) interface{} {
 					thisValue = os.Getenv(substr)
 					// TODO(920) disabling the warning for now, since we want to get rid of it eventually
 					// TODO(920) please add/remove this based on what we decide in issue #920
-					//if thisValue == "" {
-					// TODO(797) i18n
-					//wskprint.PrintlnOpenWhiskWarning("Missing Environment Variable " + substr + ".")
-					//}
+
+					/** Fixes #797
+					if thisValue == "" {
+						warningString := wski18n.T(
+							wski18n.ID_WARN_MISSING_ENVIRONMENT_VARIABLE,
+							map[string]interface{}{
+								wski18n.KEY_VALUE: keystr})
+						wskprint.PrintOpenWhiskWarning(warningString)
+					}
+					**/
+
 					keystr = strings.Replace(keystr, "$"+substr, thisValue, -1)
 					//if the substr is a ${ENV_VAR}
 					// return interpolated string using env. variable
@@ -83,10 +93,17 @@ func InterpolateStringWithEnvVar(key interface{}) interface{} {
 					thisValue = os.Getenv(substr)
 					// TODO(920) disabling the warning for now, since we want to get rid of it eventually
 					// TODO(920) please add/remove this based on what we decide in issue #920
-					//if thisValue == "" {
-					// TODO(797) i18n
-					//wskprint.PrintlnOpenWhiskWarning("Missing Environment Variable " + substr + ".")
-					//}
+
+					/** Fixes #797
+					if thisValue == "" {
+						warningString := wski18n.T(
+							wski18n.ID_WARN_MISSING_ENVIRONMENT_VARIABLE,
+							map[string]interface{}{
+								wski18n.KEY_VALUE: keystr})
+						wskprint.PrintOpenWhiskWarning(warningString)
+					}
+					**/
+
 					keystr = strings.Replace(keystr, "${"+substr+"}", thisValue, -1)
 				}
 			}

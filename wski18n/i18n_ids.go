@@ -236,6 +236,9 @@ const (
 	ID_WARN_API_MISSING_WEB_ACTION_X_action_X_api_X           = "msg_warn_api_missing_web_action"
 	ID_WARN_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X       = "msg_warn_api_missing_web_sequence"
 	ID_WARN_API_INVALID_RESPONSE_TYPE                         = "msg_warn_api_invalid_response_type"
+	/** Fixes #797
+	ID_WARN_MISSING_ENVIRONMENT_VARIABLE                      = "msg_warn_missing_environment_variable"
+	**/
 
 	// Verbose (Debug/Trace) messages
 	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X                = "msg_dbg_searching_project_directory"
