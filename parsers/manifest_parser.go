@@ -38,6 +38,7 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/davecgh/go-spew/spew"
 	"net/url"
 )
 
@@ -857,6 +858,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 	manifestFileName := splitManifestFilePath[len(splitManifestFilePath)-1]
 
 	for actionName, action := range actions {
+		spew.Dump(action)
 		var actionFilePath string
 
 		// update the action (of type Action) to set its name
