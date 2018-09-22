@@ -649,8 +649,12 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 	}
 
 	if utils.IsDirectory(actionFilePath) {
+		spew.Println("********Action Include********")
+		spew.Dump(action.Include)
+		spew.Println("*********Action File Path*******")
+		spew.Dump(actionFilePath)
 		zipFileName = actionFilePath + "." + runtimes.ZIP_FILE_EXTENSION
-		err := utils.NewZipWritter(actionFilePath, zipFileName).Zip()
+		err := utils.NewZipWritter(actionFilePath, zipFileName, action.Include).Zip()
 		if err != nil {
 			return actionFilePath, nil, err
 		}
@@ -858,7 +862,6 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 	manifestFileName := splitManifestFilePath[len(splitManifestFilePath)-1]
 
 	for actionName, action := range actions {
-		spew.Dump(action)
 		var actionFilePath string
 
 		// update the action (of type Action) to set its name

@@ -30,6 +30,7 @@ import (
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/hokaccha/go-prettyjson"
 )
 
@@ -99,14 +100,15 @@ func PrettyJSON(j interface{}) (string, error) {
 	return string(bytes), nil
 }
 
-func NewZipWritter(src, des string) *ZipWritter {
-	zw := &ZipWritter{src: src, des: des}
+func NewZipWritter(src string, des string, include [][]string) *ZipWritter {
+	zw := &ZipWritter{src: src, des: des, include: include}
 	return zw
 }
 
 type ZipWritter struct {
 	src        string
 	des        string
+	include    [][]string
 	zipWritter *zip.Writer
 }
 
@@ -143,11 +145,49 @@ func (zw *ZipWritter) Zip() error {
 		return err
 	}
 	defer zipFile.Close()
+
 	zw.zipWritter = zip.NewWriter(zipFile)
 	err = filepath.Walk(zw.src, zw.zipFile)
 	if err != nil {
 		return nil
 	}
+
+	spew.Println("***********src*********")
+	spew.Dump(zw.src)
+
+	spew.Println("***********dest********")
+	spew.Dump(zw.des)
+
+	spew.Println("***********include******")
+	spew.Dump(zw.include)
+
+	spew.Println("**********zip file*******")
+	spew.Dump(zipFile)
+
+	for _, includeInfo := range zw.include {
+		var src, dst string
+
+		if len(includeInfo) == 1 {
+			src = includeInfo[0]
+		} else if len(includeInfo) == 2 {
+			src = includeInfo[0]
+			dst = includeInfo[1]
+		}
+		s, err := os.Stat(src)
+		if err != nil {
+			return err
+		}
+		if s.IsDir() {
+			spew.Println("is a directory")
+		} else {
+			spew.Println("is not a directory")
+		}
+		spew.Println("src")
+		spew.Dump(src)
+		spew.Println("dst")
+		spew.Dump(dst)
+	}
+
 	err = zw.zipWritter.Close()
 	if err != nil {
 		return err

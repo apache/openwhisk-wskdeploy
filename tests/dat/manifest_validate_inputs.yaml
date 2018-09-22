@@ -5,7 +5,7 @@ packages:
   helloworld:
     actions:
       helloNodejs:
-        function: actions/hello.js
+        function: actions/
         runtime: nodejs:6
         include:
             - ["actions/hello.js"]
