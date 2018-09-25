@@ -196,13 +196,13 @@ func (zw *ZipWritter) Zip() error {
 
 		if s.IsDir() {
 			spew.Println("is a directory")
-			err = Dir(i.source, i.destination)
+			err = copyDir(i.source, i.destination)
 			if err != nil {
 				return err
 			}
 		} else {
 			spew.Println("is not a directory")
-			err = File(i.source, i.destination)
+			err = copyFile(i.source, i.destination)
 			if err != nil {
 				return err
 			}
@@ -228,11 +228,12 @@ func (zw *ZipWritter) Zip() error {
 	return nil
 }
 
-func File(src, dst string) error {
+func copyFile(src, dst string) error {
 	var err error
 	var srcfd *os.File
 	var dstfd *os.File
 	var srcinfo os.FileInfo
+	var srcDirInfo os.FileInfo
 
 	spew.Println("############src##############")
 	spew.Dump(src)
@@ -244,7 +245,26 @@ func File(src, dst string) error {
 	}
 	defer srcfd.Close()
 
+	if srcinfo, err = os.Stat(src); err != nil {
+		return err
+	}
+
 	spew.Println("Done opening src")
+
+	spew.Dump(filepath.Dir(dst))
+
+	if srcDirInfo, err = os.Stat(filepath.Dir(src)); err != nil {
+		return err
+	}
+
+	if _, err := os.Stat(filepath.Dir(dst)); os.IsNotExist(err) {
+		err = os.MkdirAll(filepath.Dir(dst), srcDirInfo.Mode())
+		spew.Println("Done creating a dir")
+		if err != nil {
+			spew.Println("Failed to create a dir")
+			return err
+		}
+	}
 
 	if dstfd, err = os.Create(dst); err != nil {
 		spew.Println("Failed to create dst")
@@ -261,15 +281,12 @@ func File(src, dst string) error {
 
 	spew.Println("done copying src to dst")
 
-	if srcinfo, err = os.Stat(src); err != nil {
-		return err
-	}
 	spew.Println("src info")
 	spew.Dump(srcinfo)
 	return os.Chmod(dst, srcinfo.Mode())
 }
 
-func Dir(src string, dst string) error {
+func copyDir(src string, dst string) error {
 	var err error
 	var fds []os.FileInfo
 	var srcinfo os.FileInfo
@@ -290,11 +307,11 @@ func Dir(src string, dst string) error {
 		dstfp := path.Join(dst, fd.Name())
 
 		if fd.IsDir() {
-			if err = Dir(srcfp, dstfp); err != nil {
+			if err = copyDir(srcfp, dstfp); err != nil {
 				fmt.Println(err)
 			}
 		} else {
-			if err = File(srcfp, dstfp); err != nil {
+			if err = copyFile(srcfp, dstfp); err != nil {
 				fmt.Println(err)
 			}
 		}
