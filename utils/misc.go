@@ -29,6 +29,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"fmt"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/hokaccha/go-prettyjson"
@@ -100,16 +101,22 @@ func PrettyJSON(j interface{}) (string, error) {
 	return string(bytes), nil
 }
 
-func NewZipWritter(src string, des string, include [][]string) *ZipWritter {
-	zw := &ZipWritter{src: src, des: des, include: include}
+func NewZipWritter(src string, des string, include [][]string, manifestFilePath string) *ZipWritter {
+	zw := &ZipWritter{src: src, des: des, include: include, manifestFilePath: manifestFilePath}
 	return zw
 }
 
 type ZipWritter struct {
-	src        string
-	des        string
-	include    [][]string
-	zipWritter *zip.Writer
+	src              string
+	des              string
+	include          [][]string
+	manifestFilePath string
+	zipWritter       *zip.Writer
+}
+
+type Include struct {
+	source      string
+	destination string
 }
 
 func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
@@ -126,6 +133,12 @@ func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
 	defer file.Close()
 
 	fileName := strings.TrimPrefix(path, zw.src+"/")
+	spew.Println("++++++++file name is+++++++")
+	spew.Dump(fileName)
+	spew.Println("++++++++ path ++++++++")
+	spew.Dump(path)
+	spew.Println("+++++++++ src +++++++")
+	spew.Dump(zw.src)
 	wr, err := zw.zipWritter.Create(fileName)
 	if err != nil {
 		return err
@@ -164,33 +177,113 @@ func (zw *ZipWritter) Zip() error {
 	spew.Println("**********zip file*******")
 	spew.Dump(zipFile)
 
-	for _, includeInfo := range zw.include {
-		var src, dst string
+	var includeInfo []Include
 
-		if len(includeInfo) == 1 {
-			src = includeInfo[0]
+	for _, include := range zw.include {
+		var i Include
+
+		if len(include) == 1 {
+			i.source = filepath.Join(zw.manifestFilePath, include[0])
+			i.destination = i.source
 		} else if len(includeInfo) == 2 {
-			src = includeInfo[0]
-			dst = includeInfo[1]
+			i.source = filepath.Join(zw.manifestFilePath, include[0])
+			i.destination = filepath.Join(zw.src, include[1])
 		}
-		s, err := os.Stat(src)
+		includeInfo = append(includeInfo, i)
+
+		s, err := os.Stat(i.source)
 		if err != nil {
 			return err
 		}
 		if s.IsDir() {
 			spew.Println("is a directory")
+			err = Dir(i.source, i.destination)
+			if err != nil {
+				return err
+			}
 		} else {
 			spew.Println("is not a directory")
+			err = File(i.source, i.destination)
+			if err != nil {
+				return err
+			}
+		}
+		err = filepath.Walk(i.destination, zw.zipFile)
+		if err != nil {
+			return nil
 		}
 		spew.Println("src")
-		spew.Dump(src)
+		spew.Dump(i.source)
 		spew.Println("dst")
-		spew.Dump(dst)
+		spew.Dump(i.destination)
 	}
 
 	err = zw.zipWritter.Close()
 	if err != nil {
 		return err
+	}
+
+	for _, i := range includeInfo {
+		os.Remove(i.destination)
+	}
+
+	return nil
+}
+
+func File(src, dst string) error {
+	var err error
+	var srcfd *os.File
+	var dstfd *os.File
+	var srcinfo os.FileInfo
+
+	if srcfd, err = os.Open(src); err != nil {
+		return err
+	}
+	defer srcfd.Close()
+
+	if dstfd, err = os.Create(dst); err != nil {
+		return err
+	}
+	defer dstfd.Close()
+
+	if _, err = io.Copy(dstfd, srcfd); err != nil {
+		return err
+	}
+	if srcinfo, err = os.Stat(src); err != nil {
+		return err
+	}
+	return os.Chmod(dst, srcinfo.Mode())
+}
+
+func Dir(src string, dst string) error {
+	var err error
+	var fds []os.FileInfo
+	var srcinfo os.FileInfo
+
+	if srcinfo, err = os.Stat(src); err != nil {
+		return err
+	}
+
+	if err = os.MkdirAll(dst, srcinfo.Mode()); err != nil {
+		return err
+	}
+
+	if fds, err = ioutil.ReadDir(src); err != nil {
+		return err
+	}
+	for _, fd := range fds {
+		srcfp := path.Join(src, fd.Name())
+		dstfp := path.Join(dst, fd.Name())
+
+		if fd.IsDir() {
+			if err = Dir(srcfp, dstfp); err != nil {
+				fmt.Println(err)
+			}
+		} else {
+			if err = File(srcfp, dstfp); err != nil {
+				fmt.Println(err)
+			}
+		}
 	}
 	return nil
 }

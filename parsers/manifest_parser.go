@@ -654,7 +654,7 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 		spew.Println("*********Action File Path*******")
 		spew.Dump(actionFilePath)
 		zipFileName = actionFilePath + "." + runtimes.ZIP_FILE_EXTENSION
-		err := utils.NewZipWritter(actionFilePath, zipFileName, action.Include).Zip()
+		err := utils.NewZipWritter(actionFilePath, zipFileName, action.Include, filepath.Dir(manifestFilePath)).Zip()
 		if err != nil {
 			return actionFilePath, nil, err
 		}
