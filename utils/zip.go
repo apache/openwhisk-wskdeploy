@@ -80,9 +80,13 @@ func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
 }
 
 func (zw *ZipWritter) Zip() error {
+
+	var zipFile *os.File
+	var err error
+	var fileInfo os.FileInfo
+
 	// create zip file e.g. greeting.zip
-	zipFile, err := os.Create(zw.des)
-	if err != nil {
+	if zipFile, err = os.Create(zw.des); err != nil {
 		return err
 	}
 	defer zipFile.Close()
@@ -93,8 +97,7 @@ func (zw *ZipWritter) Zip() error {
 	// walk file system rooted at the directory specified in "function"
 	// walk over each file and dir under root directory e.g. function: actions/greeting
 	// add actions/greeting/index.js and actions/greeting/package.json to zip file
-	err = filepath.Walk(zw.src, zw.zipFile)
-	if err != nil {
+	if err = filepath.Walk(zw.src, zw.zipFile); err != nil {
 		return nil
 	}
 
@@ -123,38 +126,41 @@ func (zw *ZipWritter) Zip() error {
 			continue
 		}
 
+		// append just parsed include info to the list for further processing
 		includeInfo = append(includeInfo, i)
 
-		s, err := os.Stat(i.source)
-		if err != nil {
+		// now determine whether the included item is file or dir
+		if fileInfo, err = os.Stat(i.source); err != nil {
 			return err
 		}
 
-		if s.IsDir() {
-			spew.Println("is a directory")
-			err = copyDir(i.source, i.destination)
-			if err != nil {
+		// if the included item is a directory, call a function to copy the
+		// entire directory recursively including its subdirectories and files
+		if fileInfo.IsDir() {
+			if err = copyDir(i.source, i.destination); err != nil {
 				return err
 			}
+			// if the included item is a file, call a function to copy the file
+			// along with its path by creating the parent directories
 		} else {
-			spew.Println("is not a directory")
-			err = copyFile(i.source, i.destination)
-			if err != nil {
+			if err = copyFile(i.source, i.destination); err != nil {
 				return err
 			}
 		}
 
-		err = filepath.Walk(i.destination, zw.zipFile)
-		if err != nil {
+		// add included item into zip file greeting.zip
+		if err = filepath.Walk(i.destination, zw.zipFile); err != nil {
 			return nil
 		}
 	}
 
-	err = zw.zipWritter.Close()
-	if err != nil {
+	// now close the zip file greeting.zip as all the included items
+	// are added into the zip file along with the action root dir
+	if err = zw.zipWritter.Close(); err != nil {
 		return err
 	}
 
+	// and its safe to delete the files/directories which we copied earlier
 	for _, i := range includeInfo {
 		spew.Println("Deleting destination")
 		spew.Dump(i.destination)
