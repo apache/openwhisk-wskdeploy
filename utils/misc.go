@@ -120,6 +120,10 @@ type Include struct {
 }
 
 func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
+	spew.Println("++++++++ path ++++++++")
+	spew.Dump(path)
+	spew.Println("+++++++++ src +++++++")
+	spew.Dump(zw.src)
 	if err != nil {
 		return err
 	}
@@ -135,10 +139,6 @@ func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
 	fileName := strings.TrimPrefix(path, zw.src+"/")
 	spew.Println("++++++++file name is+++++++")
 	spew.Dump(fileName)
-	spew.Println("++++++++ path ++++++++")
-	spew.Dump(path)
-	spew.Println("+++++++++ src +++++++")
-	spew.Dump(zw.src)
 	wr, err := zw.zipWritter.Create(fileName)
 	if err != nil {
 		return err
@@ -174,20 +174,18 @@ func (zw *ZipWritter) Zip() error {
 	spew.Println("***********include******")
 	spew.Dump(zw.include)
 
-	spew.Println("**********zip file*******")
-	spew.Dump(zipFile)
-
 	var includeInfo []Include
 
-	for _, include := range zw.include {
+	for _, includeData := range zw.include {
+
 		var i Include
 
-		if len(include) == 1 {
-			i.source = filepath.Join(zw.manifestFilePath, include[0])
+		if len(includeData) == 1 {
+			i.source = filepath.Join(zw.manifestFilePath, includeData[0])
 			i.destination = i.source
-		} else if len(includeInfo) == 2 {
-			i.source = filepath.Join(zw.manifestFilePath, include[0])
-			i.destination = filepath.Join(zw.src, include[1])
+		} else if len(includeData) == 2 {
+			i.source = filepath.Join(zw.manifestFilePath, includeData[0])
+			i.destination = filepath.Join(zw.src, includeData[1])
 		}
 		includeInfo = append(includeInfo, i)
 
@@ -195,6 +193,7 @@ func (zw *ZipWritter) Zip() error {
 		if err != nil {
 			return err
 		}
+
 		if s.IsDir() {
 			spew.Println("is a directory")
 			err = Dir(i.source, i.destination)
@@ -208,14 +207,11 @@ func (zw *ZipWritter) Zip() error {
 				return err
 			}
 		}
+
 		err = filepath.Walk(i.destination, zw.zipFile)
 		if err != nil {
 			return nil
 		}
-		spew.Println("src")
-		spew.Dump(i.source)
-		spew.Println("dst")
-		spew.Dump(i.destination)
 	}
 
 	err = zw.zipWritter.Close()
@@ -224,7 +220,9 @@ func (zw *ZipWritter) Zip() error {
 	}
 
 	for _, i := range includeInfo {
-		os.Remove(i.destination)
+		spew.Println("Deleting destination")
+		spew.Dump(i.destination)
+		os.RemoveAll(i.destination)
 	}
 
 	return nil
@@ -236,22 +234,38 @@ func File(src, dst string) error {
 	var dstfd *os.File
 	var srcinfo os.FileInfo
 
+	spew.Println("############src##############")
+	spew.Dump(src)
+	spew.Println("###############dst#############")
+	spew.Dump(dst)
+
 	if srcfd, err = os.Open(src); err != nil {
 		return err
 	}
 	defer srcfd.Close()
 
+	spew.Println("Done opening src")
+
 	if dstfd, err = os.Create(dst); err != nil {
+		spew.Println("Failed to create dst")
+		spew.Dump(err)
 		return err
 	}
 	defer dstfd.Close()
 
+	spew.Println("done creating dst")
+
 	if _, err = io.Copy(dstfd, srcfd); err != nil {
 		return err
 	}
+
+	spew.Println("done copying src to dst")
+
 	if srcinfo, err = os.Stat(src); err != nil {
 		return err
 	}
+	spew.Println("src info")
+	spew.Dump(srcinfo)
 	return os.Chmod(dst, srcinfo.Mode())
 }
 
