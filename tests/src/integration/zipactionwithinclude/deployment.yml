@@ -5,7 +5,24 @@ project:
     packages:
         zipactionwithinclude:
             actions:
-                greeting:
+                greeting1:
+                    inputs:
+                        name: Amy
+                        place: Vermont
+                greeting2:
                     inputs:
                         name: Bernie
-                        place: Vermont
+                        place: Paris
+                greeting3:
+                    inputs:
+                        name: Cindy
+                        place: New York
+                greeting4:
+                    inputs:
+                        name: Dough
+                        place: Spain
+                greeting5:
+                    inputs:
+                        name: Evya
+                        place: Japan
+

@@ -116,11 +116,11 @@ func (zw *ZipWritter) Zip() error {
 		// "destination" is relative to the action directory, the one specified in function
 		// relative path is converted to absolute path by appending function directory
 		if len(includeData) == 1 {
-			i.source = filepath.Join(zw.manifestFilePath, includeData[0])
-			i.destination = i.source
+			i.source = filepath.Clean(filepath.Join(zw.manifestFilePath, includeData[0]))
+			i.destination = filepath.Clean(filepath.Join(zw.src, includeData[0]))
 		} else if len(includeData) == 2 {
-			i.source = filepath.Join(zw.manifestFilePath, includeData[0])
-			i.destination = filepath.Join(zw.src, includeData[1])
+			i.source = filepath.Clean(filepath.Join(zw.manifestFilePath, includeData[0]))
+			i.destination = filepath.Clean(filepath.Join(zw.src, includeData[1]))
 		} else {
 			continue
 		}
@@ -132,9 +132,8 @@ func (zw *ZipWritter) Zip() error {
 	}
 
 	for _, i := range includeInfo {
-		spew.Println("I am starting to copying files to destination")
 		spew.Dump(i)
-		if filepath.Clean(i.source) != filepath.Clean(i.destination) {
+		if i.source != i.destination {
 			spew.Println("I am inside different source/dest")
 			spew.Dump(filepath.Clean(i.source))
 			spew.Dump(filepath.Clean(i.destination))
