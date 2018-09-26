@@ -9,12 +9,14 @@
  */
 
 
-var common = require('./common/common1/utils.js')
+var common1 = require('./common/utils.js')
+var common2 = require('./common/common1/utils.js')
+var common3 = require('./common/common1/copyUtils.js')
 
 function main(params) {
     var name = params.name || params.payload || 'stranger';
     var place = params.place || 'somewhere';
-    var hello = common.hello || 'Hello';
+    var hello = common1.hello || common2.hello || common3.hello || 'Hello';
     return {payload:  hello + ', ' + name + ' from ' + place + '!'};
 }
 exports.main = main;

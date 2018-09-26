@@ -1,0 +1,6 @@
+{
+   "name": "my-action",
+   "main": "index.js",
+   "dependencies" : {
+   }
+}
