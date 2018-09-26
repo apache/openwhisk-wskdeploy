@@ -102,6 +102,7 @@ func (zw *ZipWritter) Zip() error {
 	spew.Println("I am done walking over a root dir")
 	// maintain a list of included files and/or directories with their destination
 	var includeInfo []Include
+	var files []os.FileInfo
 
 	// iterate over set of included files specified in manifest YAML e.g.
 	// include:
@@ -125,10 +126,32 @@ func (zw *ZipWritter) Zip() error {
 			continue
 		}
 
-		// append just parsed include info to the list for further processing
-		includeInfo = append(includeInfo, i)
-		spew.Println("I am done populating includeInfo")
-		spew.Dump(includeInfo)
+		// handle the scenarios where included path contains *.ext
+		basePath := strings.Split(filepath.Base(i.source), ".")
+		if strings.ContainsAny(basePath[0], "*") {
+			spew.Println("I am inside check with *")
+			if files, err = ioutil.ReadDir(filepath.Dir(i.source)); err != nil {
+				return err
+			}
+			for _, file := range files {
+				var j Include
+				spew.Dump(filepath.Ext(file.Name()))
+				spew.Dump(basePath)
+				if filepath.Ext(file.Name()) == "."+basePath[1] {
+					j.source = filepath.Join(filepath.Dir(i.source), file.Name())
+					j.destination = filepath.Join(filepath.Dir(i.destination), file.Name())
+					includeInfo = append(includeInfo, j)
+				}
+			}
+			spew.Println("include info from *")
+			spew.Dump(includeInfo)
+		} else {
+			// append just parsed include info to the list for further processing
+			includeInfo = append(includeInfo, i)
+			spew.Println("I am done populating includeInfo")
+			spew.Dump(includeInfo)
+		}
+
 	}
 
 	for _, i := range includeInfo {
@@ -138,6 +161,7 @@ func (zw *ZipWritter) Zip() error {
 			spew.Dump(filepath.Clean(i.source))
 			spew.Dump(filepath.Clean(i.destination))
 			// now determine whether the included item is file or dir
+			// it could list something like this as well, "actions/common/*.js"
 			if fileInfo, err = os.Stat(i.source); err != nil {
 				return err
 			}
@@ -210,6 +234,8 @@ func copyFile(src, dst string) error {
 	}
 
 	if srcInfo, err = os.Stat(src); err != nil {
+		spew.Println("I am having issues with stat on a file")
+		spew.Dump(src)
 		return err
 	}
 	return os.Chmod(dst, srcInfo.Mode())
