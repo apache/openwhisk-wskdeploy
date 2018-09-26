@@ -48,32 +48,25 @@ type Include struct {
 }
 
 func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
-	spew.Println("++++++++ path ++++++++")
-	spew.Dump(path)
-	spew.Println("+++++++++ src +++++++")
-	spew.Dump(zw.src)
+	var file *os.File
+	var wr io.Writer
 	if err != nil {
 		return err
 	}
 	if !f.Mode().IsRegular() || f.Size() == 0 {
 		return nil
 	}
-	file, err := os.Open(path)
-	if err != nil {
+	if file, err = os.Open(path); err != nil {
 		return err
 	}
 	defer file.Close()
 
 	fileName := strings.TrimPrefix(path, zw.src+"/")
-	spew.Println("++++++++file name is+++++++")
-	spew.Dump(fileName)
-	wr, err := zw.zipWritter.Create(fileName)
-	if err != nil {
+	if wr, err = zw.zipWritter.Create(fileName); err != nil {
 		return err
 	}
 
-	_, err = io.Copy(wr, file)
-	if err != nil {
+	if _, err = io.Copy(wr, file); err != nil {
 		return err
 	}
 	return nil
@@ -91,8 +84,13 @@ func (zw *ZipWritter) Zip() error {
 	}
 	defer zipFile.Close()
 
+	spew.Println("I am done creating a zip file")
+	spew.Dump(zw.des)
+
 	// creating a new zip writter for greeting.zip
 	zw.zipWritter = zip.NewWriter(zipFile)
+
+	spew.Println("I am done writing a zip file")
 
 	// walk file system rooted at the directory specified in "function"
 	// walk over each file and dir under root directory e.g. function: actions/greeting
@@ -101,6 +99,7 @@ func (zw *ZipWritter) Zip() error {
 		return nil
 	}
 
+	spew.Println("I am done walking over a root dir")
 	// maintain a list of included files and/or directories with their destination
 	var includeInfo []Include
 
@@ -128,23 +127,34 @@ func (zw *ZipWritter) Zip() error {
 
 		// append just parsed include info to the list for further processing
 		includeInfo = append(includeInfo, i)
+		spew.Println("I am done populating includeInfo")
+		spew.Dump(includeInfo)
+	}
 
-		// now determine whether the included item is file or dir
-		if fileInfo, err = os.Stat(i.source); err != nil {
-			return err
-		}
-
-		// if the included item is a directory, call a function to copy the
-		// entire directory recursively including its subdirectories and files
-		if fileInfo.IsDir() {
-			if err = copyDir(i.source, i.destination); err != nil {
+	for _, i := range includeInfo {
+		spew.Println("I am starting to copying files to destination")
+		spew.Dump(i)
+		if filepath.Clean(i.source) != filepath.Clean(i.destination) {
+			spew.Println("I am inside different source/dest")
+			spew.Dump(filepath.Clean(i.source))
+			spew.Dump(filepath.Clean(i.destination))
+			// now determine whether the included item is file or dir
+			if fileInfo, err = os.Stat(i.source); err != nil {
 				return err
 			}
-			// if the included item is a file, call a function to copy the file
-			// along with its path by creating the parent directories
-		} else {
-			if err = copyFile(i.source, i.destination); err != nil {
-				return err
+
+			// if the included item is a directory, call a function to copy the
+			// entire directory recursively including its subdirectories and files
+			if fileInfo.IsDir() {
+				if err = copyDir(i.source, i.destination); err != nil {
+					return err
+				}
+				// if the included item is a file, call a function to copy the file
+				// along with its path by creating the parent directories
+			} else {
+				if err = copyFile(i.source, i.destination); err != nil {
+					return err
+				}
 			}
 		}
 
@@ -161,9 +171,8 @@ func (zw *ZipWritter) Zip() error {
 	}
 
 	// and its safe to delete the files/directories which we copied earlier
+	// to include them in the zip file greeting.zip
 	for _, i := range includeInfo {
-		spew.Println("Deleting destination")
-		spew.Dump(i.destination)
 		os.RemoveAll(i.destination)
 	}
 
@@ -172,32 +181,26 @@ func (zw *ZipWritter) Zip() error {
 
 func copyFile(src, dst string) error {
 	var err error
-	var srcfd *os.File
-	var dstfd *os.File
+	var sourceFD *os.File
+	var destFD *os.File
 	var srcinfo os.FileInfo
 	var srcDirInfo os.FileInfo
 
-	spew.Println("############src##############")
-	spew.Dump(src)
-	spew.Println("###############dst#############")
-	spew.Dump(dst)
-
-	if srcfd, err = os.Open(src); err != nil {
+	if sourceFD, err = os.Open(src); err != nil {
 		return err
 	}
-	defer srcfd.Close()
+	defer sourceFD.Close()
 
 	if srcinfo, err = os.Stat(src); err != nil {
 		return err
 	}
 
-	spew.Println("Done opening src")
-
-	spew.Dump(filepath.Dir(dst))
-
 	if srcDirInfo, err = os.Stat(filepath.Dir(src)); err != nil {
 		return err
 	}
+
+	spew.Println("source dir info")
+	spew.Dump(srcDirInfo)
 
 	if _, err := os.Stat(filepath.Dir(dst)); os.IsNotExist(err) {
 		err = os.MkdirAll(filepath.Dir(dst), srcDirInfo.Mode())
@@ -208,16 +211,16 @@ func copyFile(src, dst string) error {
 		}
 	}
 
-	if dstfd, err = os.Create(dst); err != nil {
+	if destFD, err = os.Create(dst); err != nil {
 		spew.Println("Failed to create dst")
 		spew.Dump(err)
 		return err
 	}
-	defer dstfd.Close()
+	defer destFD.Close()
 
 	spew.Println("done creating dst")
 
-	if _, err = io.Copy(dstfd, srcfd); err != nil {
+	if _, err = io.Copy(destFD, sourceFD); err != nil {
 		return err
 	}
 
