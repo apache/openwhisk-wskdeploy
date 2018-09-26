@@ -145,13 +145,13 @@ func (zw *ZipWritter) Zip() error {
 
 			// if the included item is a directory, call a function to copy the
 			// entire directory recursively including its subdirectories and files
-			if fileInfo.IsDir() {
+			if fileInfo.Mode().IsDir() {
 				if err = copyDir(i.source, i.destination); err != nil {
 					return err
 				}
 				// if the included item is a file, call a function to copy the file
 				// along with its path by creating the parent directories
-			} else {
+			} else if fileInfo.Mode().IsRegular() {
 				if err = copyFile(i.source, i.destination); err != nil {
 					return err
 				}
@@ -191,10 +191,6 @@ func copyFile(src, dst string) error {
 	}
 	defer sourceFD.Close()
 
-	if srcinfo, err = os.Stat(src); err != nil {
-		return err
-	}
-
 	if srcDirInfo, err = os.Stat(filepath.Dir(src)); err != nil {
 		return err
 	}
@@ -202,11 +198,8 @@ func copyFile(src, dst string) error {
 	spew.Println("source dir info")
 	spew.Dump(srcDirInfo)
 
-	if _, err := os.Stat(filepath.Dir(dst)); os.IsNotExist(err) {
-		err = os.MkdirAll(filepath.Dir(dst), srcDirInfo.Mode())
-		spew.Println("Done creating a dir")
-		if err != nil {
-			spew.Println("Failed to create a dir")
+	if _, err = os.Stat(filepath.Dir(dst)); os.IsNotExist(err) {
+		if err = os.MkdirAll(filepath.Dir(dst), srcDirInfo.Mode()); err != nil {
 			return err
 		}
 	}
@@ -225,6 +218,10 @@ func copyFile(src, dst string) error {
 	}
 
 	spew.Println("done copying src to dst")
+
+	if srcinfo, err = os.Stat(src); err != nil {
+		return err
+	}
 
 	spew.Println("src info")
 	spew.Dump(srcinfo)
