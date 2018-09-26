@@ -1,0 +1,32 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+packages:
+    zipactionwithinclude:
+        version: 1.0
+        license: Apache-2.0
+        actions:
+            greeting:
+                version: 1.0
+                function: actions/greeting
+                runtime: nodejs:6
+                include:
+                    - []
+                    - ["actions/common/utils.js"]
+                    - ["actions/common/utils.js", "common/utils.js"]
+                    - ["actions/common/utils.js", "common/common1/utils.js"]
+                    - ["actions/common/utils.js", "common/common1/copyUtils.js"]
+            greeting1:
+                version: 1.0
+                function: actions/greeting1
+                runtime: nodejs:6
+                include:
+                    - ["actions/common/", "common/"]
+                    - ["actions/common/", "common/common1/"]
+            greeting2:
+                version: 1.0
+                function: actions/greeting2
+                runtime: nodejs:6
+                include:
+                    - ["actions/common/*.js", "common/"]
+
