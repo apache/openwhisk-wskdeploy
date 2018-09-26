@@ -183,7 +183,7 @@ func copyFile(src, dst string) error {
 	var err error
 	var sourceFD *os.File
 	var destFD *os.File
-	var srcinfo os.FileInfo
+	var srcInfo os.FileInfo
 	var srcDirInfo os.FileInfo
 
 	if sourceFD, err = os.Open(src); err != nil {
@@ -195,9 +195,6 @@ func copyFile(src, dst string) error {
 		return err
 	}
 
-	spew.Println("source dir info")
-	spew.Dump(srcDirInfo)
-
 	if _, err = os.Stat(filepath.Dir(dst)); os.IsNotExist(err) {
 		if err = os.MkdirAll(filepath.Dir(dst), srcDirInfo.Mode()); err != nil {
 			return err
@@ -205,55 +202,46 @@ func copyFile(src, dst string) error {
 	}
 
 	if destFD, err = os.Create(dst); err != nil {
-		spew.Println("Failed to create dst")
-		spew.Dump(err)
 		return err
 	}
 	defer destFD.Close()
-
-	spew.Println("done creating dst")
 
 	if _, err = io.Copy(destFD, sourceFD); err != nil {
 		return err
 	}
 
-	spew.Println("done copying src to dst")
-
-	if srcinfo, err = os.Stat(src); err != nil {
+	if srcInfo, err = os.Stat(src); err != nil {
 		return err
 	}
-
-	spew.Println("src info")
-	spew.Dump(srcinfo)
-	return os.Chmod(dst, srcinfo.Mode())
+	return os.Chmod(dst, srcInfo.Mode())
 }
 
 func copyDir(src string, dst string) error {
 	var err error
-	var fds []os.FileInfo
-	var srcinfo os.FileInfo
+	var fileDescriptors []os.FileInfo
+	var srcInfo os.FileInfo
 
-	if srcinfo, err = os.Stat(src); err != nil {
+	if srcInfo, err = os.Stat(src); err != nil {
 		return err
 	}
 
-	if err = os.MkdirAll(dst, srcinfo.Mode()); err != nil {
+	if err = os.MkdirAll(dst, srcInfo.Mode()); err != nil {
 		return err
 	}
 
-	if fds, err = ioutil.ReadDir(src); err != nil {
+	if fileDescriptors, err = ioutil.ReadDir(src); err != nil {
 		return err
 	}
-	for _, fd := range fds {
-		srcfp := path.Join(src, fd.Name())
-		dstfp := path.Join(dst, fd.Name())
+	for _, fd := range fileDescriptors {
+		srcFilePath := path.Join(src, fd.Name())
+		dstFilePath := path.Join(dst, fd.Name())
 
 		if fd.IsDir() {
-			if err = copyDir(srcfp, dstfp); err != nil {
+			if err = copyDir(srcFilePath, dstFilePath); err != nil {
 				fmt.Println(err)
 			}
 		} else {
-			if err = copyFile(srcfp, dstfp); err != nil {
+			if err = copyFile(srcFilePath, dstFilePath); err != nil {
 				fmt.Println(err)
 			}
 		}
