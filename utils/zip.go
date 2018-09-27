@@ -119,6 +119,8 @@ func (zw *ZipWritter) Zip() error {
 		if len(includeData) == 1 {
 			i.source = filepath.Clean(filepath.Join(zw.manifestFilePath, includeData[0]))
 			i.destination = filepath.Clean(filepath.Join(zw.src, includeData[0]))
+			spew.Println("destination is after clean")
+			spew.Dump(i.destination)
 		} else if len(includeData) == 2 {
 			i.source = filepath.Clean(filepath.Join(zw.manifestFilePath, includeData[0]))
 			i.destination = filepath.Clean(filepath.Join(zw.src, includeData[1]))
@@ -126,20 +128,34 @@ func (zw *ZipWritter) Zip() error {
 			continue
 		}
 
-		// handle the scenarios where included path contains *.ext
-		basePath := strings.Split(filepath.Base(i.source), ".")
-		if strings.ContainsAny(basePath[0], "*") {
+		// actions/common/*
+
+		//actions/*
+
+		// handle the scenarios where included path is something similar to actions/common/*.js
+		sourceDir := i.source
+		if isFilePath(sourceDir) {
+			sourceDir = filepath.Dir(i.source)
+		}
+		destDir := i.destination
+		spew.Println("**********dest dir **********")
+		spew.Dump(destDir)
+		if isFilePath(destDir) {
+			destDir = filepath.Dir(destDir)
+		}
+		spew.Dump(destDir)
+
+		if strings.HasPrefix(filepath.Base(i.source), "*.") {
 			spew.Println("I am inside check with *")
-			if files, err = ioutil.ReadDir(filepath.Dir(i.source)); err != nil {
+			if files, err = ioutil.ReadDir(sourceDir); err != nil {
 				return err
 			}
 			for _, file := range files {
 				var j Include
 				spew.Dump(filepath.Ext(file.Name()))
-				spew.Dump(basePath)
-				if filepath.Ext(file.Name()) == "."+basePath[1] {
+				if filepath.Ext(file.Name()) == filepath.Ext(filepath.Base(i.source)) {
 					j.source = filepath.Join(filepath.Dir(i.source), file.Name())
-					j.destination = filepath.Join(filepath.Dir(i.destination), file.Name())
+					j.destination = filepath.Join(destDir, file.Name())
 					includeInfo = append(includeInfo, j)
 				}
 			}
@@ -200,6 +216,38 @@ func (zw *ZipWritter) Zip() error {
 	}
 
 	return nil
+}
+
+func isFilePath(path string) bool {
+	_, file := filepath.Split(path)
+	if len(file) == 0 {
+		return false
+	}
+	return true
+}
+
+func isFile(path string) (bool, error) {
+	var err error
+	var info os.FileInfo
+	if info, err = os.Stat(path); err != nil {
+		return false, err
+	}
+	if info.Mode().IsRegular() {
+		return true, err
+	}
+	return false, err
+}
+
+func isDir(path string) (bool, error) {
+	var err error
+	var info os.FileInfo
+	if info, err = os.Stat(path); err != nil {
+		return false, err
+	}
+	if info.Mode().IsDir() {
+		return true, err
+	}
+	return false, err
 }
 
 func copyFile(src, dst string) error {

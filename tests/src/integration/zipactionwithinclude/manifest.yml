@@ -33,6 +33,7 @@ packages:
                 function: actions/greeting4
                 runtime: nodejs:6
                 include:
+#                    - ["actions/common/*.js"]
                     - ["actions/common/*.js", "common/"]
 #            greeting5:
 #                version: 1.0
