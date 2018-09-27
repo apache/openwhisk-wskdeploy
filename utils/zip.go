@@ -117,13 +117,11 @@ func (zw *ZipWritter) Zip() error {
 		// "destination" is relative to the action directory, the one specified in function
 		// relative path is converted to absolute path by appending function directory
 		if len(includeData) == 1 {
-			i.source = filepath.Clean(filepath.Join(zw.manifestFilePath, includeData[0]))
-			i.destination = filepath.Clean(filepath.Join(zw.src, includeData[0]))
-			spew.Println("destination is after clean")
-			spew.Dump(i.destination)
+			i.source = filepath.Join(zw.manifestFilePath, includeData[0])
+			i.destination = filepath.Join(zw.src, includeData[0])
 		} else if len(includeData) == 2 {
-			i.source = filepath.Clean(filepath.Join(zw.manifestFilePath, includeData[0]))
-			i.destination = filepath.Clean(filepath.Join(zw.src, includeData[1]))
+			i.source = filepath.Join(zw.manifestFilePath, includeData[0])
+			i.destination = zw.src + "/" + includeData[1]
 		} else {
 			continue
 		}
@@ -132,19 +130,16 @@ func (zw *ZipWritter) Zip() error {
 
 		//actions/*
 
-		// handle the scenarios where included path is something similar to actions/common/*.js
 		sourceDir := i.source
 		if isFilePath(sourceDir) {
 			sourceDir = filepath.Dir(i.source)
 		}
 		destDir := i.destination
-		spew.Println("**********dest dir **********")
-		spew.Dump(destDir)
 		if isFilePath(destDir) {
 			destDir = filepath.Dir(destDir)
 		}
-		spew.Dump(destDir)
 
+		// handle the scenarios where included path is something similar to actions/common/*.js
 		if strings.HasPrefix(filepath.Base(i.source), "*.") {
 			spew.Println("I am inside check with *")
 			if files, err = ioutil.ReadDir(sourceDir); err != nil {
@@ -152,7 +147,6 @@ func (zw *ZipWritter) Zip() error {
 			}
 			for _, file := range files {
 				var j Include
-				spew.Dump(filepath.Ext(file.Name()))
 				if filepath.Ext(file.Name()) == filepath.Ext(filepath.Base(i.source)) {
 					j.source = filepath.Join(filepath.Dir(i.source), file.Name())
 					j.destination = filepath.Join(destDir, file.Name())
@@ -161,24 +155,42 @@ func (zw *ZipWritter) Zip() error {
 			}
 			spew.Println("include info from *")
 			spew.Dump(includeInfo)
+			// handle scenarios where included path is something similar to actions/common/utils.js
+			// and destination is set to ./common/ i.e. no file name specified in the destination
 		} else {
-			// append just parsed include info to the list for further processing
-			includeInfo = append(includeInfo, i)
-			spew.Println("I am done populating includeInfo")
-			spew.Dump(includeInfo)
+			spew.Println("I am inside if where its checking for source to be file")
+			if f, err := isFile(i.source); err == nil && f {
+				spew.Println("INSIDE")
+				spew.Dump(i.source)
+				spew.Dump(f)
+				if _, file := filepath.Split(i.destination); len(file) == 0 {
+					spew.Println("I am inside if where its checking for destination to be file")
+					_, sFile := filepath.Split(i.source)
+					i.destination = i.destination + sFile
+					includeInfo = append(includeInfo, i)
+				} else {
+					includeInfo = append(includeInfo, i)
+				}
+			} else {
+				// append just parsed include info to the list for further processing
+				includeInfo = append(includeInfo, i)
+				spew.Println("I am done populating includeInfo")
+				spew.Dump(includeInfo)
+			}
 		}
-
 	}
 
 	for _, i := range includeInfo {
 		spew.Dump(i)
 		if i.source != i.destination {
 			spew.Println("I am inside different source/dest")
-			spew.Dump(filepath.Clean(i.source))
-			spew.Dump(filepath.Clean(i.destination))
+			spew.Dump(i.source)
+			spew.Dump(i.destination)
 			// now determine whether the included item is file or dir
 			// it could list something like this as well, "actions/common/*.js"
 			if fileInfo, err = os.Stat(i.source); err != nil {
+				spew.Println("Failed to stat on a source")
+				spew.Dump(fileInfo)
 				return err
 			}
 

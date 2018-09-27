@@ -6,39 +6,44 @@ packages:
         version: 1.0
         license: Apache-2.0
         actions:
-#            greeting1:
-#                version: 1.0
-#                function: actions/greeting1
-#                runtime: nodejs:6
-#                include:
-#                    - []
-#                    - ["actions/common/utils.js"]
-#            greeting2:
-#                version: 1.0
-#                function: actions/greeting2
-#                runtime: nodejs:6
-#                include:
-#                    - ["actions/common/utils.js", "common/utils.js"]
-#                    - ["actions/common/utils.js", "common/common1/utils.js"]
-#                    - ["actions/common/utils.js", "common/common1/copyUtils.js"]
-#            greeting3:
-#                version: 1.0
-#                function: actions/greeting3
-#                runtime: nodejs:6
-#                include:
-#                    - ["actions/common/", "common/"]
-#                    - ["actions/common/", "common/common1/"]
+            greeting1:
+                version: 1.0
+                function: actions/greeting1
+                runtime: nodejs:6
+                include:
+                    - []
+                    - ["actions/common/utils.js"]
+            greeting2:
+                version: 1.0
+                function: actions/greeting2
+                runtime: nodejs:6
+                include:
+                    - ["actions/common/utils.js", "common/utils.js"]
+                    - ["actions/common/utils.js", "common/common1/utils.js"]
+                    - ["actions/common/utils.js", "common/common1/copyUtils.js"]
+            greeting3:
+                version: 1.0
+                function: actions/greeting3
+                runtime: nodejs:6
+                include:
+                    - ["actions/common/", "common/"]
+                    - ["actions/common/", "common/common1/"]
             greeting4:
                 version: 1.0
                 function: actions/greeting4
                 runtime: nodejs:6
                 include:
-#                    - ["actions/common/*.js"]
                     - ["actions/common/*.js", "common/"]
-#            greeting5:
-#                version: 1.0
-#                function: actions/greeting5
-#                runtime: nodejs:6
-#                include:
-#                    - ["actions/common/utils.js", "./common/"]
+            greeting5:
+                version: 1.0
+                function: actions/greeting5
+                runtime: nodejs:6
+                include:
+                    - ["actions/common/utils.js", "./common/"]
+            greeting6:
+                version: 1.0
+                function: actions/greeting6
+                runtime: nodejs:6
+                include:
+                    - ["actions/common/*.js"]
 
