@@ -227,18 +227,6 @@ func isFile(path string) (bool, error) {
 	return false, err
 }
 
-func isDir(path string) (bool, error) {
-	var err error
-	var info os.FileInfo
-	if info, err = os.Stat(path); err != nil {
-		return false, err
-	}
-	if info.Mode().IsDir() {
-		return true, err
-	}
-	return false, err
-}
-
 func copyFile(src, dst string) error {
 	var err error
 	var sourceFD *os.File
