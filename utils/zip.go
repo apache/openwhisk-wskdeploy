@@ -20,7 +20,6 @@ package utils
 import (
 	"archive/zip"
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"io"
 	"io/ioutil"
 	"os"
@@ -84,13 +83,8 @@ func (zw *ZipWritter) Zip() error {
 	}
 	defer zipFile.Close()
 
-	spew.Println("I am done creating a zip file")
-	spew.Dump(zw.des)
-
 	// creating a new zip writter for greeting.zip
 	zw.zipWritter = zip.NewWriter(zipFile)
-
-	spew.Println("I am done writing a zip file")
 
 	// walk file system rooted at the directory specified in "function"
 	// walk over each file and dir under root directory e.g. function: actions/greeting
@@ -99,7 +93,6 @@ func (zw *ZipWritter) Zip() error {
 		return nil
 	}
 
-	spew.Println("I am done walking over a root dir")
 	// maintain a list of included files and/or directories with their destination
 	var includeInfo []Include
 	var files []os.FileInfo
@@ -141,7 +134,6 @@ func (zw *ZipWritter) Zip() error {
 
 		// handle the scenarios where included path is something similar to actions/common/*.js
 		if strings.HasPrefix(filepath.Base(i.source), "*.") {
-			spew.Println("I am inside check with *")
 			if files, err = ioutil.ReadDir(sourceDir); err != nil {
 				return err
 			}
@@ -153,18 +145,11 @@ func (zw *ZipWritter) Zip() error {
 					includeInfo = append(includeInfo, j)
 				}
 			}
-			spew.Println("include info from *")
-			spew.Dump(includeInfo)
 			// handle scenarios where included path is something similar to actions/common/utils.js
 			// and destination is set to ./common/ i.e. no file name specified in the destination
 		} else {
-			spew.Println("I am inside if where its checking for source to be file")
 			if f, err := isFile(i.source); err == nil && f {
-				spew.Println("INSIDE")
-				spew.Dump(i.source)
-				spew.Dump(f)
 				if _, file := filepath.Split(i.destination); len(file) == 0 {
-					spew.Println("I am inside if where its checking for destination to be file")
 					_, sFile := filepath.Split(i.source)
 					i.destination = i.destination + sFile
 					includeInfo = append(includeInfo, i)
@@ -174,23 +159,15 @@ func (zw *ZipWritter) Zip() error {
 			} else {
 				// append just parsed include info to the list for further processing
 				includeInfo = append(includeInfo, i)
-				spew.Println("I am done populating includeInfo")
-				spew.Dump(includeInfo)
 			}
 		}
 	}
 
 	for _, i := range includeInfo {
-		spew.Dump(i)
 		if i.source != i.destination {
-			spew.Println("I am inside different source/dest")
-			spew.Dump(i.source)
-			spew.Dump(i.destination)
 			// now determine whether the included item is file or dir
 			// it could list something like this as well, "actions/common/*.js"
 			if fileInfo, err = os.Stat(i.source); err != nil {
-				spew.Println("Failed to stat on a source")
-				spew.Dump(fileInfo)
 				return err
 			}
 
@@ -294,8 +271,6 @@ func copyFile(src, dst string) error {
 	}
 
 	if srcInfo, err = os.Stat(src); err != nil {
-		spew.Println("I am having issues with stat on a file")
-		spew.Dump(src)
 		return err
 	}
 	return os.Chmod(dst, srcInfo.Mode())

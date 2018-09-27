@@ -38,7 +38,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
 	"net/url"
 )
 
@@ -649,12 +648,6 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 	}
 
 	if utils.IsDirectory(actionFilePath) {
-		spew.Println("********Action Include********")
-		spew.Dump(action.Include)
-		spew.Println("*********Action File Path*******")
-		spew.Dump(actionFilePath)
-		spew.Println("*********Manifest File Path********")
-		spew.Dump(manifestFilePath)
 		zipFileName = actionFilePath + "." + runtimes.ZIP_FILE_EXTENSION
 		err := utils.NewZipWritter(actionFilePath, zipFileName, action.Include, filepath.Dir(manifestFilePath)).Zip()
 		if err != nil {
