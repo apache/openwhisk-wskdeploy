@@ -19,11 +19,10 @@ package utils
 
 import (
 	"archive/zip"
-	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"io"
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 )
@@ -119,9 +118,10 @@ func (zw *ZipWritter) Zip() error {
 			continue
 		}
 
-		// actions/common/*
-
-		//actions/*
+		// TODO address scenarios with these patterns:
+		// TODO actions/common/*
+		// TODO actions/*
+		// TODO actions/common/*/
 
 		sourceDir := i.source
 		if isFilePath(sourceDir) {
@@ -147,6 +147,13 @@ func (zw *ZipWritter) Zip() error {
 			}
 			// handle scenarios where included path is something similar to actions/common/utils.js
 			// and destination is set to ./common/ i.e. no file name specified in the destination
+		} else if strings.HasSuffix(i.source, "*") {
+			if files, err = ioutil.ReadDir(sourceDir); err != nil {
+				return err
+			}
+			for _, file := range files {
+				spew.Dump(file.Name())
+			}
 		} else {
 			if f, err := isFile(i.source); err == nil && f {
 				if _, file := filepath.Split(i.destination); len(file) == 0 {
@@ -204,95 +211,5 @@ func (zw *ZipWritter) Zip() error {
 		os.RemoveAll(i.destination)
 	}
 
-	return nil
-}
-
-func isFilePath(path string) bool {
-	_, file := filepath.Split(path)
-	if len(file) == 0 {
-		return false
-	}
-	return true
-}
-
-func isFile(path string) (bool, error) {
-	var err error
-	var info os.FileInfo
-	if info, err = os.Stat(path); err != nil {
-		return false, err
-	}
-	if info.Mode().IsRegular() {
-		return true, err
-	}
-	return false, err
-}
-
-func copyFile(src, dst string) error {
-	var err error
-	var sourceFD *os.File
-	var destFD *os.File
-	var srcInfo os.FileInfo
-	var srcDirInfo os.FileInfo
-
-	if sourceFD, err = os.Open(src); err != nil {
-		return err
-	}
-	defer sourceFD.Close()
-
-	if srcDirInfo, err = os.Stat(filepath.Dir(src)); err != nil {
-		return err
-	}
-
-	if _, err = os.Stat(filepath.Dir(dst)); os.IsNotExist(err) {
-		if err = os.MkdirAll(filepath.Dir(dst), srcDirInfo.Mode()); err != nil {
-			return err
-		}
-	}
-
-	if destFD, err = os.Create(dst); err != nil {
-		return err
-	}
-	defer destFD.Close()
-
-	if _, err = io.Copy(destFD, sourceFD); err != nil {
-		return err
-	}
-
-	if srcInfo, err = os.Stat(src); err != nil {
-		return err
-	}
-	return os.Chmod(dst, srcInfo.Mode())
-}
-
-func copyDir(src string, dst string) error {
-	var err error
-	var fileDescriptors []os.FileInfo
-	var srcInfo os.FileInfo
-
-	if srcInfo, err = os.Stat(src); err != nil {
-		return err
-	}
-
-	if err = os.MkdirAll(dst, srcInfo.Mode()); err != nil {
-		return err
-	}
-
-	if fileDescriptors, err = ioutil.ReadDir(src); err != nil {
-		return err
-	}
-	for _, fd := range fileDescriptors {
-		srcFilePath := path.Join(src, fd.Name())
-		dstFilePath := path.Join(dst, fd.Name())
-
-		if fd.IsDir() {
-			if err = copyDir(srcFilePath, dstFilePath); err != nil {
-				fmt.Println(err)
-			}
-		} else {
-			if err = copyFile(srcFilePath, dstFilePath); err != nil {
-				fmt.Println(err)
-			}
-		}
-	}
 	return nil
 }
