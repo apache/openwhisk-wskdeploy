@@ -18,7 +18,6 @@
 package utils
 
 import (
-	"fmt"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"io"
 	"io/ioutil"
@@ -57,6 +56,7 @@ func isFile(path string) (bool, error) {
 	return false, err
 }
 
+// copy one single source file to the destination path
 func copyFile(src, dst string) error {
 	var err error
 	var sourceFD *os.File
@@ -110,33 +110,40 @@ func copyFile(src, dst string) error {
 	return os.Chmod(dst, srcInfo.Mode())
 }
 
-func copyDir(src string, dst string) error {
+// recursively copy the entire source directory to destination path
+func copyDir(src, dst string) error {
 	var err error
 	var fileDescriptors []os.FileInfo
 	var srcInfo os.FileInfo
 
+	// retrieve os.fileInfo of the source directory
 	if srcInfo, err = os.Stat(src); err != nil {
 		return err
 	}
 
+	// create destination directory with parent directories
 	if err = os.MkdirAll(dst, srcInfo.Mode()); err != nil {
 		return err
 	}
 
+	// now, retrieve all the directory/file entries under the source directory
 	if fileDescriptors, err = ioutil.ReadDir(src); err != nil {
 		return err
 	}
+
+	// iterating over the entire list of files/directories under the destination path
+	// run copyFile or recursive copyDir based on if its file or dir
 	for _, fd := range fileDescriptors {
 		srcFilePath := path.Join(src, fd.Name())
 		dstFilePath := path.Join(dst, fd.Name())
 
 		if fd.IsDir() {
 			if err = copyDir(srcFilePath, dstFilePath); err != nil {
-				fmt.Println(err)
+				return err
 			}
 		} else {
 			if err = copyFile(srcFilePath, dstFilePath); err != nil {
-				fmt.Println(err)
+				return err
 			}
 		}
 	}
