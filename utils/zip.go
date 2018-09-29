@@ -70,31 +70,10 @@ func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
 	return nil
 }
 
-func (zw *ZipWritter) Zip() error {
-
-	var zipFile *os.File
-	var err error
-	var fileInfo os.FileInfo
-
-	// create zip file e.g. greeting.zip
-	if zipFile, err = os.Create(zw.des); err != nil {
-		return err
-	}
-	defer zipFile.Close()
-
-	// creating a new zip writter for greeting.zip
-	zw.zipWritter = zip.NewWriter(zipFile)
-
-	// walk file system rooted at the directory specified in "function"
-	// walk over each file and dir under root directory e.g. function: actions/greeting
-	// add actions/greeting/index.js and actions/greeting/package.json to zip file
-	if err = filepath.Walk(zw.src, zw.zipFile); err != nil {
-		return nil
-	}
-
-	// maintain a list of included files and/or directories with their destination
+func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 	var includeInfo []Include
 	var files []os.FileInfo
+	var err error
 
 	// iterate over set of included files specified in manifest YAML e.g.
 	// include:
@@ -135,7 +114,7 @@ func (zw *ZipWritter) Zip() error {
 		// handle the scenarios where included path is something similar to actions/common/*.js
 		if strings.HasPrefix(filepath.Base(i.source), "*.") {
 			if files, err = ioutil.ReadDir(sourceDir); err != nil {
-				return err
+				return includeInfo, err
 			}
 			for _, file := range files {
 				var j Include
@@ -149,7 +128,7 @@ func (zw *ZipWritter) Zip() error {
 			// and destination is set to ./common/ i.e. no file name specified in the destination
 		} else if strings.HasSuffix(i.source, "*") {
 			if files, err = ioutil.ReadDir(sourceDir); err != nil {
-				return err
+				return includeInfo, err
 			}
 			for _, file := range files {
 				spew.Dump(file.Name())
@@ -168,6 +147,37 @@ func (zw *ZipWritter) Zip() error {
 				includeInfo = append(includeInfo, i)
 			}
 		}
+	}
+	return includeInfo, nil
+}
+
+func (zw *ZipWritter) Zip() error {
+
+	var zipFile *os.File
+	var err error
+	var fileInfo os.FileInfo
+
+	// create zip file e.g. greeting.zip
+	if zipFile, err = os.Create(zw.des); err != nil {
+		return err
+	}
+	defer zipFile.Close()
+
+	// creating a new zip writter for greeting.zip
+	zw.zipWritter = zip.NewWriter(zipFile)
+
+	// walk file system rooted at the directory specified in "function"
+	// walk over each file and dir under root directory e.g. function: actions/greeting
+	// add actions/greeting/index.js and actions/greeting/package.json to zip file
+	if err = filepath.Walk(zw.src, zw.zipFile); err != nil {
+		return nil
+	}
+
+	// maintain a list of included files and/or directories with their destination
+	var includeInfo []Include
+	includeInfo, err = zw.buildIncludeMetadata()
+	if err != nil {
+		return err
 	}
 
 	for _, i := range includeInfo {
@@ -192,7 +202,6 @@ func (zw *ZipWritter) Zip() error {
 				}
 			}
 		}
-
 		// add included item into zip file greeting.zip
 		if err = filepath.Walk(i.destination, zw.zipFile); err != nil {
 			return nil
