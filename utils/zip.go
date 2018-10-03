@@ -21,7 +21,6 @@ import (
 	"archive/zip"
 	"github.com/davecgh/go-spew/spew"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -73,6 +72,7 @@ func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
 func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 	var includeInfo []Include
 	var files []os.FileInfo
+	var listOfSourceFiles []string
 	var err error
 
 	// iterate over set of included files specified in manifest YAML e.g.
@@ -89,9 +89,15 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 		// relative path is converted to absolute path by appending function directory
 		if len(includeData) == 1 {
 			i.source = filepath.Join(zw.manifestFilePath, includeData[0])
+			z, err := filepath.Glob(i.source)
+			spew.Dump(z)
+			spew.Dump(err)
 			i.destination = filepath.Join(zw.src, includeData[0])
 		} else if len(includeData) == 2 {
 			i.source = filepath.Join(zw.manifestFilePath, includeData[0])
+			z, err := filepath.Glob(i.source)
+			spew.Dump(z)
+			spew.Dump(err)
 			i.destination = zw.src + "/" + includeData[1]
 		} else {
 			continue
@@ -102,37 +108,41 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 		// TODO actions/*
 		// TODO actions/common/*/
 
+		// set sourceDir to the source location
+		// check if its a file than change it to the Dir of source file
 		sourceDir := i.source
 		if isFilePath(sourceDir) {
 			sourceDir = filepath.Dir(i.source)
 		}
+		// set destDir to the destination location
+		// check if its a file than change it to the Dir of destination file
 		destDir := i.destination
 		if isFilePath(destDir) {
 			destDir = filepath.Dir(destDir)
 		}
 
+		// retrieve the names of all files matching pattern or nil if there is no matching file
+		// listOfSourceFiles will hold a list of files matching patterns such as
+		// actions/libs/* or  actions/libs/*/utils.js or actions/*/*/utils.js
+		if listOfSourceFiles, err = filepath.Glob(i.source); err != nil {
+			return includeInfo, err
+		}
+
 		// handle the scenarios where included path is something similar to actions/common/*.js
-		if strings.HasPrefix(filepath.Base(i.source), "*.") {
-			if files, err = ioutil.ReadDir(sourceDir); err != nil {
-				return includeInfo, err
-			}
-			for _, file := range files {
-				var j Include
-				if filepath.Ext(file.Name()) == filepath.Ext(filepath.Base(i.source)) {
-					j.source = filepath.Join(filepath.Dir(i.source), file.Name())
-					j.destination = filepath.Join(destDir, file.Name())
-					includeInfo = append(includeInfo, j)
+		// handle scenarios where included path is something similar to actions/libs/*
+		// and destination is set to libs/ or libs/* or ./libs/*
+		// handle scenarios where included path is something similar to actions/libs/*/utils.js
+		// and destination is set to libs/*/utils.js or libs/ or ./libs/
+		if strings.ContainsAny(filepath.Base(i.source), "*") {
+			for _, file := range listOfSourceFiles {
+				j := Include{
+					source:      file,
+					destination: filepath.Join(destDir, filepath.Base(file)),
 				}
+				includeInfo = append(includeInfo, j)
 			}
 			// handle scenarios where included path is something similar to actions/common/utils.js
 			// and destination is set to ./common/ i.e. no file name specified in the destination
-		} else if strings.HasSuffix(i.source, "*") {
-			if files, err = ioutil.ReadDir(sourceDir); err != nil {
-				return includeInfo, err
-			}
-			for _, file := range files {
-				spew.Dump(file.Name())
-			}
 		} else {
 			if f, err := isFile(i.source); err == nil && f {
 				if _, file := filepath.Split(i.destination); len(file) == 0 {

@@ -40,9 +40,9 @@ packages:
                 runtime: nodejs:6
                 include:
                     - ["actions/common/*.js"]
-#            greeting7:
-#                function: actions/greeting7
-#                runtime: nodejs:6
-#                include:
-#                    - ["actions/libs/*", "libs/"]
+            greeting7:
+                function: actions/greeting7
+                runtime: nodejs:6
+                include:
+                    - ["actions/*/*/utils.js", "libs/"]
 
