@@ -44,5 +44,15 @@ packages:
                 function: actions/greeting7
                 runtime: nodejs:6
                 include:
+                    - ["actions/libs/*", "libs/"]
+            greeting8:
+                function: actions/greeting8
+                runtime: nodejs:6
+                include:
+                    - ["actions/libs/*/utils.js", "libs/"]
+            greeting9:
+                function: actions/greeting9
+                runtime: nodejs:6
+                include:
                     - ["actions/*/*/utils.js", "libs/"]
 
