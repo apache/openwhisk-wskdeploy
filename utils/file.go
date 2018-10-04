@@ -43,7 +43,7 @@ func isFile(path string) (bool, error) {
 	var info os.FileInfo
 	// run stat on the file and if the it returns no error,
 	// read the fileInfo to check if its a file or not
-	if info, err = os.Lstat(path); err == nil {
+	if info, err = os.Stat(path); err == nil {
 		if info.Mode().IsRegular() {
 			return true, nil
 		}
@@ -75,7 +75,7 @@ func copyFile(src, dst string) error {
 
 	// running stat on Dir(src), Dir returns all but the last element of the src
 	// this info is needed in case when a destination path has a directory structure which does not exist
-	if srcDirInfo, err = os.Lstat(filepath.Dir(src)); err != nil {
+	if srcDirInfo, err = os.Stat(filepath.Dir(src)); err != nil {
 		return err
 	}
 
@@ -83,7 +83,7 @@ func copyFile(src, dst string) error {
 	// create specified path along with creating any parent directory
 	// e.g. when destination is greeting/common/utils.js and parent dir common
 	// doesn't exist, its getting created here at greeting/common
-	if _, err = os.Lstat(filepath.Dir(dst)); os.IsNotExist(err) {
+	if _, err = os.Stat(filepath.Dir(dst)); os.IsNotExist(err) {
 		wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Creating directory pattern ["+filepath.Dir(dst)+"] before creating destination file")
 		if err = os.MkdirAll(filepath.Dir(dst), srcDirInfo.Mode()); err != nil {
 			return err
@@ -104,7 +104,7 @@ func copyFile(src, dst string) error {
 
 	// retrieve the file mode bits of the source file
 	// so that the bits can be set to the destination file
-	if srcInfo, err = os.Lstat(src); err != nil {
+	if srcInfo, err = os.Stat(src); err != nil {
 		return err
 	}
 	return os.Chmod(dst, srcInfo.Mode())
@@ -117,7 +117,7 @@ func copyDir(src, dst string) error {
 	var srcInfo os.FileInfo
 
 	// retrieve os.fileInfo of the source directory
-	if srcInfo, err = os.Lstat(src); err != nil {
+	if srcInfo, err = os.Stat(src); err != nil {
 		return err
 	}
 
