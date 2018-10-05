@@ -23,6 +23,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 func NewZipWritter(src string, des string, include [][]string, manifestFilePath string) *ZipWritter {
@@ -88,18 +90,13 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 		if len(includeData) == 1 {
 			i.source = filepath.Join(zw.manifestFilePath, includeData[0])
 			i.destination = filepath.Join(zw.src, includeData[0])
+			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "For the Source Path: \""+includeData[0]+"\"")
 		} else if len(includeData) == 2 {
 			i.source = filepath.Join(zw.manifestFilePath, includeData[0])
 			i.destination = zw.src + "/" + includeData[1]
+			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "For the Source Path: \""+includeData[0]+"\" and the Destination Path: \""+includeData[1]+"\"")
 		} else {
 			continue
-		}
-
-		// set sourceDir to the source location
-		// check if its a file than change it to the Dir of source file
-		sourceDir := i.source
-		if isFilePath(sourceDir) {
-			sourceDir = filepath.Dir(i.source)
 		}
 
 		// set destDir to the destination location
@@ -108,6 +105,9 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 		if isFilePath(destDir) {
 			destDir = filepath.Dir(destDir)
 		}
+		// trim path wildcard "*" from the destination path as if it has any
+		destDirs := strings.Split(destDir, "*")
+		destDir = destDirs[0]
 
 		// retrieve the name of all files matching pattern or nil if there is no matching file
 		// listOfSourceFiles will hold a list of files matching patterns such as
@@ -119,13 +119,20 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 		// handle the scenarios where included path is something similar to actions/common/*.js
 		// or actions/libs/* or actions/libs/*/utils.js
 		// and destination is set to libs/ or libs/* or ./libs/* or libs/*/utils.js or libs/ or ./libs/
-		if strings.ContainsAny(filepath.Base(i.source), "*") {
+		if strings.ContainsAny(i.source, "*") {
+			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Found the following files with matching Source File Path pattern:")
 			for _, file := range listOfSourceFiles {
+				var relPath string
+				if relPath, err = filepath.Rel(i.source, file); err != nil {
+					return includeInfo, err
+				}
+				relPath = strings.TrimLeft(relPath, "../")
 				j := Include{
 					source:      file,
-					destination: filepath.Join(destDir, filepath.Base(file)),
+					destination: filepath.Join(destDir, relPath),
 				}
 				includeInfo = append(includeInfo, j)
+				wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Source File Path: ["+j.source+"] Destination File Path: ["+j.destination+"]")
 			}
 			// handle scenarios where included path is something similar to actions/common/utils.js
 			// and destination is set to ./common/ i.e. no file name specified in the destination
@@ -134,14 +141,12 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 				if _, file := filepath.Split(i.destination); len(file) == 0 {
 					_, sFile := filepath.Split(i.source)
 					i.destination = i.destination + sFile
-					includeInfo = append(includeInfo, i)
-				} else {
-					includeInfo = append(includeInfo, i)
 				}
-			} else {
-				// append just parsed include info to the list for further processing
-				includeInfo = append(includeInfo, i)
 			}
+			// append just parsed include info to the list for further processing
+			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Found the following files with matching Source File Path pattern:")
+			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Source File Path: ["+i.source+"] Destination File Path: ["+i.destination+"]")
+			includeInfo = append(includeInfo, i)
 		}
 	}
 	return includeInfo, nil
@@ -213,7 +218,9 @@ func (zw *ZipWritter) Zip() error {
 	// and its safe to delete the files/directories which we copied earlier
 	// to include them in the zip file greeting.zip
 	for _, i := range includeInfo {
-		os.RemoveAll(i.destination)
+		if i.source != i.destination {
+			os.RemoveAll(i.destination)
+		}
 	}
 
 	return nil

@@ -18,12 +18,13 @@
 package utils
 
 import (
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"io"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
+
+	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
 // check if the path represents file path or dir path
