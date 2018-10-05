@@ -9,9 +9,9 @@
  */
 
 
-var lib1 = require('.actions/libs/lib1/utils.js')
-var lib2 = require('.actions/libs/lib2/utils.js')
-var lib3 = require('.actions/libs/lib3/utils.js')
+var lib1 = require('./actions/libs/lib1/utils.js')
+var lib2 = require('./actions/libs/lib2/utils.js')
+var lib3 = require('./actions/libs/lib3/utils.js')
 
 function main(params) {
     var name = params.name || params.payload || 'stranger';
