@@ -25,10 +25,13 @@ import (
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/davecgh/go-spew/spew"
+	"io/ioutil"
 )
 
 func NewZipWritter(src string, des string, include [][]string, exclude []string, manifestFilePath string) *ZipWritter {
 	zw := &ZipWritter{src: src, des: des, include: include, exclude: exclude, manifestFilePath: manifestFilePath}
+	zw.excludedFiles = make(map[string]bool, 0)
 	return zw
 }
 
@@ -37,6 +40,7 @@ type ZipWritter struct {
 	des              string
 	include          [][]string
 	exclude          []string
+	excludedFiles    map[string]bool
 	manifestFilePath string
 	zipWritter       *zip.Writer
 }
@@ -52,6 +56,12 @@ func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
 	if err != nil {
 		return err
 	}
+
+	if zw.excludedFiles[filepath.Clean(path)] {
+		wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Excluding file: ["+path+"]")
+		return nil
+	}
+
 	if !f.Mode().IsRegular() || f.Size() == 0 {
 		return nil
 	}
@@ -143,6 +153,7 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 					destination: filepath.Join(destDir, relPath),
 				}
 				includeInfo = append(includeInfo, j)
+				zw.excludedFiles[j.source] = false
 				wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Source File Path: ["+j.source+"] Destination File Path: ["+j.destination+"]")
 			}
 			// handle scenarios where included path is something similar to actions/common/utils.js
@@ -158,15 +169,60 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Found the following files with matching Source File Path pattern:")
 			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Source File Path: ["+i.source+"] Destination File Path: ["+i.destination+"]")
 			includeInfo = append(includeInfo, i)
+			zw.excludedFiles[i.source] = false
 		}
 	}
 	return includeInfo, nil
 }
 
-func (zw *ZipWritter) buildExcludeMetadata() ([]string, error) {
-	var excludeFiles []string
+func (zw *ZipWritter) buildExcludeMetadata() error {
+	var f bool
 	var err error
-	return excludeFiles, err
+	var files []string
+
+	for _, exclude := range zw.exclude {
+		spew.Dump(exclude)
+		exclude = filepath.Join(zw.manifestFilePath, exclude)
+		spew.Dump(exclude)
+		if files, err = filepath.Glob(exclude); err != nil {
+			return err
+		}
+		for _, file := range files {
+			if f, err = isFile(file); err != nil {
+				return err
+			} else if f {
+				zw.excludedFiles[file] = true
+			} else {
+				if err = zw.findExcludedIncludedFiles(file, true); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	return err
+}
+
+func (zw *ZipWritter) findExcludedIncludedFiles(path string, flag bool) error {
+	var filesInfo []os.FileInfo
+	var err error
+	spew.Println("Reading Dir:")
+	spew.Dump(path)
+	if filesInfo, err = ioutil.ReadDir(path); err != nil {
+		return err
+	}
+	for _, info := range filesInfo {
+		if info.Mode().IsDir() {
+			spew.Println("Reading back the entire dir")
+			zw.findExcludedIncludedFiles(info.Name(), flag)
+
+		} else if info.Mode().IsRegular() {
+			spew.Println("adding file to exclude map")
+			spew.Dump(info.Name())
+			zw.excludedFiles[info.Name()] = flag
+		}
+	}
+	return err
 }
 
 func (zw *ZipWritter) Zip() error {
@@ -185,6 +241,16 @@ func (zw *ZipWritter) Zip() error {
 
 	// creating a new zip writter for greeting.zip
 	zw.zipWritter = zip.NewWriter(zipFile)
+
+	// build a map of file names and bool indicating whether the file is included or excluded
+	// iterate over the directory specified in "function", find the list of files and mark them as not excluded
+	if err = zw.findExcludedIncludedFiles(zw.src, false); err != nil {
+		return err
+	}
+
+	if err = zw.buildExcludeMetadata(); err != nil {
+		return err
+	}
 
 	// walk file system rooted at the directory specified in "function"
 	// walk over each file and dir under root directory e.g. function: actions/greeting
