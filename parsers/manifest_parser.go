@@ -649,7 +649,7 @@ func (dm *YAMLParser) readActionFunction(manifestFilePath string, manifestFileNa
 
 	if utils.IsDirectory(actionFilePath) {
 		zipFileName = actionFilePath + "." + runtimes.ZIP_FILE_EXTENSION
-		err := utils.NewZipWritter(actionFilePath, zipFileName, action.Include, filepath.Dir(manifestFilePath)).Zip()
+		err := utils.NewZipWritter(actionFilePath, zipFileName, action.Include, action.Exclude, filepath.Dir(manifestFilePath)).Zip()
 		if err != nil {
 			return actionFilePath, nil, err
 		}

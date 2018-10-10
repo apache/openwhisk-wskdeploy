@@ -27,8 +27,8 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
-func NewZipWritter(src string, des string, include [][]string, manifestFilePath string) *ZipWritter {
-	zw := &ZipWritter{src: src, des: des, include: include, manifestFilePath: manifestFilePath}
+func NewZipWritter(src string, des string, include [][]string, exclude []string, manifestFilePath string) *ZipWritter {
+	zw := &ZipWritter{src: src, des: des, include: include, exclude: exclude, manifestFilePath: manifestFilePath}
 	return zw
 }
 
@@ -36,6 +36,7 @@ type ZipWritter struct {
 	src              string
 	des              string
 	include          [][]string
+	exclude          []string
 	manifestFilePath string
 	zipWritter       *zip.Writer
 }
@@ -67,6 +68,7 @@ func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
 	if _, err = io.Copy(wr, file); err != nil {
 		return err
 	}
+	wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Adding ["+fileName+"] to zip file")
 	return nil
 }
 
@@ -152,6 +154,12 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 	return includeInfo, nil
 }
 
+func (zw *ZipWritter) buildExcludeMetadata() ([]string, error) {
+	var excludeFiles []string
+	var err error
+	return excludeFiles, err
+}
+
 func (zw *ZipWritter) Zip() error {
 
 	var zipFile *os.File
@@ -163,6 +171,8 @@ func (zw *ZipWritter) Zip() error {
 		return err
 	}
 	defer zipFile.Close()
+
+	wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Creating zip file at \""+zipFile.Name()+"\"")
 
 	// creating a new zip writter for greeting.zip
 	zw.zipWritter = zip.NewWriter(zipFile)
@@ -218,7 +228,8 @@ func (zw *ZipWritter) Zip() error {
 	// and its safe to delete the files/directories which we copied earlier
 	// to include them in the zip file greeting.zip
 	for _, i := range includeInfo {
-		if i.source != i.destination {
+		if filepath.Clean(i.source) != filepath.Clean(i.destination) {
+			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Deleting the file from ["+i.destination+"]")
 			os.RemoveAll(i.destination)
 		}
 	}

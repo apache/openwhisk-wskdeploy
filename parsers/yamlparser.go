@@ -115,6 +115,7 @@ type Action struct {
 	Outputs     map[string]Parameter   `yaml:"outputs"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	Include     [][]string             `yaml:"include,omitempty"`
+	Exclude     []string               `yaml:"exclude,omitempty"`
 }
 
 type Limits struct {
