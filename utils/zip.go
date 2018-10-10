@@ -98,6 +98,15 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 			i.destination = zw.src + "/" + includeData[1]
 			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "For the Source Path: \""+includeData[0]+"\" and the Destination Path: \""+includeData[1]+"\"")
 		} else {
+			if len(includeData) == 0 {
+				wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Ignoring include entry as its empty: []")
+			} else {
+				for index, d := range includeData {
+					includeData[index] = "\"" + d + "\""
+				}
+				includeEntry := strings.Join(includeData, ", ")
+				wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Ignoring include entry as it is invalid: ["+includeEntry+"]. Include entries can have either Source or Source and Destination.")
+			}
 			continue
 		}
 
