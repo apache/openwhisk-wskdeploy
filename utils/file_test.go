@@ -69,8 +69,6 @@ func TestIsFile(t *testing.T) {
 	paths := []string{
 		"../tests/dat/",
 		"../tests/dat/manifest_hello_swift.yaml",
-		"../tests/data",
-		"../tests/data/manifest_hello_swift.yaml",
 	}
 	for _, p := range paths {
 		f, err := isFile(p)
@@ -82,10 +80,6 @@ func TestIsFile(t *testing.T) {
 			assert.False(t, f, fmt.Sprintf(IS_FILE_FAILURE_FOR_FILE, p))
 		case "tests/dat/manifest_hello_swift.yaml":
 			assert.True(t, f, fmt.Sprintf(IS_FILE_FAILURE_FOR_FILE, p))
-		case "../tests/data":
-			assert.False(t, f, fmt.Sprintf(IS_FILE_FAILURE_FOR_DIR, p))
-		case "../tests/data/manifest_hello_swift.yaml":
-			assert.False(t, f, fmt.Sprintf(IS_FILE_FAILURE_FOR_DIR, p))
 		}
 	}
 }
