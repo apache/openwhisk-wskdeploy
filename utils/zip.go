@@ -27,6 +27,9 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
+const PATH_WILDCARD = "*"
+const ONE_DIR_UP = "../"
+
 func NewZipWritter(src string, des string, include [][]string, exclude []string, manifestFilePath string) *ZipWritter {
 	zw := &ZipWritter{
 		src:              src,
@@ -131,7 +134,7 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 			destDir = filepath.Dir(destDir)
 		}
 		// trim path wildcard "*" from the destination path as if it has any
-		destDirs := strings.Split(destDir, "*")
+		destDirs := strings.Split(destDir, PATH_WILDCARD)
 		destDir = destDirs[0]
 
 		// retrieve the name of all files matching pattern or nil if there is no matching file
@@ -144,14 +147,14 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 		// handle the scenarios where included path is something similar to actions/common/*.js
 		// or actions/libs/* or actions/libs/*/utils.js
 		// and destination is set to libs/ or libs/* or ./libs/* or libs/*/utils.js or libs/ or ./libs/
-		if strings.ContainsAny(i.source, "*") {
+		if strings.ContainsAny(i.source, PATH_WILDCARD) {
 			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Found the following files with matching Source File Path pattern:")
 			for _, file := range listOfSourceFiles {
 				var relPath string
 				if relPath, err = filepath.Rel(i.source, file); err != nil {
 					return includeInfo, err
 				}
-				relPath = strings.TrimLeft(relPath, "../")
+				relPath = strings.TrimLeft(relPath, ONE_DIR_UP)
 				j := Include{
 					source:      file,
 					destination: filepath.Join(destDir, relPath),
@@ -196,8 +199,8 @@ func (zw *ZipWritter) findExcludedIncludedFiles(functionPath string, flag bool) 
 	var excludedFiles []string
 	var f bool
 
-	if !strings.HasSuffix(functionPath, "*") {
-		functionPath = filepath.Join(functionPath, "*")
+	if !strings.HasSuffix(functionPath, PATH_WILDCARD) {
+		functionPath = filepath.Join(functionPath, PATH_WILDCARD)
 	}
 	if excludedFiles, err = filepath.Glob(functionPath); err != nil {
 		return err
