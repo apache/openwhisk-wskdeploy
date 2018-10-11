@@ -25,8 +25,6 @@ import (
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
-	"github.com/davecgh/go-spew/spew"
-	"io/ioutil"
 )
 
 func NewZipWritter(src string, des string, include [][]string, exclude []string, manifestFilePath string) *ZipWritter {
@@ -176,50 +174,46 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 }
 
 func (zw *ZipWritter) buildExcludeMetadata() error {
-	var f bool
 	var err error
-	var files []string
-
 	for _, exclude := range zw.exclude {
-		spew.Dump(exclude)
 		exclude = filepath.Join(zw.manifestFilePath, exclude)
-		spew.Dump(exclude)
-		if files, err = filepath.Glob(exclude); err != nil {
+		if err = zw.findExcludedIncludedFiles(exclude, true); err != nil {
 			return err
 		}
-		for _, file := range files {
-			if f, err = isFile(file); err != nil {
-				return err
-			} else if f {
-				zw.excludedFiles[file] = true
-			} else {
-				if err = zw.findExcludedIncludedFiles(file, true); err != nil {
-					return err
-				}
-			}
-		}
 	}
-
 	return err
 }
 
-func (zw *ZipWritter) findExcludedIncludedFiles(path string, flag bool) error {
-	var filesInfo []os.FileInfo
+func (zw *ZipWritter) findExcludedIncludedFiles(functionPath string, flag bool) error {
 	var err error
-	spew.Println("Reading Dir:")
-	spew.Dump(path)
-	if filesInfo, err = ioutil.ReadDir(path); err != nil {
+	var files []string
+	var excludedFiles []string
+	var f bool
+
+	if !strings.HasSuffix(functionPath, "*") {
+		functionPath = filepath.Join(functionPath, "*")
+	}
+	if excludedFiles, err = filepath.Glob(functionPath); err != nil {
 		return err
 	}
-	for _, info := range filesInfo {
-		if info.Mode().IsDir() {
-			spew.Println("Reading back the entire dir")
-			zw.findExcludedIncludedFiles(info.Name(), flag)
-
-		} else if info.Mode().IsRegular() {
-			spew.Println("adding file to exclude map")
-			spew.Dump(info.Name())
-			zw.excludedFiles[info.Name()] = flag
+	for _, file := range excludedFiles {
+		err = filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
+			files = append(files, path)
+			return nil
+		})
+		if err != nil {
+			return err
+		}
+	}
+	for _, file := range files {
+		if f, err = isFile(file); err != nil {
+			return err
+		} else if f {
+			zw.excludedFiles[file] = flag
+		} else {
+			if err = zw.findExcludedIncludedFiles(file, flag); err != nil {
+				return err
+			}
 		}
 	}
 	return err
