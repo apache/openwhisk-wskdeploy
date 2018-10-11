@@ -24,6 +24,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 )
 
@@ -60,12 +61,18 @@ type Include struct {
 func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
 	var file *os.File
 	var wr io.Writer
+	var verboseMsg string
+
 	if err != nil {
 		return err
 	}
 
 	if zw.excludedFiles[filepath.Clean(path)] {
-		wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Excluding file: ["+path+"]")
+		verboseMsg = wski18n.T(wski18n.ID_VERBOSE_ZIP_EXCLUDING_FILE_X_path_X,
+			map[string]interface{}{
+				wski18n.KEY_PATH: path,
+			})
+		wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, verboseMsg)
 		return nil
 	}
 
@@ -85,7 +92,11 @@ func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
 	if _, err = io.Copy(wr, file); err != nil {
 		return err
 	}
-	wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Adding ["+fileName+"] to zip file")
+	verboseMsg = wski18n.T(wski18n.ID_VERBOSE_ZIP_ADDING_FILE_X_path_X,
+		map[string]interface{}{
+			wski18n.KEY_PATH: path,
+		})
+	wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, verboseMsg)
 	return nil
 }
 
@@ -93,6 +104,7 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 	var includeInfo []Include
 	var listOfSourceFiles []string
 	var err error
+	var verboseMsg string
 
 	// iterate over set of included files specified in manifest YAML e.g.
 	// include:
@@ -109,20 +121,36 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 		if len(includeData) == 1 {
 			i.source = filepath.Join(zw.manifestFilePath, includeData[0])
 			i.destination = filepath.Join(zw.src, includeData[0])
-			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "For the Source Path: \""+includeData[0]+"\"")
+			verboseMsg = wski18n.T(wski18n.ID_VERBOSE_ZIP_INCLUDE_SOURCE_PATH_X_path_X,
+				map[string]interface{}{
+					wski18n.KEY_PATH: includeData[0],
+				})
+			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, verboseMsg)
 		} else if len(includeData) == 2 {
 			i.source = filepath.Join(zw.manifestFilePath, includeData[0])
 			i.destination = zw.src + "/" + includeData[1]
-			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "For the Source Path: \""+includeData[0]+"\" and the Destination Path: \""+includeData[1]+"\"")
+			verboseMsg = wski18n.T(wski18n.ID_VERBOSE_ZIP_INCLUDE_SOURCE_PATH_X_path_X_DESTINATION_PATH_X_dest_X,
+				map[string]interface{}{
+					wski18n.KEY_PATH:        includeData[0],
+					wski18n.KEY_DESTINATION: includeData[1],
+				})
 		} else {
 			if len(includeData) == 0 {
-				wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Ignoring include entry as its empty: []")
+				verboseMsg = wski18n.T(wski18n.ID_VERBOSE_INVALID_INCLUDE_ENTRY,
+					map[string]interface{}{
+						wski18n.KEY_INCLUDE: "",
+					})
+				wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, verboseMsg)
 			} else {
 				for index, d := range includeData {
 					includeData[index] = "\"" + d + "\""
 				}
 				includeEntry := strings.Join(includeData, ", ")
-				wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Ignoring include entry as it is invalid: ["+includeEntry+"]. Include entries can have either Source or Source and Destination.")
+				verboseMsg = wski18n.T(wski18n.ID_VERBOSE_INVALID_INCLUDE_ENTRY,
+					map[string]interface{}{
+						wski18n.KEY_INCLUDE: includeEntry,
+					})
+				wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, verboseMsg)
 			}
 			continue
 		}
@@ -148,7 +176,7 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 		// or actions/libs/* or actions/libs/*/utils.js
 		// and destination is set to libs/ or libs/* or ./libs/* or libs/*/utils.js or libs/ or ./libs/
 		if strings.ContainsAny(i.source, PATH_WILDCARD) {
-			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Found the following files with matching Source File Path pattern:")
+			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, wski18n.T(wski18n.ID_VERBOSE_LIST_OF_FILES_MATCHING_PATTERN))
 			for _, file := range listOfSourceFiles {
 				var relPath string
 				if relPath, err = filepath.Rel(i.source, file); err != nil {
@@ -161,7 +189,12 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 				}
 				includeInfo = append(includeInfo, j)
 				zw.excludedFiles[j.source] = false
-				wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Source File Path: ["+j.source+"] Destination File Path: ["+j.destination+"]")
+				verboseMsg = wski18n.T(wski18n.ID_VERBOSE_ZIP_INCLUDE_SOURCE_PATH_X_path_X_DESTINATION_PATH_X_dest_X,
+					map[string]interface{}{
+						wski18n.KEY_PATH:        j.source,
+						wski18n.KEY_DESTINATION: j.destination,
+					})
+				wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, verboseMsg)
 			}
 			// handle scenarios where included path is something similar to actions/common/utils.js
 			// and destination is set to ./common/ i.e. no file name specified in the destination
@@ -173,8 +206,13 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 				}
 			}
 			// append just parsed include info to the list for further processing
-			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Found the following files with matching Source File Path pattern:")
-			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Source File Path: ["+i.source+"] Destination File Path: ["+i.destination+"]")
+			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, wski18n.T(wski18n.ID_VERBOSE_LIST_OF_FILES_MATCHING_PATTERN))
+			verboseMsg = wski18n.T(wski18n.ID_VERBOSE_ZIP_INCLUDE_SOURCE_PATH_X_path_X_DESTINATION_PATH_X_dest_X,
+				map[string]interface{}{
+					wski18n.KEY_PATH:        i.source,
+					wski18n.KEY_DESTINATION: i.destination,
+				})
+			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, verboseMsg)
 			includeInfo = append(includeInfo, i)
 			zw.excludedFiles[i.source] = false
 		}
@@ -233,6 +271,7 @@ func (zw *ZipWritter) Zip() error {
 	var zipFile *os.File
 	var err error
 	var fileInfo os.FileInfo
+	var verboseMsg string
 
 	// create zip file e.g. greeting.zip
 	if zipFile, err = os.Create(zw.des); err != nil {
@@ -240,7 +279,11 @@ func (zw *ZipWritter) Zip() error {
 	}
 	defer zipFile.Close()
 
-	wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Creating zip file at \""+zipFile.Name()+"\"")
+	verboseMsg = wski18n.T(wski18n.ID_VERBOSE_CREATING_ZIP_FILE_X_path_X,
+		map[string]interface{}{
+			wski18n.KEY_PATH: zipFile.Name(),
+		})
+	wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, verboseMsg)
 
 	// creating a new zip writter for greeting.zip
 	zw.zipWritter = zip.NewWriter(zipFile)
@@ -307,7 +350,11 @@ func (zw *ZipWritter) Zip() error {
 	// to include them in the zip file greeting.zip
 	for _, i := range includeInfo {
 		if filepath.Clean(i.source) != filepath.Clean(i.destination) {
-			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, "Deleting the file from ["+i.destination+"]")
+			verboseMsg = wski18n.T(wski18n.ID_VERBOSE_DELETING_FILE_X_path_X,
+				map[string]interface{}{
+					wski18n.KEY_PATH: i.destination,
+				})
+			wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, verboseMsg)
 			os.RemoveAll(i.destination)
 		}
 	}

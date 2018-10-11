@@ -86,6 +86,8 @@ const (
 	KEY_API_BASE_PATH     = "apibasepath"
 	KEY_RESPONSE          = "response"
 	KEY_API_RELATIVE_PATH = "apirelativepath"
+	KEY_DESTINATION       = "destination"
+	KEY_INCLUDE           = "include"
 )
 
 // DO NOT TRANSLATE
@@ -241,10 +243,18 @@ const (
 	**/
 
 	// Verbose (Debug/Trace) messages
-	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X                = "msg_dbg_searching_project_directory"
-	ID_DEBUG_DEPLOYMENT_NAME_FOUND_X_key_X_name_X         = "msg_dbg_deployment_name_found"
-	ID_DEBUG_PACKAGES_FOUND_UNDER_ROOT_X_path_X           = "msg_dbg_packages_found_root"
-	ID_DEBUG_PACKAGES_FOUND_UNDER_PROJECT_X_path_X_name_X = "msg_dbg_packages_found_project"
+	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X                                = "msg_dbg_searching_project_directory"
+	ID_DEBUG_DEPLOYMENT_NAME_FOUND_X_key_X_name_X                         = "msg_dbg_deployment_name_found"
+	ID_DEBUG_PACKAGES_FOUND_UNDER_ROOT_X_path_X                           = "msg_dbg_packages_found_root"
+	ID_DEBUG_PACKAGES_FOUND_UNDER_PROJECT_X_path_X_name_X                 = "msg_dbg_packages_found_project"
+	ID_VERBOSE_ZIP_EXCLUDING_FILE_X_path_X                                = "msg_verbose_zip_exclude_file_path"
+	ID_VERBOSE_ZIP_ADDING_FILE_X_path_X                                   = "msg_verbose_zip_adding_file_path"
+	ID_VERBOSE_ZIP_INCLUDE_SOURCE_PATH_X_path_X                           = "msg_verbose_zip_include_source_path"
+	ID_VERBOSE_ZIP_INCLUDE_SOURCE_PATH_X_path_X_DESTINATION_PATH_X_dest_X = "msg_verbose_zip_include_source_path_destination_path"
+	ID_VERBOSE_INVALID_INCLUDE_ENTRY                                      = "msg_verbose_invalid_include_entry"
+	ID_VERBOSE_CREATING_ZIP_FILE_X_path_X                                 = "msg_verbose_creating_zip_file"
+	ID_VERBOSE_DELETING_FILE_X_path_X                                     = "msg_verbose_deleting_file"
+	ID_VERBOSE_LIST_OF_FILES_MATCHING_PATTERN                             = "msg_verbose_list_of_files_matching_pattern"
 )
 
 // DO NOT TRANSLATE
