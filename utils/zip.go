@@ -28,8 +28,14 @@ import (
 )
 
 func NewZipWritter(src string, des string, include [][]string, exclude []string, manifestFilePath string) *ZipWritter {
-	zw := &ZipWritter{src: src, des: des, include: include, exclude: exclude, manifestFilePath: manifestFilePath}
-	zw.excludedFiles = make(map[string]bool, 0)
+	zw := &ZipWritter{
+		src:              src,
+		des:              des,
+		include:          include,
+		exclude:          exclude,
+		excludedFiles:    make(map[string]bool, 0),
+		manifestFilePath: manifestFilePath,
+	}
 	return zw
 }
 

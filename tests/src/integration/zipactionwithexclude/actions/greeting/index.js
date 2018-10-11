@@ -9,7 +9,7 @@
  */
 
 
-var common = require('./actions/common/utils.js')
+var common = require('./common/utils.js')
 
 function main(params) {
     var name = params.name || params.payload || 'stranger';
