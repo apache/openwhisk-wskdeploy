@@ -510,5 +510,33 @@
   {
     "id": "msg_config_missing_apigw_access_token",
     "translation": "The apigw access token is not configured.\n"
+  },
+  {
+    "id": "msg_verbose_zip_exclude_file_path",
+    "translation": "Excluding Path: [{{.path}}]\n"
+  },
+  {
+    "id": "msg_verbose_zip_adding_file_path",
+    "translation": "Adding [{{.path}}] to Zip File.\n"
+  },
+  {
+    "id": "msg_verbose_zip_include_source_path",
+    "translation": "For the Source Path: [{{.path}}]\n"
+  },
+  {
+    "id": "msg_verbose_zip_include_source_path_destination_path",
+    "translation": "For the Source Path: [{{.path}}] and Destination Path: [{{.destination}}]\n"
+  },
+  {
+    "id": "msg_verbose_invalid_include_entry",
+    "translation": "Ignoring Include Entry as it is invalid [{{.include}}]. Include entry can either have [Source] or [Source, Destination].\n"
+  },
+  {
+    "id": "msg_verbose_creating_zip_file",
+    "translation": "Creating the Zip File: [{{.path}}]\n"
+  },
+  {
+    "id": "msg_verbose_list_of_files_matching_pattern",
+    "translation": "Found the following files with matching Source File Path pattern.\n"
   }
 ]

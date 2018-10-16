@@ -1,0 +1,28 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+project:
+    packages:
+        zipactionwithinclude:
+            actions:
+                greeting1:
+                    inputs:
+                        name: Amy
+                        place: Vermont
+                greeting2:
+                    inputs:
+                        name: Bernie
+                        place: Paris
+                greeting3:
+                    inputs:
+                        name: Cindy
+                        place: New York
+                greeting4:
+                    inputs:
+                        name: Dough
+                        place: Spain
+                greeting5:
+                    inputs:
+                        name: Evya
+                        place: Japan
+

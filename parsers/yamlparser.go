@@ -114,8 +114,8 @@ type Action struct {
 	Inputs      map[string]Parameter   `yaml:"inputs"`
 	Outputs     map[string]Parameter   `yaml:"outputs"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
-	// TODO() this is propoagated from package to every action within that package
-	//Parameters  map[string]interface{} `yaml:parameters`
+	Include     [][]string             `yaml:"include,omitempty"`
+	Exclude     []string               `yaml:"exclude,omitempty"`
 }
 
 type Limits struct {

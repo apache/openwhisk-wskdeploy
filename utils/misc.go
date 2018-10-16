@@ -18,15 +18,12 @@
 package utils
 
 import (
-	"archive/zip"
 	"encoding/json"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"os/user"
 	"path"
-	"path/filepath"
 	"strings"
 
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
@@ -97,62 +94,6 @@ func PrettyJSON(j interface{}) (string, error) {
 		return "", err
 	}
 	return string(bytes), nil
-}
-
-func NewZipWritter(src, des string) *ZipWritter {
-	zw := &ZipWritter{src: src, des: des}
-	return zw
-}
-
-type ZipWritter struct {
-	src        string
-	des        string
-	zipWritter *zip.Writer
-}
-
-func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
-	if err != nil {
-		return err
-	}
-	if !f.Mode().IsRegular() || f.Size() == 0 {
-		return nil
-	}
-	file, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	fileName := strings.TrimPrefix(path, zw.src+"/")
-	wr, err := zw.zipWritter.Create(fileName)
-	if err != nil {
-		return err
-	}
-
-	_, err = io.Copy(wr, file)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (zw *ZipWritter) Zip() error {
-	// create zip file
-	zipFile, err := os.Create(zw.des)
-	if err != nil {
-		return err
-	}
-	defer zipFile.Close()
-	zw.zipWritter = zip.NewWriter(zipFile)
-	err = filepath.Walk(zw.src, zw.zipFile)
-	if err != nil {
-		return nil
-	}
-	err = zw.zipWritter.Close()
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func GetManifestFilePath(projectPath string) string {
