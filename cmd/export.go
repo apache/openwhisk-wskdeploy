@@ -117,8 +117,8 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML,
 
 func exportProject(projectName string, targetManifest string) error {
 
-        whisk.SetVerbose(utils.Flags.Verbose)
-        whisk.SetDebug(utils.Flags.Trace)
+	whisk.SetVerbose(utils.Flags.Verbose)
+	whisk.SetDebug(utils.Flags.Trace)
 
 	maniyaml := &parsers.YAML{}
 	maniyaml.Project.Name = projectName
