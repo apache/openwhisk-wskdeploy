@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/apache/incubator-openwhisk-wskdeploy",
-	"GoVersion": "go1.7",
+	"GoVersion": "go1.9",
 	"GodepVersion": "v62",
 	"Deps": [
 		{
