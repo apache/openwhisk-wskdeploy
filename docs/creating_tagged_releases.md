@@ -55,5 +55,6 @@ Update brew formula with the automation command `brew bump-formula-pr`:
 $ brew bump-formula-pr \
   --url='https://github.com/apache/incubator-openwhisk-wskdeploy/archive/X.Y.Z.tar.gz' \
   --sha256='PASTE THE SHA256 CHECKSUM HERE' \
+  --version='X.Y.Z' \
   wskdeploy
 ```
