@@ -150,10 +150,25 @@ packages:
                   { "greeting" => greeting }
                 end
           runtime: ruby:2.5
+        helloGo:
+          function: actions/hello.go
+        helloGoWithCode:
+          code: |
+              package main
+              func Main(obj map[string]interface{}) map[string]interface{} {
+                name, ok := obj["name"].(string)
+                if !ok {
+                  name = "stranger!"
+                }
+                msg := make(map[string]interface{})
+                msg["greeting"] = "Hello, " + name + "!"
+                return msg
+              }
+          runtime: go:1.11
       sequences:
         # sequence of helloworld in all four runtimes
         hello-world-series:
-          actions: helloNodejs, helloNodejsWithCode, helloJava, helloPython, helloPythonWithCode, helloSwift, helloSwiftWithCode, helloRuby, helloRubyWithCode
+          actions: helloNodejs, helloNodejsWithCode, helloJava, helloPython, helloPythonWithCode, helloSwift, helloSwiftWithCode, helloRuby, helloRubyWithCode, helloGo, helloGoWithCode
       triggers:
         # trigger to activate helloworld sequence
         triggerHelloworld:
