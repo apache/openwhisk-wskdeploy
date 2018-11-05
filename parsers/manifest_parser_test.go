@@ -530,7 +530,7 @@ func TestComposeActionsForInvalidRuntime_1(t *testing.T) {
     helloworld:
         actions:
             helloInvalidRuntime:
-				function: ../tests/src/integration/helloworld/deployment.yml`
+                function: ../tests/src/integration/helloworld/deployment.yaml`
 	p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
 	_, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.NotNil(t, err, fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED, tmpfile))
