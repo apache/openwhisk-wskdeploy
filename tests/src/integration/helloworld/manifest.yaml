@@ -151,19 +151,19 @@ packages:
                 end
           runtime: ruby:2.5
         helloGo:
-          function: actions/hello.go
+          function: actions/_hello.go
         helloGoWithCode:
           code: |
-              package main
-              func Main(obj map[string]interface{}) map[string]interface{} {
-                name, ok := obj["name"].(string)
-                if !ok {
-                  name = "stranger!"
+                package main
+                func Main(obj map[string]interface{}) map[string]interface{} {
+                  name, ok := obj["name"].(string)
+                  if !ok {
+                    name = "stranger!"
+                  }
+                  msg := make(map[string]interface{})
+                  msg["greeting"] = "Hello, " + name + "!"
+                  return msg
                 }
-                msg := make(map[string]interface{})
-                msg["greeting"] = "Hello, " + name + "!"
-                return msg
-              }
           runtime: go:1.11
       sequences:
         # sequence of helloworld in all four runtimes
