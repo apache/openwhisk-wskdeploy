@@ -381,6 +381,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 		wskprint.PrintOpenWhiskWarning(warningString)
 		pkg.Version = DEFAULT_PACKAGE_VERSION
 	}
+	pag.Version = wskenv.ConvertSingleName(pkg.Version)
 
 	//License is a mandatory value
 	//set license to unknown if it is an empty string
@@ -933,6 +934,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		wskaction.Name = actionName
 		pub := false
 		wskaction.Publish = &pub
+		wskaction.Version = wskenv.ConvertSingleName(action.Version)
 
 		record := utils.ActionRecord{Action: wskaction, Packagename: packageName, Filepath: actionFilePath}
 		listOfActions = append(listOfActions, record)
