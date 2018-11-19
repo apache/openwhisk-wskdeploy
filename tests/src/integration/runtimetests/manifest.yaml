@@ -26,6 +26,16 @@ packages:
                     place: string
                 outputs:
                     payload: string
+            greetingnodejs10-with-explicit-runtime:
+                web-export: true
+                version: 1.0
+                function: src/greeting.js
+                runtime: nodejs:10
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
             greetingphp-with-explicit-runtime:
                 web-export: true
                 version: 1.0
