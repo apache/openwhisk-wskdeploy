@@ -35,6 +35,7 @@ const (
 	FLOAT   string = "float"
 	BOOLEAN string = "boolean"
 	JSON    string = "json"
+	SLICE   string = "slice"
 )
 
 var validParameterNameMap = map[string]string{
@@ -52,6 +53,7 @@ var validParameterNameMap = map[string]string{
 	"float64": FLOAT,
 	JSON:      JSON,
 	"map":     JSON,
+	"slice":   SLICE,
 }
 
 var typeDefaultValueMap = map[string]interface{}{
@@ -345,6 +347,11 @@ func ResolveParameter(paramName string, param *Parameter, filePath string) (inte
 	// JSON - Handle both cases, where value 1) is a string containing JSON, 2) is a map of JSON
 	if param.Value != nil && param.Type == "json" {
 		value, errorParser = resolveJSONParameter(filePath, paramName, param, value)
+	}
+
+	if param.Value != nil && param.Type == "slice" {
+		value = wskenv.InterpolateStringWithEnvVar(param.Value)
+		value = utils.ConvertInterfaceValue(value)
 	}
 
 	// Default value to zero value for the Type

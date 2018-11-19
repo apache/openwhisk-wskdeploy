@@ -56,6 +56,7 @@ const (
 	TEST_MSG_ACTION_FUNCTION_PATH_MISSING           = "Action function path missing"
 	TEST_MSG_INVALID_ACTION_ANNOTATION              = "Action annotations are invalid"
 	TEST_MSG_PACKAGE_PARAMETER_VALUE_MISMATCH       = "Package parameter value mismatched."
+	TEST_MSG_MISMATCH_ACTION_INPUT_PARAMS           = "Action parameters mismatched."
 
 	// local error messages
 	TEST_ERROR_MANIFEST_PARSE_FAILURE     = "Manifest [%s]: Failed to parse. Error: %s"
@@ -1333,6 +1334,28 @@ func TestParseManifestForJSONParams(t *testing.T) {
 				expectedType := "json"
 				actualType := param.Type
 				assert.Equal(t, expectedType, actualType, fmt.Sprintf(TEST_MSG_ACTION_PARAMETER_TYPE_MISMATCH, output))
+			}
+		}
+	}
+}
+
+// Test 18: validate manifest_parser.ComposeActions() method for parsing the correct inputs to the action
+func TestComposeActionsForInputs(t *testing.T) {
+	file := "../tests/dat/manifest_data_compose_actions_for_inputs.yaml"
+	_, m, _ := testLoadParseManifest(t, file)
+	packageName := "testActionInputsInManifest"
+	actionName := "helloNodejs"
+
+	if action, ok := m.Packages[packageName].Actions[actionName]; ok {
+		// validate Inputs to this action
+		for input, param := range action.Inputs {
+			switch input {
+			case "param1":
+				assert.Equal(t, []interface{}{"v1", "v2"},
+					param.Value.([]interface{}), TEST_MSG_MISMATCH_ACTION_INPUT_PARAMS)
+			case "param2":
+				assert.Equal(t, []interface{}{"value1", "value2"},
+					param.Value.([]interface{}), TEST_MSG_MISMATCH_ACTION_INPUT_PARAMS)
 			}
 		}
 	}
