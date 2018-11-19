@@ -134,15 +134,15 @@ These packages may vary by OpenWhisk release; examples of supported runtimes as 
 
 | Runtime value | OpenWhisk kind | Docker image name | Description |
 |:---|:---|:---|:---|
-| nodejs | nodejs | openwhisk/nodejsaction:latest | Latest NodeJS runtime |
-| nodejs@6 | nodejs:6 | openwhisk/nodejs6action:latest | Latest NodeJS 6 runtime |
+| nodejs@10 | nodejs:10 | openwhisk/action-nodejs-v8:latest | Latest NodeJS 10 runtime |
 | nodejs@8 | nodejs:8 | openwhisk/action-nodejs-v8:latest | Latest NodeJS 8 runtime |
-| java, java@8 | java | openwhisk/java8action:latest | Latest Java (8) language runtime |
+| nodejs@6 | nodejs:6 | openwhisk/nodejs6action:latest | Latest NodeJS 6 runtime |
+| java | java | openwhisk/java8action:latest | Latest Java (8) language runtime |
+| php, php@7.2 | php:7.2 | openwhisk/action-php-v7.2:latest | Latest PHP (7.2) language runtime |
 | php, php@7.1 | php:7.1 | openwhisk/action-php-v7.1:latest | Latest PHP (7.1) language runtime |
-| python, python@2 | python:2 | openwhisk/python2action:latest | Latest Python 2 language runtime |
 | python@3 | python:3 | openwhisk/python3action:latest | Latest Python 3 language runtime |
-| swift | swift | openwhisk/swiftaction:latest | Latest Swift language runtime |
-| swift@3 | swift | openwhisk/swift3action:latest | Latest Swift 3 language runtime |
+| python, python@2 | python:2 | openwhisk/python2action:latest | Latest Python 2 language runtime |s
+| swift@4.1 | swift | openwhisk/action-swift-v4.1:latest | Latest Swift 4.1 language runtime |
 | swift@3.1.1 | swift | openwhisk/action-swift-v3.1.1:latest | Latest Swift 3.1.1 language runtime |
 | language:default | N/A | N/A | Permit the OpenWhisk platform to select the correct default language runtime. |
 
