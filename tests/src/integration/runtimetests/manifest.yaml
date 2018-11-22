@@ -76,6 +76,16 @@ packages:
                     place: string
                 outputs:
                     payload: string
+            greetingruby25-with-explicit-runtime:
+                web-export: true
+                version: 1.0
+                function: src/hello.rb
+                runtime: ruby:2.5
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
             greetingswift311-with-explicit-runtime:
                 web-export: true
                 version: 1.0
@@ -122,6 +132,15 @@ packages:
                 web-export: true
                 version: 1.0
                 function: src/hello.py
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
+            greetingruby-without-explicit-runtime:
+                web-export: true
+                version: 1.0
+                function: src/hello.rb
                 inputs:
                     name: string
                     place: string
@@ -195,6 +214,26 @@ packages:
                 web-export: true
                 version: 1.0
                 function: src/hello.py
+                runtime: random
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
+            greetingruby-with-php-explicit-runtime:
+                web-export: true
+                version: 1.0
+                function: src/hello.rb
+                runtime: php
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
+            greetingruby-with-random-explicit-runtime:
+                web-export: true
+                version: 1.0
+                function: src/hello.rb
                 runtime: random
                 inputs:
                     name: string
