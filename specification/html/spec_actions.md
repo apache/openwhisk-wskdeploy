@@ -142,6 +142,7 @@ These packages may vary by OpenWhisk release; examples of supported runtimes as 
 | php, php@7.1 | php:7.1 | openwhisk/action-php-v7.1:latest | Latest PHP (7.1) language runtime |
 | python@3 | python:3 | openwhisk/python3action:latest | Latest Python 3 language runtime |
 | python, python@2 | python:2 | openwhisk/python2action:latest | Latest Python 2 language runtime |s
+| ruby | ruby:2.5 | openwhisk/action-ruby-v2.5:latest | Latest Ruby 2.5 language runtime |
 | swift@4.1 | swift | openwhisk/action-swift-v4.1:latest | Latest Swift 4.1 language runtime |
 | swift@3.1.1 | swift | openwhisk/action-swift-v3.1.1:latest | Latest Swift 3.1.1 language runtime |
 | language:default | N/A | N/A | Permit the OpenWhisk platform to select the correct default language runtime. |
@@ -185,6 +186,11 @@ following file extensions are recognized and will be run on the latest version o
   <td>.php</td>
   <td>php</td>
   <td>Latest PHP language runtime.</td>
+ </tr>
+ <tr>
+  <td>.rb</td>
+  <td>ruby</td>
+  <td>Latest Ruby language runtime.</td>
  </tr>
 </table>
 </html>

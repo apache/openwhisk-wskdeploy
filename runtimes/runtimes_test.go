@@ -36,6 +36,7 @@ func TestParseOpenWhisk(t *testing.T) {
 	assert.Equal(t, 2, len(converted["php"]), "not expected length")
 	assert.Equal(t, 1, len(converted["java"]), "not expected length")
 	assert.Equal(t, 6, len(converted["python"]), "not expected length")
+	assert.Equal(t, 1, len(converted["ruby"]), "not expected length")
 	assert.Equal(t, 2, len(converted["swift"]), "not expected length")
 	// cannot pass this test until it is deployed in OpenWhisk
 	//assert.Equal(t, 2, len(converted["go"]), "not expected length")
