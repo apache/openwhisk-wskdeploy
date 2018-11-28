@@ -60,10 +60,19 @@ type RuleRecord struct {
 	Packagename string
 }
 
+func fallbackHome() string {
+	if home := os.Getenv("HOME"); home != "" {
+		return home
+	}
+	// For Windows.
+	return os.Getenv("UserProfile")
+}
+
 func GetHomeDirectory() string {
 	usr, err := user.Current()
 	if err != nil {
-		return ""
+
+		return fallbackHome()
 	}
 
 	return usr.HomeDir
