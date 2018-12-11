@@ -23,8 +23,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 
@@ -56,7 +54,6 @@ const (
 	HTTP_CONTENT_TYPE_VALUE = "application/json; charset=UTF-8"
 	RUNTIME_NOT_SPECIFIED   = "NOT SPECIFIED"
 	BLACKBOX                = "blackbox"
-	RUNTIMES_FILE_NAME      = "runtimes.json"
 	HTTPS                   = "https://"
 )
 
@@ -137,14 +134,11 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	if err != nil || !strings.Contains(HTTP_CONTENT_TYPE_VALUE, res.Header.Get(HTTP_CONTENT_TYPE_KEY)) {
 		stdout := wski18n.T(wski18n.ID_MSG_UNMARSHAL_LOCAL)
 		wskprint.PrintOpenWhiskInfo(stdout)
-		runtimeDetails := readRuntimes()
-		if runtimeDetails != nil {
-			err = json.Unmarshal(runtimeDetails, &op)
-			if err != nil {
-				errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_PARSER_ERROR,
-					map[string]interface{}{wski18n.KEY_ERR: err.Error()})
-				err = wskderrors.NewRuntimeParserError(errMessage)
-			}
+		err = json.Unmarshal(RUNTIME_DETAILS, &op)
+		if err != nil {
+			errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_PARSER_ERROR,
+				map[string]interface{}{wski18n.KEY_ERR: err.Error()})
+			err = wskderrors.NewRuntimeParserError(errMessage)
 		}
 	} else {
 		b, _ := ioutil.ReadAll(res.Body)
@@ -270,14 +264,259 @@ func ListOfSupportedRuntimes(runtimes map[string][]string) (rt []string) {
 	return
 }
 
-func readRuntimes() []byte {
-	_, b, _, _ := runtime.Caller(0)
-	basepath := filepath.Dir(b)
-	runtimesFileWithPath := filepath.Join(basepath, RUNTIMES_FILE_NAME)
-	file, readErr := ioutil.ReadFile(runtimesFileWithPath)
-	if readErr != nil {
-		wskprint.PrintlnOpenWhiskWarning(readErr.Error())
-		return nil
-	}
-	return file
-}
+var RUNTIME_DETAILS = []byte(`{
+    "support": {
+        "github": "https://github.com/apache/incubator-openwhisk/issues",
+        "slack": "http://slack.openwhisk.org"
+    },
+    "description": "OpenWhisk",
+    "api_paths": [
+        "/api/v1"
+    ],
+    "runtimes": {
+        "nodejs": [
+            {
+                "kind": "nodejs",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "nodejsaction",
+                    "tag": "latest"
+                },
+                "deprecated": true,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "nodejs:6",
+                "default": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "nodejs6action",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "stemCells": [{
+                    "count": 2,
+                    "memory": "256 MB"
+                }]
+            },
+            {
+                "kind": "nodejs:8",
+                "default": false,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-nodejs-v8",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "nodejs:10",
+                "default": false,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-nodejs-v10",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            }
+        ],
+        "python": [
+            {
+                "kind": "python",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "python2action",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "python:2",
+                "default": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "python2action",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "python:3",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "python3action",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            }
+        ],
+        "swift": [
+            {
+                "kind": "swift",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "swiftaction",
+                    "tag": "latest"
+                },
+                "deprecated": true,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "swift:3",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "swift3action",
+                    "tag": "latest"
+                },
+                "deprecated": true,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "swift:3.1.1",
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-swift-v3.1.1",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "swift:4.1",
+                "default": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-swift-v4.1",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            }
+        ],
+        "java": [
+            {
+                "kind": "java",
+                "default": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "java8action",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "requireMain": true
+            }
+        ],
+        "php": [
+            {
+                "kind": "php:7.1",
+                "default": false,
+                "deprecated": false,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-php-v7.1",
+                    "tag": "latest"
+                },
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "php:7.2",
+                "default": true,
+                "deprecated": false,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-php-v7.2",
+                    "tag": "latest"
+                },
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            }
+        ],
+        "ruby": [
+            {
+                "kind": "ruby:2.5",
+                "default": true,
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-ruby-v2.5",
+                    "tag": "latest"
+                }
+            }
+        ],
+        "go": [
+            {
+                "kind": "go:1.11",
+                "default": true,
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "actionloop-golang-v1.11",
+                    "tag": "latest"
+                }
+            }
+        ]
+    },
+    "blackboxes": [
+        {
+            "prefix": "openwhisk",
+            "name": "dockerskeleton",
+            "tag": "latest"
+        }
+    ]
+}`)
