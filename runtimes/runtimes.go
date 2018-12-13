@@ -510,6 +510,23 @@ var RUNTIME_DETAILS = []byte(`{
                     "tag": "latest"
                 }
             }
+        ],
+        "dotnet": [
+            {
+                "kind": "dotnet:2.2",
+                "default": true,
+                "deprecated": false,
+                "requireMain": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-dotnet-v2.2",
+                    "tag": "latest"
+                },
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            }
         ]
     },
     "blackboxes": [
