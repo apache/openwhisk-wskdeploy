@@ -39,6 +39,7 @@ const (
 	PYTHON_FILE_EXTENSION   = "py"
 	JAVA_FILE_EXTENSION     = "java"
 	JAR_FILE_EXTENSION      = "jar"
+	CSHARP_FILE_EXTENSION   = "cs"
 	PHP_FILE_EXTENSION      = "php"
 	ZIP_FILE_EXTENSION      = "zip"
 	RUBY_FILE_EXTENSION     = "rb"
@@ -47,6 +48,7 @@ const (
 	SWIFT_RUNTIME           = SWIFT_FILE_EXTENSION
 	PYTHON_RUNTIME          = "python"
 	JAVA_RUNTIME            = JAVA_FILE_EXTENSION
+	DOTNET_RUNTIME          = ZIP_FILE_EXTENSION
 	PHP_RUNTIME             = PHP_FILE_EXTENSION
 	RUBY_RUNTIME            = "ruby"
 	GO_RUNTIME              = GO_FILE_EXTENSION
@@ -202,7 +204,10 @@ func FileExtensionRuntimes(op OpenWhiskInfo) (ext map[string]string) {
 			ext[RUBY_FILE_EXTENSION] = k
 		} else if strings.Contains(k, GO_RUNTIME) {
 			ext[GO_FILE_EXTENSION] = k
-		}
+        } else if strings.Contains(k, DOTNET_RUNTIME) {
+			ext[CSHARP_FILE_EXTENSION] = k
+			ext[ZIP_FILE_EXTENSION] = k
+        }
 	}
 	return
 }
@@ -227,7 +232,9 @@ func FileRuntimeExtensions(op OpenWhiskInfo) (rte map[string]string) {
 					rte[v[i].Kind] = RUBY_FILE_EXTENSION
 				} else if strings.Contains(k, GO_RUNTIME) {
 					rte[v[i].Kind] = GO_FILE_EXTENSION
-				}
+				} else if strings.Contains(k, DOTNET_RUNTIME) {
+                    rte[v[i].Kind] = CSHARP_FILE_EXTENSION
+                }
 			}
 		}
 	}
