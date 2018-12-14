@@ -204,10 +204,10 @@ func FileExtensionRuntimes(op OpenWhiskInfo) (ext map[string]string) {
 			ext[RUBY_FILE_EXTENSION] = k
 		} else if strings.Contains(k, GO_RUNTIME) {
 			ext[GO_FILE_EXTENSION] = k
-        } else if strings.Contains(k, DOTNET_RUNTIME) {
+		} else if strings.Contains(k, DOTNET_RUNTIME) {
 			ext[CSHARP_FILE_EXTENSION] = k
 			ext[ZIP_FILE_EXTENSION] = k
-        }
+		}
 	}
 	return
 }
@@ -233,8 +233,8 @@ func FileRuntimeExtensions(op OpenWhiskInfo) (rte map[string]string) {
 				} else if strings.Contains(k, GO_RUNTIME) {
 					rte[v[i].Kind] = GO_FILE_EXTENSION
 				} else if strings.Contains(k, DOTNET_RUNTIME) {
-                    rte[v[i].Kind] = CSHARP_FILE_EXTENSION
-                }
+					rte[v[i].Kind] = CSHARP_FILE_EXTENSION
+				}
 			}
 		}
 	}
