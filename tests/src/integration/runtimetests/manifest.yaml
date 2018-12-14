@@ -276,7 +276,3 @@ packages:
                 function: src/helloDotNet.zip
                 main: Apache.OpenWhisk.Example.Dotnet::Apache.OpenWhisk.Example.Dotnet.Hello::Main
                 runtime: swift:3.1.1
-            helloworlddotnet22-with-random-explicit-runtime:
-                function: src/helloDotNet.zip
-                main: Apache.OpenWhisk.Example.Dotnet::Apache.OpenWhisk.Example.Dotnet.Hello::Main
-                runtime: random
