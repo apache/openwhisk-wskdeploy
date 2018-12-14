@@ -162,9 +162,6 @@ packages:
             helloworldjava-without-explicit-runtime:
                 function: src/hello.jar
                 main: Hello
-            helloworlddotnet22-without-explicit-runtime:
-                function: src/helloDotNet.zip
-                main: Apache.OpenWhisk.Example.Dotnet::Apache.OpenWhisk.Example.Dotnet.Hello::Main
     TestInvalidExplicitRuntimes:
         actions:
             greetingnodejs-with-java-explicit-runtime:
