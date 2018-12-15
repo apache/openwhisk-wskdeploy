@@ -145,6 +145,7 @@ These packages may vary by OpenWhisk release; examples of supported runtimes as 
 | ruby | ruby:2.5 | openwhisk/action-ruby-v2.5:latest | Latest Ruby 2.5 language runtime |
 | swift@4.1 | swift | openwhisk/action-swift-v4.1:latest | Latest Swift 4.1 language runtime |
 | swift@3.1.1 | swift | openwhisk/action-swift-v3.1.1:latest | Latest Swift 3.1.1 language runtime |
+| dotnet, dotnet@2.2 | dotnet:2.2 | openwhisk/action-dotnet-v2.2:latest | Latest .NET Core 2.2 runtime |
 | language:default | N/A | N/A | Permit the OpenWhisk platform to select the correct default language runtime. |
 
 #### Notes

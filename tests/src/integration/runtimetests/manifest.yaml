@@ -100,6 +100,10 @@ packages:
                 function: src/hello.jar
                 runtime: java
                 main: Hello
+            helloworlddotnet22-with-explicit-runtime:
+                function: src/helloDotNet.zip
+                runtime: dotnet:2.2
+                main: Apache.OpenWhisk.Example.Dotnet::Apache.OpenWhisk.Example.Dotnet.Hello::Main
             zipaction-with-explicit-runtime:
                 function: src/helloworld
                 runtime: nodejs:6
@@ -268,3 +272,7 @@ packages:
                 function: src/hello.jar
                 main: Hello
                 runtime: random
+            helloworlddotnet22-with-swift-explicit-runtime:
+                function: src/helloDotNet.zip
+                main: Apache.OpenWhisk.Example.Dotnet::Apache.OpenWhisk.Example.Dotnet.Hello::Main
+                runtime: swift:3.1.1
