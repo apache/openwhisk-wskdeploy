@@ -36,11 +36,31 @@ packages:
                     place: string
                 outputs:
                     payload: string
-            greetingphp-with-explicit-runtime:
+            greetingphp71-with-explicit-runtime:
                 web-export: true
                 version: 1.0
                 function: src/hello.php
                 runtime: php:7.1
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
+            greetingphp72-with-explicit-runtime:
+                web-export: true
+                version: 1.0
+                function: src/hello.php
+                runtime: php:7.2
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
+            greetingphp73-with-explicit-runtime:
+                web-export: true
+                version: 1.0
+                function: src/hello.php
+                runtime: php:7.3
                 inputs:
                     name: string
                     place: string

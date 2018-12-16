@@ -138,6 +138,7 @@ These packages may vary by OpenWhisk release; examples of supported runtimes as 
 | nodejs@8 | nodejs:8 | openwhisk/action-nodejs-v8:latest | Latest NodeJS 8 runtime |
 | nodejs@6 | nodejs:6 | openwhisk/nodejs6action:latest | Latest NodeJS 6 runtime |
 | java | java | openwhisk/java8action:latest | Latest Java (8) language runtime |
+| php, php@7.3 | php:7.3 | openwhisk/action-php-v7.3:latest | Latest PHP (7.3) language runtime |
 | php, php@7.2 | php:7.2 | openwhisk/action-php-v7.2:latest | Latest PHP (7.2) language runtime |
 | php, php@7.1 | php:7.1 | openwhisk/action-php-v7.1:latest | Latest PHP (7.1) language runtime |
 | python@3 | python:3 | openwhisk/python3action:latest | Latest Python 3 language runtime |
