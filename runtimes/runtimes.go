@@ -473,11 +473,25 @@ var RUNTIME_DETAILS = []byte(`{
             },
             {
                 "kind": "php:7.2",
-                "default": true,
+                "default": false,
                 "deprecated": false,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-php-v7.2",
+                    "tag": "latest"
+                },
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "php:7.3",
+                "default": true,
+                "deprecated": false,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-php-v7.3",
                     "tag": "latest"
                 },
                 "attached": {
