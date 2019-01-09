@@ -153,10 +153,11 @@ The Whisk deploy project is setup for development purposes and uses "go deps" fo
 
 - See: [https://github.com/tools/godep](https://github.com/tools/godep)
 
-Specifically, for development please use:
+Specifically, for development please use ```go build```:
 
 ```
-$ git clone git@github.com:mrutkows/incubator-openwhisk-wskdeploy
+$ git clone git@github.com:<your fork>/incubator-openwhisk-wskdeploy
+$ cd incubator-openwhisk-wskdeploy
 $ go build
 ```
 
