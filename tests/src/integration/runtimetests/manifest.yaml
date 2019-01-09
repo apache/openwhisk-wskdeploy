@@ -116,6 +116,26 @@ packages:
                     place: string
                 outputs:
                     payload: string
+            greetingswift41-with-explicit-runtime:
+                web-export: true
+                version: 1.0
+                function: src/hello.swift
+                runtime: swift:4.1
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
+            greetingswift42-with-explicit-runtime:
+                web-export: true
+                version: 1.0
+                function: src/hello.swift
+                runtime: swift:4.2
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
             helloworldjava-with-explicit-runtime:
                 function: src/hello.jar
                 runtime: java

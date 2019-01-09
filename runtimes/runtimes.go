@@ -426,10 +426,24 @@ var RUNTIME_DETAILS = []byte(`{
             },
             {
                 "kind": "swift:4.1",
-                "default": true,
+                "default": false,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-swift-v4.1",
+                    "tag": "latest"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "swift:4.2",
+                "default": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-swift-v4.2",
                     "tag": "latest"
                 },
                 "deprecated": false,
