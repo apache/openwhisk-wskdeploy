@@ -25,7 +25,6 @@ import (
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
-	"net/http"
 	"testing"
 )
 
