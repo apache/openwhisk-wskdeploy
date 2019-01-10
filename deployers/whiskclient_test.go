@@ -20,12 +20,12 @@
 package deployers
 
 import (
-    "net/http"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
 	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 )
 
@@ -282,6 +282,6 @@ func TestNewWhiskConfigWithAdditionalHeaders(t *testing.T) {
 	newHeader := "NewHeader"
 	newHeaderValue := "NewValue"
 	AddAdditionalHeader(newHeader, newHeaderValue)
-    config, _ := NewWhiskConfig(propPath, deploymentPath, manifestPath)
+	config, _ := NewWhiskConfig(propPath, deploymentPath, manifestPath)
 	assert.Equal(t, newHeaderValue, config.AdditionalHeaders.Get(newHeader), "Failed to set an addtional header")
 }
