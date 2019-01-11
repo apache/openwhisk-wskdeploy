@@ -40,12 +40,13 @@ const (
 )
 
 var (
-	credential       = PropertyValue{}
-	namespace        = PropertyValue{}
-	apiHost          = PropertyValue{}
-	key              = PropertyValue{}
-	cert             = PropertyValue{}
-	apigwAccessToken = PropertyValue{}
+	credential        = PropertyValue{}
+	namespace         = PropertyValue{}
+	apiHost           = PropertyValue{}
+	key               = PropertyValue{}
+	cert              = PropertyValue{}
+	apigwAccessToken  = PropertyValue{}
+	additionalHeaders = make(http.Header)
 )
 
 type PropertyValue struct {
@@ -78,6 +79,10 @@ var CreateNewClient = func(config_input *whisk.Config) (*whisk.Client, error) {
 		Timeout: time.Second * utils.DEFAULT_HTTP_TIMEOUT,
 	}
 	return whisk.NewClient(netClient, config_input)
+}
+
+func AddAdditionalHeader(hdrName string, hdrValue string) {
+	additionalHeaders.Add(hdrName, hdrValue)
 }
 
 func resetWhiskConfig() {
@@ -223,14 +228,15 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string)
 	}
 
 	clientConfig = &whisk.Config{
-		AuthToken:        credential.Value, //Authtoken
-		Namespace:        namespace.Value,  //Namespace
-		Host:             apiHost.Value,
-		Version:          "v1", // TODO() should not be hardcoded, should warn user of default
-		Cert:             cert.Value,
-		Key:              key.Value,
-		Insecure:         mode, // true if you want to ignore certificate signing
-		ApigwAccessToken: apigwAccessToken.Value,
+		AuthToken:         credential.Value, //Authtoken
+		Namespace:         namespace.Value,  //Namespace
+		Host:              apiHost.Value,
+		Version:           "v1", // TODO() should not be hardcoded, should warn user of default
+		Cert:              cert.Value,
+		Key:               key.Value,
+		Insecure:          mode, // true if you want to ignore certificate signing
+		ApigwAccessToken:  apigwAccessToken.Value,
+		AdditionalHeaders: additionalHeaders,
 	}
 
 	// validate we have credential, apihost and namespace

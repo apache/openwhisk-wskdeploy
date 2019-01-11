@@ -273,3 +273,14 @@ func TestValidateClientConfig(t *testing.T) {
 
 	// TODO() test remainder of validateClientConfig() processing
 }
+
+func TestNewWhiskConfigWithAdditionalHeaders(t *testing.T) {
+	propPath := ""
+	manifestPath := ""
+	deploymentPath := ""
+	newHeader := "NewHeader"
+	newHeaderValue := "NewValue"
+	AddAdditionalHeader(newHeader, newHeaderValue)
+	config, _ := NewWhiskConfig(propPath, deploymentPath, manifestPath)
+	assert.Equal(t, newHeaderValue, config.AdditionalHeaders.Get(newHeader), "Failed to set an addtional header")
+}
