@@ -45,8 +45,8 @@ const (
 	TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH          = "Action function path mismatched."
 	TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH       = "Action function runtime mismatched."
 	TEST_MSG_ACTION_FUNCTION_MAIN_MISMATCH          = "Action function main name mismatch."
-	TEST_MSG_ACTION_PARAMETER_TYPE_MISMATCH         = "Action parameter [%s] had a type mismatch."
-	TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH        = "Action parameter [%s] had a value mismatch."
+	TEST_MSG_ACTION_PARAMETER_TYPE_MISMATCH         = "Action parameter [%v] had a type mismatch."
+	TEST_MSG_ACTION_PARAMETER_VALUE_MISMATCH        = "Action parameter [%v] had a value mismatch."
 	TEST_MSG_PARAMETER_NUMBER_MISMATCH              = "Number of Paramaters mismatched."
 	TEST_MSG_MANIFEST_UNMARSHALL_ERROR_EXPECTED     = "Manifest [%s]: Expected Unmarshal error."
 	TEST_MSG_ACTION_FUNCTION_RUNTIME_ERROR_EXPECTED = "Manifest [%s]: Expected runtime error."
@@ -580,7 +580,7 @@ func TestComposeActionsForValidRuntime_ZipAction(t *testing.T) {
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, tmpfile))
 	for _, action := range actions {
 		if action.Action.Name == "hello" {
-			assert.Equal(t, action.Action.Exec.Kind, "nodejs:6", fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH, action))
+			assert.Equal(t, action.Action.Exec.Kind, "nodejs:6", fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH))
 		}
 
 	}

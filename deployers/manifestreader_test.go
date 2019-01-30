@@ -98,7 +98,7 @@ func TestManifestReader_InitPackages(t *testing.T) {
 
 	err = manifestReader.InitPackages(manifestParser, manifest, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
-	assert.Equal(t, 3, len(deployer.Deployment.Packages), fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile, ""))
+	assert.Equal(t, 3, len(deployer.Deployment.Packages), fmt.Sprintf(TEST_ERROR_MANIFEST_SET_PACKAGES, manifestFile))
 
 	expectedParametersAndAnnotations := 0
 
