@@ -137,12 +137,12 @@ func TestDeploymentReader_ProjectBindTrigger(t *testing.T) {
 	// test Project exists with expected name in Deployment file
 	projectNameDeploy := dReader.DeploymentDescriptor.GetProject().Name
 	if projectNameDeploy != TEST_PROJECT {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_DEPLOYMENT_FIND_PROJECT, TEST_PROJECT))
+		assert.Fail(t, fmt.Sprintf(TEST_ERROR_DEPLOYMENT_FIND_PROJECT, projectNameDeploy, TEST_PROJECT))
 	}
 
 	// test that the Project has Packages
 	if len(dReader.DeploymentDescriptor.GetProject().Packages) == 0 {
-		assert.Fail(t, fmt.Sprintf(TEST_ERROR_DEPLOYMENT_FIND_PACKAGES, TEST_PROJECT))
+		assert.Fail(t, fmt.Sprintf(TEST_ERROR_DEPLOYMENT_FIND_PACKAGES, projectNameDeploy, TEST_PROJECT))
 	}
 
 	trigger := sDeployer.Deployment.Triggers[TEST_TRIGGER]
