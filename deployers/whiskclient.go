@@ -275,20 +275,20 @@ func validateClientConfig(credential PropertyValue, apiHost PropertyValue, names
 	// Show caller what final values we used for credential, apihost and namespace
 	stdout := wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
 		map[string]interface{}{wski18n.KEY_HOST: apiHost.Value, wski18n.KEY_SOURCE: apiHost.Source})
-	wskprint.PrintOpenWhiskInfo(stdout)
+	wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, stdout)
 
 	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
 		map[string]interface{}{wski18n.KEY_SOURCE: credential.Source})
-	wskprint.PrintOpenWhiskInfo(stdout)
+	wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, stdout)
 
 	stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
 		map[string]interface{}{wski18n.KEY_NAMESPACE: namespace.Value, wski18n.KEY_SOURCE: namespace.Source})
-	wskprint.PrintOpenWhiskInfo(stdout)
+	wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, stdout)
 
 	if len(apigwAccessToken.Value) != 0 {
 		stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIGE_ACCESS_TOKEN_X_source_X,
 			map[string]interface{}{wski18n.KEY_SOURCE: apigwAccessToken.Source})
-		wskprint.PrintOpenWhiskInfo(stdout)
+		wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, stdout)
 	}
 
 	return nil

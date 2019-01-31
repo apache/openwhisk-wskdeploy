@@ -119,6 +119,12 @@ func PrintlnOpenWhiskTrace(trace bool, message string) {
 	}
 }
 
+func PrintOpenWhiskBanner(verbose bool) {
+	if verbose {
+		PrintlnOpenWhiskOutput("         ____      ___                   _    _ _     _     _\n        /\\   \\    / _ \\ _ __   ___ _ __ | |  | | |__ (_)___| | __\n   /\\  /__\\   \\  | | | | '_ \\ / _ \\ '_ \\| |  | | '_ \\| / __| |/ /\n  /  \\____ \\  /  | |_| | |_) |  __/ | | | |/\\| | | | | \\__ \\   <\n  \\   \\  /  \\/    \\___/| .__/ \\___|_| |_|__/\\__|_| |_|_|___/_|\\_\\ \n   \\___\\/              |_|\n")
+	}
+}
+
 // Display "trace" output if either param is true OR we are running Go test verbose (i.e., "go test -v")
 // Typical Args for "go test" looks as follows:
 // arg[0] = [/var/folders/nj/<uuid>/T/<build-id>/github.com/apache/incubator-openwhisk-wskdeploy/deployers/_test/deployers.test
