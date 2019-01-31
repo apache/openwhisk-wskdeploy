@@ -432,7 +432,7 @@ func (dm *YAMLParser) ComposePackage(pkg Package, packageName string, filePath s
 	// and in this case wskdeploy deploys openwhisk entities under
 	// /namespace instead of /namespace/package
 	if strings.ToLower(pag.Name) == DEFAULT_PACKAGE {
-		wskprint.PrintlnOpenWhiskInfo(wski18n.T(wski18n.ID_MSG_DEFAULT_PACKAGE))
+		wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, wski18n.T(wski18n.ID_MSG_DEFAULT_PACKAGE))
 		// when a package is marked public with "Public: true" in manifest file
 		// the package is visible to anyone and created with publish state
 		// set to shared otherwise publish state is set to private

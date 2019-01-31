@@ -135,7 +135,7 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	// Local openwhisk deployment sometimes only returns "application/json" as the content type
 	if err != nil || !strings.Contains(HTTP_CONTENT_TYPE_VALUE, res.Header.Get(HTTP_CONTENT_TYPE_KEY)) {
 		stdout := wski18n.T(wski18n.ID_MSG_UNMARSHAL_LOCAL)
-		wskprint.PrintOpenWhiskInfo(stdout)
+		wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, stdout)
 		err = json.Unmarshal(RUNTIME_DETAILS, &op)
 		if err != nil {
 			errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_PARSER_ERROR,
@@ -147,7 +147,7 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 		if b != nil && len(b) > 0 {
 			stdout := wski18n.T(wski18n.ID_MSG_UNMARSHAL_NETWORK_X_url_X,
 				map[string]interface{}{"url": opURL})
-			wskprint.PrintOpenWhiskInfo(stdout)
+			wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, stdout)
 			err = json.Unmarshal(b, &op)
 			if err != nil {
 				errMessage := wski18n.T(wski18n.ID_ERR_RUNTIME_PARSER_ERROR,

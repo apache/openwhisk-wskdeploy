@@ -1463,10 +1463,6 @@ func (deployer *ServiceDeployer) getQualifiedName(name string) string {
 
 func (deployer *ServiceDeployer) printDeploymentAssets(assets *DeploymentProject) {
 
-	// pretty ASCII OpenWhisk graphic
-	// TODO() move to separate function and suppress using some flag
-	wskprint.PrintlnOpenWhiskOutput("         ____      ___                   _    _ _     _     _\n        /\\   \\    / _ \\ _ __   ___ _ __ | |  | | |__ (_)___| | __\n   /\\  /__\\   \\  | | | | '_ \\ / _ \\ '_ \\| |  | | '_ \\| / __| |/ /\n  /  \\____ \\  /  | |_| | |_) |  __/ | | | |/\\| | | | | \\__ \\   <\n  \\   \\  /  \\/    \\___/| .__/ \\___|_| |_|__/\\__|_| |_|_|___/_|\\_\\ \n   \\___\\/              |_|\n")
-
 	// TODO() review format
 	wskprint.PrintlnOpenWhiskOutput(strings.Title(parsers.YAML_KEY_PACKAGES) + ":")
 	for _, pack := range assets.Packages {
@@ -1623,7 +1619,7 @@ func displayPreprocessingInfo(entity string, name string, onDeploy bool) {
 		map[string]interface{}{
 			wski18n.KEY_KEY:  entity,
 			wski18n.KEY_NAME: name})
-	wskprint.PrintlnOpenWhiskInfo(msg)
+	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, msg)
 }
 
 func displayPostprocessingInfo(entity string, name string, onDeploy bool) {
@@ -1638,7 +1634,7 @@ func displayPostprocessingInfo(entity string, name string, onDeploy bool) {
 		map[string]interface{}{
 			wski18n.KEY_KEY:  entity,
 			wski18n.KEY_NAME: name})
-	wskprint.PrintlnOpenWhiskInfo(msg)
+	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, msg)
 }
 
 func createWhiskClientError(err *whisk.WskError, response *http.Response, entity string, onCreate bool) *wskderrors.WhiskClientError {
