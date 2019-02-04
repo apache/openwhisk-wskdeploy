@@ -66,7 +66,7 @@ The API entity schema is used to define an OpenWhisk API within a manifest.
         <relativePath>:
             <actionName>:
                 method: <get | delete | put | post | ...>
-                response-type: <http | json | text | html>
+                response: <http | json | text | html>
 ```
 
 ### Example
@@ -86,13 +86,13 @@ packages:
           world:
             hello_world:
               method: GET
-              response-type: json
+              response: json
       goodbye-world:
         hello:
           world:
             hello_world:
               method: DELETE
-              response-type: json
+              response: json
 ```
 
 ### Requirements
@@ -102,6 +102,7 @@ packages:
 - The APi `relativePath` value MUST start with a `/` character.
 - The API entity schema includes all required fields declared above.
 - Only web actions, actions having `web-export` set to `true`, can be used as an API endpoint's action.
+    - If needed, the action will be automatically converted to a web action during deployment.
 - A valid API entity MUST have one or more valid endpoints defined.
 
 
