@@ -65,6 +65,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 - [Rules](html/spec_rule.md#rules) - grammar, schema and examples for Rules.
 - [Sequences](html/spec_sequences.md#sequences) - schema to compose multiple Actions into a single, named Action sequence.
 - [Entity Naming & Namespacing](html/spec_entity_naming_and_namespacing.md#naming-and-namespacing) - describes what characters can be used to name Packages, Actions, Triggers and Rules and how to manage them with namespaces.
+- [APIs](html/spec_apis.md#apis) - grammar, schema and examples for APIs.
 
 #### References
 - [Normative & Non-normative References](html/spec_normative_refs.md)
