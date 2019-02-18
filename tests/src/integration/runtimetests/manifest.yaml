@@ -106,26 +106,6 @@ packages:
                     place: string
                 outputs:
                     payload: string
-            greetingswift311-with-explicit-runtime:
-                web-export: true
-                version: 1.0
-                function: src/hello.swift
-                runtime: swift:3.1.1
-                inputs:
-                    name: string
-                    place: string
-                outputs:
-                    payload: string
-            greetingswift41-with-explicit-runtime:
-                web-export: true
-                version: 1.0
-                function: src/hello.swift
-                runtime: swift:4.1
-                inputs:
-                    name: string
-                    place: string
-                outputs:
-                    payload: string
             greetingswift42-with-explicit-runtime:
                 web-export: true
                 version: 1.0
@@ -307,7 +287,7 @@ packages:
             helloworldjava-with-swift-explicit-runtime:
                 function: src/hello.jar
                 main: Hello
-                runtime: swift:3.1.1
+                runtime: swift:4.2
             helloworldjava-with-random-explicit-runtime:
                 function: src/hello.jar
                 main: Hello
@@ -315,4 +295,4 @@ packages:
             helloworlddotnet22-with-swift-explicit-runtime:
                 function: src/helloDotNet.zip
                 main: Apache.OpenWhisk.Example.Dotnet::Apache.OpenWhisk.Example.Dotnet.Hello::Main
-                runtime: swift:3.1.1
+                runtime: swift:4.2
