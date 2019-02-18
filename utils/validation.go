@@ -153,7 +153,7 @@ func LimitsMemoryValidation(memory *int) bool {
 	if memory == nil {
 		return true
 	}
-	if *memory < 128 || *memory > 512 {
+	if *memory < 128 || *memory > 2048 {
 		wskprint.PrintlnOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_LIMITS_MEMORY_SIZE))
 		return false
 	}
