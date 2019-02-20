@@ -31,13 +31,12 @@ func TestParseOpenWhisk(t *testing.T) {
 	converted := ConvertToMap(openwhisk)
 	println(converted["nodejs"])
 	println(converted["python"])
-	//println(converted["go"])
+	println(converted["go"])
 	assert.Equal(t, 3, len(converted["nodejs"]), "not expected length")
 	assert.Equal(t, 3, len(converted["php"]), "not expected length")
 	assert.Equal(t, 1, len(converted["java"]), "not expected length")
 	assert.Equal(t, 6, len(converted["python"]), "not expected length")
 	assert.Equal(t, 1, len(converted["ruby"]), "not expected length")
 	assert.Equal(t, 3, len(converted["swift"]), "not expected length")
-	// cannot pass this test until it is deployed in OpenWhisk
-	//assert.Equal(t, 2, len(converted["go"]), "not expected length")
+	assert.Equal(t, 1, len(converted["go"]), "not expected length")
 }
