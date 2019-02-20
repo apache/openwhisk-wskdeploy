@@ -498,11 +498,35 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
 	}
 }
 
-// Test 9: validate manifest_parser.ComposeActions() method for implicit runtimes
+// Test 9(1): validate manifest_parser.ComposeActions() method for implicit runtimes
 // when a runtime of an action is not provided, manifest_parser determines the runtime
 // based on the file extension of an action file
 func TestComposeActionsForImplicitRuntimes(t *testing.T) {
 	file := "../tests/dat/manifest_data_compose_runtimes_implicit.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
+	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
+	var expectedResult string
+	for i := 0; i < len(actions); i++ {
+		if actions[i].Action.Name == "helloNodejs" {
+			expectedResult = runtimes.DefaultRunTimes[runtimes.FileExtensionRuntimeKindMap["js"]]
+		} else if actions[i].Action.Name == "helloJava" {
+			expectedResult = runtimes.DefaultRunTimes[runtimes.FileExtensionRuntimeKindMap["jar"]]
+		} else if actions[i].Action.Name == "helloPython" {
+			expectedResult = runtimes.DefaultRunTimes[runtimes.FileExtensionRuntimeKindMap["py"]]
+		} else if actions[i].Action.Name == "helloSwift" {
+			expectedResult = runtimes.DefaultRunTimes[runtimes.FileExtensionRuntimeKindMap["swift"]]
+		}
+		actualResult := actions[i].Action.Exec.Kind
+		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
+	}
+}
+
+// Test 9(2): validate manifest_parser.ComposeActions() method for default runtimes
+// when a runtime of an action is set to default, manifest_parser determines
+// the runtime based on the default runtimes
+func TestComposeActionsForDefaultRuntimes(t *testing.T) {
+	file := "../tests/dat/manifest_data_compose_runtimes_default.yaml"
 	p, m, _ := testLoadParseManifest(t, file)
 	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
