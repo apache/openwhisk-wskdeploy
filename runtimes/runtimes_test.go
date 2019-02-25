@@ -31,7 +31,7 @@ func TestParseOpenWhisk(t *testing.T) {
 	converted := ConvertToMap(openwhisk)
 	println(converted["nodejs"])
 	println(converted["python"])
-	//println(converted["go"])
+	println(converted["go"])
 	//one larger than in api response because of explicit :default
 	assert.Equal(t, 4, len(converted["nodejs"]), "not expected length")
 	assert.Equal(t, 4, len(converted["php"]), "not expected length")
@@ -39,6 +39,5 @@ func TestParseOpenWhisk(t *testing.T) {
 	assert.Equal(t, 7, len(converted["python"]), "not expected length")
 	assert.Equal(t, 2, len(converted["ruby"]), "not expected length")
 	assert.Equal(t, 4, len(converted["swift"]), "not expected length")
-	// cannot pass this test until it is deployed in OpenWhisk
-	//assert.Equal(t, 2, len(converted["go"]), "not expected length")
+	assert.Equal(t, 2, len(converted["go"]), "not expected length")
 }
