@@ -533,13 +533,13 @@ func TestComposeActionsForDefaultRuntimes(t *testing.T) {
 	var expectedResult string
 	for i := 0; i < len(actions); i++ {
 		if actions[i].Action.Name == "helloNodejs" {
-			expectedResult = runtimes.DefaultRunTimes[runtimes.FileExtensionRuntimeKindMap["js"]]
+			expectedResult = "nodejs:default"
 		} else if actions[i].Action.Name == "helloJava" {
-			expectedResult = runtimes.DefaultRunTimes[runtimes.FileExtensionRuntimeKindMap["jar"]]
+			expectedResult = "java:default"
 		} else if actions[i].Action.Name == "helloPython" {
-			expectedResult = runtimes.DefaultRunTimes[runtimes.FileExtensionRuntimeKindMap["py"]]
+			expectedResult = "python:default"
 		} else if actions[i].Action.Name == "helloSwift" {
-			expectedResult = runtimes.DefaultRunTimes[runtimes.FileExtensionRuntimeKindMap["swift"]]
+			expectedResult = "swift:default"
 		}
 		actualResult := actions[i].Action.Exec.Kind
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
