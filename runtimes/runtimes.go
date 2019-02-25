@@ -167,6 +167,9 @@ func ConvertToMap(op OpenWhiskInfo) (rt map[string][]string) {
 			if !v[i].Deprecated {
 				rt[k] = append(rt[k], v[i].Kind)
 			}
+			if v[i].Default {
+				rt[k] = append(rt[k], strings.Split(v[i].Kind, ":")[0]+":default")
+			}
 		}
 	}
 	return
