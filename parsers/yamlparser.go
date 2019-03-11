@@ -132,6 +132,7 @@ type Sequence struct {
 	Actions     string                 `yaml:"actions"`
 	Web         string                 `yaml:"web"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
+	Limits      *Limits                `yaml:"limits"`
 }
 
 type Dependency struct {

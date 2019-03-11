@@ -6,5 +6,9 @@ packages:
     sequences:
       sequence1:
         actions: action1, action2
+        limits:
+          memorySize: 1024
+          timeout: 180
+          logSize: 1
       sequence2:
         actions: action3, action4, action5
