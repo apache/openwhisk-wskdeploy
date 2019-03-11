@@ -503,6 +503,13 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 			wskaction.Annotations = annotations
 		}
 
+		// Limits
+		if sequence.Limits != nil {
+			if wsklimits := dm.composeActionLimits(*(sequence.Limits)); wsklimits != nil {
+				wskaction.Limits = wsklimits
+			}
+		}
+
 		// appending managed annotations if its a managed deployment
 		if utils.Flags.Managed || utils.Flags.Sync {
 			wskaction.Annotations = append(wskaction.Annotations, managedAnnotations)
