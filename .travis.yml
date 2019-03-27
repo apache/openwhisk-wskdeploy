@@ -52,7 +52,7 @@ before_deploy:
       export GIT_TAG=$TRAVIS_TAG;
       export TAG=true;
   fi
-- ./gradlew --console=plain releaseBinaries -PpackageVersion=$GIT_TAG
+- ./gradlew --console=plain releaseBinaries -PpackageVersion=$GIT_TAG -PgitCommit=$(git rev-parse HEAD) -PbuildDate=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 - "./tools/travis/build_tag_releases.sh $build_file_name $GIT_TAG"
 - export RELEASE_PKG_FILE="$(cd "$TRAVIS_BUILD_DIR/release" && ls ${zip_file_name}-*.tgz ${zip_file_name}-*.zip)"
 - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."

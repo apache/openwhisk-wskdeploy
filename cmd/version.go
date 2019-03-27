@@ -38,5 +38,9 @@ var versionCmd = &cobra.Command{
 			// Note: no need to translate the following string
 			// TODO(#767) - Flags.CliVersion are not set during build
 			fmt.Sprintf("wskdeploy version: %s", utils.Flags.CliVersion))
+		wskprint.PrintlnOpenWhiskOutput(
+			fmt.Sprintf("wskdeploy git commit: %s", utils.Flags.CliGitCommit))
+		wskprint.PrintlnOpenWhiskOutput(
+			fmt.Sprintf("wskdeploy build date: %s", utils.Flags.CliBuildDate))
 	},
 }

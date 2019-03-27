@@ -29,6 +29,8 @@ type WskDeployFlags struct {
 	ApiVersion       string // OpenWhisk version
 	CfgFile          string
 	CliVersion       string
+	CliGitCommit     string
+	CliBuildDate     string
 	ProjectPath      string
 	DeploymentPath   string
 	ManifestPath     string
