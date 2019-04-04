@@ -213,16 +213,15 @@ following file extensions are recognized and will be run on the latest version o
   <td>codeSize</td>
   <td>scalar-unit.size</td>
   <td>48 MB</td>
-  <td><i>[1, 48] MB</i></td>
-  <td>The maximum size of the Action code.<p><i>Note: This value is not changeable via APIs at this
-  time.</i></p></td>
+  <td>[1, 48] MB<sup><a href="#limit-notes">3</a></sup></td>
+  <td>The maximum size of the Action code.</td>
 </tr>
 <tr>
   <td>concurrentActivations</td>
   <td>integer</td>
   <td>1000</td>
-  <td><i>See description</i></td>
-  <td>The maximum number of concurrent Action activations allowed (per-namespace). <p><i>Note: This value is not changeable via APIs at this time.</i></p></td>
+  <td>[1, 1000] <sup><a href="#limit-notes">3</a></sup></td>
+  <td>The maximum number of concurrent Action activations allowed (per-namespace).</td>
 </tr>
 <tr>
   <td>logSize</td>
@@ -243,8 +242,8 @@ following file extensions are recognized and will be run on the latest version o
   <td>parameterSize</td>
   <td>scalar-unit.size</td>
   <td>5 MB</td>
-  <td><i>See description</i></td>
-  <td>The maximum size<p><i>Note: This value is not changeable via APIs at this time.</i></p></td>
+  <td>[0, 5] MB <sup><a href="#limit-notes">3, 4</a></sup></td>
+  <td>The maximum size of all parameters (total) for an Action.</td>
 </tr>
 <tr>
   <td>timeout</td>
@@ -257,8 +256,8 @@ following file extensions are recognized and will be run on the latest version o
   <td>userInvocationRate</td>
   <td>integer</td>
   <td>5000</td>
-  <td><i>See description</i></td>
-  <td>The maximum number of Action invocations allowed per user, per minute. <p><i>Note: This value is not changeable via APIs at this time.</i></p></td>
+  <td>[1, 5000] <sup><a href="#limit-notes">3</a></sup></td>
+  <td>The maximum number of Action invocations allowed per user, per minute.</td>
 </tr>
 </table>
 </html>
@@ -267,6 +266,8 @@ following file extensions are recognized and will be run on the latest version o
 
 1. The default values and ranges for limit configurations reflect the defaults for the OpenWhisk platform (open source code).&nbsp; These values may be changed over time to reflect the open source community consensus. 
 2. Serverless providers that use Apache OpenWhisk MAY choose to enforce different defaults and value ranges for limits.
+3. This limit is not currently user configurable.
+4. The parameter size limit also applies to Triggers and Packages.
 
 ### Web Actions
 OpenWhisk can turn any Action into a 'web action' causing it to return HTTP content without use of an API Gateway. Simply supply a supported 'type' extension to indicate which content type is to be returned and identified in the HTTP header (e.g., _.json_, _.html_, _.text_ or _.http_).
