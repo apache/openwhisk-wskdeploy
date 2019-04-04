@@ -429,11 +429,11 @@
   },
   {
     "id": "msg_warn_limits_memory_size",
-    "translation": "memorySize of limits in manifest may be outside the default range of [128, 512] MB.\n"
+    "translation": "memorySize of limits in manifest may be outside the default range of [128, 2048] MB. Please verify your provider supports this value.\n"
   },
   {
     "id": "msg_warn_limits_timeout",
-    "translation": "timeout of limits in manifest should be an integer between 100 and 600000.\n"
+    "translation": "timeout of limits in manifest should be an integer between [100, 600000] milliseconds. Please verify your provider supports this value.\n"
   },
   {
     "id": "msg_warn_whisk_properties",
