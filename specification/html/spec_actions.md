@@ -202,70 +202,71 @@ following file extensions are recognized and will be run on the latest version o
 
 <html>
 <table id="TABLE_LIMIT_KEYS">
-  <tr>
-   <th>Limit Keyname</th>
-   <th>Allowed values</th>
-   <th>Default value</th>
-   <th>Default Range *</th>
-   <th>Description</th>
-  </tr>
-  <tr>
-    <td>codeSize</td>
-    <td>scalar-unit.size</td>
-    <td>48 MB</td>
-    <td><i>See description</i></td>
-    <td>The maximum size of the Action code.<p><i>Note: This value is not changeable via APIs at this
-    time.</i></p></td>
-  </tr>
-  <tr>
-    <td>concurrentActivations</td>
-    <td>integer</td>
-    <td>1000</td>
-    <td><i>See description</i></td>
-    <td>The maximum number of concurrent Action activations allowed (per-namespace). <p><i>Note: This value is not changeable via APIs at this time.</i></p></td>
-  </tr>
-  <tr>
-    <td>parameterSize</td>
-    <td>scalar-unit.size</td>
-    <td>5 MB</td>
-    <td><i>See description</i></td>
-    <td>The maximum size<p><i>Note: This value is not changeable via APIs at this time.</i></p></td>
-  </tr>
-  <tr>
-    <td>timeout</td>
-    <td>scalar-unit.time</td>
-    <td>60000 ms</td>
-    <td>[100, 600000] milliseconds</td>
-    <td>The per-invocation Action timeout. Default unit is assumed to be milliseconds (ms).</td>
-  </tr>
-  <tr>
-    <td>memorySize</td>
-    <td>scalar-unit.size</td>
-    <td>256 MB</td>
-    <td>[128, 2048] MB</td>
-    <td>The per-Action memory. Default unit is assumed to be in megabytes (MB).</p>
-    </td>
-  </tr>
-  <tr>
-    <td>logSize</td>
-    <td>scalar-unit.size</td>
-    <td>10 MB</td>
-    <td>[0, 10] MB</td>
-    <td>The action log size. Default unit is assumed to be in megabytes (MB).</td>
-  </tr>
-  <tr>
-    <td>userInvocationRate</td>
-    <td>integer</td>
-    <td>5000</td>
-    <td><i>See description</i></td>
-    <td>The maximum number of Action invocations allowed per user, per minute. <p><i>Note: This value is not changeable via APIs at this time.</i></p></td>
-  </tr>
+<tr>
+ <th>Limit Keyname</th>
+ <th>Type</th>
+ <th>Default value <sup><a href="#limit-notes">1</a></sup></th>
+ <th>Default Range  <sup><a href="#limit-notes">2</a></sup></th>
+ <th>Description</th>
+</tr>
+<tr>
+  <td>codeSize</td>
+  <td>scalar-unit.size</td>
+  <td>48 MB</td>
+  <td><i>[1, 48] MB</i></td>
+  <td>The maximum size of the Action code.<p><i>Note: This value is not changeable via APIs at this
+  time.</i></p></td>
+</tr>
+<tr>
+  <td>concurrentActivations</td>
+  <td>integer</td>
+  <td>1000</td>
+  <td><i>See description</i></td>
+  <td>The maximum number of concurrent Action activations allowed (per-namespace). <p><i>Note: This value is not changeable via APIs at this time.</i></p></td>
+</tr>
+<tr>
+  <td>logSize</td>
+  <td>scalar-unit.size</td>
+  <td>10 MB</td>
+  <td>[0, 10] MB</td>
+  <td>The action log size. Default unit is assumed to be in megabytes (MB).</td>
+</tr>
+<tr>
+  <td>memorySize</td>
+  <td>scalar-unit.size</td>
+  <td>256 MB</td>
+  <td>[128, 2048] MB</td>
+  <td>The per-Action memory. Default unit is assumed to be in megabytes (MB).</p>
+  </td>
+</tr>
+<tr>
+  <td>parameterSize</td>
+  <td>scalar-unit.size</td>
+  <td>5 MB</td>
+  <td><i>See description</i></td>
+  <td>The maximum size<p><i>Note: This value is not changeable via APIs at this time.</i></p></td>
+</tr>
+<tr>
+  <td>timeout</td>
+  <td>scalar-unit.time</td>
+  <td>60000 ms</td>
+  <td>[100, 600000] ms</td>
+  <td>The per-invocation Action timeout. Default unit is assumed to be milliseconds (ms).</td>
+</tr>
+<tr>
+  <td>userInvocationRate</td>
+  <td>integer</td>
+  <td>5000</td>
+  <td><i>See description</i></td>
+  <td>The maximum number of Action invocations allowed per user, per minute. <p><i>Note: This value is not changeable via APIs at this time.</i></p></td>
+</tr>
 </table>
 </html>
 
-#### Notes
+#### Limit Notes
 
-- The default values and ranges for limit configurations reflect the defaults for the OpenWhisk platform (open source code).&nbsp; These values may be changed over time to reflect the open source community consensus.
+1. The default values and ranges for limit configurations reflect the defaults for the OpenWhisk platform (open source code).&nbsp; These values may be changed over time to reflect the open source community consensus. 
+2. Serverless providers that use Apache OpenWhisk MAY choose to enforce different defaults and value ranges for limits.
 
 ### Web Actions
 OpenWhisk can turn any Action into a 'web action' causing it to return HTTP content without use of an API Gateway. Simply supply a supported 'type' extension to indicate which content type is to be returned and identified in the HTTP header (e.g., _.json_, _.html_, _.text_ or _.http_).
