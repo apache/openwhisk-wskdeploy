@@ -203,11 +203,11 @@ following file extensions are recognized and will be run on the latest version o
 <html>
 <table id="TABLE_LIMIT_KEYS">
 <tr>
- <th>Limit Keyname</th>
- <th>Type</th>
- <th>Default value <sup><a href="#limit-notes">1</a></sup></th>
- <th>Default Range  <sup><a href="#limit-notes">2</a></sup></th>
- <th>Description</th>
+  <th>Limit Keyname</th>
+  <th>Type</th>
+  <th>Default value <sup><a href="#limit-notes">1</a></sup></th>
+  <th>Default Range  <sup><a href="#limit-notes">2</a></sup></th>
+  <th>Description</th>
 </tr>
 <tr>
   <td>codeSize</td>
@@ -264,7 +264,7 @@ following file extensions are recognized and will be run on the latest version o
 
 #### Limit Notes
 
-1. The default values and ranges for limit configurations reflect the defaults for the OpenWhisk platform (open source code).&nbsp; These values may be changed over time to reflect the open source community consensus. 
+1. The default values and ranges for limit configurations reflect the defaults for the OpenWhisk platform (open source code).&nbsp; These values may be changed over time to reflect the open source community consensus.
 2. Serverless providers that use Apache OpenWhisk MAY choose to enforce different defaults and value ranges for limits.
 3. This limit is not currently user configurable.
 4. The parameter size limit also applies to Triggers and Packages.
