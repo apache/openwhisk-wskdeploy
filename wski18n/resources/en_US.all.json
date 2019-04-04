@@ -425,15 +425,15 @@
   },
   {
     "id": "msg_warn_limits_log_size",
-    "translation": "logSize of limits in manifest should be an integer between 0 and 10.\n"
+    "translation": "logSize of limits in manifest may be outside the default range of [0, 10] MB. Please verify your provider supports this value.\n"
   },
   {
     "id": "msg_warn_limits_memory_size",
-    "translation": "memorySize of limits in manifest should be an integer between 128 and 512.\n"
+    "translation": "memorySize of limits in manifest may be outside the default range of [128, 512] MB.\n"
   },
   {
     "id": "msg_warn_limits_timeout",
-    "translation": "timeout of limits in manifest should be an integer between 100 and 300000.\n"
+    "translation": "timeout of limits in manifest should be an integer between 100 and 600000.\n"
   },
   {
     "id": "msg_warn_whisk_properties",
