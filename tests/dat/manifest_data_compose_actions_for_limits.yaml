@@ -8,6 +8,7 @@ packages:
         function: ../src/integration/helloworld/actions/hello.js
         limits:
           timeout: 1
+          timeout: 600000
       hello2:
         function: ../src/integration/helloworld/actions/hello.js
         limits:
