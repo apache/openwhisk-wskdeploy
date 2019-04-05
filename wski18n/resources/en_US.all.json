@@ -421,19 +421,19 @@
   },
   {
     "id": "msg_warn_limit_changeable",
-    "translation": "Limit [{{.name}}] is currently not changeable. Ignoring...\n"
+    "translation": "Action Limit [{{.name}}] is currently not changeable. Ignoring...\n"
   },
   {
     "id": "msg_warn_limits_log_size",
-    "translation": "logSize of limits in manifest should be an integer between 0 and 10.\n"
+    "translation": "Action limit: logSize may be outside the default range of [0, 10] MB. Please verify your provider supports this value.\n"
   },
   {
     "id": "msg_warn_limits_memory_size",
-    "translation": "memorySize of limits in manifest should be an integer between 128 and 512.\n"
+    "translation": "Action limit: memorySize may be outside the default range of [128, 2048] MB. Please verify your provider supports this value.\n"
   },
   {
     "id": "msg_warn_limits_timeout",
-    "translation": "timeout of limits in manifest should be an integer between 100 and 300000.\n"
+    "translation": "Action limit: timeout may be outside the default range of [100, 600000] milliseconds. Please verify your provider supports this value.\n"
   },
   {
     "id": "msg_warn_whisk_properties",

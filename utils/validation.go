@@ -140,9 +140,13 @@ func LimitsTimeoutValidation(timeout *int) bool {
 	if timeout == nil {
 		return true
 	}
-	if *timeout < 100 || *timeout > 300000 {
+	if *timeout < 100 {
+		// Do not allow invalid limit to be added to API
 		wskprint.PrintlnOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_LIMITS_TIMEOUT))
 		return false
+	} else if *timeout > 600000 {
+		// Emit a warning, but allow to pass through to provider
+		wskprint.PrintlnOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_LIMITS_TIMEOUT))
 	}
 	return true
 }
@@ -153,9 +157,13 @@ func LimitsMemoryValidation(memory *int) bool {
 	if memory == nil {
 		return true
 	}
-	if *memory < 128 || *memory > 2048 {
+	if *memory < 128 {
+		// Do not allow invalid limit to be added to API
 		wskprint.PrintlnOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_LIMITS_MEMORY_SIZE))
 		return false
+	} else if *memory > 2048 {
+		// Emit a warning, but allow to pass through to provider
+		wskprint.PrintlnOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_LIMITS_MEMORY_SIZE))
 	}
 	return true
 }
@@ -166,9 +174,13 @@ func LimitsLogsizeValidation(logsize *int) bool {
 	if logsize == nil {
 		return true
 	}
-	if *logsize < 0 || *logsize > 10 {
+	if *logsize < 0 {
+		// Do not allow invalid limit to be added to API
 		wskprint.PrintlnOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_LIMITS_LOG_SIZE))
 		return false
+	} else if *logsize > 10 {
+		// Emit a warning, but allow to pass through to provider
+		wskprint.PrintlnOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_LIMITS_LOG_SIZE))
 	}
 	return true
 }
