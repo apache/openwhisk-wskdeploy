@@ -993,11 +993,11 @@ func TestComposeActionsForLimits(t *testing.T) {
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, file))
 
 	for i := 0; i < len(actions); i++ {
-		//if actions[i].Action.Name == "hello1" {
-		//	assert.Nil(t, actions[i].Action.Limits, "Expected limit section to be empty but got %s", actions[i].Action.Limits)
-		//} else
+		if actions[i].Action.Name == "hello1" {
+			assert.Nil(t, actions[i].Action.Limits, "Expected limit section to be empty but got %s", actions[i].Action.Limits)
+		} else
 		if actions[i].Action.Name == "hello2" {
-			assert.NotNil(t, actions[i].Action.Limits, "Expected limit section to be not empty but found it empty")
+			assert.NotNil(t, actions[i].Action.Limits, "Expected limit section to not be empty but found it empty")
 			assert.Equal(t, 180, *actions[i].Action.Limits.Timeout, "Failed to get Timeout")
 			assert.Equal(t, 128, *actions[i].Action.Limits.Memory, "Failed to get Memory")
 			assert.Equal(t, 1, *actions[i].Action.Limits.Logsize, "Failed to get Logsize")
