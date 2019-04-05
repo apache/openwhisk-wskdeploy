@@ -143,7 +143,7 @@ func LimitsTimeoutValidation(timeout *int) bool {
 	if *timeout < 100 {
 		// Do not allow invalid limit to be added to API
 		wskprint.PrintlnOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_LIMITS_TIMEOUT))
-		return false;
+		return false
 	} else if *timeout > 600000 {
 		// Emit a warning, but allow to pass through to provider
 		wskprint.PrintlnOpenWhiskWarning(wski18n.T(wski18n.ID_WARN_LIMITS_TIMEOUT))
