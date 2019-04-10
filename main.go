@@ -28,9 +28,13 @@ func main() {
 
 var (
 	//Version ...The Version of the tool
-	Version = "unset"
+	Version   = "unset"
+	GitCommit = "unset"
+	BuildDate = "unset"
 )
 
 func init() {
 	utils.Flags.CliVersion = Version
+	utils.Flags.CliGitCommit = GitCommit
+	utils.Flags.CliBuildDate = BuildDate
 }
