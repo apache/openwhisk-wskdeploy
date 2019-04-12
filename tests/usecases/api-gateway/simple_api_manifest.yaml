@@ -9,6 +9,6 @@ packages:
           fire:
             function: actions/fire/index.js
             inputs:
-              triggerName: trgger1
+              triggerName: trigger1
               type: string
             exposedUrl: post/whiskbot/slack-event/
