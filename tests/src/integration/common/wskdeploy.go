@@ -177,6 +177,11 @@ func (Wskdeploy *Wskdeploy) ManagedDeploymentManifestAndProject(manifestPath str
 	return Wskdeploy.RunCommand("sync", "-m", manifestPath, "--projectname", projectName)
 }
 
+func (Wskdeploy *Wskdeploy) ManagedDeploymentManifestAndProjectWithCredentials(manifestPath string, projectName string, wskprops *whisk.Wskprops) (string, error) {
+	return Wskdeploy.RunCommand("sync", "-m", manifestPath, "--projectname", projectName, "--auth", wskprops.AuthKey,
+		"--namespace", wskprops.Namespace, "--apihost", wskprops.APIHost, "--apiversion", wskprops.Apiversion)
+}
+
 func (Wskdeploy *Wskdeploy) ManagedDeployment(manifestPath string, deploymentPath string) (string, error) {
 	return Wskdeploy.RunCommand("sync", "-m", manifestPath, "-d", deploymentPath)
 }
@@ -187,6 +192,11 @@ func (Wskdeploy *Wskdeploy) HeadlessManagedDeployment(manifestPath string, deplo
 
 func (wskdeploy *Wskdeploy) ExportProject(projectName string, targetManifestPath string) (string, error) {
 	return wskdeploy.RunCommand("export", "-m", targetManifestPath, "--projectname", projectName)
+}
+
+func (wskdeploy *Wskdeploy) ExportProjectWithCredentials(projectName string, targetManifestPath string, wskprops *whisk.Wskprops) (string, error) {
+	return wskdeploy.RunCommand("export", "-m", targetManifestPath, "--projectname", projectName, "--auth", wskprops.AuthKey,
+		"--namespace", wskprops.Namespace, "--apihost", wskprops.APIHost, "--apiversion", wskprops.Apiversion)
 }
 
 // This method is only for testing

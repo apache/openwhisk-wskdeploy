@@ -25,6 +25,7 @@ import (
 	"os"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
@@ -44,8 +45,6 @@ func TestExport(t *testing.T) {
 
 	wskdeploy := common.NewWskdeploy()
 
-	defer os.RemoveAll(targetManifestFolder)
-
 	_, err := wskdeploy.ManagedDeploymentOnlyManifest(manifestLib1Path)
 	assert.Equal(t, nil, err, "Failed to deploy the lib1 manifest file.")
 
@@ -54,6 +53,8 @@ func TestExport(t *testing.T) {
 
 	_, err = wskdeploy.ManagedDeploymentOnlyManifest(manifestExtPath)
 	assert.Equal(t, nil, err, "Failed to deploy the ext manifest file.")
+
+	time.Sleep(2 * time.Second) // should it sleep for few seconds before export?!
 
 	_, err = wskdeploy.ExportProject(projectName, targetManifestPath)
 	assert.Equal(t, nil, err, "Failed to export project.")
@@ -75,6 +76,7 @@ func TestExport(t *testing.T) {
 
 	_, err = wskdeploy.UndeployManifestPathOnly(manifestLib1Path)
 	assert.Equal(t, nil, err, "Failed to undeploy the lib2.")
+	os.RemoveAll(targetManifestFolder)
 }
 
 func SkipTestExportHelloWorld(t *testing.T) {
@@ -82,8 +84,6 @@ func SkipTestExportHelloWorld(t *testing.T) {
 	manifestHelloWorldPath := os.Getenv("GOPATH") + EXPORT_TEST_PATH + "manifest_helloworld.yaml"
 	targetManifestFolder := os.Getenv("GOPATH") + EXPORT_TEST_PATH + "tmp-" + strconv.Itoa(rand.Intn(1000)) + "/"
 	targetManifestHelloWorldPath := targetManifestFolder + "manifest-" + projectName + ".yaml"
-
-	defer os.RemoveAll(targetManifestFolder)
 
 	wskdeploy := common.NewWskdeploy()
 
@@ -112,6 +112,8 @@ func SkipTestExportHelloWorld(t *testing.T) {
 		_, err = wskdeploy.UndeployManifestPathOnly(targetManifestHelloWorldPath)
 		assert.Equal(t, nil, err, "Failed to undeploy exported project")
 	}
+
+	os.RemoveAll(targetManifestFolder)
 }
 
 func TestExport2Pack(t *testing.T) {
@@ -119,14 +121,13 @@ func TestExport2Pack(t *testing.T) {
 	targetManifestFolder := os.Getenv("GOPATH") + EXPORT_TEST_PATH + "tmp-" + strconv.Itoa(rand.Intn(1000)) + "/"
 	target2PackManifestPath := targetManifestFolder + "exported2packmanifest.yaml"
 
-	defer os.RemoveAll(targetManifestFolder)
-
 	projectName := "2pack"
 	wskdeploy := common.NewWskdeploy()
 
 	_, err := wskdeploy.ManagedDeploymentOnlyManifest(manifest2PackPath)
 	assert.Equal(t, nil, err, "Failed to deploy the 2pack manifest file.")
 
+	time.Sleep(2 * time.Second) // should it sleep for few seconds before export?!
 	_, err = wskdeploy.ExportProject(projectName, target2PackManifestPath)
 	assert.Equal(t, nil, err, "Failed to export project.")
 
@@ -141,21 +142,22 @@ func TestExport2Pack(t *testing.T) {
 
 	_, err = wskdeploy.UndeployManifestPathOnly(manifest2PackPath)
 	assert.Equal(t, nil, err, "Failed to undeploy")
+
+	os.RemoveAll(targetManifestFolder)
 }
 
 func TestExportApi(t *testing.T) {
 	projectName := "ApiExp"
 	wskdeploy := common.NewWskdeploy()
 
-	defer os.RemoveAll(targetManifestFolder)
-
 	_, err := wskdeploy.ManagedDeploymentManifestAndProject(manifestApiExpPath, projectName)
 	assert.Equal(t, nil, err, "Failed to deploy the ApiExp manifest file.")
 
+	time.Sleep(2 * time.Second) // should it sleep for few seconds before export?!
 	_, err = wskdeploy.ExportProject(projectName, targetApiExpManifestPath)
 	assert.Equal(t, nil, err, "Failed to export project.")
 
-	_, err = os.Stat(manifestApiExpPath)
+	_, err = os.Stat(targetApiExpManifestPath)
 	assert.Equal(t, nil, err, "Missing exported manifest file")
 
 	_, err = os.Stat(targetManifestFolder + "api-gateway-test/greeting.js")
@@ -169,6 +171,45 @@ func TestExportApi(t *testing.T) {
 
 	_, err = wskdeploy.UndeployManifestPathOnly(targetApiExpManifestPath)
 	assert.Equal(t, nil, err, "Failed to undeploy the exported manifest file")
+
+	os.RemoveAll(targetManifestFolder)
+}
+
+func TestExportTriggerFeed(t *testing.T) {
+	projectName := "FeedExp"
+
+	wskprops := common.GetWskpropsFromEnvVars(common.BLUEMIX_APIHOST, common.BLUEMIX_NAMESPACE, common.BLUEMIX_AUTH)
+	err := common.ValidateWskprops(wskprops)
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Println("Wsk properties are not properly configured, so tests are skipped.")
+	} else {
+		wskdeploy := common.NewWskdeploy()
+
+		_, err = wskdeploy.ManagedDeploymentManifestAndProjectWithCredentials(manifestFeedExpPath, projectName, wskprops)
+		assert.Equal(t, nil, err, "Failed to deploy the FeedExp manifest file.")
+
+		time.Sleep(2 * time.Second) // should it sleep for few seconds before export?!
+		_, err = wskdeploy.ExportProjectWithCredentials(projectName, targetFeedExpManifestPath, wskprops)
+		assert.Equal(t, nil, err, "Failed to export project with trigger feed.")
+
+		_, err = os.Stat(targetFeedExpManifestPath)
+		assert.Equal(t, nil, err, "Missing exported manifest file")
+
+		_, err = os.Stat(targetManifestFolder + "trigger-feed-test/greeting.js")
+		assert.Equal(t, nil, err, "Missing exported trigger-feed-test/greeting.js")
+
+		_, err = wskdeploy.UndeployWithCredentials(targetFeedExpManifestPath, manifestFeedExpPath, wskprops)
+		assert.Equal(t, nil, err, "Failed to undeploy manifest feed")
+
+		_, err = wskdeploy.ManagedDeploymentManifestAndProjectWithCredentials(manifestFeedExpPath, projectName, wskprops)
+		assert.Equal(t, nil, err, "Failed to redeploy the exported manifest file.")
+
+		_, err = wskdeploy.UndeployWithCredentials(targetFeedExpManifestPath, manifestFeedExpPath, wskprops)
+		assert.Equal(t, nil, err, "Failed to undeploy the exported manifest file")
+	}
+
+	os.RemoveAll(targetManifestFolder)
 }
 
 var (
@@ -184,4 +225,7 @@ var (
 
 	manifestApiExpPath       = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_apiexp.yaml"
 	targetApiExpManifestPath = targetManifestFolder + "exportedapimanifest.yaml"
+
+	manifestFeedExpPath       = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_feed.yaml"
+	targetFeedExpManifestPath = targetManifestFolder + "exportedfeedmanifest.yaml"
 )

@@ -216,12 +216,19 @@ func exportProject(projectName string, targetManifest string) error {
 						// export trigger to manifest
 
 						if feedname, isFeed := utils.IsFeedAction(&trg); isFeed {
-							// export feed input parameters
-							feedAction, _, _ := client.Actions.Get(feedname, true)
-							if err != nil {
-								return err
+							// check if feed name starts with namespace and workaround it
+							// the current problem is that client has user namespace and when feed specified with different namespace it will fail to invoke the feed action
+							// we need to transform the path from e.g.
+							// /api/v1/namespaces/kpavel@il.ibm.com_uspace/actions//whisk.system/alarms/interval?blocking=true
+							// in to
+							// /api/v1/namespaces/kpavel@il.ibm.com_uspace/actions/../../whisk.system/actions/alarms/interval?blocking=true
+							if strings.HasPrefix(feedname, "/") {
+								//  /whisk.system/alarms/interval  ->  ../../whisk.system/actions/alarms/interval
+								prts := strings.SplitN(feedname, "/", 3)
+								feedname = "../../" + prts[1] + "/actions/" + prts[2]
 							}
 
+							// export feed input parameters
 							params := make(map[string]interface{})
 							params["authKey"] = client.Config.AuthToken
 							params["lifecycleEvent"] = "READ"
@@ -231,10 +238,12 @@ func exportProject(projectName string, targetManifest string) error {
 								return err
 							}
 							feedConfig := res["config"]
-							for key, val := range feedConfig.(map[string]interface{}) {
 
-								if i := feedAction.Parameters.FindKeyValue(key); i >= 0 {
-									trg.Parameters = trg.Parameters.AddOrReplace(&whisk.KeyValue{Key: key, Value: val})
+							if feedConfig != nil {
+								for key, val := range feedConfig.(map[string]interface{}) {
+									if key != "startDate" {
+										trg.Parameters = trg.Parameters.AddOrReplace(&whisk.KeyValue{Key: key, Value: val})
+									}
 								}
 							}
 						}
