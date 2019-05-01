@@ -138,7 +138,7 @@ inputs:
 #### Object type example
 
 The Object type allows for complex objects to be declared as parameters
-with an optional validateable schema.
+with an optional validatable schema.
 
 ```yaml
 inputs:
