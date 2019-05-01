@@ -175,7 +175,7 @@ func TestExportApi(t *testing.T) {
 	os.RemoveAll(targetManifestFolder)
 }
 
-func TestExportTriggerFeed(t *testing.T) {
+func SkipTestExportTriggerFeed(t *testing.T) {
 	projectName := "FeedExp"
 
 	wskprops := common.GetWskpropsFromEnvVars(common.BLUEMIX_APIHOST, common.BLUEMIX_NAMESPACE, common.BLUEMIX_AUTH)
