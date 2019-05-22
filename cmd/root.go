@@ -102,20 +102,31 @@ func init() {
 func initConfig() {
 	userHome := utils.GetHomeDirectory()
 	defaultPath := path.Join(userHome, whisk.DEFAULT_LOCAL_CONFIG)
-	if utils.Flags.CfgFile != "" {
 
-		// Read the file as a wskprops file, to check if it is valid.
-		_, err := whisk.ReadProps(utils.Flags.CfgFile)
-		if err != nil {
-			utils.Flags.CfgFile = defaultPath
-			warn := wski18n.T(wski18n.ID_WARN_CONFIG_INVALID_X_path_X,
-				map[string]interface{}{
-					wski18n.KEY_PATH: utils.Flags.CfgFile})
-			wskprint.PrintOpenWhiskWarning(warn)
+	// Precedence order for reading the configuration file should be:
+	// 1. --config
+	// 2. ENV variable WSK_CONFIG_FILE
+	// 3. Default $HOME/.wskprops
+	cfgFiles := []string{
+		utils.Flags.CfgFile,
+		os.Getenv("WSK_CONFIG_FILE"),
+		defaultPath,
+	}
+
+	for _, cfgFile := range cfgFiles {
+		if cfgFile != "" {
+			// Read the file as a wskprops file, to check if it is valid.
+			_, err := whisk.ReadProps(cfgFile)
+			if err != nil {
+				warn := wski18n.T(wski18n.ID_WARN_CONFIG_INVALID_X_path_X,
+					map[string]interface{}{
+						wski18n.KEY_PATH: utils.Flags.CfgFile})
+				wskprint.PrintOpenWhiskWarning(warn)
+			} else {
+				utils.Flags.CfgFile = cfgFile
+				break
+			}
 		}
-
-	} else {
-		utils.Flags.CfgFile = defaultPath
 	}
 }
 
