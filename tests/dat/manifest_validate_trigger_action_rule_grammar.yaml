@@ -22,8 +22,10 @@ packages:
         license: Apache-2.0
         actions:
             first_action:
+                description: Foo Bar 1
                 function: actions/dump_params.js
             second_action:
+                description: Foo Bar 2
                 function: actions/dump_params.js
             third_action:
                 function: actions/dump_params.js
@@ -32,9 +34,11 @@ packages:
             trigger2:
         rules:
             rule1:
+                description: Foo Bar 1
                 trigger: trigger1
                 action: first_action
             rule3:
+                description: Foo Bar 2
                 trigger: trigger2
                 action: second_action
             rule2:
