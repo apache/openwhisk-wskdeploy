@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
+	"github.com/apache/openwhisk-client-go/whisk"
 )
 
 /*

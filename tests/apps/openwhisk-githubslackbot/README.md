@@ -19,19 +19,19 @@
 
 # GitHub Slack Bot
 
-[Github Slack Bot](https://github.com/apache/incubator-openwhisk-GitHubSlackBot)
+[Github Slack Bot](https://github.com/apache/openwhisk-GitHubSlackBot)
 is an application designed to post updates to Slack when a GitHub pull request is
 ready to merge or a list of pull requests are under review for certain days and
 haven't merged.
 
 You can find detailed Architecture and Usage at
-[incubator-openwhisk-githubslackbot](https://github.com/apache/incubator-openwhisk-GitHubSlackBot).
+[openwhisk-githubslackbot](https://github.com/apache/openwhisk-GitHubSlackBot).
 
 Github Slack Bot application is dependent on three major components:
 
-1. [Cloudant Package](https://github.com/apache/incubator-openwhisk-package-cloudant)
-2. [GitHub Package](https://github.com/apache/incubator-openwhisk-catalog/tree/master/packages/github)
-3. [Slack Package](https://github.com/apache/incubator-openwhisk-catalog/tree/master/packages/slack)
+1. [Cloudant Package](https://github.com/apache/openwhisk-package-cloudant)
+2. [GitHub Package](https://github.com/apache/openwhisk-catalog/tree/master/packages/github)
+3. [Slack Package](https://github.com/apache/openwhisk-catalog/tree/master/packages/slack)
 
 
 #### `manifest.yaml` for Cloudant Package

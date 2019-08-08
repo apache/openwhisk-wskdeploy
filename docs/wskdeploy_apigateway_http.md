@@ -119,7 +119,7 @@ function main(params) {
 
 ### Deploying
 
-You can actually deploy the "API Gateway HTTP" manifest from the incubator-openwhisk-wskdeploy project directory if you have downloaded it from GitHub:
+You can actually deploy the "API Gateway HTTP" manifest from the *openwhisk-wskdeploy* project directory if you have downloaded it from GitHub:
 
 ```sh
 $ wskdeploy -m docs/examples/manifest_hello_world_apigateway_http.yaml

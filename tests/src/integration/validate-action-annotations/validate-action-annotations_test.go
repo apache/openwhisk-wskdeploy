@@ -20,13 +20,13 @@
 package tests
 
 import (
-	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
 
-var path = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-action-annotations/"
+var path = "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/validate-action-annotations/"
 
 func TestActionAnnotations(t *testing.T) {
 	manifestPath := os.Getenv("GOPATH") + path + "manifest.yaml"

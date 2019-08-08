@@ -19,12 +19,12 @@
 
 # Using Cloudant Package with `wskdeploy`
 
-The [Cloudant usecase](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/tests/src/integration/cloudant) demonstrates how to build an OpenWhisk app to retrieve document updates from cloudant using `wskdeploy`.
+The [Cloudant usecase](https://github.com/apache/openwhisk-wskdeploy/tree/master/tests/src/integration/cloudant) demonstrates how to build an OpenWhisk app to retrieve document updates from cloudant using `wskdeploy`.
 
-OpenWhisk supports [Cloudant package](https://github.com/apache/incubator-openwhisk-package-cloudant) which can be used to integrate with Cloudant APIs. For our simple app to display document IDs,  we need:
+OpenWhisk supports [Cloudant package](https://github.com/apache/openwhisk-package-cloudant) which can be used to integrate with Cloudant APIs. For our simple app to display document IDs,  we need:
 
-- [manifest.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/tests/usecases/cloudant/manifest.yaml)
-- [Action File](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/tests/usecases/cloudant/src/process-change.js)
+- [manifest.yaml](https://github.com/apache/openwhisk-wskdeploy/blob/master/tests/usecases/cloudant/manifest.yaml)
+- [Action File](https://github.com/apache/openwhisk-wskdeploy/blob/master/tests/usecases/cloudant/src/process-change.js)
 
 All you have to do is export following environment variables:
 

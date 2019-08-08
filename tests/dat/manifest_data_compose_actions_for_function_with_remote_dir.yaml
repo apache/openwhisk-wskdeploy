@@ -19,4 +19,4 @@ packages:
   helloworld:
     actions:
       hello:
-        function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/src/integration/helloworld/actions/
+        function: https://raw.githubusercontent.com/apache/openwhisk-wskdeploy/master/tests/src/integration/helloworld/actions/

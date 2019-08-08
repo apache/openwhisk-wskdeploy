@@ -19,13 +19,13 @@
 
 # Using GitHub Package with `wskdeploy`
 
-The [GitHub usecase](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/tests/usecases/github) demonstrates how to build an OpenWhisk app to display github commit messages using `wskdeploy`.
+The [GitHub usecase](https://github.com/apache/openwhisk-wskdeploy/tree/master/tests/usecases/github) demonstrates how to build an OpenWhisk app to display github commit messages using `wskdeploy`.
 
-OpenWhisk comes with a [GitHub package](https://github.com/apache/incubator-openwhisk-catalog/blob/master/packages/github/README.md) which can be used to run GitHub APIs. For our app to display github commits, we need:
+OpenWhisk comes with a [GitHub package](https://github.com/apache/openwhisk-catalog/blob/master/packages/github/README.md) which can be used to run GitHub APIs. For our app to display github commits, we need:
 
-- [manifest.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/tests/usecases/github/manifest.yaml)
-- [deployment.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/tests/usecases/github/deployment.yaml)
-- [Action File](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/tests/usecases/github/src/print-github-commits.js)
+- [manifest.yaml](https://github.com/apache/openwhisk-wskdeploy/blob/master/tests/usecases/github/manifest.yaml)
+- [deployment.yaml](https://github.com/apache/openwhisk-wskdeploy/blob/master/tests/usecases/github/deployment.yaml)
+- [Action File](https://github.com/apache/openwhisk-wskdeploy/blob/master/tests/usecases/github/src/print-github-commits.js)
 
 All you have to do is add your own credentials in `deployment.yaml` to deploy this app.
 
@@ -33,7 +33,7 @@ All you have to do is add your own credentials in `deployment.yaml` to deploy th
 GitHubWebhookTrigger:
     inputs:
         username: <username>  # replace it with your GitHub username
-        repository: <repo>    # replace it with your repo eg. apache/incubator-openwhisk-wskdeploy
+        repository: <repo>    # replace it with your repo eg. apache/openwhisk-wskdeploy
         accessToken: <token>  # replace it with token which has access to the specified repo
         events: push          # push for commits
 ```

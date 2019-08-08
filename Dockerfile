@@ -27,19 +27,19 @@ ENV GOPATH=/
 RUN echo "Installing the godep tool"
 RUN go get github.com/tools/godep
 
-ADD . /src/github.com/apache/incubator-openwhisk-wskdeploy
+ADD . /src/github.com/apache/openwhisk-wskdeploy
 
 # Load all of the dependencies from the previously generated/saved godep generated godeps.json file
 RUN echo "Restoring Go dependencies"
-RUN cd /src/github.com/apache/incubator-openwhisk-wskdeploy && /bin/godep restore -v
+RUN cd /src/github.com/apache/openwhisk-wskdeploy && /bin/godep restore -v
 
 # All of the Go CLI binaries will be placed under a build folder
-RUN rm -rf /src/github.com/apache/incubator-openwhisk-wskdeploy/build
-RUN mkdir /src/github.com/apache/incubator-openwhisk-wskdeploy/build
+RUN rm -rf /src/github.com/apache/openwhisk-wskdeploy/build
+RUN mkdir /src/github.com/apache/openwhisk-wskdeploy/build
 
 ARG WSKDEPLOY_OS
 ARG WSKDEPLOY_ARCH
 
 # Build the Go wsk CLI binaries and compress resultant binaries
-RUN chmod +x /src/github.com/apache/incubator-openwhisk-wskdeploy/build.sh
-RUN cd /src/github.com/apache/incubator-openwhisk-wskdeploy/ && ./build.sh
+RUN chmod +x /src/github.com/apache/openwhisk-wskdeploy/build.sh
+RUN cd /src/github.com/apache/openwhisk-wskdeploy/ && ./build.sh

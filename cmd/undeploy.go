@@ -18,7 +18,7 @@
 package cmd
 
 import (
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/openwhisk-wskdeploy/wski18n"
 	"github.com/spf13/cobra"
 )
 

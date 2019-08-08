@@ -20,7 +20,7 @@
 package tests
 
 import (
-	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -28,7 +28,7 @@ import (
 )
 
 func TestDefaultPackage(t *testing.T) {
-	path := "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/defaultpackage/"
+	path := "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/defaultpackage/"
 	manifestPath := os.Getenv("GOPATH") + path + "manifest.yaml"
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)

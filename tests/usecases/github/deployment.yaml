@@ -25,6 +25,6 @@ project:
                 GitHubWebhookTrigger:
                     inputs:
                         username: <username>  # replace it with your GitHub username
-                        repository: <repo>    # replace it with your repo eg. apache/incubator-openwhisk-wskdeploy
+                        repository: <repo>    # replace it with your repo eg. apache/openwhisk-wskdeploy
                         accessToken: <token>  # replace it with token which has access to the specified repo
                         events: push          # push for commits

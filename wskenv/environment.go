@@ -22,8 +22,8 @@ import (
 	"reflect"
 	"strings"
 	/** Fixes #797
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/apache/openwhisk-wskdeploy/wski18n"
+	"github.com/apache/openwhisk-wskdeploy/wskprint"
 	**/)
 
 // Test if a string

@@ -19,23 +19,23 @@ packages:
     helloworld1:
         dependencies:
             helloworlds:
-                location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+                location: github.com/apache/openwhisk-test/packages/helloworlds
             dependency1:
-                location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+                location: github.com/apache/openwhisk-test/packages/helloworlds
             dependency2:
-                location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+                location: github.com/apache/openwhisk-test/packages/hellowhisk
             dependency3:
                 location: /whisk.system/utils
     helloworld2:
         dependencies:
             helloworlds:
-                location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+                location: github.com/apache/openwhisk-test/packages/helloworlds
             dependency1:
-                location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+                location: github.com/apache/openwhisk-test/packages/helloworlds
             dependency4:
-                location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+                location: github.com/apache/openwhisk-test/packages/helloworlds
             dependency5:
-                location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+                location: github.com/apache/openwhisk-test/packages/hellowhisk
             dependency6:
                 location: /whisk.system/utils
 

@@ -208,7 +208,7 @@ project:
         Extension1:
             dependencies:
                 helloworlds:
-                    location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+                    location: github.com/apache/openwhisk-test/packages/helloworlds
 ```
 
 After deploying this project with `wskdeploy sync -m manifest.yaml`, package `Extension2` has following annotation:
@@ -230,7 +230,7 @@ ok: got package Extension1
                     {
                         "key": "/guest/helloworlds",
                         "value": {
-                            "file": ".../src/github.com/apache/incubator-openwhisk-wskdeploy/Packages/helloworlds-master/packages/helloworlds/manifest.yaml",
+                            "file": ".../src/github.com/apache/openwhisk-wskdeploy/Packages/helloworlds-master/packages/helloworlds/manifest.yaml",
                             "projectDeps": [],
                             "projectHash": "0ae33344f7885df01aefd053e94a4eb3675ef72d",
                             "projectName": "HelloWorlds"
@@ -255,7 +255,7 @@ bx wsk package get helloworlds
         {
             "key": "whisk-managed",
             "value": {
-                "file": ".../src/github.com/apache/incubator-openwhisk-wskdeploy/Packages/helloworlds-master/packages/helloworlds/manifest.yaml",
+                "file": ".../src/github.com/apache/openwhisk-wskdeploy/Packages/helloworlds-master/packages/helloworlds/manifest.yaml",
                 "projectDeps": [],
                 "projectHash": "0ae33344f7885df01aefd053e94a4eb3675ef72d",
                 "projectName": "HelloWorlds"
@@ -277,9 +277,9 @@ project:
         Extension2:
             dependencies:
                 helloworlds:
-                    location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+                    location: github.com/apache/openwhisk-test/packages/helloworlds
                 custom-hellowhisk:
-                    location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+                    location: github.com/apache/openwhisk-test/packages/hellowhisk
 ...
 ```
 
@@ -302,7 +302,7 @@ ok: got package Extension2
                     {
                         "key": "/guest/helloworlds",
                         "value": {
-                            "file": ".../src/github.com/apache/incubator-openwhisk-wskdeploy/Packages/helloworlds-master/packages/helloworlds/manifest.yaml",
+                            "file": ".../src/github.com/apache/openwhisk-wskdeploy/Packages/helloworlds-master/packages/helloworlds/manifest.yaml",
                             "projectDeps": [],
                             "projectHash": "0ae33344f7885df01aefd053e94a4eb3675ef72d",
                             "projectName": "HelloWorlds"
@@ -311,7 +311,7 @@ ok: got package Extension2
                     {
                         "key": "/guest/hellowhisk",
                         "value": {
-                            "file": "../src/github.com/apache/incubator-openwhisk-wskdeploy/Packages/custom-hellowhisk-master/packages/hellowhisk/manifest.yaml",
+                            "file": "../src/github.com/apache/openwhisk-wskdeploy/Packages/custom-hellowhisk-master/packages/hellowhisk/manifest.yaml",
                             "projectDeps": [],
                             "projectHash": "8970b2e820631322ae630e9366b2342ab3b67a57",
                             "projectName": "HelloWhisk"

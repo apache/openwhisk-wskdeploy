@@ -53,7 +53,7 @@ The API entity schema is used to define an OpenWhisk API within a manifest.
   <td>no</td>
   <td>string</td>
   <td>http</td>
-  <td>The response type or <i>content extension</i> used when the API Gateway invokes the web action. See <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md#content-extensions">https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md#content-extensions</a>.</p></td>
+  <td>The response type or <i>content extension</i> used when the API Gateway invokes the web action. See <a href="https://github.com/apache/openwhisk/blob/master/docs/webactions.md#content-extensions">https://github.com/apache/openwhisk/blob/master/docs/webactions.md#content-extensions</a>.</p></td>
  </tr>
 </table>
 </html>
@@ -109,7 +109,7 @@ packages:
 ### Notes
 
 - When an API endpoint is being added to an existing API, the `apiName` in the manifest is ignored.
-- See <a href="https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md">https://github.com/apache/incubator-openwhisk/blob/master/docs/webactions.md</a> for the complete set of supported `response` values, also known as <i>content extensions</i>.
+- See <a href="https://github.com/apache/openwhisk/blob/master/docs/webactions.md">https://github.com/apache/openwhisk/blob/master/docs/webactions.md</a> for the complete set of supported `response` values, also known as <i>content extensions</i>.
 - Using a `response` value of `http` will give you the most control over the API request and response handling.
 
 <!--

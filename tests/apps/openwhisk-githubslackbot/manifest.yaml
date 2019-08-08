@@ -17,7 +17,7 @@
 
 ##############################
 
-# OpenWhisk Whisk Deploy manifest for incubator-openwhisk-githubslackbot
+# OpenWhisk Whisk Deploy manifest for openwhisk-githubslackbot
 # Installing openwhisk actions, triggers, and rules for OpenWhisk building block
 #   Cloudant Package
 #   GitHub Package

@@ -22,4 +22,4 @@ HOMEDIR="$SCRIPTDIR/../../../"
 
 # clone OpenWhisk utilities repo. in order to run scanCode
 cd $HOMEDIR
-git clone https://github.com/apache/incubator-openwhisk-utilities.git
+git clone https://github.com/apache/openwhisk-utilities.git

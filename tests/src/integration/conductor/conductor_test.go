@@ -23,11 +23,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 )
 
-const PATH = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/conductor/"
+const PATH = "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/conductor/"
 
 func TestManagedDeployment(t *testing.T) {
 	manifestPath := os.Getenv("GOPATH") + PATH + "manifest.yaml"

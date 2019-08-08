@@ -29,11 +29,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/apache/openwhisk-client-go/whisk"
+	"github.com/apache/openwhisk-wskdeploy/runtimes"
+	"github.com/apache/openwhisk-wskdeploy/utils"
+	"github.com/apache/openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -967,7 +967,7 @@ func TestComposeActionsForDocker(t *testing.T) {
 func TestComposeActionsForEnvVariableInFunction(t *testing.T) {
 	os.Setenv("OPENWHISK_FUNCTION_FILE", "../src/integration/helloworld/actions/hello.js")
 	os.Setenv("OPENWHISK_FUNCTION_PYTHON", "../src/integration/helloworld/actions/hello")
-	os.Setenv("OPENWHISK_FUNCTION_GITHUB", "raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/src/integration/helloworld/actions/hello")
+	os.Setenv("OPENWHISK_FUNCTION_GITHUB", "raw.githubusercontent.com/apache/openwhisk-wskdeploy/master/tests/src/integration/helloworld/actions/hello")
 
 	file := "../tests/dat/manifest_data_compose_actions_for_function_with_env_variable.yaml"
 	p, m, _ := testLoadParseManifest(t, file)

@@ -20,13 +20,13 @@
 package tests
 
 import (
-	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
 
-var path = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-project/"
+var path = "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/validate-project/"
 
 func TestProjectInDeployment(t *testing.T) {
 	manifestPath := os.Getenv("GOPATH") + path + "manifest.yaml"

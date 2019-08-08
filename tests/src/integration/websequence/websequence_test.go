@@ -23,7 +23,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -38,6 +38,6 @@ func TestWebSequence(t *testing.T) {
 }
 
 var (
-	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/websequence/manifest.yaml"
+	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/websequence/manifest.yaml"
 	deploymentPath = ""
 )

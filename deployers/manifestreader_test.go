@@ -23,12 +23,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
-	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/apache/openwhisk-client-go/whisk"
+	"github.com/apache/openwhisk-wskdeploy/dependencies"
+	"github.com/apache/openwhisk-wskdeploy/parsers"
+	"github.com/apache/openwhisk-wskdeploy/runtimes"
+	"github.com/apache/openwhisk-wskdeploy/utils"
+	"github.com/apache/openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -171,8 +171,8 @@ func TestManifestReader_SetDependencies(t *testing.T) {
 	err = manifestReader.HandleYaml(manifestParser, manifest, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
 
-	expectedLocationHelloWorlds := "https://github.com/apache/incubator-openwhisk-test/packages/helloworlds"
-	expectedLocationHelloWhisk := "https://github.com/apache/incubator-openwhisk-test/packages/hellowhisk"
+	expectedLocationHelloWorlds := "https://github.com/apache/openwhisk-test/packages/helloworlds"
+	expectedLocationHelloWhisk := "https://github.com/apache/openwhisk-test/packages/hellowhisk"
 	expectedLocationUtils := "/whisk.system/utils"
 
 	for pkgName, pkg := range deployer.Deployment.Packages {

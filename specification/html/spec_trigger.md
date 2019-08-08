@@ -19,7 +19,7 @@
 
 ## Triggers
 
-The Trigger entity schema contains the necessary information to describe the stream of events that it represents. For more information, see the document "[Creating Triggers and Rules](https://github.com/apache/incubator-openwhisk/blob/master/docs/triggers_rules.md)".
+The Trigger entity schema contains the necessary information to describe the stream of events that it represents. For more information, see the document "[Creating Triggers and Rules](https://github.com/apache/openwhisk/blob/master/docs/triggers_rules.md)".
 
 #### Subsections
 - [Fields](#fields)
