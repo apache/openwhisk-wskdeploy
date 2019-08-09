@@ -21,9 +21,9 @@ project:
         Extension2:
             dependencies:
                 hellowhisk-with-managed-project:
-                    location: github.com/apache/openwhisk-test/packages/hellowhisk
+                    location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
                 helloworlds-with-managed-project:
-                    location: github.com/apache/openwhisk-test/packages/helloworlds
+                    location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
             sequences:
                 helloworld-sequence:
                    actions: helloworlds-with-managed-project/hello-js, hellowhisk-with-managed-project/greeting
