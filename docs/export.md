@@ -68,7 +68,7 @@ ok: got package lib1_package
         {
             "key": "whisk-managed",
             "value": {
-                "file": "/root/go_projects/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_lib1.yaml",
+                "file": "/root/go_projects/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/export/manifest_lib1.yaml",
                 "projectDeps": [],
                 "projectHash": "80eec5f8e3ee874e22bdacb76aa4cc69aad459c1",
                 "projectName": "lib1"
@@ -84,7 +84,7 @@ ok: got package lib1_package
                 {
                     "key": "whisk-managed",
                     "value": {
-                        "file": "/root/go_projects/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_lib1.yaml",
+                        "file": "/root/go_projects/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/export/manifest_lib1.yaml",
                         "projectDeps": [],
                         "projectHash": "80eec5f8e3ee874e22bdacb76aa4cc69aad459c1",
                         "projectName": "lib1"
@@ -103,7 +103,7 @@ ok: got package lib1_package
                 {
                     "key": "whisk-managed",
                     "value": {
-                        "file": "/root/go_projects/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_lib1.yaml",
+                        "file": "/root/go_projects/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/export/manifest_lib1.yaml",
                         "projectDeps": [],
                         "projectHash": "80eec5f8e3ee874e22bdacb76aa4cc69aad459c1",
                         "projectName": "lib1"
@@ -122,7 +122,7 @@ ok: got package lib1_package
                 {
                     "key": "whisk-managed",
                     "value": {
-                        "file": "/root/go_projects/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_lib1.yaml",
+                        "file": "/root/go_projects/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/export/manifest_lib1.yaml",
                         "projectDeps": [],
                         "projectHash": "80eec5f8e3ee874e22bdacb76aa4cc69aad459c1",
                         "projectName": "lib1"

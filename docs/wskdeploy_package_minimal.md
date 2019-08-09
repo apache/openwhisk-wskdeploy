@@ -19,7 +19,7 @@
 
 # Packages
 
-The wskdeploy utility works primarily with the OpenWhisk **Package** resource as described in the [OpenWhisk Packaging Specification](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/specification#openwhisk-packaging-specification).
+The wskdeploy utility works primarily with the OpenWhisk **Package** resource as described in the [OpenWhisk Packaging Specification](https://github.com/apache/openwhisk-wskdeploy/tree/master/specification#openwhisk-packaging-specification).
 
 ## Creating a minimal OpenWhisk Package
 
@@ -90,11 +90,11 @@ packages
 
 #### Source code
 The source code for the manifest and JavaScript files can be found here:
-- [manifest_package_minimal.yaml](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/docs/examples/manifest_package_minimal.yaml)
+- [manifest_package_minimal.yaml](https://github.com/apache/openwhisk-wskdeploy/blob/master/docs/examples/manifest_package_minimal.yaml)
 
 ### Specification
 For convenience, the Packages grammar can be found here:
-- **[Packages](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_packages.md#packages)**
+- **[Packages](https://github.com/apache/openwhisk-wskdeploy/blob/master/specification/html/spec_packages.md#packages)**
 
 ---
 

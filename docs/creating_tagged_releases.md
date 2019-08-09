@@ -48,12 +48,12 @@ You can download the binaries, and delete them from the releases page in GitHub 
 
 [Homebrew](https://brew.sh) is used to install `wskdeploy` locally. Once we release a new version of `wskdeploy` we should update its version in homebrew.
 
-Get the new release SHA256 checksum by downloading the Source Code (tar.gz) from the [releases page](https://github.com/apache/incubator-openwhisk-wskdeploy/releases) and running `shasum -a 256 X.Y.Z.tar.gz` on the tarball.
+Get the new release SHA256 checksum by downloading the Source Code (tar.gz) from the [releases page](https://github.com/apache/openwhisk-wskdeploy/releases) and running `shasum -a 256 X.Y.Z.tar.gz` on the tarball.
 
 Update brew formula with the automation command `brew bump-formula-pr`:
 ```bash
 $ brew bump-formula-pr \
-  --url='https://github.com/apache/incubator-openwhisk-wskdeploy/archive/X.Y.Z.tar.gz' \
+  --url='https://github.com/apache/openwhisk-wskdeploy/archive/X.Y.Z.tar.gz' \
   --sha256='PASTE THE SHA256 CHECKSUM HERE' \
   --version='X.Y.Z' \
   wskdeploy

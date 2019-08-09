@@ -23,12 +23,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
-	"github.com/apache/incubator-openwhisk-wskdeploy/parsers"
-	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/apache/openwhisk-client-go/whisk"
+	"github.com/apache/openwhisk-wskdeploy/dependencies"
+	"github.com/apache/openwhisk-wskdeploy/parsers"
+	"github.com/apache/openwhisk-wskdeploy/runtimes"
+	"github.com/apache/openwhisk-wskdeploy/utils"
+	"github.com/apache/openwhisk-wskdeploy/wskprint"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -24,7 +24,7 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/apache/openwhisk-wskdeploy/wskprint"
 )
 
 // check if the path represents file path or dir path

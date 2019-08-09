@@ -45,7 +45,7 @@ build_wskdeploy () {
 
   export GOARCH=$arch
 
-  cd /src/github.com/apache/incubator-openwhisk-wskdeploy
+  cd /src/github.com/apache/openwhisk-wskdeploy
   go build -ldflags "-X main.Version=`date -u '+%Y-%m-%dT%H:%M:%S'`" -v -o build/$os/$arch/$bin main.go;
 };
 

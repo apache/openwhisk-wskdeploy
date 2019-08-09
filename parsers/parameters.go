@@ -19,9 +19,9 @@ package parsers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
+	"github.com/apache/openwhisk-wskdeploy/utils"
+	"github.com/apache/openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/openwhisk-wskdeploy/wskenv"
 	"reflect"
 )
 

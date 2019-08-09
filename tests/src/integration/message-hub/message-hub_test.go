@@ -21,7 +21,7 @@ package tests
 
 import (
 	"fmt"
-	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -56,6 +56,6 @@ func TestMessageHub(t *testing.T) {
 }
 
 var (
-	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/message-hub/manifest.yaml"
-	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/message-hub/deployment.yaml"
+	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/message-hub/manifest.yaml"
+	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/message-hub/deployment.yaml"
 )

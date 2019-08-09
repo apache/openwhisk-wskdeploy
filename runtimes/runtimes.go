@@ -26,11 +26,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/apache/openwhisk-client-go/whisk"
+	"github.com/apache/openwhisk-wskdeploy/utils"
+	"github.com/apache/openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/openwhisk-wskdeploy/wski18n"
+	"github.com/apache/openwhisk-wskdeploy/wskprint"
 )
 
 const (
@@ -276,7 +276,7 @@ func ListOfSupportedRuntimes(runtimes map[string][]string) (rt []string) {
 
 var RUNTIME_DETAILS = []byte(`{
     "support": {
-        "github": "https://github.com/apache/incubator-openwhisk/issues",
+        "github": "https://github.com/apache/openwhisk/issues",
         "slack": "http://slack.openwhisk.org"
     },
     "description": "OpenWhisk",

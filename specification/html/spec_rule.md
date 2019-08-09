@@ -19,7 +19,7 @@
 
 ## Rules
 
-The Rule entity schema contains the information necessary to associates one trigger with one action, with every firing of the trigger causing the corresponding action to be invoked with the trigger event as input. For more information, see the document "[Creating Triggers and Rules](https://github.com/apache/incubator-openwhisk/blob/master/docs/triggers_rules.md)".
+The Rule entity schema contains the information necessary to associates one trigger with one action, with every firing of the trigger causing the corresponding action to be invoked with the trigger event as input. For more information, see the document "[Creating Triggers and Rules](https://github.com/apache/openwhisk/blob/master/docs/triggers_rules.md)".
 
 #### Subsections
 - [Fields](#fields)

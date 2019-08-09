@@ -21,7 +21,7 @@ package cmd
 
 import (
 	"bytes"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
+	"github.com/apache/openwhisk-wskdeploy/utils"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -86,7 +86,7 @@ func initializeParameters() {
 	expected_auth_flags.Auth = "fake_auth"
 	expected_auth_flags.ApiVersion = "fake_api_version"
 
-	expected_input.CfgFile = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/dat/wskprops"
+	expected_input.CfgFile = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/dat/wskprops"
 	expected_input.Verbose = true
 	expected_input.Preview = false
 	expected_input.ProjectPath = "fake_project_path"

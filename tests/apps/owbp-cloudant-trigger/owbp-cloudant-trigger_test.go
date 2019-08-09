@@ -21,13 +21,13 @@ package tests
 
 import (
 	"fmt"
-	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
 
-var projectPath = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/apps/owbp-cloudant-trigger/runtimes/"
+var projectPath = "/src/github.com/apache/openwhisk-wskdeploy/tests/apps/owbp-cloudant-trigger/runtimes/"
 
 func TestCloudantTriggerNode(t *testing.T) {
 	manifestPath := os.Getenv("GOPATH") + projectPath + "node/manifest.yaml"

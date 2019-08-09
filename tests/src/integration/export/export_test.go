@@ -27,11 +27,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 )
 
-const EXPORT_TEST_PATH = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/"
+const EXPORT_TEST_PATH = "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/export/"
 
 func TestExport(t *testing.T) {
 	projectName := "EXT_PROJECT"
@@ -213,19 +213,19 @@ func SkipTestExportTriggerFeed(t *testing.T) {
 }
 
 var (
-	manifestLib1Path = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_lib1.yaml"
-	manifestLib2Path = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_lib2.yaml"
-	manifestExtPath  = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_ext.yaml"
+	manifestLib1Path = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/export/manifest_lib1.yaml"
+	manifestLib2Path = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/export/manifest_lib2.yaml"
+	manifestExtPath  = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/export/manifest_ext.yaml"
 
-	targetManifestFolder = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/tmp/"
+	targetManifestFolder = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/export/tmp/"
 	targetManifestPath   = targetManifestFolder + "manifest.yaml"
 
-	manifest2PackPath       = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_2pack.yaml"
+	manifest2PackPath       = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/export/manifest_2pack.yaml"
 	target2PackManifestPath = targetManifestFolder + "exported2packmanifest.yaml"
 
-	manifestApiExpPath       = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_apiexp.yaml"
+	manifestApiExpPath       = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/export/manifest_apiexp.yaml"
 	targetApiExpManifestPath = targetManifestFolder + "exportedapimanifest.yaml"
 
-	manifestFeedExpPath       = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/export/manifest_feed.yaml"
+	manifestFeedExpPath       = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/export/manifest_feed.yaml"
 	targetFeedExpManifestPath = targetManifestFolder + "exportedfeedmanifest.yaml"
 )

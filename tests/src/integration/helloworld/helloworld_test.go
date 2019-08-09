@@ -20,7 +20,7 @@
 package tests
 
 import (
-	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -35,6 +35,6 @@ func TestHelloWorld(t *testing.T) {
 }
 
 var (
-	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/helloworld/manifest.yaml"
-	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/helloworld/deployment.yaml"
+	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/helloworld/manifest.yaml"
+	deploymentPath = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/helloworld/deployment.yaml"
 )

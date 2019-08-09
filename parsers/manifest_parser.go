@@ -28,16 +28,16 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/conductor"
-	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
-	"github.com/apache/incubator-openwhisk-wskdeploy/runtimes"
-	"github.com/apache/incubator-openwhisk-wskdeploy/utils"
-	"github.com/apache/incubator-openwhisk-wskdeploy/webaction"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskenv"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskprint"
+	"github.com/apache/openwhisk-client-go/whisk"
+	"github.com/apache/openwhisk-wskdeploy/conductor"
+	"github.com/apache/openwhisk-wskdeploy/dependencies"
+	"github.com/apache/openwhisk-wskdeploy/runtimes"
+	"github.com/apache/openwhisk-wskdeploy/utils"
+	"github.com/apache/openwhisk-wskdeploy/webaction"
+	"github.com/apache/openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/openwhisk-wskdeploy/wskenv"
+	"github.com/apache/openwhisk-wskdeploy/wski18n"
+	"github.com/apache/openwhisk-wskdeploy/wskprint"
 	"net/url"
 )
 

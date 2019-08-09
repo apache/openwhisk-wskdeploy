@@ -58,7 +58,7 @@ There are two key changes to this file:
 
 ### Deploying
 
-You can actually deploy the "API Gateway sequence" manifest from the incubator-openwhisk-wskdeploy project directory if you have downloaded it from GitHub:
+You can actually deploy the "API Gateway sequence" manifest from the openwhisk-wskdeploy project directory if you have downloaded it from GitHub:
 
 ```sh
 $ wskdeploy -m docs/examples/manifest_hello_world_apigateway_sequence.yaml

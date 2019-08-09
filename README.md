@@ -20,13 +20,13 @@
 # Whisk Deploy `wskdeploy`
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Build Status](https://travis-ci.org/apache/incubator-openwhisk-wskdeploy.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-wskdeploy)
+[![Build Status](https://travis-ci.org/apache/openwhisk-wskdeploy.svg?branch=master)](https://travis-ci.org/apache/openwhisk-wskdeploy)
 
-`wskdeploy` is a utility to help you describe and deploy any part of the OpenWhisk programming model using a Manifest file written in YAML. Use it to deploy all your OpenWhisk [Packages](https://github.com/apache/incubator-openwhisk/blob/master/docs/packages.md), [Actions](https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md), [Triggers, and Rules](https://github.com/apache/incubator-openwhisk/blob/master/docs/triggers_rules.md) using a single command!
+`wskdeploy` is a utility to help you describe and deploy any part of the OpenWhisk programming model using a Manifest file written in YAML. Use it to deploy all your OpenWhisk [Packages](https://github.com/apache/openwhisk/blob/master/docs/packages.md), [Actions](https://github.com/apache/openwhisk/blob/master/docs/actions.md), [Triggers, and Rules](https://github.com/apache/openwhisk/blob/master/docs/triggers_rules.md) using a single command!
 
 `wskdeploy export --projectname managed_project_name` allows to "export" a specified managed project into a local file system. Namely, a `managed_project_name.yml` Manifest file will be created automatically. This Manifest file can be used with `wskdeploy` to redeploy the managed project at a different OpenWhisk instance. If the managed project contains dependencies on other managed projects, then these projects will be exported automatically into their respective manifests.
 
-You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses the [OpenWhisk "Go" Client](https://github.com/apache/incubator-openwhisk-client-go) to create its HTTP REST calls for deploying and undeploying your packages.
+You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses the [OpenWhisk "Go" Client](https://github.com/apache/openwhisk-client-go) to create its HTTP REST calls for deploying and undeploying your packages.
 
 ## Here are some quick links for:
 
@@ -56,7 +56,7 @@ Once your environment is setup, download `wskdeploy` and its dependencies:
 
 ```sh
 $ cd $GOPATH
-$ go get github.com/apache/incubator-openwhisk-wskdeploy  # see known issues below if you get an error
+$ go get github.com/apache/openwhisk-wskdeploy  # see known issues below if you get an error
 $ go get github.com/tools/godep # get the dependency manager
 ```
 
@@ -64,7 +64,7 @@ $ go get github.com/tools/godep # get the dependency manager
 
 Use the Go utility to build the ```wskdeploy``` binary as follows:
 ```sh
-$ cd src/github.com/apache/incubator-openwhisk-wskdeploy/
+$ cd src/github.com/apache/openwhisk-wskdeploy/
 $ godep restore
 $ go build -o wskdeploy
 ```
@@ -125,7 +125,7 @@ $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/tr
 ## Downloading released binaries
 
 Binaries of `wskdeploy` are available for download on the project's GitHub release page:
-- [https://github.com/apache/incubator-openwhisk-wskdeploy/releases](https://github.com/apache/incubator-openwhisk-wskdeploy/releases).
+- [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases).
 
 For each release, we typically provide binaries built for Linux, Mac OS (Darwin) and Windows on the AMD64 architecture. However, we provide instructions on how to build your own binaries as well from source code with the Go tool.  See [Building the project](#building-the-project).
 
@@ -135,12 +135,12 @@ _If you are a Developer or Contributor, **we recommend building from the latest 
 
 ## Contributing to the project
 
-Start by creating a fork of `incubator-openwhisk-wskdeploy` and then change the git `origin` to point to your forked repository, as follows:
+Start by creating a fork of `openwhisk-wskdeploy` and then change the git `origin` to point to your forked repository, as follows:
 
 ```sh
-$ cd $GOPATH/src/github.com/apache/incubator-openwhisk-wskdeploy
+$ cd $GOPATH/src/github.com/apache/openwhisk-wskdeploy
 $ git remote rename origin upstream
-$ git remote add origin https://github.com/<your fork>/incubator-openwhisk-wskdeploy
+$ git remote add origin https://github.com/<your fork>/openwhisk-wskdeploy
 $ git fetch --all
 $ git branch --set-upstream-to origin/master  # track master from origin now
 ```
@@ -156,13 +156,13 @@ The Whisk deploy project is setup for development purposes and uses "go deps" fo
 Specifically, for development please use ```go build```:
 
 ```
-$ git clone git@github.com:<your fork>/incubator-openwhisk-wskdeploy
-$ cd incubator-openwhisk-wskdeploy
+$ git clone git@github.com:<your fork>/openwhisk-wskdeploy
+$ cd openwhisk-wskdeploy
 $ go build
 ```
 
 for end-users, please use versioned releases of binaries.
-- [https://github.com/apache/incubator-openwhisk-wskdeploy/releases](https://github.com/apache/incubator-openwhisk-wskdeploy/releases)
+- [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases)
 
 ### How to Cross Compile Binary with Gradle/Docker
 
@@ -174,7 +174,7 @@ After compiling, a suitable wskdeploy binary that works for your OS platform wil
 
 2. Make sure you have Java 1.7 or above installed.
 
-3. Clone the wskdeploy repo with command ```git clone https://github.com/apache/incubator-openwhisk-wskdeploy.git```
+3. Clone the wskdeploy repo with command ```git clone https://github.com/apache/openwhisk-wskdeploy.git```
 
 4. If you use Windows OS, type ```gradlew.bat -version ```. For Unix/Linux/Mac, please type ```./gradlew -version```.
 
@@ -197,7 +197,7 @@ Then, you will find the binaries and their compressed packages generated under t
 ### Building for Internationalization
 
 Please follow this process for building any changes to translatable strings:
-- [How to generate the file i18n_resources.go for internationalization](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/wski18n/README.md)
+- [How to generate the file i18n_resources.go for internationalization](https://github.com/apache/openwhisk-wskdeploy/blob/master/wski18n/README.md)
 
 <!-- ----------------------------------------------------------------------------- -->
 
@@ -210,19 +210,19 @@ Please follow this process for building any changes to translatable strings:
 The "go get" command uses HTTPS with GitHub and when you attempt to "commit" code you might be prompted with your GitHub credentials.  If you wish to use your SSH credentials, you may need to issue the following command to set the appropriate URL for your "origin" fork:
 
 ```
-git remote set-url origin git@github.com:<username>/incubator-openwhisk-wskdeploy.git
+git remote set-url origin git@github.com:<username>/openwhisk-wskdeploy.git
 ```
 
 <or> you can manually change the remote (origin) url within your .git/config file:
 ```
 [remote "origin"]
-    url = git@github.com:<username>/incubator-openwhisk-wskdeploy
+    url = git@github.com:<username>/openwhisk-wskdeploy
 ```
 
 while there, you can verify that your upstream repository is set correctly:
 ```
 [remote "upstream"]
-    url = git@github.com:apache/incubator-openwhisk-wskdeploy
+    url = git@github.com:apache/openwhisk-wskdeploy
 ```
 
 #### Git clone RPC failed: HTTP 301
@@ -231,7 +231,7 @@ This sometimes occurs using "go get" the wskdeploy code (which indirectly invoke
 
 <b>Note: Using "go get" for development is unsupported; instead, please use "go deps" for dependency management.</b>
 
-You might get this error when downloading `incubator-openwhisk-wskdeploy`:
+You might get this error when downloading `openwhisk-wskdeploy`:
 
      Cloning into ''$GOAPTH/src/gopkg.in/yaml.v2'...
      error: RPC failed; HTTP 301 curl 22 The requested URL returned error: 301
@@ -246,8 +246,4 @@ $ git config --global http.https://gopkg.in.followRedirects true
 ## Creating Tagged Releases
 
 Committers can find instructions on how to create tagged releases here:
-- [creating_tagged_releases.md](https://github.com/apache/incubator-openwhisk-wskdeploy/tree/master/docs/creating_tagged_releases.md)
-
-# Disclaimer
-
-Apache OpenWhisk Whisk Deploy(wskdeploy) is an effort undergoing incubation at The Apache Software Foundation (ASF), sponsored by the Apache Incubator. Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, communications, and decision making process have stabilized in a manner consistent with other successful ASF projects. While incubation status is not necessarily a reflection of the completeness or stability of the code, it does indicate that the project has yet to be fully endorsed by the ASF.
+- [creating_tagged_releases.md](https://github.com/apache/openwhisk-wskdeploy/tree/master/docs/creating_tagged_releases.md)

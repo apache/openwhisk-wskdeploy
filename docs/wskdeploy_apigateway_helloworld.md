@@ -54,7 +54,7 @@ The `apis` block contains a number of groups of API endpoint. Each endpoint is t
 
 ### Deploying
 
-You can actually deploy the "hello world API gateway" manifest from the incubator-openwhisk-wskdeploy project directory if you have downloaded it from GitHub:
+You can actually deploy the "hello world API gateway" manifest from the openwhisk-wskdeploy project directory if you have downloaded it from GitHub:
 
 ```sh
 $ wskdeploy -m docs/examples/manifest_hello_world_apigateway.yaml

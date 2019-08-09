@@ -17,7 +17,7 @@
 
 package conductor
 
-import "github.com/apache/incubator-openwhisk-client-go/whisk"
+import "github.com/apache/openwhisk-client-go/whisk"
 
 const CONDUCTOR_ANNOTATION = "conductor"
 

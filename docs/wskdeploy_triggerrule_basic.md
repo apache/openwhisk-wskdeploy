@@ -122,7 +122,7 @@ which verifies that the parameter bindings of the values (i.e, _"Sam"_ (name), _
 
 ### Specification
 For convenience, the Actions and Parameters grammar can be found here:
-- **[Triggers and Rules](https://github.com/apache/incubator-openwhisk-wskdeploy/blob/master/specification/html/spec_trigger_rule.md#triggers-and-rules)**
+- **[Triggers and Rules](https://github.com/apache/openwhisk-wskdeploy/blob/master/specification/html/spec_trigger_rule.md#triggers-and-rules)**
 
 ---
 <!--

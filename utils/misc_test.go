@@ -20,7 +20,7 @@
 package utils
 
 import (
-	"github.com/apache/incubator-openwhisk-wskdeploy/dependencies"
+	"github.com/apache/openwhisk-wskdeploy/dependencies"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"

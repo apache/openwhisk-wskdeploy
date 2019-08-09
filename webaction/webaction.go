@@ -18,8 +18,8 @@
 package webaction
 
 import (
-	"github.com/apache/incubator-openwhisk-client-go/whisk"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/openwhisk-client-go/whisk"
+	"github.com/apache/openwhisk-wskdeploy/wskderrors"
 	"strings"
 )
 

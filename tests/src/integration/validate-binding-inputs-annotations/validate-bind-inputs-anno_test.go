@@ -20,13 +20,13 @@
 package tests
 
 import (
-	"github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
 
-var PATH = "/src/github.com/apache/incubator-openwhisk-wskdeploy/tests/src/integration/validate-binding-inputs-annotations/"
+var PATH = "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/validate-binding-inputs-annotations/"
 
 func TestBindingInputsAnnotations(t *testing.T) {
 

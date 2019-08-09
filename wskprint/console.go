@@ -19,7 +19,7 @@ package wskprint
 
 import (
 	"fmt"
-	"github.com/apache/incubator-openwhisk-wskdeploy/wski18n"
+	"github.com/apache/openwhisk-wskdeploy/wski18n"
 	"github.com/fatih/color"
 	"github.com/mattn/go-colorable"
 	"os"
@@ -127,7 +127,7 @@ func PrintOpenWhiskBanner(verbose bool) {
 
 // Display "trace" output if either param is true OR we are running Go test verbose (i.e., "go test -v")
 // Typical Args for "go test" looks as follows:
-// arg[0] = [/var/folders/nj/<uuid>/T/<build-id>/github.com/apache/incubator-openwhisk-wskdeploy/deployers/_test/deployers.test
+// arg[0] = [/var/folders/nj/<uuid>/T/<build-id>/github.com/apache/openwhisk-wskdeploy/deployers/_test/deployers.test
 // arg[1] = -test.v=true
 // arg[2] = -test.run=TestDeploymentReader_PackagesBindTrigger]
 func DetectGoTestVerbose() bool {

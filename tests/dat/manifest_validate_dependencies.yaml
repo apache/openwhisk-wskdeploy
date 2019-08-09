@@ -38,6 +38,3 @@ packages:
                 location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
             dependency6:
                 location: /whisk.system/utils
-
-
-

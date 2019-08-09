@@ -21,4 +21,4 @@ packages:
       hello1:
         function: ../src/integration/helloworld/actions/hello.js
       hello2:
-        function: https://raw.githubusercontent.com/apache/incubator-openwhisk-wskdeploy/master/tests/src/integration/helloworld/actions/hello.js
+        function: https://raw.githubusercontent.com/apache/openwhisk-wskdeploy/master/tests/src/integration/helloworld/actions/hello.js
