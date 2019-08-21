@@ -1148,12 +1148,12 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, man
 func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string, pkg Package, manifestPath string) ([]*whisk.ApiCreateRequest, map[string]*whisk.ApiCreateRequestOptions, error) {
 	var requests = make([]*whisk.ApiCreateRequest, 0)
 
-	// verify APIGW_ACCESS_TOKEN is set before composing APIs
-	// until this point, we dont know whether APIs are specified in manifest or not
+	// supply a dummy API GW token as it is optional
 	if pkg.Apis != nil && len(pkg.Apis) != 0 {
 		if len(client.ApigwAccessToken) == 0 {
-			return nil, nil, wskderrors.NewWhiskClientInvalidConfigError(
-				wski18n.ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN)
+			warningString := wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN)
+			wskprint.PrintOpenWhiskWarning(warningString)
+			client.ApigwAccessToken = "DUMMY TOKEN"
 		}
 	}
 
