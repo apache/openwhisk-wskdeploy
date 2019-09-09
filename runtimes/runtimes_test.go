@@ -34,15 +34,8 @@ func TestParseOpenWhisk(t *testing.T) {
 	assert.Equal(t, nil, err, "parse openwhisk info error happened.")
 	println(openwhisk.Runtimes)
 	converted := ConvertToMap(openwhisk)
-	// println(converted["nodejs"])
-	// println(converted["python"])
-	// println(converted["go"])
 
-	// for language := range converted {
- //        //do something with i,v
- //    }
-
-    // TODO (see GitHub issue: #1069): add tests for newer runtime kinds (e.g., .NET, ballerina, etc.)
+	// TODO (see GitHub issue: #1069): add tests for newer runtime kinds (e.g., .NET, ballerina, etc.)
 	assert.GreaterOrEqual(t, 2, len(converted["go"]), "Runtime kind ["+language+"] not found at ["+openwhiskHost+"]")
 	assert.GreaterOrEqual(t, 2, len(converted["java"]), "Runtime kind ["+language+"] not found at ["+openwhiskHost+"]")
 	assert.GreaterOrEqual(t, 2, len(converted["ruby"]), "Runtime kind ["+language+"] not found at ["+openwhiskHost+"]")
