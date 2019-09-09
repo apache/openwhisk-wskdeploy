@@ -36,11 +36,11 @@ func TestParseOpenWhisk(t *testing.T) {
 	converted := ConvertToMap(openwhisk)
 
 	// TODO (see GitHub issue: #1069): add tests for newer runtime kinds (e.g., .NET, ballerina, etc.)
-	assert.GreaterOrEqual(t, 2, len(converted["go"]), "Runtime kind [%s] not found at [%s]", language, openwhiskHost)
-	assert.GreaterOrEqual(t, 2, len(converted["java"]), "Runtime kind [%s] not found at [%s]", language, openwhiskHost)
-	assert.GreaterOrEqual(t, 2, len(converted["ruby"]), "Runtime kind [%s] not found at [%s]", language, openwhiskHost)
-	assert.GreaterOrEqual(t, 2, len(converted["nodejs"]), "Runtime kind [%s] not found at [%s]", language, openwhiskHost)
-	assert.GreaterOrEqual(t, 2, len(converted["php"]), "Runtime kind [%s] not found at [%s]", language, openwhiskHost)
-	assert.GreaterOrEqual(t, 2, len(converted["swift"]), "Runtime kind [%s] not found at [%s]", language, openwhiskHost)
-	assert.GreaterOrEqual(t, 2, len(converted["python"]), "Runtime kind [%s] not found at [%s]", language, openwhiskHost)
+	assert.GreaterOrEqual(t, 2, len(converted["go"]), "Runtime kind [%s] not found at [%s]", "go", openwhiskHost)
+	assert.GreaterOrEqual(t, 2, len(converted["java"]), "Runtime kind [%s] not found at [%s]", "java", openwhiskHost)
+	assert.GreaterOrEqual(t, 2, len(converted["ruby"]), "Runtime kind [%s] not found at [%s]", "ruby", openwhiskHost)
+	assert.GreaterOrEqual(t, 2, len(converted["nodejs"]), "Runtime kind [%s] not found at [%s]", "nodejs", openwhiskHost)
+	assert.GreaterOrEqual(t, 2, len(converted["php"]), "Runtime kind [%s] not found at [%s]", "php", openwhiskHost)
+	assert.GreaterOrEqual(t, 2, len(converted["swift"]), "Runtime kind [%s] not found at [%s]", "swift", openwhiskHost)
+	assert.GreaterOrEqual(t, 2, len(converted["python"]), "Runtime kind [%s] not found at [%s]", "python", openwhiskHost)
 }
