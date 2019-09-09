@@ -35,7 +35,7 @@ func TestParseOpenWhisk(t *testing.T) {
 	assert.Equal(t, nil, err, "parse openwhisk info error happened.")
 	println(openwhisk.Runtimes)
 	converted := ConvertToMap(openwhisk)
-	supported []string{ "go", "java", "nodejs", "php", "python", "ruby", "swift" }
+	supported := []string{ "go", "java", "nodejs", "php", "python", "ruby", "swift" }
 	fmt.Printf("%v", supported)
 
 	// TODO (see GitHub issue: #1069): add tests for newer runtime kinds (e.g., .NET, ballerina, etc.)
