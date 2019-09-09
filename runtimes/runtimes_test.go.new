@@ -43,4 +43,11 @@ func TestParseOpenWhisk(t *testing.T) {
 		fmt.Printf("%s", language)
 		assert.GreaterOrEqual(t, len(converted[language], 2), "Runtime kind [%s] not found at [%s]", language, openwhiskHost)
 	}
+
+	// assert.GreaterOrEqual(t, len(converted["java"], 2), "Runtime kind [%s] not found at [%s]", "java", openwhiskHost)
+	// assert.GreaterOrEqual(t, len(converted["nodejs"], 2), "Runtime kind [%s] not found at [%s]", "nodejs", openwhiskHost)
+	// assert.GreaterOrEqual(t, len(converted["php"], 2), "Runtime kind [%s] not found at [%s]", "php", openwhiskHost)
+	// assert.GreaterOrEqual(t, len(converted["python"], 2), "Runtime kind [%s] not found at [%s]", "python", openwhiskHost)
+	// assert.GreaterOrEqual(t, len(converted["ruby"], 2), "Runtime kind [%s] not found at [%s]", "ruby", openwhiskHost)
+	// assert.GreaterOrEqual(t, len(converted["swift"], 2), "Runtime kind [%s] not found at [%s]", "swift", openwhiskHost)
 }
