@@ -23,21 +23,31 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// This test only verifies that the runtimes list (i.e., "kinds") supports 1 or more
+// languages we have more granular tests for (plus 1 default).
+// NOTE: We do not intend for this testcase to comprehensively test for all runtime
+// language versions.  Individual tests that require specific versions will have
+// better, more localized failures and error messages.
 func TestParseOpenWhisk(t *testing.T) {
 	openwhiskHost := "https://openwhisk.ng.bluemix.net"
 	openwhisk, err := ParseOpenWhisk(openwhiskHost)
 	assert.Equal(t, nil, err, "parse openwhisk info error happened.")
 	println(openwhisk.Runtimes)
 	converted := ConvertToMap(openwhisk)
-	println(converted["nodejs"])
-	println(converted["python"])
-	println(converted["go"])
-	//one larger than in api response because of explicit :default
-	assert.Equal(t, 4, len(converted["nodejs"]), "not expected length")
-	assert.Equal(t, 4, len(converted["php"]), "not expected length")
-	assert.Equal(t, 2, len(converted["java"]), "not expected length")
-	assert.Equal(t, 7, len(converted["python"]), "not expected length")
-	assert.Equal(t, 2, len(converted["ruby"]), "not expected length")
-	assert.Equal(t, 4, len(converted["swift"]), "not expected length")
-	assert.Equal(t, 2, len(converted["go"]), "not expected length")
+	// println(converted["nodejs"])
+	// println(converted["python"])
+	// println(converted["go"])
+
+	// for language := range converted {
+ //        //do something with i,v
+ //    }
+
+    // TODO (see GitHub issue: #1069): add tests for newer runtime kinds (e.g., .NET, ballerina, etc.)
+	assert.GreaterOrEqual(t, 2, len(converted["go"]), "Runtime kind ["+language+"] not found at ["+openwhiskHost+"]")
+	assert.GreaterOrEqual(t, 2, len(converted["java"]), "Runtime kind ["+language+"] not found at ["+openwhiskHost+"]")
+	assert.GreaterOrEqual(t, 2, len(converted["ruby"]), "Runtime kind ["+language+"] not found at ["+openwhiskHost+"]")
+	assert.GreaterOrEqual(t, 2, len(converted["nodejs"]), "Runtime kind ["+language+"] not found at ["+openwhiskHost+"]")
+	assert.GreaterOrEqual(t, 2, len(converted["php"]), "Runtime kind ["+language+"] not found at ["+openwhiskHost+"]")
+	assert.GreaterOrEqual(t, 2, len(converted["swift"]), "Runtime kind ["+language+"] not found at ["+openwhiskHost+"]")
+	assert.GreaterOrEqual(t, 2, len(converted["python"]), "Runtime kind ["+language+"] not found at ["+openwhiskHost+"]")
 }
