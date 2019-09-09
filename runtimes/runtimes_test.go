@@ -36,11 +36,11 @@ func TestParseOpenWhisk(t *testing.T) {
 	println(openwhisk.Runtimes)
 	converted := ConvertToMap(openwhisk)
 	supported := []string{"go", "java", "nodejs", "php", "python", "ruby", "swift"}
-	fmt.Printf("%v", supported)
+	fmt.Printf("Testing runtime kind support for: %v\n", supported)
 
 	// TODO (see GitHub issue: #1069): add tests for newer runtime kinds (e.g., .NET, ballerina, etc.)
 	for _, language := range supported {
-		fmt.Printf("%s", language)
+		fmt.Printf("Testing runtime kind: [%s]...\n", language)
 		assert.GreaterOrEqual(t, len(converted[language]), 2, "Runtime kind [%s] not found at [%s]", language, openwhiskHost)
 	}
 }
