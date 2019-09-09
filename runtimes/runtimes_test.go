@@ -18,6 +18,7 @@
 package runtimes
 
 import (
+    "fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -34,13 +35,19 @@ func TestParseOpenWhisk(t *testing.T) {
 	assert.Equal(t, nil, err, "parse openwhisk info error happened.")
 	println(openwhisk.Runtimes)
 	converted := ConvertToMap(openwhisk)
+	supported []string{ "go", "java", "nodejs", "php", "python", "ruby", "swift" }
+	fmt.Printf("%v", supported)
 
 	// TODO (see GitHub issue: #1069): add tests for newer runtime kinds (e.g., .NET, ballerina, etc.)
-	assert.GreaterOrEqual(t, 2, len(converted["go"]), "Runtime kind [%s] not found at [%s]", "go", openwhiskHost)
-	assert.GreaterOrEqual(t, 2, len(converted["java"]), "Runtime kind [%s] not found at [%s]", "java", openwhiskHost)
-	assert.GreaterOrEqual(t, 2, len(converted["ruby"]), "Runtime kind [%s] not found at [%s]", "ruby", openwhiskHost)
-	assert.GreaterOrEqual(t, 2, len(converted["nodejs"]), "Runtime kind [%s] not found at [%s]", "nodejs", openwhiskHost)
-	assert.GreaterOrEqual(t, 2, len(converted["php"]), "Runtime kind [%s] not found at [%s]", "php", openwhiskHost)
-	assert.GreaterOrEqual(t, 2, len(converted["swift"]), "Runtime kind [%s] not found at [%s]", "swift", openwhiskHost)
-	assert.GreaterOrEqual(t, 2, len(converted["python"]), "Runtime kind [%s] not found at [%s]", "python", openwhiskHost)
+	for index, language := range supported {
+		fmt.Printf("%s", language)
+		assert.GreaterOrEqual(t, len(converted[language], 2), "Runtime kind [%s] not found at [%s]", language, openwhiskHost)
+    }
+
+	// assert.GreaterOrEqual(t, len(converted["java"], 2), "Runtime kind [%s] not found at [%s]", "java", openwhiskHost)
+	// assert.GreaterOrEqual(t, len(converted["nodejs"], 2), "Runtime kind [%s] not found at [%s]", "nodejs", openwhiskHost)
+	// assert.GreaterOrEqual(t, len(converted["php"], 2), "Runtime kind [%s] not found at [%s]", "php", openwhiskHost)
+	// assert.GreaterOrEqual(t, len(converted["python"], 2), "Runtime kind [%s] not found at [%s]", "python", openwhiskHost)
+	// assert.GreaterOrEqual(t, len(converted["ruby"], 2), "Runtime kind [%s] not found at [%s]", "ruby", openwhiskHost)
+	// assert.GreaterOrEqual(t, len(converted["swift"], 2), "Runtime kind [%s] not found at [%s]", "swift", openwhiskHost)
 }
