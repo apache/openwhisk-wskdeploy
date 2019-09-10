@@ -113,6 +113,7 @@ type Action struct {
 	Limits      *Limits                `yaml:"limits"`
 	Inputs      map[string]Parameter   `yaml:"inputs"`
 	Outputs     map[string]Parameter   `yaml:"outputs"`
+	Description string                 `yaml:"description,omitempty"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	Include     [][]string             `yaml:"include,omitempty"`
 	Exclude     []string               `yaml:"exclude,omitempty"`
@@ -159,6 +160,7 @@ type Trigger struct {
 	Credential  string               `yaml:"credential"`
 	Inputs      map[string]Parameter `yaml:"inputs"`
 	Name        string
+	Description string                 `yaml:"description,omitempty"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 	// TODO() this is propoagated from package to trigger within that package
 	//Parameters  map[string]interface{} `yaml:parameters`
@@ -185,6 +187,7 @@ type Rule struct {
 	Rule   string `yaml:"rule"`   //used in manifest.yaml
 	//mapping to wsk.Rule.Name
 	Name        string
+	Description string                 `yaml:"description,omitempty"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
 }
 
@@ -216,6 +219,7 @@ type Package struct {
 	Rules            map[string]Rule                                               `yaml:"rules"`
 	Inputs           map[string]Parameter                                          `yaml:"inputs"`
 	Sequences        map[string]Sequence                                           `yaml:"sequences"`
+	Description      string                                                        `yaml:"description,omitempty"`
 	Annotations      map[string]interface{}                                        `yaml:"annotations,omitempty"`
 	Apis             map[string]map[string]map[string]map[string]APIMethodResponse `yaml:"apis"`
 }

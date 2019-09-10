@@ -20,6 +20,7 @@ packages:
   $package_name:
     version: 1.0
     license: Apache-2.0
+    description: Foo Bar
   $package_name_second:
     version: 1.0
     license: Apache-2.0
