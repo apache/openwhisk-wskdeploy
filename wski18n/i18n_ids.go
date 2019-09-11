@@ -88,6 +88,7 @@ const (
 	KEY_API_RELATIVE_PATH = "apirelativepath"
 	KEY_DESTINATION       = "destination"
 	KEY_INCLUDE           = "include"
+	KEY_DUMMY_TOKEN       = "dummytoken"
 )
 
 // DO NOT TRANSLATE
@@ -141,6 +142,7 @@ const (
 	ID_MSG_CONFIG_MISSING_APIHOST                       = "msg_config_missing_apihost"
 	ID_MSG_CONFIG_MISSING_NAMESPACE                     = "msg_config_missing_namespace"
 	ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN            = "msg_config_missing_apigw_access_token"
+	ID_MSG_CONFIG_PROVIDE_DEFAULT_APIGW_ACCESS_TOKEN    = "msg_config_provide_default_apigw_access_token"
 	ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X        = "msg_config_apihost_info"
 	ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X               = "msg_config_authkey_info"
 	ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X = "msg_config_namespace_info"
@@ -350,4 +352,5 @@ var I18N_ID_SET = [](string){
 	ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
 	ID_WARN_WHISK_PROPS_DEPRECATED,
 	ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN,
+	ID_MSG_CONFIG_PROVIDE_DEFAULT_APIGW_ACCESS_TOKEN,
 }

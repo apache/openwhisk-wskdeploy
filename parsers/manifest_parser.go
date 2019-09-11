@@ -52,6 +52,8 @@ const (
 	NATIVE_DOCKER_IMAGE   = "openwhisk/dockerskeleton"
 	PARAM_OPENING_BRACKET = "{"
 	PARAM_CLOSING_BRACKET = "}"
+
+	DUMMY_APIGW_ACCESS_TOKEN = "DUMMY TOKEN"
 )
 
 // Read existing manifest file or create new if none exists
@@ -1151,9 +1153,10 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 	// supply a dummy API GW token as it is optional
 	if pkg.Apis != nil && len(pkg.Apis) != 0 {
 		if len(client.ApigwAccessToken) == 0 {
-			warningString := wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN)
+			warningString := wski18n.T(wski18n.ID_MSG_CONFIG_PROVIDE_DEFAULT_APIGW_ACCESS_TOKEN,
+				map[string]interface{}{wski18n.KEY_DUMMY_TOKEN: DUMMY_APIGW_ACCESS_TOKEN})
 			wskprint.PrintOpenWhiskWarning(warningString)
-			client.ApigwAccessToken = "DUMMY TOKEN"
+			client.ApigwAccessToken = DUMMY_APIGW_ACCESS_TOKEN
 		}
 	}
 
