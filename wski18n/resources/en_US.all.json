@@ -512,6 +512,10 @@
     "translation": "The apigw access token is not configured.\n"
   },
   {
+    "id": "msg_config_provide_default_apigw_access_token",
+    "translation": "The apigw access token is not configured, use '{{.dummytoken}}' as the default one.\n"
+  },
+  {
     "id": "msg_verbose_zip_exclude_file_path",
     "translation": "Excluding Path: [{{.path}}]\n"
   },
