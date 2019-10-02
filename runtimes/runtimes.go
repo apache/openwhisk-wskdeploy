@@ -564,7 +564,7 @@ var RUNTIME_DETAILS = []byte(`{
                     "tag": "latest"
                 }
             }
-        ], 
+        ],
         "dotnet": [
             {
                 "kind": "dotnet:2.2",
