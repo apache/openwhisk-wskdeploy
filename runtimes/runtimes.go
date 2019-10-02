@@ -549,6 +549,22 @@ var RUNTIME_DETAILS = []byte(`{
                 }
             }
         ],
+        "rust": [
+            {
+                "kind": "rust:1.34",
+                "default": true,
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "actionloop-rust-v1.34",
+                    "tag": "latest"
+                }
+            }
+        ], 
         "dotnet": [
             {
                 "kind": "dotnet:2.2",

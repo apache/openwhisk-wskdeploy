@@ -130,6 +130,16 @@ packages:
                     place: string
                 outputs:
                     payload: string
+            greetingrust134-with-explicit-runtime:
+                web-export: true
+                version: 1.0
+                function: src/lib.rs
+                runtime: rust:1.3.4
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
             helloworldjava-with-explicit-runtime:
                 function: src/hello.jar
                 runtime: java
@@ -188,6 +198,15 @@ packages:
                 web-export: true
                 version: 1.0
                 function: src/hello.swift
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
+            greetingsrust134-without-explicit-runtime:
+                web-export: true
+                version: 1.0
+                function: src/lib.rs
                 inputs:
                     name: string
                     place: string
@@ -289,6 +308,26 @@ packages:
                 outputs:
                     payload: string
             greetingswift-with-random-explicit-runtime:
+                web-export: true
+                version: 1.0
+                function: src/hello.swift
+                runtime: random
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
+            greetingsrust134-with-nodejs-explicit-runtime:
+                web-export: true
+                version: 1.0
+                function: src/hello.rs
+                runtime: nodejs:6
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
+            greetingsrust134-with-random-explicit-runtime:
                 web-export: true
                 version: 1.0
                 function: src/hello.swift

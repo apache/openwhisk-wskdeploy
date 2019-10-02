@@ -147,6 +147,7 @@ These packages may vary by OpenWhisk release; examples of supported runtimes as 
 | swift@4.2 | swift:4.2 | openwhisk/action-swift-v4.2:latest | Latest Swift 4.2 language runtime |
 | swift@4.1 | swift:4.1 | openwhisk/action-swift-v4.1:latest | Latest Swift 4.1 language runtime |
 | swift@3.1.1 | swift:3.1.1 | openwhisk/action-swift-v3.1.1:latest | Latest Swift 3.1.1 language runtime |
+| rust@1.34 | rust:1.34 | openwhisk/actionloop-rust-v1.34:latest | Latest Rust 1.34 language runtime |
 | dotnet, dotnet@2.2 | dotnet:2.2 | openwhisk/action-dotnet-v2.2:latest | Latest .NET Core 2.2 runtime |
 | language:default | N/A | N/A | Permit the OpenWhisk platform to select the correct default language runtime. |
 
@@ -194,6 +195,11 @@ following file extensions are recognized and will be run on the latest version o
   <td>.rb</td>
   <td>ruby</td>
   <td>Latest Ruby language runtime.</td>
+ </tr>
+ <tr>
+  <td>.rs</td>
+  <td>rust</td>
+  <td>Latest Rust language runtime.</td>
  </tr>
 </table>
 </html>
