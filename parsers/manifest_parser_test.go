@@ -190,12 +190,12 @@ func testUnmarshalTemporaryFile(data []byte, filename string) (p *YAMLParser, m 
 func TestUnmarshalForHelloNodeJS(t *testing.T) {
 	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_nodejs.yaml", // Manifest path
-		"helloworld",                              // Package name
-		1,                                         // # of Actions
-		"helloNodejs",                             // Action name
-		"actions/hello.js",                        // Function path
-		"nodejs:6",                                // "Runtime
-		"")                                        // "Main" function name
+		"helloworld",       // Package name
+		1,                  // # of Actions
+		"helloNodejs",      // Action name
+		"actions/hello.js", // Function path
+		"nodejs:6",         // "Runtime
+		"")                 // "Main" function name
 }
 
 // Test 2: validate manifest_parser:Unmarshal() method with a sample manifest in Java
@@ -203,12 +203,12 @@ func TestUnmarshalForHelloNodeJS(t *testing.T) {
 func TestUnmarshalForHelloJava(t *testing.T) {
 	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_java_jar.yaml", // Manifest path
-		"helloworld",                                // Package name
-		1,                                           // # of Actions
-		"helloJava",                                 // Action name
-		"actions/hello.jar",                         // Function path
-		"java",                                      // "Runtime
-		"Hello")                                     // "Main" function name
+		"helloworld",        // Package name
+		1,                   // # of Actions
+		"helloJava",         // Action name
+		"actions/hello.jar", // Function path
+		"java",              // "Runtime
+		"Hello")             // "Main" function name
 }
 
 // Test 3: validate manifest_parser:Unmarshal() method with a sample manifest in Python
@@ -216,12 +216,12 @@ func TestUnmarshalForHelloJava(t *testing.T) {
 func TestUnmarshalForHelloPython(t *testing.T) {
 	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_python.yaml", // Manifest path
-		"helloworld",                              // Package name
-		1,                                         // # of Actions
-		"helloPython",                             // Action name
-		"actions/hello.py",                        // Function path
-		"python",                                  // "Runtime
-		"")                                        // "Main" function name
+		"helloworld",       // Package name
+		1,                  // # of Actions
+		"helloPython",      // Action name
+		"actions/hello.py", // Function path
+		"python",           // "Runtime
+		"")                 // "Main" function name
 }
 
 // Test 4: validate manifest_parser:Unmarshal() method with a sample manifest in Swift
@@ -1910,7 +1910,7 @@ func TestParseYAML_param(t *testing.T) {
 				case "inline6":
 					assert.Equal(t, -531, param.Value, "Get param value failed.")
 				case "inline7":
-					assert.Equal(t, 432.432E-43, param.Value, "Get param value failed.")
+					assert.Equal(t, 432.432e-43, param.Value, "Get param value failed.")
 				case "inline8":
 					assert.Equal(t, "[ true, null, \"boo\", { \"key\": 0 }]", param.Value, "Get param value failed.")
 				case "inline9":

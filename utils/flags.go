@@ -42,12 +42,12 @@ type WskDeployFlags struct {
 	ProjectName      string // Project name
 	ApigwAccessToken string
 	//ApigwTenantId    string // APIGW_TENANT_ID (IAM namespace resource identifier); not avail. as CLI flag yet
-	Verbose          bool
-	Trace            bool
-	Sync             bool
-	Report           bool
-	Param            []string
-	ParamFile        string
+	Verbose   bool
+	Trace     bool
+	Sync      bool
+	Report    bool
+	Param     []string
+	ParamFile string
 }
 
 // TODO turn this into a generic utility for formatting any struct

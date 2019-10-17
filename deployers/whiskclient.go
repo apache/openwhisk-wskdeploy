@@ -242,10 +242,10 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string)
 	}
 
 	clientConfig = &whisk.Config{
-		AuthToken:         credential.Value, //Authtoken
-		Namespace:         namespace.Value,  //Namespace
-		Host:              apiHost.Value,
-		Version:           "v1", // TODO() should not be hardcoded, should warn user of default
+		AuthToken: credential.Value, //Authtoken
+		Namespace: namespace.Value,  //Namespace
+		Host:      apiHost.Value,
+		Version:   "v1", // TODO() should not be hardcoded, should warn user of default
 		//Version:           Apiversion
 		Cert:              cert.Value,
 		Key:               key.Value,

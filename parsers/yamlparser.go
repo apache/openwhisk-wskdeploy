@@ -229,7 +229,7 @@ type Project struct {
 	Namespace        string               `yaml:"namespace"`
 	Credential       string               `yaml:"credential"`
 	ApiHost          string               `yaml:"apiHost"`
-	ApigwAccessToken string               `yaml:"apigwAccessToken"`  // TODO: support apigwTenantId? deprecate?
+	ApigwAccessToken string               `yaml:"apigwAccessToken"` // TODO: support apigwTenantId? deprecate?
 	Version          string               `yaml:"version"`
 	Packages         map[string]Package   `yaml:"packages"`
 	Inputs           map[string]Parameter `yaml: parameters`
