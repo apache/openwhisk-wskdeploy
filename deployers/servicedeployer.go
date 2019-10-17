@@ -1011,7 +1011,15 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 	var response *http.Response
 
 	apiCreateReqOptions := deployer.Deployment.ApiOptions[apiPath]
-	apiCreateReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+
+	if len(deployer.Client.Config.ApigwTenantId) > 0 {
+		// Use it to identify the IAM namespace
+		apiCreateReqOptions.SpaceGuid = deployer.Client.Config.ApigwTenantId
+	} else{
+		//  assume a CF namespaces (SpaceGuid) which is part of the authtoken
+		apiCreateReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+	}
+
 	apiCreateReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
 
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {

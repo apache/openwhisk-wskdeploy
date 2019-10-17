@@ -36,7 +36,7 @@ import (
 const (
 	SOURCE_WSKPROPS         = ".wskprops"
 	SOURCE_WHISK_PROPERTIES = "whisk.properties"
-	SOURCE_DEFAULT_VALUE    = "wskdeploy default" // TODO() i18n?
+	SOURCE_DEFAULT_VALUE    = "wskdeploy default"
 )
 
 var (
@@ -46,6 +46,7 @@ var (
 	key               = PropertyValue{}
 	cert              = PropertyValue{}
 	apigwAccessToken  = PropertyValue{}
+	apigwTenantId     = PropertyValue{}
 	additionalHeaders = make(http.Header)
 )
 
@@ -70,6 +71,7 @@ var GetWskPropFromWhiskProperty = func(pi whisk.Properties) (*whisk.Wskprops, er
 	return whisk.GetWskPropFromWhiskProperty(pi)
 }
 
+// TODO implement a command line flag for APIGW_TENANT_ID
 var GetCommandLineFlags = func() (string, string, string, string, string, string) {
 	return utils.Flags.ApiHost, utils.Flags.Auth, utils.Flags.Namespace, utils.Flags.Key, utils.Flags.Cert, utils.Flags.ApigwAccessToken
 }
@@ -92,6 +94,7 @@ func resetWhiskConfig() {
 	key = PropertyValue{}
 	cert = PropertyValue{}
 	apigwAccessToken = PropertyValue{}
+	apigwTenantId = PropertyValue{}
 }
 
 func readFromCLI() {
@@ -103,6 +106,8 @@ func readFromCLI() {
 	key = GetPropertyValue(key, keyfile, wski18n.COMMAND_LINE)
 	cert = GetPropertyValue(cert, certfile, wski18n.COMMAND_LINE)
 	apigwAccessToken = GetPropertyValue(apigwAccessToken, accessToken, wski18n.COMMAND_LINE)
+	// TODO optionally allow this value to be set from command line arg.
+	//apigwTenantId = GetPropertyValue(apigwTenantId, tenantId, wski18n.COMMAND_LINE)
 }
 
 func setWhiskConfig(cred string, ns string, host string, token string, source string) {
@@ -110,6 +115,7 @@ func setWhiskConfig(cred string, ns string, host string, token string, source st
 	namespace = GetPropertyValue(namespace, ns, source)
 	apiHost = GetPropertyValue(apiHost, host, source)
 	apigwAccessToken = GetPropertyValue(apigwAccessToken, token, source)
+	// TODO decide if we should allow APIGW_TENANT_ID in manifest
 }
 
 func readFromDeploymentFile(deploymentPath string) {
@@ -129,6 +135,7 @@ func readFromManifestFile(manifestPath string) {
 			mm := parsers.NewYAMLParser()
 			manifest, _ := mm.ParseManifest(manifestPath)
 			p := manifest.GetProject()
+			// TODO look to deprecate reading Namespace, APIGW values from manifest or depl. YAML files
 			setWhiskConfig(p.Credential, p.Namespace, p.ApiHost, p.ApigwAccessToken, path.Base(manifestPath))
 		}
 	}
@@ -143,6 +150,7 @@ func readFromWskprops(pi whisk.PropertiesImp, proppath string) {
 	key = GetPropertyValue(key, wskprops.Key, SOURCE_WSKPROPS)
 	cert = GetPropertyValue(cert, wskprops.Cert, SOURCE_WSKPROPS)
 	apigwAccessToken = GetPropertyValue(apigwAccessToken, wskprops.AuthAPIGWKey, SOURCE_WSKPROPS)
+	apigwTenantId = GetPropertyValue(apigwTenantId, wskprops.APIGWTenantId, SOURCE_WSKPROPS)
 }
 
 func readFromWhiskProperty(pi whisk.PropertiesImp) {
@@ -174,6 +182,12 @@ func readFromWhiskProperty(pi whisk.PropertiesImp) {
 			map[string]interface{}{wski18n.KEY_KEY: wski18n.APIGW_ACCESS_TOKEN})
 		wskprint.PrintlnOpenWhiskWarning(warnMsg)
 	}
+	apigwTenantId = GetPropertyValue(apigwTenantId, whiskproperty.APIGWTenantId, SOURCE_WHISK_PROPERTIES)
+	if apigwTenantId.Source == SOURCE_WHISK_PROPERTIES {
+		warnMsg = wski18n.T(wski18n.ID_WARN_WHISK_PROPS_DEPRECATED,
+			map[string]interface{}{wski18n.KEY_KEY: wski18n.APIGW_TENANT_ID})
+		wskprint.PrintlnOpenWhiskWarning(warnMsg)
+	}
 }
 
 // we are reading openwhisk credentials (apihost, namespace, and auth) in the following precedence order:
@@ -198,7 +212,7 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string)
 
 	// TODO() i18n
 	// Print all flags / values if verbose
-	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, wski18n.CONFIGURATION+":\n"+utils.Flags.Format())
+	//wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, wski18n.CONFIGURATION+":\n"+utils.Flags.Format())
 
 	// now, read them from deployment file if not found on command line
 	readFromDeploymentFile(deploymentPath)
@@ -232,12 +246,17 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string)
 		Namespace:         namespace.Value,  //Namespace
 		Host:              apiHost.Value,
 		Version:           "v1", // TODO() should not be hardcoded, should warn user of default
+		//Version:           Apiversion
 		Cert:              cert.Value,
 		Key:               key.Value,
 		Insecure:          mode, // true if you want to ignore certificate signing
 		ApigwAccessToken:  apigwAccessToken.Value,
+		ApigwTenantId:     apigwTenantId.Value,
 		AdditionalHeaders: additionalHeaders,
 	}
+
+	// Print all flags / values if verbose
+	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, wski18n.CLI_FLAGS+":\n"+utils.Flags.Format())
 
 	// validate we have credential, apihost and namespace
 	err := validateClientConfig(credential, apiHost, namespace)
@@ -288,6 +307,12 @@ func validateClientConfig(credential PropertyValue, apiHost PropertyValue, names
 	if len(apigwAccessToken.Value) != 0 {
 		stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIGE_ACCESS_TOKEN_X_source_X,
 			map[string]interface{}{wski18n.KEY_SOURCE: apigwAccessToken.Source})
+		wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, stdout)
+	}
+
+	if len(apigwTenantId.Value) != 0 {
+		stdout = wski18n.T(wski18n.ID_MSG_CONFIG_INFO_APIGW_TENANT_ID_X_source_X,
+			map[string]interface{}{wski18n.KEY_UUID: apigwTenantId, wski18n.KEY_SOURCE: apigwTenantId.Source})
 		wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, stdout)
 	}
 

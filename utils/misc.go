@@ -164,6 +164,7 @@ func Read(url string) ([]byte, error) {
 	}
 }
 
+// TODO make generic and put into a separate JSON utils source file
 func GetJSONFromStrings(content []string, keyValueFormat bool) (interface{}, error) {
 	var data map[string]interface{}
 	var res interface{}

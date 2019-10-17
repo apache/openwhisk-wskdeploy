@@ -41,6 +41,7 @@ type WskDeployFlags struct {
 	Managed          bool   // OpenWhisk Managed Deployments
 	ProjectName      string // Project name
 	ApigwAccessToken string
+	//ApigwTenantId    string // APIGW_TENANT_ID (IAM namespace resource identifier); not avail. as CLI flag yet
 	Verbose          bool
 	Trace            bool
 	Sync             bool
@@ -49,6 +50,7 @@ type WskDeployFlags struct {
 	ParamFile        string
 }
 
+// TODO turn this into a generic utility for formatting any struct
 func (flags *WskDeployFlags) Format() string {
 
 	flagNames := reflect.TypeOf(*flags)

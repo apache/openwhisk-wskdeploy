@@ -21,7 +21,7 @@ project:
         Extension1:
             dependencies:
                 helloworlds:
-                    location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+                    location: github.com/apache/openwhisk-test/packages/helloworlds
             triggers:
                 triggerInExtension1:
             rules:

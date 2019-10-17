@@ -111,7 +111,6 @@ func PrintlnOpenWhiskVerbose(verbose bool, message string) {
 }
 
 func PrintlnOpenWhiskTrace(trace bool, message string) {
-
 	if trace {
 		_, fname, lineNum, _ := runtime.Caller(2)
 		out := fmt.Sprintf("%s [%v]: %s\n", filepath.Base(fname), lineNum, message)

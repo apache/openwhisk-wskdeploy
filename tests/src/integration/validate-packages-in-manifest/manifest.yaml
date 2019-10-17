@@ -19,9 +19,9 @@ packages:
     packageNodeJS:
 #        dependencies:
 #            hellowhisk:
-#                location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+#                location: github.com/apache/openwhisk-test/packages/hellowhisk
 #            myhelloworlds:
-#                location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+#                location: github.com/apache/openwhisk-test/packages/helloworlds
         actions:
             helloNodejs-1:
                 function: actions/hello.js
@@ -62,9 +62,9 @@ packages:
     packagePython:
 #        dependencies:
 #            hellowhisk:
-#                location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+#                location: github.com/apache/openwhisk-test/packages/hellowhisk
 #            helloworlds:
-#                location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+#                location: github.com/apache/openwhisk-test/packages/helloworlds
         actions:
             helloPython-1:
                 function: actions/hello.py

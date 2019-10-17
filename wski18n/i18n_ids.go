@@ -20,26 +20,28 @@ package wski18n
 // DO NOT TRANSLATE
 // descriptive key names
 const (
-	ACTIONS            = "Actions"
-	ACTIVATIONS        = "Activations"
+	//ACTIONS            = "Actions"
+	//ACTIVATIONS        = "Activations"
 	API_HOST           = "API host"
 	APIGW_ACCESS_TOKEN = "API Gateway Access Token"
+	APIGW_TENANT_ID    = "API Gateway Tenant ID"
 	AUTH_KEY           = "authentication key"
-	COMMAND_LINE       = "wskdeploy command line"
+	COMMAND_LINE       = "command line"
 	CONFIGURATION      = "Configuration"
+	CLI_FLAGS          = "CLI Flags"
 	DEPLOYMENT_FILE    = "deployment file"
 	MANIFEST_FILE      = "manifest file"
 	NAME_PROJECT       = "project name"
-	NAMESPACES         = "Namespaces"
+	//NAMESPACES         = "Namespaces"
 	PACKAGE_BINDING    = "package binding"
 	PACKAGE_LICENSE    = "package license"
 	PACKAGE_VERSION    = "package version"
-	PACKAGES           = "Packages"
+	//PACKAGES           = "Packages"
 	RULES              = "Rules"
 	TRIGGER_FEED       = "trigger feed"
 	CMD_DEPLOY         = "deploy"
 	CMD_UNDEPLOY       = "undeploy"
-	CMD_SYNC           = "sync"
+	//CMD_SYNC           = "sync"
 	TRIGGERS           = "Triggers"
 	BINDING            = "binding"
 )
@@ -89,6 +91,7 @@ const (
 	KEY_DESTINATION       = "destination"
 	KEY_INCLUDE           = "include"
 	KEY_DUMMY_TOKEN       = "dummytoken"
+	KEY_UUID              = "uuid"
 )
 
 // DO NOT TRANSLATE
@@ -146,6 +149,7 @@ const (
 	ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X        = "msg_config_apihost_info"
 	ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X               = "msg_config_authkey_info"
 	ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X = "msg_config_namespace_info"
+	ID_MSG_CONFIG_INFO_APIGW_TENANT_ID_X_source_X       = "msg_config_apigw_tenant_id_info"
 	ID_MSG_CONFIG_INFO_APIGE_ACCESS_TOKEN_X_source_X    = "msg_config_apigw_access_token_info"
 
 	// YAML marshal / unmarshal

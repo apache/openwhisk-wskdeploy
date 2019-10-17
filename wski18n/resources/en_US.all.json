@@ -160,8 +160,12 @@
     "translation": "The namespace is [{{.namespace}}], from {{.source}}.\n"
   },
   {
+    "id": "msg_config_apigw_tenant_id_info",
+    "translation": "The API Gateway Tenant ID is [{{.uuid}}], from {{.source}}.\n"
+  },
+  {
     "id": "msg_config_apigw_access_token_info",
-    "translation": "The apigw access token is set, from {{.source}}.\n"
+    "translation": "The API Gateway access token is set, from {{.source}}.\n"
   },
   {
     "id": "msg_unmarshal_local",

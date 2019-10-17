@@ -75,7 +75,7 @@ project:
                 hello3:
                     function: ${OPENWHISK_FUNCTION_PYTHON}.py
                 hello4:
-                    function: https://${OPENWHISK_FUNCTION_GITHUB_DIR}.js                    function: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+                    function: https://${OPENWHISK_FUNCTION_GITHUB_DIR}.js                    function: github.com/apache/openwhisk-test/packages/helloworlds
 ```
 
 #### Trigger Feed
