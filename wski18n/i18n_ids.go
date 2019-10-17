@@ -29,7 +29,7 @@ const (
 	APIGW_ACCESS_TOKEN = "API Gateway Access Token"
 	APIGW_TENANT_ID    = "API Gateway Tenant ID"
 	AUTH_KEY           = "authentication key"
-	BINDING  		   = "binding"
+	BINDING            = "binding"
 	CLI_FLAGS          = "CLI Flags"
 	CMD_DEPLOY         = "deploy"
 	CMD_UNDEPLOY       = "undeploy"
