@@ -277,13 +277,11 @@ func validateClientConfig(credential PropertyValue, apiHost PropertyValue, names
 		if len(apiHost.Value) == 0 {
 			errorMsg = wskderrors.AppendDetailToErrorMessage(
 				errorMsg, wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_APIHOST), 1)
-
 		}
 
 		if len(namespace.Value) == 0 {
 			errorMsg = wskderrors.AppendDetailToErrorMessage(
 				errorMsg, wski18n.T(wski18n.ID_MSG_CONFIG_MISSING_NAMESPACE), 1)
-
 		}
 
 		if len(errorMsg) > 0 {
