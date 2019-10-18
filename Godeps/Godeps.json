@@ -105,7 +105,7 @@
 		},
 		{
 			"ImportPath": "github.com/apache/openwhisk-client-go/whisk",
-			"Rev": "d8ccb1442651beee6a9245913e3ca0cb182888b1"
+			"Rev": "ee5b8709787cd37201c42e38040e9709f6d1e9c8"
 		},
 		{
 			"ImportPath": "github.com/apache/openwhisk-client-go/wski18n",
