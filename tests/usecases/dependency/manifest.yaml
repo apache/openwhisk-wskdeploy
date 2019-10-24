@@ -19,9 +19,9 @@ packages:
     dependency-demo:
         dependencies:
             hellowhisk:
-                location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+                location: github.com/apache/openwhisk-test/packages/hellowhisk
             myhelloworlds:
-                location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+                location: github.com/apache/openwhisk-test/packages/helloworlds
             cloudant-package-binding:
                 location: /whisk.system/cloudant
                 inputs:

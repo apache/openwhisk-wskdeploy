@@ -35,11 +35,11 @@ a dependent package and can be specified in `manifest.yaml` with the following
 ```yaml
 dependencies:
     hellowhisk:
-        location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+        location: github.com/apache/openwhisk-test/packages/hellowhisk
 ```
 
 where `hellowhisk` is an external package whose source code is located in
-GitHub repo under https://github.com/apache/incubator-openwhisk-test/. When we
+GitHub repo under https://github.com/apache/openwhisk-test/. When we
 deploy our application, `hellowhisk` will be deployed based on the manifest and
 deployment files located in the folder `packages/hellowhisk`.
 
@@ -49,9 +49,9 @@ package name, we can define `manifest` with:
 ```yaml
 dependencies:
     hellowhisk:
-        location: github.com/apache/incubator-openwhisk-test/packages/hellowhisk
+        location: github.com/apache/openwhisk-test/packages/hellowhisk
     myhelloworlds:
-        location: github.com/apache/incubator-openwhisk-test/packages/helloworlds
+        location: github.com/apache/openwhisk-test/packages/helloworlds
 ```
 
 ### Package Binding
