@@ -1446,6 +1446,10 @@ func (deployer *ServiceDeployer) deleteSwaggerApi(api *whisk.ApiCreateRequest) e
 	var err error
 	var response *http.Response
 
+	// If there is no swagger file do nothing
+	if api == nil {
+		return nil
+	}
 	swaggerString := api.ApiDoc.Swagger
 	swaggerObj := new(whisk.ApiSwagger)
 	err = json.Unmarshal([]byte(swaggerString), swaggerObj)
