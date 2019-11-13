@@ -1,0 +1,60 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0",
+        "title": "Hello World API"
+    },
+    "basePath": "/hello",
+    "schemes": [
+        "https"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/world": {
+            "get": {
+                "description": "Returns a greeting to the user!",
+                "operationId": "hello_world",
+                "responses": {
+                    "200": {
+                        "description": "Returns the greeting.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+
+    },
+    "x-gateway-configuration": {
+    "assembly": {
+      "execute": [
+        {
+          "operation-switch": {
+            "case": [
+              {
+                "operations": [
+                  "getHello"
+                ],
+                "execute": [
+                  {
+                    "invoke": {
+                      "target-url": "https://openwhisk.ng.bluemix.net/api/some/action/path.http",
+                      "verb": "keep"
+                    }
+                  }
+                ]
+              }
+            ],
+            "otherwise": []
+          }
+        }
+      ]
+    }
+  }
+}
