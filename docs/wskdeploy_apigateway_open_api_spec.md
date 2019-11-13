@@ -106,7 +106,7 @@ project:
 }
 ```
 *NOTE*: Some providers such as IBM may have changed these keys. For example, IBM uses `x-ibm-configuration` instead of `x-gateway-configuration`.
-  
+
 There are two major differences from _"Hello World" API_ example:
 - the root key is now project as the open api specification is a project wide concept.
 - a new `config` key specifying where the Open API Specification is located.
