@@ -1351,7 +1351,13 @@ func (deployer *ServiceDeployer) isApi(api *whisk.ApiCreateRequest) bool {
 	apiReqOptions := new(whisk.ApiGetRequestOptions)
 	apiReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
 	apiReqOptions.ApiBasePath = api.ApiDoc.GatewayBasePath
-	apiReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+	if len(deployer.Client.Config.ApigwTenantId) > 0 {
+		// Use it to identify the IAM namespace
+		apiReqOptions.SpaceGuid = deployer.Client.Config.ApigwTenantId
+	} else {
+		//  assume a CF namespaces (SpaceGuid) which is part of the authtoken
+		apiReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+	}
 
 	a := new(whisk.ApiGetRequest)
 
@@ -1379,7 +1385,13 @@ func (deployer *ServiceDeployer) deleteApi(api *whisk.ApiCreateRequest) error {
 
 		apiDeleteReqOptions := new(whisk.ApiDeleteRequestOptions)
 		apiDeleteReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
-		apiDeleteReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+		if len(deployer.Client.Config.ApigwTenantId) > 0 {
+			// Use it to identify the IAM namespace
+			apiDeleteReqOptions.SpaceGuid = deployer.Client.Config.ApigwTenantId
+		} else {
+			//  assume a CF namespaces (SpaceGuid) which is part of the authtoken
+			apiDeleteReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+		}
 		apiDeleteReqOptions.ApiBasePath = api.ApiDoc.GatewayBasePath
 		apiDeleteReqOptions.ApiRelPath = api.ApiDoc.GatewayRelPath
 		apiDeleteReqOptions.ApiVerb = api.ApiDoc.GatewayMethod
