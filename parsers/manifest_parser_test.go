@@ -1499,9 +1499,9 @@ func TestComposeSequences(t *testing.T) {
 		switch wsk_action.Name {
 		case "sequence1":
 			assert.Equal(t, "sequence", wsk_action.Exec.Kind, "Failed to set sequence exec kind")
-			assert.Equal(t, 1024, wsk_action.Limits.Memory, "Failed to get Memory")
-			assert.Equal(t, 180, wsk_action.Limits.Timeout, "Failed to get Timeout")
-			assert.Equal(t, 1, wsk_action.Limits.Logsize, "Failed to get Logsize")
+			assert.Equal(t, 1024, strconv.FormatInt(int64(wsk_action.Limits.Memory.(int)), "Failed to get Memory")
+			assert.Equal(t, 180, strconv.FormatInt(int64(wsk_action.Limits.Timeout.(int)), "Failed to get Timeout")
+			assert.Equal(t, 1, strconv.FormatInt(int64(wsk_action.Limits.Logsize.(int)), "Failed to get Logsize")
 			assert.Equal(t, 2, len(wsk_action.Exec.Components), "Failed to set sequence exec components")
 			assert.Equal(t, "/helloworld/action1", wsk_action.Exec.Components[0], "Failed to set sequence 1st exec components")
 			assert.Equal(t, "/helloworld/action2", wsk_action.Exec.Components[1], "Failed to set sequence 2nd exec components")
