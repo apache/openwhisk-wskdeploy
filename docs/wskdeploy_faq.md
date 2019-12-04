@@ -27,3 +27,12 @@
 
 -  The ```wskdeploy``` utility will cease deploying as soon as it receives an error from the target platform and display what error information it receives to you.
 - then it will attempt to undeploy any entities that it attempted to deploy.
+
+### What is the order of precedence for OpenWhisk credentials?
+
+- The ```wskdeploy``` utility finds the credentials (apihost, namespace, and auth) as well as the APIGW_ACCESS_TOKEN in the folowing precedence from highest to lowest:
+  - ```wskdeploy``` command line (i.e. ```wskdeploy --apihost --namespace --auth```)
+  - The deployment file
+  - The manifest file
+  - The .wskprops file
+- So when filling out the credentials and the APIGW_ACCESS_TOKEN, it first looks to the command line. Anything not found on the command line is attempted to be filled by the deployment file. Next it searches for all the unfilled values in the manifest file, and finally any unfilled values are looked for in the .wskprops file.
