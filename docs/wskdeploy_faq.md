@@ -35,4 +35,4 @@
   - The deployment file
   - The manifest file
   - The .wskprops file
-- So when filling out the credentials and the APIGW_ACCESS_TOKEN, it first looks to the command line. Anything not found on the command line is attempted to be filled by the deployment file. Next it searches for all the unfilled values in the manifest file, and finally any unfilled values are looked for in the .wskprops file.
+- So when filling out the credentials and the APIGW_ACCESS_TOKEN, it first looks to the command line. Anything not found on the command line is attempted to be filled by the deployment file. Next it searches for all the unfilled values in the manifest file, and finally any unfilled values are looked for in the .wskprops file. After failing to find a value in the places mentioned above, namespace will default to "_". In the case of a TravisCI environment, APIGW_ACCESS_TOKEN will be set to "DUMMY TOKEN" if it is not already set via one of the mechanisms described previously.
