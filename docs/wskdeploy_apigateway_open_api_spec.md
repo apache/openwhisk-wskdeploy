@@ -17,7 +17,7 @@
 #
 -->
 
-# API Gateway
+# API Open API Spec
 
 ## The "Hello World" API
 
