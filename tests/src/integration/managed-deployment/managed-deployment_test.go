@@ -63,7 +63,6 @@ func TestHeadlessManagedDeployment(t *testing.T) {
 	deploymentPath := ""
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.HeadlessManagedDeployment(manifestPath, deploymentPath, "HeadlessManaged")
-	//assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest and deployment files.")
