@@ -811,10 +811,13 @@ func (deployer *ServiceDeployer) DeployRules() error {
 // Deploy Apis into OpenWhisk
 func (deployer *ServiceDeployer) DeployApis() error {
 	var err error
-	// Only deploy either swagger or manifest defined api, but not both
-	// Swagger API takes precedence
+	// NOTE: Only deploy either swagger or manifest defined api, but not both
+	// NOTE: Swagger API takes precedence
 	if deployer.Deployment.SwaggerApi != nil && deployer.Deployment.SwaggerApiOptions != nil {
 		err = deployer.createSwaggerApi(deployer.Deployment.SwaggerApi)
+		if err != nil {
+			return err
+		}
 	} else {
 		for _, api := range deployer.Deployment.Apis {
 			err = deployer.createApi(api)
