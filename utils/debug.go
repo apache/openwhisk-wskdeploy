@@ -18,23 +18,15 @@
 package utils
 
 import (
-	"encoding/json"
-	"github.com/hokaccha/go-prettyjson"
+	"fmt"
+	"runtime"
+	"strings"
 )
 
-func PrettyJSON(rawData interface{}) (string, error) {
-	formatter := prettyjson.NewFormatter()
-	bytes, err := formatter.Marshal(rawData)
-	if err != nil {
-		return "", err
-	}
-	return string(bytes), nil
-}
-
-func FormatStructAsJsonString(a interface{}) string {
-	out, err := json.Marshal(a)
-	if err == nil {
-		return string(out)
-	}
-	return ""
+func dumpInterface(tag string, value interface{}) {
+	pc, fn, line, _ := runtime.Caller(1)
+	basicFile := fn[strings.LastIndex(fn, "/")+1:]
+	details := runtime.FuncForPC(pc)
+	basicFnName := details.Name()[strings.LastIndex(details.Name(), ".")+1:]
+	fmt.Printf("---\n[info] %s(%d): %s: %s=%+v\n", basicFile, line, basicFnName, tag, value)
 }

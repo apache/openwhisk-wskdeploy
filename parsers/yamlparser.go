@@ -96,22 +96,23 @@ type YAMLParser struct {
 type Action struct {
 	Name string
 	// TODO(): deprecate location in favor of function
-	Location    string                 `yaml:"location"`
-	Version     string                 `yaml:"version"`
-	Function    string                 `yaml:"function"`
-	Code        string                 `yaml:"code"`
-	Runtime     string                 `yaml:"runtime,omitempty"`
-	Namespace   string                 `yaml:"namespace"`
-	Credential  string                 `yaml:"credential"`
-	ExposedUrl  string                 `yaml:"exposedUrl"`
-	Webexport   string                 `yaml:"web-export"`
-	Web         string                 `yaml:"web"`
-	Main        string                 `yaml:"main"`
-	Docker      string                 `yaml:"docker,omitempty"`
-	Native      bool                   `yaml:"native,omitempty"`
-	Conductor   bool                   `yaml:"conductor,omitempty"`
-	Limits      *Limits                `yaml:"limits"`
-	Inputs      map[string]Parameter   `yaml:"inputs"`
+	Location   string               `yaml:"location"`
+	Version    string               `yaml:"version"`
+	Function   string               `yaml:"function"`
+	Code       string               `yaml:"code"`
+	Runtime    string               `yaml:"runtime,omitempty"`
+	Namespace  string               `yaml:"namespace"`
+	Credential string               `yaml:"credential"`
+	ExposedUrl string               `yaml:"exposedUrl"`
+	WebExport  string               `yaml:"web-export"`
+	Web        string               `yaml:"web"`
+	WebSecure  bool                 `yaml:"web-secure,omitempty""`
+	Main       string               `yaml:"main"`
+	Docker     string               `yaml:"docker,omitempty"`
+	Native     bool                 `yaml:"native,omitempty"`
+	Conductor  bool                 `yaml:"conductor,omitempty"`
+	Limits     *Limits              `yaml:"limits"`
+	Inputs     map[string]Parameter `yaml:"inputs"`
 	Outputs     map[string]Parameter   `yaml:"outputs"`
 	Description string                 `yaml:"description,omitempty"`
 	Annotations map[string]interface{} `yaml:"annotations,omitempty"`
@@ -254,8 +255,8 @@ type PackageInputs struct {
 // function to return web-export or web depending on what is specified
 // in manifest and deployment files
 func (action *Action) GetWeb() string {
-	if len(action.Web) == 0 && len(action.Webexport) != 0 {
-		return action.Webexport
+	if len(action.Web) == 0 && len(action.WebExport) != 0 {
+		return action.WebExport
 	}
 	return action.Web
 }

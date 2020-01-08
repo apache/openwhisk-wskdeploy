@@ -845,7 +845,7 @@ func (dm *YAMLParser) composeActionLimits(limits Limits) *whisk.Limits {
 }
 
 func (dm *YAMLParser) validateActionWebFlag(action Action) {
-	if len(action.Web) != 0 && len(action.Webexport) != 0 {
+	if len(action.Web) != 0 && len(action.WebExport) != 0 {
 		warningString := wski18n.T(wski18n.ID_WARN_ACTION_WEB_X_action_X,
 			map[string]interface{}{wski18n.KEY_ACTION: action.Name})
 		wskprint.PrintOpenWhiskWarning(warningString)

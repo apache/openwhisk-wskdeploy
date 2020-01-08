@@ -27,7 +27,6 @@ import (
 	"strings"
 
 	"github.com/apache/openwhisk-client-go/whisk"
-	"github.com/hokaccha/go-prettyjson"
 )
 
 const (
@@ -94,15 +93,6 @@ func IsFeedAction(trigger *whisk.Trigger) (string, bool) {
 	}
 
 	return "", false
-}
-
-func PrettyJSON(j interface{}) (string, error) {
-	formatter := prettyjson.NewFormatter()
-	bytes, err := formatter.Marshal(j)
-	if err != nil {
-		return "", err
-	}
-	return string(bytes), nil
 }
 
 func GetManifestFilePath(projectPath string) string {

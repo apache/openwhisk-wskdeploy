@@ -62,7 +62,6 @@ func ConvertInterfaceValue(value interface{}) interface{} {
 }
 
 // TODO() add a Print function to wskprint that calls this and adds the label
-// TODO add prettyjson formatting as an option
 func ConvertMapToJSONString(name string, mapIn interface{}) string {
 	strMapOut, _ := json.MarshalIndent(mapIn, "", "  ")
 	return fmt.Sprintf("%s: %s", name, string(strMapOut))
