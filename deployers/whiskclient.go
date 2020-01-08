@@ -55,6 +55,9 @@ type PropertyValue struct {
 	Source string
 }
 
+// Note buyer beware this function returns the existing value, and only if there is not
+// an existing value does it set it to newValue. We should perhaps rename this function
+// as it implies that it is a getter, when this is not strictly true
 var GetPropertyValue = func(prop PropertyValue, newValue string, source string) PropertyValue {
 	if len(prop.Value) == 0 && len(newValue) > 0 {
 		prop.Value = newValue
@@ -201,12 +204,6 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string)
 	// reset credential, apiHost, namespace, etc to avoid any conflicts as they initialized globally
 	resetWhiskConfig()
 
-	// initialize APIGW_ACCESS_TOKEN to "DUMMY TOKEN" for Travis builds
-	if strings.ToLower(os.Getenv("TRAVIS")) == "true" {
-		apigwAccessToken.Value = "DUMMY TOKEN"
-		apigwAccessToken.Source = SOURCE_DEFAULT_VALUE
-	}
-
 	// read from command line
 	readFromCLI()
 
@@ -227,8 +224,16 @@ func NewWhiskConfig(proppath string, deploymentPath string, manifestPath string)
 
 	readFromWskprops(pi, proppath)
 
-	// TODO() whisk.properties should be deprecated; it is only used in Travis test automation for now
+	// TODO() whisk.properties should be deprecated
 	readFromWhiskProperty(pi)
+
+	// As a last resort initialize APIGW_ACCESS_TOKEN to "DUMMY TOKEN" for Travis builds
+	// The reason DUMMY TOKEN is not always true for Travis builds is that they may want
+	// to use Travis as a CD vehicle in which case we need to respect the other values
+	// that may be set before.
+	if strings.ToLower(os.Getenv("TRAVIS")) == "true" {
+		apigwAccessToken = GetPropertyValue(apigwAccessToken, "DUMMY TOKEN", SOURCE_DEFAULT_VALUE)
+	}
 
 	// set namespace to default namespace if not yet found
 	if len(apiHost.Value) != 0 && len(credential.Value) != 0 && len(namespace.Value) == 0 {
