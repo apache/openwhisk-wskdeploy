@@ -516,11 +516,13 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		// when web-export is set to raw, treat sequence as a raw HTTP web action,
 		// when web-export is set to no | false, treat sequence as a standard action
 		if len(sequence.Web) != 0 {
-			wskaction.Annotations, errorParser = webaction.WebAction(manifestFilePath, wskaction.Name, sequence.Web, wskaction.Annotations, false)
+			wskaction.Annotations, errorParser = webaction.SetWebActionAnnotations(manifestFilePath, wskaction.Name, sequence.Web, wskaction.Annotations, false)
 			if errorParser != nil {
 				return nil, errorParser
 			}
 		}
+
+		// TODO Add web-secure support for sequences?
 
 		record := utils.ActionRecord{Action: wskaction, Packagename: packageName, Filepath: key}
 		listOfSequences = append(listOfSequences, record)
@@ -845,6 +847,8 @@ func (dm *YAMLParser) composeActionLimits(limits Limits) *whisk.Limits {
 }
 
 func (dm *YAMLParser) validateActionWebFlag(action Action) {
+	// Warn user if BOTH web and web-export specified,
+	// as they are redundant; defer to "web" flag and its value
 	if len(action.Web) != 0 && len(action.WebExport) != 0 {
 		warningString := wski18n.T(wski18n.ID_WARN_ACTION_WEB_X_action_X,
 			map[string]interface{}{wski18n.KEY_ACTION: action.Name})
@@ -909,14 +913,58 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 			wskaction.Annotations = append(wskaction.Annotations, managedAnnotations)
 		}
 
-		// Web Export
+		// Web Export (i.e., "web-export" annotation)
+		// ==========
 		// Treat ACTION as a web action, a raw HTTP web action, or as a standard action based on web-export;
 		// when web-export is set to yes | true, treat action as a web action,
 		// when web-export is set to raw, treat action as a raw HTTP web action,
 		// when web-export is set to no | false, treat action as a standard action
 		dm.validateActionWebFlag(action)
 		if len(action.GetWeb()) != 0 {
-			wskaction.Annotations, errorParser = webaction.WebAction(manifestFilePath, action.Name, action.GetWeb(), wskaction.Annotations, false)
+			wskaction.Annotations, errorParser = webaction.SetWebActionAnnotations(
+				manifestFilePath,
+				action.Name,
+				action.GetWeb(),
+				wskaction.Annotations,
+				false)
+			if errorParser != nil {
+				return listOfActions, errorParser
+			}
+		}
+
+		// Web Secure (i.e., "require-whisk-auth" annotation)
+		// ==========
+		// DOCS:
+		// The --web-secure flag to automatically set the require-whisk-auth annotation.
+		// - When set to true a random number is generated as the require-whisk-auth annotation value.
+		// - When set to false the require-whisk-auth annotation is removed.
+		// - When set to any other value, that value is used as the require-whisk-auth annotation value.
+		//
+		// NOTE: This logic must come after the "web" and "web-export" flags have resolved to a single "web-export" value.
+		// from the logic above.
+		//
+		// ASSUMPTION: Docs. indicate that "web-secure" (annotations) only work when "web-export" is true
+		// quote "The rest of the annotations (e.g., "require-whisk-auth") described below have
+		// no effect on the action unless [the "web-export"] annotation is also set.".
+        // IF "web-export" (annot) NOT defined; create the "web-export" annotation, set it to TRUE
+        //    (i.e., export an HTTPS action)???
+        // IF "web-export" (annot) is FALSE (non-HTTP action) && "web-secure" (HTTP action) is also defined;
+        //    throw error (both non-HTTP and HTTP configured)
+        // IF "web-export" (annot) is TRUE then carry out the normal logic for "web-secure" for true | false | string
+        //
+        // once we have the actual "value" for "web-secure", it needs to be set on the API call itself
+        // using the SecureKey field
+        //
+		//if webactionSecret != nil {
+		//	apiCreateReq.ApiDoc.Action.SecureKey = webactionSecret
+		//}
+		if len(action.WebSecure) != 0 {
+			wskaction.Annotations, errorParser = webaction.SetWebSecureAnnotations(
+				manifestFilePath,
+				action.Name,
+				action.WebSecure,
+				wskaction.Annotations,
+				false)
 			if errorParser != nil {
 				return listOfActions, errorParser
 			}
@@ -928,16 +976,20 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 				wskaction.Limits = wsklimits
 			}
 		}
+
 		// Conductor Action
 		if action.Conductor {
 			wskaction.Annotations = append(wskaction.Annotations, conductor.ConductorAction())
 		}
 
+		// Set other top-level values for the action (e.g., name, version, publish, etc.)
 		wskaction.Name = actionName
 		pub := false
 		wskaction.Publish = &pub
 		wskaction.Version = wskenv.ConvertSingleName(action.Version)
 
+		// create a "record" of the Action relative to its package and function filepath
+		// which will be used to compose the REST API calls
 		record := utils.ActionRecord{Action: wskaction, Packagename: packageName, Filepath: actionFilePath}
 		listOfActions = append(listOfActions, record)
 	}

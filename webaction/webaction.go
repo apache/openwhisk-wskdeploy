@@ -25,10 +25,11 @@ import (
 
 //for web action support, code from wsk cli with tiny adjustments
 const (
-	WEB_EXPORT_ANNOT = "web-export"
-	RAW_HTTP_ANNOT   = "raw-http"
-	FINAL_ANNOT      = "final"
-	TRUE             = "true"
+	REQUIRE_WHISK_AUTH = "require-whisk-auth"
+	WEB_EXPORT_ANNOT   = "web-export"
+	RAW_HTTP_ANNOT     = "raw-http"
+	FINAL_ANNOT        = "final"
+	TRUE               = "true"
 )
 
 var webExport map[string]string = map[string]string{
@@ -46,7 +47,6 @@ func deleteKey(key string, keyValueArr whisk.KeyValueArr) whisk.KeyValueArr {
 			break
 		}
 	}
-
 	return keyValueArr
 }
 
@@ -55,11 +55,10 @@ func addKeyValue(key string, value interface{}, keyValueArr whisk.KeyValueArr) w
 		Key:   key,
 		Value: value,
 	}
-
 	return append(keyValueArr, keyValue)
 }
 
-func WebAction(filePath string, action string, webMode string, annotations whisk.KeyValueArr, fetch bool) (whisk.KeyValueArr, error) {
+func SetWebActionAnnotations(filePath string, action string, webMode string, annotations whisk.KeyValueArr, fetch bool) (whisk.KeyValueArr, error) {
 	switch strings.ToLower(webMode) {
 	case webExport["TRUE"]:
 		fallthrough
@@ -70,9 +69,21 @@ func WebAction(filePath string, action string, webMode string, annotations whisk
 	case webExport["FALSE"]:
 		return webActionAnnotations(fetch, annotations, deleteWebAnnotations)
 	case webExport["RAW"]:
-		return webActionAnnotations(fetch, annotations, addRawAnnotations)
+		return webActionAnnotations(fetch, annotations, addWebRawAnnotations)
 	default:
 		return nil, wskderrors.NewInvalidWebExportError(filePath, action, webMode, getValidWebExports())
+	}
+}
+
+func SetWebSecureAnnotations(filePath string, action string, webSecure string, annotations whisk.KeyValueArr, fetch bool) (whisk.KeyValueArr, error) {
+	switch strings.ToLower(webSecure) {
+	case "true":
+		fallthrough
+	case "false":
+		fallthrough
+		//return webActionAnnotations(fetch, annotations, deleteWebAnnotations)
+	default:
+		return nil, wskderrors.NewInvalidWebExportError(filePath, action, webSecure, getValidWebExports())
 	}
 }
 
@@ -107,7 +118,7 @@ func deleteWebAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
 	return annotations
 }
 
-func addRawAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
+func addWebRawAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
 	annotations = deleteWebAnnotationKeys(annotations)
 	annotations = addKeyValue(WEB_EXPORT_ANNOT, true, annotations)
 	annotations = addKeyValue(RAW_HTTP_ANNOT, true, annotations)
