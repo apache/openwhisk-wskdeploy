@@ -22,7 +22,7 @@ packages:
     actions:
       greeting:
         function: src/greeting.js
-        runtime: nodejs:6
+        runtime: nodejs:default
     triggers:
       test_alarm_trigger:
         feed: /whisk.system/alarms/interval

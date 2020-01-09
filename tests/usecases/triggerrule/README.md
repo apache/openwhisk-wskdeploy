@@ -44,7 +44,7 @@ $ wsk action list
   "publish": false,
   "annotations": [{
     "key": "exec",
-    "value": "nodejs:6"
+    "value": "nodejs:default"
   }],
   "version": "0.0.1",
   "namespace": "<namespace>/triggerrule"

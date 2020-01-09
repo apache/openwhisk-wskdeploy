@@ -20,7 +20,7 @@ packages:
         actions:
             validate_singleline_params:
                 function: actions/dump_params.js
-                runtime: nodejs:6
+                runtime: nodejs:default
                 inputs:
                     # simple string
                     param_simple_string: foo

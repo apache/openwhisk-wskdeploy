@@ -20,7 +20,7 @@ packages:
     actions:
       validate_json_params:
         function: actions/dump_params.js
-        runtime: nodejs:6
+        runtime: nodejs:default
         inputs:
           member1:
             type: json

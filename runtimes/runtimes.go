@@ -300,13 +300,13 @@ var RUNTIME_DETAILS = []byte(`{
             },
             {
                 "kind": "nodejs:6",
-                "default": true,
+                "default": false,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "nodejs6action",
                     "tag": "latest"
                 },
-                "deprecated": false,
+                "deprecated": true,
                 "attached": {
                     "attachmentName": "codefile",
                     "attachmentType": "text/plain"
@@ -332,7 +332,7 @@ var RUNTIME_DETAILS = []byte(`{
             },
             {
                 "kind": "nodejs:10",
-                "default": false,
+                "default": true,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v10",

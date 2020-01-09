@@ -86,7 +86,7 @@ project:
                                 return { text: message };
                               }
                               exports.main = main;
-                    runtime: nodejs:6
+                    runtime: nodejs:default
             sequences:
                 # Creating sequence to connect the send-message action with the slack post action
                 post_message_slack_sequence:

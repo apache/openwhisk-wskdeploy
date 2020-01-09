@@ -20,7 +20,7 @@ packages:
         actions:
             validate_multiline_params:
                 function: actions/dump_params.js
-                runtime: nodejs:6
+                runtime: nodejs:default
                 inputs:
                     # value only
                     param_string_value_only:

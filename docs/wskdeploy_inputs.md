@@ -74,7 +74,7 @@ packages:
                           function main(params) {
                               return {payload:  'Hello, ' + params.name + ' from ' + params.place};
                           }
-                runtime: nodejs:6
+                runtime: nodejs:default
 ```
 
 Or (Single Line Inputs):
@@ -91,7 +91,7 @@ packages:
                           function main(params) {
                               return {payload:  'Hello, ' + params.name + ' from ' + params.place};
                           }
-                runtime: nodejs:6
+                runtime: nodejs:default
 ```
 Whisk deploy creates bindings at the action level with two parameters `name` and `place`:
 
@@ -147,7 +147,7 @@ packages:
                           function main(params) {
                               return {payload:  'Hello, ' + params.name + ' from ' + params.place};
                           }
-                runtime: nodejs:6
+                runtime: nodejs:default
 ```
 
 Deployment of this kind of manifest file results in following failure as inputs
@@ -173,7 +173,7 @@ packages:
                           function main(params) {
                               return {payload:  'Hello, ' + params.name + ' from ' + params.place};
                           }
-                runtime: nodejs:6
+                runtime: nodejs:default
 ```
 
 Action is created with two bindings `name` and `place` set to `""`:
@@ -272,7 +272,7 @@ project:
                           function main(params) {
                               return {payload:  'Hello, ' + params.name + ' from ' + params.place};
                           }
-                    runtime: nodejs:6
+                    runtime: nodejs:default
 ```
 
 This is how bindings are created only under action:
@@ -344,7 +344,7 @@ project:
                           function main(params) {
                               return {payload:  'Hello, ' + params.name + ' from ' + params.place};
                           }
-                    runtime: nodejs:6
+                    runtime: nodejs:default
 ```
 
 Now, bindings are created under Package:
@@ -433,7 +433,7 @@ project:
                           function main(params) {
                               return {payload:  'Hello, ' + params.message + ' ' + params.name + ' from ' + params.place};
                           }
-                    runtime: nodejs:6
+                    runtime: nodejs:default
                 helloWithEvening:
                     inputs:
                         message:
@@ -445,13 +445,13 @@ project:
                           function main(params) {
                               return {payload:  'Hello, ' + params.message + ' ' + params.name + ' from ' + params.place};
                           }
-                    runtime: nodejs:6
+                    runtime: nodejs:default
                 helloWithNight:
                     code: |
                           function main(params) {
                               return {payload:  'Hello, ' + params.message + ' ' + params.name + ' from ' + params.place};
                           }
-                    runtime: nodejs:6
+                    runtime: nodejs:default
 ```
 
 Now, invoking `helloWithMorning` returns `Good Morning` and invoking `helloWithEvening`

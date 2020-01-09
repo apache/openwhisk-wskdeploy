@@ -22,7 +22,7 @@ packages:
                 function: actions/hello.js
             helloworld2:
                 code: const main = ({ msg }) => { console.log(msg); return {msg}; }
-                runtime: nodejs:6
+                runtime: nodejs:default
             helloworld3:
                 function: actions/hello.js
                 annotations:
