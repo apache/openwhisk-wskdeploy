@@ -935,8 +935,9 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		// Web Secure (i.e., "require-whisk-auth" annotation)
 		// ==========
 		// DOCS:
-		// The --web-secure flag to automatically set the require-whisk-auth annotation.
+		// The --web-secure flag automatically sets the require-whisk-auth annotation.
 		// - When set to true a random number is generated as the require-whisk-auth annotation value.
+		// - TODO what happens on an update; is it changed each time?
 		// - When set to false the require-whisk-auth annotation is removed.
 		// - When set to any other value, that value is used as the require-whisk-auth annotation value.
 		//
