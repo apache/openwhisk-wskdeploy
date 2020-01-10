@@ -955,9 +955,10 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
         // once we have the actual "value" for "web-secure", it needs to be set on the API call itself
         // using the SecureKey field
         //
-		//if webactionSecret != nil {
-		//	apiCreateReq.ApiDoc.Action.SecureKey = webactionSecret
-		//}
+        // // https://github.com/apache/openwhisk-cli/blob/master/commands/api.go
+		// if webactionSecret != nil {
+		//	 apiCreateReq.ApiDoc.Action.SecureKey = webactionSecret
+		// }
 		if len(action.WebSecure) != 0 {
 			wskaction.Annotations, errorParser = webaction.SetWebSecureAnnotations(
 				manifestFilePath,
