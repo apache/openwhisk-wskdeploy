@@ -68,10 +68,10 @@ project:
             actions:
                 hello1:
                     function: $OPENWHISK_FUNCTION_FILE
-                    runtime: nodejs:6
+                    runtime: nodejs:default
                 hello2:
                     function: ${OPENWHISK_FUNCTION_FILE}
-                    runtime: nodejs:6
+                    runtime: nodejs:default
                 hello3:
                     function: ${OPENWHISK_FUNCTION_PYTHON}.py
                 hello4:

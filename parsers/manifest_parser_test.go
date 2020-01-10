@@ -190,12 +190,12 @@ func testUnmarshalTemporaryFile(data []byte, filename string) (p *YAMLParser, m 
 func TestUnmarshalForHelloNodeJS(t *testing.T) {
 	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_nodejs.yaml", // Manifest path
-		"helloworld",       // Package name
-		1,                  // # of Actions
-		"helloNodejs",      // Action name
-		"actions/hello.js", // Function path
-		"nodejs:6",         // "Runtime
-		"")                 // "Main" function name
+		"helloworld",                              // Package name
+		1,                                         // # of Actions
+		"helloNodejs",                             // Action name
+		"actions/hello.js",                        // Function path
+		"nodejs:default",                                // "Runtime
+		"")                                        // "Main" function name
 }
 
 // Test 2: validate manifest_parser:Unmarshal() method with a sample manifest in Java
@@ -254,7 +254,7 @@ func TestUnmarshalForHelloWithParams(t *testing.T) {
 		1,                              // # of Actions
 		TEST_ACTION_NAME,               // Action name
 		"actions/hello-with-params.js", // Function path
-		"nodejs:6",                     // "Runtime
+		"nodejs:default",                     // "Runtime
 		"")                             // "Main" function name
 
 	if pkg != nil {
@@ -310,7 +310,7 @@ func TestParseManifestForMultiLineParams(t *testing.T) {
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
 
 		// test action's runtime
-		expectedResult = "nodejs:6"
+		expectedResult = "nodejs:default"
 		actualResult = action.Runtime
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
 
@@ -415,7 +415,7 @@ func TestParseManifestForSingleLineParams(t *testing.T) {
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
 
 		// test Action runtime
-		expectedResult = "nodejs:6"
+		expectedResult = "nodejs:default"
 		actualResult = action.Runtime
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
 
@@ -598,13 +598,13 @@ func TestComposeActionsForValidRuntime_ZipAction(t *testing.T) {
         actions:
             hello:
                 function: ../tests/src/integration/runtimetests/src/helloworld/helloworld.zip
-                runtime: nodejs:6`
+                runtime: nodejs:default`
 	p, m, tmpfile := testUnmarshalTemporaryFile([]byte(data), "manifest_parser_validate_runtime_")
 	actions, err := p.ComposeActionsFromAllPackages(m, tmpfile, whisk.KeyValue{}, map[string]PackageInputs{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_COMPOSE_ACTION_FAILURE, tmpfile))
 	for _, action := range actions {
 		if action.Action.Name == "hello" {
-			assert.Equal(t, action.Action.Exec.Kind, "nodejs:6", fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH))
+			assert.Equal(t, action.Action.Exec.Kind, "nodejs:default", fmt.Sprintf(TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH))
 		}
 
 	}
@@ -1274,8 +1274,8 @@ func TestParseManifestForJSONParams(t *testing.T) {
 		actualResult := action.Function
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_PATH_MISMATCH)
 
-		// validate runtime of an action to be "nodejs:6"
-		expectedResult = "nodejs:6"
+		// validate runtime of an action to be "nodejs:default"
+		expectedResult = "nodejs:default"
 		actualResult = action.Runtime
 		assert.Equal(t, expectedResult, actualResult, TEST_MSG_ACTION_FUNCTION_RUNTIME_MISMATCH)
 
@@ -1752,8 +1752,8 @@ func TestUnmarshalForPackages(t *testing.T) {
 					expectedResult = "actions/hello.js"
 					actualResult = action.Function
 					assert.Equal(t, expectedResult, actualResult, "Expected action function "+expectedResult+" but got "+actualResult)
-					// runtime of an action should be "nodejs:6"
-					expectedResult = "nodejs:6"
+					// runtime of an action should be "nodejs:default"
+					expectedResult = "nodejs:default"
 					actualResult = action.Runtime
 					assert.Equal(t, expectedResult, actualResult, "Expected action runtime "+expectedResult+" but got "+actualResult)
 				} else {

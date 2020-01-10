@@ -58,7 +58,7 @@ project:
                           function main(params) {
                               return {payload:  'Hello, ' + params.message + ' ' + params.name + ' from ' + params.place};
                           }
-                    runtime: nodejs:6
+                    runtime: nodejs:default
                 helloWithEvening:
                     inputs:
                         message:
@@ -70,12 +70,12 @@ project:
                           function main(params) {
                               return {payload:  'Hello, ' + params.message + ' ' + params.name + ' from ' + params.place};
                           }
-                    runtime: nodejs:6
+                    runtime: nodejs:default
                 helloWithNight:
                     code: |
                           function main(params) {
                               return {payload:  'Hello, ' + params.message + ' ' + params.name + ' from ' + params.place};
                           }
-                    runtime: nodejs:6
+                    runtime: nodejs:default
 
 

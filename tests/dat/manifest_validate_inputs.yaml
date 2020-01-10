@@ -20,7 +20,7 @@ packages:
     actions:
       helloNodejs:
         function: actions/
-        runtime: nodejs:6
+        runtime: nodejs:default
         include:
             - ["actions/hello.js"]
             - ["actions/hello.js", "actions/hello.js"]

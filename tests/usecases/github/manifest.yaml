@@ -20,7 +20,7 @@ packages:
         actions:
             print-github-commits:
                 location: src/print-github-commits.js
-                runtime: nodejs:6
+                runtime: nodejs:default
         triggers:
             GitHubWebhookTrigger:
                 feed: /whisk.system/github/webhook

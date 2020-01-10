@@ -22,7 +22,7 @@ packages:
                 web-export: true
                 version: 1.0
                 function: src/greeting.js
-                runtime: nodejs:6
+                runtime: nodejs:default
                 inputs:
                     name: string
                     place: string
@@ -32,7 +32,7 @@ packages:
                 web-export: yes
                 version: 1.0
                 function: src/greeting.js
-                runtime: nodejs:6
+                runtime: nodejs:default
                 inputs:
                     name: string
                     place: string
@@ -42,26 +42,26 @@ packages:
                 web-export: raw
                 version: 1.0
                 function: src/greeting.js
-                runtime: nodejs:6
+                runtime: nodejs:default
             greeting-web-action-with-auth:
                 web-export: true
                 version: 1.0
                 function: src/greeting.js
-                runtime: nodejs:6
+                runtime: nodejs:default
                 annotations:
                     require-whisk-auth: true
             greeting-web-action-final:
                 web-export: true
                 version: 1.0
                 function: src/greeting.js
-                runtime: nodejs:6
+                runtime: nodejs:default
                 annotations:
                     final: true
             greeting-web-action-with-custom-options:
                 web-export: true
                 version: 1.0
                 function: src/greeting.js
-                runtime: nodejs:6
+                runtime: nodejs:default
                 annotations:
                     web-custom-options: true
         triggers:

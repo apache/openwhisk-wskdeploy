@@ -22,7 +22,7 @@ packages:
         actions:
             greeting1:
                 function: actions
-                runtime: nodejs:6
+                runtime: nodejs:default
                 exclude:
                     - actions/*
                 include:

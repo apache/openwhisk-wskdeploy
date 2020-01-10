@@ -20,7 +20,7 @@ packages:
         actions:
             helloworld:
                 function: actions/hello.js
-                runtime: nodejs:6
+                runtime: nodejs:default
                 inputs:
                     name:
                         type: string
@@ -41,7 +41,7 @@ packages:
         actions:
             helloworld:
                 function: actions/hello.js
-                runtime: nodejs:6
+                runtime: nodejs:default
                 inputs:
                     name:
                         type: string
@@ -62,7 +62,7 @@ packages:
         actions:
             helloworld:
                 function: actions/hello.js
-                runtime: nodejs:6
+                runtime: nodejs:default
                 inputs:
                     name:
                         type: string

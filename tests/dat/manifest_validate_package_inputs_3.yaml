@@ -47,6 +47,6 @@ project:
                           function main(params) {
                               return {payload:  'Hello, ' + params.name + ' from ' + params.place};
                           }
-                    runtime: nodejs:6
+                    runtime: nodejs:default
 
 

@@ -80,10 +80,10 @@ actions
 /guest/ManagedPackage-1/ManagedSequence-2                              private sequence
 /guest/ManagedPackage-1/ManagedSequence-1                              private sequence
 /guest/ManagedPackage-2/ManagedSequence-1                              private sequence
-/guest/ManagedPackage-1/HelloWorld-2                                   private nodejs:6
-/guest/ManagedPackage-1/HelloWorld-1                                   private nodejs:6
-/guest/ManagedPackage-1/HelloWorld-3                                   private nodejs:6
-/guest/ManagedPackage-2/HelloWorld-1                                   private nodejs:6
+/guest/ManagedPackage-1/HelloWorld-2                                   private nodejs:default
+/guest/ManagedPackage-1/HelloWorld-1                                   private nodejs:default
+/guest/ManagedPackage-1/HelloWorld-3                                   private nodejs:default
+/guest/ManagedPackage-2/HelloWorld-1                                   private nodejs:default
 triggers
 /guest/ManagedTrigger-2                                                private
 /guest/ManagedTrigger-1                                                private
@@ -128,9 +128,9 @@ packages
 actions
 /guest/ManagedPackage-1/ManagedSequence-2                              private sequence
 /guest/ManagedPackage-1/ManagedSequence-1                              private sequence
-/guest/ManagedPackage-1/HelloWorld-3                                   private nodejs:6
-/guest/ManagedPackage-1/HelloWorld-2                                   private nodejs:6
-/guest/ManagedPackage-1/HelloWorld-1                                   private nodejs:6
+/guest/ManagedPackage-1/HelloWorld-3                                   private nodejs:default
+/guest/ManagedPackage-1/HelloWorld-2                                   private nodejs:default
+/guest/ManagedPackage-1/HelloWorld-1                                   private nodejs:default
 triggers
 /guest/ManagedTrigger-1                                                private
 rules
@@ -154,9 +154,9 @@ packages
 /guest/ManagedPackage-1                                                private
 actions
 /guest/ManagedPackage-1/ManagedSequence-1                              private sequence
-/guest/ManagedPackage-1/HelloWorld-3                                   private nodejs:6
-/guest/ManagedPackage-1/HelloWorld-2                                   private nodejs:6
-/guest/ManagedPackage-1/HelloWorld-1                                   private nodejs:6
+/guest/ManagedPackage-1/HelloWorld-3                                   private nodejs:default
+/guest/ManagedPackage-1/HelloWorld-2                                   private nodejs:default
+/guest/ManagedPackage-1/HelloWorld-1                                   private nodejs:default
 triggers
 /guest/ManagedTrigger-1                                                private
 rules
@@ -179,8 +179,8 @@ packages
 /guest/ManagedPackage-1                                                private
 actions
 /guest/ManagedPackage-1/ManagedSequence-1                              private sequence
-/guest/ManagedPackage-1/HelloWorld-2                                   private nodejs:6
-/guest/ManagedPackage-1/HelloWorld-1                                   private nodejs:6
+/guest/ManagedPackage-1/HelloWorld-2                                   private nodejs:default
+/guest/ManagedPackage-1/HelloWorld-1                                   private nodejs:default
 triggers
 /guest/ManagedTrigger-1                                                private
 rules

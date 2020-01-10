@@ -27,7 +27,7 @@ packages:
         actions:
             post-to-slack:
                 function: actions/post-to-slack.js
-                runtime: nodejs:6
+                runtime: nodejs:default
                 inputs:
                     message:
                         type: string

@@ -51,7 +51,7 @@ func composeDeployFiles(count int) (manifestStr string, deploymentStr string) {
 		manifestStr = manifestStr + "    func" + strconv.Itoa(i) + ":" +
 			`
       function: actions/function.js
-      runtime: nodejs:6
+      runtime: nodejs:default
       inputs:
         functionID: string
         visited: string

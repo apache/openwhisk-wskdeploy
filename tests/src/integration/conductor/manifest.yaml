@@ -24,7 +24,7 @@ project:
                     function: actions/triple.js
                 increment:
                     function: actions/increment.js
-                    runtime: nodejs:6
+                    runtime: nodejs:default
                 tripleAndIncrement:
                     function: actions/tripleAndIncrement.js
                     conductor: true
@@ -33,11 +33,11 @@ project:
                 triple:
                     code: |
                           function main({ value }) { return { value: value * 3 } }
-                    runtime: nodejs:6
+                    runtime: nodejs:default
                 increment:
                     code: |
                           function main({ value }) { return { value: value + 1 } }
-                    runtime: nodejs:6
+                    runtime: nodejs:default
                 tripleAndIncrement:
                     code: |
                           function main(params) {
@@ -49,6 +49,6 @@ project:
                                   case 2: return { params }
                               }
                           }
-                    runtime: nodejs:6
+                    runtime: nodejs:default
                     conductor: true
 

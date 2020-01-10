@@ -25,12 +25,12 @@ packages:
         lib1_greeting1:
           version: 1.0
           function: src/greeting.js
-          runtime: nodejs:6
+          runtime: nodejs:default
         lib1_greeting2:
           version: 1.0
           function: src/greeting.js
-          runtime: nodejs:6
+          runtime: nodejs:default
         lib1_greeting3:
           version: 1.0
           function: src/greeting.js
-          runtime: nodejs:6
+          runtime: nodejs:default

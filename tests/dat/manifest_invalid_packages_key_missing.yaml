@@ -20,6 +20,6 @@ test_package:
   actions:
     helloNodejs:
       function: actions/hello.js
-      runtime: nodejs:6
+      runtime: nodejs:default
     helloJava:
       function: actions/hello.java

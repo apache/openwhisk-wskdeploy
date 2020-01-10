@@ -246,7 +246,7 @@ func TestManifestReader_SetActions(t *testing.T) {
 	err = manifestReader.HandleYaml(manifestParser, manifest, whisk.KeyValue{})
 	assert.Nil(t, err, fmt.Sprintf(TEST_ERROR_MANIFEST_PARSE_FAILURE, manifestFile))
 
-	expectedRuntime := "nodejs:6"
+	expectedRuntime := "nodejs:default"
 	expectedImage := "openwhisk/skeleton"
 
 	for actionName, action := range deployer.Deployment.Packages["helloworld"].Actions {

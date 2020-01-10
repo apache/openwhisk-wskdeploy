@@ -7,7 +7,7 @@
   "url": "https://github.com/apache/openwhisk-wskdeploy/tree/master/tests/apps/owbp-cloudant-trigger",
   "runtime": {
     "name": "Node.js 6",
-    "kind": "nodejs:6",
+    "kind": "nodejs:default",
     "type": "node"
   },
   "categories": [

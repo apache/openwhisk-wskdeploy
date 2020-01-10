@@ -92,7 +92,7 @@ ok: got package lib1_package
                 },
                 {
                     "key": "exec",
-                    "value": "nodejs:6"
+                    "value": "nodejs:default"
                 }
             ]
         },
@@ -111,7 +111,7 @@ ok: got package lib1_package
                 },
                 {
                     "key": "exec",
-                    "value": "nodejs:6"
+                    "value": "nodejs:default"
                 }
             ]
         },
@@ -130,7 +130,7 @@ ok: got package lib1_package
                 },
                 {
                     "key": "exec",
-                    "value": "nodejs:6"
+                    "value": "nodejs:default"
                 }
             ]
         }
@@ -187,7 +187,7 @@ packages:
         version: 0.0.1
         function: lib1_package/lib1_greeting1.js
         code: ""
-        runtime: nodejs:6
+        runtime: nodejs:default
         namespace: your_namespace/lib1_package
         credential: ""
         exposedUrl: ""
@@ -197,14 +197,14 @@ packages:
         inputs: {}
         outputs: {}
         annotations:
-          exec: nodejs:6
+          exec: nodejs:default
       lib1_greeting2:
         name: lib1_greeting2
         location: ""
         version: 0.0.1
         function: lib1_package/lib1_greeting2.js
         code: ""
-        runtime: nodejs:6
+        runtime: nodejs:default
         namespace: your_namespace/lib1_package
         credential: ""
         exposedUrl: ""
@@ -214,14 +214,14 @@ packages:
         inputs: {}
         outputs: {}
         annotations:
-          exec: nodejs:6
+          exec: nodejs:default
       lib1_greeting3:
         name: lib1_greeting3
         location: ""
         version: 0.0.1
         function: lib1_package/lib1_greeting3.js
         code: ""
-        runtime: nodejs:6
+        runtime: nodejs:default
         namespace: your_namespace/lib1_package
         credential: ""
         exposedUrl: ""
@@ -231,7 +231,7 @@ packages:
         inputs: {}
         outputs: {}
         annotations:
-          exec: nodejs:6
+          exec: nodejs:default
     triggers: {}
     feeds: {}
     rules: {}

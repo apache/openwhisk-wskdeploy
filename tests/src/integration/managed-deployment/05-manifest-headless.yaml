@@ -20,4 +20,4 @@ packages:
     actions:
       HelloWorld-Headless:
         function: actions/hello.js
-        runtime: nodejs:6
+        runtime: nodejs:default

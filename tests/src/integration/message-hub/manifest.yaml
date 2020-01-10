@@ -29,10 +29,10 @@ packages:
         actions:
             receive-messages-from-messagehub:
                 function: src/receive-messages.js
-                runtime: nodejs:6
+                runtime: nodejs:default
             process-messages-received-from-messagehub:
                 function: src/process-messages.js
-                runtime: nodejs:6
+                runtime: nodejs:default
         sequences:
             data-processing-sequence:
                 actions: receive-messages-from-messagehub, process-messages-received-from-messagehub

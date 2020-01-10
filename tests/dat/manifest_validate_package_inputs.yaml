@@ -53,7 +53,7 @@ project:
             actions:
                 post-to-slack:
                     function: ../usecases/slack/actions/post-to-slack.js
-                    runtime: nodejs:6
+                    runtime: nodejs:default
                     inputs:
                         message:
                             type: string

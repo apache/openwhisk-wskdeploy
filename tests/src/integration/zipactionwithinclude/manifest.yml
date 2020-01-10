@@ -22,56 +22,56 @@ packages:
         actions:
             greeting1:
                 function: actions/greeting1
-                runtime: nodejs:6
+                runtime: nodejs:default
                 include:
                     - []
                     - ["actions/common/utils.js"]
             greeting2:
                 function: actions/greeting2
-                runtime: nodejs:6
+                runtime: nodejs:default
                 include:
                     - ["actions/common/utils.js", "common/utils.js"]
                     - ["actions/common/utils.js", "common/common1/utils.js"]
                     - ["actions/common/utils.js", "common/common1/copyUtils.js"]
             greeting3:
                 function: actions/greeting3
-                runtime: nodejs:6
+                runtime: nodejs:default
                 include:
                     - ["actions/common/", "common/"]
                     - ["actions/common/", "common/common1/"]
             greeting4:
                 function: actions/greeting4
-                runtime: nodejs:6
+                runtime: nodejs:default
                 include:
                     - ["actions/common/*.js", "common/"]
             greeting5:
                 function: actions/greeting5
-                runtime: nodejs:6
+                runtime: nodejs:default
                 include:
                     - ["actions/common/utils.js", "./common/"]
             greeting6:
                 function: actions/greeting6
-                runtime: nodejs:6
+                runtime: nodejs:default
                 include:
                     - ["actions/common/*.js"]
             greeting7:
                 function: actions/greeting7
-                runtime: nodejs:6
+                runtime: nodejs:default
                 include:
                     - ["actions/libs/*", "libs/"]
             greeting8:
                 function: actions/greeting8
-                runtime: nodejs:6
+                runtime: nodejs:default
                 include:
                     - ["actions/libs/*/utils.js", "libs/"]
             greeting9:
                 function: actions/greeting9
-                runtime: nodejs:6
+                runtime: nodejs:default
                 include:
                     - ["actions/*/*/utils.js"]
             greeting10:
                 function: actions/greeting10
-                runtime: nodejs:6
+                runtime: nodejs:default
                 include:
                     - ["actions/*/*/utils.js", "actions/"]
 
