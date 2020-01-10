@@ -275,22 +275,15 @@ func ListOfSupportedRuntimes(runtimes map[string][]string) (rt []string) {
 }
 
 var RUNTIME_DETAILS = []byte(`{
-    "support": {
-        "github": "https://github.com/apache/openwhisk/issues",
-        "slack": "http://slack.openwhisk.org"
-    },
-    "description": "OpenWhisk",
-    "api_paths": [
-        "/api/v1"
-    ],
     "runtimes": {
         "nodejs": [
             {
-                "kind": "nodejs",
+                "kind": "nodejs:6",
+                "default": false,
                 "image": {
                     "prefix": "openwhisk",
-                    "name": "nodejsaction",
-                    "tag": "latest"
+                    "name": "nodejs6action",
+                    "tag": "nightly"
                 },
                 "deprecated": true,
                 "attached": {
@@ -299,30 +292,12 @@ var RUNTIME_DETAILS = []byte(`{
                 }
             },
             {
-                "kind": "nodejs:6",
-                "default": false,
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "nodejs6action",
-                    "tag": "latest"
-                },
-                "deprecated": true,
-                "attached": {
-                    "attachmentName": "codefile",
-                    "attachmentType": "text/plain"
-                },
-                "stemCells": [{
-                    "count": 2,
-                    "memory": "256 MB"
-                }]
-            },
-            {
                 "kind": "nodejs:8",
                 "default": false,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v8",
-                    "tag": "latest"
+                    "tag": "nightly"
                 },
                 "deprecated": false,
                 "attached": {
@@ -336,7 +311,27 @@ var RUNTIME_DETAILS = []byte(`{
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v10",
-                    "tag": "latest"
+                    "tag": "nightly"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "stemCells": [
+                    {
+                        "count": 2,
+                        "memory": "256 MB"
+                    }
+                ]
+            },
+            {
+                "kind": "nodejs:12",
+                "default": false,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-nodejs-v12",
+                    "tag": "nightly"
                 },
                 "deprecated": false,
                 "attached": {
@@ -347,25 +342,12 @@ var RUNTIME_DETAILS = []byte(`{
         ],
         "python": [
             {
-                "kind": "python",
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "python2action",
-                    "tag": "latest"
-                },
-                "deprecated": false,
-                "attached": {
-                    "attachmentName": "codefile",
-                    "attachmentType": "text/plain"
-                }
-            },
-            {
                 "kind": "python:2",
-                "default": true,
+                "default": false,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "python2action",
-                    "tag": "latest"
+                    "tag": "1.13.0-incubating"
                 },
                 "deprecated": false,
                 "attached": {
@@ -375,10 +357,11 @@ var RUNTIME_DETAILS = []byte(`{
             },
             {
                 "kind": "python:3",
+                "default": true,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "python3action",
-                    "tag": "latest"
+                    "tag": "nightly"
                 },
                 "deprecated": false,
                 "attached": {
@@ -389,65 +372,12 @@ var RUNTIME_DETAILS = []byte(`{
         ],
         "swift": [
             {
-                "kind": "swift",
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "swiftaction",
-                    "tag": "latest"
-                },
-                "deprecated": true,
-                "attached": {
-                    "attachmentName": "codefile",
-                    "attachmentType": "text/plain"
-                }
-            },
-            {
-                "kind": "swift:3",
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "swift3action",
-                    "tag": "latest"
-                },
-                "deprecated": true,
-                "attached": {
-                    "attachmentName": "codefile",
-                    "attachmentType": "text/plain"
-                }
-            },
-            {
-                "kind": "swift:3.1.1",
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "action-swift-v3.1.1",
-                    "tag": "latest"
-                },
-                "deprecated": false,
-                "attached": {
-                    "attachmentName": "codefile",
-                    "attachmentType": "text/plain"
-                }
-            },
-            {
-                "kind": "swift:4.1",
-                "default": false,
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "action-swift-v4.1",
-                    "tag": "latest"
-                },
-                "deprecated": false,
-                "attached": {
-                    "attachmentName": "codefile",
-                    "attachmentType": "text/plain"
-                }
-            },
-            {
                 "kind": "swift:4.2",
                 "default": true,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-swift-v4.2",
-                    "tag": "latest"
+                    "tag": "nightly"
                 },
                 "deprecated": false,
                 "attached": {
@@ -458,12 +388,12 @@ var RUNTIME_DETAILS = []byte(`{
         ],
         "java": [
             {
-                "kind": "java",
+                "kind": "java:8",
                 "default": true,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "java8action",
-                    "tag": "latest"
+                    "tag": "nightly"
                 },
                 "deprecated": false,
                 "attached": {
@@ -475,41 +405,27 @@ var RUNTIME_DETAILS = []byte(`{
         ],
         "php": [
             {
-                "kind": "php:7.1",
-                "default": false,
-                "deprecated": false,
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "action-php-v7.1",
-                    "tag": "latest"
-                },
-                "attached": {
-                    "attachmentName": "codefile",
-                    "attachmentType": "text/plain"
-                }
-            },
-            {
-                "kind": "php:7.2",
-                "default": false,
-                "deprecated": false,
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "action-php-v7.2",
-                    "tag": "latest"
-                },
-                "attached": {
-                    "attachmentName": "codefile",
-                    "attachmentType": "text/plain"
-                }
-            },
-            {
                 "kind": "php:7.3",
-                "default": true,
+                "default": false,
                 "deprecated": false,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-php-v7.3",
-                    "tag": "latest"
+                    "tag": "nightly"
+                },
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "php:7.4",
+                "default": true,
+                "deprecated": false,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-php-v7.4",
+                    "tag": "nightly"
                 },
                 "attached": {
                     "attachmentName": "codefile",
@@ -529,7 +445,7 @@ var RUNTIME_DETAILS = []byte(`{
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-ruby-v2.5",
-                    "tag": "latest"
+                    "tag": "nightly"
                 }
             }
         ],
@@ -544,8 +460,8 @@ var RUNTIME_DETAILS = []byte(`{
                 },
                 "image": {
                     "prefix": "openwhisk",
-                    "name": "actionloop-golang-v1.11",
-                    "tag": "latest"
+                    "name": "action-golang-v1.11",
+                    "tag": "nightly"
                 }
             }
         ],
@@ -558,8 +474,24 @@ var RUNTIME_DETAILS = []byte(`{
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-dotnet-v2.2",
-                    "tag": "latest"
+                    "tag": "nightly"
                 },
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            }
+        ],
+        "ballerina": [
+            {
+                "kind": "ballerina:0.990",
+                "default": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-ballerina-v0.990.2",
+                    "tag": "nightly"
+                },
+                "deprecated": false,
                 "attached": {
                     "attachmentName": "codefile",
                     "attachmentType": "text/plain"
@@ -571,7 +503,7 @@ var RUNTIME_DETAILS = []byte(`{
         {
             "prefix": "openwhisk",
             "name": "dockerskeleton",
-            "tag": "latest"
+            "tag": "nightly"
         }
     ]
 }`)
