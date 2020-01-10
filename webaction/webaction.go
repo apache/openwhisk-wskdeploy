@@ -78,8 +78,10 @@ func SetWebActionAnnotations(filePath string, action string, webMode string, ann
 func SetWebSecureAnnotations(filePath string, action string, webSecure string, annotations whisk.KeyValueArr, fetch bool) (whisk.KeyValueArr, error) {
 	switch strings.ToLower(webSecure) {
 	case "true":
+		// TODO: generate random string (token)
 		fallthrough
 	case "false":
+
 		fallthrough
 		//return webActionAnnotations(fetch, annotations, deleteWebAnnotations)
 	default:
