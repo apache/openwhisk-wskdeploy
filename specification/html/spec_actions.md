@@ -42,14 +42,24 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 | outputs | no | list of [parameter](spec_parameters.md) | N/A | The optional outputs from the Action. |
 | limits | no | map of [limit keys and values](#valid-limit-keys) | N/A | Optional map of limit keys and their values.</br>See section "[Valid limit keys](#valid-limit-keys)" (below) for a listing of recognized keys and values. |
 | feed | no | boolen | false | Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action. |
-| web \| web-export | no | boolean | yes \| no \| raw \| false | The optional flag (annotation) that makes the action accessible to REST calls without authentication.<p>For details on all types of Web Actions, see: [Web Actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md).</p>|
+| web | no | boolean | yes \| no \| raw \| false | The optional flag that makes the action accessible to REST calls without authentication.<p>For details on all types of Web Actions, see: [Web Actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md).</p>|
+| web-secure | no | true \| false \| string | The optional flag that makes the action accessible to REST calls with authentication.<p>See [Securing web actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#Securing-web-actions)</p>|
 | raw-http | no | boolean | false | The optional flag (annotation) to indicate if a Web Action is able to consume the raw contents within the body of an HTTP request.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
 | docker | no | string | N/A | The optional key that references a Docker image (e.g., openwhisk/skeleton). |
 | native | no | boolean | false | The optional key (flag) that indicates the Action is should use the Docker skeleton image for OpenWhisk (i.e., short-form for docker: openwhisk/skeleton). |
 | final | no | boolean | false | The optional flag (annotation) which makes all of the action parameters that are already defined immutable.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
-| web-custom-options | no | boolean | false | The optional flag (annotation) enables a web action to respond to OPTIONS requests with customized headers, otherwise a [default CORS response](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#options-requests) applies. |
-| require-whisk-auth | no | boolean | false | The optional flag (annotation) protects the web action so that it is only accessible to an authenticated subject. |
 | main | no | string | N/A | The optional name of the function to be aliased as a function named “main”.<p><em><b>Note</b>: by convention, Action functions are required to be called “main”; this field allows existing functions not named “main” to be aliased and accessed as if they were named “main”.</em></p>|
+| annotations | no | N/A | The optional map of annotation key-values. See below for [special annotations](#annotations) on actions. |
+
+#### Annotations
+
+The following annotations have special meanings for Actions:
+
+| Key Name | Required | Value Type | Default | Description |
+|:---|:---|:---|:---|:---|
+| web-export         | no | boolean | not set (false) | yes | no | raw | The optional annotation used to export an action as a web action A web action accessible through a REST interface (url). |
+| web-custom-options | no | boolean | not set (false) | The optional annotation enables a web action to respond to OPTIONS requests with customized headers, otherwise a [default CORS response](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#options-requests) applies. |
+| require-whisk-auth | no | string  | not set (false) | The optional annotation that when enabled protects the web action so that it is only accessible to an authenticated subject.<p>See [Securing web actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#Securing-web-actions)</p> |
 
 ### Requirements
 
@@ -92,14 +102,17 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
   limits:
     <list of limit key-values>
   feed: <boolean> # default: false
-  web | web-export: <boolean> | yes | no | raw
+  web: <boolean> | yes | no | raw
   raw-http: <boolean>
   docker: <string>
   native: <boolean>
   final: <boolean>
-  web-custom-options: <boolean>
-  require-whisk-auth: <boolean>
   main: <string>
+  annotations:
+    <map of annotation key-values>
+    web-export: <boolean> | yes | no | raw # optional
+    web-custom-options: <boolean> # optional, only valid when web-export enabled
+    require-whisk-auth: true | false | <string> # optional, only valid when web-export enabled
 ```
 _**Note**: the optional [.<type>] grammar is used for naming Web Actions._
 
@@ -134,9 +147,10 @@ These packages may vary by OpenWhisk release; examples of supported runtimes as 
 
 | Runtime value | OpenWhisk kind | Docker image name | Description |
 |:---|:---|:---|:---|
+| nodejs@12 | nodejs:12 | openwhisk/nodejs12action:latest | Latest NodeJS 12 runtime |
 | nodejs@10 | nodejs:10 | openwhisk/action-nodejs-v8:latest | Latest NodeJS 10 runtime |
 | nodejs@8 | nodejs:8 | openwhisk/action-nodejs-v8:latest | Latest NodeJS 8 runtime |
-| nodejs@12 | nodejs:12 | openwhisk/nodejs12action:latest | Latest NodeJS 12 runtime |
+| nodejs@6 **(deprecated)**| nodejs:6 (deprecated)| openwhisk/nodejs6action:latest | Latest NodeJS 6 runtime |
 | java | java | openwhisk/java8action:latest | Latest Java (8) language runtime |
 | php, php@7.3 | php:7.3 | openwhisk/action-php-v7.3:latest | Latest PHP (7.3) language runtime |
 | php, php@7.2 | php:7.2 | openwhisk/action-php-v7.2:latest | Latest PHP (7.2) language runtime |
