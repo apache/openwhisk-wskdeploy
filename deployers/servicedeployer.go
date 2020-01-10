@@ -45,11 +45,13 @@ const (
 )
 
 type DeploymentProject struct {
-	Packages   map[string]*DeploymentPackage
-	Triggers   map[string]*whisk.Trigger
-	Rules      map[string]*whisk.Rule
-	Apis       map[string]*whisk.ApiCreateRequest
-	ApiOptions map[string]*whisk.ApiCreateRequestOptions
+	Packages          map[string]*DeploymentPackage
+	Triggers          map[string]*whisk.Trigger
+	Rules             map[string]*whisk.Rule
+	Apis              map[string]*whisk.ApiCreateRequest
+	ApiOptions        map[string]*whisk.ApiCreateRequestOptions
+	SwaggerApi        *whisk.ApiCreateRequest
+	SwaggerApiOptions *whisk.ApiCreateRequestOptions
 }
 
 func NewDeploymentProject() *DeploymentProject {
@@ -808,10 +810,20 @@ func (deployer *ServiceDeployer) DeployRules() error {
 
 // Deploy Apis into OpenWhisk
 func (deployer *ServiceDeployer) DeployApis() error {
-	for _, api := range deployer.Deployment.Apis {
-		err := deployer.createApi(api)
+	var err error
+	// NOTE: Only deploy either swagger or manifest defined api, but not both
+	// NOTE: Swagger API takes precedence
+	if deployer.Deployment.SwaggerApi != nil && deployer.Deployment.SwaggerApiOptions != nil {
+		err = deployer.createSwaggerApi(deployer.Deployment.SwaggerApi)
 		if err != nil {
 			return err
+		}
+	} else {
+		for _, api := range deployer.Deployment.Apis {
+			err = deployer.createApi(api)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -1035,6 +1047,27 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 	return nil
 }
 
+// create api (API Gateway functionality) from swagger file
+func (deployer *ServiceDeployer) createSwaggerApi(api *whisk.ApiCreateRequest) error {
+	var err error
+	var response *http.Response
+
+	apiCreateReqOptions := deployer.Deployment.SwaggerApiOptions
+	apiCreateReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+	apiCreateReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
+
+	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+		_, response, err = deployer.Client.Apis.Insert(api, apiCreateReqOptions, true)
+		return err
+	})
+
+	if err != nil {
+		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_API, true)
+	}
+
+	return nil
+}
+
 func (deployer *ServiceDeployer) UnDeploy(verifiedPlan *DeploymentProject) error {
 	if deployer.Preview == true {
 		deployer.printDeploymentAssets(verifiedPlan)
@@ -1058,6 +1091,9 @@ func (deployer *ServiceDeployer) UnDeployProject() error {
 }
 
 func (deployer *ServiceDeployer) unDeployAssets(verifiedPlan *DeploymentProject) error {
+	if err := deployer.UndeploySwaggerApis(verifiedPlan); err != nil {
+		return err
+	}
 	if err := deployer.UnDeployApis(verifiedPlan); err != nil {
 		return err
 	}
@@ -1239,6 +1275,15 @@ func (deployer *ServiceDeployer) UnDeployApis(deployment *DeploymentProject) err
 	return nil
 }
 
+func (deployer *ServiceDeployer) UndeploySwaggerApis(deployment *DeploymentProject) error {
+	api := deployment.SwaggerApi
+	err := deployer.deleteSwaggerApi(api)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (deployer *ServiceDeployer) deletePackage(packa *whisk.Package) error {
 
 	displayPreprocessingInfo(parsers.YAML_KEY_PACKAGE, packa.Name, false)
@@ -1408,6 +1453,42 @@ func (deployer *ServiceDeployer) deleteApi(api *whisk.ApiCreateRequest) error {
 		}
 	}
 	displayPostprocessingInfo(parsers.YAML_KEY_API, apiPath, false)
+	return nil
+}
+
+// delete api (API Gateway functionality) from swagger file
+func (deployer *ServiceDeployer) deleteSwaggerApi(api *whisk.ApiCreateRequest) error {
+	var err error
+	var response *http.Response
+
+	// If there is no swagger file do nothing
+	if api == nil {
+		return nil
+	}
+	swaggerString := api.ApiDoc.Swagger
+	swaggerObj := new(whisk.ApiSwagger)
+	err = json.Unmarshal([]byte(swaggerString), swaggerObj)
+	if err != nil {
+		return err
+	}
+
+	apiDeleteReqOptions := new(whisk.ApiDeleteRequestOptions)
+	apiDeleteReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+	apiDeleteReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
+	apiDeleteReqOptions.ApiBasePath = swaggerObj.BasePath
+
+	a := new(whisk.ApiDeleteRequest)
+	a.Swagger = swaggerString
+
+	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
+		response, err = deployer.Client.Apis.Delete(a, apiDeleteReqOptions)
+		return err
+	})
+
+	if err != nil {
+		return createWhiskClientError(err.(*whisk.WskError), response, parsers.YAML_KEY_API, true)
+	}
+
 	return nil
 }
 

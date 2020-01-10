@@ -113,6 +113,11 @@ func (reader *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, man
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
+	api, response, err := manifestParser.ComposeApiRecordsFromSwagger(reader.serviceDeployer.ClientConfig, manifest)
+	if err != nil {
+		return wskderrors.NewYAMLFileFormatError(manifestName, err)
+	}
+
 	err = reader.SetDependencies(deps)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
@@ -139,6 +144,11 @@ func (reader *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, man
 	}
 
 	err = reader.SetApis(apis, responses)
+	if err != nil {
+		return wskderrors.NewYAMLFileFormatError(manifestName, err)
+	}
+
+	err = reader.SetSwaggerApi(api, response)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
@@ -319,6 +329,16 @@ func (reader *ManifestReader) SetApis(ar []*whisk.ApiCreateRequest, responses ma
 		dep.Deployment.ApiOptions[apiPath] = response
 	}
 
+	return nil
+}
+
+func (reader *ManifestReader) SetSwaggerApi(api *whisk.ApiCreateRequest, response *whisk.ApiCreateRequestOptions) error {
+	dep := reader.serviceDeployer
+
+	dep.mt.Lock()
+	defer dep.mt.Unlock()
+	dep.Deployment.SwaggerApi = api
+	dep.Deployment.SwaggerApiOptions = response
 	return nil
 }
 
