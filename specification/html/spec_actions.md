@@ -108,11 +108,7 @@ The following annotations have special meanings for Actions:
   native: <boolean>
   final: <boolean>
   main: <string>
-<<<<<<< HEAD
   annotations:
-=======
-  annotations: 
->>>>>>> 05e93deb92a3c60302adb3dce3f72c4145ed889f
     <map of annotation key-values>
     web-export: <boolean> | yes | no | raw # optional
     web-custom-options: <boolean> # optional, only valid when web-export enabled
