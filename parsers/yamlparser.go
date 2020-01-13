@@ -234,6 +234,7 @@ type Project struct {
 	Version          string               `yaml:"version"`
 	Packages         map[string]Package   `yaml:"packages"`
 	Inputs           map[string]Parameter `yaml: parameters`
+	Config           string               `yaml:"config"`
 }
 
 type YAML struct {

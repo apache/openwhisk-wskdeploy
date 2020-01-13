@@ -19,6 +19,7 @@ package parsers
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -39,6 +40,7 @@ import (
 	"github.com/apache/openwhisk-wskdeploy/wskenv"
 	"github.com/apache/openwhisk-wskdeploy/wski18n"
 	"github.com/apache/openwhisk-wskdeploy/wskprint"
+	yamlHelper "github.com/ghodss/yaml"
 	"net/url"
 )
 
@@ -55,6 +57,9 @@ const (
 	PARAM_CLOSING_BRACKET = "}"
 
 	DUMMY_APIGW_ACCESS_TOKEN = "DUMMY TOKEN"
+
+	YAML_FILE_EXTENSION = "yaml"
+	YML_FILE_EXTENSION  = "yml"
 )
 
 // Read existing manifest file or create new if none exists
@@ -1357,6 +1362,111 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 		}
 	}
 	return requests, requestOptions, nil
+}
+
+func (dm *YAMLParser) ComposeApiRecordsFromSwagger(client *whisk.Config, manifest *YAML) (*whisk.ApiCreateRequest, *whisk.ApiCreateRequestOptions, error) {
+	var api *whisk.Api
+	var err error
+	var config string = manifest.Project.Config
+	// Check to make sure the manifest has a config under project
+	if config == "" {
+		return nil, nil, nil
+	}
+
+	api, err = dm.parseSwaggerApi(config, client.Namespace)
+	if err != nil {
+		whisk.Debug(whisk.DbgError, "parseSwaggerApi() error: %s\n", err)
+		errMsg := wski18n.T("Unable to parse swagger file: {{.err}}", map[string]interface{}{"err": err})
+		whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXIT_CODE_ERR_GENERAL,
+			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return nil, nil, whiskErr
+	}
+
+	apiCreateReq := new(whisk.ApiCreateRequest)
+	apiCreateReq.ApiDoc = api
+
+	apiCreateReqOptions := new(whisk.ApiCreateRequestOptions)
+
+	return apiCreateReq, apiCreateReqOptions, nil
+
+}
+
+/*
+ * Read the swagger config provided by under
+ * Project:
+ *   config: swagger_filename.[yaml|yml]
+ *
+ * NOTE: This was lifted almost verbatim from openwhisk-cli/commands/api.go
+ *       and as a follow up should probably be moved and updated to live in whiskclient-go
+ * NOTE: This does notb verify that actions used in swagger api definition are defined in
+ *        the openwhisk server or manifest.
+ */
+func (dm *YAMLParser) parseSwaggerApi(configfile, namespace string) (*whisk.Api, error) {
+	if len(configfile) == 0 {
+		whisk.Debug(whisk.DbgError, "No swagger file is specified\n")
+		errMsg := wski18n.T("A swagger configuration file was not specified.")
+		whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
+			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return nil, whiskErr
+	}
+
+	swagger, err := ioutil.ReadFile(configfile)
+	if err != nil {
+		whisk.Debug(whisk.DbgError, "readFile(%s) error: %s\n", configfile, err)
+		errMsg := wski18n.T("Error reading swagger file '{{.name}}': {{.err}}",
+			map[string]interface{}{"name": configfile, "err": err})
+		whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXIT_CODE_ERR_GENERAL,
+			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return nil, whiskErr
+	}
+
+	// Check if this swagger is in JSON or YAML format
+	isYaml := strings.HasSuffix(configfile, YAML_FILE_EXTENSION) || strings.HasSuffix(configfile, YML_FILE_EXTENSION)
+	if isYaml {
+		whisk.Debug(whisk.DbgInfo, "Converting YAML formated API configuration into JSON\n")
+		jsonbytes, err := yamlHelper.YAMLToJSON([]byte(swagger))
+		if err != nil {
+			whisk.Debug(whisk.DbgError, "yaml.YAMLToJSON() error: %s\n", err)
+			errMsg := wski18n.T("Unable to parse YAML configuration file: {{.err}}", map[string]interface{}{"err": err})
+			whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
+				whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
+			return nil, whiskErr
+		}
+		swagger = jsonbytes
+	}
+
+	// Parse the JSON into a swagger object
+	swaggerObj := new(whisk.ApiSwagger)
+	err = json.Unmarshal([]byte(swagger), swaggerObj)
+	if err != nil {
+		whisk.Debug(whisk.DbgError, "JSON parse of '%s' error: %s\n", configfile, err)
+		errMsg := wski18n.T("Error parsing swagger file '{{.name}}': {{.err}}",
+			map[string]interface{}{"name": configfile, "err": err})
+		whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXIT_CODE_ERR_GENERAL,
+			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return nil, whiskErr
+	}
+	if swaggerObj.BasePath == "" || swaggerObj.SwaggerName == "" || swaggerObj.Info == nil || swaggerObj.Paths == nil {
+		whisk.Debug(whisk.DbgError, "Swagger file is invalid.\n")
+		errMsg := wski18n.T("Swagger file is invalid (missing basePath, info, paths, or swagger fields)")
+		whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
+			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return nil, whiskErr
+	}
+
+	if !strings.HasPrefix(swaggerObj.BasePath, "/") {
+		whisk.Debug(whisk.DbgError, "Swagger file basePath is invalid.\n")
+		errMsg := wski18n.T("Swagger file basePath must start with a leading slash (/)")
+		whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXIT_CODE_ERR_GENERAL,
+			whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return nil, whiskErr
+	}
+
+	api := new(whisk.Api)
+	api.Namespace = namespace
+	api.Swagger = string(swagger)
+
+	return api, nil
 }
 
 func (dm *YAMLParser) getGatewayMethods() []string {

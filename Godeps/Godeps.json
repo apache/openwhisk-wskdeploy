@@ -164,9 +164,13 @@
 			"ImportPath": "gopkg.in/yaml.v2",
 			"Rev": "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
 		},
-        {
-            "ImportPath": "github.com/palantir/stacktrace",
-            "Rev": "78658fd2d1772b755720ed8c44367d11ee5380d6"
-        }
+    {
+      "ImportPath": "github.com/palantir/stacktrace",
+      "Rev": "78658fd2d1772b755720ed8c44367d11ee5380d6"
+    },
+    {
+      "ImportPath": "github.com/ghodss/yaml",
+      "Rev": "25d852aebe32c875e9c044af3eef9c7dc6bc777f"
+    }
 	]
 }
