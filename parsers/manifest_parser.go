@@ -20,6 +20,7 @@ package parsers
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -846,7 +847,7 @@ func (dm *YAMLParser) composeActionLimits(limits Limits) *whisk.Limits {
 	return nil
 }
 
-func (dm *YAMLParser) validateActionWebFlag(action Action) {
+func (dm *YAMLParser) warnIfRedundantWebActionFlags(action Action) {
 	// Warn user if BOTH web and web-export specified,
 	// as they are redundant; defer to "web" flag and its value
 	if len(action.Web) != 0 && len(action.WebExport) != 0 {
@@ -904,6 +905,9 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		//}
 
 		// Action.Annotations
+		// ==================
+		// WARNING!  Processing of explicit Annotations MUST occur before handling of Action keys, as these
+		// keys often need to check for inconsistencies (and raise errors).
 		if listOfAnnotations := dm.composeAnnotations(action.Annotations); len(listOfAnnotations) > 0 {
 			wskaction.Annotations = append(wskaction.Annotations, listOfAnnotations...)
 		}
@@ -919,7 +923,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		// when web-export is set to yes | true, treat action as a web action,
 		// when web-export is set to raw, treat action as a raw HTTP web action,
 		// when web-export is set to no | false, treat action as a standard action
-		dm.validateActionWebFlag(action)
+		dm.warnIfRedundantWebActionFlags(action)
 		if len(action.GetWeb()) != 0 {
 			wskaction.Annotations, errorParser = webaction.SetWebActionAnnotations(
 				manifestFilePath,
@@ -961,6 +965,8 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		//	 apiCreateReq.ApiDoc.Action.SecureKey = webactionSecret
 		// }
 		if len(action.WebSecure) != 0 {
+			webExportVal := webaction.GetWebExportAnnotationValue(wskaction.Annotations)
+			fmt.Println(webExportVal)
 			wskaction.Annotations, errorParser = webaction.SetWebSecureAnnotations(
 				manifestFilePath,
 				action.Name,

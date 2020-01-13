@@ -21,14 +21,16 @@ packages:
       helloWebSecureTrue:
         function: ../src/integration/helloworld/actions/hello.js
         web-secure: true
-      helloWebSecureFalse:
-        function: ../src/integration/helloworld/actions/hello.js
-        web-secure: true
-      helloWebTrueAndWebSecureTrue:
-        function: ../src/integration/helloworld/actions/hello.js
-        web: true
-        web-secure: true
-      helloWebExportTrueAndWebSecureTrue:
-        function: ../src/integration/helloworld/actions/hello.js
-        web-export: true
-        web-secure: true
+        annotations:
+          web-export: true
+#      helloWebSecureFalse:
+#        function: ../src/integration/helloworld/actions/hello.js
+#        web-secure: true
+#      helloWebTrueAndWebSecureTrue:
+#        function: ../src/integration/helloworld/actions/hello.js
+#        web: true
+#        web-secure: true
+#      helloWebExportTrueAndWebSecureTrue:
+#        function: ../src/integration/helloworld/actions/hello.js
+#        web-export: true
+#        web-secure: true
