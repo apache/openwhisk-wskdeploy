@@ -1012,6 +1012,34 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 	return nil
 }
 
+func (deployer *ServiceDeployer) getAnnotationsFromPackageAction(packageActionName string) *whisk.KeyValueArr {
+
+	if len(packageActionName)==0 {
+		// TODO: return err
+		return nil
+	}
+
+	// Split the package name and action name being searched for
+	aActionName := strings.Split(packageActionName,"/")
+	fmt.Println(aActionName[0])
+	fmt.Println(aActionName[1])
+
+	var foundAction *utils.ActionRecord
+	if pkg, found := deployer.Deployment.Packages[aActionName[0]]; found {
+		fmt.Printf("found %v\n", pkg)
+
+		if atemp, found := pkg.Actions[aActionName[1]]; found {
+			fmt.Printf("found %v\n", atemp)
+			foundAction = &atemp
+			return &(foundAction.Action.Annotations)
+
+		}
+
+	}
+
+	return nil
+}
+
 // create api (API Gateway functionality)
 func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 
@@ -1024,11 +1052,15 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 
 	apiCreateReqOptions := deployer.Deployment.ApiOptions[apiPath]
 
+	var actionAnnotations *whisk.KeyValueArr
+	actionAnnotations = deployer.getAnnotationsFromPackageAction(api.ApiDoc.Action.Name)
+	fmt.Println(actionAnnotations)
+
 	if len(deployer.Client.Config.ApigwTenantId) > 0 {
 		// Use it to identify the IAM namespace
 		apiCreateReqOptions.SpaceGuid = deployer.Client.Config.ApigwTenantId
 	} else {
-		//  assume a CF namespaces (SpaceGuid) which is part of the authtoken
+		//  assume a CF namespace (SpaceGuid) which is part of the authtoken
 		apiCreateReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
 	}
 

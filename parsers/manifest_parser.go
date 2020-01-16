@@ -21,7 +21,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -969,19 +968,17 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		// if webactionSecret != nil {
 		//	 apiCreateReq.ApiDoc.Action.SecureKey = webactionSecret
 		// }
-		if len(action.WebSecure) != 0 {
-			webExportVal := webaction.GetWebExportAnnotationValue(wskaction.Annotations)
-			fmt.Println(webExportVal)
-			wskaction.Annotations, errorParser = webaction.SetWebSecureAnnotations(
-				manifestFilePath,
-				action.Name,
-				action.WebSecure,
-				wskaction.Annotations,
-				false)
-			if errorParser != nil {
-				return listOfActions, errorParser
-			}
-		}
+		//if len(action.WebSecure) != 0 {
+		//	wskaction.Annotations, errorParser = webaction.SetWebSecureAnnotations(
+		//		manifestFilePath,
+		//		action.Name,
+		//		action.WebSecure,
+		//		wskaction.Annotations,
+		//		false)
+		//	if errorParser != nil {
+		//		return listOfActions, errorParser
+		//	}
+		//}
 
 		// Action.Limits
 		if action.Limits != nil {

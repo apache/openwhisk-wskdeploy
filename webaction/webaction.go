@@ -92,8 +92,9 @@ func genWebActionSecureKey() int64 {
 
 func SetWebSecureAnnotations(filePath string, action string, webSecure string, annotations whisk.KeyValueArr, fetch bool) (whisk.KeyValueArr, error) {
 
-	//var val = annotations[WEB_EXPORT_ANNOT]
-	//fmt.Println(val)
+	webExportVal := GetWebExportAnnotationValue(annotations)
+	fmt.Println(webExportVal)
+
 	switch strings.ToLower(webSecure) {
 		case "true":
 		// TODO: Only generate a value for "require-whisk-auth" when not already set explicitly
