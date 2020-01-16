@@ -20,6 +20,7 @@ package deployers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/apache/openwhisk-wskdeploy/webaction"
 	"net/http"
 	"path"
 	"reflect"
@@ -1021,22 +1022,12 @@ func (deployer *ServiceDeployer) getAnnotationsFromPackageAction(packageActionNa
 
 	// Split the package name and action name being searched for
 	aActionName := strings.Split(packageActionName,"/")
-	fmt.Println(aActionName[0])
-	fmt.Println(aActionName[1])
 
-	var foundAction *utils.ActionRecord
 	if pkg, found := deployer.Deployment.Packages[aActionName[0]]; found {
-		fmt.Printf("found %v\n", pkg)
-
 		if atemp, found := pkg.Actions[aActionName[1]]; found {
-			fmt.Printf("found %v\n", atemp)
-			foundAction = &atemp
-			return &(foundAction.Action.Annotations)
-
+			return &(atemp.Action.Annotations)
 		}
-
 	}
-
 	return nil
 }
 
@@ -1055,6 +1046,24 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 	var actionAnnotations *whisk.KeyValueArr
 	actionAnnotations = deployer.getAnnotationsFromPackageAction(api.ApiDoc.Action.Name)
 	fmt.Println(actionAnnotations)
+	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, fmt.Sprintf("%v", actionAnnotations))
+
+	// process any special action annotations such as "require-whisk-auth"
+	if actionAnnotations != nil {
+		if webaction.HasAnnotation(actionAnnotations, webaction.REQUIRE_WHISK_AUTH) {
+			var secureKey = actionAnnotations.GetValue(webaction.REQUIRE_WHISK_AUTH).(string)
+
+			if len(secureKey) != 0 {
+				fmt.Println(secureKey)
+				//api.ApiDoc.Action.SecureKey = secureKey
+			} else {
+				// TODO Error
+			}
+
+			whisk.Debug(whisk.DbgInfo, "AccessToken: %s\nSpaceGuid: %s\nResponseType: %s",
+				apiCreateReqOptions.AccessToken, apiCreateReqOptions.SpaceGuid, apiCreateReqOptions.ResponseType)
+		}
+	}
 
 	if len(deployer.Client.Config.ApigwTenantId) > 0 {
 		// Use it to identify the IAM namespace

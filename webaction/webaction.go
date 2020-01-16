@@ -18,12 +18,9 @@
 package webaction
 
 import (
-	"fmt"
 	"github.com/apache/openwhisk-client-go/whisk"
 	"github.com/apache/openwhisk-wskdeploy/wskderrors"
-	"math/rand"
 	"strings"
-	"time"
 )
 
 //for web action support, code from wsk cli with tiny adjustments
@@ -76,38 +73,6 @@ func SetWebActionAnnotations(filePath string, action string, webMode string, ann
 	default:
 		return nil, wskderrors.NewInvalidWebExportError(filePath, action, webMode, getValidWebExports())
 	}
-}
-
-// Generate a random number to be used as a web action's require-whisk-auth secret
-func genWebActionSecureKey() int64 {
-	r := rand.New(rand.NewSource(time.Now().Unix()))
-
-	// Truncate integer for API GW interoperability
-	const
-	(
-		MAX_JS_INT = 1<<53 - 1
-	)
-	return r.Int63() & MAX_JS_INT
-}
-
-func SetWebSecureAnnotations(filePath string, action string, webSecure string, annotations whisk.KeyValueArr, fetch bool) (whisk.KeyValueArr, error) {
-
-	webExportVal := GetWebExportAnnotationValue(annotations)
-	fmt.Println(webExportVal)
-
-	switch strings.ToLower(webSecure) {
-		case "true":
-		// TODO: Only generate a value for "require-whisk-auth" when not already set explicitly
-		iSecureKey := genWebActionSecureKey()
-		addKeyValue(REQUIRE_WHISK_AUTH, iSecureKey, annotations)
-		return webActionAnnotations(fetch, annotations, deleteWebAnnotations)
-		case "false":
-		fallthrough
-		//return webActionAnnotations(fetch, annotations, deleteWebAnnotations)
-		default:
-		return nil, wskderrors.NewInvalidWebExportError(filePath, action, webSecure, getValidWebExports())
-	}
-
 }
 
 type WebActionAnnotationMethod func(annotations whisk.KeyValueArr) whisk.KeyValueArr
@@ -167,18 +132,6 @@ func getValidWebExports() []string {
 	return validWebExports
 }
 
-func GetWebExportAnnotationValue(annotations whisk.KeyValueArr) bool {
-	if annotations != nil{
-		for _, wkv := range annotations {
-			fmt.Print(wkv)
-			if wkv.Key == WEB_EXPORT_ANNOT{
-				return wkv.Value.(bool)
-			}
-		}
-	}
-	return false
-}
-
 func IsWebAction(webexport string) bool {
 	webexport = strings.ToLower(webexport)
 	if len(webexport) != 0 {
@@ -191,4 +144,10 @@ func IsWebAction(webexport string) bool {
 
 func IsWebSequence(webexport string) bool {
 	return IsWebAction(webexport)
+}
+
+func HasAnnotation(annotations *whisk.KeyValueArr, key string) bool {
+
+	index := annotations.FindKeyValue(key)
+	return index>=0
 }

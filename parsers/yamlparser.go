@@ -106,7 +106,6 @@ type Action struct {
 	ExposedUrl  string                 `yaml:"exposedUrl"`
 	WebExport   string                 `yaml:"web-export"`
 	Web         string                 `yaml:"web"`
-	WebSecure   string                 `yaml:"web-secure"`
 	Main        string                 `yaml:"main"`
 	Docker      string                 `yaml:"docker,omitempty"`
 	Native      bool                   `yaml:"native,omitempty"`

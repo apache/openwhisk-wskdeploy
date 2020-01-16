@@ -940,46 +940,6 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 			}
 		}
 
-		// Web Secure (i.e., "require-whisk-auth" annotation)
-		// ==========
-		// DOCS:
-		// The --web-secure flag automatically sets the require-whisk-auth annotation.
-		// - When set to true a random number is generated as the require-whisk-auth annotation value.
-		// - TODO what happens on an update; is it changed each time?
-		// - When set to false the require-whisk-auth annotation is removed.
-		// - When set to any other value, that value is used as the require-whisk-auth annotation value.
-		//
-		// NOTE: This logic must come after the "web" and "web-export" flags have resolved to a single "web-export" value.
-		// from the logic above.
-		//
-		// ASSUMPTION: Docs. indicate that "web-secure" (annotations) only work when "web-export" is true
-		// quote "The rest of the annotations (e.g., "require-whisk-auth") described below have
-		// no effect on the action unless [the "web-export"] annotation is also set.".
-        // IF "web-export" (annot) NOT defined; create the "web-export" annotation, set it to TRUE
-        //    (i.e., export an HTTPS action)???
-        // IF "web-export" (annot) is FALSE (non-HTTP action) && "web-secure" (HTTP action) is also defined;
-        //    throw error (both non-HTTP and HTTP configured)
-        // IF "web-export" (annot) is TRUE then carry out the normal logic for "web-secure" for true | false | string
-        //
-        // once we have the actual "value" for "web-secure", it needs to be set on the API call itself
-        // using the SecureKey field
-        //
-        // // https://github.com/apache/openwhisk-cli/blob/master/commands/api.go
-		// if webactionSecret != nil {
-		//	 apiCreateReq.ApiDoc.Action.SecureKey = webactionSecret
-		// }
-		//if len(action.WebSecure) != 0 {
-		//	wskaction.Annotations, errorParser = webaction.SetWebSecureAnnotations(
-		//		manifestFilePath,
-		//		action.Name,
-		//		action.WebSecure,
-		//		wskaction.Annotations,
-		//		false)
-		//	if errorParser != nil {
-		//		return listOfActions, errorParser
-		//	}
-		//}
-
 		// Action.Limits
 		if action.Limits != nil {
 			if wsklimits := dm.composeActionLimits(*(action.Limits)); wsklimits != nil {

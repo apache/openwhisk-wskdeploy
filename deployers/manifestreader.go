@@ -159,7 +159,6 @@ func (reader *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, man
 func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package, inputs map[string]parsers.PackageInputs) error {
 
 	dep := reader.serviceDeployer
-
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
 
@@ -175,7 +174,6 @@ func (reader *ManifestReader) SetPackages(packages map[string]*whisk.Package, in
 func (reader *ManifestReader) SetDependencies(deps map[string]dependencies.DependencyRecord) error {
 
 	dep := reader.serviceDeployer
-
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
 
@@ -210,9 +208,7 @@ func (reader *ManifestReader) SetDependencies(deps map[string]dependencies.Depen
 }
 
 func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
-
 	dep := reader.serviceDeployer
-
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
 
@@ -228,7 +224,6 @@ func (reader *ManifestReader) SetActions(actions []utils.ActionRecord) error {
 
 func (reader *ManifestReader) SetSequences(sequences []utils.ActionRecord) error {
 	dep := reader.serviceDeployer
-
 	dep.mt.Lock()
 	defer dep.mt.Unlock()
 
@@ -247,7 +242,6 @@ func (reader *ManifestReader) SetSequences(sequences []utils.ActionRecord) error
 	}
 
 	return nil
-
 }
 
 func (reader *ManifestReader) SetTriggers(triggers []*whisk.Trigger) error {
