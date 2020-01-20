@@ -1043,25 +1043,29 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 
 	apiCreateReqOptions := deployer.Deployment.ApiOptions[apiPath]
 
+	// Retrieve annotations on the action we are attempting to create an API for
 	var actionAnnotations *whisk.KeyValueArr
 	actionAnnotations = deployer.getAnnotationsFromPackageAction(api.ApiDoc.Action.Name)
-	fmt.Println(actionAnnotations)
-	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, fmt.Sprintf("%v", actionAnnotations))
+	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, fmt.Sprintf("Processing action annotations: %v", actionAnnotations))
 
 	// process any special action annotations such as "require-whisk-auth"
 	if actionAnnotations != nil {
 		if webaction.HasAnnotation(actionAnnotations, webaction.REQUIRE_WHISK_AUTH) {
 			var secureKey = actionAnnotations.GetValue(webaction.REQUIRE_WHISK_AUTH).(string)
 
+			// assure the user-supplied token is valid
 			if len(secureKey) != 0 {
-				fmt.Println(secureKey)
-				//api.ApiDoc.Action.SecureKey = secureKey
+				api.ApiDoc.Action.SecureKey = secureKey
 			} else {
-				// TODO Error
+				errString := wski18n.T(wski18n.ID_ERR_WEB_ACTION_REQUIRE_AUTH_TOKEN_INVALID_X_action_X_key_X_value,
+					map[string]interface{}{
+						wski18n.KEY_ACTION: api.ApiDoc.Action.Name,
+						wski18n.KEY_KEY: webaction.REQUIRE_WHISK_AUTH,
+						wski18n.KEY_VALUE: secureKey})
+				wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, errString)
+				err = wskderrors.NewDeployApiError(errString)
+				return err
 			}
-
-			whisk.Debug(whisk.DbgInfo, "AccessToken: %s\nSpaceGuid: %s\nResponseType: %s",
-				apiCreateReqOptions.AccessToken, apiCreateReqOptions.SpaceGuid, apiCreateReqOptions.ResponseType)
 		}
 	}
 

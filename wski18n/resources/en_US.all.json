@@ -392,6 +392,10 @@
     "translation": "Failed to retrieve runtimes {{.err}}."
   },
   {
+    "id": "msg_err_web_action_require_auth_token_invalid",
+    "translation": "Unable to secure the web action; Action [{{.action}}] Annotation [{{.key}}] has invalid value [{{.value}}]."
+  },
+  {
     "id": "WARNINGS",
     "translation": "================= WARNINGS ==================="
   },
