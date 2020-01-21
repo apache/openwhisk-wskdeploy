@@ -1048,8 +1048,10 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 	actionAnnotations = deployer.getAnnotationsFromPackageAction(api.ApiDoc.Action.Name)
 	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, fmt.Sprintf("Processing action annotations: %v", actionAnnotations))
 
-	// Apply the user provided security key from the referenced action's "require-whisk-auth" annotation
+	// Process any special annotations (e.g., "require-whisk-auth") on the associated Action
 	if actionAnnotations != nil {
+		// If the "require-whisk-auth" annotation is present on the referenced action,
+		// apply its user provided security key (i.e., the annotation's value) to the API
 		if webaction.HasAnnotation(actionAnnotations, webaction.REQUIRE_WHISK_AUTH) {
 			var secureKey = actionAnnotations.GetValue(webaction.REQUIRE_WHISK_AUTH).(string)
 			// assure the user-supplied token is valid
