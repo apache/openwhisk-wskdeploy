@@ -947,10 +947,10 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 			wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, fmt.Sprintf("Processing Action [%s] annotations: %v", actionName, wskaction.Annotations))
 
 			if webaction.HasAnnotation(&wskaction.Annotations, webaction.REQUIRE_WHISK_AUTH) {
-				var secureKey = wskaction.Annotations.GetValue(webaction.REQUIRE_WHISK_AUTH).(string)
+				var secureKey, ok = wskaction.Annotations.GetValue(webaction.REQUIRE_WHISK_AUTH).(string)
 
 				// assure the user-supplied token is valid (i.e., for now a non-empty string)
-				if len(secureKey) != 0 && secureKey!="<nil>" {
+				if ok && len(secureKey) != 0 && secureKey!="<nil>" {
 					msgString := wski18n.T(wski18n.ID_VERBOSE_ACTION_SECURED_X_action_X,
 						map[string]interface{}{
 							wski18n.KEY_ACTION: actionName})

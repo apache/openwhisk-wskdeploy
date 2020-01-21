@@ -39,10 +39,10 @@ packages:
     apis:
       web-secure:
         helloworlds:
-#          helloSecure:
-#            helloSecure:
-#              method: GET
-#              response: json
+          helloSecure:
+            helloSecure:
+              method: GET
+              response: json
 #           helloSecureEmpty:
 #            helloSecureEmpty:
 #              method: GET
