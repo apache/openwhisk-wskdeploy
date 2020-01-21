@@ -262,7 +262,7 @@ const (
 	ID_VERBOSE_CREATING_ZIP_FILE_X_path_X                                 = "msg_verbose_creating_zip_file"
 	ID_VERBOSE_DELETING_FILE_X_path_X                                     = "msg_verbose_deleting_file"
 	ID_VERBOSE_LIST_OF_FILES_MATCHING_PATTERN                             = "msg_verbose_list_of_files_matching_pattern"
-	ID_VERBOSE_API_SECURED_X_api_X_action_X                               = "msg_api_secured"
+	ID_VERBOSE_ACTION_SECURED_X_action_X                                  = "msg_action_secured"
 )
 
 // DO NOT TRANSLATE

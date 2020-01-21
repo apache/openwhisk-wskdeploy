@@ -147,8 +147,5 @@ func IsWebSequence(webexport string) bool {
 }
 
 func HasAnnotation(annotations *whisk.KeyValueArr, key string) bool {
-
-	//index := annotations.FindKeyValue(key)
-	//return index>=0
 	return (annotations.FindKeyValue(key) >= 0)
 }

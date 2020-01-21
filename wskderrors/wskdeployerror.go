@@ -65,7 +65,7 @@ const (
 	ERROR_YAML_INVALID_WEB_EXPORT         = "ERROR_YAML_INVALID_WEB_EXPORT"
 	ERROR_YAML_INVALID_API_GATEWAY_METHOD = "ERROR_YAML_INVALID_API_GATEWAY_METHOD"
 	ERROR_RUNTIME_PARSER_FAILURE          = "ERROR_RUNTIME_PARSER_FAILURE"
-	ERROR_DEPLOY_API                      = "ERROR_DEPLOY_API"
+	ERROR_ACTION_ANNOTATION               = "ERROR_ACTION_ANNOTATION"
 )
 
 /*
@@ -467,9 +467,9 @@ type DeployError struct {
 	WskDeployBaseErr
 }
 
-func NewDeployApiError(errorMsg string) *DeployError {
+func NewActionSecureKeyError(errorMsg string) *DeployError {
 	var err = &DeployError{}
-	err.SetErrorType(ERROR_DEPLOY_API)
+	err.SetErrorType(ERROR_ACTION_ANNOTATION)
 	err.SetCallerByStackFrameSkip(2)
 	err.SetMessage(errorMsg)
 	return err

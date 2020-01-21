@@ -21,6 +21,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -937,6 +938,32 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 				false)
 			if errorParser != nil {
 				return listOfActions, errorParser
+			}
+		}
+
+		// validate special action annotations such as "require-whisk-auth"
+		// NOTE: the Manifest parser will later verify if a web-action, that an API is declared
+		if wskaction.Annotations != nil {
+			wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, fmt.Sprintf("Processing Action [%s] annotations: %v", actionName, wskaction.Annotations))
+
+			if webaction.HasAnnotation(&wskaction.Annotations, webaction.REQUIRE_WHISK_AUTH) {
+				var secureKey = wskaction.Annotations.GetValue(webaction.REQUIRE_WHISK_AUTH).(string)
+
+				// assure the user-supplied token is valid (i.e., for now a non-empty string)
+				if len(secureKey) != 0 && secureKey!="<nil>" {
+					msgString := wski18n.T(wski18n.ID_VERBOSE_ACTION_SECURED_X_action_X,
+						map[string]interface{}{
+							wski18n.KEY_ACTION: actionName})
+					wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, msgString)
+				} else {
+					errString := wski18n.T(wski18n.ID_ERR_WEB_ACTION_REQUIRE_AUTH_TOKEN_INVALID_X_action_X_key_X_value,
+						map[string]interface{}{
+							wski18n.KEY_ACTION: actionName,
+							wski18n.KEY_KEY: webaction.REQUIRE_WHISK_AUTH,
+							wski18n.KEY_VALUE: secureKey})
+					err = wskderrors.NewActionSecureKeyError(errString)
+					return nil, err
+				}
 			}
 		}
 
