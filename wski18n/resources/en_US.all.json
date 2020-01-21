@@ -550,5 +550,9 @@
   {
     "id": "msg_verbose_list_of_files_matching_pattern",
     "translation": "Found the following files with matching Source File Path pattern.\n"
+  },
+  {
+    "id": "msg_api_secured",
+    "translation": "The API [{{.api}}] is being secured using the REQUIRE_WHISK_AUTH Annotation value from Action [{{.action}}].\n"
   }
 ]

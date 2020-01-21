@@ -1222,6 +1222,12 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							a.Annotations[webaction.WEB_EXPORT_ANNOT] = true
 							pkg.Actions[actionName] = a
 						}
+						//else {
+							// TODO if "require-whisk-auth" annotiation set, validate value
+							// For now, it seems that different providers accept different
+							// values (and types); so unable to do this currently
+						//}
+
 						// verify that the sequence is defined under sequences sections
 					} else if _, ok := pkg.Sequences[actionName]; ok {
 						// verify that the sequence is defined as web sequence

@@ -1049,20 +1049,24 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, fmt.Sprintf("Processing action annotations: %v", actionAnnotations))
 
 	// process any special action annotations such as "require-whisk-auth"
+	// NOTE: the Manifest parser already verified that the referenced Action is declared
 	if actionAnnotations != nil {
 		if webaction.HasAnnotation(actionAnnotations, webaction.REQUIRE_WHISK_AUTH) {
 			var secureKey = actionAnnotations.GetValue(webaction.REQUIRE_WHISK_AUTH).(string)
 
 			// assure the user-supplied token is valid
 			if len(secureKey) != 0 {
-				api.ApiDoc.Action.SecureKey = secureKey
+				msgString := wski18n.T(wski18n.ID_VERBOSE_API_SECURED_X_api_X_action_X,
+					map[string]interface{}{
+						wski18n.KEY_ACTION: api.ApiDoc.Action.Name,
+						wski18n.KEY_API: api.ApiDoc.ApiName})
+				whisk.Verbose(msgString)
 			} else {
 				errString := wski18n.T(wski18n.ID_ERR_WEB_ACTION_REQUIRE_AUTH_TOKEN_INVALID_X_action_X_key_X_value,
 					map[string]interface{}{
 						wski18n.KEY_ACTION: api.ApiDoc.Action.Name,
 						wski18n.KEY_KEY: webaction.REQUIRE_WHISK_AUTH,
 						wski18n.KEY_VALUE: secureKey})
-				wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, errString)
 				err = wskderrors.NewDeployApiError(errString)
 				return err
 			}

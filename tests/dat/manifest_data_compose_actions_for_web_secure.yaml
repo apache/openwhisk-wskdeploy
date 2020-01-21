@@ -18,18 +18,18 @@
 packages:
   helloworldSecure:
     actions:
-#      helloSecure:
-#        function: ../src/integration/helloworld/actions/hello.js
-#        web: true
-#        annotations:
-#          web-export: true
-#          require-whisk-auth: "mytoken"
-      helloSecureEmpty:
+      helloSecure:
         function: ../src/integration/helloworld/actions/hello.js
         web: true
         annotations:
           web-export: true
-          require-whisk-auth: ""
+          require-whisk-auth: "mytoken"
+#      helloSecureEmpty:
+#        function: ../src/integration/helloworld/actions/hello.js
+#        web: true
+#        annotations:
+#          web-export: true
+#          require-whisk-auth: ""
 #      helloSecureNil:
 #        function: ../src/integration/helloworld/actions/hello.js
 #        web: true
@@ -39,14 +39,14 @@ packages:
     apis:
       web-secure:
         helloworlds:
-#          helloSecure:
-#            helloSecure:
-#              method: GET
-#              response: json
-          helloSecureEmpty:
-            helloSecureEmpty:
+          helloSecure:
+            helloSecure:
               method: GET
               response: json
+#          helloSecureEmpty:
+#            helloSecureEmpty:
+#              method: GET
+#              response: json
 #          helloSecureNil:
 #            helloSecureNil:
 #              method: GET
