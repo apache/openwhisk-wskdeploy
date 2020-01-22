@@ -1,3 +1,5 @@
+// +build integration
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,18 +22,23 @@ package tests
 import (
 	"fmt"
 	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+	//"time"
 )
 
 func TestRequireWhiskAuthAnnotation(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath2, deploymentPath2)
-	fmt.Println(err)
-	//assert.Equal(t, nil, err, "Failed to deploy 'require-whisk-auth' annotations based on the manifest file.")
-	_, err = wskdeploy.Undeploy(manifestPath2, deploymentPath2)
-	//assert.Equal(t, nil, err, "Failed to undeploy 'require-whisk-auth' annotations based on the manifest file.")
-	fmt.Println(err)
+	assert.Equal(t, nil, err, "Failed to deploy 'require-whisk-auth' annotations based on the manifest file.")
+	//fmt.Println(err)
+
+	//time.Sleep(2 * time.Second)
+
+	_, err2 := wskdeploy.Undeploy(manifestPath2, deploymentPath2)
+	assert.Equal(t, nil, err2, "Failed to undeploy 'require-whisk-auth' annotations based on the manifest file.")
+	//fmt.Println(err2)
 }
 
 var (
