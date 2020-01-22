@@ -169,6 +169,11 @@ func ValidateRequireWhiskAuthAnnotationValue(actionName string, value interface{
 			}
 		case int:
 			secureValue := value.(int)
+			// FYI, the CLI defines MAX_JS_INT = 1<<53 - 1 (i.e.,  9007199254740991)
+			// NOTE: For JS, the largest exact integral value is 253-1, or 9007199254740991.
+			// In ES6, this is defined as Number MAX_SAFE_INTEGER.
+			// However, in JS, the bitwise operators and shift operators operate on 32-bit ints,
+			// so in that case, the max safe integer is 231-1, or 2147483647
 			if secureValue < MAX_JS_INT {
 				isValid = true
 				enabled = wski18n.FEATURE_ENABLED
