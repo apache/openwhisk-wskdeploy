@@ -1,5 +1,3 @@
-// +build integration
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -26,11 +24,9 @@ import (
 	"testing"
 )
 
-//var wskprops = common.GetWskprops()
-
 func TestRequireWhiskAuthAnnotation(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
-	_, err := wskdeploy.Deploy(manifestPath2, deploymentPath2)
+	_, err := wskdeploy.DeployManifestOnly(manifestPath2, deploymentPath2)
 	fmt.Println(err)
 	//assert.Equal(t, nil, err, "Failed to deploy 'require-whisk-auth' annotations based on the manifest file.")
 	_, err = wskdeploy.Undeploy(manifestPath2, deploymentPath2)

@@ -20,7 +20,6 @@
 package tests
 
 import (
-	"fmt"
 	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -31,8 +30,7 @@ var wskprops = common.GetWskprops()
 
 func TestWebAction(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
-	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
-	fmt.Println("manifest paht: ", manifestPath)
+	_, err := wskdeploy.DeployManifestOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest file.")

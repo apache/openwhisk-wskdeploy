@@ -134,6 +134,10 @@ func (wskdeploy *Wskdeploy) RunCommand(s ...string) (string, error) {
 	return outb.String(), returnError
 }
 
+func (wskdeploy *Wskdeploy) DeployManifestOnly(manifestPath string) (string, error) {
+	return wskdeploy.RunCommand("-m", manifestPath)
+}
+
 func (wskdeploy *Wskdeploy) Deploy(manifestPath string, deploymentPath string) (string, error) {
 	return wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath)
 }
