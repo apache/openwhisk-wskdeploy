@@ -38,18 +38,18 @@ packages:
         function: src/greeting.js
         annotations:
           require-whisk-auth: true
-    apis:
-      web-secure:
-        helloworlds:
-          helloSecureString:
-            helloSecureString:
-              method: GET
-              response: json
-          helloSecureInt:
-            helloSecureInt:
-              method: GET
-              response: json
-          helloSecureBool:
-            helloSecureBool:
-              method: GET
-              response: json
+#    apis:
+#      web-secure:
+#        helloworlds:
+#          helloSecureString:
+#            helloSecureString:
+#              method: GET
+#              response: json
+#          helloSecureInt:
+#            helloSecureInt:
+#              method: GET
+#              response: json
+#          helloSecureBool:
+#            helloSecureBool:
+#              method: GET
+#              response: json

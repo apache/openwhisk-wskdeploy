@@ -35,6 +35,6 @@ func TestRequireWhiskAuthAnnotation(t *testing.T) {
 }
 
 var (
-	manifestPath2   = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest_require_whisk_auth_valid.yml"
+	manifestPath2   = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest_require_whisk_auth_valid.yaml"
 	deploymentPath2 = ""
 )
