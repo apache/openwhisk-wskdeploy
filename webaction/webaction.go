@@ -18,8 +18,12 @@
 package webaction
 
 import (
+	"fmt"
 	"github.com/apache/openwhisk-client-go/whisk"
+	"github.com/apache/openwhisk-wskdeploy/utils"
 	"github.com/apache/openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/openwhisk-wskdeploy/wski18n"
+	"github.com/apache/openwhisk-wskdeploy/wskprint"
 	"strings"
 )
 
@@ -30,6 +34,7 @@ const (
 	RAW_HTTP_ANNOT     = "raw-http"
 	FINAL_ANNOT        = "final"
 	TRUE               = "true"
+	MAX_JS_INT         = 1<<53 - 1
 )
 
 var webExport map[string]string = map[string]string{
@@ -148,4 +153,49 @@ func IsWebSequence(webexport string) bool {
 
 func HasAnnotation(annotations *whisk.KeyValueArr, key string) bool {
 	return (annotations.FindKeyValue(key) >= 0)
+}
+
+func ValidateRequireWhiskAuthAnnotationValue(actionName string, value interface{}) (string, error) {
+	var isValid = false
+	var enabled = wski18n.FEATURE_DISABLED
+
+	switch value.(type) {
+		case string:
+			secureValue := value.(string)
+			// assure the user-supplied token is valid (i.e., for now a non-empty string)
+			if len(secureValue) != 0 && secureValue!="<nil>" {
+				isValid = true
+				enabled = wski18n.FEATURE_ENABLED
+			}
+		case int:
+			secureValue := value.(int)
+			if secureValue < MAX_JS_INT {
+				isValid = true
+				enabled = wski18n.FEATURE_ENABLED
+			}
+		case bool:
+			secureValue := value.(bool)
+			isValid = true
+			if secureValue {
+				enabled = wski18n.FEATURE_ENABLED
+			}
+	}
+
+	if !isValid {
+		errMsg := wski18n.T(wski18n.ID_ERR_WEB_ACTION_REQUIRE_AUTH_TOKEN_INVALID_X_action_X_key_X_value,
+			map[string]interface{}{
+				wski18n.KEY_ACTION: actionName,
+				wski18n.KEY_KEY: REQUIRE_WHISK_AUTH,
+				wski18n.KEY_VALUE: fmt.Sprintf("%v", value)})
+		return errMsg, wskderrors.NewActionSecureKeyError(errMsg)
+	}
+
+	// Emit an affirmation that security token will be applied to the action
+	msg := wski18n.T(wski18n.ID_VERBOSE_ACTION_AUTH_X_action_X_value_X,
+		map[string]interface{}{
+			wski18n.KEY_ACTION: actionName,
+			wski18n.KEY_VALUE:  enabled})
+	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, msg)
+
+	return msg, nil
 }

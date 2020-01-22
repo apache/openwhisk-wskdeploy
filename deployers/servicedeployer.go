@@ -318,7 +318,6 @@ func (deployer *ServiceDeployer) Deploy() error {
 
 	wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_SUCCEEDED)))
 	return nil
-
 }
 
 func (deployer *ServiceDeployer) deployAssets() error {
