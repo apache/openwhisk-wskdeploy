@@ -30,7 +30,7 @@ var wskprops = common.GetWskprops()
 
 func TestWebAction(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
-	_, err := wskdeploy.DeployManifestOnly(manifestPath)
+	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
 	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest file.")

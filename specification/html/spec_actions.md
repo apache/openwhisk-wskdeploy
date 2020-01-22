@@ -150,11 +150,7 @@ These packages may vary by OpenWhisk release; examples of supported runtimes as 
 | nodejs@12 | nodejs:12 | openwhisk/nodejs12action:latest | Latest NodeJS 12 runtime |
 | nodejs@10 | nodejs:10 | openwhisk/action-nodejs-v8:latest | Latest NodeJS 10 runtime |
 | nodejs@8 | nodejs:8 | openwhisk/action-nodejs-v8:latest | Latest NodeJS 8 runtime |
-<<<<<<< HEAD
 | nodejs@6 **(deprecated)**| nodejs:6 (deprecated)| openwhisk/nodejs6action:latest | Latest NodeJS 6 runtime |
-=======
-| nodejs@6 (deprecated)| nodejs:6 (deprecated)| openwhisk/nodejs6action:latest | Latest NodeJS 6 runtime |
->>>>>>> 05e93deb92a3c60302adb3dce3f72c4145ed889f
 | java | java | openwhisk/java8action:latest | Latest Java (8) language runtime |
 | php, php@7.3 | php:7.3 | openwhisk/action-php-v7.3:latest | Latest PHP (7.3) language runtime |
 | php, php@7.2 | php:7.2 | openwhisk/action-php-v7.2:latest | Latest PHP (7.2) language runtime |

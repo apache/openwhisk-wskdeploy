@@ -26,7 +26,7 @@ import (
 
 func TestRequireWhiskAuthAnnotation(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
-	_, err := wskdeploy.DeployManifestOnly(manifestPath2, deploymentPath2)
+	_, err := wskdeploy.Deploy(manifestPath2, deploymentPath2)
 	fmt.Println(err)
 	//assert.Equal(t, nil, err, "Failed to deploy 'require-whisk-auth' annotations based on the manifest file.")
 	_, err = wskdeploy.Undeploy(manifestPath2, deploymentPath2)
