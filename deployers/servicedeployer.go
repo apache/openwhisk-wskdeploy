@@ -1053,11 +1053,7 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 		// If the "require-whisk-auth" annotation is present on the referenced action,
 		// apply its user provided security key (i.e., the annotation's value) to the API
 		if webaction.HasAnnotation(actionAnnotations, webaction.REQUIRE_WHISK_AUTH) {
-			var secureKey = actionAnnotations.GetValue(webaction.REQUIRE_WHISK_AUTH).(string)
-			// assure the user-supplied token is valid
-			if len(secureKey) != 0 {
-				api.ApiDoc.Action.SecureKey = secureKey
-			}
+			api.ApiDoc.Action.SecureKey = actionAnnotations.GetValue(webaction.REQUIRE_WHISK_AUTH)
 		}
 	}
 
