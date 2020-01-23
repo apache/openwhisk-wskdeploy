@@ -158,12 +158,12 @@ These packages may vary by OpenWhisk release; examples of supported runtimes aro
 
 | Runtime value | OpenWhisk kind | Docker image | Tag | Description |
 |:---|:---|:---|:---|:---|
-| go, go:1.11 **default** | action-golang-v1.11 | nightly | Go 1.11 runtime |
+| go, go:1.11 **default** | go:1.11 | openwhisk/action-golang-v1.11 | nightly | Go 1.11 runtime |
 | nodejs@12 | nodejs:12 | openwhisk/nodejs12action | nightly | NodeJS 12 runtime |
-| nodejs, nodejs@10  **default** | nodejs:10 | openwhisk/action-nodejs-v8 | nightly |NodeJS 10 runtime |
+| nodejs, nodejs@10 **default** | nodejs:10 | openwhisk/action-nodejs-v8 | nightly |NodeJS 10 runtime |
 | nodejs@8 | nodejs:8 | openwhisk/action-nodejs-v8 | nightly | NodeJS 8 runtime |
-| nodejs@6 **(deprecated)**| nodejs:6 (deprecated)| nightly | openwhisk/nodejs6action | NodeJS 6 runtime |
-| java, java8 **default** | openwhisk/java8action | nightly | Java (8) language runtime |
+| nodejs@6 **(deprecated)**| nodejs:6 | openwhisk/nodejs6action | nightly | NodeJS 6 runtime |
+| java, java8 **default** | java:8 | openwhisk/java8action | nightly | Java (8) language runtime |
 | php, php@7.4 **default**| php:7.4 | openwhisk/action-php-v7.4 | nightly | PHP (7.3) language runtime |
 | php@7.3 | php:7.3 | openwhisk/action-php-v7.3 | nightly | PHP (7.3) language runtime |
 | php@7.2 **(deprecated)** | php:7.2 | openwhisk/action-php-v7.2 | nightly | PHP (7.2) language runtime |
@@ -176,16 +176,15 @@ These packages may vary by OpenWhisk release; examples of supported runtimes aro
 | swift@3.1.1 | swift:3.1.1 | openwhisk/action-swift-v3.1.1 | nightly | Swift 3.1.1 language runtime |
 | dotnet, dotnet@2.2 **default**| dotnet:2.2 | openwhisk/action-dotnet-v2.2 | nightly | .NET Core 2.2 runtime |
 | dotnet@3.1 | dotnet:3.1 | openwhisk/action-dotnet-v3.1 | nightly | .NET Core 3.1 runtime |
-| language:default | N/A | N/A | Permit the OpenWhisk platform to select the correct default language runtime. |
+| language:default | N/A | N/A | N/A | Permit the OpenWhisk platform to select the correct default language runtime. |
 
-See the file [runtimes.json](https://github.com/apache/openwhisk/blob/master/ansible/files/runtimes.json) in 
+See the file [runtimes.json](https://github.com/apache/openwhisk/blob/master/ansible/files/runtimes.json) in
 the main [apache/openwhisk](https://github.com/apache/openwhisk) repository for the latest supported runtimes nad versions.
 
 #### Notes
+- **WARNING**: _For OpenWhisk project builds, the Docker image used is tagged `nightly` in Docker Hub (e.g, for GitHub pull
+requests). Production uses of OpenWhisk code may use different images and tagged (released) image versions._
 - If no value for `runtime` is supplied, the value `language:default` will be assumed.
-- **WARNING**: _For OpenWhisk project builds, the Docker image used is tagged `nightly` in Docker Hub (e.g, for GitHub pull 
-requests). Production uses of OpenWhisk code may use different images and tagged (released) image versions._ 
-
 
 ### Recognized File extensions
 
