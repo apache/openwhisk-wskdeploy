@@ -41,50 +41,58 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 | inputs | no | list of [parameter](spec_parameters.md) | N/A | The optional ordered list inputs to the Action. |
 | outputs | no | list of [parameter](spec_parameters.md) | N/A | The optional outputs from the Action. |
 | limits | no | map of [limit keys and values](#valid-limit-keys) | N/A | Optional map of limit keys and their values.</br>See section "[Valid limit keys](#valid-limit-keys)" (below) for a listing of recognized keys and values. |
-| feed | no | boolen | false | Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action. |
-| web | no | boolean | yes \| no \| raw \| false | The optional flag that makes the action accessible to REST calls without authentication.<p>For details on all types of Web Actions, see: [Web Actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md).</p>|
-| web-secure | no | true \| false \| string | The optional flag that makes the action accessible to REST calls with authentication.<p>See [Securing web actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#Securing-web-actions)</p>|
+| feed | no | boolean | false | Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action. |
+| web&nbsp;&#124; web-export | no | string | true&nbsp;&#124; false&nbsp;&#124; yes&nbsp;&#124; no&nbsp;&#124; raw | The optional flag that makes the action accessible to REST calls without authentication.<p>For details on all types of Web Actions, see: [Web Actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md).</p>|
 | raw-http | no | boolean | false | The optional flag (annotation) to indicate if a Web Action is able to consume the raw contents within the body of an HTTP request.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
 | docker | no | string | N/A | The optional key that references a Docker image (e.g., openwhisk/skeleton). |
 | native | no | boolean | false | The optional key (flag) that indicates the Action is should use the Docker skeleton image for OpenWhisk (i.e., short-form for docker: openwhisk/skeleton). |
 | final | no | boolean | false | The optional flag (annotation) which makes all of the action parameters that are already defined immutable.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
 | main | no | string | N/A | The optional name of the function to be aliased as a function named “main”.<p><em><b>Note</b>: by convention, Action functions are required to be called “main”; this field allows existing functions not named “main” to be aliased and accessed as if they were named “main”.</em></p>|
-| annotations | no | N/A | The optional map of annotation key-values. See below for [special annotations](#annotations) on actions. |
+| annotations | no | N/A | The optional map of annotation key-values. See below for [Action annotations](#action-annotations) on actions. |
 
-#### Annotations
+#### Action Annotations
 
 The following annotations have special meanings for Actions:
 
 | Key Name | Required | Value Type | Default | Description |
 |:---|:---|:---|:---|:---|
-| web-export         | no | boolean | not set (false) | yes | no | raw | The optional annotation used to export an action as a web action A web action accessible through a REST interface (url). |
+| final              | no | boolean | not set (false) | Parameters are protected and treated as immutable. This is required for web actions (i.e., `web` or `web-export` set to `true`. |
+| web-export         | no | boolean&nbsp;&#124; yes&nbsp;&#124; no&nbsp;&#124; raw  | not set (false) | The optional annotation used to export an action as a web action A web action accessible through a REST interface (url). |
 | web-custom-options | no | boolean | not set (false) | The optional annotation enables a web action to respond to OPTIONS requests with customized headers, otherwise a [default CORS response](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#options-requests) applies. |
-| require-whisk-auth | no | string  | not set (false) | The optional annotation that when enabled protects the web action so that it is only accessible to an authenticated subject.<p>See [Securing web actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#Securing-web-actions)</p> |
+| require-whisk-auth | no | string&nbsp;&#124; integer&nbsp;&#124; boolean | not set (false) | The optional annotation that when enabled protects the web action so that it is only accessible to an authenticated subject.<p>See [Securing web actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#Securing-web-actions)</p> |
 
 ### Requirements
 
-- The Action name (i.e., &lt;actionName&gt; MUST be less than or equal to 256 characters.
+- The Action name (i.e., &lt;actionName&gt; **MUST** be less than or equal to 256 characters.
 - The Action entity schema includes all general <a href="#SCHEMA_ENTITY">Entity Schema</a> fields in addition to any fields declared above.
-- Supplying a runtime name without a version indicates that OpenWhisk SHOULD use the most current version.
-- Supplying a runtime <i>major version</i> without a <i>minor version</i> (et al.) indicates OpenWhisk SHOULD use the most current <i>minor version</i>.
-- Unrecognized limit keys (and their values) SHALL be ignored.
-- Invalid values for known limit keys SHALL result in an error.
+- Supplying a runtime name without a version indicates that OpenWhisk SHOULD use the current default version.
+- Supplying a runtime <i>major version</i> without a <i>minor version</i> (et al.) indicates OpenWhisk **SHOULD** use the most current <i>minor version</i>.
+- Unrecognized limit keys (and their values) **SHALL** be ignored.
+- Invalid values for known limit keys **SHALL** result in an error.
 - If the Feed is a Feed Action (i.e., the feed key's value is set to true), it MUST support the following parameters:
-  - **lifecycleEvent**: one of 'CREATE', 'DELETE', 'PAUSE',or 'UNPAUSE'. These operation names MAY be supplied in lowercase (i.e., 'create',
-'delete', 'pause', etc.).
+  - **lifecycleEvent**: one of `CREATE`, `DELETE`, `PAUSE`,or `UNPAUSE`. These operation names **MAY** be supplied in lowercase (i.e., `create`,
+`delete`, `pause`, etc.).
   - **triggerName**: the fully-qualified name of the trigger which contains events produced from this feed.
   - **authKey**: the Basic auth. credentials of the OpenWhisk user who owns the trigger.
-- The keyname ‘kind’ is currently supported as a synonym for the key named ‘runtime’; in the future it MAY be deprecated.
-- When a code is specified, runtime SHALL be a required field.
+- The keyname `kind` is currently supported as a synonym for the key named ‘`runtime`’; in the future it MAY be deprecated.
+- When the `code` key-value is specified, the `runtime` **SHALL** be a required field.
 
+#### Annotation requirements
+- The annotation `require-whisk-auth` **SHALL** only be valid for web actions; that is, if the `web` or `web-export` key (or the `web-export` annotation) is present and set to `true`.
+- If the value of the `require-whisk-auth` annotation is an `integer` its value **MUST** be a positive integer less than or equal to the `MAX_INT` value of `9007199254740991`.
+- When the `web` or `web-export` key is present and set to `true` the web action's **MUST** also be marked `final`.  This happens automatically when the `web` or `web-export` keys are present and set to `true`.
+
+### Securing web actions
+
+See further discussion on [Securing web actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#securing-web-actions) in main project documentation.
 
 ### Notes
 
-- Input and output parameters are implemented as JSON Objects within the OpenWhisk framework.
+- Input and output parameters are implemented as JSON Objects within the CLI client framework.
 - The maximum code size for an Action currently must be less than 48 MB.
 - The maximum payload size for an Action (i.e., POST content length or size) currently must be less than 1 MB.
 - The maximum parameter size for an Action currently must be less than 1 MB.
-- if no value for runtime is supplied, the value ‘language:default’ will be assumed.
+- if no value for runtime is supplied, the value `language:default` will be assumed.
 
 ### Grammar
 
@@ -111,8 +119,8 @@ The following annotations have special meanings for Actions:
   annotations:
     <map of annotation key-values>
     web-export: <boolean> | yes | no | raw # optional
-    web-custom-options: <boolean> # optional, only valid when web-export enabled
-    require-whisk-auth: true | false | <string> # optional, only valid when web-export enabled
+    web-custom-options: <boolean> # optional, only valid when `web-export` enabled
+    require-whisk-auth: <boolean> | <string> | <positive integer> # optional, only valid when `web-export` enabled
 ```
 _**Note**: the optional [.<type>] grammar is used for naming Web Actions._
 
@@ -124,6 +132,7 @@ my_awesome_action:
   description: An awesome action written for node.js
   function: src/js/action.js
   runtime: nodejs@>0.12<6.0
+  web: true
   inputs:
     not_awesome_input_value:
       description: Some input string that is boring
@@ -135,6 +144,8 @@ my_awesome_action:
   limits:
     memorySize: 512 kB
     logSize: 5 MB
+  annotations:
+    require-whisk-auth: "my-auth-token"
 ```
 
 ### Valid Runtime names

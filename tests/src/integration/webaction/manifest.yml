@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+# TODO: test for value conflicts when both `web` and `web-export` supplied
 packages:
     IntegrationTestWebAction:
         actions:
