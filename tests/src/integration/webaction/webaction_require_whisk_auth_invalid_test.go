@@ -20,26 +20,34 @@
 package tests
 
 import (
+	"fmt"
 	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
+	"strings"
 	"testing"
+)
+
+const (
+	ANNOTATION_ERROR = "ERROR_ACTION_ANNOTATION"
 )
 
 func TestRequireWhiskAuthAnnotationInvalid(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 
 	_, err1 := wskdeploy.DeployManifestPathOnly(manifestStringEmpty)
-	assert.Contains(t, err1.Error(), "ERROR_ACTION_ANNOTATION")
+	var result1 = strings.Contains(err1.Error(),ANNOTATION_ERROR)
+	fmt.Printf("Contains=%v\n", result1)
+	assert.Contains(t, err1.Error(), ANNOTATION_ERROR)
 
 	_, err2 := wskdeploy.DeployManifestPathOnly(manifestStringNil)
-	assert.Contains(t, err2.Error(), "ERROR_ACTION_ANNOTATION")
+	assert.Contains(t, err2.Error(), ANNOTATION_ERROR)
 
 	_, err3 := wskdeploy.DeployManifestPathOnly(manifestIntTooBig)
-	assert.Contains(t, err3.Error(), "ERROR_ACTION_ANNOTATION")
+	assert.Contains(t, err3.Error(), ANNOTATION_ERROR)
 
 	_, err4 := wskdeploy.DeployManifestPathOnly(manifestIntNegative)
-	assert.Contains(t, err4.Error(), "ERROR_ACTION_ANNOTATION")
+	assert.Contains(t, err4.Error(), ANNOTATION_ERROR)
 }
 
 var (
