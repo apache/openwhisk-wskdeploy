@@ -138,6 +138,10 @@ func (wskdeploy *Wskdeploy) Deploy(manifestPath string, deploymentPath string) (
 	return wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath)
 }
 
+func (wskdeploy *Wskdeploy) DeployManifestVerbose(manifestPath string) (string, error) {
+	return wskdeploy.RunCommand("-m", manifestPath, "-v")
+}
+
 func (wskdeploy *Wskdeploy) DeployWithCredentials(manifestPath string, deploymentPath string, wskprops *whisk.Wskprops) (string, error) {
 	return wskdeploy.RunCommand("-m", manifestPath, "-d", deploymentPath, "--auth", wskprops.AuthKey,
 		"--namespace", wskprops.Namespace, "--apihost", wskprops.APIHost, "--apiversion", wskprops.Apiversion)

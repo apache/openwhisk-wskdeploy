@@ -16,26 +16,21 @@
 #
 
 packages:
-  helloworldSecure:
+  helloworldSecureInvalid:
+    license: Apache-2.0
+    version: 0.0.1
     actions:
-      helloSecureEmpty:
+      # i.e., MAX_JS_INT + 1
+      helloSecureIntNeg:
         function: src/greeting.js
         web: true
         annotations:
-          require-whisk-auth: ""
-#      helloSecureNil:
-#        function: src/greeting.js
-#        web: true
-#        annotations:
-#          require-whisk-auth:
-    apis:
-      web-secure:
-        helloworlds:
-           helloSecureEmpty:
-            helloSecureEmpty:
-              method: GET
-              response: json
-#          helloSecureNil:
-#            helloSecureNil:
+          require-whisk-auth: -1
+# TODO: currently the vanilla OW GW does not support this (using secure key in header)
+#    apis:
+#      web-secure:
+#        helloworlds:
+#           helloSecureIntNeg:
+#            helloSecureIntNeg:
 #              method: GET
 #              response: json

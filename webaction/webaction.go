@@ -174,7 +174,8 @@ func ValidateRequireWhiskAuthAnnotationValue(actionName string, value interface{
 			// In ES6, this is defined as Number MAX_SAFE_INTEGER.
 			// However, in JS, the bitwise operators and shift operators operate on 32-bit ints,
 			// so in that case, the max safe integer is 231-1, or 2147483647
-			if secureValue < MAX_JS_INT {
+			// We also disallow negative integers
+			if secureValue < MAX_JS_INT && secureValue > 0 {
 				isValid = true
 				enabled = wski18n.FEATURE_ENABLED
 			}
