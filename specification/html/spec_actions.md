@@ -154,34 +154,43 @@ The following runtime values are currently supported by the OpenWhisk platform.
 
 Each of these runtimes also include additional built-in packages (or libraries) that have been determined be useful for Actions surveyed and tested by the OpenWhisk platform.
 
-These packages may vary by OpenWhisk release; examples of supported runtimes as of this specification version include:
+These packages may vary by OpenWhisk release; examples of supported runtimes around OpenWhisk 1.0 release are:
 
-| Runtime value | OpenWhisk kind | Docker image name | Description |
-|:---|:---|:---|:---|
-| nodejs@12 | nodejs:12 | openwhisk/nodejs12action:latest | Latest NodeJS 12 runtime |
-| nodejs@10 | nodejs:10 | openwhisk/action-nodejs-v8:latest | Latest NodeJS 10 runtime |
-| nodejs@8 | nodejs:8 | openwhisk/action-nodejs-v8:latest | Latest NodeJS 8 runtime |
-| nodejs@6 **(deprecated)**| nodejs:6 (deprecated)| openwhisk/nodejs6action:latest | Latest NodeJS 6 runtime |
-| java | java | openwhisk/java8action:latest | Latest Java (8) language runtime |
-| php, php@7.3 | php:7.3 | openwhisk/action-php-v7.3:latest | Latest PHP (7.3) language runtime |
-| php, php@7.2 | php:7.2 | openwhisk/action-php-v7.2:latest | Latest PHP (7.2) language runtime |
-| php, php@7.1 | php:7.1 | openwhisk/action-php-v7.1:latest | Latest PHP (7.1) language runtime |
-| python@3 | python:3 | openwhisk/python3action:latest | Latest Python 3 language runtime |
-| python, python@2 | python:2 | openwhisk/python2action:latest | Latest Python 2 language runtime |s
-| ruby | ruby:2.5 | openwhisk/action-ruby-v2.5:latest | Latest Ruby 2.5 language runtime |
-| swift@4.2 | swift:4.2 | openwhisk/action-swift-v4.2:latest | Latest Swift 4.2 language runtime |
-| swift@4.1 | swift:4.1 | openwhisk/action-swift-v4.1:latest | Latest Swift 4.1 language runtime |
-| swift@3.1.1 | swift:3.1.1 | openwhisk/action-swift-v3.1.1:latest | Latest Swift 3.1.1 language runtime |
-| dotnet, dotnet@2.2 | dotnet:2.2 | openwhisk/action-dotnet-v2.2:latest | Latest .NET Core 2.2 runtime |
+| Runtime value | OpenWhisk kind | Docker image | Tag | Description |
+|:---|:---|:---|:---|:---|
+| go, go:1.11 **default** | action-golang-v1.11 | nightly | Go 1.11 runtime |
+| nodejs@12 | nodejs:12 | openwhisk/nodejs12action | nightly | NodeJS 12 runtime |
+| nodejs, nodejs@10  **default** | nodejs:10 | openwhisk/action-nodejs-v8 | nightly |NodeJS 10 runtime |
+| nodejs@8 | nodejs:8 | openwhisk/action-nodejs-v8 | nightly | NodeJS 8 runtime |
+| nodejs@6 **(deprecated)**| nodejs:6 (deprecated)| nightly | openwhisk/nodejs6action | NodeJS 6 runtime |
+| java, java8 **default** | openwhisk/java8action | nightly | Java (8) language runtime |
+| php, php@7.4 **default**| php:7.4 | openwhisk/action-php-v7.4 | nightly | PHP (7.3) language runtime |
+| php@7.3 | php:7.3 | openwhisk/action-php-v7.3 | nightly | PHP (7.3) language runtime |
+| php@7.2 **(deprecated)** | php:7.2 | openwhisk/action-php-v7.2 | nightly | PHP (7.2) language runtime |
+| php@7.1 **(deprecated)** | php:7.1 | openwhisk/action-php-v7.1 | nightly | PHP (7.1) language runtime |
+| python, python@3 **default** | python:3 | openwhisk/python3action | nightly | Python 3 (3.6) language runtime |
+| python@2 | python:2 | openwhisk/python2action | 1.13.0-incubating | Python 2 (2.7) language runtime |
+| ruby | ruby:2.5 **default** | openwhisk/action-ruby-v2.5 | nightly | Ruby 2.5 language runtime |
+| swift, swift@4.2 **default** | swift:4.2 | openwhisk/action-swift-v4.2 | nightly | Swift 4.2 language runtime |
+| swift@4.1 | swift:4.1 | openwhisk/action-swift-v4.1 | nightly | Swift 4.1 language runtime |
+| swift@3.1.1 | swift:3.1.1 | openwhisk/action-swift-v3.1.1 | nightly | Swift 3.1.1 language runtime |
+| dotnet, dotnet@2.2 **default**| dotnet:2.2 | openwhisk/action-dotnet-v2.2 | nightly | .NET Core 2.2 runtime |
+| dotnet@3.1 | dotnet:3.1 | openwhisk/action-dotnet-v3.1 | nightly | .NET Core 3.1 runtime |
 | language:default | N/A | N/A | Permit the OpenWhisk platform to select the correct default language runtime. |
 
+See the file [runtimes.json](https://github.com/apache/openwhisk/blob/master/ansible/files/runtimes.json) in 
+the main [apache/openwhisk](https://github.com/apache/openwhisk) repository for the latest supported runtimes nad versions.
+
 #### Notes
-- If no value for runtime is supplied, the value 'language:default' will be assumed.
+- If no value for `runtime` is supplied, the value `language:default` will be assumed.
+- **WARNING**: _For OpenWhisk project builds, the Docker image used is tagged `nightly` in Docker Hub (e.g, for GitHub pull 
+requests). Production uses of OpenWhisk code may use different images and tagged (released) image versions._ 
+
 
 ### Recognized File extensions
 
 Although it is best practice to provide a runtime value when declaring an Action, it is not required. In those cases, that a runtime is not provided, the package tooling will attempt to derive the correct runtime based upon the the file extension for the Action's function (source code file). The
-following file extensions are recognized and will be run on the latest version of corresponding Runtime listed below:
+following file extensions are recognized and will be run on the version of corresponding Runtime listed below:
 
 <html>
 <table>
