@@ -20,21 +20,20 @@
 package tests
 
 import (
-	"fmt"
 	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
-	//"time"
+	"time"
 )
 
 func TestRequireWhiskAuthAnnotation(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 	_, err := wskdeploy.Deploy(manifestPath2, deploymentPath2)
 	assert.Equal(t, nil, err, "Failed to deploy 'require-whisk-auth' annotations based on the manifest file.")
-	//fmt.Println(err)
 
-	//time.Sleep(2 * time.Second)
+	// artificial delay to allow API/swagger creation
+	time.Sleep(2 * time.Second)
 
 	_, err2 := wskdeploy.Undeploy(manifestPath2, deploymentPath2)
 	assert.Equal(t, nil, err2, "Failed to undeploy 'require-whisk-auth' annotations based on the manifest file.")
