@@ -30,13 +30,12 @@ var wskprops = common.GetWskprops()
 
 func TestWebAction(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
-	_, err := wskdeploy.Deploy(manifestPath, deploymentPath)
+	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
-	_, err = wskdeploy.Undeploy(manifestPath, deploymentPath)
+	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
 	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest file.")
 }
 
 var (
-	manifestPath   = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest.yml"
-	deploymentPath = ""
+	manifestPath = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest.yml"
 )

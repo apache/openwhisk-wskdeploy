@@ -29,18 +29,16 @@ import (
 
 func TestRequireWhiskAuthAnnotation(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
-	_, err := wskdeploy.Deploy(manifestPath2, deploymentPath2)
+	_, err := wskdeploy.DeployManifestPathOnly(manifestPath2)
 	assert.Equal(t, nil, err, "Failed to deploy 'require-whisk-auth' annotations based on the manifest file.")
 
-	// artificial delay to allow API/swagger creation
-	time.Sleep(2 * time.Second)
+	// artificial 1 second delay to allow API/swagger creation
+	time.Sleep(1 * time.Second)
 
-	_, err2 := wskdeploy.Undeploy(manifestPath2, deploymentPath2)
+	_, err2 := wskdeploy.UndeployManifestPathOnly(manifestPath2)
 	assert.Equal(t, nil, err2, "Failed to undeploy 'require-whisk-auth' annotations based on the manifest file.")
-	//fmt.Println(err2)
 }
 
 var (
-	manifestPath2   = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest_require_whisk_auth_valid.yaml"
-	deploymentPath2 = ""
+	manifestPath2 = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest_require_whisk_auth_valid.yaml"
 )
