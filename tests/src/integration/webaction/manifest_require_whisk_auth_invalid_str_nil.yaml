@@ -25,10 +25,3 @@ packages:
         web: true
         annotations:
           require-whisk-auth:
-# TODO: currently the vanilla OW GW does not support this (using secure key in header)
-#    apis:
-#      web-secure:
-#          helloSecureNil:
-#            helloSecureNil:
-#              method: GET
-#              response: json

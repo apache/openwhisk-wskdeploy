@@ -20,24 +20,28 @@
 package tests
 
 import (
-	"fmt"
 	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
 	"os"
-	"strings"
 	"testing"
 )
 
 const (
 	ANNOTATION_ERROR = "ERROR_ACTION_ANNOTATION"
+	MSG_ASSERT_EXPECTED_ERROR = "Expected error [%s], but got:\n [%v]\n"
+)
+
+var (
+	manifestStringEmpty = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest_require_whisk_auth_invalid_str_empty.yaml"
+	manifestStringNil = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest_require_whisk_auth_invalid_str_nil.yaml"
+	manifestIntTooBig = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest_require_whisk_auth_invalid_int_big.yaml"
+	manifestIntNegative = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest_require_whisk_auth_invalid_int_neg.yaml"
 )
 
 func TestRequireWhiskAuthAnnotationInvalid(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
 
 	_, err1 := wskdeploy.DeployManifestPathOnly(manifestStringEmpty)
-	var result1 = strings.Contains(err1.Error(),ANNOTATION_ERROR)
-	fmt.Printf("Contains=%v\n", result1)
 	assert.Contains(t, err1.Error(), ANNOTATION_ERROR)
 
 	_, err2 := wskdeploy.DeployManifestPathOnly(manifestStringNil)
@@ -49,10 +53,3 @@ func TestRequireWhiskAuthAnnotationInvalid(t *testing.T) {
 	_, err4 := wskdeploy.DeployManifestPathOnly(manifestIntNegative)
 	assert.Contains(t, err4.Error(), ANNOTATION_ERROR)
 }
-
-var (
-	manifestStringEmpty = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest_require_whisk_auth_invalid_str_empty.yaml"
-	manifestStringNil = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest_require_whisk_auth_invalid_str_nil.yaml"
-	manifestIntTooBig = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest_require_whisk_auth_invalid_int_big.yaml"
-	manifestIntNegative = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest_require_whisk_auth_invalid_int_neg.yaml"
-)

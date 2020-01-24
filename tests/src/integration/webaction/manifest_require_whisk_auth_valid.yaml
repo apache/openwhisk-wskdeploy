@@ -33,24 +33,18 @@ packages:
         web: true
         annotations:
           require-whisk-auth: true
-      greeting-web-action-with-auth:
-        web-export: true
-        function: src/greeting.js
-        annotations:
-          require-whisk-auth: true
-# TODO: currently the vanilla OW GW does not support this (using secure key in header)
-#    apis:
-#      web-secure:
-#        helloworlds:
-#          helloSecureString:
-#            helloSecureString:
-#              method: GET
-#              response: json
-#          helloSecureInt:
-#            helloSecureInt:
-#              method: GET
-#              response: json
-#          helloSecureBool:
-#            helloSecureBool:
-#              method: GET
-#              response: json
+    apis:
+      web-secure:
+        helloworlds:
+          helloSecureString:
+            helloSecureString:
+              method: GET
+              response: json
+          helloSecureInt:
+            helloSecureInt:
+              method: GET
+              response: json
+          helloSecureBool:
+            helloSecureBool:
+              method: GET
+              response: json
