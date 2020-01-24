@@ -65,6 +65,7 @@ const (
 	ERROR_YAML_INVALID_WEB_EXPORT         = "ERROR_YAML_INVALID_WEB_EXPORT"
 	ERROR_YAML_INVALID_API_GATEWAY_METHOD = "ERROR_YAML_INVALID_API_GATEWAY_METHOD"
 	ERROR_RUNTIME_PARSER_FAILURE          = "ERROR_RUNTIME_PARSER_FAILURE"
+	ERROR_ACTION_ANNOTATION               = "ERROR_ACTION_ANNOTATION"
 )
 
 /*
@@ -454,6 +455,21 @@ type RuntimeParserError struct {
 func NewRuntimeParserError(errorMsg string) *RuntimeParserError {
 	var err = &RuntimeParserError{}
 	err.SetErrorType(ERROR_RUNTIME_PARSER_FAILURE)
+	err.SetCallerByStackFrameSkip(2)
+	err.SetMessage(errorMsg)
+	return err
+}
+
+/*
+ * Failed to Retrieve/Parse Runtime
+ */
+type DeployError struct {
+	WskDeployBaseErr
+}
+
+func NewActionSecureKeyError(errorMsg string) *DeployError {
+	var err = &DeployError{}
+	err.SetErrorType(ERROR_ACTION_ANNOTATION)
 	err.SetCallerByStackFrameSkip(2)
 	err.SetMessage(errorMsg)
 	return err

@@ -58,7 +58,7 @@ func TestDependencies(t *testing.T) {
 	assert.Equal(t, "/subfolder1/subfolder2", record.SubFolder, "SubFolder is wrong")
 }
 
-func TestNewZipWritter(t *testing.T) {
+func TestNewZipWriter(t *testing.T) {
 	filePath := "../tests/src/integration/zipaction/actions/cat"
 	zipName := filePath + ".zip"
 	err := NewZipWritter(filePath, zipName, make([][]string, 0), make([]string, 0), "").Zip()

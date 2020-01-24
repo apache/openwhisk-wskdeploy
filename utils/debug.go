@@ -1,5 +1,3 @@
-// +build integration
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -17,25 +15,18 @@
  * limitations under the License.
  */
 
-package tests
+package utils
 
 import (
-	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
-	"github.com/stretchr/testify/assert"
-	"os"
-	"testing"
+	"fmt"
+	"runtime"
+	"strings"
 )
 
-var wskprops = common.GetWskprops()
-
-func TestWebAction(t *testing.T) {
-	wskdeploy := common.NewWskdeploy()
-	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
-	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
-	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest file.")
+func dumpInterface(tag string, value interface{}) {
+	pc, fn, line, _ := runtime.Caller(1)
+	basicFile := fn[strings.LastIndex(fn, "/")+1:]
+	details := runtime.FuncForPC(pc)
+	basicFnName := details.Name()[strings.LastIndex(details.Name(), ".")+1:]
+	fmt.Printf("---\n[info] %s(%d): %s: %s=%+v\n", basicFile, line, basicFnName, tag, value)
 }
-
-var (
-	manifestPath = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest.yml"
-)

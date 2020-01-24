@@ -41,40 +41,54 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 | inputs | no | list of [parameter](spec_parameters.md) | N/A | The optional ordered list inputs to the Action. |
 | outputs | no | list of [parameter](spec_parameters.md) | N/A | The optional outputs from the Action. |
 | limits | no | map of [limit keys and values](#valid-limit-keys) | N/A | Optional map of limit keys and their values.</br>See section "[Valid limit keys](#valid-limit-keys)" (below) for a listing of recognized keys and values. |
-| feed | no | boolen | false | Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action. |
-| web \| web-export | no | boolean | yes \| no \| raw \| false | The optional flag (annotation) that makes the action accessible to REST calls without authentication.<p>For details on all types of Web Actions, see: [Web Actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md).</p>|
+| feed | no | boolean | false | Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action. |
+| web&nbsp;&#124; web-export | no | string | true&nbsp;&#124; false&nbsp;&#124; yes&nbsp;&#124; no&nbsp;&#124; raw | The optional flag that makes the action accessible to REST calls without authentication.<p>For details on all types of Web Actions, see: [Web Actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md).</p>|
 | raw-http | no | boolean | false | The optional flag (annotation) to indicate if a Web Action is able to consume the raw contents within the body of an HTTP request.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
 | docker | no | string | N/A | The optional key that references a Docker image (e.g., openwhisk/skeleton). |
 | native | no | boolean | false | The optional key (flag) that indicates the Action is should use the Docker skeleton image for OpenWhisk (i.e., short-form for docker: openwhisk/skeleton). |
 | final | no | boolean | false | The optional flag (annotation) which makes all of the action parameters that are already defined immutable.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
-| web-custom-options | no | boolean | false | The optional flag (annotation) enables a web action to respond to OPTIONS requests with customized headers, otherwise a [default CORS response](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#options-requests) applies. |
-| require-whisk-auth | no | boolean | false | The optional flag (annotation) protects the web action so that it is only accessible to an authenticated subject. |
 | main | no | string | N/A | The optional name of the function to be aliased as a function named “main”.<p><em><b>Note</b>: by convention, Action functions are required to be called “main”; this field allows existing functions not named “main” to be aliased and accessed as if they were named “main”.</em></p>|
+| annotations | no | N/A | The optional map of annotation key-values. See below for [Action annotations](#action-annotations) on actions. |
+
+#### Action Annotations
+
+The following annotations have special meanings for Actions:
+
+| Key Name | Required | Value Type | Default | Description |
+|:---|:---|:---|:---|:---|
+| final              | no | boolean | not set (false) | Parameters are protected and treated as immutable. This is required for web actions (i.e., `web` or `web-export` set to `true`. |
+| web-export         | no | boolean&nbsp;&#124; yes&nbsp;&#124; no&nbsp;&#124; raw  | not set (false) | The optional annotation used to export an action as a `web action` which is accessible through an API REST interface (url). |
+| web-custom-options | no | boolean | not set (false) | The optional annotation that enables a web action to respond to OPTIONS requests with customized headers, otherwise a [default CORS response](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#options-requests) applies. |
+| require-whisk-auth | no | string&nbsp;&#124; integer&nbsp;&#124; boolean | not set (false) | The optional annotation that can secure a `web action` so that it is only accessible to an authenticated subject.<p>See [Securing web actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#Securing-web-actions)</p> |
 
 ### Requirements
 
-- The Action name (i.e., &lt;actionName&gt; MUST be less than or equal to 256 characters.
-- The Action entity schema includes all general <a href="#SCHEMA_ENTITY">Entity Schema</a> fields in addition to any fields declared above.
-- Supplying a runtime name without a version indicates that OpenWhisk SHOULD use the most current version.
-- Supplying a runtime <i>major version</i> without a <i>minor version</i> (et al.) indicates OpenWhisk SHOULD use the most current <i>minor version</i>.
-- Unrecognized limit keys (and their values) SHALL be ignored.
-- Invalid values for known limit keys SHALL result in an error.
-- If the Feed is a Feed Action (i.e., the feed key's value is set to true), it MUST support the following parameters:
-  - **lifecycleEvent**: one of 'CREATE', 'DELETE', 'PAUSE',or 'UNPAUSE'. These operation names MAY be supplied in lowercase (i.e., 'create',
-'delete', 'pause', etc.).
+- The Action entity schema **SHALL** include all general <a href="#SCHEMA_ENTITY">Entity Schema</a> fields in addition to any fields declared above.
+- The Action name (i.e., &lt;actionName&gt; **MUST** be less than or equal to 256 characters.
+- Supplying a runtime name without a version indicates that OpenWhisk **SHOULD** use the current default version.
+- Supplying a runtime <i>major version</i> without a <i>minor version</i> (et al.) indicates OpenWhisk **SHOULD** use the most current <i>minor version</i>.
+- Unrecognized limit keys (and their values) **SHALL** be ignored.
+- Invalid values for known limit keys **SHALL** result in an error.
+- If the Feed is a Feed Action (i.e., the feed key's value is set to true), it **MUST** support the following parameters:
+  - **lifecycleEvent**: one of `CREATE`, `DELETE`, `PAUSE`,or `UNPAUSE`. These operation names **MAY** be supplied in lowercase (i.e., `create`,
+`delete`, `pause`, etc.).
   - **triggerName**: the fully-qualified name of the trigger which contains events produced from this feed.
   - **authKey**: the Basic auth. credentials of the OpenWhisk user who owns the trigger.
-- The keyname ‘kind’ is currently supported as a synonym for the key named ‘runtime’; in the future it MAY be deprecated.
-- When a code is specified, runtime SHALL be a required field.
+- The keyname `kind` is currently supported as a synonym for the key named ‘`runtime`’; in the future it **MAY** be deprecated.
+- When the `code` key-value is specified, the `runtime` **SHALL** be a required field.
 
+#### Annotation requirements
+- The annotation `require-whisk-auth` **SHALL** only be valid for web actions (i.e., if the `web` or `web-export` key (or `web-export` annotation) is set to `true`).
+- If the value of the `require-whisk-auth` annotation is an `integer` its value **MUST** be a positive integer less than or equal to the `MAX_INT` value of `9007199254740991`.
+- When the `web` or `web-export` key is present and set to `true` the web action's **MUST** also be marked `final`.  This happens automatically when the `web` or `web-export` keys are present and set to `true`.
 
 ### Notes
 
-- Input and output parameters are implemented as JSON Objects within the OpenWhisk framework.
+- Input and output parameters are implemented as JSON Objects within the CLI client framework.
 - The maximum code size for an Action currently must be less than 48 MB.
 - The maximum payload size for an Action (i.e., POST content length or size) currently must be less than 1 MB.
 - The maximum parameter size for an Action currently must be less than 1 MB.
-- if no value for runtime is supplied, the value ‘language:default’ will be assumed.
+- if no value for runtime is supplied, the value `language:default` will be assumed.
 
 ### Grammar
 
@@ -92,14 +106,17 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
   limits:
     <list of limit key-values>
   feed: <boolean> # default: false
-  web | web-export: <boolean> | yes | no | raw
+  web: <boolean> | yes | no | raw
   raw-http: <boolean>
   docker: <string>
   native: <boolean>
   final: <boolean>
-  web-custom-options: <boolean>
-  require-whisk-auth: <boolean>
   main: <string>
+  annotations:
+    <map of annotation key-values>
+    web-export: <boolean> | yes | no | raw # optional
+    web-custom-options: <boolean> # optional, only valid when `web-export` enabled
+    require-whisk-auth: <boolean> | <string> | <positive integer> # optional, only valid when `web-export` enabled
 ```
 _**Note**: the optional [.<type>] grammar is used for naming Web Actions._
 
@@ -111,6 +128,7 @@ my_awesome_action:
   description: An awesome action written for node.js
   function: src/js/action.js
   runtime: nodejs@>0.12<6.0
+  web: true
   inputs:
     not_awesome_input_value:
       description: Some input string that is boring
@@ -122,41 +140,50 @@ my_awesome_action:
   limits:
     memorySize: 512 kB
     logSize: 5 MB
+  annotations:
+    require-whisk-auth: "my-auth-token"
 ```
 
 ### Valid Runtime names
 
-The following runtime values are currently supported by the OpenWhisk platform.
+The following runtime values are currently supported by the OpenWhisk platform "out-of-box" at around the time of the Openwhisk platform release 1.0.
 
-Each of these runtimes also include additional built-in packages (or libraries) that have been determined be useful for Actions surveyed and tested by the OpenWhisk platform.
+| Runtime value | OpenWhisk kind | Docker image | Tag | Description |
+|:---|:---|:---|:---|:---|
+| go&nbsp;&#124; go:1.11 (default)| go:1.11 | [openwhisk/action-golang-v1.11](https://hub.docker.com/r/openwhisk/action-golang-v1.11) | nightly | Go 1.11 runtime |
+| nodejs@12 | nodejs:12 | [openwhisk/nodejs12action](https://hub.docker.com/r/openwhisk/action-nodejs-v12) | nightly | NodeJS 12 runtime |
+| nodejs&nbsp;&#124; nodejs@10 (default)| nodejs:10 | [openwhisk/action-nodejs-v10](https://hub.docker.com/r/openwhisk/action-nodejs-v10) | nightly |NodeJS 10 runtime |
+| nodejs@8 | nodejs:8 | [openwhisk/action-nodejs-v8](https://hub.docker.com/r/openwhisk/action-nodejs-v8) | nightly | NodeJS 8 runtime |
+| nodejs@6 **(deprecated)**| nodejs:6 | [openwhisk/nodejs6action](https://hub.docker.com/r/openwhisk/nodejs6action) | nightly | NodeJS 6 runtime |
+| java&nbsp;&#124; java8 (default) | java:8 | [openwhisk/java8action](https://hub.docker.com/r/openwhisk/java8action) | nightly | Java (8) language runtime |
+| php&nbsp;&#124; php@7.4 (default) | php:7.4 | [openwhisk/action-php-v7.4](https://hub.docker.com/r/openwhisk/action-php-v7.4) | nightly | PHP (7.3) language runtime |
+| php@7.3 | php:7.3 | [openwhisk/action-php-v7.3](https://hub.docker.com/r/openwhisk/action-php-v7.3) | nightly | PHP (7.3) language runtime |
+| php@7.2 **(deprecated)** | php:7.2 | [openwhisk/action-php-v7.2](https://hub.docker.com/r/openwhisk/action-php-v7.2) | nightly | PHP (7.2) language runtime |
+| php@7.1 **(deprecated)** | php:7.1 | [openwhisk/action-php-v7.1](https://hub.docker.com/r/openwhisk/action-php-v7.1) | nightly | PHP (7.1) language runtime |
+| python&nbsp;&#124; python@3 (default) | python:3 | [openwhisk/python3action](https://hub.docker.com/r/openwhisk/python3action) | nightly | Python 3 (3.6) language runtime |
+| python@2 | python:2 | [openwhisk/python2action](https://hub.docker.com/r/openwhisk/python2action) | 1.13.0-incubating | Python 2 (2.7) language runtime |
+| ruby&nbsp;&#124; (default) | ruby:2.5 | [openwhisk/action-ruby-v2.5](https://hub.docker.com/repository/docker/openwhisk/action-ruby-v2.5) | nightly | Ruby 2.5 language runtime |
+| swift&nbsp;&#124; swift@4.2 (default) | swift:4.2 | [openwhisk/action-swift-v4.2](https://hub.docker.com/r/openwhisk/action-swift-v4.2) | nightly | Swift 4.2 language runtime |
+| swift@4.1 | swift:4.1 | [openwhisk/action-swift-v4.1](https://hub.docker.com/r/openwhisk/action-swift-v4.1) | nightly | Swift 4.1 language runtime |
+| swift@3.1.1 **(deprecated)** | swift:3.1.1 | [openwhisk/action-swift-v3.1.1](https://hub.docker.com/r/openwhisk/action-swift-v3.1.1) | nightly | Swift 3.1.1 language runtime |
+| dotnet&nbsp;&#124; dotnet@2.2 (default) | dotnet:2.2 | [openwhisk/action-dotnet-v2.2](https://hub.docker.com/r/openwhisk/action-dotnet-v2.2) | nightly | .NET Core 2.2 runtime |
+| dotnet@3.1 | dotnet:3.1 | [openwhisk/action-dotnet-v3.1](https://hub.docker.com/r/openwhisk/action-dotnet-v3.1) | nightly | .NET Core 3.1 runtime |
+| language:default | N/A | N/A | N/A | Permit the OpenWhisk platform to select the correct default language runtime. |
 
-These packages may vary by OpenWhisk release; examples of supported runtimes as of this specification version include:
-
-| Runtime value | OpenWhisk kind | Docker image name | Description |
-|:---|:---|:---|:---|
-| nodejs@10 | nodejs:10 | openwhisk/action-nodejs-v8:latest | Latest NodeJS 10 runtime |
-| nodejs@8 | nodejs:8 | openwhisk/action-nodejs-v8:latest | Latest NodeJS 8 runtime |
-| nodejs@12 | nodejs:12 | openwhisk/nodejs12action:latest | Latest NodeJS 12 runtime |
-| java | java | openwhisk/java8action:latest | Latest Java (8) language runtime |
-| php, php@7.3 | php:7.3 | openwhisk/action-php-v7.3:latest | Latest PHP (7.3) language runtime |
-| php, php@7.2 | php:7.2 | openwhisk/action-php-v7.2:latest | Latest PHP (7.2) language runtime |
-| php, php@7.1 | php:7.1 | openwhisk/action-php-v7.1:latest | Latest PHP (7.1) language runtime |
-| python@3 | python:3 | openwhisk/python3action:latest | Latest Python 3 language runtime |
-| python, python@2 | python:2 | openwhisk/python2action:latest | Latest Python 2 language runtime |s
-| ruby | ruby:2.5 | openwhisk/action-ruby-v2.5:latest | Latest Ruby 2.5 language runtime |
-| swift@4.2 | swift:4.2 | openwhisk/action-swift-v4.2:latest | Latest Swift 4.2 language runtime |
-| swift@4.1 | swift:4.1 | openwhisk/action-swift-v4.1:latest | Latest Swift 4.1 language runtime |
-| swift@3.1.1 | swift:3.1.1 | openwhisk/action-swift-v3.1.1:latest | Latest Swift 3.1.1 language runtime |
-| dotnet, dotnet@2.2 | dotnet:2.2 | openwhisk/action-dotnet-v2.2:latest | Latest .NET Core 2.2 runtime |
-| language:default | N/A | N/A | Permit the OpenWhisk platform to select the correct default language runtime. |
+See the file [runtimes.json](https://github.com/apache/openwhisk/blob/master/ansible/files/runtimes.json) in
+the main [apache/openwhisk](https://github.com/apache/openwhisk) repository for the latest supported runtimes nad versions.
 
 #### Notes
-- If no value for runtime is supplied, the value 'language:default' will be assumed.
+- **WARNING**: _For OpenWhisk project builds, the Docker image used is tagged `nightly` in Docker Hub (e.g, for GitHub pull
+requests). Production uses of OpenWhisk code may use different images and tagged (released) image versions._
+- If no value for `runtime` is supplied, the value `language:default` will be assumed.
+- OpenWhisk runtimes may also include additional built-in packages (or libraries) that have been determined be useful for Actions surveyed and tested by the OpenWhisk platform.
+
 
 ### Recognized File extensions
 
 Although it is best practice to provide a runtime value when declaring an Action, it is not required. In those cases, that a runtime is not provided, the package tooling will attempt to derive the correct runtime based upon the the file extension for the Action's function (source code file). The
-following file extensions are recognized and will be run on the latest version of corresponding Runtime listed below:
+following file extensions are recognized and will be run on the version of corresponding Runtime listed below:
 
 <html>
 <table>

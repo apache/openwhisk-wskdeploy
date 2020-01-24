@@ -20,6 +20,7 @@ package deployers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/apache/openwhisk-wskdeploy/webaction"
 	"net/http"
 	"path"
 	"reflect"
@@ -317,7 +318,6 @@ func (deployer *ServiceDeployer) Deploy() error {
 
 	wskprint.PrintOpenWhiskSuccess(wski18n.T(wski18n.T(wski18n.ID_MSG_DEPLOYMENT_SUCCEEDED)))
 	return nil
-
 }
 
 func (deployer *ServiceDeployer) deployAssets() error {
@@ -1012,6 +1012,21 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 	return nil
 }
 
+func (deployer *ServiceDeployer) getAnnotationsFromPackageAction(packageActionName string) *whisk.KeyValueArr {
+
+	if len(packageActionName)!=0 {
+		// Split the package name and action name being searched for
+		aActionName := strings.Split(packageActionName,"/")
+
+		if pkg, found := deployer.Deployment.Packages[aActionName[0]]; found {
+			if atemp, found := pkg.Actions[aActionName[1]]; found {
+				return &(atemp.Action.Annotations)
+			}
+		}
+	}
+	return nil
+}
+
 // create api (API Gateway functionality)
 func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 
@@ -1024,11 +1039,26 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 
 	apiCreateReqOptions := deployer.Deployment.ApiOptions[apiPath]
 
+	// Retrieve annotations on the action we are attempting to create an API for
+	var actionAnnotations *whisk.KeyValueArr
+	actionAnnotations = deployer.getAnnotationsFromPackageAction(api.ApiDoc.Action.Name)
+
+	// Process any special annotations (e.g., "require-whisk-auth") on the associated Action
+	if actionAnnotations != nil {
+		wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, fmt.Sprintf("Processing action annotations: %v", actionAnnotations))
+
+		// If the "require-whisk-auth" annotation is present on the referenced action,
+		// apply its user provided security key (i.e., the annotation's value) to the API
+		if webaction.HasAnnotation(actionAnnotations, webaction.REQUIRE_WHISK_AUTH) {
+			api.ApiDoc.Action.SecureKey = actionAnnotations.GetValue(webaction.REQUIRE_WHISK_AUTH)
+		}
+	}
+
 	if len(deployer.Client.Config.ApigwTenantId) > 0 {
 		// Use it to identify the IAM namespace
 		apiCreateReqOptions.SpaceGuid = deployer.Client.Config.ApigwTenantId
 	} else {
-		//  assume a CF namespaces (SpaceGuid) which is part of the authtoken
+		//  assume a CF namespace (SpaceGuid) which is part of the authtoken
 		apiCreateReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
 	}
 

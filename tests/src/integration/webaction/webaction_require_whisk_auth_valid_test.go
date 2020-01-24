@@ -24,18 +24,21 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+	"time"
 )
 
-var wskprops = common.GetWskprops()
-
-func TestWebAction(t *testing.T) {
+func TestRequireWhiskAuthAnnotation(t *testing.T) {
 	wskdeploy := common.NewWskdeploy()
-	_, err := wskdeploy.DeployManifestPathOnly(manifestPath)
-	assert.Equal(t, nil, err, "Failed to deploy based on the manifest file.")
-	_, err = wskdeploy.UndeployManifestPathOnly(manifestPath)
-	assert.Equal(t, nil, err, "Failed to undeploy based on the manifest file.")
+	_, err := wskdeploy.DeployManifestPathOnly(manifestPathValidTests)
+	assert.Equal(t, nil, err, "Failed to deploy 'require-whisk-auth' annotations based on the manifest file.")
+
+	// artificial 1 second delay to allow API/swagger creation
+	time.Sleep(1 * time.Second)
+
+	_, err2 := wskdeploy.UndeployManifestPathOnly(manifestPathValidTests)
+	assert.Equal(t, nil, err2, "Failed to undeploy 'require-whisk-auth' annotations based on the manifest file.")
 }
 
 var (
-	manifestPath = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest.yml"
+	manifestPathValidTests = os.Getenv("GOPATH") + "/src/github.com/apache/openwhisk-wskdeploy/tests/src/integration/webaction/manifest_require_whisk_auth_valid.yaml"
 )

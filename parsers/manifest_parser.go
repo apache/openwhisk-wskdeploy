@@ -521,11 +521,13 @@ func (dm *YAMLParser) ComposeSequences(namespace string, sequences map[string]Se
 		// when web-export is set to raw, treat sequence as a raw HTTP web action,
 		// when web-export is set to no | false, treat sequence as a standard action
 		if len(sequence.Web) != 0 {
-			wskaction.Annotations, errorParser = webaction.WebAction(manifestFilePath, wskaction.Name, sequence.Web, wskaction.Annotations, false)
+			wskaction.Annotations, errorParser = webaction.SetWebActionAnnotations(manifestFilePath, wskaction.Name, sequence.Web, wskaction.Annotations, false)
 			if errorParser != nil {
 				return nil, errorParser
 			}
 		}
+
+		// TODO Add web-secure support for sequences?
 
 		record := utils.ActionRecord{Action: wskaction, Packagename: packageName, Filepath: key}
 		listOfSequences = append(listOfSequences, record)
@@ -849,8 +851,10 @@ func (dm *YAMLParser) composeActionLimits(limits Limits) *whisk.Limits {
 	return nil
 }
 
-func (dm *YAMLParser) validateActionWebFlag(action Action) {
-	if len(action.Web) != 0 && len(action.Webexport) != 0 {
+func (dm *YAMLParser) warnIfRedundantWebActionFlags(action Action) {
+	// Warn user if BOTH web and web-export specified,
+	// as they are redundant; defer to "web" flag and its value
+	if len(action.Web) != 0 && len(action.WebExport) != 0 {
 		warningString := wski18n.T(wski18n.ID_WARN_ACTION_WEB_X_action_X,
 			map[string]interface{}{wski18n.KEY_ACTION: action.Name})
 		wskprint.PrintOpenWhiskWarning(warningString)
@@ -905,6 +909,9 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		//}
 
 		// Action.Annotations
+		// ==================
+		// WARNING!  Processing of explicit Annotations MUST occur before handling of Action keys, as these
+		// keys often need to check for inconsistencies (and raise errors).
 		if listOfAnnotations := dm.composeAnnotations(action.Annotations); len(listOfAnnotations) > 0 {
 			wskaction.Annotations = append(wskaction.Annotations, listOfAnnotations...)
 		}
@@ -914,14 +921,33 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 			wskaction.Annotations = append(wskaction.Annotations, managedAnnotations)
 		}
 
-		// Web Export
+		// Web Export (i.e., "web-export" annotation)
+		// ==========
 		// Treat ACTION as a web action, a raw HTTP web action, or as a standard action based on web-export;
 		// when web-export is set to yes | true, treat action as a web action,
 		// when web-export is set to raw, treat action as a raw HTTP web action,
 		// when web-export is set to no | false, treat action as a standard action
-		dm.validateActionWebFlag(action)
+		dm.warnIfRedundantWebActionFlags(action)
 		if len(action.GetWeb()) != 0 {
-			wskaction.Annotations, errorParser = webaction.WebAction(manifestFilePath, action.Name, action.GetWeb(), wskaction.Annotations, false)
+			wskaction.Annotations, errorParser = webaction.SetWebActionAnnotations(
+				manifestFilePath,
+				action.Name,
+				action.GetWeb(),
+				wskaction.Annotations,
+				false)
+			if errorParser != nil {
+				return listOfActions, errorParser
+			}
+		}
+
+		// validate special action annotations such as "require-whisk-auth"
+		// TODO: the Manifest parser will validate any declared APIs that ref. this action
+		if wskaction.Annotations != nil {
+			if webaction.HasAnnotation(&wskaction.Annotations, webaction.REQUIRE_WHISK_AUTH) {
+				_, errorParser = webaction.ValidateRequireWhiskAuthAnnotationValue(
+					actionName,
+					wskaction.Annotations.GetValue(webaction.REQUIRE_WHISK_AUTH))
+			}
 			if errorParser != nil {
 				return listOfActions, errorParser
 			}
@@ -933,22 +959,25 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 				wskaction.Limits = wsklimits
 			}
 		}
+
 		// Conductor Action
 		if action.Conductor {
 			wskaction.Annotations = append(wskaction.Annotations, conductor.ConductorAction())
 		}
 
+		// Set other top-level values for the action (e.g., name, version, publish, etc.)
 		wskaction.Name = actionName
 		pub := false
 		wskaction.Publish = &pub
 		wskaction.Version = wskenv.ConvertSingleName(action.Version)
 
+		// create a "record" of the Action relative to its package and function filepath
+		// which will be used to compose the REST API calls
 		record := utils.ActionRecord{Action: wskaction, Packagename: packageName, Filepath: actionFilePath}
 		listOfActions = append(listOfActions, record)
 	}
 
 	return listOfActions, nil
-
 }
 
 func (dm *YAMLParser) ComposeTriggersFromAllPackages(manifest *YAML, filePath string, managedAnnotations whisk.KeyValue, inputs map[string]PackageInputs) ([]*whisk.Trigger, error) {

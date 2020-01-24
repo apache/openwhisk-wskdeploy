@@ -18,17 +18,23 @@
 package webaction
 
 import (
+	"fmt"
 	"github.com/apache/openwhisk-client-go/whisk"
+	"github.com/apache/openwhisk-wskdeploy/utils"
 	"github.com/apache/openwhisk-wskdeploy/wskderrors"
+	"github.com/apache/openwhisk-wskdeploy/wski18n"
+	"github.com/apache/openwhisk-wskdeploy/wskprint"
 	"strings"
 )
 
 //for web action support, code from wsk cli with tiny adjustments
 const (
-	WEB_EXPORT_ANNOT = "web-export"
-	RAW_HTTP_ANNOT   = "raw-http"
-	FINAL_ANNOT      = "final"
-	TRUE             = "true"
+	REQUIRE_WHISK_AUTH = "require-whisk-auth"
+	WEB_EXPORT_ANNOT   = "web-export"
+	RAW_HTTP_ANNOT     = "raw-http"
+	FINAL_ANNOT        = "final"
+	TRUE               = "true"
+	MAX_JS_INT         = 1<<53 - 1
 )
 
 var webExport map[string]string = map[string]string{
@@ -46,7 +52,6 @@ func deleteKey(key string, keyValueArr whisk.KeyValueArr) whisk.KeyValueArr {
 			break
 		}
 	}
-
 	return keyValueArr
 }
 
@@ -55,11 +60,10 @@ func addKeyValue(key string, value interface{}, keyValueArr whisk.KeyValueArr) w
 		Key:   key,
 		Value: value,
 	}
-
 	return append(keyValueArr, keyValue)
 }
 
-func WebAction(filePath string, action string, webMode string, annotations whisk.KeyValueArr, fetch bool) (whisk.KeyValueArr, error) {
+func SetWebActionAnnotations(filePath string, action string, webMode string, annotations whisk.KeyValueArr, fetch bool) (whisk.KeyValueArr, error) {
 	switch strings.ToLower(webMode) {
 	case webExport["TRUE"]:
 		fallthrough
@@ -70,7 +74,7 @@ func WebAction(filePath string, action string, webMode string, annotations whisk
 	case webExport["FALSE"]:
 		return webActionAnnotations(fetch, annotations, deleteWebAnnotations)
 	case webExport["RAW"]:
-		return webActionAnnotations(fetch, annotations, addRawAnnotations)
+		return webActionAnnotations(fetch, annotations, addWebRawAnnotations)
 	default:
 		return nil, wskderrors.NewInvalidWebExportError(filePath, action, webMode, getValidWebExports())
 	}
@@ -82,8 +86,9 @@ func webActionAnnotations(
 	fetchAnnotations bool,
 	annotations whisk.KeyValueArr,
 	webActionAnnotationMethod WebActionAnnotationMethod) (whisk.KeyValueArr, error) {
-	if annotations != nil || !fetchAnnotations {
-		annotations = webActionAnnotationMethod(annotations)
+
+		if annotations != nil || !fetchAnnotations {
+			annotations = webActionAnnotationMethod(annotations)
 	}
 
 	return annotations, nil
@@ -107,7 +112,7 @@ func deleteWebAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
 	return annotations
 }
 
-func addRawAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
+func addWebRawAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
 	annotations = deleteWebAnnotationKeys(annotations)
 	annotations = addKeyValue(WEB_EXPORT_ANNOT, true, annotations)
 	annotations = addKeyValue(RAW_HTTP_ANNOT, true, annotations)
@@ -144,4 +149,59 @@ func IsWebAction(webexport string) bool {
 
 func IsWebSequence(webexport string) bool {
 	return IsWebAction(webexport)
+}
+
+func HasAnnotation(annotations *whisk.KeyValueArr, key string) bool {
+	return (annotations.FindKeyValue(key) >= 0)
+}
+
+func ValidateRequireWhiskAuthAnnotationValue(actionName string, value interface{}) (string, error) {
+	var isValid = false
+	var enabled = wski18n.FEATURE_DISABLED
+
+	switch value.(type) {
+		case string:
+			secureValue := value.(string)
+			// assure the user-supplied token is valid (i.e., for now a non-empty string)
+			if len(secureValue) != 0 && secureValue!="<nil>" {
+				isValid = true
+				enabled = wski18n.FEATURE_ENABLED
+			}
+		case int:
+			secureValue := value.(int)
+			// FYI, the CLI defines MAX_JS_INT = 1<<53 - 1 (i.e.,  9007199254740991)
+			// NOTE: For JS, the largest exact integral value is 253-1, or 9007199254740991.
+			// In ES6, this is defined as Number MAX_SAFE_INTEGER.
+			// However, in JS, the bitwise operators and shift operators operate on 32-bit ints,
+			// so in that case, the max safe integer is 231-1, or 2147483647
+			// We also disallow negative integers
+			if secureValue < MAX_JS_INT && secureValue > 0 {
+				isValid = true
+				enabled = wski18n.FEATURE_ENABLED
+			}
+		case bool:
+			secureValue := value.(bool)
+			isValid = true
+			if secureValue {
+				enabled = wski18n.FEATURE_ENABLED
+			}
+	}
+
+	if !isValid {
+		errMsg := wski18n.T(wski18n.ID_ERR_WEB_ACTION_REQUIRE_AUTH_TOKEN_INVALID_X_action_X_key_X_value,
+			map[string]interface{}{
+				wski18n.KEY_ACTION: actionName,
+				wski18n.KEY_KEY: REQUIRE_WHISK_AUTH,
+				wski18n.KEY_VALUE: fmt.Sprintf("%v", value)})
+		return errMsg, wskderrors.NewActionSecureKeyError(errMsg)
+	}
+
+	// Emit an affirmation that security token will be applied to the action
+	msg := wski18n.T(wski18n.ID_VERBOSE_ACTION_AUTH_X_action_X_value_X,
+		map[string]interface{}{
+			wski18n.KEY_ACTION: actionName,
+			wski18n.KEY_VALUE:  enabled})
+	wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, msg)
+
+	return msg, nil
 }

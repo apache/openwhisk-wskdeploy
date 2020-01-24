@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+# TODO: test for value conflicts when both `web` and `web-export` supplied
 packages:
     IntegrationTestWebAction:
         actions:
@@ -43,13 +44,6 @@ packages:
                 version: 1.0
                 function: src/greeting.js
                 runtime: nodejs:default
-            greeting-web-action-with-auth:
-                web-export: true
-                version: 1.0
-                function: src/greeting.js
-                runtime: nodejs:default
-                annotations:
-                    require-whisk-auth: true
             greeting-web-action-final:
                 web-export: true
                 version: 1.0

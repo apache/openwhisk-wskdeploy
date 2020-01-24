@@ -36,6 +36,8 @@ const (
 	COMMAND_LINE       = "command line"
 	CONFIGURATION      = "Configuration"
 	DEPLOYMENT_FILE    = "deployment file"
+	FEATURE_DISABLED   = "disabled"
+	FEATURE_ENABLED	   = "enabled"
 	MANIFEST_FILE      = "manifest file"
 	NAME_PROJECT       = "project name"
 	PACKAGE_BINDING    = "package binding"
@@ -50,48 +52,48 @@ const (
 // Known keys used for text replacement in i18n translated strings
 const (
 	KEY_ACTION            = "action"
+	KEY_API               = "api"
+	KEY_API_BASE_PATH     = "apibasepath"
+	KEY_API_RELATIVE_PATH = "apirelativepath"
+	KEY_ARG               = "arg"
+	KEY_BINDINGS          = "bindings"
 	KEY_CMD               = "cmd"
 	KEY_CODE              = "code"
+	KEY_DEPENDENCY        = "dependency"
 	KEY_DEPLOYMENT_NAME   = "dname"
 	KEY_DEPLOYMENT_PATH   = "dpath"
+	KEY_DESTINATION       = "destination"
+	KEY_DUMMY_TOKEN       = "dummytoken"
 	KEY_ERR               = "err"
 	KEY_EXTENSION         = "ext"
 	KEY_FILE_TYPE         = "filetype"
 	KEY_HOST              = "host"
+	KEY_INCLUDE           = "include"
+	KEY_INPUTS            = "inputs"
 	KEY_KEY               = "key"
 	KEY_LIMIT             = "limit"
+	KEY_LOCATION          = "location"
 	KEY_MANIFEST_NAME     = "mname"
 	KEY_MANIFEST_PATH     = "mpath"
 	KEY_NAME              = "name"
 	KEY_NAMESPACE         = "namespace"
 	KEY_NEW               = "newkey"
 	KEY_OLD               = "oldkey"
+	KEY_PACKAGE           = "package"
 	KEY_PATH              = "path"
 	KEY_PROJECT           = "project"
+	KEY_RESPONSE          = "response"
+	KEY_RULE              = "rule"
 	KEY_RUNTIME           = "runtime"
-	KEY_SOURCE            = "source"
-	KEY_VALUE             = "value"
-	KEY_VALUE_MIN         = "min" // TODO() attempt to use this for Limit value range errors
-	KEY_VALUE_MAX         = "max" // TODO() attempt to use this for Limit value range errors
-	KEY_API               = "api"
-	KEY_URL               = "url"
-	KEY_PACKAGE           = "package"
-	KEY_BINDINGS          = "bindings"
-	KEY_DEPENDENCY        = "dependency"
-	KEY_LOCATION          = "location"
 	KEY_SEQUENCE          = "sequence"
+	KEY_SOURCE            = "source"
 	KEY_TRIGGER           = "trigger"
 	KEY_TRIGGER_FEED      = "feed"
-	KEY_RULE              = "rule"
-	KEY_ARG               = "arg"
-	KEY_INPUTS            = "inputs"
-	KEY_API_BASE_PATH     = "apibasepath"
-	KEY_RESPONSE          = "response"
-	KEY_API_RELATIVE_PATH = "apirelativepath"
-	KEY_DESTINATION       = "destination"
-	KEY_INCLUDE           = "include"
-	KEY_DUMMY_TOKEN       = "dummytoken"
+	KEY_URL               = "url"
 	KEY_UUID              = "uuid"
+	KEY_VALUE             = "value"
+	KEY_VALUE_MAX         = "max" // TODO() attempt to use this for Limit value range errors
+	KEY_VALUE_MIN         = "min" // TODO() attempt to use this for Limit value range errors
 )
 
 // DO NOT TRANSLATE
@@ -216,6 +218,7 @@ const (
 	ID_ERR_REQUIRED_INPUTS_MISSING_VALUE_X_inputs_X                      = "msg_err_required_inputs_missing_value"
 	ID_ERR_API_GATEWAY_BASE_PATH_INVALID_X_api_X                         = "msg_err_api_gateway_base_path_invalid"
 	ID_ERR_RUNTIME_PARSER_ERROR                                          = "msg_err_runtime_parser_error"
+	ID_ERR_WEB_ACTION_REQUIRE_AUTH_TOKEN_INVALID_X_action_X_key_X_value  = "msg_err_web_action_require_auth_token_invalid"
 
 	// Server-side Errors (wskdeploy as an Action)
 	ID_ERR_JSON_MISSING_KEY_CMD = "msg_err_json_missing_cmd_key"
@@ -261,10 +264,11 @@ const (
 	ID_VERBOSE_CREATING_ZIP_FILE_X_path_X                                 = "msg_verbose_creating_zip_file"
 	ID_VERBOSE_DELETING_FILE_X_path_X                                     = "msg_verbose_deleting_file"
 	ID_VERBOSE_LIST_OF_FILES_MATCHING_PATTERN                             = "msg_verbose_list_of_files_matching_pattern"
+	ID_VERBOSE_ACTION_AUTH_X_action_X_value_X                             = "msg_action_authentication"
 )
 
 // DO NOT TRANSLATE
-// Used to unit test that translations exist with these IDs
+// Used to unit test that translations exist with these IDs and their keys != their values (string)
 var I18N_ID_SET = [](string){
 	ID_CMD_DESC_LONG_REPORT,
 	ID_CMD_DESC_LONG_ROOT,
@@ -278,11 +282,11 @@ var I18N_ID_SET = [](string){
 	ID_CMD_FLAG_CONFIG,
 	ID_CMD_FLAG_DEFAULTS,
 	ID_CMD_FLAG_DEPLOYMENT,
-	ID_CMD_FLAG_PREVIEW,
 	ID_CMD_FLAG_KEY_FILE,
 	ID_CMD_FLAG_MANAGED,
 	ID_CMD_FLAG_MANIFEST,
 	ID_CMD_FLAG_NAMESPACE,
+	ID_CMD_FLAG_PREVIEW,
 	ID_CMD_FLAG_PROJECT,
 	ID_CMD_FLAG_PROJECTNAME,
 	ID_CMD_FLAG_STRICT,
@@ -292,9 +296,11 @@ var I18N_ID_SET = [](string){
 	ID_DEBUG_PACKAGES_FOUND_UNDER_PROJECT_X_path_X_name_X,
 	ID_DEBUG_PACKAGES_FOUND_UNDER_ROOT_X_path_X,
 	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X,
+	ID_ERR_CANT_SAVE_DOCKER_RUNTIME,
 	ID_ERR_DEPENDENCY_UNKNOWN_TYPE,
 	ID_ERR_ENTITY_CREATE_X_key_X_err_X_code_X,
 	ID_ERR_ENTITY_DELETE_X_key_X_err_X_code_X,
+	ID_ERR_FILE_ALREADY_EXISTS,
 	ID_ERR_JSON_MISSING_KEY_CMD,
 	ID_ERR_JSON_MISSING_KEY_CMD,
 	ID_ERR_KEY_MISSING_X_key_X,
@@ -305,15 +311,16 @@ var I18N_ID_SET = [](string){
 	ID_ERR_RUNTIMES_GET_X_err_X,
 	ID_ERR_URL_INVALID_X_urltype_X_url_X_filetype_X,
 	ID_ERR_URL_MALFORMED_X_urltype_X_url_X,
-	ID_ERR_CANT_SAVE_DOCKER_RUNTIME,
-	ID_ERR_FILE_ALREADY_EXISTS,
+	ID_ERR_WEB_ACTION_REQUIRE_AUTH_TOKEN_INVALID_X_action_X_key_X_value,
 	ID_MSG_COMMAND_USING_X_cmd_X_filetype_X_path_X,
 	ID_MSG_CONFIG_INFO_APIHOST_X_host_X_source_X,
 	ID_MSG_CONFIG_INFO_AUTHKEY_X_source_X,
 	ID_MSG_CONFIG_INFO_NAMESPACE_X_namespace_X_source_X,
+	ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN,
 	ID_MSG_CONFIG_MISSING_APIHOST,
 	ID_MSG_CONFIG_MISSING_AUTHKEY,
 	ID_MSG_CONFIG_MISSING_NAMESPACE,
+	ID_MSG_CONFIG_PROVIDE_DEFAULT_APIGW_ACCESS_TOKEN,
 	ID_MSG_DEPENDENCY_DEPLOYING_X_name_X,
 	ID_MSG_DEPENDENCY_DEPLOYMENT_FAILURE_X_name_X,
 	ID_MSG_DEPENDENCY_DEPLOYMENT_SUCCESS_X_name_X,
@@ -355,6 +362,4 @@ var I18N_ID_SET = [](string){
 	ID_WARN_PACKAGES_NOT_FOUND_X_path_X,
 	ID_WARN_RUNTIME_CHANGED_X_runtime_X_action_X,
 	ID_WARN_WHISK_PROPS_DEPRECATED,
-	ID_MSG_CONFIG_MISSING_APIGW_ACCESS_TOKEN,
-	ID_MSG_CONFIG_PROVIDE_DEFAULT_APIGW_ACCESS_TOKEN,
 }
