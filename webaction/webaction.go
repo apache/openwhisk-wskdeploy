@@ -153,8 +153,11 @@ func HasAnnotation(annotations *whisk.KeyValueArr, key string) bool {
 	return (annotations.FindKeyValue(key) >= 0)
 }
 
-func CreateWebAnnotationsAsMap() map[string]interface{} {
-	annotations := make(map[string]interface{}, 3)
+func CreateWebAnnotationsAsMap(annotations map[string]interface{}) map[string]interface{} {
+	if annotations == nil {
+		annotations = make(map[string]interface{}, 3)
+	}
+
 	annotations[WEB_EXPORT_ANNOT] = true
 	annotations[RAW_HTTP_ANNOT] = false
 	annotations[FINAL_ANNOT] = true
@@ -162,17 +165,33 @@ func CreateWebAnnotationsAsMap() map[string]interface{} {
 }
 
 func WarnWebAnnotationMissingFromActionOrSequence(apiName string, actionName string, isSequence bool){
+	nameKey := wski18n.KEY_ACTION
 	i18nWarningID := wski18n.ID_WARN_API_MISSING_WEB_ACTION_X_action_X_api_X
 
 	if isSequence {
+		nameKey = wski18n.KEY_SEQUENCE
 		i18nWarningID = wski18n.ID_WARN_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X
 	}
 
 	warningString := wski18n.T(i18nWarningID,
 		map[string]interface{}{
-			wski18n.KEY_SEQUENCE: actionName,
+			nameKey: actionName,
 			wski18n.KEY_API:      apiName})
 	wskprint.PrintOpenWhiskWarning(warningString)
+}
+
+func ErrorWebAnnotationMissingFromActionOrSequence(apiName string, actionName string, isSequence bool){
+	i18nErrorID := wski18n.ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X
+
+	if isSequence {
+		i18nErrorID = wski18n.ID_ERR_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X
+	}
+
+	errString := wski18n.T(i18nErrorID,
+		map[string]interface{}{
+			wski18n.KEY_SEQUENCE: actionName,
+			wski18n.KEY_API:      apiName})
+	wskprint.PrintOpenWhiskWarning(errString)
 }
 
 func ValidateRequireWhiskAuthAnnotationValue(actionName string, value interface{}) (string, error) {

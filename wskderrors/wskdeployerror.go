@@ -19,6 +19,8 @@ package wskderrors
 
 import (
 	"fmt"
+	"github.com/apache/openwhisk-wskdeploy/wski18n"
+	"github.com/apache/openwhisk-wskdeploy/wskprint"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -63,6 +65,7 @@ const (
 	ERROR_YAML_INVALID_PARAMETER_TYPE     = "ERROR_YAML_INVALID_PARAMETER_TYPE"
 	ERROR_YAML_INVALID_RUNTIME            = "ERROR_YAML_INVALID_RUNTIME"
 	ERROR_YAML_INVALID_WEB_EXPORT         = "ERROR_YAML_INVALID_WEB_EXPORT"
+	ERROR_YAML_INVALID_API                = "ERROR_YAML_INVALID_API"
 	ERROR_YAML_INVALID_API_GATEWAY_METHOD = "ERROR_YAML_INVALID_API_GATEWAY_METHOD"
 	ERROR_RUNTIME_PARSER_FAILURE          = "ERROR_RUNTIME_PARSER_FAILURE"
 	ERROR_ACTION_ANNOTATION               = "ERROR_ACTION_ANNOTATION"
@@ -442,6 +445,35 @@ func NewInvalidAPIGatewayMethodError(fpath string, api string, method string, su
 		STR_API_METHOD, method,
 		STR_API_SUPPORTED_METHODS, strings.Join(supportedMethods, ", "))
 	err.SetMessage(str)
+	return err
+}
+
+/*
+ * Invalid Web Action API
+ */
+type InvalidWebActionAPIError struct {
+	WskDeployBaseErr
+}
+
+func NewInvalidWebActionError(apiName string, actionName string, isSequence bool) *InvalidWebActionAPIError {
+	var err = &InvalidWebActionAPIError{
+	}
+
+	i18nErrorID := wski18n.ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X
+
+	if isSequence {
+		i18nErrorID = wski18n.ID_ERR_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X
+	}
+
+	errString := wski18n.T(i18nErrorID,
+		map[string]interface{}{
+			wski18n.KEY_SEQUENCE: actionName,
+			wski18n.KEY_API:      apiName})
+	wskprint.PrintOpenWhiskWarning(errString)
+
+	err.SetErrorType(ERROR_YAML_INVALID_API)
+	err.SetCallerByStackFrameSkip(2)
+	err.SetMessage(errString)
 	return err
 }
 

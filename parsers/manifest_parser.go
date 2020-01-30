@@ -1223,12 +1223,18 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						// web or web-export set to any of [true, yes, raw]
 						a := pkg.Actions[actionName]
 						if !webaction.IsWebAction(a.GetWeb()) {
-							webaction.WarnWebAnnotationMissingFromActionOrSequence(apiName,actionName,false)
-							if a.Annotations == nil {
-								a.Annotations = make(map[string]interface{}, 0)
+							if !utils.Flags.Strict {
+								webaction.WarnWebAnnotationMissingFromActionOrSequence(apiName,actionName,false)
+								if a.Annotations == nil {
+									a.Annotations = make(map[string]interface{}, 0)
+								}
+								a.Annotations[webaction.WEB_EXPORT_ANNOT] = true
+								//a.Annotations = webaction.CreateWebAnnotationsAsMap()
+								pkg.Actions[actionName] = a
+							} else {
+								err := wskderrors.NewInvalidWebActionError(apiName,actionName,false)
+								return requests, requestOptions, err
 							}
-							a.Annotations[webaction.WEB_EXPORT_ANNOT] = true
-							pkg.Actions[actionName] = a
 						}
 						// verify that the sequence is defined under sequences sections
 					} else if _, ok := pkg.Sequences[actionName]; ok {
@@ -1236,12 +1242,18 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						// web set to any of [true, yes, raw]
 						a := pkg.Sequences[actionName]
 						if !webaction.IsWebSequence(a.Web) {
-							webaction.WarnWebAnnotationMissingFromActionOrSequence(apiName,actionName,true)
-							if a.Annotations == nil {
-								a.Annotations = make(map[string]interface{}, 0)
+							if !utils.Flags.Strict  {
+								webaction.WarnWebAnnotationMissingFromActionOrSequence(apiName,actionName,true)
+								if a.Annotations == nil {
+									a.Annotations = make(map[string]interface{}, 0)
+								}
+								a.Annotations[webaction.WEB_EXPORT_ANNOT] = true
+								//a.Annotations = webaction.CreateWebAnnotationsAsMap()
+								pkg.Sequences[actionName] = a
+							} else {
+								err := wskderrors.NewInvalidWebActionError(apiName,actionName,true)
+								return requests, requestOptions, err
 							}
-							a.Annotations[webaction.WEB_EXPORT_ANNOT] = true
-							pkg.Sequences[actionName] = a
 						}
 						// return failure since action or sequence are not defined in the manifest
 					} else {

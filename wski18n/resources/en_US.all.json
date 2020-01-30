@@ -388,6 +388,14 @@
     "translation": "API Gateway base path [{{.apibasepath}}] is invalid. It has path parameters which is not supported, only relative path supports path parameters."
   },
   {
+    "id": "msg_err_api_missing_web_action",
+    "translation": "Action [{{.action}}] is not a web action, API [{{.api}}] can only be created using a web action.\n"
+  },
+  {
+    "id": "msg_err_api_missing_web_sequence",
+    "translation": "Sequence [{{.sequence}}] is not a web sequence, API [{{.api}}] can only be created using a web sequence.\n"
+  },
+  {
     "id": "msg_err_runtime_parser_error",
     "translation": "Failed to retrieve runtimes {{.err}}."
   },
@@ -481,11 +489,11 @@
   },
   {
     "id": "msg_warn_api_missing_web_action",
-    "translation": "Action [{{.action}}] is not a web action, API [{{.api}}] can only be created using web action. Converting [{{.action}}] to a web action.\n"
+    "translation": "Action [{{.action}}] is not a web action, API [{{.api}}] can only be created using a web action. Converting [{{.action}}] to a web action.\n"
   },
   {
     "id": "msg_warn_api_missing_web_sequence",
-    "translation": "Sequence [{{.sequence}}] is not a web sequence, API [{{.api}}] can only be created using web sequence. Converting [{{.sequence}}] to a web sequence.\n"
+    "translation": "Sequence [{{.sequence}}] is not a web sequence, API [{{.api}}] can only be created using a web sequence. Converting [{{.sequence}}] to a web sequence.\n"
   },
   {
     "id": "msg_warn_api_invalid_response_type",
