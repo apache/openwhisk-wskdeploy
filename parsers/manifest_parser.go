@@ -1223,11 +1223,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						// web or web-export set to any of [true, yes, raw]
 						a := pkg.Actions[actionName]
 						if !webaction.IsWebAction(a.GetWeb()) {
-							warningString := wski18n.T(wski18n.ID_WARN_API_MISSING_WEB_ACTION_X_action_X_api_X,
-								map[string]interface{}{
-									wski18n.KEY_ACTION: actionName,
-									wski18n.KEY_API:    apiName})
-							wskprint.PrintOpenWhiskWarning(warningString)
+							webaction.WarnWebAnnotationMissingFromActionOrSequence(apiName,actionName,false)
 							if a.Annotations == nil {
 								a.Annotations = make(map[string]interface{}, 0)
 							}
@@ -1240,11 +1236,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						// web set to any of [true, yes, raw]
 						a := pkg.Sequences[actionName]
 						if !webaction.IsWebSequence(a.Web) {
-							warningString := wski18n.T(wski18n.ID_WARN_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X,
-								map[string]interface{}{
-									wski18n.KEY_SEQUENCE: actionName,
-									wski18n.KEY_API:      apiName})
-							wskprint.PrintOpenWhiskWarning(warningString)
+							webaction.WarnWebAnnotationMissingFromActionOrSequence(apiName,actionName,true)
 							if a.Annotations == nil {
 								a.Annotations = make(map[string]interface{}, 0)
 							}

@@ -1012,14 +1012,17 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 	return nil
 }
 
-func (deployer *ServiceDeployer) getAnnotationsFromPackageAction(packageActionName string) *whisk.KeyValueArr {
+func (deployer *ServiceDeployer) getAnnotationsFromPackageActionOrSequence(packageActionName string) *whisk.KeyValueArr {
 
 	if len(packageActionName)!=0 {
 		// Split the package name and action name being searched for
-		aActionName := strings.Split(packageActionName,"/")
+		aActionName := strings.Split(packageActionName,	parsers.PATH_SEPARATOR)
 
+		// Attempt to locate the named action (or sequence) to return its annotations
 		if pkg, found := deployer.Deployment.Packages[aActionName[0]]; found {
 			if atemp, found := pkg.Actions[aActionName[1]]; found {
+				return &(atemp.Action.Annotations)
+			} else if atemp, found := pkg.Sequences[aActionName[1]]; found {
 				return &(atemp.Action.Annotations)
 			}
 		}
@@ -1041,9 +1044,11 @@ func (deployer *ServiceDeployer) createApi(api *whisk.ApiCreateRequest) error {
 
 	// Retrieve annotations on the action we are attempting to create an API for
 	var actionAnnotations *whisk.KeyValueArr
-	actionAnnotations = deployer.getAnnotationsFromPackageAction(api.ApiDoc.Action.Name)
+	actionAnnotations = deployer.getAnnotationsFromPackageActionOrSequence(api.ApiDoc.Action.Name)
 
 	// Process any special annotations (e.g., "require-whisk-auth") on the associated Action
+	// NOTE: we do not throw an error if annotations are NOT found (nil) since this is already done in
+	// the parsing phase and would be redundant.
 	if actionAnnotations != nil {
 		wskprint.PrintlnOpenWhiskVerbose(utils.Flags.Verbose, fmt.Sprintf("Processing action annotations: %v", actionAnnotations))
 
