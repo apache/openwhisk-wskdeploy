@@ -92,6 +92,10 @@ func webActionAnnotations( fetchAnnotations bool, annotations whisk.KeyValueArr,
 	return annotations, nil
 }
 
+func AddWebAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
+	return addWebAnnotations(annotations)
+}
+
 func addWebAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
 	annotations = deleteWebAnnotationKeys(annotations)
 	annotations = addKeyValue(WEB_EXPORT_ANNOT, true, annotations)
@@ -151,17 +155,6 @@ func IsWebSequence(webexport string) bool {
 
 func HasAnnotation(annotations *whisk.KeyValueArr, key string) bool {
 	return (annotations.FindKeyValue(key) >= 0)
-}
-
-func CreateWebAnnotationsAsMap(annotations map[string]interface{}) map[string]interface{} {
-	if annotations == nil {
-		annotations = make(map[string]interface{}, 3)
-	}
-
-	annotations[WEB_EXPORT_ANNOT] = true
-	annotations[RAW_HTTP_ANNOT] = false
-	annotations[FINAL_ANNOT] = true
-	return annotations
 }
 
 func WarnWebAnnotationMissingFromActionOrSequence(apiName string, actionName string, isSequence bool){

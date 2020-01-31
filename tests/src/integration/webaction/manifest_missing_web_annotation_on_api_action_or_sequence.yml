@@ -15,7 +15,10 @@
 # limitations under the License.
 #
 
-# TODO: test for value conflicts when both `web` and `web-export` supplied
+# Test automatically adding web annotations on Actions that do not have them declared
+# when these actions are used to create APIs.
+# 1) Test an Action missing web-export, but with existing Annotations declared
+# 2) Test a Sequence missing web-export with NO existing Annotations (to verify we allocate)
 packages:
     TestMissingWebAnnotation:
         actions:
@@ -23,6 +26,8 @@ packages:
                 function: src/hello_http_validate.js
             hello:
                 function: src/hello.js
+                annotations:
+                    foo: bar
             hello_wrap:
                 function: src/hello_http_wrap.js
         sequences:
@@ -31,7 +36,7 @@ packages:
         apis:
             actionmissingweb:
                 helloworlds:
-                    hellosequence:
+                    helloweb:
                         hello:
                             method: GET
                             response: http
