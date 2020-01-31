@@ -92,10 +92,6 @@ func webActionAnnotations( fetchAnnotations bool, annotations whisk.KeyValueArr,
 	return annotations, nil
 }
 
-func AddWebAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
-	return addWebAnnotations(annotations)
-}
-
 func addWebAnnotations(annotations whisk.KeyValueArr) whisk.KeyValueArr {
 	annotations = deleteWebAnnotationKeys(annotations)
 	annotations = addKeyValue(WEB_EXPORT_ANNOT, true, annotations)
@@ -157,7 +153,7 @@ func HasAnnotation(annotations *whisk.KeyValueArr, key string) bool {
 	return (annotations.FindKeyValue(key) >= 0)
 }
 
-func WarnWebAnnotationMissingFromActionOrSequence(apiName string, actionName string, isSequence bool){
+func warnWebAnnotationMissingFromActionOrSequence(apiName string, actionName string, isSequence bool){
 	nameKey := wski18n.KEY_ACTION
 	i18nWarningID := wski18n.ID_WARN_API_MISSING_WEB_ACTION_X_action_X_api_X
 
@@ -173,18 +169,20 @@ func WarnWebAnnotationMissingFromActionOrSequence(apiName string, actionName str
 	wskprint.PrintOpenWhiskWarning(warningString)
 }
 
-func ErrorWebAnnotationMissingFromActionOrSequence(apiName string, actionName string, isSequence bool){
-	i18nErrorID := wski18n.ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X
+func TryUpdateAPIsActionToWebAction(records []utils.ActionRecord, pkgName string, apiName string, actionName string, isSequence bool) error {
+	a1 := utils.GetActionFromActionRecords(records,pkgName,actionName)
 
-	if isSequence {
-		i18nErrorID = wski18n.ID_ERR_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X
-	}
+	if a1.Annotations.FindKeyValue(WEB_EXPORT_ANNOT) == -1 {
+		if !utils.Flags.Strict {
+			warnWebAnnotationMissingFromActionOrSequence(apiName,actionName,isSequence)
+			a1.Annotations = addWebAnnotations(a1.Annotations)
+			fmt.Printf("Web Annotations to Action; result: %v\n",a1.Annotations)
+		} else {
+			return wskderrors.NewInvalidWebActionError(apiName,actionName,isSequence)
+		}
+	} // NOOP
 
-	errString := wski18n.T(i18nErrorID,
-		map[string]interface{}{
-			wski18n.KEY_SEQUENCE: actionName,
-			wski18n.KEY_API:      apiName})
-	wskprint.PrintOpenWhiskWarning(errString)
+	return nil
 }
 
 func ValidateRequireWhiskAuthAnnotationValue(actionName string, value interface{}) (string, error) {

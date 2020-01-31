@@ -21,7 +21,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -1227,34 +1226,18 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						// verify that the action is defined as web action;
 						// web or web-export set to any of [true, yes, raw]; if not,
 						// we will try to add it (if no strict" flag) and warn user that we did so
-						a1 := utils.GetActionFromActionRecords(actionrecords,packageName,actionName)
-
-						if a1.Annotations.FindKeyValue(webaction.WEB_EXPORT_ANNOT) == -1 {
-							if !utils.Flags.Strict {
-								webaction.WarnWebAnnotationMissingFromActionOrSequence(apiName,actionName,false)
-								a1.Annotations = webaction.AddWebAnnotations(a1.Annotations)
-								fmt.Printf("%v\n",a1.Annotations)
-							} else {
-								err := wskderrors.NewInvalidWebActionError(apiName,actionName,false)
-								return requests, requestOptions, err
-							}
+						if err := webaction.TryUpdateAPIsActionToWebAction(actionrecords, packageName,
+							apiName, actionName, false); err!=nil {
+							return requests, requestOptions, err
 						}
 						// verify that the sequence action is defined under sequences records
 					} else if _, ok := pkg.Sequences[actionName]; ok {
 						// verify that the sequence action is defined as web sequence
 						// web or web-export set to any of [true, yes, raw]; if not,
 						// we will try to add it (if no strict" flag) and warn user that we did so
-						a1 := utils.GetActionFromActionRecords(sequencerecords,packageName,actionName)
-
-						if a1.Annotations.FindKeyValue(webaction.WEB_EXPORT_ANNOT) == -1 {
-							if !utils.Flags.Strict {
-								webaction.WarnWebAnnotationMissingFromActionOrSequence(apiName,actionName,false)
-								a1.Annotations = webaction.AddWebAnnotations(a1.Annotations)
-								fmt.Printf("%v\n",a1.Annotations)
-							} else {
-								err := wskderrors.NewInvalidWebActionError(apiName,actionName,false)
-								return requests, requestOptions, err
-							}
+						if err := webaction.TryUpdateAPIsActionToWebAction(sequencerecords, packageName,
+							apiName, actionName, true); err!=nil {
+							return requests, requestOptions, err
 						}
 					} else {
 						return nil, nil, wskderrors.NewYAMLFileFormatError(manifestPath,

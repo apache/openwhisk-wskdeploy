@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+# TODO automate this testcase
 # Test automatically adding web annotations on Actions that do not have them declared
 # when these actions are used to create APIs.
 # 1) Test an Action missing web-export, but with existing Annotations declared
