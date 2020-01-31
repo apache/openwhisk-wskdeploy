@@ -172,7 +172,8 @@ func warnWebAnnotationMissingFromActionOrSequence(apiName string, actionName str
 func TryUpdateAPIsActionToWebAction(records []utils.ActionRecord, pkgName string, apiName string, actionName string, isSequence bool) error {
 	a1 := utils.GetActionFromActionRecords(records,pkgName,actionName)
 
-	if a1.Annotations.FindKeyValue(WEB_EXPORT_ANNOT) == -1 {
+	//if a1.Annotations.FindKeyValue(WEB_EXPORT_ANNOT) == -1 {
+	if !HasAnnotation(&a1.Annotations,WEB_EXPORT_ANNOT) {
 		if !utils.Flags.Strict {
 			warnWebAnnotationMissingFromActionOrSequence(apiName,actionName,isSequence)
 			a1.Annotations = addWebAnnotations(a1.Annotations)
@@ -180,7 +181,12 @@ func TryUpdateAPIsActionToWebAction(records []utils.ActionRecord, pkgName string
 		} else {
 			return wskderrors.NewInvalidWebActionError(apiName,actionName,isSequence)
 		}
-	} // NOOP
+	} else {
+		// verify its web-export annotation value is "true", else error
+		if !a1.WebAction() {
+			return wskderrors.NewInvalidWebActionError(apiName,actionName,isSequence)
+		}
+	}
 
 	return nil
 }

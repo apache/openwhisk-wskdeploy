@@ -1230,7 +1230,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 							apiName, actionName, false); err!=nil {
 							return requests, requestOptions, err
 						}
-						// verify that the sequence action is defined under sequences records
+						// verify that the sequence action is defined under sequence records
 					} else if _, ok := pkg.Sequences[actionName]; ok {
 						// verify that the sequence action is defined as web sequence
 						// web or web-export set to any of [true, yes, raw]; if not,

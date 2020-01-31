@@ -20,6 +20,7 @@
 # when these actions are used to create APIs.
 # 1) Test an Action missing web-export, but with existing Annotations declared
 # 2) Test a Sequence missing web-export with NO existing Annotations (to verify we allocate)
+# 3) Test if web-action is set to false that we error out as we cannot override explicit value
 packages:
     TestMissingWebAnnotation:
         actions:
@@ -31,6 +32,9 @@ packages:
                     foo: bar
             hello_wrap:
                 function: src/hello_http_wrap.js
+            helloWebFalse:
+                function: src/hello.js
+                web: false
         sequences:
             hellosequence:
                 actions: hello_validate, hello, hello_wrap
@@ -42,5 +46,8 @@ packages:
                             method: GET
                             response: http
                         hellosequence:
+                            method: GET
+                            response: http
+                        helloWebFalse:
                             method: GET
                             response: http
