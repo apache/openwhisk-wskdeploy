@@ -145,10 +145,6 @@ func IsWebAction(webexport string) bool {
 	return false
 }
 
-func IsWebSequence(webexport string) bool {
-	return IsWebAction(webexport)
-}
-
 func HasAnnotation(annotations *whisk.KeyValueArr, key string) bool {
 	return (annotations.FindKeyValue(key) >= 0)
 }
@@ -170,21 +166,27 @@ func warnWebAnnotationMissingFromActionOrSequence(apiName string, actionName str
 }
 
 func TryUpdateAPIsActionToWebAction(records []utils.ActionRecord, pkgName string, apiName string, actionName string, isSequence bool) error {
-	a1 := utils.GetActionFromActionRecords(records,pkgName,actionName)
 
-	//if a1.Annotations.FindKeyValue(WEB_EXPORT_ANNOT) == -1 {
-	if !HasAnnotation(&a1.Annotations,WEB_EXPORT_ANNOT) {
-		if !utils.Flags.Strict {
-			warnWebAnnotationMissingFromActionOrSequence(apiName,actionName,isSequence)
-			a1.Annotations = addWebAnnotations(a1.Annotations)
-			fmt.Printf("Web Annotations to Action; result: %v\n",a1.Annotations)
+	// if records are nil; it may be that the Action already exists at target provider OR
+	// this is a unit test.  If the former case, we pass through and allow provider to validate
+	// and return an error.
+	if records!=nil {
+		action := utils.GetActionFromActionRecords(records,pkgName,actionName)
+
+		if !HasAnnotation(&action.Annotations,WEB_EXPORT_ANNOT) {
+			if !utils.Flags.Strict {
+				warnWebAnnotationMissingFromActionOrSequence(apiName,actionName,isSequence)
+				action.Annotations = addWebAnnotations(action.Annotations)
+				wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose,
+					fmt.Sprintf("Web Annotations to Action; result: %v\n",action.Annotations))
+			} else {
+				return wskderrors.NewInvalidWebActionError(apiName,actionName,isSequence)
+			}
 		} else {
-			return wskderrors.NewInvalidWebActionError(apiName,actionName,isSequence)
-		}
-	} else {
-		// verify its web-export annotation value is "true", else error
-		if !a1.WebAction() {
-			return wskderrors.NewInvalidWebActionError(apiName,actionName,isSequence)
+			// verify its web-export annotation value is "true", else error
+			if !action.WebAction() {
+				return wskderrors.NewInvalidWebActionError(apiName,actionName,isSequence)
+			}
 		}
 	}
 
