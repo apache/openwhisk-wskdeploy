@@ -217,6 +217,8 @@ const (
 	ID_ERR_INVALID_PARAM_FILE_X_file_X                                   = "msg_err_invalid_param_file"
 	ID_ERR_REQUIRED_INPUTS_MISSING_VALUE_X_inputs_X                      = "msg_err_required_inputs_missing_value"
 	ID_ERR_API_GATEWAY_BASE_PATH_INVALID_X_api_X                         = "msg_err_api_gateway_base_path_invalid"
+	ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X           			 = "msg_err_api_missing_web_action"
+	ID_ERR_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X      			 = "msg_err_api_missing_web_sequence"
 	ID_ERR_RUNTIME_PARSER_ERROR                                          = "msg_err_runtime_parser_error"
 	ID_ERR_WEB_ACTION_REQUIRE_AUTH_TOKEN_INVALID_X_action_X_key_X_value  = "msg_err_web_action_require_auth_token_invalid"
 
@@ -296,6 +298,9 @@ var I18N_ID_SET = [](string){
 	ID_DEBUG_PACKAGES_FOUND_UNDER_PROJECT_X_path_X_name_X,
 	ID_DEBUG_PACKAGES_FOUND_UNDER_ROOT_X_path_X,
 	ID_DEBUG_PROJECT_SEARCH_X_path_X_key_X,
+	ID_ERR_API_GATEWAY_BASE_PATH_INVALID_X_api_X,
+	ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X,
+	ID_ERR_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X,
 	ID_ERR_CANT_SAVE_DOCKER_RUNTIME,
 	ID_ERR_DEPENDENCY_UNKNOWN_TYPE,
 	ID_ERR_ENTITY_CREATE_X_key_X_err_X_code_X,

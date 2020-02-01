@@ -1,0 +1,53 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# TODO automate this testcase
+# Test automatically adding web annotations on Actions that do not have them declared
+# when these actions are used to create APIs.
+# 1) Test an Action missing web-export, but with existing Annotations declared
+# 2) Test a Sequence missing web-export with NO existing Annotations (to verify we allocate)
+# 3) Test if web-action is set to false that we error out as we cannot override explicit value
+packages:
+    TestMissingWebAnnotation:
+        actions:
+            hello_validate:
+                function: src/hello_http_validate.js
+            hello:
+                function: src/hello.js
+                annotations:
+                    foo: bar
+            hello_wrap:
+                function: src/hello_http_wrap.js
+            helloWebFalse:
+                function: src/hello.js
+                web: false
+        sequences:
+            hellosequence:
+                actions: hello_validate, hello, hello_wrap
+        apis:
+            actionmissingweb:
+                helloworlds:
+                    helloweb:
+                        hello:
+                            method: GET
+                            response: http
+                        hellosequence:
+                            method: GET
+                            response: http
+                        helloWebFalse:
+                            method: GET
+                            response: http

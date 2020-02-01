@@ -82,9 +82,7 @@ func SetWebActionAnnotations(filePath string, action string, webMode string, ann
 
 type WebActionAnnotationMethod func(annotations whisk.KeyValueArr) whisk.KeyValueArr
 
-func webActionAnnotations(
-	fetchAnnotations bool,
-	annotations whisk.KeyValueArr,
+func webActionAnnotations( fetchAnnotations bool, annotations whisk.KeyValueArr,
 	webActionAnnotationMethod WebActionAnnotationMethod) (whisk.KeyValueArr, error) {
 
 		if annotations != nil || !fetchAnnotations {
@@ -147,12 +145,52 @@ func IsWebAction(webexport string) bool {
 	return false
 }
 
-func IsWebSequence(webexport string) bool {
-	return IsWebAction(webexport)
-}
-
 func HasAnnotation(annotations *whisk.KeyValueArr, key string) bool {
 	return (annotations.FindKeyValue(key) >= 0)
+}
+
+func warnWebAnnotationMissingFromActionOrSequence(apiName string, actionName string, isSequence bool){
+	nameKey := wski18n.KEY_ACTION
+	i18nWarningID := wski18n.ID_WARN_API_MISSING_WEB_ACTION_X_action_X_api_X
+
+	if isSequence {
+		nameKey = wski18n.KEY_SEQUENCE
+		i18nWarningID = wski18n.ID_WARN_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X
+	}
+
+	warningString := wski18n.T(i18nWarningID,
+		map[string]interface{}{
+			nameKey: actionName,
+			wski18n.KEY_API:      apiName})
+	wskprint.PrintOpenWhiskWarning(warningString)
+}
+
+func TryUpdateAPIsActionToWebAction(records []utils.ActionRecord, pkgName string, apiName string, actionName string, isSequence bool) error {
+
+	// if records are nil; it may be that the Action already exists at target provider OR
+	// this is a unit test.  If the former case, we pass through and allow provider to validate
+	// and return an error.
+	if records!=nil {
+		action := utils.GetActionFromActionRecords(records,pkgName,actionName)
+
+		if !HasAnnotation(&action.Annotations,WEB_EXPORT_ANNOT) {
+			if !utils.Flags.Strict {
+				warnWebAnnotationMissingFromActionOrSequence(apiName,actionName,isSequence)
+				action.Annotations = addWebAnnotations(action.Annotations)
+				wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose,
+					fmt.Sprintf("Web Annotations to Action; result: %v\n",action.Annotations))
+			} else {
+				return wskderrors.NewInvalidWebActionError(apiName,actionName,isSequence)
+			}
+		} else {
+			// verify its web-export annotation value is "true", else error
+			if !action.WebAction() {
+				return wskderrors.NewInvalidWebActionError(apiName,actionName,isSequence)
+			}
+		}
+	}
+
+	return nil
 }
 
 func ValidateRequireWhiskAuthAnnotationValue(actionName string, value interface{}) (string, error) {

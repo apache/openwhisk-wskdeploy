@@ -67,6 +67,12 @@ sequences:
   <sequence name>:
      <Entity schema>
      actions: <ordered list of action names>
+     web: <boolean> | yes | no | raw
+  annotations:
+    <map of annotation key-values>
+    web-export: <boolean> | yes | no | raw # optional
+    web-custom-options: <boolean> # optional, only valid when `web-export` enabled
+    require-whisk-auth: <boolean> | <string> | <positive integer> # optional, only valid when `web-export` enabled
   ...
 ```
 
@@ -75,6 +81,7 @@ sequences:
 sequences:
   newbot:
     actions: newbot-create, newbot-select-persona, newbot-greeting
+    web: true
 ```
 
 <!--

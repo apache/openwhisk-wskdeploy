@@ -187,3 +187,14 @@ func getKeyValueFormattedJSON(data map[string]interface{}) whisk.KeyValueArr {
 	}
 	return keyValueArr
 }
+
+func GetActionFromActionRecords( records []ActionRecord, packageName string, actionName string ) *whisk.Action {
+	for _, record := range records {
+		if record.Packagename == packageName {
+			if record.Action.Name == actionName {
+				return record.Action
+			}
+		}
+	}
+	return nil
+}

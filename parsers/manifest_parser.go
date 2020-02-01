@@ -1131,7 +1131,9 @@ func (dm *YAMLParser) ComposeRules(pkg Package, packageName string, managedAnnot
 	return rules, nil
 }
 
-func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, manifest *YAML) ([]*whisk.ApiCreateRequest, map[string]*whisk.ApiCreateRequestOptions, error) {
+func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, manifest *YAML,
+	actionrecords []utils.ActionRecord,
+	sequencerecords []utils.ActionRecord) ([]*whisk.ApiCreateRequest, map[string]*whisk.ApiCreateRequestOptions, error) {
 	var requests = make([]*whisk.ApiCreateRequest, 0)
 	var responses = make(map[string]*whisk.ApiCreateRequestOptions, 0)
 	manifestPackages := make(map[string]Package)
@@ -1143,7 +1145,8 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, man
 	}
 
 	for packageName, p := range manifestPackages {
-		r, response, err := dm.ComposeApiRecords(client, packageName, p, manifest.Filepath)
+		r, response, err := dm.ComposeApiRecords(client, packageName, p, manifest.Filepath,
+			actionrecords, sequencerecords)
 		if err == nil {
 			requests = append(requests, r...)
 			for k, v := range response {
@@ -1181,7 +1184,8 @@ func (dm *YAMLParser) ComposeApiRecordsFromAllPackages(client *whisk.Config, man
  * 	}
  * }
  */
-func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string, pkg Package, manifestPath string) ([]*whisk.ApiCreateRequest, map[string]*whisk.ApiCreateRequestOptions, error) {
+func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string, pkg Package, manifestPath string,
+	actionrecords []utils.ActionRecord, sequencerecords []utils.ActionRecord) ([]*whisk.ApiCreateRequest, map[string]*whisk.ApiCreateRequestOptions, error) {
 	var requests = make([]*whisk.ApiCreateRequest, 0)
 
 	// supply a dummy API GW token as it is optional
@@ -1217,41 +1221,24 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 					gatewayRelPath = PATH_SEPARATOR + gatewayRelPath
 				}
 				for actionName, gatewayMethodResponse := range gatewayRelPathMap {
-					// verify that the action is defined under actions sections
+					// verify that the action is defined under action records
 					if _, ok := pkg.Actions[actionName]; ok {
-						// verify that the action is defined as web action
-						// web or web-export set to any of [true, yes, raw]
-						a := pkg.Actions[actionName]
-						if !webaction.IsWebAction(a.GetWeb()) {
-							warningString := wski18n.T(wski18n.ID_WARN_API_MISSING_WEB_ACTION_X_action_X_api_X,
-								map[string]interface{}{
-									wski18n.KEY_ACTION: actionName,
-									wski18n.KEY_API:    apiName})
-							wskprint.PrintOpenWhiskWarning(warningString)
-							if a.Annotations == nil {
-								a.Annotations = make(map[string]interface{}, 0)
-							}
-							a.Annotations[webaction.WEB_EXPORT_ANNOT] = true
-							pkg.Actions[actionName] = a
+						// verify that the action is defined as web action;
+						// web or web-export set to any of [true, yes, raw]; if not,
+						// we will try to add it (if no strict" flag) and warn user that we did so
+						if err := webaction.TryUpdateAPIsActionToWebAction(actionrecords, packageName,
+							apiName, actionName, false); err!=nil {
+							return requests, requestOptions, err
 						}
-						// verify that the sequence is defined under sequences sections
+						// verify that the sequence action is defined under sequence records
 					} else if _, ok := pkg.Sequences[actionName]; ok {
-						// verify that the sequence is defined as web sequence
-						// web set to any of [true, yes, raw]
-						a := pkg.Sequences[actionName]
-						if !webaction.IsWebSequence(a.Web) {
-							warningString := wski18n.T(wski18n.ID_WARN_API_MISSING_WEB_SEQUENCE_X_sequence_X_api_X,
-								map[string]interface{}{
-									wski18n.KEY_SEQUENCE: actionName,
-									wski18n.KEY_API:      apiName})
-							wskprint.PrintOpenWhiskWarning(warningString)
-							if a.Annotations == nil {
-								a.Annotations = make(map[string]interface{}, 0)
-							}
-							a.Annotations[webaction.WEB_EXPORT_ANNOT] = true
-							pkg.Sequences[actionName] = a
+						// verify that the sequence action is defined as web sequence
+						// web or web-export set to any of [true, yes, raw]; if not,
+						// we will try to add it (if no strict" flag) and warn user that we did so
+						if err := webaction.TryUpdateAPIsActionToWebAction(sequencerecords, packageName,
+							apiName, actionName, true); err!=nil {
+							return requests, requestOptions, err
 						}
-						// return failure since action or sequence are not defined in the manifest
 					} else {
 						return nil, nil, wskderrors.NewYAMLFileFormatError(manifestPath,
 							wski18n.T(wski18n.ID_ERR_API_MISSING_ACTION_OR_SEQUENCE_X_action_or_sequence_X_api_X,
@@ -1275,7 +1262,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						gatewayMethodResponse.Response = utils.HTTP_FILE_EXTENSION
 					}
 
-					// Chekc if API verb is valid, it must be one of (GET, PUT, POST, DELETE)
+					// Check if API verb is valid, it must be one of (GET, PUT, POST, DELETE)
 					if _, ok := whisk.ApiVerbs[strings.ToUpper(gatewayMethodResponse.Method)]; !ok {
 						return nil, nil, wskderrors.NewInvalidAPIGatewayMethodError(manifestPath,
 							gatewayBasePath+gatewayRelPath,

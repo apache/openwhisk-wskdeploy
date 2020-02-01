@@ -108,7 +108,7 @@ func (reader *ManifestReader) HandleYaml(manifestParser *parsers.YAMLParser, man
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}
 
-	apis, responses, err := manifestParser.ComposeApiRecordsFromAllPackages(reader.serviceDeployer.ClientConfig, manifest)
+	apis, responses, err := manifestParser.ComposeApiRecordsFromAllPackages(reader.serviceDeployer.ClientConfig, manifest, actions, sequences)
 	if err != nil {
 		return wskderrors.NewYAMLFileFormatError(manifestName, err)
 	}

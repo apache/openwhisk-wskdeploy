@@ -1576,7 +1576,7 @@ func TestComposeApiRecords(t *testing.T) {
 		ApigwAccessToken: "token",
 	}
 
-	apiList, apiRequestOptions, err := p.ComposeApiRecordsFromAllPackages(&config, m)
+	apiList, apiRequestOptions, err := p.ComposeApiRecordsFromAllPackages(&config, m, nil, nil)
 	if err != nil {
 		assert.Fail(t, "Failed to compose api records: "+err.Error())
 	}
