@@ -29,7 +29,7 @@ This example shows how to:
 - declare an explicit runtime for your Action's function.
 
 ### Manifest file
-#### _Example: explicit selection of the NodeJS version 6 runtime_
+#### _Example: explicit selection of the NodeJS version 10 runtime_
 ```yaml
 packages:
   hello_world_package:
@@ -38,7 +38,7 @@ packages:
     actions:
       hello_world_runtime:
         function: src/hello.js
-        runtime: nodejs@6
+        runtime: nodejs@10
 ```
 
 ### Deploying

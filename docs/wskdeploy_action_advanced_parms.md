@@ -37,7 +37,7 @@ packages:
     actions:
       hello_world_advanced_parms:
         function: src/hello_plus.js
-        runtime: nodejs@6
+        runtime: nodejs@10
         inputs:
           name:
             type: string
