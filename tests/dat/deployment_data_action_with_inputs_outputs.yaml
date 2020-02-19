@@ -39,7 +39,7 @@ packages:
           description: "output notice string"
           name: notice
           type: string
-      runtime: nodejs@6
+      runtime: nodejs@10
       version: 1.0
   license: Apache-2.0
   packagename: helloworld
