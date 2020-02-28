@@ -213,7 +213,10 @@ func ValidateRequireWhiskAuthAnnotationValue(actionName string, value interface{
 			// However, in JS, the bitwise operators and shift operators operate on 32-bit ints,
 			// so in that case, the max safe integer is 231-1, or 2147483647
 			// We also disallow negative integers
-			if secureValue < MAX_JS_INT && secureValue > 0 {
+			// NOTE: when building for 386 archs. we need to assure comparison with MAX_JS_INT does not
+			// "blow up" and must allow the compiler to compare an untyped int (secureValue) to effectively
+			// an int64... so for the comparison we MUST force a type conversion to avoid "int" size mismatch
+			if int64(secureValue) < MAX_JS_INT && secureValue > 0 {
 				isValid = true
 				enabled = wski18n.FEATURE_ENABLED
 			}
