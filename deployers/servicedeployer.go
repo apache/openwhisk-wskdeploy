@@ -1014,9 +1014,9 @@ func (deployer *ServiceDeployer) createAction(pkgname string, action *whisk.Acti
 
 func (deployer *ServiceDeployer) getAnnotationsFromPackageActionOrSequence(packageActionName string) *whisk.KeyValueArr {
 
-	if len(packageActionName)!=0 {
+	if len(packageActionName) != 0 {
 		// Split the package name and action name being searched for
-		aActionName := strings.Split(packageActionName,	parsers.PATH_SEPARATOR)
+		aActionName := strings.Split(packageActionName, parsers.PATH_SEPARATOR)
 
 		// Attempt to locate the named action (or sequence) to return its annotations
 		if pkg, found := deployer.Deployment.Packages[aActionName[0]]; found {
@@ -1518,12 +1518,11 @@ func (deployer *ServiceDeployer) deleteSwaggerApi(api *whisk.ApiCreateRequest) e
 	apiDeleteReqOptions.ApiBasePath = swaggerObj.BasePath
 	// In the case of IAM namespaces, we must use the ApigwTenantId as the SpaceGuid
 	// IAM namespaces can be detected by seeing if the ApigwTenantId is populated
-	if len(deployer.Client.Config.ApigwTenantId) > 0	{
-    apiDeleteReqOptions.SpaceGuid = deployer.Client.Config.ApigwTenantId
-  } else {
-    apiDeleteReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
-  }
-
+	if len(deployer.Client.Config.ApigwTenantId) > 0 {
+		apiDeleteReqOptions.SpaceGuid = deployer.Client.Config.ApigwTenantId
+	} else {
+		apiDeleteReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+	}
 
 	a := new(whisk.ApiDeleteRequest)
 	a.Swagger = swaggerString
