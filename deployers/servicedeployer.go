@@ -1088,8 +1088,14 @@ func (deployer *ServiceDeployer) createSwaggerApi(api *whisk.ApiCreateRequest) e
 	var response *http.Response
 
 	apiCreateReqOptions := deployer.Deployment.SwaggerApiOptions
-	apiCreateReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
 	apiCreateReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
+	// In the case of IAM namespaces, we must use the ApigwTenantId as the SpaceGuid
+	// IAM namespaces can be detected by seeing if the ApigwTenantId is populated
+	if len(deployer.Client.Config.ApigwTenantId) > 0 {
+		apiCreateReqOptions.SpaceGuid = deployer.Client.Config.ApigwTenantId
+	} else {
+		apiCreateReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+	}
 
 	err = retry(DEFAULT_ATTEMPTS, DEFAULT_INTERVAL, func() error {
 		_, response, err = deployer.Client.Apis.Insert(api, apiCreateReqOptions, true)
@@ -1508,9 +1514,16 @@ func (deployer *ServiceDeployer) deleteSwaggerApi(api *whisk.ApiCreateRequest) e
 	}
 
 	apiDeleteReqOptions := new(whisk.ApiDeleteRequestOptions)
-	apiDeleteReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
 	apiDeleteReqOptions.AccessToken = deployer.Client.Config.ApigwAccessToken
 	apiDeleteReqOptions.ApiBasePath = swaggerObj.BasePath
+	// In the case of IAM namespaces, we must use the ApigwTenantId as the SpaceGuid
+	// IAM namespaces can be detected by seeing if the ApigwTenantId is populated
+	if len(deployer.Client.Config.ApigwTenantId) > 0	{
+    apiDeleteReqOptions.SpaceGuid = deployer.Client.Config.ApigwTenantId
+  } else {
+    apiDeleteReqOptions.SpaceGuid = strings.Split(deployer.Client.Config.AuthToken, ":")[0]
+  }
+
 
 	a := new(whisk.ApiDeleteRequest)
 	a.Swagger = swaggerString
