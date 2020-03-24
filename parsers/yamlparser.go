@@ -255,9 +255,6 @@ type PackageInputs struct {
 // function to return web-export or web depending on what is specified
 // in manifest and deployment files. Web flag takes precedence.
 func (action *Action) GetWeb() string {
-	if len(action.Web) == 0 && len(action.WebExport) != 0 {
-		return action.WebExport
-	}
 	return action.Web
 }
 

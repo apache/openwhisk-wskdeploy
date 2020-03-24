@@ -20,7 +20,8 @@ packages:
         actions:
             putBooks:
                 function: ../tests/src/integration/helloworld/actions/hello.js
-                web-export: true
+                annotations:
+                    web-export: true
             deleteBooks:
                 function: ../tests/src/integration/helloworld/actions/hello.js
             listMembers:

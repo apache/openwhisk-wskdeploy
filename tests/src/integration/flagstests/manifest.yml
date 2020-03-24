@@ -21,7 +21,8 @@ packages:
       license: Apache-2.0
       actions:
         greeting:
-          web-export: true
+          annotations:
+            web-export: true
           version: 1.0
           function: src/greeting.js
           runtime: nodejs:default

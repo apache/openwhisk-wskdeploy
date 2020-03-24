@@ -21,7 +21,8 @@ packages:
             helloInDefaultPackage:
                 function: actions/hello.js
                 runtime: nodejs:default
-                web-export: true
+                annotations:
+                    web-export: true
                 inputs:
                     name:
                         type: string
@@ -80,7 +81,8 @@ packages:
             greetingInsidePackage:
                 function: actions/hello.js
                 runtime: nodejs:default
-                web-export: true
+                annotations:
+                    web-export: true
                 inputs:
                     name:
                         type: string
