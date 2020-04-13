@@ -109,7 +109,7 @@ type Action struct {
 	Main        string                 `yaml:"main"`
 	Docker      string                 `yaml:"docker,omitempty"`
 	Native      bool                   `yaml:"native,omitempty"`
-	Conductor   bool               	   `yaml:"conductor,omitempty"`
+	Conductor   bool                   `yaml:"conductor,omitempty"`
 	Limits      *Limits                `yaml:"limits"`
 	Inputs      map[string]Parameter   `yaml:"inputs"`
 	Outputs     map[string]Parameter   `yaml:"outputs"`
@@ -255,6 +255,9 @@ type PackageInputs struct {
 // function to return web-export or web depending on what is specified
 // in manifest and deployment files. Web flag takes precedence.
 func (action *Action) GetWeb() string {
+	if len(action.Web) == 0 && len(action.WebExport) != 0 {
+		return action.WebExport
+	}
 	return action.Web
 }
 
