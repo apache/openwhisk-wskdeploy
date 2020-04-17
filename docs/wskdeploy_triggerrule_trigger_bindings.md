@@ -119,7 +119,8 @@ $ wsk activation get 3a7c92468b4e4170bc92468b4eb170f1
 
 ### Specification
 For convenience, the Actions and Parameters grammar can be found here:
-- **[Triggers and Rules](https://github.com/apache/openwhisk-wskdeploy/blob/master/specification/html/spec_trigger_rule.md#triggers-and-rules)**
+- **[Triggers](https://github.com/apache/openwhisk-wskdeploy/blob/master/specification/html/spec_trigger.md#triggers)**
+- **[Rules](https://github.com/apache/openwhisk-wskdeploy/blob/master/specification/html/spec_rule.md#rules)**
 
 ---
 <!--
