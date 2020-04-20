@@ -28,7 +28,7 @@ The Parameter schema is used to define input and/or output data to be used by Op
 ### Fields
 | Key Name | Required | Value Type | Default | Description |
 |:---|:---|:---|:---|:---|
-| type       | no | _&lt;any&gt;_ | string | Optional valid type name or the parameter’s value for alidation purposes. By default, the type is string. |
+| [type](./spec_parameter_types.md)       | no | _&lt;any&gt;_ | string | Optional valid type name or the parameter’s value for validation purposes. By default, the type is string. |
 | description | no | string256 | N/A | Optional description of the Parameter. |
 | value      | no | _&lt;any&gt;_ | N/A | The optional user supplied value for the parameter.</br> Note: this is not the default value, but an explicit declaration which allows simple usage of the Manifest file without a Deployment file. |
 | required   | no | boolean    | true | Optional indicator to declare the parameter as required (i.e., true) or optional (i.e., false). |
