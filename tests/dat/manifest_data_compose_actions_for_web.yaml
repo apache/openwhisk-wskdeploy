@@ -20,21 +20,17 @@ packages:
     actions:
       hello1:
         function: ../src/integration/helloworld/actions/hello.js
-        annotations:
-          web-export: true
+        web-export: true
       hello2:
         function: ../src/integration/helloworld/actions/hello.js
-        annotations:
-          web-export: yes
+        web-export: yes
       hello3:
         function: ../src/integration/helloworld/actions/hello.js
-        annotations:
-          web-export: raw
+        web-export: raw
       hello4:
         function: ../src/integration/helloworld/actions/hello.js
-        annotations:
-          web-export: false
+        web-export: false
       hello5:
         function: ../src/integration/helloworld/actions/hello.js
-        annotations:
-          web-export: no
+        web-export: no
+
