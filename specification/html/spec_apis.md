@@ -79,7 +79,8 @@ packages:
     actions:
       hello_world:
         function: src/hello.js
-        web-export: true
+        annotations:
+          web-export: true
     apis:
       hello-world:
         hello:

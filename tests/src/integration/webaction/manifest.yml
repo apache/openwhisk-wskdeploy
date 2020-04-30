@@ -20,7 +20,8 @@ packages:
     IntegrationTestWebAction:
         actions:
             greeting-web-action:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/greeting.js
                 runtime: nodejs:default
@@ -30,7 +31,8 @@ packages:
                 outputs:
                     payload: string
             greeting-web-action-1:
-                web-export: yes
+                annotations:
+                    web-export: yes
                 version: 1.0
                 function: src/greeting.js
                 runtime: nodejs:default
@@ -40,19 +42,22 @@ packages:
                 outputs:
                     payload: string
             greeting-with-raw-http:
-                web-export: raw
+                annotations:
+                    web-export: raw
                 version: 1.0
                 function: src/greeting.js
                 runtime: nodejs:default
             greeting-web-action-final:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/greeting.js
                 runtime: nodejs:default
                 annotations:
                     final: true
             greeting-web-action-with-custom-options:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/greeting.js
                 runtime: nodejs:default

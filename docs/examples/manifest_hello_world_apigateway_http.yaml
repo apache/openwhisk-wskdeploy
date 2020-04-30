@@ -23,10 +23,12 @@ packages:
     actions:
       hello_world:
         function: src/hello_http.js
-        web-export: true
+        annotations:
+          web-export: true
       hello_world_promise:
         function: src/hello_http_promise.js
-        web-export: true
+        annotations:
+          web-export: true
     apis:
       hello-world:
         hello:

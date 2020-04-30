@@ -109,7 +109,7 @@ type Action struct {
 	Main        string                 `yaml:"main"`
 	Docker      string                 `yaml:"docker,omitempty"`
 	Native      bool                   `yaml:"native,omitempty"`
-	Conductor   bool               	   `yaml:"conductor,omitempty"`
+	Conductor   bool                   `yaml:"conductor,omitempty"`
 	Limits      *Limits                `yaml:"limits"`
 	Inputs      map[string]Parameter   `yaml:"inputs"`
 	Outputs     map[string]Parameter   `yaml:"outputs"`

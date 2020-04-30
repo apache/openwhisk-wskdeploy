@@ -21,7 +21,8 @@ packages:
         license: Apache-1.0
         actions:
             greetingnodejs6-with-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/greeting.js
                 runtime: nodejs:default
@@ -31,7 +32,8 @@ packages:
                 outputs:
                     payload: string
             greetingnodejs8-with-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/greeting.js
                 runtime: nodejs:8
@@ -41,7 +43,8 @@ packages:
                 outputs:
                     payload: string
             greetingnodejs10-with-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/greeting.js
                 runtime: nodejs:10
@@ -51,7 +54,8 @@ packages:
                 outputs:
                     payload: string
             greetingphp71-with-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.php
                 runtime: php:7.1
@@ -61,7 +65,8 @@ packages:
                 outputs:
                     payload: string
             greetingphp72-with-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.php
                 runtime: php:7.2
@@ -71,7 +76,8 @@ packages:
                 outputs:
                     payload: string
             greetingphp73-with-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.php
                 runtime: php:7.3
@@ -81,7 +87,8 @@ packages:
                 outputs:
                     payload: string
             greetingpython-with-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.py
                 runtime: python
@@ -91,7 +98,8 @@ packages:
                 outputs:
                     payload: string
             greetingpython2-with-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.py
                 runtime: python:2
@@ -101,7 +109,8 @@ packages:
                 outputs:
                     payload: string
             greetingpython3-with-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.py
                 runtime: python:3
@@ -111,7 +120,8 @@ packages:
                 outputs:
                     payload: string
             greetingruby25-with-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.rb
                 runtime: ruby:2.5
@@ -121,7 +131,8 @@ packages:
                 outputs:
                     payload: string
             greetingswift42-with-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.swift
                 runtime: swift:4.2
@@ -149,7 +160,8 @@ packages:
     TestImplicitRuntimes:
         actions:
             greetingnodejs-without-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/greeting.js
                 inputs:
@@ -158,7 +170,8 @@ packages:
                 outputs:
                     payload: string
             greetingphp-without-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.php
                 inputs:
@@ -167,7 +180,8 @@ packages:
                 outputs:
                     payload: string
             greetingpython-without-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.py
                 inputs:
@@ -176,7 +190,8 @@ packages:
                 outputs:
                     payload: string
             greetingruby-without-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.rb
                 inputs:
@@ -185,7 +200,8 @@ packages:
                 outputs:
                     payload: string
             greetingswift-without-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.swift
                 inputs:
@@ -199,7 +215,8 @@ packages:
     TestInvalidExplicitRuntimes:
         actions:
             greetingnodejs-with-java-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/greeting.js
                 runtime: java
@@ -209,7 +226,8 @@ packages:
                 outputs:
                     payload: string
             greetingnodejs-with-random-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/greeting.js
                 runtime: random
@@ -219,7 +237,8 @@ packages:
                 outputs:
                     payload: string
             greetingphp-with-nodejs-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.php
                 runtime: nodejs:default
@@ -229,7 +248,8 @@ packages:
                 outputs:
                     payload: string
             greetingphp-with-random-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.php
                 runtime: random
@@ -239,7 +259,8 @@ packages:
                 outputs:
                     payload: string
             greetingpython-with-php-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.py
                 runtime: php
@@ -249,7 +270,8 @@ packages:
                 outputs:
                     payload: string
             greetingpython-with-random-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.py
                 runtime: random
@@ -259,7 +281,8 @@ packages:
                 outputs:
                     payload: string
             greetingruby-with-php-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.rb
                 runtime: php
@@ -269,7 +292,8 @@ packages:
                 outputs:
                     payload: string
             greetingruby-with-random-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.rb
                 runtime: random
@@ -279,7 +303,8 @@ packages:
                 outputs:
                     payload: string
             greetingswift-with-nodejs-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.swift
                 runtime: nodejs:default
@@ -289,7 +314,8 @@ packages:
                 outputs:
                     payload: string
             greetingswift-with-random-explicit-runtime:
-                web-export: true
+                annotations:
+                    web-export: true
                 version: 1.0
                 function: src/hello.swift
                 runtime: random

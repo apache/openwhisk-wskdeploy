@@ -37,7 +37,8 @@ packages:
     actions:
       hello_world:
         function: src/hello.js
-        web-export: true
+        annotations:
+          web-export: true
     apis:
       hello-world:
         hello:
@@ -47,7 +48,7 @@ packages:
 ```
 
 There are two key changes to this file:
-- the `hello_world` action now has the `web-export` flag set to `true`.
+- the `hello_world` action now has the `web-export` annotation set to `true`.
 - a new `apis` block has been created.
 
 The `apis` block contains a number of groups of API endpoint. Each endpoint is then defined by the hierarchy. In this case, we are creating the `hello/world` endpoint. The leaf in the structure specifies the action to trigger when the given HTTP verb is sent to that endpoint, in this case, when the HTTP verb `GET` is used on the `hello/world` endpoint, trigger the `hello_world` action.

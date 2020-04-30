@@ -22,19 +22,23 @@ packages:
         function: ../src/integration/helloworld/actions/hello.js
         runtime: nodejs
         web: true
-        web-export: true
+        annotations:
+          web-export: true
       hello2:
         function: ../src/integration/helloworld/actions/hello.js
         runtime: nodejs
         web: true
-        web-export: false
+        annotations:
+          web-export: false
       hello3:
         function: ../src/integration/helloworld/actions/hello.js
         runtime: nodejs
         web: false
-        web-export: true
+        annotations:
+          web-export: true
       hello4:
         function: ../src/integration/helloworld/actions/hello.js
         runtime: nodejs
         web: raw
-        web-export: true
+        annotations:
+          web-export: true

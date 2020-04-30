@@ -39,6 +39,7 @@ project:
       actions:
         hello_world:
           function: src/hello.js
+        annotations:
           web-export: true
 ```
 ### Open API Specification

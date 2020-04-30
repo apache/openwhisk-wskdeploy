@@ -33,3 +33,4 @@ packages:
       hello5:
         function: ../src/integration/helloworld/actions/hello.js
         web-export: no
+
