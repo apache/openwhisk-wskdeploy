@@ -99,8 +99,8 @@ packages:
 ### Requirements
 
 - The API name MUST be less than or equal to 256 characters.
-- The API `basePath` value MUST start with a `/` character.
-- The APi `relativePath` value MUST start with a `/` character.
+- The API `basePath` value MUST NOT start with a `/` character.
+- The API `relativePath` value MUST NOT start with a `/` character.
 - The API entity schema includes all required fields declared above.
 - Only web actions, actions having `web-export` set to `true`, can be used as an API endpoint's action.
     - If needed, the action will be automatically converted to a web action during deployment.
