@@ -190,12 +190,12 @@ func testUnmarshalTemporaryFile(data []byte, filename string) (p *YAMLParser, m 
 func TestUnmarshalForHelloNodeJS(t *testing.T) {
 	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_nodejs.yaml", // Manifest path
-		"helloworld",                              // Package name
-		1,                                         // # of Actions
-		"helloNodejs",                             // Action name
-		"actions/hello.js",                        // Function path
-		"nodejs:default",                                // "Runtime
-		"")                                        // "Main" function name
+		"helloworld",       // Package name
+		1,                  // # of Actions
+		"helloNodejs",      // Action name
+		"actions/hello.js", // Function path
+		"nodejs:default",   // "Runtime
+		"")                 // "Main" function name
 }
 
 // Test 2: validate manifest_parser:Unmarshal() method with a sample manifest in Java
@@ -254,7 +254,7 @@ func TestUnmarshalForHelloWithParams(t *testing.T) {
 		1,                              // # of Actions
 		TEST_ACTION_NAME,               // Action name
 		"actions/hello-with-params.js", // Function path
-		"nodejs:default",                     // "Runtime
+		"nodejs:default",               // "Runtime
 		"")                             // "Main" function name
 
 	if pkg != nil {
@@ -928,7 +928,7 @@ func TestComposeActionsForFunctionWithRemoteDir(t *testing.T) {
 
 // validate manifest_parser.ComposeActions() method
 func TestComposeActionsForDocker(t *testing.T) {
-
+	os.Setenv("image_name", "environmental_variable/image")
 	file := "../tests/dat/manifest_data_compose_actions_for_docker.yaml"
 	actionFile := "../tests/src/integration/docker/actions/exec.zip"
 
@@ -960,8 +960,15 @@ func TestComposeActionsForDocker(t *testing.T) {
 			assert.NotNil(t, action.Action.Exec.Code, TEST_MSG_ACTION_CODE_MISSING)
 			assert.Equal(t, runtimes.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
 			assert.Equal(t, "mydockerhub/myimage", action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
+		case "CustomDockerAction6":
+			println(action.Action.Exec.Image)
+			assert.NotNil(t, action.Action.Exec.Code, TEST_MSG_ACTION_CODE_MISSING)
+			assert.Equal(t, runtimes.BLACKBOX, action.Action.Exec.Kind, fmt.Sprintf(TEST_MSG_ACTION_DOCKER_KIND_MISMATCH, action.Action.Exec.Kind))
+			assert.Equal(t, os.Getenv("image_name"), action.Action.Exec.Image, TEST_MSG_ACTION_DOCKER_IMAGE_MISMATCH)
 		}
 	}
+
+	os.Unsetenv("image_name")
 }
 
 func TestComposeActionsForEnvVariableInFunction(t *testing.T) {

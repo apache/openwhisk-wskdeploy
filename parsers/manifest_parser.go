@@ -29,6 +29,8 @@ import (
 
 	"gopkg.in/yaml.v2"
 
+	"net/url"
+
 	"github.com/apache/openwhisk-client-go/whisk"
 	"github.com/apache/openwhisk-wskdeploy/conductor"
 	"github.com/apache/openwhisk-wskdeploy/dependencies"
@@ -40,7 +42,6 @@ import (
 	"github.com/apache/openwhisk-wskdeploy/wski18n"
 	"github.com/apache/openwhisk-wskdeploy/wskprint"
 	yamlHelper "github.com/ghodss/yaml"
-	"net/url"
 )
 
 const (
@@ -796,7 +797,7 @@ func (dm *YAMLParser) composeActionExec(manifestFilePath string, manifestFileNam
 		if action.Native {
 			exec.Image = NATIVE_DOCKER_IMAGE
 		} else {
-			exec.Image = action.Docker
+			exec.Image = wskenv.InterpolateStringWithEnvVar(action.Docker).(string)
 		}
 	}
 
@@ -1227,7 +1228,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						// web or web-export set to any of [true, yes, raw]; if not,
 						// we will try to add it (if no strict" flag) and warn user that we did so
 						if err := webaction.TryUpdateAPIsActionToWebAction(actionrecords, packageName,
-							apiName, actionName, false); err!=nil {
+							apiName, actionName, false); err != nil {
 							return requests, requestOptions, err
 						}
 						// verify that the sequence action is defined under sequence records
@@ -1236,7 +1237,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						// web or web-export set to any of [true, yes, raw]; if not,
 						// we will try to add it (if no strict" flag) and warn user that we did so
 						if err := webaction.TryUpdateAPIsActionToWebAction(sequencerecords, packageName,
-							apiName, actionName, true); err!=nil {
+							apiName, actionName, true); err != nil {
 							return requests, requestOptions, err
 						}
 					} else {
