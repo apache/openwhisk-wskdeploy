@@ -1691,7 +1691,7 @@ func TestBadYAMLInvalidPackageKeyInManifest(t *testing.T) {
 
 	assert.NotNil(t, err)
 	// NOTE: go-yaml/yaml gets the line # wrong; testing only for the invalid key message
-	assert.Contains(t, err.Error(), "field invalidKey not found in struct parsers.Package")
+	assert.Contains(t, err.Error(), "field invalidKey not found in type parsers.Package")
 }
 
 func TestBadYAMLInvalidKeyMappingValueInManifest(t *testing.T) {
@@ -1710,7 +1710,7 @@ func TestBadYAMLMissingRootKeyInManifest(t *testing.T) {
 	_, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_missing_root_key.yaml")
 
 	assert.NotNil(t, err)
-	assert.Contains(t, err.Error(), "field actions not found in struct parsers.YAML")
+	assert.Contains(t, err.Error(), "field actions not found in type parsers.YAML")
 }
 
 func TestBadYAMLInvalidCommentInManifest(t *testing.T) {
