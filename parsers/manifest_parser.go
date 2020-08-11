@@ -1227,7 +1227,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						// web or web-export set to any of [true, yes, raw]; if not,
 						// we will try to add it (if no strict" flag) and warn user that we did so
 						if err := webaction.TryUpdateAPIsActionToWebAction(actionrecords, packageName,
-							apiName, actionName, false); err!=nil {
+							apiName, actionName, false); err != nil {
 							return requests, requestOptions, err
 						}
 						// verify that the sequence action is defined under sequence records
@@ -1236,7 +1236,7 @@ func (dm *YAMLParser) ComposeApiRecords(client *whisk.Config, packageName string
 						// web or web-export set to any of [true, yes, raw]; if not,
 						// we will try to add it (if no strict" flag) and warn user that we did so
 						if err := webaction.TryUpdateAPIsActionToWebAction(sequencerecords, packageName,
-							apiName, actionName, true); err!=nil {
+							apiName, actionName, true); err != nil {
 							return requests, requestOptions, err
 						}
 					} else {

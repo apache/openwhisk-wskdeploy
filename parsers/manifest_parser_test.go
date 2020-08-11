@@ -190,12 +190,12 @@ func testUnmarshalTemporaryFile(data []byte, filename string) (p *YAMLParser, m 
 func TestUnmarshalForHelloNodeJS(t *testing.T) {
 	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_nodejs.yaml", // Manifest path
-		"helloworld",                              // Package name
-		1,                                         // # of Actions
-		"helloNodejs",                             // Action name
-		"actions/hello.js",                        // Function path
-		"nodejs:default",                                // "Runtime
-		"")                                        // "Main" function name
+		"helloworld",       // Package name
+		1,                  // # of Actions
+		"helloNodejs",      // Action name
+		"actions/hello.js", // Function path
+		"nodejs:default",   // "Runtime
+		"")                 // "Main" function name
 }
 
 // Test 2: validate manifest_parser:Unmarshal() method with a sample manifest in Java
@@ -254,7 +254,7 @@ func TestUnmarshalForHelloWithParams(t *testing.T) {
 		1,                              // # of Actions
 		TEST_ACTION_NAME,               // Action name
 		"actions/hello-with-params.js", // Function path
-		"nodejs:default",                     // "Runtime
+		"nodejs:default",               // "Runtime
 		"")                             // "Main" function name
 
 	if pkg != nil {
