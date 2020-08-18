@@ -456,8 +456,7 @@ type InvalidWebActionAPIError struct {
 }
 
 func NewInvalidWebActionError(apiName string, actionName string, isSequence bool) *InvalidWebActionAPIError {
-	var err = &InvalidWebActionAPIError{
-	}
+	var err = &InvalidWebActionAPIError{}
 
 	i18nErrorID := wski18n.ID_ERR_API_MISSING_WEB_ACTION_X_action_X_api_X
 

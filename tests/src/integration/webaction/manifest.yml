@@ -50,19 +50,17 @@ packages:
             greeting-web-action-final:
                 annotations:
                     web-export: true
+                    final: true
                 version: 1.0
                 function: src/greeting.js
                 runtime: nodejs:default
-                annotations:
-                    final: true
             greeting-web-action-with-custom-options:
                 annotations:
                     web-export: true
+                    web-custom-options: true
                 version: 1.0
                 function: src/greeting.js
                 runtime: nodejs:default
-                annotations:
-                    web-custom-options: true
         triggers:
             webActionTrigger:
         rules:
