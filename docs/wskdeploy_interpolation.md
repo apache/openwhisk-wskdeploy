@@ -76,6 +76,9 @@ project:
                     function: ${OPENWHISK_FUNCTION_PYTHON}.py
                 hello4:
                     function: https://${OPENWHISK_FUNCTION_GITHUB_DIR}.js                    function: github.com/apache/openwhisk-test/packages/helloworlds
+                hello5:
+                    function: $OPENWHISK_FUNCTION_FILE
+                    docker: $DOCKER_HUB_IMAGE
 ```
 
 #### Trigger Feed
