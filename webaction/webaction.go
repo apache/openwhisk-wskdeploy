@@ -82,11 +82,11 @@ func SetWebActionAnnotations(filePath string, action string, webMode string, ann
 
 type WebActionAnnotationMethod func(annotations whisk.KeyValueArr) whisk.KeyValueArr
 
-func webActionAnnotations( fetchAnnotations bool, annotations whisk.KeyValueArr,
+func webActionAnnotations(fetchAnnotations bool, annotations whisk.KeyValueArr,
 	webActionAnnotationMethod WebActionAnnotationMethod) (whisk.KeyValueArr, error) {
 
-		if annotations != nil || !fetchAnnotations {
-			annotations = webActionAnnotationMethod(annotations)
+	if annotations != nil || !fetchAnnotations {
+		annotations = webActionAnnotationMethod(annotations)
 	}
 
 	return annotations, nil
@@ -149,7 +149,7 @@ func HasAnnotation(annotations *whisk.KeyValueArr, key string) bool {
 	return (annotations.FindKeyValue(key) >= 0)
 }
 
-func warnWebAnnotationMissingFromActionOrSequence(apiName string, actionName string, isSequence bool){
+func warnWebAnnotationMissingFromActionOrSequence(apiName string, actionName string, isSequence bool) {
 	nameKey := wski18n.KEY_ACTION
 	i18nWarningID := wski18n.ID_WARN_API_MISSING_WEB_ACTION_X_action_X_api_X
 
@@ -160,8 +160,8 @@ func warnWebAnnotationMissingFromActionOrSequence(apiName string, actionName str
 
 	warningString := wski18n.T(i18nWarningID,
 		map[string]interface{}{
-			nameKey: actionName,
-			wski18n.KEY_API:      apiName})
+			nameKey:         actionName,
+			wski18n.KEY_API: apiName})
 	wskprint.PrintOpenWhiskWarning(warningString)
 }
 
@@ -170,22 +170,22 @@ func TryUpdateAPIsActionToWebAction(records []utils.ActionRecord, pkgName string
 	// if records are nil; it may be that the Action already exists at target provider OR
 	// this is a unit test.  If the former case, we pass through and allow provider to validate
 	// and return an error.
-	if records!=nil {
-		action := utils.GetActionFromActionRecords(records,pkgName,actionName)
+	if records != nil {
+		action := utils.GetActionFromActionRecords(records, pkgName, actionName)
 
-		if !HasAnnotation(&action.Annotations,WEB_EXPORT_ANNOT) {
+		if !HasAnnotation(&action.Annotations, WEB_EXPORT_ANNOT) {
 			if !utils.Flags.Strict {
-				warnWebAnnotationMissingFromActionOrSequence(apiName,actionName,isSequence)
+				warnWebAnnotationMissingFromActionOrSequence(apiName, actionName, isSequence)
 				action.Annotations = addWebAnnotations(action.Annotations)
 				wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose,
-					fmt.Sprintf("Web Annotations to Action; result: %v\n",action.Annotations))
+					fmt.Sprintf("Web Annotations to Action; result: %v\n", action.Annotations))
 			} else {
-				return wskderrors.NewInvalidWebActionError(apiName,actionName,isSequence)
+				return wskderrors.NewInvalidWebActionError(apiName, actionName, isSequence)
 			}
 		} else {
 			// verify its web-export annotation value is "true", else error
 			if !action.WebAction() {
-				return wskderrors.NewInvalidWebActionError(apiName,actionName,isSequence)
+				return wskderrors.NewInvalidWebActionError(apiName, actionName, isSequence)
 			}
 		}
 	}
@@ -198,42 +198,42 @@ func ValidateRequireWhiskAuthAnnotationValue(actionName string, value interface{
 	var enabled = wski18n.FEATURE_DISABLED
 
 	switch value.(type) {
-		case string:
-			secureValue := value.(string)
-			// assure the user-supplied token is valid (i.e., for now a non-empty string)
-			if len(secureValue) != 0 && secureValue!="<nil>" {
-				isValid = true
-				enabled = wski18n.FEATURE_ENABLED
-			}
-		case int:
-			secureValue := value.(int)
-			// FYI, the CLI defines MAX_JS_INT = 1<<53 - 1 (i.e.,  9007199254740991)
-			// NOTE: For JS, the largest exact integral value is 253-1, or 9007199254740991.
-			// In ES6, this is defined as Number MAX_SAFE_INTEGER.
-			// However, in JS, the bitwise operators and shift operators operate on 32-bit ints,
-			// so in that case, the max safe integer is 231-1, or 2147483647
-			// We also disallow negative integers
-			// NOTE: when building for 386 archs. we need to assure comparison with MAX_JS_INT does not
-			// "blow up" and must allow the compiler to compare an untyped int (secureValue) to effectively
-			// an int64... so for the comparison we MUST force a type conversion to avoid "int" size mismatch
-			if int64(secureValue) < MAX_JS_INT && secureValue > 0 {
-				isValid = true
-				enabled = wski18n.FEATURE_ENABLED
-			}
-		case bool:
-			secureValue := value.(bool)
+	case string:
+		secureValue := value.(string)
+		// assure the user-supplied token is valid (i.e., for now a non-empty string)
+		if len(secureValue) != 0 && secureValue != "<nil>" {
 			isValid = true
-			if secureValue {
-				enabled = wski18n.FEATURE_ENABLED
-			}
+			enabled = wski18n.FEATURE_ENABLED
+		}
+	case int:
+		secureValue := value.(int)
+		// FYI, the CLI defines MAX_JS_INT = 1<<53 - 1 (i.e.,  9007199254740991)
+		// NOTE: For JS, the largest exact integral value is 253-1, or 9007199254740991.
+		// In ES6, this is defined as Number MAX_SAFE_INTEGER.
+		// However, in JS, the bitwise operators and shift operators operate on 32-bit ints,
+		// so in that case, the max safe integer is 231-1, or 2147483647
+		// We also disallow negative integers
+		// NOTE: when building for 386 archs. we need to assure comparison with MAX_JS_INT does not
+		// "blow up" and must allow the compiler to compare an untyped int (secureValue) to effectively
+		// an int64... so for the comparison we MUST force a type conversion to avoid "int" size mismatch
+		if int64(secureValue) < MAX_JS_INT && secureValue > 0 {
+			isValid = true
+			enabled = wski18n.FEATURE_ENABLED
+		}
+	case bool:
+		secureValue := value.(bool)
+		isValid = true
+		if secureValue {
+			enabled = wski18n.FEATURE_ENABLED
+		}
 	}
 
 	if !isValid {
 		errMsg := wski18n.T(wski18n.ID_ERR_WEB_ACTION_REQUIRE_AUTH_TOKEN_INVALID_X_action_X_key_X_value,
 			map[string]interface{}{
 				wski18n.KEY_ACTION: actionName,
-				wski18n.KEY_KEY: REQUIRE_WHISK_AUTH,
-				wski18n.KEY_VALUE: fmt.Sprintf("%v", value)})
+				wski18n.KEY_KEY:    REQUIRE_WHISK_AUTH,
+				wski18n.KEY_VALUE:  fmt.Sprintf("%v", value)})
 		return errMsg, wskderrors.NewActionSecureKeyError(errMsg)
 	}
 

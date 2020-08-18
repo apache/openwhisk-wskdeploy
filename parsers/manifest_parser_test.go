@@ -190,12 +190,12 @@ func testUnmarshalTemporaryFile(data []byte, filename string) (p *YAMLParser, m 
 func TestUnmarshalForHelloNodeJS(t *testing.T) {
 	testUnmarshalManifestPackageAndActionBasic(t,
 		"../tests/dat/manifest_hello_nodejs.yaml", // Manifest path
-		"helloworld",                              // Package name
-		1,                                         // # of Actions
-		"helloNodejs",                             // Action name
-		"actions/hello.js",                        // Function path
-		"nodejs:default",                                // "Runtime
-		"")                                        // "Main" function name
+		"helloworld",       // Package name
+		1,                  // # of Actions
+		"helloNodejs",      // Action name
+		"actions/hello.js", // Function path
+		"nodejs:default",   // "Runtime
+		"")                 // "Main" function name
 }
 
 // Test 2: validate manifest_parser:Unmarshal() method with a sample manifest in Java
@@ -254,7 +254,7 @@ func TestUnmarshalForHelloWithParams(t *testing.T) {
 		1,                              // # of Actions
 		TEST_ACTION_NAME,               // Action name
 		"actions/hello-with-params.js", // Function path
-		"nodejs:default",                     // "Runtime
+		"nodejs:default",               // "Runtime
 		"")                             // "Main" function name
 
 	if pkg != nil {
@@ -1691,7 +1691,7 @@ func TestBadYAMLInvalidPackageKeyInManifest(t *testing.T) {
 
 	assert.NotNil(t, err)
 	// NOTE: go-yaml/yaml gets the line # wrong; testing only for the invalid key message
-	assert.Contains(t, err.Error(), "field invalidKey not found in struct parsers.Package")
+	assert.Contains(t, err.Error(), "field invalidKey not found in type parsers.Package")
 }
 
 func TestBadYAMLInvalidKeyMappingValueInManifest(t *testing.T) {
@@ -1710,7 +1710,7 @@ func TestBadYAMLMissingRootKeyInManifest(t *testing.T) {
 	_, err := p.ParseManifest("../tests/dat/manifest_bad_yaml_missing_root_key.yaml")
 
 	assert.NotNil(t, err)
-	assert.Contains(t, err.Error(), "field actions not found in struct parsers.YAML")
+	assert.Contains(t, err.Error(), "field actions not found in type parsers.YAML")
 }
 
 func TestBadYAMLInvalidCommentInManifest(t *testing.T) {
