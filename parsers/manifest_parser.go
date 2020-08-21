@@ -29,6 +29,8 @@ import (
 
 	"gopkg.in/yaml.v2"
 
+	"net/url"
+
 	"github.com/apache/openwhisk-client-go/whisk"
 	"github.com/apache/openwhisk-wskdeploy/conductor"
 	"github.com/apache/openwhisk-wskdeploy/dependencies"
@@ -40,7 +42,6 @@ import (
 	"github.com/apache/openwhisk-wskdeploy/wski18n"
 	"github.com/apache/openwhisk-wskdeploy/wskprint"
 	yamlHelper "github.com/ghodss/yaml"
-	"net/url"
 )
 
 const (
@@ -796,7 +797,7 @@ func (dm *YAMLParser) composeActionExec(manifestFilePath string, manifestFileNam
 		if action.Native {
 			exec.Image = NATIVE_DOCKER_IMAGE
 		} else {
-			exec.Image = action.Docker
+			exec.Image = wskenv.InterpolateStringWithEnvVar(action.Docker).(string)
 		}
 	}
 

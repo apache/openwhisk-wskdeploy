@@ -17,24 +17,26 @@
 
 packages:
   IntegrationTestDocker:
-      actions:
-          OpenWhiskSkeleton:
-              docker: openwhisk/skeleton
-          OpenWhiskSkeletonWithNative:
-              native: true
-          CustomDockerAction1:
-              function: ../src/integration/docker/actions/exec.zip
-              docker: openwhisk/skeleton
-          CustomDockerAction2:
-              function: ../src/integration/docker/actions/exec.zip
-              native: true
-          CustomDockerAction3:
-              function: ../src/integration/docker/actions/bash
-              native: true
-          CustomDockerAction4:
-              function: ../src/integration/docker/actions/go
-              native: true
-          CustomDockerAction5:
-              function: ../src/integration/docker/actions/go
-              docker: mydockerhub/myimage
-
+    actions:
+      OpenWhiskSkeleton:
+        docker: openwhisk/skeleton
+      OpenWhiskSkeletonWithNative:
+        native: true
+      CustomDockerAction1:
+        function: ../src/integration/docker/actions/exec.zip
+        docker: openwhisk/skeleton
+      CustomDockerAction2:
+        function: ../src/integration/docker/actions/exec.zip
+        native: true
+      CustomDockerAction3:
+        function: ../src/integration/docker/actions/bash
+        native: true
+      CustomDockerAction4:
+        function: ../src/integration/docker/actions/go
+        native: true
+      CustomDockerAction5:
+        function: ../src/integration/docker/actions/go
+        docker: mydockerhub/myimage
+      CustomDockerAction6:
+        function: ../src/integration/docker/actions/go
+        docker: ${image_name}
