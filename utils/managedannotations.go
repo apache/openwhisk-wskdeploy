@@ -81,7 +81,7 @@ func generateProjectHash(filePath string) (string, error) {
 	}
 
 	// combine all the hash components used to generate SHA1
-	hashContents := OPENWHISK + string(size) + NULL + string(contents)
+	hashContents := OPENWHISK + string(rune(size)) + NULL + string(contents)
 
 	// generate a new hash.Hash computing the SHA1 checksum
 	h := sha1.New()
