@@ -1739,8 +1739,8 @@ func TestUnmarshalForPackages(t *testing.T) {
 	// Unmarshal reads/parses manifest data and sets the values of YAML
 	// And returns an error if parsing a manifest data fails
 	if err == nil {
-		expectedResult := string(2)
-		actualResult := string(len(m.Packages))
+		expectedResult := string(rune(2))
+		actualResult := string(rune(len(m.Packages)))
 		assert.Equal(t, expectedResult, actualResult, "Expected 2 packages but got "+actualResult)
 		// we have two packages
 		// package name should be "helloNodejs" and "helloPython"
@@ -1748,8 +1748,8 @@ func TestUnmarshalForPackages(t *testing.T) {
 			switch k {
 			case "package1":
 				assert.Equal(t, "package1", k, "Expected package name package1 but got "+k)
-				expectedResult = string(1)
-				actualResult = string(len(v.Actions))
+				expectedResult = string(rune(1))
+				actualResult = string(rune(len(v.Actions)))
 				assert.Equal(t, expectedResult, actualResult, "Expected 1 but got "+actualResult)
 				// get the action payload from the map of actions which is stored in
 				// YAML.Package.Actions with the type of map[string]Action
@@ -1768,8 +1768,8 @@ func TestUnmarshalForPackages(t *testing.T) {
 				}
 			case "package2":
 				assert.Equal(t, "package2", k, "Expected package name package2 but got "+k)
-				expectedResult = string(1)
-				actualResult = string(len(v.Actions))
+				expectedResult = string(rune(1))
+				actualResult = string(rune(len(v.Actions)))
 				assert.Equal(t, expectedResult, actualResult, "Expected 1 but got "+actualResult)
 				// get the action payload from the map of actions which is stored in
 				// YAML.Package.Actions with the type of map[string]Action
