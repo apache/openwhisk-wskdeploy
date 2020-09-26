@@ -19,6 +19,26 @@
 
 # Apache OpenWhisk WskDeploy
 
+# 1.1.0
+  * Upgrade to Go 1.15 (#1105)
+  * Added interpolation to docker option in manifest.yaml (#1100)
+  * Migrate to using Go Module to manage dependencies (#1101)
+  * doc: spec_apis.md  basePath, relativePath (#1096)
+  * Remove misleading web-export key (#1092)
+  * Fix link to spec. docs for triggers and rules (#1093)
+  * Support alt namespace uuid as tenant id on swagger api creates/deletes (#1091)
+  * Fix max int. comparison for 386 archs (#1090)
+  * replace the last few uses of nodejs@6 with nodejs@10 (#1089)
+  * Enable Web Secure token for sequences on API create (#1087)
+  * Enable setting user-supplied auth tokens on API create via require-whisk-auth annotation (#1083)
+  * Add the ability to specify api via swagger in manifest (#1078)
+  * Updating runtimes cache to match server side (#1086)
+  * Deprecate nodejs:6 and update runtime metadata (#1085)
+  * Dummy token issue (#1081)
+  * Support alt. namespace resource uuid as tenant id on undeploy (#1080)
+  * Support alt. namespace resource uuid as tenant id to API gatway service (#1076)
+  * gradle version 5 (#1075)
+
 ## 1.0.0
   * Auto supply a dummy API GW token (#1068)
   * Support Description field in corresponding entities (#1057)
