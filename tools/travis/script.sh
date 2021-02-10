@@ -44,7 +44,7 @@ WHISKDIR="$HOMEDIR/openwhisk"
 cd $WHISKDIR
 ./tools/travis/setup.sh
 
-ANSIBLE_CMD="ansible-playbook -i ${ROOTDIR}/ansible/environments/local -e docker_image_prefix=openwhisk -e docker_image_tag=nightly"
+ANSIBLE_CMD="ansible-playbook -i ${WHISKDIR}/ansible/environments/local -e docker_image_prefix=openwhisk -e docker_image_tag=nightly"
 
 cd $WHISKDIR/ansible
 $ANSIBLE_CMD setup.yml
