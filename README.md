@@ -63,15 +63,16 @@ Make sure your `$GOPATH` is defined correctly in your environment. For detailed 
     git clone git@github.com:${GITHUB_ACCOUNT_USERNAME}/openwhisk-wskdeploy.git
     ```
 
-    You can now use `git push` to push local `commit` changes to your `origin` repository and submit pull requests to the `upstream` project repository.
-
 1. Add the Apache repository as a remote with the `upstream` alias:
 
     ```sh
     git remote add upstream git@github.com:apache/openwhisk-wskdeploy
     ```
 
-    Optionally, prevent accidental pushes to upstream:
+    You can now use `git push` to push local `commit` changes to your `origin` repository and submit pull requests to the `upstream` project repository.
+
+ 1. Optionally, prevent accidental pushes to `upstream` using this command:
+
     ```sh
     git remote set-url --push upstream no_push
     ```
@@ -104,6 +105,43 @@ For example, run the following command to build the binary for 64-bit Linux:
 ```sh
 $ GOOS=linux GOARCH=amd64 go build -o wskdeploy
 ```
+
+### How to Cross Compile Binary with Gradle/Docker
+
+If you don't want to bother with go installation, build, git clone etc, and you can do it with Gradle/Docker.
+
+After compiling, a suitable wskdeploy binary that works for your OS platform will be available under /bin directory.
+
+1. First you need a docker daemon running locally on your machine.
+
+2. Make sure you have Java 8 or above installed.
+
+3. Clone the wskdeploy repo with command ```git clone https://github.com/apache/openwhisk-wskdeploy.git```
+
+4. If you use Windows OS, type ```gradlew.bat -version ```. For Unix/Linux/Mac, please type ```./gradlew -version```.
+
+5. Make sure you can see the correct Gradle version info on your console. Currently the expected Gradle
+version is 3.3.
+
+6. For Windows type ```gradlew.bat distDocker```. For Linux/Unix/Mac, please type ```./gradlew distDocker```. These
+commands will start the wskdeploy cross compile for your specific OS platform inside a Docker container.
+
+7. After build success, you should find a correct binary under current /bin dir of you openwhisk-deploy clone dir.
+
+If you would like to build the binaries available for all the operating systems and architectures, run the following command:
+
+```sh
+$ ./gradlew distDocker -PcrossCompileWSKDEPLOY=true
+```
+
+Then, you will find the binaries and their compressed packages generated under the folder ```bin/<os>/<arch>/``` for each supported Operating System and CPU Architecture pair.
+
+### Building for Internationalization
+
+Please follow this process for building any changes to translatable strings:
+- [How to generate the file i18n_resources.go for internationalization](https://github.com/apache/openwhisk-wskdeploy/blob/master/wski18n/README.md)
+
+---
 
 ## Running ```wskdeploy```
 
@@ -144,49 +182,8 @@ For each release, we typically provide binaries built for Linux, Mac OS (Darwin)
 
 _If you are a Developer or Contributor, **we recommend building from the latest source code** from the project's master branch._
 
-<!-- ----------------------------------------------------------------------------- -->
-
-
-You can now use `git push` to push changes to your repository and submit pull requests.
-
-
 for end-users, please use versioned releases of binaries.
 - [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases)
-
-### How to Cross Compile Binary with Gradle/Docker
-
-If you don't want to bother with go installation, build, git clone etc, and you can do it with Gradle/Docker.
-
-After compiling, a suitable wskdeploy binary that works for your OS platform will be available under /bin directory.
-
-1. First you need a docker daemon running locally on your machine.
-
-2. Make sure you have Java 8 or above installed.
-
-3. Clone the wskdeploy repo with command ```git clone https://github.com/apache/openwhisk-wskdeploy.git```
-
-4. If you use Windows OS, type ```gradlew.bat -version ```. For Unix/Linux/Mac, please type ```./gradlew -version```.
-
-5. Make sure you can see the correct Gradle version info on your console. Currently the expected Gradle
-version is 3.3.
-
-6. For Windows type ```gradlew.bat distDocker```. For Linux/Unix/Mac, please type ```./gradlew distDocker```. These
-commands will start the wskdeploy cross compile for your specific OS platform inside a Docker container.
-
-7. After build success, you should find a correct binary under current /bin dir of you openwhisk-deploy clone dir.
-
-If you would like to build the binaries available for all the operating systems and architectures, run the following command:
-
-```sh
-$ ./gradlew distDocker -PcrossCompileWSKDEPLOY=true
-```
-
-Then, you will find the binaries and their compressed packages generated under the folder ```bin/<os>/<arch>/``` for each supported Operating System and CPU Architecture pair.
-
-### Building for Internationalization
-
-Please follow this process for building any changes to translatable strings:
-- [How to generate the file i18n_resources.go for internationalization](https://github.com/apache/openwhisk-wskdeploy/blob/master/wski18n/README.md)
 
 <!-- ----------------------------------------------------------------------------- -->
 
