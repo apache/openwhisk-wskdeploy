@@ -41,37 +41,61 @@ You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses t
 
 ---
 
-## Building the project
+## Contributing to the project
 
 ### GoLang setup
 
-The wskdeploy utility is a GoLang program so you will first need to [Download and install GoLang](https://golang.org/doc/install) onto your local machine.
+The wskdeploy utility is a GoLang program so you will first need to [Download and install GoLang](https://golang.org/dl/) onto your local machine.
+
+> **Note** Go version 1.15 or higher is recommended
 
 Make sure your `$GOPATH` is defined correctly in your environment. For detailed setup of your GoLang development environment, please read [How to Write Go Code](https://golang.org/doc/code.html).
 
+### Git repository setup
 
-### Get the source code from GitHub
+1. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the Apache repository
 
-Once your environment is setup, download `wskdeploy` and its dependencies:
+    If you intend to contribute code, you will want to fork the `apache/openwhisk-wskdeploy` repository into your github account and use that as the source for your clone.
+
+1. Clone the repository from your fork:
+
+    ```sh
+    git clone git@github.com:${GITHUB_ACCOUNT_USERNAME}/openwhisk-wskdeploy.git
+    ```
+
+    You can now use `git push` to push local `commit` changes to your `origin` repository and submit pull requests to the `upstream` project repository.
+
+1. Add the Apache repository as a remote with the `upstream` alias:
+
+    ```sh
+    git remote add upstream git@github.com:apache/openwhisk-wskdeploy
+    ```
+
+    Optionally, prevent accidental pushes to upstream:
+    ```sh
+    git remote set-url --push upstream no_push
+    ```
+
+### Sync your fork before starting commits
+
+Be sure to [Sync your fork](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) before starting any contributions to keep it up-to-date with the upstream repository.
+
+---
+
+## Building the `wskdeploy` binary
+
+Use the Go utility to build the ```wskdeploy``` binary
+
+Change into the cloned project directory and use `go build` with the target output name for the binary:
 
 ```sh
-$ cd $GOPATH
-$ go get github.com/apache/openwhisk-wskdeploy  # see known issues below if you get an error
-$ go get github.com/tools/godep # get the dependency manager
-```
-
-### Build the binary
-
-Use the Go utility to build the ```wskdeploy``` binary as follows:
-```sh
-$ cd src/github.com/apache/openwhisk-wskdeploy/
-$ godep restore
 $ go build -o wskdeploy
 ```
 
-### building for other Operating Systems (GOOS) and Architectures (GOARCH)
+### Building for other Operating Systems (GOOS) and Architectures (GOARCH)
 
 If you would like to build the binary for a specific operating system, you may add the arguments GOOS and GOARCH into the Go build command. You may set
+
 - ```GOOS``` to "linux", "darwin" or "windows"
 - ```GOARCH``` to "amd64" or "386"
 
@@ -81,23 +105,11 @@ For example, run the following command to build the binary for 64-bit Linux:
 $ GOOS=linux GOARCH=amd64 go build -o wskdeploy
 ```
 
-### build using GoDep tool
-
-If you want to build with the godep tool, please execute the following commands.
-
-```sh
-$ go get github.com/tools/godep # Install the godep tool.
-$ godep get                     # Download and install packages with specified dependencies.
-$ godep go build -o wskdeploy   # build the wskdeploy tool.
-```
-
-<!-- ----------------------------------------------------------------------------- -->
-
 ## Running ```wskdeploy```
 
 After building the wskdeploy binary, you can run it as follows:
 
-#### Running the Binary file
+### Running the Binary file
 
 Start by verifying the utility can display the command line help:
 ```sh
@@ -109,7 +121,7 @@ then try deploying an OpenWhisk Manifest and Deployment file:
 $ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
 
-#### Running as a Go program
+### Running as a Go program
 
 Since ```wskdeploy``` is a GoLang program, you may choose to run it using the Go utility:
 ```sh
@@ -120,7 +132,8 @@ and deploying using the Go utility would look like:
 ```sh
 $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
 ```
-<!-- ----------------------------------------------------------------------------- -->
+
+---
 
 ## Downloading released binaries
 
@@ -133,33 +146,9 @@ _If you are a Developer or Contributor, **we recommend building from the latest 
 
 <!-- ----------------------------------------------------------------------------- -->
 
-## Contributing to the project
-
-Start by creating a fork of `openwhisk-wskdeploy` and then change the git `origin` to point to your forked repository, as follows:
-
-```sh
-$ cd $GOPATH/src/github.com/apache/openwhisk-wskdeploy
-$ git remote rename origin upstream
-$ git remote add origin https://github.com/<your fork>/openwhisk-wskdeploy
-$ git fetch --all
-$ git branch --set-upstream-to origin/master  # track master from origin now
-```
 
 You can now use `git push` to push changes to your repository and submit pull requests.
 
-### Developers should use "go deps" and "go build" not "go get"
-
-The Whisk deploy project is setup for development purposes and uses "go deps" for dependency management. We do NOT recommend using "go get" as this will use the latest dependencies for all imported GitHub repos. which is not supported.
-
-- See: [https://github.com/tools/godep](https://github.com/tools/godep)
-
-Specifically, for development please use ```go build```:
-
-```
-$ git clone git@github.com:<your fork>/openwhisk-wskdeploy
-$ cd openwhisk-wskdeploy
-$ go build
-```
 
 for end-users, please use versioned releases of binaries.
 - [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases)
@@ -172,7 +161,7 @@ After compiling, a suitable wskdeploy binary that works for your OS platform wil
 
 1. First you need a docker daemon running locally on your machine.
 
-2. Make sure you have Java 1.7 or above installed.
+2. Make sure you have Java 8 or above installed.
 
 3. Clone the wskdeploy repo with command ```git clone https://github.com/apache/openwhisk-wskdeploy.git```
 
