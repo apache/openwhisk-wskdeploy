@@ -87,7 +87,6 @@ dependencies {
 
 rat {
     excludes += [
-        'Godeps/*',
         '.gradletasknamecache', 'gradle/wrapper/**', 'gradlew*', 'build/**', // Gradle
         '.gitignore', '.rat-excludes',
         'i18n_resources.go',

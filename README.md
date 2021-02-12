@@ -24,14 +24,32 @@
 
 `wskdeploy` is a utility to help you describe and deploy any part of the OpenWhisk programming model using a Manifest file written in YAML. Use it to deploy all your OpenWhisk [Packages](https://github.com/apache/openwhisk/blob/master/docs/packages.md), [Actions](https://github.com/apache/openwhisk/blob/master/docs/actions.md), [Triggers, and Rules](https://github.com/apache/openwhisk/blob/master/docs/triggers_rules.md) using a single command!
 
-`wskdeploy export --projectname managed_project_name` allows to "export" a specified managed project into a local file system. Namely, a `managed_project_name.yml` Manifest file will be created automatically. This Manifest file can be used with `wskdeploy` to redeploy the managed project at a different OpenWhisk instance. If the managed project contains dependencies on other managed projects, then these projects will be exported automatically into their respective manifests.
+#### Running `wskdeploy` standalone
 
-You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses the [OpenWhisk "Go" Client](https://github.com/apache/openwhisk-client-go) to create its HTTP REST calls for deploying and undeploying your packages.
+You can use this utility separately from the OpenWhisk CLI as it uses the same [OpenWhisk "Go" Client](https://github.com/apache/openwhisk-client-go) as the Openwhisk CLI does to create its HTTP REST calls for deploying and undeploying your Openwhisk packages and entities.
 
-## Here are some quick links for:
+#### Running `wskdeploy` as part of the `wsk` CLI
 
-- [Downloading wskdeploy](#downloading-released-binaries) - released binaries for Linux, Mac OS and Windows
-- [Running wskdeploy](#running-wskdeploy) - run wskdeploy as a binary or Go program
+Alternatively, you can use the `wskdeploy` functionality within the OpenWhisk CLI as it is now embedded as the `deploy` command. That is, you can invoke it as `wsk deploy` using all the same parameters documented for the standalone utility.
+
+#### Using `wskdeploy` to manage OpenWhisk entities as projects
+
+In addition to simple deployment, `wskdeploy` also has the powerful `export` command to manage sets of OpenWhisk entities that work together as a named project. The command:
+
+```sh
+wskdeploy export --projectname <managed_project_name>`
+```
+
+allows you to "export" a specified project into a local file system and manage it as a single entity.
+
+In the above example, a `<managed_project_name>.yml` Manifest file would be created automatically which can be used with `wskdeploy` to redeploy the managed project on a different OpenWhisk instance. If the managed project contains dependencies on other managed projects, then these projects will be exported automatically into their respective manifests.
+
+## Getting started
+
+Here are some quick links to help you get started:
+
+- [Downloading released binaries](#downloading-released-binaries) - released binaries for Linux, Mac OS and Windows
+- [Running wskdeploy](#running-wskdeploy) - run `wskdeploy` as a binary or Go program
 - :eight_spoked_asterisk: [Writing Package Manifests](docs/programming_guide.md#wskdeploy-utility-by-example) - a step-by-step guide on writing Package Manifest files for ```wskdeploy```
 - :eight_spoked_asterisk: [Exporting OpenWhisk assets](docs/export.md) - how to use `export` feature
 - [Building the project](#building-the-project) - download and build the GoLang source code
@@ -41,7 +59,35 @@ You can use this in addition to the OpenWhisk CLI.  In fact, this utility uses t
 
 ---
 
-## Contributing to the project
+## Downloading released binaries
+
+Binaries of `wskdeploy` are available for download on the project's GitHub release page:
+- [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases).
+
+For each release, we typically provide binaries built for Linux, Mac OS (Darwin) and Windows on the AMD64 architecture. However, we provide instructions on how to build your own binaries as well from source code with the Go tool.  See [Building the project](#building-the-project).
+
+_If you are a Developer or Contributor, **we recommend building from the latest source code** from the project's master branch._
+
+for end-users, please use versioned releases of binaries.
+- [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases)
+
+---
+
+## Running ```wskdeploy```
+
+Start by verifying the utility can display the command line help:
+```sh
+$ ./wskdeploy --help
+```
+
+then try deploying an OpenWhisk Manifest and Deployment file:
+```sh
+$ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
+```
+
+---
+
+## Building the project
 
 ### GoLang setup
 
@@ -51,39 +97,26 @@ The wskdeploy utility is a GoLang program so you will first need to [Download an
 
 Make sure your `$GOPATH` is defined correctly in your environment. For detailed setup of your GoLang development environment, please read [How to Write Go Code](https://golang.org/doc/code.html).
 
-### Git repository setup
+### Download the source code from GitHub
 
-1. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the Apache repository
+As the code is managed using GitHub, it is easiest to retrieve the code using the `git clone` command.
 
-    If you intend to contribute code, you will want to fork the `apache/openwhisk-wskdeploy` repository into your github account and use that as the source for your clone.
+if you just want to build the code and do not intend to be a Contributor, you can clone the latest code from the Apache repository:
 
-1. Clone the repository from your fork:
+```sh
+git clone git@github.com:apache/openwhisk-wskdeploy
+```
 
-    ```sh
-    git clone git@github.com:${GITHUB_ACCOUNT_USERNAME}/openwhisk-wskdeploy.git
-    ```
+or you can specify a release (tag) if you do not want the latest code by using the `--branch <tag>` flag. For example, you can clone the source code for the tagged 1.1.0 [release](https://github.com/apache/openwhisk-wskdeploy/releases)
 
-1. Add the Apache repository as a remote with the `upstream` alias:
+```sh
+git clone --branch 1.1.0 git@github.com:apache/openwhisk-wskdeploy
+```
 
-    ```sh
-    git remote add upstream git@github.com:apache/openwhisk-wskdeploy
-    ```
+You can also pull the code from a fork of the repository. If you intend to become a Contributor to the project, read the section [Contributing to the project](#contributing-to-the-project) below on how to setup a fork.
 
-    You can now use `git push` to push local `commit` changes to your `origin` repository and submit pull requests to the `upstream` project repository.
 
- 1. Optionally, prevent accidental pushes to `upstream` using this command:
-
-    ```sh
-    git remote set-url --push upstream no_push
-    ```
-
-### Sync your fork before starting commits
-
-Be sure to [Sync your fork](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) before starting any contributions to keep it up-to-date with the upstream repository.
-
----
-
-## Building the `wskdeploy` binary
+### Building using `go build`
 
 Use the Go utility to build the ```wskdeploy``` binary
 
@@ -92,6 +125,8 @@ Change into the cloned project directory and use `go build` with the target outp
 ```sh
 $ go build -o wskdeploy
 ```
+
+an executable named `wskdeploy` will be created in the current directory for your current operating system and architecture.
 
 ### Building for other Operating Systems (GOOS) and Architectures (GOARCH)
 
@@ -141,27 +176,10 @@ Then, you will find the binaries and their compressed packages generated under t
 Please follow this process for building any changes to translatable strings:
 - [How to generate the file i18n_resources.go for internationalization](https://github.com/apache/openwhisk-wskdeploy/blob/master/wski18n/README.md)
 
----
-
-## Running ```wskdeploy```
-
-After building the wskdeploy binary, you can run it as follows:
-
-### Running the Binary file
-
-Start by verifying the utility can display the command line help:
-```sh
-$ ./wskdeploy --help
-```
-
-then try deploying an OpenWhisk Manifest and Deployment file:
-```sh
-$ ./wskdeploy -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/triggerrule/deployment.yml
-```
-
 ### Running as a Go program
 
-Since ```wskdeploy``` is a GoLang program, you may choose to run it using the Go utility:
+Since ```wskdeploy``` is a GoLang program, you may choose to run it using the Go utility. After building the wskdeploy binary, you can run it as follows:
+
 ```sh
 $ go run main.go --help
 ```
@@ -173,19 +191,42 @@ $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/tr
 
 ---
 
-## Downloading released binaries
+## Contributing to the project
 
-Binaries of `wskdeploy` are available for download on the project's GitHub release page:
-- [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases).
+### Git repository setup
 
-For each release, we typically provide binaries built for Linux, Mac OS (Darwin) and Windows on the AMD64 architecture. However, we provide instructions on how to build your own binaries as well from source code with the Go tool.  See [Building the project](#building-the-project).
+1. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the Apache repository
 
-_If you are a Developer or Contributor, **we recommend building from the latest source code** from the project's master branch._
+    If you intend to contribute code, you will want to fork the `apache/openwhisk-wskdeploy` repository into your github account and use that as the source for your clone.
 
-for end-users, please use versioned releases of binaries.
-- [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases)
+1. Clone the repository from your fork:
 
-<!-- ----------------------------------------------------------------------------- -->
+    ```sh
+    git clone git@github.com:${GITHUB_ACCOUNT_USERNAME}/openwhisk-wskdeploy.git
+    ```
+
+1. Add the Apache repository as a remote with the `upstream` alias:
+
+    ```sh
+    git remote add upstream git@github.com:apache/openwhisk-wskdeploy
+    ```
+
+    You can now use `git push` to push local `commit` changes to your `origin` repository and submit pull requests to the `upstream` project repository.
+
+ 1. Optionally, prevent accidental pushes to `upstream` using this command:
+
+    ```sh
+    git remote set-url --push upstream no_push
+    ```
+
+> Be sure to [Sync your fork](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) before starting any contributions to keep it up-to-date with the upstream repository.
+
+### Creating Tagged Releases
+
+Committers can find instructions on how to create tagged releases here:
+- [creating_tagged_releases.md](https://github.com/apache/openwhisk-wskdeploy/tree/master/docs/creating_tagged_releases.md)
+
+---
 
 ## Troubleshooting
 
@@ -228,8 +269,3 @@ This is caused by newer `git` versions not forwarding requests anymore. One solu
 ```
 $ git config --global http.https://gopkg.in.followRedirects true
 ```
-
-## Creating Tagged Releases
-
-Committers can find instructions on how to create tagged releases here:
-- [creating_tagged_releases.md](https://github.com/apache/openwhisk-wskdeploy/tree/master/docs/creating_tagged_releases.md)
