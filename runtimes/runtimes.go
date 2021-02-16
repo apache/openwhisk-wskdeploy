@@ -43,6 +43,7 @@ const (
 	PHP_FILE_EXTENSION      = "php"
 	ZIP_FILE_EXTENSION      = "zip"
 	RUBY_FILE_EXTENSION     = "rb"
+	RUST_FILE_EXTENSION     = "rs"
 	GO_FILE_EXTENSION       = "go"
 	NODEJS_RUNTIME          = "nodejs"
 	SWIFT_RUNTIME           = SWIFT_FILE_EXTENSION
@@ -51,6 +52,7 @@ const (
 	DOTNET_RUNTIME          = ZIP_FILE_EXTENSION
 	PHP_RUNTIME             = PHP_FILE_EXTENSION
 	RUBY_RUNTIME            = "ruby"
+	RUBY_RUNTIME            = "rust"
 	GO_RUNTIME              = GO_FILE_EXTENSION
 	HTTP_CONTENT_TYPE_KEY   = "Content-Type"
 	HTTP_CONTENT_TYPE_VALUE = "application/json; charset=UTF-8"
@@ -205,6 +207,8 @@ func FileExtensionRuntimes(op OpenWhiskInfo) (ext map[string]string) {
 			ext[JAR_FILE_EXTENSION] = k
 		} else if strings.Contains(k, RUBY_RUNTIME) {
 			ext[RUBY_FILE_EXTENSION] = k
+		} else if strings.Contains(k, RUST_RUNTIME) {
+			ext[RUST_FILE_EXTENSION] = k
 		} else if strings.Contains(k, GO_RUNTIME) {
 			ext[GO_FILE_EXTENSION] = k
 		} else if strings.Contains(k, DOTNET_RUNTIME) {
@@ -233,6 +237,8 @@ func FileRuntimeExtensions(op OpenWhiskInfo) (rte map[string]string) {
 					rte[v[i].Kind] = JAVA_FILE_EXTENSION
 				} else if strings.Contains(k, RUBY_RUNTIME) {
 					rte[v[i].Kind] = RUBY_FILE_EXTENSION
+				} else if strings.Contains(k, RUST_RUNTIME) {
+					rte[v[i].Kind] = RUST_FILE_EXTENSION
 				} else if strings.Contains(k, GO_RUNTIME) {
 					rte[v[i].Kind] = GO_FILE_EXTENSION
 				} else if strings.Contains(k, DOTNET_RUNTIME) {
