@@ -24,23 +24,24 @@ The most convenient way to create a tagged release for wskdeploy is to build the
 
 1. Add a tag to a commit id: ```git tag -a <tag/version> <commit hash>```
 
-for example, using the (7 min.) leading characters on commit hash:
+for example, using the leading characters on commit hash (minimum of 7 characters):
+
 ```
-$ git tag -a 0.8.9 c08b0f
+$ git tag -a 1.0.9 c08b0f3
 ```
 
 2. Push the tag upstream: ```git push -f upstream <tag/version>```
 
 for example:
 ```
-$ git push -f upstream 0.8.9
+$ git push -f upstream 1.0.9
 ```
 
-Travis will start the build of 0.8.9 automatically by the event of tag creation.
+will start a Travis build of 1.0.9 automatically from seeing the tag creation event.
 
 If the travis build passed, binaries will be pushed into releases page.
 
-If we modify the tag by pointing to a different commit, use ```git push -f upstream 0.8.9<tag>``` to overwrite the old tag. New binaries from travis build will overwrite the old binaries as well.
+If we modify the tag by pointing to a different commit, use ```git push -f upstream 1.0.9<tag>``` to overwrite the old tag. New binaries from travis build will overwrite the old binaries as well.
 
 You can download the binaries, and delete them from the releases page in GitHub if we do not want them to be public.
 

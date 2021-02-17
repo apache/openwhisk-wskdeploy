@@ -26,13 +26,9 @@ BUILD=`git rev-parse HEAD`
 
 BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
 
-deps:
-	@echo "Installing dependencies"
-	godep restore -v
-
 LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.GitCommit=${BUILD} -X main.BuildDate=${BUILD_DATE} -X main.Build=`git rev-parse HEAD` "
 
-test: deps
+test:
 	@echo "Testing"
 	go test ./... -tags=unit
 
