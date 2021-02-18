@@ -155,8 +155,9 @@ After compiling, a suitable wskdeploy binary that works for your OS platform wil
 
 4. If you use Windows OS, type ```gradlew.bat -version ```. For Unix/Linux/Mac, please type ```./gradlew -version```.
 
-5. Make sure you can see the correct Gradle version info on your console. Currently the expected Gradle
-version is 3.3.
+5. Make sure you can see the correct Gradle version info on your console.
+
+> Currently the expected Gradle version is `5.5.1`
 
 6. For Windows type ```gradlew.bat distDocker```. For Linux/Unix/Mac, please type ```./gradlew distDocker```. These
 commands will start the wskdeploy cross compile for your specific OS platform inside a Docker container.
