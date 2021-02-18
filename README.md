@@ -115,7 +115,6 @@ git clone --branch 1.1.0 git@github.com:apache/openwhisk-wskdeploy
 
 You can also pull the code from a fork of the repository. If you intend to become a Contributor to the project, read the section [Contributing to the project](#contributing-to-the-project) below on how to setup a fork.
 
-
 ### Building using `go build`
 
 Use the Go utility to build the ```wskdeploy``` binary
@@ -149,20 +148,21 @@ After compiling, a suitable wskdeploy binary that works for your OS platform wil
 
 1. First you need a docker daemon running locally on your machine.
 
-2. Make sure you have Java 8 or above installed.
+1. Make sure you have Java 8 or above installed.
 
-3. Clone the wskdeploy repo with command ```git clone https://github.com/apache/openwhisk-wskdeploy.git```
+1. Clone the wskdeploy repo with command ```git clone https://github.com/apache/openwhisk-wskdeploy.git```
 
-4. If you use Windows OS, type ```gradlew.bat -version ```. For Unix/Linux/Mac, please type ```./gradlew -version```.
+1. Verify your installed Gradle version is `5.5.1` (or higher)
 
-5. Make sure you can see the correct Gradle version info on your console.
+    - If you use Windows OS, type ```gradlew.bat -version ```.
+    - For Unix/Linux/Mac, please type ```./gradlew -version```.
 
-> Currently the expected Gradle version is `5.5.1`
+    > **Note** Gradle v6 is not yet supported.
 
-6. For Windows type ```gradlew.bat distDocker```. For Linux/Unix/Mac, please type ```./gradlew distDocker```. These
+1. For Windows type ```gradlew.bat distDocker```. For Linux/Unix/Mac, please type ```./gradlew distDocker```. These
 commands will start the wskdeploy cross compile for your specific OS platform inside a Docker container.
 
-7. After build success, you should find a correct binary under current /bin dir of you openwhisk-deploy clone dir.
+1. After build success, you should find a correct binary under current /bin dir of you openwhisk-deploy clone dir.
 
 If you would like to build the binaries available for all the operating systems and architectures, run the following command:
 

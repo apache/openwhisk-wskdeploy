@@ -37,6 +37,7 @@ golang {
     buildTags = (rootProject.findProperty('goTags')?:'').split(',')
 }
 
+/*
 dependencies {
     golang {
         build(['name':'github.com/cloudfoundry/jibber_jabber', 'version':'bcc4c8345a21301bf47c032ff42dd1aae2fe3027', 'transitive':false])
@@ -84,6 +85,7 @@ dependencies {
 
     }
 }
+*/
 
 rat {
     excludes += [
