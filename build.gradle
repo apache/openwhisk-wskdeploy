@@ -37,6 +37,23 @@ golang {
     buildTags = (rootProject.findProperty('goTags')?:'').split(',')
 }
 
+// The `gogradle` plugin was designed to work with govendor and godeps
+// We must disable its tasks that attempt to "fetch" dpendendencies
+// into a "/vendor" directory and use them to build the project (which will fail)
+installDependencies.enabled = false
+resolveBuildDependencies.enabled = false
+
+// try overwriting the task (make sure to test well the App afterwards to avoid unwanted side-effects).
+// In order to you should do the following:
+
+// task(overwrite: true){
+// apply plugin: 'com.name.of.your.plugin'
+// plugin {
+//     defaultConfig {
+
+//     }
+// }}
+
 /*
 dependencies {
     golang {
