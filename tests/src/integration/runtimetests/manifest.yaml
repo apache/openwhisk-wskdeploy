@@ -168,7 +168,7 @@ packages:
             #     outputs:
             #         payload: string
             hellocargo134-with-explicit-runtime:
-                function: helloCargo.zip
+                function: src/helloCargo.zip
                 runtime: rust:1.34
                 inputs:
                     name: string
