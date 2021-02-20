@@ -150,6 +150,8 @@ packages:
                 runtime: dotnet:2.2
                 main: Apache.OpenWhisk.Example.Dotnet::Apache.OpenWhisk.Example.Dotnet.Hello::Main
             zipaction-with-explicit-runtime:
+                annotations:
+                    web-export: true
                 function: src/helloworld
                 runtime: nodejs:default
                 inputs:
@@ -157,8 +159,16 @@ packages:
                     place: string
                 outputs:
                     payload: string
-            hellorust134-with-explicit-runtime:
-                function: src/lib.rs
+            # hellorust134-with-explicit-runtime:
+            #     function: src/lib.rs
+            #     runtime: rust:1.34
+            #     inputs:
+            #         name: string
+            #         place: string
+            #     outputs:
+            #         payload: string
+            hellocargo134-with-explicit-runtime:
+                function: helloCargo.zip
                 runtime: rust:1.34
                 inputs:
                     name: string
