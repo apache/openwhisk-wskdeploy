@@ -157,6 +157,14 @@ packages:
                     place: string
                 outputs:
                     payload: string
+            hellorust134-with-explicit-runtime:
+                function: src/lib.rs
+                runtime: rust:1.34
+                inputs:
+                    name: string
+                    place: string
+                outputs:
+                    payload: string
     TestImplicitRuntimes:
         actions:
             greetingnodejs-without-explicit-runtime:

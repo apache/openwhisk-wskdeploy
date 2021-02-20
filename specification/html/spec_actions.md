@@ -223,6 +223,11 @@ following file extensions are recognized and will be run on the version of corre
   <td>ruby</td>
   <td>Latest Ruby language runtime.</td>
  </tr>
+  <tr>
+  <td>.rs</td>
+  <td>rust</td>
+  <td>Latest Rust language runtime.</td>
+ </tr>
 </table>
 </html>
 
