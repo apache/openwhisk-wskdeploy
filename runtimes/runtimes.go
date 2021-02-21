@@ -43,7 +43,6 @@ const (
 	PHP_FILE_EXTENSION      = "php"
 	ZIP_FILE_EXTENSION      = "zip"
 	RUBY_FILE_EXTENSION     = "rb"
-	RUST_FILE_EXTENSION     = "rs"
 	GO_FILE_EXTENSION       = "go"
 	RUST_FILE_EXTENSION     = "rs"
 	NODEJS_RUNTIME          = "nodejs"
@@ -53,7 +52,6 @@ const (
 	DOTNET_RUNTIME          = ZIP_FILE_EXTENSION
 	PHP_RUNTIME             = PHP_FILE_EXTENSION
 	RUBY_RUNTIME            = "ruby"
-	RUST_RUNTIME            = "rust"
 	GO_RUNTIME              = GO_FILE_EXTENSION
 	RUST_RUNTIME            = "rust"
 	HTTP_CONTENT_TYPE_KEY   = "Content-Type"
