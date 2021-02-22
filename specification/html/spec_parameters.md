@@ -156,11 +156,13 @@ annotations: <map of <string>>
 In a Manifest or Deployment file, a parameter value may be set from the local execution environment by using the dollar ($) notation to denote names of local environment variables which supply the value to be inserted at execution time.
 
 ### Syntax
+
 ```yaml
 <parameter>: $<local environment variable name>
 ```
 
 ### Examples
+
 ```yaml
 ...
   inputs:
@@ -180,7 +182,6 @@ More examples of dollar notation, including use within JSON data, can be found h
 
 - Processors or tooling that encounter ($) Dollar notation for values should attempt to locate the corresponding named variables set into the local execution environment (e.g., where the tool was invoked) and assign its value to the named input parameter for the OpenWhisk entity.
 - This specification does not currently consider using this notation for other than simple data types (i.e., we support this mechanism for values such as `strings`, `integers`, `floats`, etc.) at this time.
-
 
 <!--
  Bottom Navigation

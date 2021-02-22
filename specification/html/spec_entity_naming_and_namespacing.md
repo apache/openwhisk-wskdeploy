@@ -26,7 +26,7 @@ packages, belongs in a *namespace.*
 
 The fully qualified name of any entity has the format:
 
-```
+```sh
 /<namespaceName>[/<packageName>]/<entityName>
 ```
 
@@ -34,7 +34,7 @@ The namespace is typically provided at bind-time by the user deploying the packa
 
 #### Requirements
 
--   The “/whisk.system“ namespace is reserved for entities that are distributed with the OpenWhisk system.
+- The “/whisk.system“ namespace is reserved for entities that are distributed with the OpenWhisk system.
 
 ### Entity Names
 
@@ -42,17 +42,19 @@ The names of all entities, including actions, triggers, rules, packages,
 and namespaces, are a sequence of characters that follow the following
 format:
 
--   The first character SHALL be an alphanumeric character, a digit, or an underscore.
--   The subsequent characters MAY be alphanumeric, digits, spaces, or any of the following:
-```
-_, @, ., -
-```
+- The first character SHALL be an alphanumeric character, a digit, or an underscore.
+- The subsequent characters MAY be alphanumeric, digits, spaces, or any of the following:
+
+    ```sh
+    _, @, ., -
+    ```
+
 - The last character SHALL NOT be a space.
 - The maximum name length of any entity name is 256 characters (i.e., ENTITY_NAME_MAX_LENGTH = 256).
 
 Valid entity names are described with the following regular expression (Java metacharacter syntax):
 
-```
+```sh
 "\A([\w]|[\w][\w@ .-]{0,${ENTITY_NAME_MAX_LENGTH - 2}}[\w@.-])\z"
 ```
 

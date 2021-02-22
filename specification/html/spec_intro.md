@@ -31,15 +31,15 @@ Development Kits (SDKs).
 The code for the Actions, along with any support services implementing *Feeds*, are packaged according to this specification to be compatible with the OpenWhisk catalog and its tooling. It also serves as a means for architects and developers to model OpenWhisk package Actions as part
 of full, event-driven services and applications providing the necessary information for artifact and data type validation along with package management operations.
 
-### Compatibility
+## Compatibility
 
 This specification is intended to be compatible with the following specifications:
 
--   *OpenWhisk API which is defined as an OpenAPI document: *
-    -   <https://github.com/apache/openwhisk/blob/master/core/controller/src/main/resources/apiv1swagger.json>
+- *OpenWhisk API which is defined as an OpenAPI document:*
+    - <https://github.com/apache/openwhisk/blob/master/core/controller/src/main/resources/apiv1swagger.json>
 
--   *OpenAPI Specification when defining REST APIs and parameters:*
-    -   <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md>
+- *OpenAPI Specification when defining REST APIs and parameters:*
+    - <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md>
 
 <!--
  Bottom Navigation

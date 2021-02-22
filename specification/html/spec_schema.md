@@ -17,7 +17,7 @@
 #
 -->
 
-# Schema
+## Schema
 
 This section defines all the essential schema used to describe OpenWhisk packages and programming model entities within a manifest.
 

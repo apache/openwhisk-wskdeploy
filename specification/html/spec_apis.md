@@ -22,6 +22,7 @@
 The API entity schema is used to define an OpenWhisk API within a manifest.
 
 ### Fields
+
 <html>
 <table width="100%">
  <tr>

@@ -22,12 +22,12 @@
 This document defines two file artifacts that are used to deploy
 Packages to a target OpenWhisk platform; these include:
 
--   ***Package Manifest file***: Contains the Package definition along
+- ***Package Manifest file***: Contains the Package definition along
     with any included Action, Trigger or Rule definitions that comprise
     the package. This file includes the schema of input and output data
     to each entity for validation purposes.
 
--   ***Deployment file*** (optional): Contains the values and bindings used
+- ***Deployment file*** (optional): Contains the values and bindings used
     configure a Package to a target OpenWhisk platform provider’s
     environment and supply input parameter values for Packages, Actions
     and Triggers. This can include Namespace bindings, security and
@@ -35,9 +35,8 @@ Packages to a target OpenWhisk platform; these include:
 
 #### Notes
 
--   _Deployment files are optional_. Deployment can be fully accomplished
+- _Deployment files are optional_. Deployment can be fully accomplished
     with simply a Manifest File.
-
 
 ### Conceptual Package creation and publishing
 

@@ -29,6 +29,7 @@ entities.
 ```
 
 ##### Multi-line grammar
+
 ```yaml
 # Where ‘key_n’ is a type <string> and ‘value_n’ is type <any>.
 <key_1>: <value_1>
