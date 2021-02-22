@@ -41,7 +41,7 @@ The Parameter schema is used to define input and/or output data to be used by Op
 
 ### Requirements
 
-The 'schema' key's value MUST be compatible with the value provided on both the 'type'  and 'value' keys; otherwise, it is considered an error.
+The `schema` key's value MUST be compatible with the value provided on both the 'type'  and 'value' keys; otherwise, it is considered an error.
 
 ### Notes
 
@@ -66,6 +66,10 @@ The `type` key acknowledges some popular schema (e.g., JSON) to use when validat
     inline0: !!float 456.423
     inline10:  # JSON null
     inline11: True # JSON true
+    inline12: ["v1", "v2"]  # Array
+    inline13: # Array
+      - "value1"
+      - "value2"
 ```
 
 Where `<YAML type>` is inferred to be a YAML type as shown in the YAML Types section above (e.g., string, integer, float, boolean, etc.).
@@ -78,18 +82,30 @@ If you wish the parser to validate against a different schema, then the multi-li
 ...
   inputs:
     multiline1:
-      value: null
-      type: string
-      description: "null string"
-    multiline2:
       value: "hello"
       type: string
       description: "greeting"
-    multiline3:
+    multiline2:
       value: '{ "key": true }'
       type: string
       description: "map as string"
+    multiline3:
+      value: null
+      type: string
+      description: "null string"
+    multiline4:
+      value: 42
+      type: integer
+    multiline:
+      value: 456.423
+      type: float
 ```
+
+More examples of multiline, including advanced types like JSON, can be found here:
+
+- [docs/examples/manifest_hello_world_advanced_parms.yaml](docs/examples/manifest_hello_world_advanced_parms.yaml)
+- [tests/dat/manifest_validate_multiline_params.yaml](tests/dat/manifest_validate_multiline_params.yaml)
+- [tests/dat/manifest_validate_json_params.yaml](tests/dat/manifest_validate_json_params.yaml)
 
 ### Status values
 
@@ -133,6 +149,7 @@ annotations: <map of <string>>
 
 - Several, non-normative "annotations" keynames and allowed values (principally for User Interface (UI) design and tooling information) may be defined in this specification or optional usage.
 
+---
 
 ## Dollar Notation ($) schema for values
 
@@ -143,12 +160,17 @@ In a Manifest or Deployment file, a parameter value may be set from the local ex
 <parameter>: $<local environment variable name>
 ```
 
-### Example
+### Examples
 ```yaml
 ...
   inputs:
     userName: $DEFAULT_USERNAME
 ```
+
+More examples of dollar notation, including use within JSON data, can be found here:
+
+- [docs/examples/manifest_hello_world_env_var_parms.yaml](docs/examples/manifest_hello_world_env_var_parms.yaml)
+- [tests/dat/manifest_validate_json_params.yaml](tests/dat/manifest_validate_json_params.yaml)
 
 ### Requirements
 

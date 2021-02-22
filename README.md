@@ -159,8 +159,9 @@ After compiling, a suitable wskdeploy binary that works for your OS platform wil
 
     > **Note** Gradle v6 is not yet supported.
 
-1. For Windows type ```gradlew.bat distDocker```. For Linux/Unix/Mac, please type ```./gradlew distDocker```. These
-commands will start the wskdeploy cross compile for your specific OS platform inside a Docker container.
+1. For Windows type ```gradlew.bat distDocker```. For Linux/Unix/Mac, please type ```./gradlew distDocker```.
+
+    These commands will start the wskdeploy cross compile for your specific OS platform inside a Docker container.
 
 1. After build success, you should find a correct binary under current /bin dir of you openwhisk-deploy clone dir.
 
