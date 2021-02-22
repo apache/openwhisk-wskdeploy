@@ -23,12 +23,14 @@
 - [Dollar Notation ($)](#dollar-notation--schema-for-values)
 
 ## Parameter schema
+
 The Parameter schema is used to define input and/or output data to be used by OpenWhisk entities for the purposes of validation.
 
 ### Fields
+
 | Key Name | Required | Value Type | Default | Description |
 |:---|:---|:---|:---|:---|
-| type       | no | _&lt;any&gt;_ | string | Optional valid type name or the parameter’s value for alidation purposes. By default, the type is string. |
+| [type](./spec_parameter_types.md) | no | _&lt;any&gt;_ | string | Optional valid type name or the parameter’s value for validation purposes. By default, the type is string. |
 | description | no | string256 | N/A | Optional description of the Parameter. |
 | value      | no | _&lt;any&gt;_ | N/A | The optional user supplied value for the parameter.</br> Note: this is not the default value, but an explicit declaration which allows simple usage of the Manifest file without a Deployment file. |
 | required   | no | boolean    | true | Optional indicator to declare the parameter as required (i.e., true) or optional (i.e., false). |
@@ -43,20 +45,50 @@ The 'schema' key's value MUST be compatible with the value provided on both the 
 
 ### Notes
 
-The 'type' key acknowledges some popular schema (e.g., JSON) to use when validating the value of the parameter. In the future additional (schema) types may be added for convenience.
+The `type` key acknowledges some popular schema (e.g., JSON) to use when validating the value of the parameter. In the future additional (schema) types may be added for convenience.
 
-### Grammar
+### Examples
 
-#### Single-line
+#### Single-line declaration *(type inferred)*
+
 ```yaml
+...
+  inputs:
+    inline1: '{ "key": true }'
+    inline2: Just a string
+    inline3: null
+    inline4: true
+    inline5: 42
+    inline6: -531
+    inline7: 432.432E-43
+    inline8: '[ true, null, "boo", { "key": 0 }]'
+    inline9: !!bool false
+    inline0: !!float 456.423
+    inline10:  # JSON null
+    inline11: True # JSON true
 ```
 
-Where <YAML type> is inferred to be a YAML type as shown in the YAML Types section above (e.g., string, integer, float, boolean, etc.).
+Where `<YAML type>` is inferred to be a YAML type as shown in the YAML Types section above (e.g., string, integer, float, boolean, etc.).
 
 If you wish the parser to validate against a different schema, then the multi-line grammar MUST be used where the value would be supplied on the keyname 'value' and the type (e.g., 'json') and/or schema (e.g., OpenAPI) can be supplied.
 
-#### Multi-line
+#### Multi-line declaration *(explicitly typed)*
+
 ```yaml
+...
+  inputs:
+    multiline1:
+      value: null
+      type: string
+      description: "null string"
+    multiline2:
+      value: "hello"
+      type: string
+      description: "greeting"
+    multiline3:
+      value: '{ "key": true }'
+      type: string
+      description: "map as string"
 ```
 
 ### Status values

@@ -38,7 +38,7 @@ golang {
 }
 
 // The `gogradle` plugin was designed to work with `govendor` and `godeps` tools
-// We must disable its tasks that attempt to "fetch" dpendendencies
+// We must disable its tasks that attempt to "fetch" dependencies
 // into a "/vendor" directory and use them to build the project (which will fail)
 installDependencies.enabled = false
 resolveBuildDependencies.enabled = false
