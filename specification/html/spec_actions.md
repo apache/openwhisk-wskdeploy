@@ -168,6 +168,7 @@ The following runtime values are currently supported by the OpenWhisk platform "
 | swift@3.1.1 **(deprecated)** | swift:3.1.1 | [openwhisk/action-swift-v3.1.1](https://hub.docker.com/r/openwhisk/action-swift-v3.1.1) | nightly | Swift 3.1.1 language runtime |
 | dotnet&nbsp;&#124; dotnet@2.2 (default) | dotnet:2.2 | [openwhisk/action-dotnet-v2.2](https://hub.docker.com/r/openwhisk/action-dotnet-v2.2) | nightly | .NET Core 2.2 runtime |
 | dotnet@3.1 | dotnet:3.1 | [openwhisk/action-dotnet-v3.1](https://hub.docker.com/r/openwhisk/action-dotnet-v3.1) | nightly | .NET Core 3.1 runtime |
+| rust@1.34 | rust:1.34 | openwhisk/actionloop-rust-v1.34:latest | Latest Rust 1.34 language runtime |
 | language:default | N/A | N/A | N/A | Permit the OpenWhisk platform to select the correct default language runtime. |
 
 See the file [runtimes.json](https://github.com/apache/openwhisk/blob/master/ansible/files/runtimes.json) in
@@ -221,6 +222,11 @@ following file extensions are recognized and will be run on the version of corre
   <td>.rb</td>
   <td>ruby</td>
   <td>Latest Ruby language runtime.</td>
+ </tr>
+  <tr>
+  <td>.rs</td>
+  <td>rust</td>
+  <td>Latest Rust language runtime.</td>
  </tr>
 </table>
 </html>
