@@ -22,6 +22,7 @@
 Actions can be composed into sequences to, in effect, form a new Action. The Sequence entity allows for a simple, convenient way to describe them in the Package Manifest.
 
 ### Fields
+
 <html>
 <table>
   <tr>
@@ -77,6 +78,7 @@ sequences:
 ```
 
 ### Example
+
 ```yaml
 sequences:
   newbot:

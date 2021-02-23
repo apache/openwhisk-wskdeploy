@@ -1924,9 +1924,9 @@ func TestParseYAML_param(t *testing.T) {
 					assert.Equal(t, false, param.Value, "Get param value failed.")
 				case "inline0":
 					assert.Equal(t, 456.423, param.Value, "Get param value failed.")
-				case "inlin10":
+				case "inline10":
 					assert.Equal(t, nil, param.Value, "Get param value failed.")
-				case "inlin11":
+				case "inline11":
 					assert.Equal(t, true, param.Value, "Get param value failed.")
 				case "expand1":
 					assert.Equal(t, nil, param.Value, "Get param value failed.")

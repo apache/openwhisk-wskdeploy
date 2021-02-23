@@ -20,6 +20,7 @@
 ## Actions
 
 #### Subsections
+
 - [Fields](#fields)
 - [Requirements](#requirements)
 - [Notes](#notes)
@@ -32,6 +33,7 @@
 The Action entity schema contains the necessary information to deploy an OpenWhisk function and define its deployment configurations, inputs and outputs.
 
 ### Fields
+
 | Key Name | Required | Value Type | Default | Description |
 |:---|:---|:---|:---|:---|
 | version | no | [version](spec_parameter_types.md#openwhisk-types) | N/A | The optional user-controlled version for the Action. |
@@ -78,6 +80,7 @@ The following annotations have special meanings for Actions:
 - When the `code` key-value is specified, the `runtime` **SHALL** be a required field.
 
 #### Annotation requirements
+
 - The annotation `require-whisk-auth` **SHALL** only be valid for web actions (i.e., if the `web` key or `web-export` annotation is set to `true`).
 - If the value of the `require-whisk-auth` annotation is an `integer` its value **MUST** be a positive integer less than or equal to the `MAX_INT` value of `9007199254740991`.
 - When the `web` or `web-export` key is present and set to `true` the web action's **MUST** also be marked `final`.  This happens automatically when the `web` or `web-export` keys are present and set to `true`.
@@ -175,11 +178,11 @@ See the file [runtimes.json](https://github.com/apache/openwhisk/blob/master/ans
 the main [apache/openwhisk](https://github.com/apache/openwhisk) repository for the latest supported runtimes nad versions.
 
 #### Notes
+
 - **WARNING**: _For OpenWhisk project builds, the Docker image used is tagged `nightly` in Docker Hub (e.g, for GitHub pull
 requests). Production uses of OpenWhisk code may use different images and tagged (released) image versions._
 - If no value for `runtime` is supplied, the value `language:default` will be assumed.
 - OpenWhisk runtimes may also include additional built-in packages (or libraries) that have been determined be useful for Actions surveyed and tested by the OpenWhisk platform.
-
 
 ### Recognized File extensions
 

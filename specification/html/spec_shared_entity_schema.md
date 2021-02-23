@@ -90,6 +90,7 @@ The Entity Schema contains fields that are common (shared) to all OpenWhisk enti
 </html>
 
 ### Grammar
+
 ```yaml
 description: <string256>
 displayName: <string16>
@@ -97,7 +98,8 @@ annotations: <map of <string>>
 ```
 
 ### Requirements
-- Non-required fields MAY be stored as ÒannotationsÓ within the OpenWhisk framework after they have been used for processing.
+
+- Non-required fields MAY be stored as `annotations` within the OpenWhisk framework after they have been used for processing.
 - Description string values SHALL be limited to 256 characters.
 - DisplayName string values SHALL be limited to 16 characters.
 - Annotations MAY be ignored by target consumers of the Manifest file as they are considered data non-essential to the deployment of management of OpenWhisk entities themselves.
@@ -105,6 +107,7 @@ annotations: <map of <string>>
 - For any OpenWhisk Entity, the maximum size of all Annotations SHALL be 256 characters.
 
 ### Notes
+
 - Several, non-normative Annotation keynames and allowed values for (principally for User Interface (UI) design) may be defined below for optional usage.
 
 <!--

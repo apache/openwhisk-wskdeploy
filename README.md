@@ -154,28 +154,56 @@ After compiling, a suitable wskdeploy binary that works for your OS platform wil
 
 1. Verify your installed Gradle version is `5.5.1` (or higher)
 
-    - If you use Windows OS, type ```gradlew.bat -version ```.
-    - For Unix/Linux/Mac, please type ```./gradlew -version```.
+    - On Windows OS, type ```gradlew.bat -version ```.
+    - On Unix/Linux/Mac, please type ```./gradlew -version```.
 
     > **Note** Gradle v6 is not yet supported.
 
-1. For Windows type ```gradlew.bat distDocker```. For Linux/Unix/Mac, please type ```./gradlew distDocker```. These
-commands will start the wskdeploy cross compile for your specific OS platform inside a Docker container.
+1. Cross-compile binaries for all supported Operating Systems and Architectures:
 
-1. After build success, you should find a correct binary under current /bin dir of you openwhisk-deploy clone dir.
+    - On Windows, type ```gradlew.bat goBuild```
+    - On Linux/Unix/Mac, please type ```./gradlew goBuild```.
 
-If you would like to build the binaries available for all the operating systems and architectures, run the following command:
+1. Upon a successful build, all binaries can be found within the `./build` directory of your project:
 
-```sh
-$ ./gradlew distDocker -PcrossCompileWSKDEPLOY=true
-```
+    ```sh
+    $ ls build
+    darwin-amd64  linux-amd64   linux-arm64   linux-s390x   windows-amd64
+    linux-386     linux-arm     linux-ppc64le windows-386
+    ```
 
-Then, you will find the binaries and their compressed packages generated under the folder ```bin/<os>/<arch>/``` for each supported Operating System and CPU Architecture pair.
+#### Compiling for a single OS/ARCH
 
-### Building for Internationalization
+1. View gradle build tasks for supported Operating Systems and Architectures:
+
+    ```sh
+    ./gradlew tasks
+    ```
+
+    you will see build tasks for supported OS/ARCH combinations:
+
+    ```sh
+    Gogradle tasks
+    --------------
+    buildDarwinAmd64 - Custom go task.
+    buildLinux386 - Custom go task.
+    buildLinuxAmd64 - Custom go task.
+    buildLinuxArm - Custom go task.
+    buildLinuxArm64 - Custom go task.
+    buildLinuxPpc64le - Custom go task.
+    buildLinuxS390x - Custom go task.
+    buildWindows386 - Custom go task.
+    buildWindowsAmd64 - Custom go task.
+    ```
+
+    > Note: The `buildWindows386` option is only supported on Golang versions less than 1.15.
+
+#### Building for Internationalization
 
 Please follow this process for building any changes to translatable strings:
 - [How to generate the file i18n_resources.go for internationalization](https://github.com/apache/openwhisk-wskdeploy/blob/master/wski18n/README.md)
+
+---
 
 ### Running as a Go program
 

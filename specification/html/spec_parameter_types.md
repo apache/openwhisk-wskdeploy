@@ -17,7 +17,7 @@
 #
 -->
 
-# Parameter Types
+## Parameter Types
 
 - [YAML Types](#yaml-types)
 - [OpenWhisk Types](#openwhisk-types)
@@ -25,7 +25,7 @@
 
 ---
 
-#### YAML Types
+### YAML Types
 
 Many of the types we use in this profile are *built-in* types from the [YAML 1.2 specification](http://www.yaml.org/spec/1.2/spec.html) (i.e., those identified by the “tag:yaml.org,2002” version tag).
 
@@ -40,7 +40,7 @@ The following table declares the valid YAML type URIs and aliases that SHALL be 
 | timestamp | tag:yaml.org,2002:timestamp | ISO 8601 compatible timestamp. See [YAML-TS-1.1](spec_normative_refs.md) |
 | null      | tag:yaml.org,2002:null | Different meaning than an empty string, map, list, etc. |
 
-#### Requirements
+### Requirements
 
 - The ‘string’ type SHALL be the default type when not specified on a parameter or property declaration.
 - All ‘boolean’ values SHALL be lowercased (i.e., ‘true’ or ‘false’).

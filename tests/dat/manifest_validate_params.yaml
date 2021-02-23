@@ -30,8 +30,8 @@ packages:
           inline8: '[ true, null, "boo", { "key": 0 }]'
           inline9: !!bool false
           inline0: !!float 456.423
-          inlin10:  # JSON null
-          inlin11: True # JSON true
+          inline10:  # JSON null
+          inline11: True # JSON true
 
           expand1:
             value: null
