@@ -41,6 +41,7 @@ Packages/
 
 # Gradle
 .gradle
+.gogradle
 build/
 
 #emacs

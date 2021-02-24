@@ -1943,7 +1943,7 @@ func TestParseYAML_param(t *testing.T) {
 				case "expand7":
 					assert.Equal(t, nil, param.Value, "Get param value failed.")
 				default:
-					t.Error("Get param name failed")
+					t.Error("Get param name [" + param_name + "] failed")
 				}
 			}
 		default:
