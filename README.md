@@ -22,7 +22,7 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.com/apache/openwhisk-wskdeploy.svg?branch=master)](https://travis-ci.com/apache/openwhisk-wskdeploy)
 
-`wskdeploy` is a utility to help you describe and deploy any part of the OpenWhisk programming model using a Manifest file written in YAML. Use it to deploy all your OpenWhisk [Packages](https://github.com/apache/openwhisk/blob/master/docs/packages.md), [Actions](https://github.com/apache/openwhisk/blob/master/docs/actions.md), [Triggers, and Rules](https://github.com/apache/openwhisk/blob/master/docs/triggers_rules.md) using a single command!
+`wskdeploy` is a utility to help you describe and deploy any part of the OpenWhisk programming model using a YAML manifest file. Use it to deploy all of your OpenWhisk project's [Packages](https://github.com/apache/openwhisk/blob/master/docs/packages.md), [Actions](https://github.com/apache/openwhisk/blob/master/docs/actions.md), [Triggers, and Rules](https://github.com/apache/openwhisk/blob/master/docs/triggers_rules.md), together, using a single command!
 
 #### Running `wskdeploy` standalone
 
@@ -61,22 +61,20 @@ Here are some quick links to help you get started:
 
 ## Downloading released binaries
 
-Binaries of `wskdeploy` are available for download on the project's GitHub [releases](https://github.com/apache/openwhisk-wskdeploy/releases) page:
+Executable binaries of `wskdeploy` are available for download on the project's GitHub [releases](https://github.com/apache/openwhisk-wskdeploy/releases) page:
 - [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases).
 
 We currently provide binaries for the following Operating Systems (OS) and architecture combinations:
 
 Operating System | Architectures
 --- | ---
-Linux | i386, AMD64, ARM, ARM64, PPC64 (Power), S/390 and IBM Z
+Linux | 386, AMD64, ARM, ARM64, PPC64 (Power), S/390 and IBM Z
 Mac OS (Darwin) | 386<sup>[1](#1)</sup>, AMD64
 Windows | 386, AMD64
 
 1. Mac OS, 32-bit (386) released versions are not available for builds using Go lang version 1.15 and greater.
 
-We also provide instructions on how to build your own binaries from source code using the `Go` tool.
-
-- See [Building the project](#building-the-project).
+We also provide instructions on how to build your own binaries from source code. See [Building the project](#building-the-project).
 
 ---
 
@@ -132,7 +130,7 @@ Change into the cloned project directory and use `go build` with the target outp
 $ go build -o wskdeploy
 ```
 
-an executable named `wskdeploy` will be created in the project directory compatible with your current operating system and architecture.
+If successful, an executable named `wskdeploy` will be created in the project directory compatible with your current operating system and architecture.
 
 #### Building for other Operating Systems (GOOS) and Architectures (GOARCH)
 
@@ -223,7 +221,7 @@ gradle -version
 > **Note** If using your own local Gradle installation, use the `gradle` command instead of the `./gradlew` command in the build instructions below.
 
 
-#### Building for Internationalization
+#### Building for internationalization
 
 Please follow this process for building any changes to translatable strings:
 - [How to generate the file i18n_resources.go for internationalization](https://github.com/apache/openwhisk-wskdeploy/blob/master/wski18n/README.md)
@@ -267,7 +265,7 @@ $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/tr
 
     You can now use `git push` to push local `commit` changes to your `origin` repository and submit pull requests to the `upstream` project repository.
 
- 1. Optionally, prevent accidental pushes to `upstream` using this command:
+1. Optionally, prevent accidental pushes to `upstream` using this command:
 
     ```sh
     git remote set-url --push upstream no_push
