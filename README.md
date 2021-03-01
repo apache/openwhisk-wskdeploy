@@ -114,7 +114,7 @@ if you just want to build the code and do not intend to be a Contributor, you ca
 git clone git@github.com:apache/openwhisk-wskdeploy
 ```
 
-or you can specify a release (tag) if you do not want the latest code by using the `--branch <tag>` flag. For example, you can clone the source code for the tagged 1.1.0 [release](https://github.com/apache/openwhisk-wskdeploy/releases)
+or you can specify a release (tag) if you do not want the latest code by using the `--branch <tag>` flag. For example, you can clone the source code for the tagged 1.1.0 [release](https://github.com/apache/openwhisk-wskdeploy/releases/tag/1.1.0)
 
 ```sh
 git clone --branch 1.1.0 git@github.com:apache/openwhisk-wskdeploy
