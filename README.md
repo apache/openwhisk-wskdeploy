@@ -136,10 +136,7 @@ an executable named `wskdeploy` will be created in the project directory compati
 
 #### Building for other Operating Systems (GOOS) and Architectures (GOARCH)
 
-If you would like to build the binary for a specific operating system, you may add the arguments GOOS and GOARCH into the Go build command. You may set
-
-- ```GOOS``` to "linux", "darwin" or "windows"
-- ```GOARCH``` to "amd64" or "386"
+If you would like to build the binary for a specific operating system and processor architecture, you may add the arguments `GOOS` and `GOARCH` into the Go build command (as inline environment variables).
 
 For example, run the following command to build the binary for 64-bit Linux:
 
@@ -147,18 +144,19 @@ For example, run the following command to build the binary for 64-bit Linux:
 $ GOOS=linux GOARCH=amd64 go build -o wskdeploy
 ```
 
+Supported value combinations include:
+
+`GOOS` | `GOARCH`
+--- | ---
+linux | 386 (32-bit), amd64 (64-bit), s390x (S/390, Z), ppc64le (Power), arm (32-bit), arm64 (64-bit)
+darwin (Mac OS) | amd64
+windows | 386 (32-bit), amd64 (64-bit)
+
 ### Build using Gradle
 
-Another option, especially for Java developers, is Gradle.
+The project includes its own packaged version of Gradle called Gradle Wrapper which is invoked using the `gradlew` command on Linux/Unix/Mac or `gradlew.bat` on Windows.
 
-1. [Install Gradle](https://gradle.org/install/)
-
-    - Gradle requires requires Java JDK version 8 or higher
-
-1. 1. Verify your installed Gradle version is `5.5.1` or higher
-
-    - On Unix/Linux/Mac, please type ```./gradlew -version```
-    - On Windows OS, type ```gradlew.bat -version ```
+1. Gradle requires requires you to [install Java JDK version 8](https://gradle.org/install/) or higher
 
 1. Clone the `openwhisk-wskdeploy` repo:
 
@@ -170,8 +168,9 @@ Another option, especially for Java developers, is Gradle.
 
 1. Cross-compile binaries for all supported Operating Systems and Architectures:
 
-    - On Windows, type ```gradlew.bat goBuild```
-    - On Linux/Unix/Mac, please type ```./gradlew goBuild```
+    ```sh
+    ./gradlew goBuild
+    ```
 
 1. Upon a successful build, the `wskdeploy` Upon a successful build, the `wskdeploy` binaries can be found within the under the corresponding `build/<os>-<architecture>/` folder of your project:
 
@@ -205,13 +204,24 @@ Another option, especially for Java developers, is Gradle.
     buildWindowsAmd64 - Custom go task.
     ```
 
-    > Note: The `buildWindows386` option is only supported on Golang versions less than 1.15.
+    > **Note**: The `buildWindows386` option is only supported on Golang versions less than 1.15.
 
 1. Build using one of these tasks, for example:
 
     ```sh
-    $ gradle buildDarwinAmd64
+    $ ./gradlew buildDarwinAmd64
     ```
+
+#### Using your own local Gradle to build
+
+Alternatively, you can choose to [Install Gradle](https://gradle.org/install/), which you can use instead of Gradle Wrapper by using the `gradle` command instead of `gradlew`. If you wish to use you own Gradle, verify its version is `5.5.1` or higher:
+
+```sh
+gradle -version
+```
+
+> **Note** If using your own local Gradle installation, use the `gradle` command instead of the `./gradlew` command in the build instructions below.
+
 
 #### Building for Internationalization
 
