@@ -61,15 +61,22 @@ Here are some quick links to help you get started:
 
 ## Downloading released binaries
 
-Binaries of `wskdeploy` are available for download on the project's GitHub release page:
+Binaries of `wskdeploy` are available for download on the project's GitHub [releases](https://github.com/apache/openwhisk-wskdeploy/releases) page:
 - [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases).
 
-For each release, we typically provide binaries built for Linux, Mac OS (Darwin) and Windows on the AMD64 architecture. However, we provide instructions on how to build your own binaries as well from source code with the Go tool.  See [Building the project](#building-the-project).
+We currently provide binaries for the following Operating Systems (OS) and architecture combinations:
 
-_If you are a Developer or Contributor, **we recommend building from the latest source code** from the project's master branch._
+Operating System | Architectures
+--- | ---
+Linux | i386, AMD64, ARM, ARM64, PPC64 (Power), S/390 and IBM Z
+Mac OS (Darwin) | 386<sup>[1](#1)</sup>, AMD64
+Windows | 386, AMD64
 
-for end-users, please use versioned releases of binaries.
-- [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases)
+1. Mac OS, 32-bit (386) released versions are not available for builds using Go lang version 1.15 and greater.
+
+We also provide instructions on how to build your own binaries from source code using the `Go` tool.
+
+- See [Building the project](#building-the-project).
 
 ---
 
