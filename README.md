@@ -170,7 +170,7 @@ The project includes its own packaged version of Gradle called Gradle Wrapper wh
     ./gradlew goBuild
     ```
 
-1. Upon a successful build, the `wskdeploy` Upon a successful build, the `wskdeploy` binaries can be found within the under the corresponding `build/<os>-<architecture>/` folder of your project:
+1. Upon a successful build, the `wskdeploy` binaries can be found under the corresponding `build/<os>-<architecture>/` folder of your project:
 
     ```sh
     $ ls build
@@ -212,7 +212,7 @@ The project includes its own packaged version of Gradle called Gradle Wrapper wh
 
 #### Using your own local Gradle to build
 
-Alternatively, you can choose to [Install Gradle](https://gradle.org/install/), which you can use instead of Gradle Wrapper by using the `gradle` command instead of `gradlew`. If you wish to use you own Gradle, verify its version is `5.5.1` or higher:
+Alternatively, you can choose to [Install Gradle](https://gradle.org/install/), which you can use instead of Gradle Wrapper by using the `gradle` command instead of `gradlew`. If you wish to use your own Gradle, verify its version is `5.5.1` or higher:
 
 ```sh
 gradle -version
