@@ -149,29 +149,31 @@ $ GOOS=linux GOARCH=amd64 go build -o wskdeploy
 
 ### Build using Gradle
 
-Another option, especially for Java developers is Gradle.
+Another option, especially for Java developers, is Gradle.
 
 1. [Install Gradle](https://gradle.org/install/)
 
     - Gradle requires requires Java JDK version 8 or higher
 
+1. 1. Verify your installed Gradle version is `5.5.1` or higher
+
+    - On Unix/Linux/Mac, please type ```./gradlew -version```
+    - On Windows OS, type ```gradlew.bat -version ```
+
 1. Clone the `openwhisk-wskdeploy` repo:
 
     ```sh
-    git clone https://github.com/apache/openwhisk-wskdeploy.git
+    git clone https://github.com/apache/openwhisk-wskdeploy
     ```
 
-1. Verify your installed Gradle version is `5.5.1` or higher
-
-    - On Windows OS, type ```gradlew.bat -version ```.
-    - On Unix/Linux/Mac, please type ```./gradlew -version```.
+    and change into the project directory.
 
 1. Cross-compile binaries for all supported Operating Systems and Architectures:
 
     - On Windows, type ```gradlew.bat goBuild```
-    - On Linux/Unix/Mac, please type ```./gradlew goBuild```.
+    - On Linux/Unix/Mac, please type ```./gradlew goBuild```
 
-1. Upon a successful build, all binaries can be found within the `./build` directory of your project:
+1. Upon a successful build, the `wskdeploy` Upon a successful build, the `wskdeploy` binaries can be found within the under the corresponding `build/<os>-<architecture>/` folder of your project:
 
     ```sh
     $ ls build
@@ -204,6 +206,12 @@ Another option, especially for Java developers is Gradle.
     ```
 
     > Note: The `buildWindows386` option is only supported on Golang versions less than 1.15.
+
+1. Build using one of these tasks, for example:
+
+    ```sh
+    $ gradle buildDarwinAmd64
+    ```
 
 #### Building for Internationalization
 
