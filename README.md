@@ -122,9 +122,9 @@ git clone --branch 1.1.0 git@github.com:apache/openwhisk-wskdeploy
 
 You can also pull the code from a fork of the repository. If you intend to become a Contributor to the project, read the section [Contributing to the project](#contributing-to-the-project) below on how to setup a fork.
 
-### Building using `go build`
+### Build using `go build`
 
-Use the Go utility to build the ```wskdeploy``` binary
+Use the Go utility to build the ```wskdeploy``` binary.
 
 Change into the cloned project directory and use `go build` with the target output name for the binary:
 
@@ -132,9 +132,9 @@ Change into the cloned project directory and use `go build` with the target outp
 $ go build -o wskdeploy
 ```
 
-an executable named `wskdeploy` will be created in the current directory for your current operating system and architecture.
+an executable named `wskdeploy` will be created in the project directory compatible with your current operating system and architecture.
 
-### Building for other Operating Systems (GOOS) and Architectures (GOARCH)
+#### Building for other Operating Systems (GOOS) and Architectures (GOARCH)
 
 If you would like to build the binary for a specific operating system, you may add the arguments GOOS and GOARCH into the Go build command. You may set
 
@@ -147,24 +147,24 @@ For example, run the following command to build the binary for 64-bit Linux:
 $ GOOS=linux GOARCH=amd64 go build -o wskdeploy
 ```
 
-### How to Cross Compile Binary with Gradle/Docker
+### Build using Gradle
 
-If you don't want to bother with go installation, build, git clone etc, and you can do it with Gradle/Docker.
+Another option, especially for Java developers is Gradle.
 
-After compiling, a suitable wskdeploy binary that works for your OS platform will be available under /bin directory.
+1. [Install Gradle](https://gradle.org/install/)
 
-1. First you need a docker daemon running locally on your machine.
+    - Gradle requires requires Java JDK version 8 or higher
 
-1. Make sure you have Java 8 or above installed.
+1. Clone the `openwhisk-wskdeploy` repo:
 
-1. Clone the wskdeploy repo with command ```git clone https://github.com/apache/openwhisk-wskdeploy.git```
+    ```sh
+    git clone https://github.com/apache/openwhisk-wskdeploy.git
+    ```
 
-1. Verify your installed Gradle version is `5.5.1` (or higher)
+1. Verify your installed Gradle version is `5.5.1` or higher
 
     - On Windows OS, type ```gradlew.bat -version ```.
     - On Unix/Linux/Mac, please type ```./gradlew -version```.
-
-    > **Note** Gradle v6 is not yet supported.
 
 1. Cross-compile binaries for all supported Operating Systems and Architectures:
 
@@ -302,7 +302,7 @@ go get github.com/project/libname@aee5cab1c
 Although you could edit the version directly in the go.mod file, it is better to use the `go edit` command:
 
 ```sh
-go mod edit -go=1.14
+go mod edit -go=1.15
 ```
 
 ### Creating Tagged Releases
