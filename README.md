@@ -304,7 +304,7 @@ go get github.com/project/libname
 Using a release tag:
 
 ```sah
-go get github.com/project/libname
+go get github.com/project/libname@1.1.0
 ```
 
 Using a commit hash:
