@@ -44,6 +44,11 @@ golang {
 // into a "/vendor" directory and use them to build the project (which will fail)
 installDependencies.enabled = false
 resolveBuildDependencies.enabled = false
+resolveTestDependencies.enabled = false
+
+// Disable "go vet" and "gofmt" as gogradle uses deprecated syntax
+goVet.enabled = false
+gofmt.enabled = false
 
 // File exclusions for the Apache Rat scanning tool
 rat {
