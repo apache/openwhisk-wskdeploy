@@ -22,7 +22,7 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.com/apache/openwhisk-wskdeploy.svg?branch=master)](https://travis-ci.com/apache/openwhisk-wskdeploy)
 
-`wskdeploy` is a utility to help you describe and deploy any part of the OpenWhisk programming model using a Manifest file written in YAML. Use it to deploy all your OpenWhisk [Packages](https://github.com/apache/openwhisk/blob/master/docs/packages.md), [Actions](https://github.com/apache/openwhisk/blob/master/docs/actions.md), [Triggers, and Rules](https://github.com/apache/openwhisk/blob/master/docs/triggers_rules.md) using a single command!
+`wskdeploy` is a utility to help you describe and deploy any part of the OpenWhisk programming model using a YAML manifest file. Use it to deploy all of your OpenWhisk project's [Packages](https://github.com/apache/openwhisk/blob/master/docs/packages.md), [Actions](https://github.com/apache/openwhisk/blob/master/docs/actions.md), [Triggers, and Rules](https://github.com/apache/openwhisk/blob/master/docs/triggers_rules.md), together, using a single command!
 
 #### Running `wskdeploy` standalone
 
@@ -61,15 +61,20 @@ Here are some quick links to help you get started:
 
 ## Downloading released binaries
 
-Binaries of `wskdeploy` are available for download on the project's GitHub release page:
+Executable binaries of `wskdeploy` are available for download on the project's GitHub [releases](https://github.com/apache/openwhisk-wskdeploy/releases) page:
 - [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases).
 
-For each release, we typically provide binaries built for Linux, Mac OS (Darwin) and Windows on the AMD64 architecture. However, we provide instructions on how to build your own binaries as well from source code with the Go tool.  See [Building the project](#building-the-project).
+We currently provide binaries for the following Operating Systems (OS) and architecture combinations:
 
-_If you are a Developer or Contributor, **we recommend building from the latest source code** from the project's master branch._
+Operating System | Architectures
+--- | ---
+Linux | 386, AMD64, ARM, ARM64, PPC64 (Power), S/390 and IBM Z
+Mac OS (Darwin) | 386<sup>[1](#1)</sup>, AMD64
+Windows | 386, AMD64
 
-for end-users, please use versioned releases of binaries.
-- [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases)
+1. Mac OS, 32-bit (386) released versions are not available for builds using Go lang version 1.15 and greater.
+
+We also provide instructions on how to build your own binaries from source code. See [Building the project](#building-the-project).
 
 ---
 
@@ -107,7 +112,7 @@ if you just want to build the code and do not intend to be a Contributor, you ca
 git clone git@github.com:apache/openwhisk-wskdeploy
 ```
 
-or you can specify a release (tag) if you do not want the latest code by using the `--branch <tag>` flag. For example, you can clone the source code for the tagged 1.1.0 [release](https://github.com/apache/openwhisk-wskdeploy/releases)
+or you can specify a release (tag) if you do not want the latest code by using the `--branch <tag>` flag. For example, you can clone the source code for the tagged 1.1.0 [release](https://github.com/apache/openwhisk-wskdeploy/releases/tag/1.1.0)
 
 ```sh
 git clone --branch 1.1.0 git@github.com:apache/openwhisk-wskdeploy
@@ -115,9 +120,9 @@ git clone --branch 1.1.0 git@github.com:apache/openwhisk-wskdeploy
 
 You can also pull the code from a fork of the repository. If you intend to become a Contributor to the project, read the section [Contributing to the project](#contributing-to-the-project) below on how to setup a fork.
 
-### Building using `go build`
+### Build using `go build`
 
-Use the Go utility to build the ```wskdeploy``` binary
+Use the Go utility to build the ```wskdeploy``` binary.
 
 Change into the cloned project directory and use `go build` with the target output name for the binary:
 
@@ -125,14 +130,11 @@ Change into the cloned project directory and use `go build` with the target outp
 $ go build -o wskdeploy
 ```
 
-an executable named `wskdeploy` will be created in the current directory for your current operating system and architecture.
+If successful, an executable named `wskdeploy` will be created in the project directory compatible with your current operating system and architecture.
 
-### Building for other Operating Systems (GOOS) and Architectures (GOARCH)
+#### Building for other Operating Systems (GOOS) and Architectures (GOARCH)
 
-If you would like to build the binary for a specific operating system, you may add the arguments GOOS and GOARCH into the Go build command. You may set
-
-- ```GOOS``` to "linux", "darwin" or "windows"
-- ```GOARCH``` to "amd64" or "386"
+If you would like to build the binary for a specific operating system and processor architecture, you may add the arguments `GOOS` and `GOARCH` into the Go build command (as inline environment variables).
 
 For example, run the following command to build the binary for 64-bit Linux:
 
@@ -140,31 +142,35 @@ For example, run the following command to build the binary for 64-bit Linux:
 $ GOOS=linux GOARCH=amd64 go build -o wskdeploy
 ```
 
-### How to Cross Compile Binary with Gradle/Docker
+Supported value combinations include:
 
-If you don't want to bother with go installation, build, git clone etc, and you can do it with Gradle/Docker.
+`GOOS` | `GOARCH`
+--- | ---
+linux | 386 (32-bit), amd64 (64-bit), s390x (S/390, Z), ppc64le (Power), arm (32-bit), arm64 (64-bit)
+darwin (Mac OS) | amd64
+windows | 386 (32-bit), amd64 (64-bit)
 
-After compiling, a suitable wskdeploy binary that works for your OS platform will be available under /bin directory.
+### Build using Gradle
 
-1. First you need a docker daemon running locally on your machine.
+The project includes its own packaged version of Gradle called Gradle Wrapper which is invoked using the `gradlew` command on Linux/Unix/Mac or `gradlew.bat` on Windows.
 
-1. Make sure you have Java 8 or above installed.
+1. Gradle requires requires you to [install Java JDK version 8](https://gradle.org/install/) or higher
 
-1. Clone the wskdeploy repo with command ```git clone https://github.com/apache/openwhisk-wskdeploy.git```
+1. Clone the `openwhisk-wskdeploy` repo:
 
-1. Verify your installed Gradle version is `5.5.1` (or higher)
+    ```sh
+    git clone https://github.com/apache/openwhisk-wskdeploy
+    ```
 
-    - On Windows OS, type ```gradlew.bat -version ```.
-    - On Unix/Linux/Mac, please type ```./gradlew -version```.
-
-    > **Note** Gradle v6 is not yet supported.
+    and change into the project directory.
 
 1. Cross-compile binaries for all supported Operating Systems and Architectures:
 
-    - On Windows, type ```gradlew.bat goBuild```
-    - On Linux/Unix/Mac, please type ```./gradlew goBuild```.
+    ```sh
+    ./gradlew goBuild
+    ```
 
-1. Upon a successful build, all binaries can be found within the `./build` directory of your project:
+1. Upon a successful build, the `wskdeploy` binaries can be found under the corresponding `build/<os>-<architecture>/` folder of your project:
 
     ```sh
     $ ls build
@@ -196,9 +202,26 @@ After compiling, a suitable wskdeploy binary that works for your OS platform wil
     buildWindowsAmd64 - Custom go task.
     ```
 
-    > Note: The `buildWindows386` option is only supported on Golang versions less than 1.15.
+    > **Note**: The `buildWindows386` option is only supported on Golang versions less than 1.15.
 
-#### Building for Internationalization
+1. Build using one of these tasks, for example:
+
+    ```sh
+    $ ./gradlew buildDarwinAmd64
+    ```
+
+#### Using your own local Gradle to build
+
+Alternatively, you can choose to [Install Gradle](https://gradle.org/install/) and use it instead of the project's Gradle Wrapper.  If so, you would use the `gradle` command instead of `gradlew`. If you do elect to use your own Gradle, verify its version is `5.5.1` or higher:
+
+```sh
+gradle -version
+```
+
+> **Note** If using your own local Gradle installation, use the `gradle` command instead of the `./gradlew` command in the build instructions below.
+
+
+#### Building for internationalization
 
 Please follow this process for building any changes to translatable strings:
 - [How to generate the file i18n_resources.go for internationalization](https://github.com/apache/openwhisk-wskdeploy/blob/master/wski18n/README.md)
@@ -242,7 +265,7 @@ $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/tr
 
     You can now use `git push` to push local `commit` changes to your `origin` repository and submit pull requests to the `upstream` project repository.
 
- 1. Optionally, prevent accidental pushes to `upstream` using this command:
+1. Optionally, prevent accidental pushes to `upstream` using this command:
 
     ```sh
     git remote set-url --push upstream no_push
@@ -295,7 +318,7 @@ go get github.com/project/libname@aee5cab1c
 Although you could edit the version directly in the go.mod file, it is better to use the `go edit` command:
 
 ```sh
-go mod edit -go=1.14
+go mod edit -go=1.15
 ```
 
 ### Creating Tagged Releases
