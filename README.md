@@ -303,7 +303,7 @@ go get github.com/project/libname
 
 Using a release tag:
 
-```sah
+```sh
 go get github.com/project/libname@1.1.0
 ```
 

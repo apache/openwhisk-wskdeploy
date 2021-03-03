@@ -1,5 +1,7 @@
 github.com/apache/openwhisk-client-go v0.0.0-20191018191012-ee5b8709787c h1:HJim5LeEgcbd4ONmGTwX+ocW0iHK0ohGT3dz3tA0k9o=
 github.com/apache/openwhisk-client-go v0.0.0-20191018191012-ee5b8709787c/go.mod h1:jLLKYP7+1+LFlIJW1n9U1gqeveLM1HIwa4ZHNOFxjPw=
+github.com/apache/openwhisk-client-go v0.0.0-20200927152356-49c58e00354d h1:eRcVp/TIKFqI7adU1egUr4IYGhOA1PYu4B5C1IvwSgI=
+github.com/apache/openwhisk-client-go v0.0.0-20200927152356-49c58e00354d/go.mod h1:jLLKYP7+1+LFlIJW1n9U1gqeveLM1HIwa4ZHNOFxjPw=
 github.com/cloudfoundry/jibber_jabber v0.0.0-20151120183258-bcc4c8345a21 h1:tuijfIjZyjZaHq9xDUh0tNitwXshJpbLkqMOJv4H3do=
 github.com/cloudfoundry/jibber_jabber v0.0.0-20151120183258-bcc4c8345a21/go.mod h1:po7NpZ/QiTKzBKyrsEAxwnTamCoh8uDk/egRpQ7siIc=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
