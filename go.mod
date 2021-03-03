@@ -5,14 +5,14 @@ go 1.14
 require (
 	github.com/apache/openwhisk-client-go v0.0.0-20200927152356-49c58e00354d
 	github.com/cloudfoundry/jibber_jabber v0.0.0-20151120183258-bcc4c8345a21
-	github.com/fatih/color v1.5.0
+	github.com/fatih/color v1.10.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32
 	github.com/google/go-querystring v0.0.0-20160401233042-9235644dd9e5 // indirect
 	github.com/hashicorp/hcl v0.0.0-20161109000027-973f376f0e7c // indirect
 	github.com/hokaccha/go-prettyjson v0.0.0-20141201065330-f75235bd99da
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/magiconair/properties v1.7.1-0.20160908093658-0723e352fa35 // indirect
-	github.com/mattn/go-colorable v0.0.7
+	github.com/mattn/go-colorable v0.1.8
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mitchellh/mapstructure v0.0.0-20161020161836-f3009df150da // indirect
 	github.com/nicksnyder/go-i18n v1.6.1-0.20161107021609-991e81cc94f6
