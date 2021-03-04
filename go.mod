@@ -14,7 +14,7 @@ require (
 	github.com/mattn/go-colorable v0.1.8
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
-	github.com/nicksnyder/go-i18n v1.6.1-0.20161107021609-991e81cc94f6
+	github.com/nicksnyder/go-i18n v1.10.0
 	github.com/onsi/ginkgo v1.14.0 // indirect
 	github.com/pelletier/go-buffruneio v0.1.0 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
