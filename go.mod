@@ -7,9 +7,9 @@ require (
 	github.com/cloudfoundry/jibber_jabber v0.0.0-20151120183258-bcc4c8345a21
 	github.com/fatih/color v1.10.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32
-	github.com/google/go-querystring v0.0.0-20160401233042-9235644dd9e5 // indirect
+	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/hashicorp/hcl v0.0.0-20161109000027-973f376f0e7c // indirect
-	github.com/hokaccha/go-prettyjson v0.0.0-20141201065330-f75235bd99da
+	github.com/hokaccha/go-prettyjson v0.0.0-20210113012101-fb4e108d2519
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/magiconair/properties v1.7.1-0.20160908093658-0723e352fa35 // indirect
 	github.com/mattn/go-colorable v0.1.8
@@ -26,6 +26,6 @@ require (
 	github.com/spf13/pflag v0.0.0-20161024131444-5ccb023bc27d // indirect
 	github.com/spf13/viper v0.0.0-20161029213352-651d9d916abc
 	github.com/stretchr/testify v1.6.1
-	golang.org/x/sys v0.0.0-20200810151505-1b9f1253b3ed // indirect
+	golang.org/x/sys v0.0.0-20210304152209-afaa3650a925 // indirect
 	gopkg.in/yaml.v2 v2.3.0
 )

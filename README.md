@@ -298,19 +298,19 @@ Although you might be tempted to edit the go.mod file directly, please use the r
 Using "latest" version:
 
 ```sh
-go get github.com/project/libname
+go get -u github.com/project/libname
 ```
 
 Using a release tag:
 
 ```sh
-go get github.com/project/libname@1.1.0
+go get -u github.com/project/libname@v1.1.0
 ```
 
 Using a commit hash:
 
 ```sh
-go get github.com/project/libname@aee5cab1c
+go get -u github.com/project/libname@aee5cab1c
 ```
 
 ### Updating Go version
