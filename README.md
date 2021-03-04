@@ -273,6 +273,25 @@ $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/tr
 
 > Be sure to [Sync your fork](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) before starting any contributions to keep it up-to-date with the upstream repository.
 
+### Running unit tests
+
+You may use `go test` to test all unit tests within a package, for example:
+
+```sh
+go test ./deployers -tags=unit -v
+go test ./parsers -tags=unit -v
+```
+
+or to run individual function tests, for example:
+
+```sh
+go test ./parsers -tags=unit -v -run TestParseManifestForSingleLineParams
+```
+
+### Running integration tests
+
+Integration tests are best left to the Travis CI build as they depend on a fully functional OpenWhisk environment to be deployed.
+
 ### Adding new dependencies
 
 Please use `go get` to add new dependencies to the `go.mod` file:
