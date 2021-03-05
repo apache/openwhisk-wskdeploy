@@ -62,6 +62,7 @@ Here are some quick links to help you get started:
 ## Downloading released binaries
 
 Executable binaries of `wskdeploy` are available for download on the project's GitHub [releases](https://github.com/apache/openwhisk-wskdeploy/releases) page:
+
 - [https://github.com/apache/openwhisk-wskdeploy/releases](https://github.com/apache/openwhisk-wskdeploy/releases).
 
 We currently provide binaries for the following Operating Systems (OS) and architecture combinations:
@@ -220,7 +221,6 @@ gradle -version
 
 > **Note** If using your own local Gradle installation, use the `gradle` command instead of the `./gradlew` command in the build instructions below.
 
-
 #### Building for internationalization
 
 Please follow this process for building any changes to translatable strings:
@@ -273,6 +273,25 @@ $ go run main.go -m tests/usecases/triggerrule/manifest.yml -d tests/usecases/tr
 
 > Be sure to [Sync your fork](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) before starting any contributions to keep it up-to-date with the upstream repository.
 
+### Running unit tests
+
+You may use `go test` to test all unit tests within a package, for example:
+
+```sh
+go test ./deployers -tags=unit -v
+go test ./parsers -tags=unit -v
+```
+
+or to run individual function tests, for example:
+
+```sh
+go test ./parsers -tags=unit -v -run TestParseManifestForSingleLineParams
+```
+
+### Running integration tests
+
+Integration tests are best left to the Travis CI build as they depend on a fully functional OpenWhisk environment to be deployed.
+
 ### Adding new dependencies
 
 Please use `go get` to add new dependencies to the `go.mod` file:
@@ -295,22 +314,10 @@ go mod tidy
 
 Although you might be tempted to edit the go.mod file directly, please use the recommended method of using the `go get` command:
 
-Using "latest" version:
-
 ```sh
-go get github.com/project/libname
-```
-
-Using a release tag:
-
-```sah
-go get github.com/project/libname@1.1.0
-```
-
-Using a commit hash:
-
-```sh
-go get github.com/project/libname@aee5cab1c
+go get -u github.com/project/libname  # Using "latest" version
+go get -u github.com/project/libname@v1.1.0 # Using tagged version
+go get -u github.com/project/libname@aee5cab1c  # Using a commit hash
 ```
 
 ### Updating Go version
@@ -336,18 +343,20 @@ Committers can find instructions on how to create tagged releases here:
 
 The "go get" command uses HTTPS with GitHub and when you attempt to "commit" code you might be prompted with your GitHub credentials.  If you wish to use your SSH credentials, you may need to issue the following command to set the appropriate URL for your "origin" fork:
 
-```
+```sh
 git remote set-url origin git@github.com:<username>/openwhisk-wskdeploy.git
 ```
 
-<or> you can manually change the remote (origin) url within your .git/config file:
-```
+or you can manually change the remote (origin) url within your .git/config file:
+
+```sh
 [remote "origin"]
     url = git@github.com:<username>/openwhisk-wskdeploy
 ```
 
 while there, you can verify that your upstream repository is set correctly:
-```
+
+```sh
 [remote "upstream"]
     url = git@github.com:apache/openwhisk-wskdeploy
 ```
@@ -356,16 +365,16 @@ while there, you can verify that your upstream repository is set correctly:
 
 This sometimes occurs using "go get" the wskdeploy code (which indirectly invokes "git clone").
 
-<b>Note: Using "go get" for development is unsupported; instead, please use "go deps" for dependency management.</b>
-
 You might get this error when downloading `openwhisk-wskdeploy`:
 
-     Cloning into ''$GOAPTH/src/gopkg.in/yaml.v2'...
-     error: RPC failed; HTTP 301 curl 22 The requested URL returned error: 301
-     fatal: The remote end hung up unexpectedly
+```sh
+Cloning into ''$GOAPTH/src/gopkg.in/yaml.v2'...
+error: RPC failed; HTTP 301 curl 22 The requested URL returned error: 301
+fatal: The remote end hung up unexpectedly
+```
 
 This is caused by newer `git` versions not forwarding requests anymore. One solution is to allow forwarding for `gopkg.in`
 
-```
+```sh
 $ git config --global http.https://gopkg.in.followRedirects true
 ```
