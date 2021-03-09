@@ -87,9 +87,9 @@ Because a HTTP response disables the API Gateway default handling, you have to p
 - a `body` field that contains your normal payload,
 - an optional `headers` field that includes any HTTP header you want to set, typically `Content-Type`.
 
-If you don't provide this structure, the API Gateway will generate a HTTP response with status code `204: No Content` and an empty body. If this occurs when it shouldn't, it's probably a sign that you have a HTTP response specified with the gateway but the undelying action doesn't return this structure.
+If you don't provide this structure, the API Gateway will generate a HTTP response with status code `204: No Content` and an empty body. If this occurs when it shouldn't, it's probably a sign that you have a HTTP response specified with the gateway but the underlying action doesn't return this structure.
 
-When you want to return an error, you need to provide the same structure wrapped into an `error` object. If you don't wrap it into an `error` object, it will still work from an HTTP prespective but OpenWhisk will not recognise it as an error.
+When you want to return an error, you need to provide the same structure wrapped into an `error` object. If you don't wrap it into an `error` object, it will still work from an HTTP perspective but OpenWhisk will not recognise it as an error.
 
 This structure will work with any language that is supported by OpenWhisk, such as python or Java. If you are using JavaScript, you can make use of `Promise.resolve` and `Promise.reject` to make your code more readable by removing the need for the `error` wrapper:
 

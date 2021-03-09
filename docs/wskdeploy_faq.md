@@ -30,7 +30,7 @@
 
 ### What is the order of precedence for OpenWhisk credentials?
 
-- The ```wskdeploy``` utility finds the credentials (apihost, namespace, and auth) as well as the APIGW_ACCESS_TOKEN in the folowing precedence from highest to lowest:
+- The ```wskdeploy``` utility finds the credentials (apihost, namespace, and auth) as well as the APIGW_ACCESS_TOKEN in the following precedence from highest to lowest:
   - ```wskdeploy``` command line (i.e. ```wskdeploy --apihost --namespace --auth```)
   - The deployment file
   - The manifest file

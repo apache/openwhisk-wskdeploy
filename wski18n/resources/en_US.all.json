@@ -21,7 +21,7 @@
   },
   {
     "id": "msg_cmd_desc_long_root",
-    "translation": "The OpenWhisk Deployment Tool\n\nTo begin working with wskdeploy, run the 'wskdeploy' command:\n\n\t$ wskdeploy\n\nThis will deploy OpenWhisk assets specified in manifest.yaml or manifest.yml\nIf current directory doesnt have any manifest file, wskdeploy prints this help message.\n\nThe most common ways of using wskdeploy to deploy and/or undeploy OpenWhisk assets are:\n\n$ wskdeploy\n$ wskdeploy -m path/to/manifest.yaml\n$ wskdeploy -m path/to/manifest.yaml -d path/to/deployment.yaml\n$ wskdeploy undeploy\n$ wskdeploy undeploy -m path/to/manifest.yaml\n$ wskdeploy undeploy -m path/to/manifest.yaml -d path/to/deployment.yaml\n\nAunthentication:\nwskdeploy reads credentials from $HOME/.wskprops by default\nOverwrite default config file on CLI:\n  $ wskdeploy --config <config file> -m path/to/manifest.yaml\nOr specify all three on CLI:\n  $ wskdeploy --apihost HOST --auth KEY --namespace NAMESPACE -m path/to/manifest.yaml"
+    "translation": "The OpenWhisk Deployment Tool\n\nTo begin working with wskdeploy, run the 'wskdeploy' command:\n\n\t$ wskdeploy\n\nThis will deploy OpenWhisk assets specified in manifest.yaml or manifest.yml\nIf current directory doesnt have any manifest file, wskdeploy prints this help message.\n\nThe most common ways of using wskdeploy to deploy and/or undeploy OpenWhisk assets are:\n\n$ wskdeploy\n$ wskdeploy -m path/to/manifest.yaml\n$ wskdeploy -m path/to/manifest.yaml -d path/to/deployment.yaml\n$ wskdeploy undeploy\n$ wskdeploy undeploy -m path/to/manifest.yaml\n$ wskdeploy undeploy -m path/to/manifest.yaml -d path/to/deployment.yaml\n\nAuthentication:\nwskdeploy reads credentials from $HOME/.wskprops by default\nOverwrite default config file on CLI:\n  $ wskdeploy --config <config file> -m path/to/manifest.yaml\nOr specify all three on CLI:\n  $ wskdeploy --apihost HOST --auth KEY --namespace NAMESPACE -m path/to/manifest.yaml"
   },
   {
     "id": "msg_cmd_desc_short_report",
@@ -181,7 +181,7 @@
   },
   {
     "id": "msg_deployment_failed",
-    "translation": "Deployment did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
+    "translation": "Deployment did not complete successfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
   },
   {
     "id": "msg_deployment_report_status",
@@ -197,7 +197,7 @@
   },
   {
     "id": "msg_undeployment_failed",
-    "translation": "Undeployment did not complete sucessfully.\n"
+    "translation": "Undeployment did not complete successfully.\n"
   },
   {
     "id": "msg_undeployment_succeeded",
@@ -233,7 +233,7 @@
   },
   {
     "id": "msg_dependency_deployment_failure",
-    "translation": "Deployment of dependency [{{.name}}] did not complete sucessfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
+    "translation": "Deployment of dependency [{{.name}}] did not complete successfully. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
   },
   {
     "id": "msg_dependency_undeploying",
@@ -245,11 +245,11 @@
   },
   {
     "id": "msg_dependency_undeployment_failure",
-    "translation": "Undeployment of dependency [{{.name}}] did not complete sucessfully.\n"
+    "translation": "Undeployment of dependency [{{.name}}] did not complete successfully.\n"
   },
   {
     "id": "msg_managed_undeployment_failed",
-    "translation": "Undeployment of deleted entities did not complete sucessfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
+    "translation": "Undeployment of deleted entities did not complete successfully during managed deployment. Run `wskdeploy undeploy` to remove partially deployed assets.\n"
   },
   {
     "id": "msg_managed_found_deleted_entity",

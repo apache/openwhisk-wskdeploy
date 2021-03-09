@@ -98,7 +98,7 @@ The Rule entity schema contains the information necessary to associates one trig
 
 ### Requirements
 - The Rule name (i.e., <ruleName>) MUST be less than or equal to 256 characters.
-- The Rule entity schema includes all general [Entity Schem](#TBD) fields in addition to any fields
+- The Rule entity schema includes all general [Entity Schema](#TBD) fields in addition to any fields
 declared above.
 
 ### Notes

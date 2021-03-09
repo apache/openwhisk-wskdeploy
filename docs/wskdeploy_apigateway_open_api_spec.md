@@ -112,7 +112,7 @@ There are two major differences from _"Hello World" API_ example:
 - the root key is now project as the open api specification is a project wide concept.
 - a new `config` key specifying where the Open API Specification is located.
 
-The `config` key under `project` in the manifest file specifies where the Open API Specification is located. The keyword `config` was chosen to remain consistent with the `config-file` terminology in OpenWhisk CLI flag option. The Open API Specification describes in a JSON document the the base path, endpoint, HTTP verb, and other details describing the API. For example, the document above describes a GET endpoint at `/hello/world` that recieves JSON as input and returns JSON as output.
+The `config` key under `project` in the manifest file specifies where the Open API Specification is located. The keyword `config` was chosen to remain consistent with the `config-file` terminology in OpenWhisk CLI flag option. The Open API Specification describes in a JSON document the the base path, endpoint, HTTP verb, and other details describing the API. For example, the document above describes a GET endpoint at `/hello/world` that receives JSON as input and returns JSON as output.
 
 ### Deploying
 

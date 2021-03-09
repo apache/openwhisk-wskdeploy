@@ -144,7 +144,7 @@ You should then see a JSON response with status code `200` and the following res
 
 ### Discussion
 
-By combining HTTP responses and sequences, you can re-use existing actions that are not designed to return HTTP responses by adding the necesary wrapper to the final result. You need to be careful how errors are handled as they will short-circuit the sequence execution and return early.
+By combining HTTP responses and sequences, you can re-use existing actions that are not designed to return HTTP responses by adding the necessary wrapper to the final result. You need to be careful how errors are handled as they will short-circuit the sequence execution and return early.
 
 ### Source code
 The source code for the manifest and JavaScript files can be found here:

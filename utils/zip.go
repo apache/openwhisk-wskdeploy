@@ -31,8 +31,8 @@ import (
 const PATH_WILDCARD = "*"
 const ONE_DIR_UP = "../"
 
-func NewZipWritter(src string, des string, include [][]string, exclude []string, manifestFilePath string) *ZipWritter {
-	zw := &ZipWritter{
+func NewZipWriter(src string, des string, include [][]string, exclude []string, manifestFilePath string) *ZipWriter {
+	zw := &ZipWriter{
 		src:              src,
 		des:              des,
 		include:          include,
@@ -43,14 +43,14 @@ func NewZipWritter(src string, des string, include [][]string, exclude []string,
 	return zw
 }
 
-type ZipWritter struct {
+type ZipWriter struct {
 	src              string
 	des              string
 	include          [][]string
 	exclude          []string
 	excludedFiles    map[string]bool
 	manifestFilePath string
-	zipWritter       *zip.Writer
+	zipWriter       *zip.Writer
 }
 
 type Include struct {
@@ -58,7 +58,7 @@ type Include struct {
 	destination string
 }
 
-func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
+func (zw *ZipWriter) zipFile(path string, f os.FileInfo, err error) error {
 	var file *os.File
 	var wr io.Writer
 	var verboseMsg string
@@ -85,7 +85,7 @@ func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
 	defer file.Close()
 
 	fileName := strings.TrimPrefix(path, zw.src+"/")
-	if wr, err = zw.zipWritter.Create(fileName); err != nil {
+	if wr, err = zw.zipWriter.Create(fileName); err != nil {
 		return err
 	}
 
@@ -100,7 +100,7 @@ func (zw *ZipWritter) zipFile(path string, f os.FileInfo, err error) error {
 	return nil
 }
 
-func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
+func (zw *ZipWriter) buildIncludeMetadata() ([]Include, error) {
 	var includeInfo []Include
 	var listOfSourceFiles []string
 	var err error
@@ -220,7 +220,7 @@ func (zw *ZipWritter) buildIncludeMetadata() ([]Include, error) {
 	return includeInfo, nil
 }
 
-func (zw *ZipWritter) buildExcludeMetadata() error {
+func (zw *ZipWriter) buildExcludeMetadata() error {
 	var err error
 	for _, exclude := range zw.exclude {
 		exclude = filepath.Join(zw.manifestFilePath, exclude)
@@ -231,7 +231,7 @@ func (zw *ZipWritter) buildExcludeMetadata() error {
 	return err
 }
 
-func (zw *ZipWritter) findExcludedIncludedFiles(functionPath string, flag bool) error {
+func (zw *ZipWriter) findExcludedIncludedFiles(functionPath string, flag bool) error {
 	var err error
 	var files []string
 	var excludedFiles []string
@@ -266,7 +266,7 @@ func (zw *ZipWritter) findExcludedIncludedFiles(functionPath string, flag bool) 
 	return err
 }
 
-func (zw *ZipWritter) Zip() error {
+func (zw *ZipWriter) Zip() error {
 
 	var zipFile *os.File
 	var err error
@@ -286,7 +286,7 @@ func (zw *ZipWritter) Zip() error {
 	wskprint.PrintlnOpenWhiskVerbose(Flags.Verbose, verboseMsg)
 
 	// creating a new zip writter for greeting.zip
-	zw.zipWritter = zip.NewWriter(zipFile)
+	zw.zipWriter = zip.NewWriter(zipFile)
 
 	// build a map of file names and bool indicating whether the file is included or excluded
 	// iterate over the directory specified in "function", find the list of files and mark them as not excluded
@@ -342,7 +342,7 @@ func (zw *ZipWritter) Zip() error {
 
 	// now close the zip file greeting.zip as all the included items
 	// are added into the zip file along with the action root dir
-	if err = zw.zipWritter.Close(); err != nil {
+	if err = zw.zipWriter.Close(); err != nil {
 		return err
 	}
 

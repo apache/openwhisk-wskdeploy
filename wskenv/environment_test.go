@@ -36,7 +36,7 @@ func TestInterpolateStringWithEnvVar(t *testing.T) {
 	assert.Equal(t, "NoDollar", InterpolateStringWithEnvVar("NoDollar"), "NoDollar should be no change.")
 	assert.Equal(t, "oh, dollars!", InterpolateStringWithEnvVar("$WithDollar"), "dollar sign should be handled.")
 	assert.Equal(t, "5000", InterpolateStringWithEnvVar("5000"), "Should be no difference between integer and string.")
-	assert.Equal(t, "", InterpolateStringWithEnvVar("$WithDollarAgain"), "if not found in environemnt, return empty string.")
+	assert.Equal(t, "", InterpolateStringWithEnvVar("$WithDollarAgain"), "if not found in environment, return empty string.")
 	assert.Equal(t, "oh, dollars!.ccc.aaa", InterpolateStringWithEnvVar("${WithDollar}.ccc.aaa"), "String concatenation fail")
 	assert.Equal(t, "ddd.NO dollar.aaa", InterpolateStringWithEnvVar("ddd.${NoDollar}.aaa"), "String concatenation fail")
 	assert.Equal(t, "oh, dollars!.NO dollar.aaa", InterpolateStringWithEnvVar("${WithDollar}.${NoDollar}.aaa"), "String concatenation fail")

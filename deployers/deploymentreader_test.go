@@ -95,7 +95,7 @@ func testLoadAndBindDeploymentYAML(t *testing.T, path string, triggerName string
 	dReader := NewDeploymentReader(sDeployer)
 	err := dReader.HandleYaml()
 
-	// DEBUG() Uncomment to display initial DeploymentDescriptor (manifest, deployemnt befopre binding)
+	// DEBUG() Uncomment to display initial DeploymentDescriptor (manifest, deployment before binding)
 	//fmt.Println(utils.ConvertMapToJSONString("BEFORE: dReader.DeploymentDescriptor", dReader.DeploymentDescriptor))
 	//fmt.Println(utils.ConvertMapToJSONString("BEFORE: sDeployer.Deployment", sDeployer.Deployment))
 
@@ -131,7 +131,7 @@ func TestDeploymentReader_ProjectBindTrigger(t *testing.T) {
 	// Create an annotation (in manifest representation) with key we expect, with value that should be overwritten
 	TEST_ANNOTATION := whisk.KeyValue{TEST_ANNOTATION_KEY, "foo"}
 
-	// create ServicedEployer
+	// create ServiceDeployer
 	sDeployer, dReader := testLoadAndBindDeploymentYAML(t, TEST_DATA, TEST_TRIGGER, TEST_ANNOTATION)
 
 	// test Project exists with expected name in Deployment file

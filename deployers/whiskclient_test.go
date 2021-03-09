@@ -282,5 +282,5 @@ func TestNewWhiskConfigWithAdditionalHeaders(t *testing.T) {
 	newHeaderValue := "NewValue"
 	AddAdditionalHeader(newHeader, newHeaderValue)
 	config, _ := NewWhiskConfig(propPath, deploymentPath, manifestPath)
-	assert.Equal(t, newHeaderValue, config.AdditionalHeaders.Get(newHeader), "Failed to set an addtional header")
+	assert.Equal(t, newHeaderValue, config.AdditionalHeaders.Get(newHeader), "Failed to set an additional header")
 }
