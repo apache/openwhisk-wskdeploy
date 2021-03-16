@@ -20,6 +20,8 @@ github.com/apache/openwhisk-client-go v0.0.0-20200927152356-49c58e00354d h1:eRcV
 github.com/apache/openwhisk-client-go v0.0.0-20200927152356-49c58e00354d/go.mod h1:jLLKYP7+1+LFlIJW1n9U1gqeveLM1HIwa4ZHNOFxjPw=
 github.com/apache/openwhisk-client-go v0.0.0-20210308161059-5cd1006dc35f h1:SVXVE9+snbgp5vtxfOQ7QrANTZQ/bcP9IFev6HXrtWc=
 github.com/apache/openwhisk-client-go v0.0.0-20210308161059-5cd1006dc35f/go.mod h1:SAQU4bHGJ0sg6c1vQ8ojmQKXgGaneVnexWX4+2/KMr8=
+github.com/apache/openwhisk-client-go v0.0.0-20210311185314-87edc2364717 h1:7MsAB3W6JH0d9TZ4UJ55rwV8AR9jXXZf97Uzk+CJqqs=
+github.com/apache/openwhisk-client-go v0.0.0-20210311185314-87edc2364717/go.mod h1:SAQU4bHGJ0sg6c1vQ8ojmQKXgGaneVnexWX4+2/KMr8=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
 github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da/go.mod h1:Q73ZrmVTwzkszR9V5SSuryQ31EELlFMUz1kKyl939pY=
 github.com/armon/go-radix v0.0.0-20180808171621-7fddfc383310/go.mod h1:ufUuZ+zHj4x4TnLV4JWEpy2hxWSpsRywHrMgIH9cCH8=
