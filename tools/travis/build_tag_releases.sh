@@ -17,7 +17,7 @@
 #
 
 declare -a os_list=("linux" "darwin" "windows")
-declare -a arc_list=("amd64" "386")
+declare -a arc_list=("amd64" "386" "arm64")
 build_file_name=${1:-"wskdeploy"}
 build_version=${2:-"$TRAVIS_TAG"}
 gitCommit=$(git rev-parse HEAD)
