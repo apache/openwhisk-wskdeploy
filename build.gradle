@@ -29,7 +29,7 @@ buildscript {
 // Gogradle Config:
 // https://github.com/gogradle/gogradle/blob/master/docs/getting-started.md#configuration
 plugins {
-    id 'com.github.blindpirate.gogradle' version '0.10'
+    id 'com.github.blindpirate.gogradle' version '0.11.4'
 }
 
 apply plugin: "org.nosphere.apache.rat"
