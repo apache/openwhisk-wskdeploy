@@ -86,7 +86,7 @@ In this example:
 - we further demonstrated how string values from environment variables could be concatenated with other strings within a Manifest file
 
 ### Notes:
-- These methods for binidng environment variables to input parameters are also available within Deployment files.
+- These methods for binding environment variables to input parameters are also available within Deployment files.
 
 ### Source code
 The manifest file for this example can be found here:

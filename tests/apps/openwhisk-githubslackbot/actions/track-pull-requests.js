@@ -231,7 +231,7 @@ function stopTracking(pullRequest, ifInState) {
                     })
                     .then (function () {
                         return {
-                            message: "Sucessfully stopped tracking " + id
+                            message: "Successfully stopped tracking " + id
                         };
                     });
                 } else {

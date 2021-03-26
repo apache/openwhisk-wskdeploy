@@ -158,7 +158,7 @@ my_whisk_package:
   version: 1.2.0
   license: Apache-2.0
   actions:
-    my_awsome_action:
+    my_awesome_action:
       <Action schema>
   triggers:
     trigger_for_awesome_action:

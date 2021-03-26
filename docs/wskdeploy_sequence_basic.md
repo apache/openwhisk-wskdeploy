@@ -21,7 +21,7 @@
 
 ## Creating a basic Action sequence
 
-OpenWhisk supports creating a new, named composite action from sequencung multiple, compatible Actions.
+OpenWhisk supports creating a new, named composite action from sequencing multiple, compatible Actions.
 
 This example:
 - Shows how to use a Manifest to sequence three actions together to:
@@ -180,7 +180,7 @@ params: {
     "job": "gentleman"
  }
 ```
-the input paramaters are augmented by the first Action in the sequence to produce the output "member" object:
+the input parameters are augmented by the first Action in the sequence to produce the output "member" object:
 
 ```json
 member: {

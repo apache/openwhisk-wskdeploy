@@ -61,7 +61,7 @@ func TestDependencies(t *testing.T) {
 func TestNewZipWriter(t *testing.T) {
 	filePath := "../tests/src/integration/zipaction/actions/cat"
 	zipName := filePath + ".zip"
-	err := NewZipWritter(filePath, zipName, make([][]string, 0), make([]string, 0), "").Zip()
+	err := NewZipWriter(filePath, zipName, make([][]string, 0), make([]string, 0), "").Zip()
 	defer os.Remove(zipName)
 	assert.Equal(t, nil, err, "zip folder error happened.")
 }

@@ -73,7 +73,7 @@ The Trigger entity schema contains the necessary information to describe the str
   <p>N/A</p>
   </td>
   <td>
-  <p>The optional credential used to acces the feed service.</p>
+  <p>The optional credential used to access the feed service.</p>
   </td>
  </tr>
  <tr>

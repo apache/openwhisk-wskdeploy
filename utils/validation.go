@@ -62,7 +62,7 @@ var license_json = LicenseJSON{}
 //Check local data record at first
 //Then check remote json data
 func CheckLicense(license string) bool {
-	// TODO(#673) Strict flag should cause an error to be generatd
+	// TODO(#673) Strict flag should cause an error to be generated
 	if !LicenseLocalValidation(license) && !LicenseRemoteValidation(license) {
 		warningString := wski18n.T(
 			wski18n.ID_WARN_KEYVALUE_INVALID,

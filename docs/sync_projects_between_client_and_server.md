@@ -33,7 +33,7 @@ whisk-managed:
 
 > Where the text “OpenWhisk” is a constant prefix and “\0” is the NULL character. The <size_of_manifest_file> and <contents_of_manifest_file> vary depending on the file.
 
-Now, subsequent deployments of the same project in `sync` mode, calculates a new `projectHash` on client and compares it with the one on the server for every entity in that project. This comparision could lead us to following two scenarios:
+Now, subsequent deployments of the same project in `sync` mode, calculates a new `projectHash` on client and compares it with the one on the server for every entity in that project. This comparison could lead us to following two scenarios:
 
 * **Scenario 1:** If `projectHash` on client is same as `projectHash` on the server i.e. there were no changes in the project on the client side, the project on server side is left as is except wskdeploy redeploys all the entities from manifest file to capture any changes in deployment file.
 

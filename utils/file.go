@@ -49,7 +49,7 @@ func isFile(path string) (bool, error) {
 			return true, nil
 		}
 	}
-	// stat returned an error and here we are chekcking if it was os.PathError
+	// stat returned an error and here we are checking if it was os.PathError
 	if !os.IsNotExist(err) {
 		return false, nil
 	}

@@ -185,7 +185,7 @@ function stopTracking(pullRequest, ifInState) {
                     })
                     .then (function () {
                         return {
-                            message: "Sucessfully stopped tracking " + id
+                            message: "Successfully stopped tracking " + id
                         };
                     });
                 } else {
@@ -240,7 +240,7 @@ function prIsTooOld(prDoc) {
     var moment = require("moment");
     // read lastUpdate from github
     var readyMoment = moment(prDoc.lastUpdate);
-    // depeneding on the state of pull request, "READY" or "REVIEW"
+    // depending on the state of pull request, "READY" or "REVIEW"
     // read the limit amount and days
     var limit = limits[prDoc.state];
     // moment.diff() returns difference between today and
