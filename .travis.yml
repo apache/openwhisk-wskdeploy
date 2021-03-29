@@ -76,6 +76,11 @@ before_deploy:
   - echo "TRAVIS_EVENT_TYPE is $TRAVIS_EVENT_TYPE"
   - echo "GIT_TAG=$GIT_TAG"
   - echo "TAG=$TAG"
+  - echo "Using Gradle Wrapper to produce release binaries..."
+  - echo "GIT_TAG=$GIT_TAG"
+  - env GIT_TAG
+  - echo "TAG=$TAG"
+  - env TAG
   - ./gradlew --console=plain releaseBinaries -PpackageVersion=$GIT_TAG -PgitCommit=$(git rev-parse HEAD) -PbuildDate=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
   - "./tools/travis/build_tag_releases.sh $build_file_name $GIT_TAG"
   - export RELEASE_PKG_FILE="$(cd "$TRAVIS_BUILD_DIR/release" && ls ${zip_file_name}-*.tgz ${zip_file_name}-*.zip)"
@@ -88,6 +93,7 @@ before_deploy:
     GIT_COMMITTER_DATE="$(git show --format=%aD | head -1)" git tag $GIT_TAG -a -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER";
     git push -f -q https://$API_KEY@github.com/apache/openwhisk-wskdeploy $GIT_TAG;
     fi
+  - echo "Completing before_deploy stage"
   - echo "TRAVIS_EVENT_TYPE is "
   - echo $TRAVIS_EVENT_TYPE
   - env TRAVIS_EVENT_TYPE
