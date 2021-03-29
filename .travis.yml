@@ -88,6 +88,7 @@ before_deploy:
   - echo $TRAVIS_EVENT_TYPE
   - echo "GIT_TAG is "
   - echo $GIT_TAG
+  - echo "GIT_TAG is $GIT_TAG"
 
 deploy:
   - provider: releases
