@@ -72,6 +72,10 @@ before_deploy:
     export GIT_TAG=$TRAVIS_TAG;
     export TAG=true;
     fi
+  - echo "TRAVIS_BRANCH is $TRAVIS_BRANCH"
+  - echo "TRAVIS_EVENT_TYPE is $TRAVIS_EVENT_TYPE"
+  - echo "GIT_TAG=$GIT_TAG"
+  - echo "TAG=$TAG"
   - ./gradlew --console=plain releaseBinaries -PpackageVersion=$GIT_TAG -PgitCommit=$(git rev-parse HEAD) -PbuildDate=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
   - "./tools/travis/build_tag_releases.sh $build_file_name $GIT_TAG"
   - export RELEASE_PKG_FILE="$(cd "$TRAVIS_BUILD_DIR/release" && ls ${zip_file_name}-*.tgz ${zip_file_name}-*.zip)"
@@ -86,9 +90,11 @@ before_deploy:
     fi
   - echo "TRAVIS_EVENT_TYPE is "
   - echo $TRAVIS_EVENT_TYPE
+  - env TRAVIS_EVENT_TYPE
   - echo "GIT_TAG is "
   - echo $GIT_TAG
-  - echo "GIT_TAG is $GIT_TAG"
+  - env GIT_TAG
+  - echo "GIT_TAG is ${GIT_TAG}"
 
 deploy:
   - provider: releases
