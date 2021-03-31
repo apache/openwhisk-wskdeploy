@@ -15,13 +15,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+set -x
 declare -a os_list=("linux" "darwin" "windows")
 declare -a arc_list=("amd64" "386")
 build_file_name=${1:-"wskdeploy"}
 build_version=${2:-"$TRAVIS_TAG"}
 gitCommit=$(git rev-parse HEAD)
 buildDate=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+echo "build_file_name: $build_file_name"
+echo "buildDate: $buildDate"
+echo "build_version: $build_version"
+echo "gitCommit: $gitCommit"
+
+printenv $TRAVIS_TAG
 
 for os in "${os_list[@]}"
 do

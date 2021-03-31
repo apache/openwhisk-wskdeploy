@@ -24,7 +24,7 @@ _testmain.go
 *.prof
 
 
-#OS X
+# OS X
 **/.DS_Store
 
 #binaries
@@ -43,6 +43,7 @@ Packages/
 .gradle
 .gogradle
 build/
+releases/
 
 #emacs
 *~
