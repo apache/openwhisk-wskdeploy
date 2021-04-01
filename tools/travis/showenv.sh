@@ -26,3 +26,5 @@ echo "TRAVIS_EVENT_TYPE = ["$TRAVIS_EVENT_TYPE"]"
 echo "GIT_TAG = ["$GIT_TAG"]"
 echo "TAG = ["$TAG"]"
 echo "================================================"
+
+printenv | sort
