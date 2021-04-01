@@ -51,6 +51,7 @@ notifications:
 
 before_install:
   - "./tools/travis/cloneutils.sh"
+  - sudo apt-get install tree
 
 # Install tools we use for linting and unit/integration testing
 # TODO: build.gradle (gradlew) already installs 'golint' and runs linting
@@ -76,11 +77,24 @@ before_script:
 # Clone and build the OpenWhisk platform (i.e., apache/openwhisk)
 # and then use Ansible to deploy it and prepare it to run our
 # integration tests.
+# TODO: Do not use Makefile for running integration tests;
+#       change to using gradle wrapper
 script:
   - echo $TRAVIS
   - echo $TRAVIS_PULL_REQUEST
   - echo $TRAVIS_SECURE_ENV_VARS
-  - printenv
+  - echo "TRAVIS_BRANCH = [$TRAVIS_BRANCH]"
+  - echo "TRAVIS_EVENT_TYPE = [$TRAVIS_EVENT_TYPE]"
+  - echo "GIT_TAG = [$GIT_TAG]"
+  - echo "TAG = [$TAG]"
+  - env TRAVIS_BRANCH
+  - env TRAVIS_EVENT_TYPE
+  - env $GIT_TAG
+  - env $TAG
+  - echo "Installing and building OpenWhisk platform using Ansible..."
+  - echo "Running Golang integration tests"
+  - printenv | sort
+  - tree tests/src/integration/
   - "./tools/travis/script.sh"
 
 after_success:
@@ -112,6 +126,8 @@ before_deploy:
   - env $TAG
   - echo "Using Gradle Wrapper to produce release binaries..."
   - ./gradlew --console=plain releaseBinaries -PpackageVersion=$GIT_TAG -PgitCommit=$(git rev-parse HEAD) -PbuildDate=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  - tree /build
+  - tree /release
   - export RELEASE_PKG_FILE="$(cd "$TRAVIS_BUILD_DIR/release" && ls ${zip_file_name}-*.tgz ${zip_file_name}-*.zip)"
   - echo "Deploying $RELEASE_PKG_FILE to GitHub releases."
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "push" ] && [ "$TRAVIS_OS_NAME" == "linux" ] ; then
