@@ -26,10 +26,15 @@ func main() {
 	cmd.Execute()
 }
 
+// Struct used to hold tagged (release) build information
+// Which is displayed by the `version` command.
+// Added automatically for CI/CD Travis builds in GitHub
 var (
-	//Version ...The Version of the tool
-	Version   = "unset"
+	// Apache OpenWhisk Whisk Deploy release/build version
+	Version = "unset"
+	// Git source code commit # that initiated the build
 	GitCommit = "unset"
+	// Date stamp indicating when build was initiated
 	BuildDate = "unset"
 )
 

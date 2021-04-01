@@ -82,19 +82,16 @@ before_script:
 script:
   - echo $TRAVIS
   - echo $TRAVIS_PULL_REQUEST
-  - echo $TRAVIS_SECURE_ENV_VARS
-  - echo "TRAVIS_BRANCH = [$TRAVIS_BRANCH]"
-  - echo "TRAVIS_EVENT_TYPE = [$TRAVIS_EVENT_TYPE]"
-  - echo "GIT_TAG = [$GIT_TAG]"
-  - echo "TAG = [$TAG]"
-  - env TRAVIS_BRANCH
-  - env TRAVIS_EVENT_TYPE
-  - env $GIT_TAG
-  - env $TAG
+  - echo "$TRAVIS_SECURE_ENV_VARS
+  - echo "TRAVIS_BRANCH = ["$TRAVIS_BRANCH"]"
+  - echo "TRAVIS_EVENT_TYPE = ["$TRAVIS_EVENT_TYPE"]"
+  - echo "GIT_TAG = ["$GIT_TAG"]"
+  - echo "TAG = [$"TAG"]"
   - echo "Installing and building OpenWhisk platform using Ansible..."
   - echo "Running Golang integration tests"
   - printenv | sort
   - tree tests/src/integration/
+  - "./tools/travis/showenv.sh"
   - "./tools/travis/script.sh"
 
 after_success:
