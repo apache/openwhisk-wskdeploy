@@ -31,6 +31,7 @@ import (
 	"github.com/apache/openwhisk-wskdeploy/utils"
 	"github.com/apache/openwhisk-wskdeploy/wski18n"
 	"github.com/apache/openwhisk-wskdeploy/wskprint"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 )
 
@@ -128,17 +129,23 @@ func exportProject(projectName string, targetManifest string) error {
 	if err != nil {
 		return err
 	}
+	spew.Dump(packages)
 
 	var bindings = make(map[string]whisk.Binding)
+	spew.Dump(bindings)
 
 	// iterate over each package to find managed annotations
 	// check if "managed" annotation is attached to a package
 	// add to export when managed project name matches with the
 	// specified project name
 	for _, pkg := range packages {
+		spew.Dump(pkg)
+
 		if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
 			// decode the JSON blob and retrieve __OW_PROJECT_NAME
 			pa := a.(map[string]interface{})
+
+			spew.Dump(pa)
 
 			// we have found a package which is part of the current project
 			if pa[utils.OW_PROJECT_NAME] == projectName {
@@ -199,6 +206,8 @@ func exportProject(projectName string, targetManifest string) error {
 
 	// iterate over the list of triggers to determine whether any of them part of specified managed project
 	for _, trg := range triggers {
+		spew.Dump(trg)
+
 		// trigger has attached managed annotation
 		if a := trg.Annotations.GetValue(utils.MANAGED); a != nil {
 			// decode the JSON blob and retrieve __OW_PROJECT_NAME
@@ -263,6 +272,8 @@ func exportProject(projectName string, targetManifest string) error {
 
 	// iterate over the list of rules to determine whether any of them is part of the manage dproject
 	for _, rule := range rules {
+		spew.Dump(rule)
+
 		// get rule from OW
 		wskRule, _, _ := client.Rules.Get(rule.Name)
 		// rule has attached managed annotation
@@ -308,6 +319,7 @@ func exportProject(projectName string, targetManifest string) error {
 		// iterate over the list of APIs to determine whether any of them part of the managed project
 		retApiArray := (*whisk.RetApiArray)(retApiList)
 		for _, api := range retApiArray.Apis {
+			spew.Dump(api)
 
 			apiName := api.ApiValue.Swagger.Info.Title
 			apiBasePath := strings.TrimPrefix(api.ApiValue.Swagger.BasePath, "/")

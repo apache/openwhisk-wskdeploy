@@ -100,7 +100,7 @@ after_success:
 # If this is a "tagged" GitHub build, then use Gradle Wrapper
 # to build binaries for all supported OS platforms and architectures.
 # The result would be a "/build" directory that has a subdirectory named
-# for each supported GOOS/
+# for each supported GOOS/GOARCH
 before_deploy:
   - export build_file_name=wskdeploy
   - go get github.com/inconshreveable/mousetrap
