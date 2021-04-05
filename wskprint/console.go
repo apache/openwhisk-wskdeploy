@@ -19,13 +19,14 @@ package wskprint
 
 import (
 	"fmt"
-	"github.com/apache/openwhisk-wskdeploy/wski18n"
-	"github.com/fatih/color"
-	"github.com/mattn/go-colorable"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/apache/openwhisk-wskdeploy/wski18n"
+	"github.com/fatih/color"
+	"github.com/mattn/go-colorable"
 )
 
 const (

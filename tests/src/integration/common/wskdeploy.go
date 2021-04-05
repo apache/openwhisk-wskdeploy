@@ -194,8 +194,14 @@ func (Wskdeploy *Wskdeploy) HeadlessManagedDeployment(manifestPath string, deplo
 	return Wskdeploy.RunCommand("sync", "-m", manifestPath, "-d", deploymentPath, "--projectname", name)
 }
 
+// Note: this test often fails due to server-related issues trying to access
+// newly created objects (e.g., primarily Rules) too quickly which often lose Annotations.
+// causing SIGSEGV errors.
+// It also sometimes fails accessing local storage (for tmp directories and files
+// that are created in Travis (constrained, shared environments).
+// You can add the "-t" or "--trace" to the RunCommand to get extensive trace on all HTTP calls
 func (wskdeploy *Wskdeploy) ExportProject(projectName string, targetManifestPath string) (string, error) {
-	return wskdeploy.RunCommand("export", "-m", targetManifestPath, "--projectname", projectName, "-v")
+	return wskdeploy.RunCommand("export", "-m", targetManifestPath, "--projectname", projectName, "-t")
 }
 
 func (wskdeploy *Wskdeploy) ExportProjectWithCredentials(projectName string, targetManifestPath string, wskprops *whisk.Wskprops) (string, error) {
