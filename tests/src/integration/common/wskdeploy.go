@@ -195,7 +195,7 @@ func (Wskdeploy *Wskdeploy) HeadlessManagedDeployment(manifestPath string, deplo
 }
 
 func (wskdeploy *Wskdeploy) ExportProject(projectName string, targetManifestPath string) (string, error) {
-	return wskdeploy.RunCommand("export", "-m", targetManifestPath, "--projectname", projectName)
+	return wskdeploy.RunCommand("export", "-m", targetManifestPath, "--projectname", projectName, "-v")
 }
 
 func (wskdeploy *Wskdeploy) ExportProjectWithCredentials(projectName string, targetManifestPath string, wskprops *whisk.Wskprops) (string, error) {

@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/apache/openwhisk-client-go v0.0.0-20210311185314-87edc2364717
 	github.com/cloudfoundry/jibber_jabber v0.0.0-20151120183258-bcc4c8345a21
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/fatih/color v1.10.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32
 	github.com/hokaccha/go-prettyjson v0.0.0-20210113012101-fb4e108d2519
