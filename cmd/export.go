@@ -119,9 +119,6 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML,
 
 func exportProject(projectName string, targetManifest string) error {
 
-	whisk.SetVerbose(utils.Flags.Verbose)
-	whisk.SetDebug(utils.Flags.Trace)
-
 	maniyaml := &parsers.YAML{}
 	maniyaml.Project.Name = projectName
 
@@ -131,6 +128,7 @@ func exportProject(projectName string, targetManifest string) error {
 		return err
 	}
 
+	// Emit additional trace data (primarily in Travis)
 	if utils.Flags.Trace {
 		spew.Dump(packages)
 	}
@@ -209,7 +207,6 @@ func exportProject(projectName string, targetManifest string) error {
 
 		// trigger has attached managed annotation
 		if trg.Annotations != nil {
-
 			if a := trg.Annotations.GetValue(utils.MANAGED); a != nil {
 				// decode the JSON blob and retrieve __OW_PROJECT_NAME
 				ta := a.(map[string]interface{})
@@ -264,6 +261,7 @@ func exportProject(projectName string, targetManifest string) error {
 				}
 			}
 		} else {
+			// Emit additional trace data on common Travis failures
 			spew.Dump(trg)
 			return wskderrors.NewCommandError("Export", "Trigger missing annotations.")
 		}
@@ -303,6 +301,7 @@ func exportProject(projectName string, targetManifest string) error {
 				}
 			}
 		} else {
+			// Emit additional trace data on common Travis failures
 			spew.Dump(wskRule)
 			return wskderrors.NewCommandError("Export", "Rule missing annotations.")
 		}
@@ -406,11 +405,13 @@ func exportProject(projectName string, targetManifest string) error {
 
 	// find exported manifest parent directory
 	manifestDir := filepath.Dir(utils.Flags.ManifestPath)
-	err1 := os.MkdirAll(manifestDir, os.ModePerm)
+	errMkDir := os.MkdirAll(manifestDir, os.ModePerm)
 
-	if err1 != nil {
-		wskprint.PrintOpenWhiskError(err1.Error())
-		return err1
+	// Exit if unable to create export dir. structure
+	// TODO: This sometimes fails in Travis, perhaps retry?
+	if errMkDir != nil {
+		wskprint.PrintOpenWhiskError(errMkDir.Error())
+		return errMkDir
 	}
 
 	// export manifest to file

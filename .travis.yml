@@ -36,7 +36,7 @@ notifications:
       # travis2slack webhook to enable DMs on openwhisk-team.slack.com to PR authors with TravisCI results
       secure: "NaDCtHwbFUEy0h0u/QrAt395o0/9FstJ5/Tv4uBSLCBdaUNU+0q6/RXVH76dKbujoxrLded2gyeJSAbI4kl4SM7FyilSHzKTikF0VsgM3G5veh65tVY5ztsvl40hDmK2E/PmWI3HkZNeWJO32WjraqPmhSWL0BZOWhA/4gJSCIsLnNRQXmpZoDqC7V8IG1BWYGwd5qcNkEjItLjYCUy1s2K8bj3QmhshYRVLTNbXxh0yJVKjM04I+bWhMXqvL8GS55qeicJ3fUwm5g1PDVCtzxLwAHCPo2jusjtNSnV+BaZgMBSahv3MD7ApxfF58e1buejggH3qZAhNGccC4bYJCahqVv/KKoA10kO6exH5iGwlHPWQTjMuF++PHmAk+FeQ1jh+JoUSBnIHExPnaD4CQIArHvUuQom+WJBnOz+L1H755VyPGzeDQ+ZUDlhOiQ6CDP/sqaRH3Wmo4IzhsqTsLaQs0dS1YeEWOS8gcawwNTVf/WtqiedYu24rQN9RiUXelRoEaXJy/pldb2KpyQRo2hbKoStDDB5fEij1xyGsj4kSXZ8uk5G10oDGnZYd+okduzJazN8wr0flrLvH32DRgDZDcG/D90I19JmqqfqbcG/SEmhxTikHZeVQd5DfWcqssLvWNrtQa/EJgAQkmZ2gaSsZ73AvPk/KyMV30+m8xTU="
 
-# The complete sequence of phases of a job is the lifecycle:
+# The complete sequence of phases of the lifecycle:
 # ---------------------------------------------------------
 # before_install
 # install
@@ -77,15 +77,8 @@ before_script:
 # Clone and build the OpenWhisk platform (i.e., apache/openwhisk)
 # and then use Ansible to deploy it and prepare it to run our
 # integration tests.
-# TODO: Do not use Makefile for running integration tests;
+# TODO: Do not use Makefile for running integration tests (in script.sh);
 #       change to using gradle wrapper
-# - echo $TRAVIS
-# - echo $TRAVIS_PULL_REQUEST
-# - echo "$TRAVIS_SECURE_ENV_VARS
-# - echo "TRAVIS_BRANCH = ["$TRAVIS_BRANCH"]"
-# - echo "TRAVIS_EVENT_TYPE = ["$TRAVIS_EVENT_TYPE"]"
-# - echo "GIT_TAG = ["$GIT_TAG"]"
-# - echo "TAG = [$"TAG"]"
 script:
   - echo "Installing and building OpenWhisk platform using Ansible..."
   - "./tools/travis/showenv.sh"
@@ -156,6 +149,7 @@ deploy:
       condition: "$DEPLOY_BUILD_READY = true"
 
 # Clean up wskdeploy binary (single)
+# Fundamentally, remove both /build and /release directory trees and contents
 # TODO: See if this is really needed in Travis environments as the
 # Makefile is not used elsewhere here (especially if we do not use th
 # build_tag_release.sh script) as it is for Windows developers primarily

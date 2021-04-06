@@ -25,7 +25,6 @@ import (
 	"os"
 	"strconv"
 	"testing"
-	"time"
 
 	"github.com/apache/openwhisk-wskdeploy/tests/src/integration/common"
 	"github.com/stretchr/testify/assert"
@@ -53,8 +52,6 @@ func TestExport(t *testing.T) {
 
 	_, err = wskdeploy.ManagedDeploymentOnlyManifest(manifestExtPath)
 	assert.Equal(t, nil, err, "Failed to deploy the ext manifest file.")
-
-	time.Sleep(2 * time.Second) // should it sleep for few seconds before export?!
 
 	_, err = wskdeploy.ExportProject(projectName, targetManifestPath)
 	assert.Equal(t, nil, err, "Failed to export project.")
@@ -127,7 +124,6 @@ func TestExport2Pack(t *testing.T) {
 	_, err := wskdeploy.ManagedDeploymentOnlyManifest(manifest2PackPath)
 	assert.Equal(t, nil, err, "Failed to deploy the 2pack manifest file.")
 
-	time.Sleep(2 * time.Second) // should it sleep for few seconds before export?!
 	_, err = wskdeploy.ExportProject(projectName, target2PackManifestPath)
 	assert.Equal(t, nil, err, "Failed to export project.")
 
@@ -153,7 +149,6 @@ func TestExportApi(t *testing.T) {
 	_, err := wskdeploy.ManagedDeploymentManifestAndProject(manifestApiExpPath, projectName)
 	assert.Equal(t, nil, err, "Failed to deploy the ApiExp manifest file.")
 
-	time.Sleep(2 * time.Second) // should it sleep for few seconds before export?!
 	_, err = wskdeploy.ExportProject(projectName, targetApiExpManifestPath)
 	assert.Equal(t, nil, err, "Failed to export project.")
 
@@ -189,7 +184,6 @@ func SkipTestExportTriggerFeed(t *testing.T) {
 		_, err = wskdeploy.ManagedDeploymentManifestAndProjectWithCredentials(manifestFeedExpPath, projectName, wskprops)
 		assert.Equal(t, nil, err, "Failed to deploy the FeedExp manifest file.")
 
-		time.Sleep(2 * time.Second) // should it sleep for few seconds before export?!
 		_, err = wskdeploy.ExportProjectWithCredentials(projectName, targetFeedExpManifestPath, wskprops)
 		assert.Equal(t, nil, err, "Failed to export project with trigger feed.")
 
