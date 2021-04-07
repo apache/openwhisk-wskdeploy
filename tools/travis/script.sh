@@ -59,5 +59,9 @@ $ANSIBLE_CMD routemgmt.yml
 
 export OPENWHISK_HOME="$(dirname "$TRAVIS_BUILD_DIR")/openwhisk"
 
+# TODO: Implement integration tests in GradleWrapper as new task
+# then use that version instead of invoking from the makefile
+echo "Running Golang integration tests"
+tree tests/src/integration/
 cd $TRAVIS_BUILD_DIR
 make integration_test

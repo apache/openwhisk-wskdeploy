@@ -29,8 +29,10 @@ import (
 	"github.com/apache/openwhisk-wskdeploy/parsers"
 	"github.com/apache/openwhisk-wskdeploy/runtimes"
 	"github.com/apache/openwhisk-wskdeploy/utils"
+	"github.com/apache/openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/openwhisk-wskdeploy/wski18n"
 	"github.com/apache/openwhisk-wskdeploy/wskprint"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 )
 
@@ -117,9 +119,6 @@ func ExportAction(actionName string, packageName string, maniyaml *parsers.YAML,
 
 func exportProject(projectName string, targetManifest string) error {
 
-	whisk.SetVerbose(utils.Flags.Verbose)
-	whisk.SetDebug(utils.Flags.Trace)
-
 	maniyaml := &parsers.YAML{}
 	maniyaml.Project.Name = projectName
 
@@ -129,6 +128,11 @@ func exportProject(projectName string, targetManifest string) error {
 		return err
 	}
 
+	// Emit additional trace data (primarily in Travis)
+	if utils.Flags.Trace {
+		spew.Dump(packages)
+	}
+
 	var bindings = make(map[string]whisk.Binding)
 
 	// iterate over each package to find managed annotations
@@ -136,6 +140,7 @@ func exportProject(projectName string, targetManifest string) error {
 	// add to export when managed project name matches with the
 	// specified project name
 	for _, pkg := range packages {
+
 		if a := pkg.Annotations.GetValue(utils.MANAGED); a != nil {
 			// decode the JSON blob and retrieve __OW_PROJECT_NAME
 			pa := a.(map[string]interface{})
@@ -199,59 +204,66 @@ func exportProject(projectName string, targetManifest string) error {
 
 	// iterate over the list of triggers to determine whether any of them part of specified managed project
 	for _, trg := range triggers {
+
 		// trigger has attached managed annotation
-		if a := trg.Annotations.GetValue(utils.MANAGED); a != nil {
-			// decode the JSON blob and retrieve __OW_PROJECT_NAME
-			ta := a.(map[string]interface{})
-			if ta[utils.OW_PROJECT_NAME] == projectName {
+		if trg.Annotations != nil {
+			if a := trg.Annotations.GetValue(utils.MANAGED); a != nil {
+				// decode the JSON blob and retrieve __OW_PROJECT_NAME
+				ta := a.(map[string]interface{})
+				if ta[utils.OW_PROJECT_NAME] == projectName {
 
-				for pkgName := range maniyaml.Packages {
-					if maniyaml.Packages[pkgName].Namespace == trg.Namespace {
-						if maniyaml.Packages[pkgName].Triggers == nil {
-							pkg := maniyaml.Packages[pkgName]
-							pkg.Triggers = make(map[string]parsers.Trigger)
-							maniyaml.Packages[pkgName] = pkg
-						}
-
-						// export trigger to manifest
-
-						if feedname, isFeed := utils.IsFeedAction(&trg); isFeed {
-							// check if feed name starts with namespace and workaround it
-							// the current problem is that client has user namespace and when feed specified with different namespace it will fail to invoke the feed action
-							// we need to transform the path from e.g.
-							// /api/v1/namespaces/kpavel@il.ibm.com_uspace/actions//whisk.system/alarms/interval?blocking=true
-							// in to
-							// /api/v1/namespaces/kpavel@il.ibm.com_uspace/actions/../../whisk.system/actions/alarms/interval?blocking=true
-							if strings.HasPrefix(feedname, "/") {
-								//  /whisk.system/alarms/interval  ->  ../../whisk.system/actions/alarms/interval
-								prts := strings.SplitN(feedname, "/", 3)
-								feedname = "../../" + prts[1] + "/actions/" + prts[2]
+					for pkgName := range maniyaml.Packages {
+						if maniyaml.Packages[pkgName].Namespace == trg.Namespace {
+							if maniyaml.Packages[pkgName].Triggers == nil {
+								pkg := maniyaml.Packages[pkgName]
+								pkg.Triggers = make(map[string]parsers.Trigger)
+								maniyaml.Packages[pkgName] = pkg
 							}
 
-							// export feed input parameters
-							params := make(map[string]interface{})
-							params["authKey"] = client.Config.AuthToken
-							params["lifecycleEvent"] = "READ"
-							params["triggerName"] = "/" + client.Namespace + "/" + trg.Name
-							res, _, err := client.Actions.Invoke(feedname, params, true, true)
-							if err != nil {
-								return err
-							}
-							feedConfig := res["config"]
+							// export trigger to manifest
 
-							if feedConfig != nil {
-								for key, val := range feedConfig.(map[string]interface{}) {
-									if key != "startDate" {
-										trg.Parameters = trg.Parameters.AddOrReplace(&whisk.KeyValue{Key: key, Value: val})
+							if feedname, isFeed := utils.IsFeedAction(&trg); isFeed {
+								// check if feed name starts with namespace and workaround it
+								// the current problem is that client has user namespace and when feed specified with different namespace it will fail to invoke the feed action
+								// we need to transform the path from e.g.
+								// /api/v1/namespaces/kpavel@il.ibm.com_uspace/actions//whisk.system/alarms/interval?blocking=true
+								// in to
+								// /api/v1/namespaces/kpavel@il.ibm.com_uspace/actions/../../whisk.system/actions/alarms/interval?blocking=true
+								if strings.HasPrefix(feedname, "/") {
+									//  /whisk.system/alarms/interval  ->  ../../whisk.system/actions/alarms/interval
+									prts := strings.SplitN(feedname, "/", 3)
+									feedname = "../../" + prts[1] + "/actions/" + prts[2]
+								}
+
+								// export feed input parameters
+								params := make(map[string]interface{})
+								params["authKey"] = client.Config.AuthToken
+								params["lifecycleEvent"] = "READ"
+								params["triggerName"] = "/" + client.Namespace + "/" + trg.Name
+								res, _, err := client.Actions.Invoke(feedname, params, true, true)
+								if err != nil {
+									return err
+								}
+								feedConfig := res["config"]
+
+								if feedConfig != nil {
+									for key, val := range feedConfig.(map[string]interface{}) {
+										if key != "startDate" {
+											trg.Parameters = trg.Parameters.AddOrReplace(&whisk.KeyValue{Key: key, Value: val})
+										}
 									}
 								}
 							}
-						}
 
-						maniyaml.Packages[pkgName].Triggers[trg.Name] = *maniyaml.ComposeParsersTrigger(trg)
+							maniyaml.Packages[pkgName].Triggers[trg.Name] = *maniyaml.ComposeParsersTrigger(trg)
+						}
 					}
 				}
 			}
+		} else {
+			// Emit additional trace data on common Travis failures
+			spew.Dump(trg)
+			return wskderrors.NewCommandError("Export", "Trigger missing annotations.")
 		}
 	}
 
@@ -263,29 +275,36 @@ func exportProject(projectName string, targetManifest string) error {
 
 	// iterate over the list of rules to determine whether any of them is part of the manage dproject
 	for _, rule := range rules {
+
 		// get rule from OW
 		wskRule, _, _ := client.Rules.Get(rule.Name)
-		// rule has attached managed annotation
-		if a := wskRule.Annotations.GetValue(utils.MANAGED); a != nil {
-			// decode the JSON blob and retrieve __OW_PROJECT_NAME
-			ta := a.(map[string]interface{})
-			if ta[utils.OW_PROJECT_NAME] == projectName {
 
-				for pkgName := range maniyaml.Packages {
-					if maniyaml.Packages[pkgName].Namespace == wskRule.Namespace {
-						if maniyaml.Packages[pkgName].Rules == nil {
-							pkg := maniyaml.Packages[pkgName]
-							pkg.Rules = make(map[string]parsers.Rule)
-							maniyaml.Packages[pkgName] = pkg
+		if wskRule.Annotations != nil {
+			// rule has attached managed annotation
+			if a := wskRule.Annotations.GetValue(utils.MANAGED); a != nil {
+				// decode the JSON blob and retrieve __OW_PROJECT_NAME
+				ta := a.(map[string]interface{})
+				if ta[utils.OW_PROJECT_NAME] == projectName {
+
+					for pkgName := range maniyaml.Packages {
+						if maniyaml.Packages[pkgName].Namespace == wskRule.Namespace {
+							if maniyaml.Packages[pkgName].Rules == nil {
+								pkg := maniyaml.Packages[pkgName]
+								pkg.Rules = make(map[string]parsers.Rule)
+								maniyaml.Packages[pkgName] = pkg
+							}
+
+							// export rule to manifest
+							maniyaml.Packages[pkgName].Rules[wskRule.Name] = *maniyaml.ComposeParsersRule(*wskRule)
 						}
-
-						// export rule to manifest
-						maniyaml.Packages[pkgName].Rules[wskRule.Name] = *maniyaml.ComposeParsersRule(*wskRule)
 					}
 				}
 			}
+		} else {
+			// Emit additional trace data on common Travis failures
+			spew.Dump(wskRule)
+			return wskderrors.NewCommandError("Export", "Rule missing annotations.")
 		}
-
 	}
 
 	// API Gateway is an optional component. Export APIs only when ApigwAccessToken is configured
@@ -386,7 +405,14 @@ func exportProject(projectName string, targetManifest string) error {
 
 	// find exported manifest parent directory
 	manifestDir := filepath.Dir(utils.Flags.ManifestPath)
-	os.MkdirAll(manifestDir, os.ModePerm)
+	errMkDir := os.MkdirAll(manifestDir, os.ModePerm)
+
+	// Exit if unable to create export dir. structure
+	// TODO: This sometimes fails in Travis, perhaps retry?
+	if errMkDir != nil {
+		wskprint.PrintOpenWhiskError(errMkDir.Error())
+		return errMkDir
+	}
 
 	// export manifest to file
 	parsers.Write(maniyaml, targetManifest)

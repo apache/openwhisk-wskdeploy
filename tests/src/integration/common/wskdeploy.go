@@ -26,6 +26,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/apache/openwhisk-client-go/whisk"
 	"github.com/apache/openwhisk-wskdeploy/dependencies"
@@ -194,11 +195,23 @@ func (Wskdeploy *Wskdeploy) HeadlessManagedDeployment(manifestPath string, deplo
 	return Wskdeploy.RunCommand("sync", "-m", manifestPath, "-d", deploymentPath, "--projectname", name)
 }
 
+// Note: this test often fails due to server-related issues trying to access
+// newly created objects (e.g., primarily Rules) too quickly which often lose Annotations.
+// causing SIGSEGV errors.
+// It also sometimes fails accessing local storage (for tmp directories and files
+// that are created in Travis (constrained, shared environments).
+// You can add the "-t" or "--trace" to the RunCommand to get extensive trace on all HTTP calls
 func (wskdeploy *Wskdeploy) ExportProject(projectName string, targetManifestPath string) (string, error) {
+	// TODO: There is a server-side timing issue with Annotations being
+	// retrieved too soon after creation; need to explore in OW main
+	time.Sleep(3 * time.Second) // should it sleep for few seconds before export?!
 	return wskdeploy.RunCommand("export", "-m", targetManifestPath, "--projectname", projectName)
 }
 
 func (wskdeploy *Wskdeploy) ExportProjectWithCredentials(projectName string, targetManifestPath string, wskprops *whisk.Wskprops) (string, error) {
+	// TODO: There is a server-side timing issue with Annotations being
+	// retrieved too soon after creation; need to explore in OW main
+	time.Sleep(3 * time.Second) // should it sleep for few seconds before export?!
 	return wskdeploy.RunCommand("export", "-m", targetManifestPath, "--projectname", projectName, "--auth", wskprops.AuthKey,
 		"--namespace", wskprops.Namespace, "--apihost", wskprops.APIHost, "--apiversion", wskprops.Apiversion)
 }
