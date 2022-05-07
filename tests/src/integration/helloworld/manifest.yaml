@@ -123,7 +123,7 @@ packages:
         # helloworld action in swift
         helloSwift:
           function: actions/hello.swift
-          runtime: swift:4.2
+          runtime: swift:5.4
           inputs:
             name:
               type: string
@@ -144,7 +144,7 @@ packages:
                     print (msg)
                     return msg
                 }
-          runtime: swift:4.2
+          runtime: swift:5.4
           inputs:
             name:
               type: string
