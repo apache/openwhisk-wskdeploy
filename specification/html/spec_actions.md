@@ -153,6 +153,7 @@ The following runtime values are currently supported by the OpenWhisk platform "
 
 | Runtime value | OpenWhisk kind | Docker image | Tag | Description |
 |:---|:---|:---|:---|:---|
+| go&nbsp;&#124; go:1.15 (default)| go:1.15 | [openwhisk/action-golang-v1.15](https://hub.docker.com/r/openwhisk/action-golang-v1.15) | nightly | Go 1.15 runtime |
 | go&nbsp;&#124; go:1.11 (default)| go:1.11 | [openwhisk/action-golang-v1.11](https://hub.docker.com/r/openwhisk/action-golang-v1.11) | nightly | Go 1.11 runtime |
 | nodejs@12 | nodejs:12 | [openwhisk/nodejs12action](https://hub.docker.com/r/openwhisk/action-nodejs-v12) | nightly | NodeJS 12 runtime |
 | nodejs&nbsp;&#124; nodejs@10 (default)| nodejs:10 | [openwhisk/action-nodejs-v10](https://hub.docker.com/r/openwhisk/action-nodejs-v10) | nightly |NodeJS 10 runtime |
@@ -166,6 +167,7 @@ The following runtime values are currently supported by the OpenWhisk platform "
 | python&nbsp;&#124; python@3 (default) | python:3 | [openwhisk/python3action](https://hub.docker.com/r/openwhisk/python3action) | nightly | Python 3 (3.6) language runtime |
 | python@2 | python:2 | [openwhisk/python2action](https://hub.docker.com/r/openwhisk/python2action) | 1.13.0-incubating | Python 2 (2.7) language runtime |
 | ruby&nbsp;&#124; (default) | ruby:2.5 | [openwhisk/action-ruby-v2.5](https://hub.docker.com/repository/docker/openwhisk/action-ruby-v2.5) | nightly | Ruby 2.5 language runtime |
+| swift&nbsp;&#124; swift@5.4 (default) | swift:5.4 | [openwhisk/action-swift-v5.4](https://hub.docker.com/r/openwhisk/action-swift-v5.4) | nightly | Swift 4.2 language runtime |
 | swift&nbsp;&#124; swift@4.2 (default) | swift:4.2 | [openwhisk/action-swift-v4.2](https://hub.docker.com/r/openwhisk/action-swift-v4.2) | nightly | Swift 4.2 language runtime |
 | swift@4.1 | swift:4.1 | [openwhisk/action-swift-v4.1](https://hub.docker.com/r/openwhisk/action-swift-v4.1) | nightly | Swift 4.1 language runtime |
 | swift@3.1.1 **(deprecated)** | swift:3.1.1 | [openwhisk/action-swift-v3.1.1](https://hub.docker.com/r/openwhisk/action-swift-v3.1.1) | nightly | Swift 3.1.1 language runtime |
