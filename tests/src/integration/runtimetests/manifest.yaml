@@ -135,7 +135,7 @@ packages:
                     web-export: true
                 version: 1.0
                 function: src/hello.swift
-                runtime: swift:4.2
+                runtime: swift:5.4
                 inputs:
                     name: string
                     place: string
@@ -345,7 +345,7 @@ packages:
             helloworldjava-with-swift-explicit-runtime:
                 function: src/hello.jar
                 main: Hello
-                runtime: swift:4.2
+                runtime: swift:5.4
             helloworldjava-with-random-explicit-runtime:
                 function: src/hello.jar
                 main: Hello
@@ -353,4 +353,4 @@ packages:
             helloworlddotnet22-with-swift-explicit-runtime:
                 function: src/helloDotNet.zip
                 main: Apache.OpenWhisk.Example.Dotnet::Apache.OpenWhisk.Example.Dotnet.Hello::Main
-                runtime: swift:4.2
+                runtime: swift:5.4

@@ -382,7 +382,7 @@ var RUNTIME_DETAILS = []byte(`{
         ],
         "swift": [
             {
-                "kind": "swift:4.2",
+                "kind": "swift:5.4",
                 "default": true,
                 "image": {
                     "prefix": "openwhisk",
@@ -461,7 +461,7 @@ var RUNTIME_DETAILS = []byte(`{
         ],
         "go": [
             {
-                "kind": "go:1.11",
+                "kind": "go:1.15",
                 "default": true,
                 "deprecated": false,
                 "attached": {
