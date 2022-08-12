@@ -3,7 +3,7 @@ module github.com/apache/openwhisk-wskdeploy
 go 1.15
 
 require (
-	github.com/apache/openwhisk-client-go v0.0.0-20210311185314-87edc2364717
+	github.com/apache/openwhisk-client-go v0.0.0-20220811044404-a6921af2f086
 	github.com/cloudfoundry/jibber_jabber v0.0.0-20151120183258-bcc4c8345a21
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/fatih/color v1.10.0
