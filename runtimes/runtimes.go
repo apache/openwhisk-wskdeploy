@@ -461,7 +461,7 @@ var RUNTIME_DETAILS = []byte(`{
         ],
         "go": [
             {
-                "kind": "go:1.18",
+                "kind": "go:1.17",
                 "default": true,
                 "deprecated": false,
                 "attached": {
@@ -470,7 +470,7 @@ var RUNTIME_DETAILS = []byte(`{
                 },
                 "image": {
                     "prefix": "openwhisk",
-                    "name": "action-golang-v1.18",
+                    "name": "action-golang-v1.17",
                     "tag": "nightly"
                 }
             }
