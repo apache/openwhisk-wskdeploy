@@ -244,12 +244,14 @@ func exportProject(projectName string, targetManifest string) error {
 								if err != nil {
 									return err
 								}
-								feedConfig := res["config"]
+								if result, ok := res.(map[string]interface{}); ok {
+									feedConfig := result["config"]
 
-								if feedConfig != nil {
-									for key, val := range feedConfig.(map[string]interface{}) {
-										if key != "startDate" {
-											trg.Parameters = trg.Parameters.AddOrReplace(&whisk.KeyValue{Key: key, Value: val})
+									if feedConfig != nil {
+										for key, val := range feedConfig.(map[string]interface{}) {
+											if key != "startDate" {
+												trg.Parameters = trg.Parameters.AddOrReplace(&whisk.KeyValue{Key: key, Value: val})
+											}
 										}
 									}
 								}

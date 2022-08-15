@@ -178,7 +178,7 @@ packages:
                   msg["greeting"] = "Hello, " + name + "!"
                   return msg
                 }
-          runtime: go:1.15
+          runtime: go:1.17
       sequences:
         # sequence of helloworld in all four runtimes
         hello-world-series:
