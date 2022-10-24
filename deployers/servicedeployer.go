@@ -20,14 +20,16 @@ package deployers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/apache/openwhisk-wskdeploy/webaction"
+
 	"net/http"
 	"path"
-	"reflect"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/apache/openwhisk-wskdeploy/webaction"
+	reflect "github.com/goccy/go-reflect"
 
 	"github.com/apache/openwhisk-client-go/whisk"
 	"github.com/apache/openwhisk-wskdeploy/dependencies"
