@@ -22,7 +22,7 @@ import (
 	"github.com/apache/openwhisk-wskdeploy/utils"
 	"github.com/apache/openwhisk-wskdeploy/wskderrors"
 	"github.com/apache/openwhisk-wskdeploy/wskenv"
-	"reflect"
+	reflect "github.com/goccy/go-reflect"
 )
 
 // TODO(): Support other valid Package Manifest types
