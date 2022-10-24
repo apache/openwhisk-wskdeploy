@@ -19,7 +19,8 @@ package utils
 
 import (
 	"fmt"
-	"reflect"
+	
+	"github.com/goccy/go-reflect"
 )
 
 type WskDeployFlags struct {
