@@ -82,13 +82,13 @@ before_script:
 script:
   - echo "Installing and building OpenWhisk platform using Ansible..."
   - "./tools/travis/showenv.sh"
-  - "./tools/travis/script.sh"
+#  - "./tools/travis/script.sh"
 
-after_success:
-  - DEPLOY_BUILD_READY=true
-  - if [ "$TRAVIS_EVENT_TYPE" == "cron" ] ; then
-    export DEPLOY_BUILD_READY=false;
-    fi
+# after_success:
+#   - DEPLOY_BUILD_READY=true
+#   - if [ "$TRAVIS_EVENT_TYPE" == "cron" ] ; then
+#     export DEPLOY_BUILD_READY=false;
+#     fi
 
 # If this is a "tagged" GitHub build, then use Gradle Wrapper
 # to build binaries for all supported OS platforms and architectures.
@@ -154,10 +154,10 @@ deploy:
 # Makefile is not used elsewhere here (especially if we do not use th
 # build_tag_release.sh script) as it is for Windows developers primarily
 # and we are building using Linux.
-after_script:
-  - make clean
-  - tree /build
-  - tree /release
+# after_script:
+#   - make clean
+#   - tree /build
+#   - tree /release
 
 env:
   global:
