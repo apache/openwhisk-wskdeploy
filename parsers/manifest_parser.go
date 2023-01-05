@@ -874,7 +874,11 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 
 		// update the action (of type Action) to set its name
 		// here key name is the action name
-		action.Name = actionName
+		if i, ok := packageInputs.Inputs[wskenv.GetEnvVarName(actionName)]; ok {
+			action.Name = i.Value.(string)
+		} else {
+			action.Name = wskenv.ConvertSingleName(actionName)
+		}
 
 		// Create action data object from client library
 		wskaction := new(whisk.Action)
@@ -946,7 +950,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		if wskaction.Annotations != nil {
 			if webaction.HasAnnotation(&wskaction.Annotations, webaction.REQUIRE_WHISK_AUTH) {
 				_, errorParser = webaction.ValidateRequireWhiskAuthAnnotationValue(
-					actionName,
+					action.Name,
 					wskaction.Annotations.GetValue(webaction.REQUIRE_WHISK_AUTH))
 			}
 			if errorParser != nil {
@@ -967,7 +971,7 @@ func (dm *YAMLParser) ComposeActions(manifestFilePath string, actions map[string
 		}
 
 		// Set other top-level values for the action (e.g., name, version, publish, etc.)
-		wskaction.Name = actionName
+		wskaction.Name = action.Name
 		pub := false
 		wskaction.Publish = &pub
 		wskaction.Version = wskenv.ConvertSingleName(action.Version)
