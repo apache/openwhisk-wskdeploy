@@ -321,13 +321,13 @@ func (dm *YAMLParser) composePackageInputs(projectInputs map[string]Parameter, r
 		}
 		// if value is set to default value for its type,
 		// check for input key being an env. variable itself
-		if value == getTypeDefaultValue(i.Type) {
+		if safeCompare(value, getTypeDefaultValue(i.Type)) {
 			value = wskenv.InterpolateStringWithEnvVar("${" + name + "}")
 		}
 
 		// if at this point, still value is set to default value of its type
 		// check if input key is defined under Project Inputs
-		if value == getTypeDefaultValue(i.Type) {
+		if safeCompare(value, getTypeDefaultValue(i.Type)) {
 			if i.Type == STRING && i.Value != nil {
 				n := wskenv.GetEnvVarName(i.Value.(string))
 				if v, ok := projectInputs[n]; ok {
@@ -1503,4 +1503,10 @@ func isGatewayBasePathValid(basePath string) bool {
 		return false
 	}
 	return true
+}
+
+func safeCompare(a interface{}, b interface{}) bool {
+	aa, _ := json.Marshal(a)
+	bb, _ := json.Marshal(b)
+	return (string(aa) == string(bb))
 }
