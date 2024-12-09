@@ -45,7 +45,6 @@ The Action entity schema contains the necessary information to deploy an OpenWhi
 | limits | no | map of [limit keys and values](#valid-limit-keys) | N/A | Optional map of limit keys and their values.</br>See section "[Valid limit keys](#valid-limit-keys)" (below) for a listing of recognized keys and values. |
 | feed | no | boolean | false | Optional indicator that the Action supports the required parameters (and operations) to be run as a Feed Action. |
 | web | no | string | true&nbsp;&#124; false&nbsp;&#124; yes&nbsp;&#124; no&nbsp;&#124; raw | The optional flag that makes the action accessible to REST calls without authentication.<p>For details on all types of Web Actions, see: [Web Actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md).</p>|
-| raw-http | no | boolean | false | The optional flag (annotation) to indicate if a Web Action is able to consume the raw contents within the body of an HTTP request.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
 | docker | no | string | N/A | The optional key that references a Docker image (e.g., openwhisk/skeleton). |
 | native | no | boolean | false | The optional key (flag) that indicates the Action is should use the Docker skeleton image for OpenWhisk (i.e., short-form for docker: openwhisk/skeleton). |
 | final | no | boolean | false | The optional flag (annotation) which makes all of the action parameters that are already defined immutable.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
@@ -62,6 +61,7 @@ The following annotations have special meanings for Actions:
 | web-export         | no | boolean&nbsp;&#124; yes&nbsp;&#124; no&nbsp;&#124; raw  | not set (false) | The optional annotation used to export an action as a `web action` which is accessible through an API REST interface (url). |
 | web-custom-options | no | boolean | not set (false) | The optional annotation that enables a web action to respond to OPTIONS requests with customized headers, otherwise a [default CORS response](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#options-requests) applies. |
 | require-whisk-auth | no | string&nbsp;&#124; integer&nbsp;&#124; boolean | not set (false) | The optional annotation that can secure a `web action` so that it is only accessible to an authenticated subject.<p>See [Securing web actions](https://github.com/apache/openwhisk/blob/master/docs/webactions.md#Securing-web-actions)</p> |
+| raw-http | no | boolean | false | The optional annotation to indicate if a Web Action is able to consume the raw contents within the body of an HTTP request.<p><b>Note</b>: this option is ONLY valid if <em>"web"</em> or <em>"web-export"</em> is set to <em>‘true’</em>.<p> |
 
 ### Requirements
 
