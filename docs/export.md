@@ -225,13 +225,13 @@ packages:
         namespace: your_namespace/lib1_package
         credential: ""
         exposedUrl: ""
-        web-export: ""
         main: ""
         limits: null
         inputs: {}
         outputs: {}
         annotations:
           exec: nodejs:default
+          web-export: ""
     triggers: {}
     feeds: {}
     rules: {}
