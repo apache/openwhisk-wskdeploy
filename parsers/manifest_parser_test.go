@@ -1969,6 +1969,28 @@ func TestPackageName_Env_Var(t *testing.T) {
 	}
 }
 
+func TestActionName_Env_Var(t *testing.T) {
+	testAction := "test_action"
+	os.Setenv("action_name", testAction)
+	file := "../tests/dat/manifest_validate_action_name_env_var.yaml"
+	p, m, _ := testLoadParseManifest(t, file)
+	actions, err := p.ComposeActionsFromAllPackages(m, m.Filepath, whisk.KeyValue{}, map[string]PackageInputs{})
+	if err != nil {
+		assert.Fail(t, "Failed to compose actions")
+	}
+	packageName := "helloworld"
+
+	assert.Equal(t, 1, len(m.Packages[packageName].Actions), "Get action list failed.")
+	action := actions[0]
+	wskprint.PrintlnOpenWhiskVerbose(false, fmt.Sprintf("actionName: %v", action))
+	switch action.Action.Name {
+	case testAction:
+		assert.Equal(t, testAction, action.Action.Name, "Get action name failed.")
+	default:
+		t.Error("Get action name failed")
+	}
+}
+
 func TestRuleName_Env_Var(t *testing.T) {
 	// read and parse manifest file with env var for rule name, and rule trigger and action
 	testRule := "test_rule"
