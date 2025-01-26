@@ -478,12 +478,27 @@ var RUNTIME_DETAILS = []byte(`{
         "dotnet": [
             {
                 "kind": "dotnet:2.2",
-                "default": true,
+                "default": false,
                 "deprecated": false,
                 "requireMain": true,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-dotnet-v2.2",
+                    "tag": "nightly"
+                },
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },	    
+            {
+                "kind": "dotnet:3.1",
+                "default": true,
+                "deprecated": false,
+                "requireMain": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-dotnet-v3.1",
                     "tag": "nightly"
                 },
                 "attached": {
