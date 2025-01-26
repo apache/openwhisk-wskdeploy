@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM golang:1.15
+FROM golang:1.16.2
 
 # Install zip
 RUN apt-get -y update && \
