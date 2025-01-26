@@ -21,12 +21,12 @@ package deployers
 
 import (
 	"fmt"
+	"testing"
 	"github.com/apache/openwhisk-client-go/whisk"
 	"github.com/apache/openwhisk-wskdeploy/utils"
 	"github.com/apache/openwhisk-wskdeploy/wskprint"
+	reflect "github.com/goccy/go-reflect"
 	"github.com/stretchr/testify/assert"
-	"reflect"
-	"testing"
 )
 
 const (
