@@ -19,12 +19,13 @@ package wskenv
 
 import (
 	"os"
-	"reflect"
 	"strings"
 	/** Fixes #797
 	"github.com/apache/openwhisk-wskdeploy/wski18n"
 	"github.com/apache/openwhisk-wskdeploy/wskprint"
 	**/)
+
+	reflect "github.com/goccy/go-reflect"
 
 // Test if a string
 func isValidEnvironmentVar(value string) bool {
